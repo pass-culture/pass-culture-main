@@ -3,7 +3,6 @@ import typing
 from datetime import datetime
 from datetime import timezone
 
-from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
@@ -13,11 +12,9 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.educational.models import StudentLevels
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.routes.shared.validation import phone_number_validator
@@ -30,18 +27,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
     venue_id: int | None = fields.VENUE_ID
     period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
     period_ending_date: str | None = fields.PERIOD_ENDING_DATE
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class OfferVenueModel(BaseModel):
-    venueId: int | None = fields.VENUE_ID
-    otherAddress: str | None = fields.OFFER_VENUE_OTHER_ADDRESS
-    addressType: OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
     class Config:
         alias_generator = to_camel
@@ -213,64 +198,69 @@ class CollectiveOffersListResponseModel(BaseModel):
 
 
 class CollectiveOfferLocationSchoolModel(BaseModel):
-    type: typing.Literal["SCHOOL"] = CollectiveLocationType.SCHOOL.value
+    type: typing.Literal["SCHOOL"] = fields.COLLECTIVE_OFFER_LOCATION_TYPE
 
     class Config:
         title = CollectiveLocationType.SCHOOL.value
+        extra = "forbid"
 
 
 class CollectiveOfferLocationToBeDefinedModel(BaseModel):
-    type: typing.Literal["TO_BE_DEFINED"] = CollectiveLocationType.TO_BE_DEFINED.value
+    type: typing.Literal["TO_BE_DEFINED"] = fields.COLLECTIVE_OFFER_LOCATION_TYPE
     comment: str | None = fields.COLLECTIVE_OFFER_LOCATION_COMMENT
 
     class Config:
         title = CollectiveLocationType.TO_BE_DEFINED.value
+        extra = "forbid"
 
 
 class CollectiveOfferLocationAddressVenueModel(BaseModel):
-    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
+    type: typing.Literal["ADDRESS"] = fields.COLLECTIVE_OFFER_LOCATION_TYPE
     isVenueAddress: typing.Literal[True] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
 
     class Config:
         title = "ADDRESS - VENUE"
+        extra = "forbid"
 
 
 class CollectiveOfferLocationAddressModel(BaseModel):
-    type: typing.Literal["ADDRESS"] = CollectiveLocationType.ADDRESS.value
+    type: typing.Literal["ADDRESS"] = fields.COLLECTIVE_OFFER_LOCATION_TYPE
     addressLabel: str | None = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL
     addressId: int = fields.COLLECTIVE_OFFER_LOCATION_ADDRESS_ID
     isVenueAddress: typing.Literal[False] = fields.COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS
 
     class Config:
         title = "ADDRESS - OTHER"
+        extra = "forbid"
 
 
-CollectiveOfferLocationAddress = typing.Annotated[
-    CollectiveOfferLocationAddressVenueModel | CollectiveOfferLocationAddressModel,
-    Field(discriminator="isVenueAddress"),
-]
-
-CollectiveOfferLocation = typing.Annotated[
-    CollectiveOfferLocationSchoolModel | CollectiveOfferLocationAddress | CollectiveOfferLocationToBeDefinedModel,
-    Field(discriminator="type"),
-]
+CollectiveOfferLocation = (
+    CollectiveOfferLocationSchoolModel
+    | CollectiveOfferLocationAddressVenueModel
+    | CollectiveOfferLocationAddressModel
+    | CollectiveOfferLocationToBeDefinedModel
+)
 
 
 def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation | None:
     match offer.locationType:
         case CollectiveLocationType.SCHOOL:
-            return CollectiveOfferLocationSchoolModel()
+            return CollectiveOfferLocationSchoolModel(type=CollectiveLocationType.SCHOOL.value)
         case CollectiveLocationType.TO_BE_DEFINED:
             return CollectiveOfferLocationToBeDefinedModel(
+                type=CollectiveLocationType.TO_BE_DEFINED.value,
                 comment=offer.locationComment,
             )
         case CollectiveLocationType.ADDRESS:
             is_venue_address = offer.offererAddressId == offer.venue.offererAddressId
             if is_venue_address:
-                return CollectiveOfferLocationAddressVenueModel(isVenueAddress=True)
+                return CollectiveOfferLocationAddressVenueModel(
+                    type=CollectiveLocationType.ADDRESS.value, isVenueAddress=True
+                )
             else:
                 assert offer.offererAddress
                 return CollectiveOfferLocationAddressModel(
+                    type=CollectiveLocationType.ADDRESS.value,
                     isVenueAddress=False,
                     addressLabel=offer.offererAddress.label,
                     addressId=offer.offererAddress.addressId,
@@ -306,8 +296,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
-    # offerVenue will be replaced with location, for now we send both
-    offerVenue: OfferVenueModel = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
@@ -351,11 +339,6 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             priceDetail=offer.collectiveStock.priceDetail,
             educationalInstitution=offer.institution.institutionId if offer.institution else None,
             educationalInstitutionId=offer.institution.id if offer.institution else None,
-            offerVenue={  # type: ignore[arg-type]
-                "venueId": offer.offerVenue.get("venueId"),
-                "addressType": offer.offerVenue["addressType"],
-                "otherAddress": offer.offerVenue["otherAddress"] or None,
-            },
             location=location,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
@@ -390,8 +373,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = fields.MENTAL_DISABILITY_COMPLIANT_WITH_DEFAULT
     motor_disability_compliant: bool = fields.MOTOR_DISABILITY_COMPLIANT_WITH_DEFAULT
     visual_disability_compliant: bool = fields.VISUAL_DISABILITY_COMPLIANT_WITH_DEFAULT
-    offer_venue: OfferVenueModel | None = fields.COLLECTIVE_OFFER_VENUE
-    location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
+    location: CollectiveOfferLocation = fields.COLLECTIVE_OFFER_LOCATION
     image_file: str | None = fields.IMAGE_FILE
     image_credit: str | None = fields.IMAGE_CREDIT
     national_program_id: int | None = fields.COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID
@@ -481,21 +463,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return end_datetime
 
-    @root_validator(pre=True)
-    def validate_offer_venue_and_location(cls, values: dict) -> dict:
-        offer_venue = values.get("offerVenue")
-        location = values.get("location")
-        if offer_venue is not None and location is not None:
-            raise ValueError(
-                "Les champs offerVenue et location sont mutuellement exclusifs. "
-                "Vous ne pouvez pas remplir les deux en même temps"
-            )
-
-        if offer_venue is None and location is None:
-            raise ValueError("Le remplissage de l'un des champs offerVenue ou location est obligatoire.")
-
-        return values
-
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -511,7 +478,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     contactPhone: str | None = fields.COLLECTIVE_OFFER_CONTACT_PHONE
     domains: list[int] | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
     students: list[str] | None = fields.COLLECTIVE_OFFER_STUDENT_LEVELS
-    offerVenue: OfferVenueModel | None = fields.COLLECTIVE_OFFER_VENUE
     location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
     interventionArea: list[str] | None = fields.COLLECTIVE_OFFER_INTERVENTION_AREA
     durationMinutes: int | None = fields.DURATION_MINUTES
@@ -612,18 +578,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if institution_id is not None and uai is not None:
             raise ValueError(
                 "Les champs educationalInstitution et educationalInstitutionId sont mutuellement exclusifs. "
-                "Vous ne pouvez pas remplir les deux en même temps"
-            )
-
-        return values
-
-    @root_validator(pre=True)
-    def validate_offer_venue_and_location(cls, values: dict) -> dict:
-        offer_venue = values.get("offerVenue")
-        location = values.get("location")
-        if offer_venue is not None and location is not None:
-            raise ValueError(
-                "Les champs offerVenue et location sont mutuellement exclusifs. "
                 "Vous ne pouvez pas remplir les deux en même temps"
             )
 

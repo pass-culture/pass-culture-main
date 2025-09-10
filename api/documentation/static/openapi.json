@@ -1727,6 +1727,7 @@
                 "title": "CollectiveOfferDisplayedStatus"
             },
             "CollectiveOfferLocationAddressModel": {
+                "additionalProperties": false,
                 "properties": {
                     "addressId": {
                         "description": "Address id in the pass Culture DB",
@@ -1735,7 +1736,7 @@
                         "type": "integer"
                     },
                     "addressLabel": {
-                        "description": "Adresse label",
+                        "description": "Address label",
                         "example": "Z\u00e9nith Paris",
                         "nullable": true,
                         "title": "Addresslabel",
@@ -1751,15 +1752,17 @@
                         "type": "boolean"
                     },
                     "type": {
-                        "default": "ADDRESS",
+                        "description": "Location type",
                         "enum": [
                             "ADDRESS"
                         ],
+                        "example": "SCHOOL",
                         "title": "Type",
                         "type": "string"
                     }
                 },
                 "required": [
+                    "type",
                     "addressId",
                     "isVenueAddress"
                 ],
@@ -1767,6 +1770,7 @@
                 "type": "object"
             },
             "CollectiveOfferLocationAddressVenueModel": {
+                "additionalProperties": false,
                 "properties": {
                     "isVenueAddress": {
                         "description": "Whether the offer is located at the address of the venue",
@@ -1778,52 +1782,64 @@
                         "type": "boolean"
                     },
                     "type": {
-                        "default": "ADDRESS",
+                        "description": "Location type",
                         "enum": [
                             "ADDRESS"
                         ],
+                        "example": "SCHOOL",
                         "title": "Type",
                         "type": "string"
                     }
                 },
                 "required": [
+                    "type",
                     "isVenueAddress"
                 ],
                 "title": "ADDRESS - VENUE",
                 "type": "object"
             },
             "CollectiveOfferLocationSchoolModel": {
+                "additionalProperties": false,
                 "properties": {
                     "type": {
-                        "default": "SCHOOL",
+                        "description": "Location type",
                         "enum": [
                             "SCHOOL"
                         ],
+                        "example": "SCHOOL",
                         "title": "Type",
                         "type": "string"
                     }
                 },
+                "required": [
+                    "type"
+                ],
                 "title": "SCHOOL",
                 "type": "object"
             },
             "CollectiveOfferLocationToBeDefinedModel": {
+                "additionalProperties": false,
                 "properties": {
                     "comment": {
-                        "description": "Comment",
+                        "description": "Comment on the location",
                         "example": "Lieu \u00e0 d\u00e9finir avec l'organisateur",
                         "nullable": true,
                         "title": "Comment",
                         "type": "string"
                     },
                     "type": {
-                        "default": "TO_BE_DEFINED",
+                        "description": "Location type",
                         "enum": [
                             "TO_BE_DEFINED"
                         ],
+                        "example": "SCHOOL",
                         "title": "Type",
                         "type": "string"
                     }
                 },
+                "required": [
+                    "type"
+                ],
                 "title": "TO_BE_DEFINED",
                 "type": "object"
             },
@@ -4408,20 +4424,16 @@
                                 "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
                             },
                             {
-                                "oneOf": [
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
-                                    }
-                                ]
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
                             },
                             {
                                 "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
                             }
                         ],
-                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "description": "\nIndicates where the collective offer will take place - [see this page](/docs/understanding-our-api/resources/collective-offers#offers-location).\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
                         "nullable": true,
                         "title": "ADDRESS"
                     },
@@ -4465,15 +4477,6 @@
                         "example": "PUBLISHED",
                         "title": "Offerstatus",
                         "type": "string"
-                    },
-                    "offerVenue": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferVenueModel"
-                            }
-                        ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
-                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -4525,7 +4528,6 @@
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets",
-                    "offerVenue",
                     "bookings",
                     "formats"
                 ],
@@ -5534,15 +5536,6 @@
                 "title": "OEUVRE_ART_read",
                 "type": "object"
             },
-            "OfferAddressType": {
-                "description": "An enumeration.",
-                "enum": [
-                    "offererVenue",
-                    "school",
-                    "other"
-                ],
-                "title": "OfferAddressType"
-            },
             "OfferStatus": {
                 "description": "An enumeration.",
                 "enum": [
@@ -5558,39 +5551,6 @@
                 ],
                 "title": "OfferStatus",
                 "type": "string"
-            },
-            "OfferVenueModel": {
-                "additionalProperties": false,
-                "properties": {
-                    "addressType": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferAddressType"
-                            }
-                        ],
-                        "description": "\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
-                        "example": "offererVenue"
-                    },
-                    "otherAddress": {
-                        "description": "Address that will be shared to the users",
-                        "example": null,
-                        "nullable": true,
-                        "title": "Otheraddress",
-                        "type": "string"
-                    },
-                    "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
-                        "example": 535,
-                        "nullable": true,
-                        "title": "Venueid",
-                        "type": "integer"
-                    }
-                },
-                "required": [
-                    "addressType"
-                ],
-                "title": "OfferVenueModel",
-                "type": "object"
             },
             "OffererResponse": {
                 "properties": {
@@ -6027,20 +5987,16 @@
                                 "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
                             },
                             {
-                                "oneOf": [
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
-                                    }
-                                ]
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
                             },
                             {
                                 "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
                             }
                         ],
-                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
+                        "description": "\nIndicates where the collective offer will take place - [see this page](/docs/understanding-our-api/resources/collective-offers#offers-location).\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
                         "nullable": true,
                         "title": "ADDRESS"
                     },
@@ -6077,16 +6033,6 @@
                         "nullable": true,
                         "title": "Numberoftickets",
                         "type": "integer"
-                    },
-                    "offerVenue": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferVenueModel"
-                            }
-                        ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
-                        "nullable": true,
-                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -6283,21 +6229,16 @@
                                 "$ref": "#/components/schemas/CollectiveOfferLocationSchoolModel"
                             },
                             {
-                                "oneOf": [
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
-                                    }
-                                ]
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressVenueModel"
+                            },
+                            {
+                                "$ref": "#/components/schemas/CollectiveOfferLocationAddressModel"
                             },
                             {
                                 "$ref": "#/components/schemas/CollectiveOfferLocationToBeDefinedModel"
                             }
                         ],
-                        "description": "\nIndicates where the collective offer will take place.\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
-                        "nullable": true,
+                        "description": "\nIndicates where the collective offer will take place - [see this page](/docs/understanding-our-api/resources/collective-offers#offers-location).\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
                         "title": "ADDRESS"
                     },
                     "mentalDisabilityCompliant": {
@@ -6331,16 +6272,6 @@
                         "example": 10,
                         "title": "Numberoftickets",
                         "type": "integer"
-                    },
-                    "offerVenue": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferVenueModel"
-                            }
-                        ],
-                        "description": "[\u26a0\ufe0f DEPRECATED] Use the `location` attribute instead of `offerVenue`.",
-                        "nullable": true,
-                        "title": "Offervenue"
                     },
                     "startDatetime": {
                         "description": "Collective offer start datetime. It cannot be a date in the past. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime). When creating a collective offer, the value of `startDatetime` will be copied to `endDatetime` if `endDatetime` is not provided.",
@@ -6392,6 +6323,7 @@
                     "contactPhone",
                     "domains",
                     "students",
+                    "location",
                     "startDatetime",
                     "bookingLimitDatetime",
                     "totalPrice",

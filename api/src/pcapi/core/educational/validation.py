@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
@@ -9,37 +8,6 @@ from pcapi.core.educational import repository
 from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
-
-
-if TYPE_CHECKING:
-    from pcapi.routes.public.collective.serialization.offers import OfferVenueModel
-
-
-def validate_offer_venue(offer_venue: "OfferVenueModel | None") -> None:
-    if offer_venue is None:
-        return
-    errors = {}
-    if offer_venue.addressType == models.OfferAddressType.OFFERER_VENUE:
-        if offer_venue.venueId is None:
-            errors["offerVenue.venueId"] = (
-                f"Ce champ est obligatoire si 'addressType' vaut '{models.OfferAddressType.OFFERER_VENUE.value}'"
-            )
-    elif offer_venue.venueId is not None:
-        errors["offerVenue.venueId"] = (
-            f"Ce champ est interdit si 'addressType' ne vaut pas '{models.OfferAddressType.OFFERER_VENUE.value}'"
-        )
-
-    if offer_venue.addressType == models.OfferAddressType.OTHER:
-        if not offer_venue.otherAddress:
-            errors["offerVenue.otherAddress"] = (
-                f"Ce champ est obligatoire si 'addressType' vaut '{models.OfferAddressType.OTHER.value}'"
-            )
-    elif offer_venue.otherAddress:
-        errors["offerVenue.otherAddress"] = (
-            f"Ce champ est interdit si 'addressType' ne vaut pas '{models.OfferAddressType.OTHER.value}'"
-        )
-    if errors:
-        raise api_errors.ApiErrors(errors=errors, status_code=404)
 
 
 CREDIT_PERIOD_MONTH_MIN = 9

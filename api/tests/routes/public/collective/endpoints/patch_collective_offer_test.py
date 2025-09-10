@@ -17,7 +17,6 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.public.collective.endpoints.offers import PATCH_NON_NULLABLE_FIELDS
@@ -121,11 +120,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "domains": [domain.id],
             "durationMinutes": 183,
             "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
+            "location": {"type": educational_models.CollectiveLocationType.SCHOOL.value},
             "interventionArea": ["33", "75"],
             "imageCredit": "a great artist",
             "nationalProgramId": national_program.id,
@@ -216,14 +211,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
 
-        payload = {
-            "venueId": other_venue.id,
-            "offerVenue": {
-                "venueId": other_venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": None,
-            },
-        }
+        payload = {"venueId": other_venue.id}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=payload)
 
@@ -231,11 +219,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert offer.venueId == other_venue.id
-        assert offer.offerVenue == {
-            "venueId": other_venue.id,
-            "addressType": "offererVenue",
-            "otherAddress": "",
-        }
 
     def test_update_venue_does_nothing_if_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -843,9 +826,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
         assert response.status_code == 200
 
-        assert response.json["location"] == {
-            "type": "SCHOOL",
-        }
+        assert response.json["location"] == {"type": "SCHOOL"}
 
         db.session.refresh(collective_offer)
         assert collective_offer.locationType == educational_models.CollectiveLocationType.SCHOOL
@@ -870,10 +851,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
         assert response.status_code == 200
 
-        assert response.json["location"] == {
-            "type": "TO_BE_DEFINED",
-            "comment": "In Paris",
-        }
+        assert response.json["location"] == {"type": "TO_BE_DEFINED", "comment": "In Paris"}
 
         db.session.refresh(collective_offer)
         assert collective_offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
@@ -898,10 +876,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
         assert response.status_code == 200
 
-        assert response.json["location"] == {
-            "type": "ADDRESS",
-            "isVenueAddress": True,
-        }
+        assert response.json["location"] == {"type": "ADDRESS", "isVenueAddress": True}
 
         db.session.refresh(collective_offer)
         assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
@@ -962,41 +937,31 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "otherAddress": "123 rue de la paix 75000 Paris",
         }
 
-    def test_patch_offer_with_both_location_and_offer_venue(self):
+    def test_patch_location_invalid(self):
         key, venue_provider = self.setup_active_venue_provider()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
+        collective_offer = educational_factories.PublishedCollectiveOfferFactory(
+            venue=venue, provider=venue_provider.provider
+        )
 
-        payload = {
-            "location": {"type": "SCHOOL"},
-            "offerVenue": {
-                "venueId": None,
-                "addressType": "school",
-                "otherAddress": None,
-            },
-        }
+        payload = {"location": {}}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
 
         assert response.status_code == 400
         assert response.json == {
-            "__root__": [
-                "Les champs offerVenue et location sont mutuellement exclusifs. "
-                "Vous ne pouvez pas remplir les deux en même temps"
-            ]
+            "location.addressId": ["field required"],
+            "location.isVenueAddress": [
+                "field required",
+                "field required",
+            ],
+            "location.type": [
+                "field required",
+                "field required",
+                "field required",
+                "field required",
+            ],
         }
-
-    def test_patch_offer_with_both_location_and_offer_venue_none(self):
-        key, venue_provider = self.setup_active_venue_provider()
-        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
-
-        payload = {"location": {"type": "SCHOOL"}, "offerVenue": None}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"offerVenue": ["Ce champ peut ne pas être présent mais ne peut pas être null."]}
 
     @pytest.mark.parametrize(
         "offer_factory",
@@ -1013,298 +978,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 422
         assert response.json == {"global": ["Offre non éditable."]}
-
-
-@pytest.mark.usefixtures("db_session")
-class UpdateOfferVenueTest(PublicAPIVenueEndpointHelper):
-    endpoint_url = "/v2/collective/offers/{offer_id}"
-    endpoint_method = "patch"
-    default_path_params = {"offer_id": 1}
-
-    def test_change_to_offerer_venue(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        # we accept None for otherAddress but we store "" as our GET schemas expect a string
-        dst = self.offer_venue_offerer_venue(venue_provider.venueId)
-        expected = {**dst, "otherAddress": ""}
-
-        offer = self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_school(),
-            dst=dst,
-            expected=expected,
-        )
-
-        assert offer.offererAddressId == venue_provider.venue.offererAddressId
-        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
-        assert offer.locationComment is None
-
-    def test_change_to_offerer_venue_other_venue(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        other_venue = offerers_factories.VenueFactory(managingOfferer=venue_provider.venue.managingOfferer)
-        other_venue.venueProviders.append(
-            providers_models.VenueProvider(venue=other_venue, provider=venue_provider.provider)
-        )
-
-        # we accept None for otherAddress but we store "" as our GET schemas expect a string
-        dst = self.offer_venue_offerer_venue(other_venue.id)
-        expected = {**dst, "otherAddress": ""}
-
-        offer = self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_school(),
-            dst=dst,
-            expected=expected,
-        )
-
-        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert offer.offererAddress.offererId == other_venue.offererAddress.offererId
-        assert offer.offererAddress.label == other_venue.common_name
-        assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
-        assert offer.locationComment is None
-
-    def test_change_to_school(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        # we accept None for otherAddress but we store "" as our GET schemas expect a string
-        dst = self.offer_venue_school()
-        expected = {**dst, "otherAddress": ""}
-
-        offer = self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_other(),
-            dst=dst,
-            expected=expected,
-        )
-
-        assert offer.offererAddressId is None
-        assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
-        assert offer.locationComment is None
-
-    def test_change_to_other_address(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        offer = self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_offerer_venue(venue_provider.venueId),
-            dst=self.offer_venue_other(),
-        )
-
-        assert offer.offererAddressId is None
-        assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
-        assert offer.locationComment == "something, Somewhereshire"
-
-    def test_offer_venue_is_updated_when_type_is_the_same_and_data_different(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        dst = {**self.offer_venue_other(), "otherAddress": "another address"}
-
-        self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_other(),
-            dst=dst,
-        )
-
-    def test_offer_venue_is_updated_even_if_unneeded_field_is_missing(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        dst = self.offer_venue_offerer_venue(venue_provider.venueId)
-        dst.pop("otherAddress")
-
-        self.assert_offer_venue_has_been_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_school(),
-            dst=dst,
-        )
-
-    def test_offer_venue_is_not_updated_when_venue_id_is_invalid(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_offerer_venue(venue_provider.venueId),
-            payload=self.offer_venue_offerer_venue("unknown and invalid id"),
-            status_code=400,
-            json_error={"offerVenue.venueId": ["invalid literal for int() with base 10: 'unknown and invalid id'"]},
-        )
-
-    def test_offer_venue_is_not_updated_when_venue_id_is_unknown(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_offerer_venue(venue_provider.venueId),
-            payload=self.offer_venue_offerer_venue(-1),
-            status_code=404,
-            json_error={"venueId": ["Ce lieu n'a pas été trouvé."]},
-        )
-
-    def test_offer_venue_is_not_updated_when_venue_id_is_not_allowed(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        other_venue = offerers_factories.VenueFactory()
-
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_offerer_venue(venue_provider.venueId),
-            payload=self.offer_venue_offerer_venue(other_venue.id),
-            status_code=404,
-            json_error={"venueId": ["Ce lieu n'a pas été trouvé."]},
-        )
-
-    def test_offer_venue_is_not_updated_when_updating_with_current_values(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_other(),
-            payload=self.offer_venue_other(),
-            status_code=200,
-        )
-
-    def test_offer_venue_is_not_updated_when_unneeded_field_is_set(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_school(),
-            status_code=404,
-            payload={**self.offer_venue_school(), "otherAddress": "should not be set"},
-        )
-
-    def test_offer_venue_is_not_updated_when_an_extra_field_is_set(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        self.assert_offer_venue_is_not_updated(
-            client=client,
-            api_key=plain_api_key,
-            venue_provider=venue_provider,
-            src=self.offer_venue_school(),
-            payload={**self.offer_venue_other(), "unknownField": "oops"},
-            status_code=400,
-            json_error={"offerVenue.unknownField": ["extra fields not permitted"]},
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client):
-        plain_api_key, _ = self.setup_active_venue_provider()
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(plain_api_key).patch(
-                f"/v2/collective/offers/{offer.id}", json={"offerVenue": self.offer_venue_school()}
-            )
-
-        # test says 404 but the implementation says 403 and since we
-        # need to implement this abstract method... lets keep it that
-        # way (for now).
-        assert response.status_code == 403
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
-        pass  # Check does not exist for now
-
-    def setup_and_send_request(self, client, api_key, src, payload, venue_provider):
-        location_type = None
-        oa = None
-        match src["addressType"]:
-            case educational_models.OfferAddressType.OFFERER_VENUE.value:
-                location_type = educational_models.CollectiveLocationType.ADDRESS
-                oa = venue_provider.venue.offererAddress
-            case educational_models.OfferAddressType.SCHOOL.value:
-                location_type = educational_models.CollectiveLocationType.SCHOOL
-            case educational_models.OfferAddressType.OTHER.value:
-                location_type = educational_models.CollectiveLocationType.TO_BE_DEFINED
-
-        offer = educational_factories.CollectiveStockFactory(
-            collectiveOffer__offerVenue=src,
-            collectiveOffer__locationType=location_type,
-            collectiveOffer__offererAddress=oa,
-            collectiveOffer__venue=venue_provider.venue,
-            collectiveOffer__provider=venue_provider.provider,
-        ).collectiveOffer
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_explicit_token(api_key).patch(
-                f"/v2/collective/offers/{offer.id}", json={"offerVenue": payload}
-            )
-
-        return response, offer
-
-    def assert_offer_venue_has_been_updated(self, client, api_key, venue_provider, src, dst, expected=None):
-        expected_result = dst if expected is None else expected
-
-        response, offer = self.setup_and_send_request(
-            client=client,
-            api_key=api_key,
-            src=src,
-            venue_provider=venue_provider,
-            payload=dst,
-        )
-
-        assert response.status_code == 200
-
-        db.session.refresh(offer)
-
-        # check that offerVenue has been updated with dst values:
-        # all common values have been copied and other are null.
-        assert dst.keys() <= offer.offerVenue.keys()
-        assert all(offer.offerVenue[key] == value for key, value in expected_result.items())
-        assert all(not value for key, value in offer.offerVenue.items() if key not in dst)
-
-        return offer
-
-    def assert_offer_venue_is_not_updated(
-        self, client, api_key, venue_provider, src, status_code, payload, json_error=None
-    ):
-        response, offer = self.setup_and_send_request(
-            client=client,
-            api_key=api_key,
-            src=src,
-            venue_provider=venue_provider,
-            payload=payload,
-        )
-
-        assert response.status_code == status_code
-        if json_error:
-            assert response.json == json_error
-
-        db.session.refresh(offer)
-        assert offer.offerVenue == src
-
-    def offer_venue_school(self):
-        return {
-            "venueId": None,
-            "addressType": "school",
-            "otherAddress": None,
-        }
-
-    def offer_venue_offerer_venue(self, venue_id):
-        return {
-            "venueId": venue_id,
-            "addressType": "offererVenue",
-            "otherAddress": None,
-        }
-
-    def offer_venue_other(self):
-        return {
-            "venueId": None,
-            "addressType": "other",
-            "otherAddress": "something, Somewhereshire",
-        }
 
 
 @pytest.mark.usefixtures("db_session")

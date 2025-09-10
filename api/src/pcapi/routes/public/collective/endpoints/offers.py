@@ -3,9 +3,7 @@ from datetime import datetime
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -35,7 +33,6 @@ PATCH_NON_NULLABLE_FIELDS = (
     "description",
     "domains",
     "students",
-    "offerVenue",
     "location",
     "interventionArea",
     "startDatetime",
@@ -289,8 +286,7 @@ def patch_collective_offer_public(
 
     image_as_bytes = None
     image_file = False
-    # checking data
-    educational_validation.validate_offer_venue(body.offerVenue)
+    # checking null data
     for field in PATCH_NON_NULLABLE_FIELDS:
         if field in new_values and new_values[field] is None:
             raise api_errors.ApiErrors(
@@ -349,14 +345,6 @@ def patch_collective_offer_public(
             raise api_errors.ApiErrors(
                 errors={"venueId": ["L'offre ne peut pas être déplacée sur ce lieu."]}, status_code=400
             )
-
-    if new_values.get("offerVenue"):
-        if new_values["offerVenue"] == OfferAddressType.OFFERER_VENUE.value:
-            venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
-            if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
-                raise api_errors.ApiErrors(
-                    errors={"offerVenue.venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404
-                )
 
     # validate image_data
     if "imageCredit" in new_values:
