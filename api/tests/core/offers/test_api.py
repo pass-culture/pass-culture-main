@@ -1303,7 +1303,7 @@ class UpdateDraftOfferTest:
 
     def test_new_video_url(self, app):
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-        video_id = api.extract_youtube_video_id(str(video_url))
+        video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
             f"youtube_video_{video_id}",
             json.dumps(
@@ -1329,7 +1329,25 @@ class UpdateDraftOfferTest:
         assert offer.metaData.videoDuration == 100
         assert offer.metaData.videoUrl == video_url
 
-    def test_new_video_url_without_metadata_in_redis_cache(self, app):
+    @mock.patch("pcapi.connectors.youtube.requests.get")
+    def test_new_video_url_without_metadata_in_redis_cache(self, mock_requests_get):
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "items": [
+                {
+                    "id": "test_video_id",
+                    "snippet": {
+                        "title": "Test Video",
+                        "thumbnails": {
+                            "high": {"url": "https://example.com/high.jpg"},
+                        },
+                    },
+                    "contentDetails": {"duration": "PT1M40S"},
+                }
+            ]
+        }
+        mock_requests_get.return_value = mock_response
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
         offer = factories.OfferFactory(
             name="Name",
@@ -1340,7 +1358,7 @@ class UpdateDraftOfferTest:
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
 
-        assert offer.metaData is None
+        assert offer.metaData.videoUrl == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
 
     def test_can_delete_video_url(self):
         meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
