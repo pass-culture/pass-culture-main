@@ -9,14 +9,11 @@ from sqlalchemy import orm as sa_orm
 
 from pcapi.connectors.big_query.queries import InstitutionRuralLevelQuery
 from pcapi.core.educational import adage_backends as adage_client
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.adage_backends import get_adage_educational_institutions
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.repository import find_educational_year_by_date
 from pcapi.models import db
 from pcapi.utils import db as db_utils
 from pcapi.utils import postal_code as postal_code_utils
@@ -27,12 +24,10 @@ logger = logging.getLogger(__name__)
 
 def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tuple, int]:
     offset = (per_page_limit * (page - 1)) if page > 0 else 0
-    return educational_repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
+    return repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
 
 
-def get_educational_institution_department_code(
-    institution: educational_models.EducationalInstitution,
-) -> str:
+def get_educational_institution_department_code(institution: models.EducationalInstitution) -> str:
     department_code = postal_code_utils.PostalCode(institution.postalCode).get_departement_code()
     return department_code
 
@@ -46,8 +41,8 @@ def search_educational_institution(
     postal_code: str | None,
     limit: int,
     uai: str | None,
-) -> educational_models.EducationalInstitution:
-    return educational_repository.search_educational_institution(
+) -> models.EducationalInstitution:
+    return repository.search_educational_institution(
         educational_institution_id=educational_institution_id,
         name=name,
         city=city,
@@ -70,8 +65,8 @@ def import_deposit_institution_csv(
         raise ValueError("The given file does not exist")
 
     try:
-        educational_year = educational_repository.get_educational_year_beginning_at_given_year(year)
-    except educational_exceptions.EducationalYearNotFound:
+        educational_year = repository.get_educational_year_beginning_at_given_year(year)
+    except exceptions.EducationalYearNotFound:
         raise ValueError(f"Educational year not found for year {year}")
 
     with open(path, "r", encoding="utf-8") as csv_file:
@@ -104,14 +99,14 @@ def import_deposit_institution_csv(
         total_amount = import_deposit_institution_data(
             data=data,
             educational_year=educational_year,
-            ministry=educational_models.Ministry[ministry],
+            ministry=models.Ministry[ministry],
             conflict=conflict,
             final=final,
         )
 
         if program_name is not None:
             educational_program = (
-                db.session.query(educational_models.EducationalInstitutionProgram).filter_by(name=program_name).one()
+                db.session.query(models.EducationalInstitutionProgram).filter_by(name=program_name).one()
             )
             logger.info("Updating institutions with program %s", program_name)
             _update_institutions_educational_program(
@@ -124,8 +119,8 @@ def import_deposit_institution_csv(
 def import_deposit_institution_data(
     *,
     data: dict[str, Decimal],
-    educational_year: educational_models.EducationalYear,
-    ministry: educational_models.Ministry,
+    educational_year: models.EducationalYear,
+    ministry: models.Ministry,
     final: bool,
     conflict: str,
 ) -> Decimal:
@@ -133,8 +128,7 @@ def import_deposit_institution_data(
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
     }
     db_institutions = {
-        institution.institutionId: institution
-        for institution in db.session.query(educational_models.EducationalInstitution).all()
+        institution.institutionId: institution for institution in db.session.query(models.EducationalInstitution).all()
     }
 
     not_found_uais = [uai for uai in data if uai not in adage_institutions]
@@ -158,7 +152,7 @@ def import_deposit_institution_data(
         else:
             created = True
             logger.warning("UAI:%s not found in db, creating institution", uai)
-            db_institution = educational_models.EducationalInstitution(
+            db_institution = models.EducationalInstitution(
                 institutionId=uai,
                 institutionType=institution_type,
                 name=adage_institution.libelle,
@@ -173,10 +167,10 @@ def import_deposit_institution_data(
         deposit = None
         if not created:
             deposit = (
-                db.session.query(educational_models.EducationalDeposit)
+                db.session.query(models.EducationalDeposit)
                 .filter(
-                    educational_models.EducationalDeposit.educationalYear == educational_year,
-                    educational_models.EducationalDeposit.educationalInstitution == db_institution,
+                    models.EducationalDeposit.educationalYear == educational_year,
+                    models.EducationalDeposit.educationalInstitution == db_institution,
                 )
                 .one_or_none()
             )
@@ -193,7 +187,7 @@ def import_deposit_institution_data(
             deposit.amount = amount
             deposit.isFinal = final
         else:
-            deposit = educational_models.EducationalDeposit(
+            deposit = models.EducationalDeposit(
                 educationalYear=educational_year,
                 educationalInstitution=db_institution,
                 amount=amount,
@@ -209,7 +203,7 @@ def import_deposit_institution_data(
 
 
 def _update_institutions_educational_program(
-    educational_program: educational_models.EducationalInstitutionProgram, uais: typing.Iterable[str], start: datetime
+    educational_program: models.EducationalInstitutionProgram, uais: typing.Iterable[str], start: datetime
 ) -> None:
     """
     For now we do not manage the specific cases:
@@ -219,9 +213,9 @@ def _update_institutions_educational_program(
 
     For an institution that was never linked to the program, we simply add the link
     """
-    institutions: list[educational_models.EducationalInstitution] = (
-        db.session.query(educational_models.EducationalInstitution)
-        .options(sa_orm.joinedload(educational_models.EducationalInstitution.programAssociations))
+    institutions: list[models.EducationalInstitution] = (
+        db.session.query(models.EducationalInstitution)
+        .options(sa_orm.joinedload(models.EducationalInstitution.programAssociations))
         .all()
     )
 
@@ -256,7 +250,7 @@ def _update_institutions_educational_program(
         if association is None:
             logger.info("Linking UAI %s to program %s", uai, educational_program.name)
             institution.programAssociations.append(
-                educational_models.EducationalInstitutionProgramAssociation(
+                models.EducationalInstitutionProgramAssociation(
                     programId=educational_program.id,
                     timespan=db_utils.make_timerange(start, None),
                 )
@@ -269,52 +263,50 @@ def _update_institutions_educational_program(
     db.session.flush()
 
 
-def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:
+def get_current_year_remaining_credit(institution: models.EducationalInstitution) -> Decimal:
     """Return the institution's remaining credit for the current year.
     The computation stays the same whether the deposit is final or not:
 
       current year deposit amount - sum of confirmed bookings amounts
     """
-    educational_year = educational_repository.find_educational_year_by_date(datetime.utcnow())
+    educational_year = repository.find_educational_year_by_date(datetime.utcnow())
     assert educational_year is not None
 
-    deposit = educational_repository.find_educational_deposit_by_institution_id_and_year(
-        institution.id, educational_year.adageId
-    )
+    deposit = repository.find_educational_deposit_by_institution_id_and_year(institution.id, educational_year.adageId)
     if deposit is None:
         return Decimal(0)
 
-    spent_amount = educational_repository.get_confirmed_collective_bookings_amount(
-        institution.id, educational_year.adageId
-    )
+    spent_amount = repository.get_confirmed_collective_bookings_amount(institution.id, educational_year.adageId)
 
     return deposit.amount - spent_amount
 
 
-def create_missing_educational_institution_from_adage(destination_uai: str) -> EducationalInstitution:
+def create_missing_educational_institution_from_adage(destination_uai: str) -> models.EducationalInstitution:
     """
     Fetch known adage institutions of the current year and create the
     missing institution inside or database if the target uai exists.
     """
-    year = find_educational_year_by_date(datetime.utcnow())
+    year = repository.find_educational_year_by_date(datetime.utcnow())
     if year is None:
-        raise educational_exceptions.EducationalYearNotFound()
+        raise exceptions.EducationalYearNotFound()
 
-    adage_institutions = get_adage_educational_institutions(year.adageId)
+    adage_institutions = adage_client.get_adage_educational_institutions(year.adageId)
     if not adage_institutions:
-        raise educational_exceptions.NoAdageInstitution()
+        raise exceptions.NoAdageInstitution()
 
     try:
         adage_institution = next(
             adage_institution for adage_institution in adage_institutions if adage_institution.uai == destination_uai
         )
     except StopIteration:
-        raise educational_exceptions.MissingAdageInstitution()
+        raise exceptions.MissingAdageInstitution()
     return create_educational_institution_from_adage(adage_institution)
 
 
-def create_educational_institution_from_adage(institution: AdageEducationalInstitution) -> EducationalInstitution:
-    educational_institution = EducationalInstitution(
+def create_educational_institution_from_adage(
+    institution: AdageEducationalInstitution,
+) -> models.EducationalInstitution:
+    educational_institution = models.EducationalInstitution(
         institutionId=institution.uai,
         institutionType=institution.sigle,
         name=institution.libelle,
@@ -332,16 +324,18 @@ def create_educational_institution_from_adage(institution: AdageEducationalInsti
 
 def synchronise_institutions_geolocation(adage_year_id: str | None = None) -> None:
     if adage_year_id is None:
-        year = find_educational_year_by_date(datetime.utcnow())
+        year = repository.find_educational_year_by_date(datetime.utcnow())
         if year is None:
-            raise educational_exceptions.EducationalYearNotFound()
+            raise exceptions.EducationalYearNotFound()
         adage_year_id = year.adageId
 
-    adage_institutions = get_adage_educational_institutions(adage_year_id)
+    adage_institutions = adage_client.get_adage_educational_institutions(adage_year_id)
     adage_uais = [instition.uai for instition in adage_institutions]
 
     educational_institutions = (
-        db.session.query(EducationalInstitution).filter(EducationalInstitution.institutionId.in_(adage_uais)).all()
+        db.session.query(models.EducationalInstitution)
+        .filter(models.EducationalInstitution.institutionId.in_(adage_uais))
+        .all()
     )
     educational_institutions_by_uai = {
         institution.institutionId: institution for institution in educational_institutions
@@ -360,44 +354,44 @@ def synchronise_rurality_level() -> None:
     rows = list(InstitutionRuralLevelQuery().execute())
     actual_rows = (
         e._asdict()
-        for e in db.session.query(educational_models.EducationalInstitution).with_entities(
-            educational_models.EducationalInstitution.id, educational_models.EducationalInstitution.ruralLevel
+        for e in db.session.query(models.EducationalInstitution).with_entities(
+            models.EducationalInstitution.id, models.EducationalInstitution.ruralLevel
         )
     )
 
-    ids_by_rurality_target: dict[int, set[educational_models.InstitutionRuralLevel]] = {}
+    ids_by_rurality_target: dict[int, set[models.InstitutionRuralLevel]] = {}
     for row in rows:
         ids_by_rurality_target.setdefault(row.institution_rural_level, set()).add(row.institution_id)
 
-    ids_by_rurality_actual: dict[int, set[educational_models.InstitutionRuralLevel]] = {}
+    ids_by_rurality_actual: dict[int, set[models.InstitutionRuralLevel]] = {}
     for row in actual_rows:
         ids_by_rurality_actual.setdefault(row["ruralLevel"], set()).add(row["id"])
 
     for rural_level, ids in ids_by_rurality_target.items():
         ids_to_update = ids - ids_by_rurality_actual.get(rural_level, set())
-        rural_level_enum = educational_models.InstitutionRuralLevel(rural_level) if rural_level else None
+        rural_level_enum = models.InstitutionRuralLevel(rural_level) if rural_level else None
         if ids_to_update:
-            db.session.query(educational_models.EducationalInstitution).filter(
-                educational_models.EducationalInstitution.id.in_(ids_to_update)
+            db.session.query(models.EducationalInstitution).filter(
+                models.EducationalInstitution.id.in_(ids_to_update)
             ).update({"ruralLevel": rural_level_enum})
 
     db.session.commit()
 
 
 def get_offers_count_for_my_institution(uai: str) -> int:
-    offer_query = (
-        db.session.query(educational_models.CollectiveOffer)
-        .join(educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution)
+    offer_query: "sa_orm.Query[models.CollectiveOffer]" = (
+        db.session.query(models.CollectiveOffer)
+        .join(models.EducationalInstitution, models.CollectiveOffer.institution)
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
+            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
+                models.CollectiveStock.collectiveBookings
             ),
         )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
+        .filter(models.EducationalInstitution.institutionId == uai)
     )
-    offer_count = len([query for query in offer_query if query.isBookable])
+    offer_count = len([offer for offer in offer_query if offer.isBookable])
     return offer_count
 
 
-def get_playlist_max_distance(institution: educational_models.EducationalInstitution) -> int:
-    return educational_models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60)
+def get_playlist_max_distance(institution: models.EducationalInstitution) -> int:
+    return models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60)
