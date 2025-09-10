@@ -260,7 +260,7 @@ def create_draft_offer(
     return offer
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_schemas.deprecated.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
@@ -475,6 +475,19 @@ def update_offer(
     if offerer_address:
         fields["offererAddress"] = offerer_address
 
+    if "videoUrl" in fields:
+        if new_video_url := fields.pop("videoUrl", None):
+            videos_api.upsert_video_and_metadata(new_video_url, offer)
+        elif offer.metaData and offer.metaData.videoUrl:
+            videos_api.remove_video_data_from_offer_metadata(
+                offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
+            )
+            logger.info(
+                "Video has been deleted from offer",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+                technical_message_id="offer.video.deleted",
+            )
+
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)
     if not updates:
@@ -485,7 +498,7 @@ def update_offer(
         if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
-    if (
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
         or "motorDisabilityCompliant" in updates
@@ -536,6 +549,25 @@ def update_offer(
             provider=offer.lastProvider,
         )
 
+    body_ean = body.extra_data.get("ean", None) if body.extra_data else None
+    if body_ean:
+        updates["ean"] = updates["extraData"].pop("ean")
+
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if offer.url and "url" in body.__fields_set__ and body.url is None:
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    else:
+        # - An URL must be provided if the offer has an online subcategory and had no URL before.
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+
+    if "subcategoryId" in updates and offer.status != models.OfferStatus.DRAFT:
+        raise offers_exceptions.UnallowedUpdate("subcategoryId")
+
     validation.check_validation_status(offer)
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
@@ -559,10 +591,18 @@ def update_offer(
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
     # Otherwise, you will break some dashboards
-    logger.info(
-        "Offer has been updated",
-        extra={"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}},
-        technical_message_id="offer.updated",
+    on_commit(
+        partial(
+            logger.info,
+            "Offer has been updated",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "product_id": offer.productId,
+                "changes": {**changes},
+            },
+            technical_message_id="offer.updated",
+        )
     )
 
     withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
