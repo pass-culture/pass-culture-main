@@ -1,11 +1,9 @@
 import classNames from 'classnames'
-import { ElementType, useId, useState } from 'react'
-
 import fullError from 'icons/full-error.svg'
+import { type ElementType, useId } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { Checkbox, CheckboxProps } from '../Checkbox/Checkbox'
-
+import { Checkbox, type CheckboxProps } from '../Checkbox/Checkbox'
 import styles from './CheckboxGroup.module.scss'
 
 type CheckboxGroupOptionSimple = Omit<
@@ -13,7 +11,7 @@ type CheckboxGroupOptionSimple = Omit<
   'checked' | 'onChange' | 'hasError' | 'disabled' | 'variant' | 'asset'
 > & {
   label: string
-  value: string | number
+  value: string
   variant?: 'default'
   asset?: never
 }
@@ -23,7 +21,7 @@ type CheckboxGroupOptionDetailed = Omit<
   'checked' | 'onChange' | 'hasError' | 'disabled' | 'variant'
 > & {
   label: string
-  value: string | number
+  value: string
   variant: 'detailed'
   asset?: CheckboxProps['asset']
 }
@@ -44,11 +42,9 @@ type CheckboxGroupProps = {
   /** List of options as checkboxes */
   options: CheckboxGroupOption[]
   /** Controlled selected values */
-  value?: (string | number)[]
-  /** Uncontrolled initial selected values */
-  defaultValue?: (string | number)[]
+  value: string[]
   /** Event handler called with the new array of selected values */
-  onChange?: (value: (string | number)[]) => void
+  onChange: (value: string[]) => void
   /** Display style of the checkbox group, defaults to 'vertical' */
   display?: 'vertical' | 'horizontal'
   /** Variant of the checkboxes (applied to all), defaults to 'default' */
@@ -64,7 +60,6 @@ export const CheckboxGroup = ({
   error,
   options,
   value,
-  defaultValue,
   onChange,
   display = 'vertical',
   variant = 'default',
@@ -84,28 +79,17 @@ export const CheckboxGroup = ({
     .filter(Boolean)
     .join(' ')
 
-  // Controlled / Uncontrolled
-  const isControlled = value !== undefined
-  const [internalValue, setInternalValue] = useState<(string | number)[]>(
-    defaultValue ?? []
-  )
-  const selectedValues = isControlled ? value! : internalValue
+  const selectedValues = value ?? []
 
-  const handleChange = (optionValue: string | number) => {
-    let newValues: (string | number)[]
-    if (selectedValues.includes(optionValue)) {
-      newValues = selectedValues.filter((v) => v !== optionValue)
+  const handleChange = (option: CheckboxGroupOption) => {
+    let newValues: string[]
+    if (selectedValues.includes(option.value)) {
+      newValues = selectedValues.filter((v) => v !== option.value)
     } else {
-      newValues = [...selectedValues, optionValue]
-    }
-    if (!isControlled) {
-      setInternalValue(newValues)
+      newValues = [...selectedValues, option.value]
     }
     onChange?.(newValues)
   }
-
-  const propagateAsset =
-    variant === 'detailed' && options.some((opt) => 'asset' in opt && opt.asset)
 
   return (
     <div
@@ -161,7 +145,7 @@ export const CheckboxGroup = ({
             option.variant === 'detailed'
               ? {
                   description: option.description,
-                  asset: propagateAsset ? option.asset : undefined,
+                  asset: option.asset,
                   collapsed: option.collapsed,
                 }
               : {}
@@ -171,7 +155,7 @@ export const CheckboxGroup = ({
               key={option.value}
               label={option.label}
               checked={checked}
-              onChange={() => handleChange(option.value)}
+              onChange={() => handleChange(option)}
               hasError={!!error}
               disabled={disabled}
               sizing={option.sizing}
