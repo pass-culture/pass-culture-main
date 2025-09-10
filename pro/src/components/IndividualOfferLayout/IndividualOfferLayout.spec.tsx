@@ -31,7 +31,7 @@ import {
   type IndividualOfferLayoutProps,
 } from './IndividualOfferLayout'
 
-vi.mock('react-router-dom', async () => ({
+vi.mock('react-router', async () => ({
   ...(await vi.importActual<typeof import('react-router')>('react-router')),
   Navigate: vi.fn(),
 }))

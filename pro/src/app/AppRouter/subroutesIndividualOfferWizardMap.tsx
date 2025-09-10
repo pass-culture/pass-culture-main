@@ -182,7 +182,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
+        '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
@@ -256,7 +256,7 @@ export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
+        '@/pages/IndividualOffer/IndividualOfferSummary/IndividualOfferSummary'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
