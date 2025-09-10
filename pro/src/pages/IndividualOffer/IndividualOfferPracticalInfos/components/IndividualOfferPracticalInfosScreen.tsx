@@ -20,7 +20,6 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -118,11 +117,7 @@ export const IndividualOfferPracticalInfosScreen = ({
     shouldSendMail: boolean
   ) {
     try {
-      const requestBody = getPatchOfferBody(
-        formValues,
-        getDepartmentCode(offer),
-        shouldSendMail
-      )
+      const requestBody = getPatchOfferBody(formValues, shouldSendMail)
 
       const response = await api.patchOffer(offer.id, requestBody)
 

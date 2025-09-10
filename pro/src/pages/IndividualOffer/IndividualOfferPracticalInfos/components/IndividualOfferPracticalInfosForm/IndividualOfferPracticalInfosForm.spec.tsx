@@ -24,7 +24,6 @@ function renderIndividualOfferPracticalInfosForm(
   function IndividualOfferPracticalInfosFormWrapper() {
     const form = useForm<IndividualOfferPracticalInfosFormValues>({
       defaultValues: {
-        bookingAllowedMode: 'now',
         withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
       },
     })

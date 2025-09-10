@@ -88,7 +88,6 @@ describe('IndividualOfferPracticalInfosScreen', () => {
         withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
         withdrawalDelay: 10,
         withdrawalDetails: 'test',
-        bookingAllowedDatetime: null,
         hasPendingBookings: true,
         subcategoryId: SubcategoryIdEnum.CONCERT,
         bookingContact: 'test@test.co',
