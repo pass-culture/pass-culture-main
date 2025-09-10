@@ -7,13 +7,13 @@ from decimal import InvalidOperation
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
 
+from pcapi.core.geography.constants import MAX_LATITUDE
+from pcapi.core.geography.constants import MAX_LONGITUDE
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
-
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
@@ -217,3 +217,59 @@ class GetOffererAddressesWithOffersOption(enum.Enum):
     INDIVIDUAL_OFFERS_ONLY = "INDIVIDUAL_OFFERS_ONLY"
     COLLECTIVE_OFFERS_ONLY = "COLLECTIVE_OFFERS_ONLY"
     COLLECTIVE_OFFER_TEMPLATES_ONLY = "COLLECTIVE_OFFER_TEMPLATES_ONLY"
+
+
+class AdageCulturalPartnerResponseModel(BaseModel):
+    id: int
+    statutId: int | None
+    siteWeb: str | None
+    domaineIds: list[int]
+
+    @validator("domaineIds", pre=True)
+    @classmethod
+    def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
+        if not domaine_ids:
+            return []
+
+        if isinstance(domaine_ids, list):
+            return domaine_ids
+
+        split_domaine_ids = domaine_ids.split(",")
+        ids = []
+        for domaine_id in split_domaine_ids:
+            if not domaine_id.isdigit():
+                raise ValueError("Domaine id must be an integer")
+            ids.append(int(domaine_id))
+
+        return ids
+
+    class Config:
+        orm_mode = True
+
+
+class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    address: AddressBodyModel
+    bookingEmail: VenueBookingEmail
+    comment: VenueComment | None
+    isOpenToPublic: bool | None
+    managingOffererId: int
+    name: VenueName
+    publicName: VenuePublicName | None
+    siret: VenueSiret | None
+    venueLabelId: int | None
+    venueTypeCode: str
+    withdrawalDetails: VenueWithdrawalDetails | None
+    description: VenueDescription | None
+    contact: VenueContactModel | None
+
+    class Config:
+        extra = "forbid"
+
+    @validator("siret", always=True)
+    @classmethod
+    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
+        """siret is defined after comment, so the validator can access the previously validated value of comment"""
+        comment = values.get("comment")
+        if (comment and siret) or (not comment and not siret):
+            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
+        return siret

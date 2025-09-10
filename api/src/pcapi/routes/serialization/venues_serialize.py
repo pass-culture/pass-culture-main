@@ -70,34 +70,6 @@ class DMSApplicationForEAC(BaseModel):
         return super().from_orm(collective_dms_application)
 
 
-class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    address: offerers_schemas.AddressBodyModel
-    bookingEmail: offerers_schemas.VenueBookingEmail
-    comment: offerers_schemas.VenueComment | None
-    isOpenToPublic: bool | None
-    managingOffererId: int
-    name: offerers_schemas.VenueName
-    publicName: offerers_schemas.VenuePublicName | None
-    siret: offerers_schemas.VenueSiret | None
-    venueLabelId: int | None
-    venueTypeCode: str
-    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
-    description: offerers_schemas.VenueDescription | None
-    contact: offerers_schemas.VenueContactModel | None
-
-    class Config:
-        extra = "forbid"
-
-    @validator("siret", always=True)
-    @classmethod
-    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
-        """siret is defined after comment, so the validator can access the previously validated value of comment"""
-        comment = values.get("comment")
-        if (comment and siret) or (not comment and not siret):
-            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
-        return siret
-
-
 class VenueResponseModel(BaseModel):
     id: int
 
@@ -565,34 +537,6 @@ class VenuesEducationalStatusResponseModel(BaseModel):
 
 class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
-
-
-class AdageCulturalPartnerResponseModel(BaseModel):
-    id: int
-    statutId: int | None
-    siteWeb: str | None
-    domaineIds: list[int]
-
-    @validator("domaineIds", pre=True)
-    @classmethod
-    def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
-        if not domaine_ids:
-            return []
-
-        if isinstance(domaine_ids, list):
-            return domaine_ids
-
-        split_domaine_ids = domaine_ids.split(",")
-        ids = []
-        for domaine_id in split_domaine_ids:
-            if not domaine_id.isdigit():
-                raise ValueError("Domaine id must be an integer")
-            ids.append(int(domaine_id))
-
-        return ids
-
-    class Config:
-        orm_mode = True
 
 
 class CulturalPartner(BaseModel):

@@ -31,6 +31,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
+from pcapi.core.users import schemas as users_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
@@ -1259,7 +1260,7 @@ class CreateProUserTest:
     }
 
     def test_create_pro_user(self):
-        pro_user_creation_body = users_serialization.ProUserCreationBodyV2Model(**self.data)
+        pro_user_creation_body = users_schemas.ProUserCreationBodyV2Model(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -1273,7 +1274,7 @@ class CreateProUserTest:
 
     @pytest.mark.settings(MAKE_PROS_BENEFICIARIES_IN_APP=True)
     def test_create_pro_user_in_integration(self):
-        pro_user_creation_body = users_serialization.ProUserCreationBodyV2Model(**self.data)
+        pro_user_creation_body = users_schemas.ProUserCreationBodyV2Model(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 

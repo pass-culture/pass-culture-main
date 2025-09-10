@@ -426,7 +426,7 @@ def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.Ven
 
 
 def create_venue(
-    venue_data: venues_serialize.PostVenueBodyModel,
+    venue_data: offerers_schemas.PostVenueBodyModel,
     author: users_models.User,
     offerer_address: Optional[models.OffererAddress] = None,
 ) -> models.Venue:
@@ -2313,7 +2313,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
+        venue_creation_info = offerers_schemas.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
         venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 

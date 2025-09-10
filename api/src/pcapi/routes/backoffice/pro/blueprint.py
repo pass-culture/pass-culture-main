@@ -251,7 +251,7 @@ def create_offerer() -> utils.BackofficeResponse:
         label=None,
     )
 
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    venue_creation_info = offerers_schemas.PostVenueBodyModel(
         address=address_body_model,
         siret=offerers_schemas.VenueSiret(form.siret_info.siret),
         bookingEmail=offerers_schemas.VenueBookingEmail(pro_user.email),

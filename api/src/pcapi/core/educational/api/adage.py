@@ -56,8 +56,8 @@ def get_cultural_partners(*, since_date: datetime | None = None, force_update: b
     return parse_obj_as(AdageCulturalPartners, {"partners": cultural_partners})
 
 
-def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
-    return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
+def get_cultural_partner(siret: str) -> offerers_schemas.AdageCulturalPartnerResponseModel:
+    return offerers_schemas.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
 
 
 def get_venue_by_siret_for_adage_iframe(

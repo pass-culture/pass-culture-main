@@ -21,6 +21,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as permissions_models
 import pcapi.core.users.ds as users_ds
+import pcapi.core.users.schemas as users_schemas
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
@@ -44,7 +45,6 @@ from pcapi.core.users import models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
-from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.pdf import generate_pdf_from_html
@@ -484,7 +484,7 @@ def delete_gdpr_extract(extract_id: int) -> None:
     db.session.query(models.GdprUserDataExtract).filter(models.GdprUserDataExtract.id == extract_id).delete()
 
 
-def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.GdprChronicleData]:
+def _extract_gdpr_chronicles(user: models.User) -> list[users_schemas.GdprChronicleData]:
     chronicles_data = (
         db.session.query(chronicles_models.Chronicle)
         .filter(
@@ -507,7 +507,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
                 product_name = product.name
                 break
         chronicles.append(
-            users_serialization.GdprChronicleData(
+            users_schemas.GdprChronicleData(
                 age=chronicle.age,
                 city=chronicle.city,
                 content=chronicle.content,
@@ -533,7 +533,7 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
     return chronicles
 
 
-def _extract_gdpr_account_update_requests(user: models.User) -> list[users_serialization.GdprAccountUpdateRequests]:
+def _extract_gdpr_account_update_requests(user: models.User) -> list[users_schemas.GdprAccountUpdateRequests]:
     fr_update_types = {
         models.UserAccountUpdateType.FIRST_NAME: "Prénom",
         models.UserAccountUpdateType.LAST_NAME: "Nom",
@@ -546,7 +546,7 @@ def _extract_gdpr_account_update_requests(user: models.User) -> list[users_seria
     update_requests = []
     for update_request in update_requests_data:
         update_requests.append(
-            users_serialization.GdprAccountUpdateRequests(
+            users_schemas.GdprAccountUpdateRequests(
                 allConditionsChecked=update_request.allConditionsChecked,
                 birthDate=update_request.birthDate,
                 dateCreated=update_request.dateCreated,
@@ -568,9 +568,9 @@ def _extract_gdpr_account_update_requests(user: models.User) -> list[users_seria
     return update_requests
 
 
-def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:
+def _extract_gdpr_marketing_data(user: models.User) -> users_schemas.GdprMarketing:
     notification_subscriptions = user.notificationSubscriptions or {}
-    return users_serialization.GdprMarketing(
+    return users_schemas.GdprMarketing(
         marketingEmails=notification_subscriptions.get("marketing_email") or False,
         marketingNotifications=notification_subscriptions.get("marketing_push") or False,
     )
@@ -578,17 +578,17 @@ def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprM
 
 def _extract_gdpr_devices_history(
     user: models.User,
-) -> list[users_serialization.GdprLoginDeviceHistorySerializer]:
+) -> list[users_schemas.GdprLoginDeviceHistorySerializer]:
     login_devices_data = (
         db.session.query(models.LoginDeviceHistory)
         .filter(models.LoginDeviceHistory.user == user)
         .order_by(models.LoginDeviceHistory.id)
         .all()
     )
-    return [users_serialization.GdprLoginDeviceHistorySerializer.from_orm(data) for data in login_devices_data]
+    return [users_schemas.GdprLoginDeviceHistorySerializer.from_orm(data) for data in login_devices_data]
 
 
-def _extract_gdpr_deposits(user: models.User) -> list[users_serialization.GdprDepositSerializer]:
+def _extract_gdpr_deposits(user: models.User) -> list[users_schemas.GdprDepositSerializer]:
     deposit_types = {
         finance_models.DepositType.GRANT_15_17.name: "Pass 15-17",
         finance_models.DepositType.GRANT_18.name: "Pass 18",
@@ -600,7 +600,7 @@ def _extract_gdpr_deposits(user: models.User) -> list[users_serialization.GdprDe
         .all()
     )
     return [
-        users_serialization.GdprDepositSerializer(
+        users_schemas.GdprDepositSerializer(
             dateCreated=deposit.dateCreated,
             dateUpdated=deposit.dateUpdated,
             expirationDate=deposit.expirationDate,
@@ -612,7 +612,7 @@ def _extract_gdpr_deposits(user: models.User) -> list[users_serialization.GdprDe
     ]
 
 
-def _extract_gdpr_email_history(user: models.User) -> list[users_serialization.GdprEmailHistory]:
+def _extract_gdpr_email_history(user: models.User) -> list[users_schemas.GdprEmailHistory]:
     emails = (
         db.session.query(models.UserEmailHistory)
         .filter(
@@ -633,7 +633,7 @@ def _extract_gdpr_email_history(user: models.User) -> list[users_serialization.G
         if history.newUserEmail:
             new_email = f"{history.newUserEmail}@{history.newDomainEmail}"
         emails_history.append(
-            users_serialization.GdprEmailHistory(
+            users_schemas.GdprEmailHistory(
                 oldEmail=f"{history.oldUserEmail}@{history.oldDomainEmail}",
                 newEmail=new_email,
                 dateCreated=history.creationDate,
@@ -642,7 +642,7 @@ def _extract_gdpr_email_history(user: models.User) -> list[users_serialization.G
     return emails_history
 
 
-def _extract_gdpr_action_history(user: models.User) -> list[users_serialization.GdprActionHistorySerializer]:
+def _extract_gdpr_action_history(user: models.User) -> list[users_schemas.GdprActionHistorySerializer]:
     actions_history = (
         db.session.query(history_models.ActionHistory)
         .filter(
@@ -659,12 +659,12 @@ def _extract_gdpr_action_history(user: models.User) -> list[users_serialization.
         .order_by(history_models.ActionHistory.id)
         .all()
     )
-    return [users_serialization.GdprActionHistorySerializer.from_orm(a) for a in actions_history]
+    return [users_schemas.GdprActionHistorySerializer.from_orm(a) for a in actions_history]
 
 
 def _extract_gdpr_beneficiary_validation(
     user: models.User,
-) -> list[users_serialization.GdprBeneficiaryValidation]:
+) -> list[users_schemas.GdprBeneficiaryValidation]:
     check_types = {
         fraud_models.FraudCheckType.DMS.name: "Démarches simplifiées",
         fraud_models.FraudCheckType.EDUCONNECT.name: "ÉduConnect",
@@ -696,7 +696,7 @@ def _extract_gdpr_beneficiary_validation(
         .all()
     )
     return [
-        users_serialization.GdprBeneficiaryValidation(
+        users_schemas.GdprBeneficiaryValidation(
             dateCreated=fraud_check.dateCreated,
             eligibilityType=(
                 eligibility_types.get(fraud_check.eligibilityType.name, fraud_check.eligibilityType.name)
@@ -711,7 +711,7 @@ def _extract_gdpr_beneficiary_validation(
     ]
 
 
-def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.GdprBookingSerializer]:
+def _extract_gdpr_booking_data(user: models.User) -> list[users_schemas.GdprBookingSerializer]:
     booking_status = {
         bookings_models.BookingStatus.CONFIRMED.name: "Réservé",
         bookings_models.BookingStatus.USED.name: "Utilisé",
@@ -734,7 +734,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.Gd
     for booking_data in bookings_data:
         offerer = booking_data.venue.managingOfferer
         bookings.append(
-            users_serialization.GdprBookingSerializer(
+            users_schemas.GdprBookingSerializer(
                 cancellationDate=booking_data.cancellationDate,
                 dateCreated=booking_data.dateCreated,
                 dateUsed=booking_data.dateUsed,
@@ -754,7 +754,7 @@ def _extract_gdpr_brevo_data(user: models.User) -> dict:
 
 
 def _dump_gdpr_data_container_as_json_bytes(
-    container: users_serialization.GdprDataContainer,
+    container: users_schemas.GdprDataContainer,
 ) -> tuple[zipfile.ZipInfo, bytes]:
     json_bytes = container.json(indent=4).encode("utf-8")
     file_info = zipfile.ZipInfo(
@@ -765,7 +765,7 @@ def _dump_gdpr_data_container_as_json_bytes(
 
 
 def _dump_gdpr_data_container_as_pdf_bytes(
-    container: users_serialization.GdprDataContainer,
+    container: users_schemas.GdprDataContainer,
 ) -> tuple[zipfile.ZipInfo, bytes]:
     html_content = render_template("extracts/beneficiary_extract.html", container=container)
     pdf_bytes = generate_pdf_from_html(html_content=html_content)
@@ -776,7 +776,7 @@ def _dump_gdpr_data_container_as_pdf_bytes(
     return file_info, pdf_bytes
 
 
-def _generate_archive_from_gdpr_data_container(container: users_serialization.GdprDataContainer) -> BytesIO:
+def _generate_archive_from_gdpr_data_container(container: users_schemas.GdprDataContainer) -> BytesIO:
     buffer = BytesIO()
     with zipfile.ZipFile(buffer, "w", allowZip64=False) as zip_file:
         zip_file.writestr(*_dump_gdpr_data_container_as_json_bytes(container))
@@ -798,10 +798,10 @@ def _store_gdpr_archive(name: str, archive: bytes) -> None:
 def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
     extract.dateProcessed = datetime.datetime.utcnow()
     user = extract.user
-    data = users_serialization.GdprDataContainer(
+    data = users_schemas.GdprDataContainer(
         generationDate=datetime.datetime.utcnow(),
-        internal=users_serialization.GdprInternal(
-            user=users_serialization.GdprUserSerializer.from_orm(user),
+        internal=users_schemas.GdprInternal(
+            user=users_schemas.GdprUserSerializer.from_orm(user),
             marketing=_extract_gdpr_marketing_data(user),
             loginDevices=_extract_gdpr_devices_history(user),
             emailsHistory=_extract_gdpr_email_history(user),
@@ -812,7 +812,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
             chronicles=_extract_gdpr_chronicles(user),
             accountUpdateRequests=_extract_gdpr_account_update_requests(user),
         ),
-        external=users_serialization.GdprExternal(
+        external=users_schemas.GdprExternal(
             brevo=_extract_gdpr_brevo_data(user),
         ),
     )

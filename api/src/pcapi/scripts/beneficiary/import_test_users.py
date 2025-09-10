@@ -30,7 +30,7 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
-from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
+from pcapi.core.users.schemas import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
 from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
@@ -151,7 +151,7 @@ def _create_pro_user(row: dict) -> User:
         label=None,
     )
 
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    venue_creation_info = offerers_schemas.PostVenueBodyModel(
         address=address,
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         comment=None,
