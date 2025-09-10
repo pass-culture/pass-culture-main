@@ -175,7 +175,7 @@ class CGRStocksTest:
         assert created_offers[0].isDuo
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 138473, "visa": "149341"}
-        assert created_offers[0]._extraData == None
+        assert created_offers[0]._extraData == {}
 
         assert created_offers[1].name == "Super Mario Bros, Le Film"
         assert created_offers[1].venue == venue_provider.venue
@@ -184,7 +184,7 @@ class CGRStocksTest:
         assert created_offers[1].isDuo
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 234099, "visa": "82382"}
-        assert created_offers[1]._extraData == None
+        assert created_offers[1]._extraData == {}
 
     @time_machine.travel(datetime.datetime(2022, 12, 30), tick=False)
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
@@ -231,7 +231,7 @@ class CGRStocksTest:
         assert created_offers[0].publicationDatetime == datetime.datetime(2022, 12, 30)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 138473}
-        assert created_offers[0]._extraData == None
+        assert created_offers[0]._extraData == {}
 
         assert created_stocks[0].quantity == 99
         assert created_stocks[0].price == Decimal("6.9")
@@ -251,7 +251,7 @@ class CGRStocksTest:
         assert created_offers[1].publicationDatetime == datetime.datetime(2022, 12, 30)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 234099}
-        assert created_offers[1]._extraData == None
+        assert created_offers[1]._extraData == {}
 
         assert created_stocks[1].quantity == 168
         assert created_stocks[1].price == Decimal(11.00)
