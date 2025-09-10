@@ -13,7 +13,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
@@ -35,7 +34,6 @@ export const StockSection = ({
 }: StockSectionProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const mode = useOfferWizardMode()
   const [isLoading, setIsLoading] = useState(false)
   const [stocksEventsStats, setStocksEventsStats] = useState<
     StockStatsResponseModel | undefined
@@ -88,8 +86,7 @@ export const StockSection = ({
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-    mode:
-      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
+    mode: OFFER_WIZARD_MODE.CREATION,
     isOnboarding,
   })
 

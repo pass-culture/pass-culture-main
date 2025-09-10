@@ -1,441 +1,492 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import { Route, Routes } from 'react-router'
+import * as reactRouter from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
+  IndividualOfferContext,
+  type IndividualOfferContextValues,
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  type RenderComponentFunction,
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
+import {
+  MOCKED_CATEGORIES,
+  MOCKED_SUBCATEGORIES,
+} from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
 import {
   IndividualOfferLayout,
   type IndividualOfferLayoutProps,
 } from './IndividualOfferLayout'
 
-const renderIndividualOfferLayout = (
-  props: Partial<IndividualOfferLayoutProps>,
-  options: RenderWithProvidersOptions = {
-    initialRouterEntries: ['/offre/creation'],
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual<typeof import('react-router')>('react-router')),
+  Navigate: vi.fn(),
+}))
+vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
+  useOfferWizardMode: vi.fn(),
+}))
+
+const renderIndividualOfferLayout: RenderComponentFunction<
+  IndividualOfferLayoutProps,
+  IndividualOfferContextValues
+> = (params) => {
+  const offer = params.props?.offer
+  assertOrFrontendError(
+    offer !== undefined,
+    '`offer` must be defined in props.'
+  )
+
+  const contextValues: IndividualOfferContextValues = {
+    categories: MOCKED_CATEGORIES,
+    hasPublishedOfferWithSameEan: false,
+    isEvent: null,
+    offerId: offer?.id ?? null,
+    setIsEvent: vi.fn(),
+    subCategories: MOCKED_SUBCATEGORIES,
+    offer,
+    ...params.contextValues,
   }
-) => {
-  renderWithProviders(
-    <>
+  const options: RenderWithProvidersOptions = {
+    user: sharedCurrentUserFactory(),
+    ...params.options,
+  }
+  const props: IndividualOfferLayoutProps = {
+    offer,
+    withStepper: true,
+    children: <div>Template child</div>,
+    ...params.props,
+  }
+
+  return renderWithProviders(
+    <IndividualOfferContext.Provider value={contextValues}>
       <Notification />
-      <Routes>
-        <Route
-          path="/offre/creation"
-          element={
-            <IndividualOfferLayout
-              title="layout title"
-              withStepper
-              offer={getIndividualOfferFactory()}
-              mode={OFFER_WIZARD_MODE.EDITION}
-              {...props}
-            >
-              <div>Template child</div>
-            </IndividualOfferLayout>
-          }
-        />
-        <Route
-          path="/onboarding/offre/creation"
-          element={
-            <IndividualOfferLayout
-              title="layout title"
-              withStepper
-              offer={getIndividualOfferFactory()}
-              mode={OFFER_WIZARD_MODE.EDITION}
-              {...props}
-            >
-              <div>Template child</div>
-            </IndividualOfferLayout>
-          }
-        />
-        <Route path="/accueil" element={<div>Accueil</div>} />
-      </Routes>
-    </>,
+
+      <IndividualOfferLayout {...props} />
+    </IndividualOfferContext.Provider>,
     options
   )
 }
 
 describe('IndividualOfferLayout', () => {
-  it('should render when no offer is given', () => {
-    renderIndividualOfferLayout({ offer: null })
-
-    expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-    expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+  const eventOffer = getIndividualOfferFactory({
+    id: 1,
+    isEvent: true,
+  })
+  const nonEventOffer = getIndividualOfferFactory({
+    id: 2,
+    isEvent: false,
   })
 
-  it('should render when offer is given', () => {
-    const offer = getIndividualOfferFactory({
-      name: 'offer name',
+  describe('when mode is CREATION', () => {
+    beforeEach(() => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
     })
 
-    renderIndividualOfferLayout({
-      offer,
+    it('should render when no offer is given', () => {
+      const props = { offer: null }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(screen.getByText('Template child')).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
     })
 
-    expect(screen.getByText('Template child')).toBeInTheDocument()
-    expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-    expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+    it('should render when offer is given', () => {
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          name: 'offer name',
+        },
+      }
 
-    expect(screen.getByText(/offer name/)).toBeInTheDocument()
-    expect(screen.getByText(/layout title/)).toBeInTheDocument()
-  })
+      renderIndividualOfferLayout({ props })
 
-  it('should not display stepper nor status when no stepper', () => {
-    const offer = getIndividualOfferFactory({
-      isActive: true,
-      status: OfferStatus.ACTIVE,
+      expect(screen.getByText('Template child')).toBeInTheDocument()
+      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
+      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+
+      expect(screen.getByText(/offer name/)).toBeInTheDocument()
+      expect(screen.getByText('Créer une offre')).toBeInTheDocument()
     })
 
-    renderIndividualOfferLayout({
-      offer,
-      withStepper: false,
+    it('should not display stepper nor status when no stepper', () => {
+      const props = { offer: nonEventOffer, withStepper: false }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(screen.queryByTestId('status')).not.toBeInTheDocument()
+      expect(screen.queryByText('Détails de l’offre')).not.toBeInTheDocument()
+      expect(screen.queryByText('Stock & Prix')).not.toBeInTheDocument()
     })
 
-    expect(screen.queryByTestId('status')).not.toBeInTheDocument()
-    expect(screen.queryByText('Détails de l’offre')).not.toBeInTheDocument()
-    expect(screen.queryByText('Stock & Prix')).not.toBeInTheDocument()
-  })
+    it('should display status and button in edition', () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
 
-  it('should display status and button in edition', () => {
-    const offer = getIndividualOfferFactory({
-      isActive: true,
-      status: OfferStatus.ACTIVE,
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          isActive: true,
+          status: OfferStatus.ACTIVE,
+        },
+      }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
+      expect(screen.getByText('publiée')).toBeInTheDocument()
     })
 
-    renderIndividualOfferLayout({
-      offer,
+    it('should not display status in creation', () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
+
+      const offer = getIndividualOfferFactory({
+        isActive: false,
+        status: OfferStatus.DRAFT,
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.queryByTestId('status')).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre en pause' })
+      ).not.toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
-    expect(screen.getByText('publiée')).toBeInTheDocument()
-  })
+    it('should display provider banner', () => {
+      const offer = getIndividualOfferFactory({
+        lastProvider: { name: 'Boost' },
+      })
 
-  it('should not allow access to publication dates edition when offer is synchronized with a provider', () => {
-    const offer = getIndividualOfferFactory({
-      lastProvider: { name: 'Boost' },
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(
+        screen.getByText('Offre synchronisée avec Boost')
+      ).toBeInTheDocument()
     })
 
-    renderIndividualOfferLayout(
-      {
-        offer,
-      },
-      {
+    it('should not display provider banner when no provider is provided', () => {
+      const offer = getIndividualOfferFactory({
+        lastProvider: { name: '' },
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
+    })
+
+    it('should display publication date when it is in the future', () => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
+
+      const future = addDays(new Date(), 3)
+      const offer = getIndividualOfferFactory({
+        publicationDate: future.toISOString(),
+        status: OfferStatus.INACTIVE,
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.getByText(/Publication prévue le/)).toBeInTheDocument()
+    })
+
+    it('should not display publication date in creation', () => {
+      const future = addDays(new Date(), 3)
+      const offer = getIndividualOfferFactory({
+        publicationDate: future.toISOString(),
+        status: OfferStatus.INACTIVE,
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(
+        screen.queryByText(/Publication prévue le/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display publication date if offer is published', () => {
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          publicationDate: addDays(new Date(), 3).toISOString(),
+          status: OfferStatus.ACTIVE,
+        },
+      }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(
+        screen.queryByText(/Publication prévue le/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display a proper tag when offer is an headline offer and feature is active', () => {
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          isHeadlineOffer: true,
+        },
+      }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(screen.getByText('Offre à la une')).toBeInTheDocument()
+    })
+
+    it('should display an error callout if another offer exists with the same EAN', () => {
+      const contextValues = {
+        hasPublishedOfferWithSameEan: true,
+      }
+      const props = { offer: nonEventOffer }
+
+      renderIndividualOfferLayout({ contextValues, props })
+
+      expect(
+        screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+      ).toBeInTheDocument()
+    })
+
+    it('should remove the draft offer if the user clicks on "Supprimer ce brouillon"', async () => {
+      const deleteDraftOffersSpy = vi
+        .spyOn(api, 'deleteDraftOffers')
+        .mockResolvedValueOnce()
+
+      const offer = getIndividualOfferFactory({ status: OfferStatus.DRAFT })
+      const contextValues = {
+        hasPublishedOfferWithSameEan: true,
+      }
+      const props = { offer }
+
+      renderIndividualOfferLayout({ props, contextValues })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+      )
+
+      expect(deleteDraftOffersSpy).toHaveBeenCalledWith({ ids: [offer.id] })
+
+      expect(
+        await screen.findByText('Votre brouillon a bien été supprimé')
+      ).toBeInTheDocument()
+    })
+
+    it('should not remove the draft offer if the offer does not exist', async () => {
+      const deleteDraftOffers = vi
+        .spyOn(api, 'deleteDraftOffers')
+        .mockResolvedValueOnce()
+
+      const contextValues = {
+        hasPublishedOfferWithSameEan: true,
+      }
+      const props = { offer: null }
+
+      renderIndividualOfferLayout({ props, contextValues })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+      )
+      expect(deleteDraftOffers).not.toHaveBeenCalled()
+    })
+
+    it('should show an error message if the deletion failed', async () => {
+      vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(
+        new Error('error')
+      )
+
+      const contextValues = {
+        hasPublishedOfferWithSameEan: true,
+      }
+      const props = { offer: nonEventOffer }
+
+      renderIndividualOfferLayout({ contextValues, props })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer ce brouillon' })
+      )
+      expect(
+        await screen.findByText(
+          'Une erreur s’est produite lors de la suppression de l’offre'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should not show the update publication button when the offer is not published, inactive or scheduled', () => {
+      const options = {
         features: ['WIP_REFACTO_FUTURE_OFFER'],
         initialRouterEntries: ['/offre/creation'],
       }
-    )
+      const props = {
+        offer: {
+          ...eventOffer,
+          status: OfferStatus.EXPIRED,
+        },
+        children: <></>,
+      }
 
-    expect(screen.getByText('publiée')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Modifier' })
-    ).not.toBeInTheDocument()
+      renderIndividualOfferLayout({ options, props })
+
+      expect(
+        screen.queryByRole('button', { name: 'Modifier' })
+      ).not.toBeInTheDocument()
+    })
+
+    describe("when it's an onboarding path", () => {
+      const options = {
+        initialRouterEntries: ['/onboarding/offre/creation'],
+      }
+
+      it("Should redirect to homepage if the user can't access it and is on onboarding url", async () => {
+        const NavigateSpy = vi.spyOn(reactRouter, 'Navigate')
+        vi.spyOn(
+          useHasAccessToDidacticOnboarding,
+          'useHasAccessToDidacticOnboarding'
+        ).mockReturnValue(false)
+
+        const props = { offer: nonEventOffer }
+
+        renderIndividualOfferLayout({ options, props })
+
+        await waitFor(() => {
+          expect(NavigateSpy).toHaveBeenCalledWith({ to: '/accueil' }, {})
+        })
+      })
+
+      it('Should display the page if the user can access onboarding and is on onboarding url', async () => {
+        vi.spyOn(
+          useHasAccessToDidacticOnboarding,
+          'useHasAccessToDidacticOnboarding'
+        ).mockReturnValue(true)
+
+        const props = { offer: nonEventOffer }
+
+        renderIndividualOfferLayout({ options, props })
+
+        await waitFor(() => {
+          expect(screen.getByText('Template child')).toBeInTheDocument()
+        })
+      })
+    })
   })
 
-  it('should display status but not let activate offer when offer is synchronized with a provider', () => {
-    const offer = getIndividualOfferFactory({
-      lastProvider: { name: 'Boost' },
+  describe('when mode is EDITION', () => {
+    beforeEach(() => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     })
 
-    renderIndividualOfferLayout({
-      offer,
+    it('should not allow access to publication dates edition when offer is synchronized with a provider', () => {
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          lastProvider: { name: 'Boost' },
+          status: OfferStatus.PUBLISHED,
+        },
+      }
+      const options = {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
+      }
+
+      renderIndividualOfferLayout({ props, options })
+
+      expect(screen.getByText('publiée')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Modifier' })
+      ).not.toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Mettre en pause' })
-    ).not.toBeInTheDocument()
-  })
-  it('should display status but not let activate offer when offer is rejected', () => {
-    const offer = getIndividualOfferFactory({
-      status: OfferStatus.REJECTED,
+    it('should not show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+      renderIndividualOfferLayout({
+        props: {
+          offer: getIndividualOfferFactory({
+            status: OfferStatus.PUBLISHED,
+            isEvent: true,
+          }),
+          children: <></>,
+        },
+      })
+
+      expect(
+        screen.queryByRole('button', { name: 'Modifier' })
+      ).not.toBeInTheDocument()
     })
 
-    renderIndividualOfferLayout({
-      offer,
+    it('should display status but not let activate offer when offer is synchronized with a provider', () => {
+      const props = {
+        offer: {
+          ...nonEventOffer,
+          lastProvider: { name: 'Boost' },
+        },
+      }
+
+      renderIndividualOfferLayout({ props })
+
+      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre en pause' })
+      ).not.toBeInTheDocument()
     })
 
-    expect(screen.getByTestId('status')).toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Mettre en pause' })
-    ).not.toBeInTheDocument()
-  })
+    it('should display status but not let activate offer when offer is rejected', () => {
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.REJECTED,
+      })
 
-  it('should not display status in creation', () => {
-    const offer = getIndividualOfferFactory({
-      isActive: false,
-      status: OfferStatus.DRAFT,
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(screen.getByTestId('status')).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Mettre en pause' })
+      ).not.toBeInTheDocument()
     })
-
-    renderIndividualOfferLayout({
-      offer,
-      mode: OFFER_WIZARD_MODE.CREATION,
-    })
-
-    expect(screen.queryByTestId('status')).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: 'Mettre en pause' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display provider banner', () => {
-    const offer = getIndividualOfferFactory({
-      lastProvider: { name: 'Boost' },
-    })
-
-    renderIndividualOfferLayout({
-      offer,
-    })
-
-    expect(
-      screen.getByText('Offre synchronisée avec Boost')
-    ).toBeInTheDocument()
-  })
-
-  it('should not display provider banner when no provider is provided', () => {
-    const offer = getIndividualOfferFactory({
-      lastProvider: { name: '' },
-    })
-
-    renderIndividualOfferLayout({
-      offer,
-    })
-
-    expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
-  })
-
-  it('should display publication date when it is in the future', () => {
-    const future = addDays(new Date(), 3)
-
-    renderIndividualOfferLayout({
-      offer: getIndividualOfferFactory({
-        publicationDate: future.toISOString(),
-        status: OfferStatus.INACTIVE,
-      }),
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
-    })
-
-    expect(screen.getByText(/Publication prévue le/)).toBeInTheDocument()
   })
 
-  it('should not display publication date when it is passed', () => {
-    renderIndividualOfferLayout({
-      offer: getIndividualOfferFactory({
+  describe('when mode is READONLY', () => {
+    beforeEach(() => {
+      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
+    })
+
+    it('should not display publication date when it is passed', () => {
+      const offer = getIndividualOfferFactory({
         publicationDate: '2021-01-01T00:00:00.000Z',
         status: OfferStatus.INACTIVE,
-      }),
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
+      })
+
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(
+        screen.queryByText(/Publication prévue le/)
+      ).not.toBeInTheDocument()
     })
 
-    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
-  })
-
-  it('should not display publication date in creation', () => {
-    const future = addDays(new Date(), 3)
-
-    renderIndividualOfferLayout({
-      offer: getIndividualOfferFactory({
-        publicationDate: future.toISOString(),
-        status: OfferStatus.INACTIVE,
-      }),
-      mode: OFFER_WIZARD_MODE.CREATION,
-    })
-
-    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
-  })
-
-  it('should not display publication date if offer is published', () => {
-    const future = addDays(new Date(), 3)
-
-    renderIndividualOfferLayout({
-      offer: getIndividualOfferFactory({
-        publicationDate: future.toISOString(),
-        status: OfferStatus.ACTIVE,
-      }),
-    })
-
-    expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
-  })
-
-  it('should display a proper tag when offer is an headline offer and feature is active', () => {
-    const offer = getIndividualOfferFactory({
-      isHeadlineOffer: true,
-    })
-
-    renderIndividualOfferLayout(
-      {
-        offer,
-      },
-      {
+    it('should show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+      const options = {
+        features: ['WIP_REFACTO_FUTURE_OFFER'],
         initialRouterEntries: ['/offre/creation'],
       }
-    )
-
-    expect(screen.getByText('Offre à la une')).toBeInTheDocument()
-  })
-
-  describe('onboarding', () => {
-    const options: RenderWithProvidersOptions = {
-      initialRouterEntries: ['/onboarding/offre/creation'],
-    }
-
-    it("Should redirect to homepage if the user can't access it and is on onboarding url", async () => {
-      vi.spyOn(
-        useHasAccessToDidacticOnboarding,
-        'useHasAccessToDidacticOnboarding'
-      ).mockReturnValue(false)
-
-      renderIndividualOfferLayout(
-        {
-          offer: getIndividualOfferFactory(),
-        },
-        options
-      )
-
-      await waitFor(() => {
-        expect(screen.getByText('Accueil')).toBeInTheDocument()
-      })
-    })
-
-    it('Should display the page if the user can access onboarding and is on onboarding url', async () => {
-      vi.spyOn(
-        useHasAccessToDidacticOnboarding,
-        'useHasAccessToDidacticOnboarding'
-      ).mockReturnValue(true)
-
-      renderIndividualOfferLayout(
-        {
-          offer: getIndividualOfferFactory(),
-        },
-        options
-      )
-      await waitFor(() => {
-        expect(screen.getByText('Template child')).toBeInTheDocument()
-      })
-    })
-  })
-
-  it('should display an error callout if another offer exists with the same EAN', () => {
-    renderIndividualOfferLayout({
-      venueHasPublishedOfferWithSameEan: true,
-    })
-
-    expect(
-      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
-    ).toBeInTheDocument()
-  })
-
-  it('should remove the draft offer if the user clicks on "Supprimer ce brouillon"', async () => {
-    const offer = getIndividualOfferFactory({ status: OfferStatus.DRAFT })
-
-    const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
-
-    renderIndividualOfferLayout({
-      offer,
-      venueHasPublishedOfferWithSameEan: true,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
-    )
-
-    expect(spy).toHaveBeenCalledWith({ ids: [offer.id] })
-
-    expect(
-      await screen.findByText('Votre brouillon a bien été supprimé')
-    ).toBeInTheDocument()
-  })
-
-  it('should not remove the draft offer if the offer does not exist', async () => {
-    const spy = vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
-
-    renderIndividualOfferLayout({
-      offer: null,
-      venueHasPublishedOfferWithSameEan: true,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
-    )
-    expect(spy).not.toHaveBeenCalled()
-  })
-
-  it('should show an error message if the deletion failed', async () => {
-    vi.spyOn(api, 'deleteDraftOffers').mockRejectedValueOnce(new Error('error'))
-
-    renderIndividualOfferLayout({
-      venueHasPublishedOfferWithSameEan: true,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Supprimer ce brouillon' })
-    )
-    expect(
-      await screen.findByText(
-        'Une erreur s’est produite lors de la suppression de l’offre'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
-    renderIndividualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
+      const props = {
+        offer: {
+          ...eventOffer,
           status: OfferStatus.PUBLISHED,
-          isEvent: true,
-        }),
-        children: <></>,
-      },
-      {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
-        initialRouterEntries: ['/offre/creation'],
+        },
       }
-    )
 
-    expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument()
-  })
+      renderIndividualOfferLayout({ options, props })
 
-  it('should not show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
-    renderIndividualOfferLayout({
-      offer: getIndividualOfferFactory({
-        status: OfferStatus.PUBLISHED,
-        isEvent: true,
-      }),
-      children: <></>,
+      expect(
+        screen.getByRole('button', { name: 'Modifier' })
+      ).toBeInTheDocument()
     })
-
-    expect(
-      screen.queryByRole('button', { name: 'Modifier' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not show the update publication button when the offer is not published, inactive or scheduled', () => {
-    renderIndividualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
-          status: OfferStatus.EXPIRED,
-          isEvent: true,
-        }),
-        children: <></>,
-      },
-      {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
-        initialRouterEntries: ['/offre/creation'],
-      }
-    )
-
-    expect(
-      screen.queryByRole('button', { name: 'Modifier' })
-    ).not.toBeInTheDocument()
   })
 })

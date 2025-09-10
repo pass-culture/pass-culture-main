@@ -36,6 +36,7 @@ const renderPriceCategories = (
 ) => {
   const context = {
     offer: props.offer,
+    offerId: props.offer.id,
     categories: [],
     subCategories: [],
     isEvent: null,

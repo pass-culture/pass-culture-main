@@ -5,7 +5,6 @@ import { GET_STOCKS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -13,7 +12,6 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { IndividualOfferSummaryPriceTableScreen } from './components/IndividualOfferSummaryPriceTableScreen'
 
 export const IndividualOfferSummaryPriceTable = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer, offerId } = useIndividualOfferContext()
   assertOrFrontendError(offerId, '`offerId` is undefined.')
 
@@ -27,7 +25,7 @@ export const IndividualOfferSummaryPriceTable = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout mode={mode} offer={offer} title="Récapitulatif">
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferSummaryPriceTableScreen
         offer={offer}
         offerStocks={getStocksQuery.data.stocks}

@@ -1,13 +1,10 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferConfirmationScreen } from './components/IndividualOfferConfirmationScreen'
 
 export const IndividualOfferConfirmation = (): JSX.Element => {
-  const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
   if (offer === null) {
@@ -15,12 +12,7 @@ export const IndividualOfferConfirmation = (): JSX.Element => {
   }
 
   return (
-    <IndividualOfferLayout
-      withStepper={false}
-      offer={offer}
-      title={getTitle(mode)}
-      mode={mode}
-    >
+    <IndividualOfferLayout withStepper={false} offer={offer}>
       <IndividualOfferConfirmationScreen offer={offer} />
     </IndividualOfferLayout>
   )

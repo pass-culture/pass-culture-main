@@ -7,6 +7,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -17,7 +18,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
@@ -44,15 +44,19 @@ import styles from './IndividualOfferSummaryScreen.module.scss'
 import { OfferSection } from './OfferSection/OfferSection'
 import { StockSection } from './StockSection/StockSection'
 
-export const IndividualOfferSummaryScreen = () => {
+interface IndividualOfferSummaryScreenProps {
+  offer: GetIndividualOfferWithAddressResponseModel
+}
+export const IndividualOfferSummaryScreen = ({
+  offer,
+}: Readonly<IndividualOfferSummaryScreenProps>) => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
-  const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const { offer, subCategories, hasPublishedOfferWithSameEan } =
+  const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
@@ -62,12 +66,6 @@ export const IndividualOfferSummaryScreen = () => {
   )
 
   const onPublish = async (values: EventPublicationFormValues) => {
-    // Edition mode offers are already published
-    /* istanbul ignore next: DEBT, TO FIX */
-    if (mode === OFFER_WIZARD_MODE.EDITION || offer === null) {
-      return
-    }
-
     const departmentCode = getDepartmentCode(offer)
 
     try {
@@ -150,7 +148,7 @@ export const IndividualOfferSummaryScreen = () => {
     : getIndividualOfferUrl({
         offerId: offer.id,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
 
@@ -163,7 +161,7 @@ export const IndividualOfferSummaryScreen = () => {
         step: isNewOfferCreationFlowFeatureActive
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
+        mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })
     )
@@ -188,40 +186,34 @@ export const IndividualOfferSummaryScreen = () => {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onPublish)}>
-        {mode === OFFER_WIZARD_MODE.CREATION && (
-          <div className={styles['offer-preview-banners']}>
-            <Callout>
-              <strong>Vous y êtes presque !</strong>
-              <br />
-              Vérifiez les informations ci-dessous avant de publier votre offre.
-            </Callout>
+        <div className={styles['offer-preview-banners']}>
+          <Callout>
+            <strong>Vous y êtes presque !</strong>
+            <br />
+            Vérifiez les informations ci-dessous avant de publier votre offre.
+          </Callout>
 
-            <EventPublicationForm />
-          </div>
-        )}
+          <EventPublicationForm />
+        </div>
+
         <SummaryLayout>
           <SummaryContent>
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
-
-            {mode === OFFER_WIZARD_MODE.CREATION && (
-              <>
-                {isMediaPageEnabled && (
-                  <MediaSection
-                    offerId={offer.id}
-                    videoUrl={offer.videoData.videoUrl}
-                    shouldImageBeHidden
-                  />
-                )}
-                {offer.isEvent && (
-                  <PriceCategoriesSection
-                    offer={offer}
-                    canBeDuo={canBeDuo}
-                    shouldShowDivider
-                  />
-                )}
-                <StockSection offer={offer} canBeDuo={canBeDuo} />
-              </>
+            {isMediaPageEnabled && (
+              <MediaSection
+                offerId={offer.id}
+                videoUrl={offer.videoData.videoUrl}
+                shouldImageBeHidden
+              />
             )}
+            {offer.isEvent && (
+              <PriceCategoriesSection
+                offer={offer}
+                canBeDuo={canBeDuo}
+                shouldShowDivider
+              />
+            )}
+            <StockSection offer={offer} canBeDuo={canBeDuo} />
           </SummaryContent>
 
           <SummaryAside>
@@ -236,28 +228,26 @@ export const IndividualOfferSummaryScreen = () => {
 
             <OfferAppPreview offer={offer} />
 
-            {mode === OFFER_WIZARD_MODE.READ_ONLY && (
-              <div className={styles['offer-preview-app-link']}>
-                <DisplayOfferInAppLink
-                  id={offer.id}
-                  variant={ButtonVariant.SECONDARY}
-                >
-                  Visualiser dans l’app
-                </DisplayOfferInAppLink>
-              </div>
-            )}
+            <div className={styles['offer-preview-app-link']}>
+              <DisplayOfferInAppLink
+                id={offer.id}
+                variant={ButtonVariant.SECONDARY}
+              >
+                Visualiser dans l’app
+              </DisplayOfferInAppLink>
+            </div>
           </SummaryAside>
         </SummaryLayout>
+
         <ActionBar
           onClickPrevious={handlePreviousStep}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
           publicationMode={methods.watch('publicationMode')}
           isDisabled={
-            (mode !== OFFER_WIZARD_MODE.CREATION
-              ? false
-              : methods.formState.isSubmitting) || hasPublishedOfferWithSameEan
+            methods.formState.isSubmitting || hasPublishedOfferWithSameEan
           }
         />
+
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
           offerId={offer.venue.managingOfferer.id}

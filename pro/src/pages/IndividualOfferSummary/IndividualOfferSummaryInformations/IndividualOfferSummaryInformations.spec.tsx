@@ -22,7 +22,6 @@ import { Component as IndividualOfferSummaryInformations } from './IndividualOff
 
 const LABELS = {
   headings: {
-    layout: 'Récapitulatif',
     informations: 'Informations pratiques',
     location: 'Localisation',
   },
@@ -86,9 +85,6 @@ describe('<IndividualOfferSummaryInformations />', () => {
   it('should render informations layout and nested screen when feature flag is inactive', () => {
     renderIndividualOfferSummaryInformations({})
 
-    expect(
-      screen.getByRole('heading', { name: LABELS.headings.layout })
-    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: LABELS.headings.informations })
     ).toBeInTheDocument()

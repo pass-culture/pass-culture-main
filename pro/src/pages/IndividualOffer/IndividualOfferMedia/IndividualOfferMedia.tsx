@@ -1,26 +1,18 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferMediaScreen } from './components/IndividualOfferMediaScreen'
 
 const IndividualOfferMedia = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
-  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
 
   if (!offer) {
     return <Spinner />
   }
 
   return (
-    <IndividualOfferLayout
-      offer={offer}
-      title={getTitle(mode)}
-      mode={mode}
-      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
-    >
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferMediaScreen offer={offer} />
     </IndividualOfferLayout>
   )

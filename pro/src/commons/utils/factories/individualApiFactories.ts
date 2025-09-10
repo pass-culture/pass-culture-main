@@ -188,6 +188,7 @@ export const individualOfferContextValuesFactory = (
 
   return {
     offer,
+    offerId: offer.id,
     categories: [],
     hasPublishedOfferWithSameEan: false,
     subCategories: [],

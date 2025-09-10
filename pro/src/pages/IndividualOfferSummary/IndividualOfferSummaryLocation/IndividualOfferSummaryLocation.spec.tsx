@@ -56,7 +56,6 @@ const renderIndividualOfferSummaryLocation: RenderComponentFunction<
 
 const LABELS = {
   headings: {
-    layout: 'Récapitulatif',
     location: 'Localisation',
   },
   texts: {
@@ -79,9 +78,6 @@ describe('<IndividualOfferSummaryLocation />', () => {
   it('should render the layout with title and nested screen when offer is present', () => {
     renderIndividualOfferSummaryLocation({})
 
-    expect(
-      screen.getByRole('heading', { name: LABELS.headings.layout })
-    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: LABELS.headings.location })
     ).toBeInTheDocument()

@@ -30,6 +30,7 @@ const contextValue: IndividualOfferContextValues = {
     }),
   ],
   offer: null,
+  offerId: null,
   isEvent: null,
   setIsEvent: vi.fn(),
   hasPublishedOfferWithSameEan: false,

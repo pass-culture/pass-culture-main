@@ -24,6 +24,7 @@ const contextValue: IndividualOfferContextValues = {
   categories: [],
   subCategories: [],
   offer: null,
+  offerId: null,
   isEvent: null,
   setIsEvent: vi.fn(),
   hasPublishedOfferWithSameEan: false,

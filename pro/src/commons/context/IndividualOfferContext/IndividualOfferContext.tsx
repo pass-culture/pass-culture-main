@@ -18,9 +18,9 @@ import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
+  // TODO (igabriele, 2025-09-09): We should be able to ensure a defined `offer` by setting aside the only case where offer is null (1st creation step).
   offer: GetIndividualOfferWithAddressResponseModel | null
-  // TODO (igabriele, 2025-08-19): Remove the `?` in another PR.
-  offerId?: number | null
+  offerId: number | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
   isEvent: boolean | null

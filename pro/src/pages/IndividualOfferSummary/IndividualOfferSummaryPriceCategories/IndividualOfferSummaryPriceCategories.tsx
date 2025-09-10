@@ -2,7 +2,6 @@
 
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -10,7 +9,6 @@ import { PriceCategoriesSection } from '../components/PriceCategoriesSection/Pri
 import { IndividualOfferSummaryPriceTable } from '../IndividualOfferSummaryPriceTable/IndividualOfferSummaryPriceTable'
 
 const IndividualOfferSummaryPriceCategories = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer, subCategories } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -29,7 +27,7 @@ const IndividualOfferSummaryPriceCategories = (): JSX.Element | null => {
   )?.canBeDuo
 
   return (
-    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout offer={offer}>
       <PriceCategoriesSection
         offer={offer}
         canBeDuo={canBeDuo}

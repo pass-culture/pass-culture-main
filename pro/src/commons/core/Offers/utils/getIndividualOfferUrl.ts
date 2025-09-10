@@ -49,7 +49,7 @@ const routes = {
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/recapitulatif`,
     [OFFER_WIZARD_MODE.EDITION]: ``,
-    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif`,
+    [OFFER_WIZARD_MODE.READ_ONLY]: '',
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.CONFIRMATION]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/confirmation`,

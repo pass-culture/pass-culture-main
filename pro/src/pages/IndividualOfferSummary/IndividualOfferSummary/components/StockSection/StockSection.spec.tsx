@@ -25,18 +25,11 @@ const renderStockSection = (
   props: StockSectionProps,
   url: string = getIndividualOfferPath({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode: OFFER_WIZARD_MODE.CREATION,
   })
 ) =>
   renderWithProviders(
     <Routes>
-      <Route
-        path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })}
-        element={<StockSection {...props} />}
-      />
       <Route
         path={getIndividualOfferPath({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -50,13 +43,6 @@ const renderStockSection = (
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
         element={<div>Offer creation: page stocks</div>}
-      />
-      <Route
-        path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        })}
-        element={<div>Offer edition: page stocks</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -221,41 +207,6 @@ describe('Summary stock section', () => {
       ).toBeInTheDocument()
     })
 
-    it('should render edition summary', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [
-          getOfferStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: null,
-          }),
-        ],
-      })
-
-      const props = {
-        offer: getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: false,
-        }),
-      }
-
-      renderStockSection(props)
-
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(
-        screen.getByRole('heading', { name: /Stocks et prix/ })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText(/Date limite de réservation/)
-      ).not.toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(screen.getByText(/Offer edition: page stocks/)).toBeInTheDocument()
-    })
-
     it("should render booking limit date when it's given", async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
         hasStocks: true,
@@ -346,30 +297,6 @@ describe('Summary stock section', () => {
       expect(
         screen.getByText(/Offer creation: page stocks/)
       ).toBeInTheDocument()
-    })
-
-    it('should render edition summary', async () => {
-      vi.spyOn(api, 'getStocksStats').mockResolvedValueOnce({})
-
-      const props = {
-        offer: getIndividualOfferFactory({
-          status: OfferStatus.ACTIVE,
-          isEvent: true,
-        }),
-      }
-
-      renderStockSection(props)
-
-      await waitFor(() => {
-        expect(api.getStocksStats).toHaveBeenCalled()
-      })
-
-      expect(
-        screen.getByRole('heading', { name: /Dates et capacités/ })
-      ).toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
-      expect(screen.getByText(/Offer edition: page stocks/)).toBeInTheDocument()
     })
   })
 })

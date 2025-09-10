@@ -1,5 +1,7 @@
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
-import { OFFER_STATUS_PENDING } from '@/commons/core/Offers/constants'
+import {
+  type GetIndividualOfferResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -21,7 +23,7 @@ export const IndividualOfferConfirmationScreen = ({
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
     new Date() < new Date(offer.publicationDate)
-  const isPendingOffer = offer.status === OFFER_STATUS_PENDING
+  const isPendingOffer = offer.status === OfferStatus.PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
 
   return (

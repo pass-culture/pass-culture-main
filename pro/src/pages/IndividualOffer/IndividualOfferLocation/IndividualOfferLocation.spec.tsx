@@ -7,7 +7,6 @@ import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -137,11 +136,6 @@ describe('<IndividualOfferLocation />', () => {
       { fallbackData: { venues: [] } }
     )
 
-    expect(
-      screen.getByRole('heading', {
-        name: /Créer une offre|Modifier l’offre|Consulter l’offre/,
-      })
-    ).toBeInTheDocument()
     expect(screen.getByTestId('location-screen')).toHaveTextContent('venues:2')
 
     // Execute fetcher manually to cover fetcher line
@@ -149,18 +143,5 @@ describe('<IndividualOfferLocation />', () => {
       .mock.calls[0][1] as (args: [string, number]) => Promise<unknown>
     await fetcher([GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id])
     expect(api.getVenues).toHaveBeenCalledWith(null, true, 42)
-  })
-
-  it('uses correct title according to mode (forces EDITION)', () => {
-    // Force mode hook to return EDITION
-    vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-      useOfferWizardMode: () => OFFER_WIZARD_MODE.EDITION,
-    }))
-    const offer = getIndividualOfferFactory()
-    mockUseSWR.mockReturnValue({ isLoading: false, data: { venues: [] } })
-    renderComponent({ offer })
-    expect(
-      screen.getByRole('heading', { name: 'Modifier l’offre' })
-    ).toBeInTheDocument()
   })
 })
