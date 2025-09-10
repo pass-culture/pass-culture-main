@@ -212,7 +212,7 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_schemas.deprecated.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
     is_from_private_api: bool = True,
@@ -406,10 +406,34 @@ def create_offer(
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
+    product: offers_models.Product | None = None,
     is_from_private_api: bool = False,
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
+    """Main entry point to offer creation
+
+    Note:
+        For some historical reason this function was only used by public
+        API calls and the internal API calls were using another function.
+        Both should use the same entrypoint but this is still a work in
+        progress since some rules are slightly different.
+    """
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+
+    if is_from_private_api:
+        # TODO(jbaudet): should be ok to remove from this if-block since
+        # only internal api calls will pass product as a parameter.
+        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+
+        # TODO(jbaudet): should be ok to remove from this if-block
+        # but let's be sure before doing anything stupid
+        if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            validation.check_accessibility_compliance(
+                audio_disability_compliant=body.audio_disability_compliant,
+                mental_disability_compliant=body.mental_disability_compliant,
+                motor_disability_compliant=body.motor_disability_compliant,
+                visual_disability_compliant=body.visual_disability_compliant,
+            )
 
     validation.check_offer_withdrawal(
         withdrawal_type=body.withdrawal_type,
@@ -429,6 +453,30 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
+    fields.pop("videoUrl", None)
+
+    if is_from_private_api:
+        if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            disability_fields = {
+                "audioDisabilityCompliant",
+                "mentalDisabilityCompliant",
+                "motorDisabilityCompliant",
+                "visualDisabilityCompliant",
+            }
+            if not any(field for field in disability_fields if field in fields):
+                fields.update(_get_accessibility_compliance_fields(venue))
+
+        if not body.withdrawal_details:
+            fields.update({"withdrawalDetails": venue.withdrawalDetails})
+
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+        fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+
+        keys_to_remove = {"venueId", "callId"}
+        if product:
+            keys_to_remove |= {"extraData", "description", "durationMinutes"}
+
+        fields = {k: v for k, v in fields.items() if k not in keys_to_remove}
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -438,12 +486,18 @@ def create_offer(
     offer = models.Offer(
         **fields,
         venue=venue,
+        product=product,
         offererAddress=offerer_address,
         lastProvider=provider,
         validation=models.OfferValidationStatus.DRAFT,
         publicationDatetime=None,
     )
     repository.add_to_session(offer)
+
+    if body.video_url:
+        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+        db.session.add(offer_metadata)
+
     db.session.flush()
 
     # This log is used for analytics purposes.

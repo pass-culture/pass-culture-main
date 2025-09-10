@@ -239,7 +239,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     offers_api.batch_delete_draft_offers(query)
 
 
-@private_api.route("/offers/draft", methods=["POST"])
+@private_api.route("/v2/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
@@ -247,9 +247,81 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 @atomic()
+def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
+    # TODO(jbaudet - 09/2025): there is too much steps and complexity
+    # inside this controller. Most of its code could be moved to a more
+    # appropriate module: the overall steps would be easier to
+    # understand and it would be way easier to test.
+    # delete this TODO if there is no plan to do any of this after
+    # a couple of months.
+    venue: offerers_models.Venue = first_or_404(
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == body.venue_id)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
+    )
+    offerer_address: offerers_models.OffererAddress | None = None
+    offerer_address = (
+        offerers_api.get_offerer_address_from_address(venue.managingOffererId, body.address)
+        if body.address
+        else venue.offererAddress
+    )
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
+    product = (
+        db.session.query(models.Product)
+        .filter(models.Product.ean == ean_code)
+        .filter(models.Product.id == body.product_id)
+        .one_or_none()
+    )
+
+    create_offer_schema = offers_schemas.CreateOffer(  # type: ignore[call-arg]
+        name=body.name,
+        subcategoryId=body.subcategory_id,
+        audioDisabilityCompliant=body.audio_disability_compliant,
+        mentalDisabilityCompliant=body.mental_disability_compliant,
+        motorDisabilityCompliant=body.motor_disability_compliant,
+        visualDisabilityCompliant=body.visual_disability_compliant,
+        bookingContact=body.booking_contact,
+        bookingEmail=body.booking_email,
+        description=body.description,
+        durationMinutes=body.duration_minutes,
+        externalTicketOfficeUrl=body.external_ticket_office_url,
+        ean=ean_code,
+        extraData=body.extra_data,
+        idAtProvider=None,
+        isDuo=None,
+        url=body.url,
+        withdrawalDelay=body.withdrawal_delay,
+        withdrawalDetails=body.withdrawal_details,
+        withdrawalType=body.withdrawal_type,
+        videoUrl=body.video_url,
+        isNational=body.is_national,
+    )
+
+    offer = offers_api.create_offer(
+        create_offer_schema, offerer_address=offerer_address, venue=venue, product=product, is_from_private_api=True
+    )
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/draft", methods=["POST"])
+@login_required
+@spectree_serialize(
+    deprecated=True,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
 def post_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_schemas.deprecated.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
+    """
+    [DEPRECATED] Please migrate to new (generic/standard) offer creation route
+    """
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
@@ -316,7 +388,9 @@ def patch_draft_offer(
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
+def post_offer(
+    body: offers_serialize.deprecated.PostOfferBodyModel,
+) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
