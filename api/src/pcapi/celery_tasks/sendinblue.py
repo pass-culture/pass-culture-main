@@ -1,8 +1,6 @@
 from brevo_python.rest import ApiException as SendinblueApiException
 
 from pcapi.celery_tasks.tasks import celery_async_task
-from pcapi.core.external import sendinblue
-from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -13,6 +11,8 @@ from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRe
     model=UpdateSendinblueContactRequest,
 )
 def update_contact_attributes_task_celery(payload: UpdateSendinblueContactRequest) -> None:
+    from pcapi.core.external import sendinblue
+
     sendinblue.make_update_request(payload)
 
 
@@ -22,6 +22,8 @@ def update_contact_attributes_task_celery(payload: UpdateSendinblueContactReques
     model=SendTransactionalEmailRequest,
 )
 def send_transactional_email_primary_task_celery(payload: SendTransactionalEmailRequest) -> None:
+    from pcapi.core.mails.transactional import send_transactional_email
+
     send_transactional_email(payload)
 
 
@@ -31,4 +33,6 @@ def send_transactional_email_primary_task_celery(payload: SendTransactionalEmail
     model=SendTransactionalEmailRequest,
 )
 def send_transactional_email_secondary_task_celery(payload: SendTransactionalEmailRequest) -> None:
+    from pcapi.core.mails.transactional import send_transactional_email
+
     send_transactional_email(payload)
