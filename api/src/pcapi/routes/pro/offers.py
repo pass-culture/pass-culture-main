@@ -1,9 +1,7 @@
-import json
 import logging
 
 import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -12,7 +10,6 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
-from pcapi.connectors import youtube
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -768,7 +765,7 @@ def get_offer_video_metadata(
             errors={"videoUrl": ["Veuillez renseigner une URL valide. Ex : https://exemple.com"]}
         )
     try:
-        video_metadata = youtube.get_video_metadata(video_id=video_id)
+        video_metadata = offers_api.get_video_metadata_from_cache(query.video_url)
     except requests.ExternalAPIException:
         raise api_errors.ApiErrors(
             errors={"videoUrl": ["Nous rencontrons des problèmes de serveur, veuillez réessayer plus tard"]}
@@ -777,14 +774,6 @@ def get_offer_video_metadata(
         raise api_errors.ApiErrors(
             errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé"]}
         )
-    json_video_metadata = json.dumps(
-        {
-            "title": video_metadata.title,
-            "thumbnail_url": video_metadata.thumbnail_url,
-            "duration": video_metadata.duration,
-        }
-    )
-    current_app.redis_client.set(f"youtube_video_{video_metadata.id}", json_video_metadata)
     return offers_serialize.OfferVideo(
         id=video_metadata.id,
         title=video_metadata.title,
