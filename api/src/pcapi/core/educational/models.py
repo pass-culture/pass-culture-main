@@ -621,6 +621,9 @@ class CollectiveOffer(
         "OffererAddress", foreign_keys=offererAddressId, uselist=False
     )
 
+    # locationType = SCHOOL -> the offer is located in the school - offererAddressId and locationComment are None
+    # locationType = ADDRESS -> the offer is located at a specific address - offererAddressId is filled and locationComment is None
+    # locationType = TO_BE_DEFINED -> the offer location is not precisely defined - offererAddressId is None and locationComment may be filled
     locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa.Column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
     )
