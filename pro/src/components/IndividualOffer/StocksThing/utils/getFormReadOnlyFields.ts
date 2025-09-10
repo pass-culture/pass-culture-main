@@ -1,8 +1,11 @@
-import {
-  type GetIndividualOfferResponseModel,
-  type GetOfferStockResponseModel,
-  OfferStatus,
+import type {
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import {
+  OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
+} from '@/commons/core/Offers/constants'
 import { isAllocineProvider } from '@/commons/core/Providers/utils/utils'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
@@ -14,9 +17,8 @@ export const getFormReadOnlyFields = (
   currentStock: StockThingFormValues
 ): string[] => {
   const isDisabledStatus = [
-    OfferStatus.REJECTED,
-    OfferStatus.PENDING,
-    OfferStatus.EXPIRED,
+    OFFER_STATUS_REJECTED,
+    OFFER_STATUS_PENDING,
   ].includes(offer.status)
   const isOfferSynchronized = !!offer.lastProvider
   const isOfferSynchronizedAllocine =
