@@ -579,7 +579,7 @@ class BookOfferTest:
         @patch("flask.current_app.redis_client.llen")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
-        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
@@ -689,7 +689,7 @@ class BookOfferTest:
         @patch("flask.current_app.redis_client.rpush")
         @patch("flask.current_app.redis_client.lpush")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
-        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
@@ -771,7 +771,7 @@ class BookOfferTest:
         @patch("flask.current_app.redis_client.llen")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
         @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
-        @patch("pcapi.core.bookings.api.generate_booking_token")
+        @patch("pcapi.core.bookings.repository.generate_booking_token")
         @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
@@ -2178,6 +2178,223 @@ class ArchiveOldBookingsTest:
         db.session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
+
+
+@pytest.mark.usefixtures("db_session")
+class CancelExpiredBookingsTest:
+    def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
+        now = datetime.utcnow()
+        eleven_days_ago = now - timedelta(days=11)
+        two_months_ago = now - timedelta(days=60)
+        old_book_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id, dateCreated=eleven_days_ago
+        )
+        old_dvd_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, dateCreated=two_months_ago
+        )
+
+        api._cancel_expired_individual_bookings()
+
+        assert old_book_booking.status is BookingStatus.CANCELLED
+        assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+        assert old_book_booking.stock.dnBookedQuantity == 0
+
+        assert old_dvd_booking.status is BookingStatus.CANCELLED
+        assert old_dvd_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_dvd_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+        assert old_dvd_booking.stock.dnBookedQuantity == 0
+
+    def should_not_cancel_new_thing_that_can_expire_booking(self, app) -> None:
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        book_booking = bookings_factories.BookingFactory(stock__offer__product=book)
+
+        api._cancel_expired_individual_bookings()
+
+        assert book_booking.status is not BookingStatus.CANCELLED
+        assert not book_booking.cancellationDate
+        assert not book_booking.cancellationReason
+
+    def should_not_cancel_old_event_booking(self, app) -> None:
+        two_months_ago = datetime.utcnow() - timedelta(days=60)
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        old_concert_booking = bookings_factories.BookingFactory(
+            dateCreated=two_months_ago,
+            stock__beginningDatetime=tomorrow,
+            stock__offer__subcategoryId=subcategories.CONCERT.id,
+        )
+
+        api._cancel_expired_individual_bookings()
+
+        assert old_concert_booking.status is not BookingStatus.CANCELLED
+        assert not old_concert_booking.cancellationDate
+        assert not old_concert_booking.cancellationReason
+
+    def should_not_cancel_old_thing_that_cannot_expire_booking(self, app) -> None:
+        two_months_ago = datetime.utcnow() - timedelta(days=60)
+        old_press_subscription_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id, dateCreated=two_months_ago
+        )
+
+        api._cancel_expired_individual_bookings()
+
+        assert old_press_subscription_booking.status is not BookingStatus.CANCELLED
+        assert not old_press_subscription_booking.cancellationDate
+        assert not old_press_subscription_booking.cancellationReason
+
+    def should_not_update_cancelled_old_thing_that_can_expire_booking(self, app) -> None:
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        old_book_booking = bookings_factories.CancelledBookingFactory(stock__offer__product=book)
+        initial_cancellation_date = old_book_booking.cancellationDate
+
+        api._cancel_expired_individual_bookings()
+
+        assert old_book_booking.status is BookingStatus.CANCELLED
+        assert old_book_booking.cancellationDate == initial_cancellation_date
+        assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
+    def should_only_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
+        now = datetime.utcnow()
+        two_months_ago = now - timedelta(days=60)
+        old_guitar_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.ACHAT_INSTRUMENT.id, dateCreated=two_months_ago
+        )
+        old_disc_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, dateCreated=two_months_ago
+        )
+        old_vod_booking = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.VOD.id, dateCreated=two_months_ago
+        )
+
+        api._cancel_expired_individual_bookings()
+
+        assert old_guitar_booking.status is BookingStatus.CANCELLED
+        assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_guitar_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+
+        assert old_disc_booking.status is BookingStatus.CANCELLED
+        assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert old_disc_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+
+        assert old_vod_booking.status is not BookingStatus.CANCELLED
+        assert not old_vod_booking.cancellationDate
+        assert not old_vod_booking.cancellationReason
+
+    def test_handle_expired_bookings_should__cancel_expired_individual_bookings(self, app) -> None:
+        # Given
+        now = datetime.utcnow()
+        two_months_ago = now - timedelta(days=60)
+
+        cd = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
+        expired_individual_booking = bookings_factories.BookingFactory(
+            stock__offer__product=cd, dateCreated=two_months_ago
+        )
+
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        book_individual_recent_booking = bookings_factories.BookingFactory(stock__offer__product=book)
+
+        # When
+        api.handle_expired_individual_bookings()
+
+        # Then
+        assert expired_individual_booking.status == BookingStatus.CANCELLED
+        assert book_individual_recent_booking.status != BookingStatus.CANCELLED
+
+    def test_queries_performance_individual_bookings(self, app) -> None:
+        now = datetime.utcnow()
+        two_months_ago = now - timedelta(days=60)
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago)
+        n_queries = 1  # select initial booking ids
+        n_queries += 4 * (1 + 1 + 1)  # update booking  # select booking stockId  # update stock dnBookedQuantity
+
+        with assert_num_queries(n_queries):
+            api._cancel_expired_individual_bookings(batch_size=3)
+
+
+@pytest.mark.usefixtures("db_session")
+class NotifyUsersOfExpiredBookingsTest:
+    def should_notify_of_todays_expired_bookings(self, app) -> None:
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        long_ago = now - timedelta(days=31)
+        very_long_ago = now - timedelta(days=32)
+        vinyle = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        expired_today_vinyle_booking = bookings_factories.CancelledBookingFactory(
+            stock__offer__product=vinyle,
+            dateCreated=long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+        )
+        cd = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
+        expired_today_cd_booking = bookings_factories.CancelledBookingFactory(
+            stock__offer__product=cd,
+            dateCreated=long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+        )
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        bookings_factories.CancelledBookingFactory(
+            stock__offer__product=book,
+            dateCreated=very_long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=yesterday,
+        )
+
+        api._notify_users_of_expired_individual_bookings()
+
+        outbox = mails_testing.outbox
+        email_recaps = {
+            (outbox[0]["To"], outbox[0]["params"]["BOOKINGS"][0]["offer_name"]),
+            (outbox[1]["To"], outbox[1]["params"]["BOOKINGS"][0]["offer_name"]),
+        }
+
+        vinyle_user_email = expired_today_vinyle_booking.user.email
+        vinyle_offer_name = expired_today_vinyle_booking.stock.offer.name
+
+        cd_user_email = expired_today_cd_booking.user.email
+        cd_offer_name = expired_today_cd_booking.stock.offer.name
+
+        assert email_recaps == {(vinyle_user_email, vinyle_offer_name), (cd_user_email, cd_offer_name)}
+
+
+@pytest.mark.usefixtures("db_session")
+class NotifyOfferersOfExpiredBookingsTest:
+    @mock.patch("pcapi.core.mails.transactional.send_bookings_expiration_to_pro_email")
+    def test_should_notify_of_todays_expired_individual_bookings(self, mocked_send_email_recap, app) -> None:
+        now = datetime.utcnow()
+        yesterday = now - timedelta(days=1)
+        long_ago = now - timedelta(days=31)
+        very_long_ago = now - timedelta(days=32)
+        vinyle = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        expired_today_vinyle_booking = bookings_factories.CancelledBookingFactory(
+            stock__offer__product=vinyle,
+            dateCreated=long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+        )
+        cd = offers_factories.ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
+        expired_today_cd_booking = bookings_factories.CancelledBookingFactory(
+            stock__offer__product=cd,
+            dateCreated=long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+        )
+        book = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        _expired_yesterday_booking = bookings_factories.CancelledBookingFactory(
+            stock__offer__product=book,
+            dateCreated=very_long_ago,
+            cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationDate=yesterday,
+        )
+
+        api._notify_offerers_of_expired_individual_bookings()
+
+        assert mocked_send_email_recap.call_count == 2
+        assert mocked_send_email_recap.call_args_list[0][0] == (
+            expired_today_vinyle_booking.offerer,
+            [expired_today_vinyle_booking],
+        )
+        assert mocked_send_email_recap.call_args_list[1][0] == (
+            expired_today_cd_booking.offerer,
+            [expired_today_cd_booking],
+        )
 
 
 @pytest.mark.usefixtures("db_session")

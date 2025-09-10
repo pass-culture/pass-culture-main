@@ -3,6 +3,8 @@ import json
 import logging
 import typing
 from functools import partial
+from itertools import groupby
+from operator import attrgetter
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -24,7 +26,6 @@ import pcapi.serialization.utils as serialization_utils
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
-from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.categories.subcategories import NUMBER_SECONDS_HIDE_QR_CODE
 from pcapi.core.categories.subcategories import SEANCE_CINE
 from pcapi.core.educational import models as educational_models
@@ -45,7 +46,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import queue
-from pcapi.utils import repository
+from pcapi.utils.repository import save
 from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -58,6 +59,7 @@ from pcapi.workers import user_emails_job
 from . import constants
 from . import exceptions
 from . import models
+from . import repository
 from . import utils
 from . import validation
 
@@ -232,7 +234,7 @@ def _book_offer(
             stockId=stock.id,
             amount=stock.price,
             quantity=quantity,
-            token=generate_booking_token(),
+            token=repository.generate_booking_token(),
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
             priceCategoryLabel=(
@@ -577,7 +579,7 @@ def _execute_cancel_booking(
             stock.dnBookedQuantity -= booking.quantity
             if booking.activationCode and stock.quantity:
                 stock.quantity -= 1
-            repository.save(booking, stock)
+            save(booking, stock)
     return True
 
 
@@ -883,7 +885,7 @@ def update_cancellation_limit_dates(
             event_beginning=new_beginning_datetime,
             edition_date=datetime.datetime.utcnow(),
         )
-    repository.save(*bookings_to_update)
+    save(*bookings_to_update)
     return bookings_to_update
 
 
@@ -1108,6 +1110,126 @@ def archive_old_bookings() -> None:
         extra={
             "archivedBookings": number_updated,
         },
+    )
+
+
+def handle_expired_individual_bookings() -> None:
+    logger.info("[handle_expired_individual_bookings] Start")
+
+    try:
+        _cancel_expired_individual_bookings()
+    except Exception as e:
+        logger.exception("Error in cancel_expired_individual_bookings : %s", e)
+
+    try:
+        _notify_users_of_expired_individual_bookings()
+    except Exception as e:
+        logger.exception("Error in notify_users_of_expired_individual_bookings : %s", e)
+
+    try:
+        _notify_offerers_of_expired_individual_bookings()
+    except Exception as e:
+        logger.exception("Error in notify_offerers_of_expired_individual_bookings : %s", e)
+
+    logger.info("[handle_expired_individual_bookings] End")
+
+
+def _cancel_expired_individual_bookings(batch_size: int = 500) -> None:
+    expiring_individual_bookings_query = repository.find_expiring_individual_bookings_query()
+    expiring_booking_ids = [b[0] for b in expiring_individual_bookings_query.with_entities(models.Booking.id).all()]
+
+    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", len(expiring_booking_ids))
+
+    # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
+    # as we use synchronize_session=False
+    db.session.commit()
+
+    start_index = 0
+    updated_total = 0
+
+    while start_index < len(expiring_booking_ids):
+        booking_ids_to_update = expiring_booking_ids[start_index : start_index + batch_size]
+        updated = (
+            db.session.query(models.Booking)
+            .filter(models.Booking.id.in_(booking_ids_to_update))
+            .update(
+                {
+                    "status": models.BookingStatus.CANCELLED,
+                    "cancellationReason": models.BookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
+                },
+                synchronize_session=False,
+            )
+        )
+        # Recompute denormalized stock quantity
+        stocks_to_recompute = [
+            row[0]
+            for row in db.session.query(models.Booking.stockId)
+            .filter(models.Booking.id.in_(booking_ids_to_update))
+            .distinct()
+            .all()
+        ]
+        recompute_dnBookedQuantity(stocks_to_recompute)
+        db.session.commit()
+
+        updated_total += updated
+
+        logger.info(
+            "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
+            updated,
+        )
+
+        start_index += batch_size
+
+    logger.info("[cancel_expired_bookings] %d Bookings have been cancelled", updated_total)
+
+
+def _notify_users_of_expired_individual_bookings(expired_on: datetime.date | None = None) -> None:
+    expired_on = expired_on or datetime.date.today()
+
+    logger.info("[notify_users_of_expired_bookings] Start")
+    user_ids = repository.find_user_ids_with_expired_individual_bookings(expired_on)
+    notified_users_str = []
+    for user_id in user_ids:
+        user = db.session.get(users_models.User, user_id)
+        transactional_mails.send_expired_bookings_to_beneficiary_email(
+            user,
+            repository.get_expired_individual_bookings_for_user(user),
+        )
+        notified_users_str.append(user.id)
+
+    logger.info(
+        "[notify_users_of_expired_bookings] %d Users have been notified: %s",
+        len(notified_users_str),
+        notified_users_str,
+    )
+
+
+def _notify_offerers_of_expired_individual_bookings(expired_on: datetime.date | None = None) -> None:
+    expired_on = expired_on or datetime.date.today()
+    logger.info("[notify_offerers_of_expired_bookings] Start")
+
+    expired_individual_bookings_grouped_by_offerer = {
+        offerer: list(bookings)
+        for offerer, bookings in groupby(
+            repository.find_expired_individual_bookings_ordered_by_offerer(expired_on),
+            attrgetter("offerer"),
+        )
+    }
+
+    notified_offerers = []
+
+    for offerer, bookings in expired_individual_bookings_grouped_by_offerer.items():
+        transactional_mails.send_bookings_expiration_to_pro_email(
+            offerer,
+            bookings,
+        )
+        notified_offerers.append(offerer)
+
+    logger.info(
+        "[notify_users_of_expired_individual_bookings] %d Offerers have been notified: %s",
+        len(notified_offerers),
+        notified_offerers,
     )
 
 

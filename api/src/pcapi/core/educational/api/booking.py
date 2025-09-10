@@ -511,3 +511,79 @@ def notify_redactor_that_booking_has_been_cancelled(booking: educational_schemas
 
 def notify_pro_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
     transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking)
+
+
+def handle_expired_collective_bookings() -> None:
+    logger.info("[handle_expired_collective_bookings] Start")
+
+    try:
+        _cancel_expired_collective_bookings()
+    except Exception as e:
+        logger.exception("Error in cancel_expired_collective_bookings : %s", e)
+
+    try:
+        _notify_offerers_of_expired_collective_bookings()
+    except Exception as e:
+        logger.exception("Error in notify_offerers_of_expired_collective_bookings : %s", e)
+
+    logger.info("[handle_expired_collective_bookings] End")
+
+
+def _cancel_expired_collective_bookings(batch_size: int = 500) -> None:
+    logger.info("[cancel_expired_collective_bookings] Start")
+
+    expiring_collective_bookings_query = educational_repository.find_expiring_collective_bookings_query()
+    expiring_booking_ids = [
+        b[0] for b in expiring_collective_bookings_query.with_entities(educational_models.CollectiveBooking.id).all()
+    ]
+
+    logger.info("[cancel_expired_collective_bookings] %d expiring bookings to cancel", len(expiring_booking_ids))
+
+    # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
+    # as we use synchronize_session=False
+    db.session.commit()
+
+    updated_total = 0
+    start_index = 0
+
+    while start_index < len(expiring_booking_ids):
+        booking_to_update_ids = expiring_booking_ids[start_index : start_index + batch_size]
+        updated = (
+            db.session.query(educational_models.CollectiveBooking)
+            .filter(educational_models.CollectiveBooking.id.in_(booking_to_update_ids))
+            .update(
+                {
+                    "status": educational_models.CollectiveBookingStatus.CANCELLED,
+                    "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+                    "cancellationDate": datetime.datetime.utcnow(),
+                },
+                synchronize_session=False,
+            )
+        )
+        db.session.commit()
+
+        logger.info(
+            "[cancel_expired_collective_bookings] %d Bookings have been cancelled in this batch",
+            updated,
+        )
+
+        updated_total += updated
+        start_index += batch_size
+
+    logger.info("[cancel_expired_collective_bookings] %d Bookings have been cancelled", updated_total)
+
+
+def _notify_offerers_of_expired_collective_bookings() -> None:
+    logger.info("[notify_offerers_of_expired_collective_bookings] Start")
+
+    expired_collective_bookings = educational_repository.find_expired_collective_bookings()
+
+    for collective_booking in expired_collective_bookings:
+        transactional_mails.send_eac_booking_cancellation_email(collective_booking)
+
+    logger.info(
+        "[notify_offerers_of_expired_collective_bookings] %d Offerers have been notified",
+        len(expired_collective_bookings),
+    )
+
+    logger.info("[notify_offerers_of_expired_collective_bookings] End")

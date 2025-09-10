@@ -7,11 +7,12 @@ import click
 
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.utils.cron as cron_decorators
+from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings.external import booking_notifications
+from pcapi.core.educational.api import booking as educational_booking_api
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.utils.blueprint import Blueprint
 
 from . import api
@@ -65,7 +66,8 @@ def cancel_ems_external_bookings() -> None:
 @blueprint.cli.command("handle_expired_bookings")
 @cron_decorators.log_cron_with_transaction
 def handle_expired_bookings() -> None:
-    handle_expired_bookings_module.handle_expired_bookings()
+    bookings_api.handle_expired_individual_bookings()
+    educational_booking_api.handle_expired_collective_bookings()
 
 
 @blueprint.cli.command("notify_soon_to_be_expired_individual_bookings")
