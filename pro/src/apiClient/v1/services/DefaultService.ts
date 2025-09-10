@@ -1905,7 +1905,8 @@ export class DefaultService {
     });
   }
   /**
-   * post_draft_offer <POST>
+   * @deprecated
+   * [DEPRECATED] Please migrate to new (generic/standard) offer creation route
    * @param requestBody
    * @returns GetIndividualOfferResponseModel Created
    * @throws ApiError
@@ -2896,6 +2897,26 @@ export class DefaultService {
         'bankAccountId': bankAccountId,
         'offererId': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * create_offer <POST>
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel Created
+   * @throws ApiError
+   */
+  public createOffer(
+    requestBody?: PostOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/v2/offers',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
