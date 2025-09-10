@@ -11,6 +11,7 @@ from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.core.educational.schemas import AdageCulturalPartners
@@ -21,7 +22,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
@@ -55,8 +55,8 @@ def get_cultural_partners(*, since_date: datetime | None = None, force_update: b
     return parse_obj_as(AdageCulturalPartners, {"partners": cultural_partners})
 
 
-def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
-    return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
+def get_cultural_partner(siret: str) -> educational_schemas.AdageCulturalPartnerResponseModel:
+    return educational_schemas.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
 
 
 def get_venue_by_siret_for_adage_iframe(

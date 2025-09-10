@@ -22,7 +22,6 @@ import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.repository as providers_repository
-import pcapi.serialization.utils as serialization_utils
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.core import search
 from pcapi.core.achievements import api as achievements_api
@@ -45,6 +44,7 @@ from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.utils import date as date_utils
 from pcapi.utils import queue
 from pcapi.utils.repository import save
 from pcapi.utils.repository import transaction
@@ -868,7 +868,7 @@ def compute_booking_cancellation_limit_date(
     if event_beginning is None:
         return None
 
-    event_beginning = serialization_utils.as_utc_without_timezone(event_beginning)
+    event_beginning = date_utils.as_utc_without_timezone(event_beginning)
     before_event_cancellation_date = event_beginning - constants.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
     after_booking_cancellation_date = booking_date + constants.CONFIRM_BOOKING_AFTER_CREATION_DELAY
 

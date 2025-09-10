@@ -3,10 +3,10 @@ import typing
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core.shared import schemas as shared_schemas
 from pcapi.routes import serialization as routes_serialization
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
-from pcapi.serialization import utils as serialization_utils
 
 
 def _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates(cls: typing.Any, values: dict) -> dict:
@@ -35,7 +35,7 @@ class StockCreation(v1_serialization.BaseStockCreation):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     quantity: pydantic_v1.PositiveInt | v1_serialization.UNLIMITED_LITERAL | None = fields.QUANTITY  # type: ignore[assignment]
 
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+    _validate_booking_limit_datetime = shared_schemas.validate_datetime("booking_limit_datetime")
 
     @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
@@ -82,16 +82,16 @@ class ProductOfferByEanCreation(routes_serialization.ConfiguredBaseModel):
     else:
         ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
     stock: StockUpsert
-    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
+    publication_datetime: datetime.datetime | shared_schemas.NOW_LITERAL | None = (
         fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
     )
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_publicationDatetime = serialization_utils.validate_datetime(
+    _validate_publicationDatetime = shared_schemas.validate_datetime(
         "publication_datetime",
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_bookingAllowedDatetime = shared_schemas.validate_datetime("booking_allowed_datetime")
     _validate_stock_booking_limit_datetime = pydantic_v1.root_validator(skip_on_failure=True, allow_reuse=True)(
         _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates
     )

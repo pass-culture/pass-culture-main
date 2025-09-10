@@ -3,7 +3,7 @@ import decimal
 from pydantic.v1.fields import Field
 
 import pcapi.core.educational.schemas as educational_schemas
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class EducationalInstitutionResponse(educational_schemas.AdageBaseResponseModel):

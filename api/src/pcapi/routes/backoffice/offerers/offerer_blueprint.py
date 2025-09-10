@@ -41,7 +41,6 @@ from pcapi.routes.backoffice.bookings import forms as bookings_forms
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
@@ -1016,7 +1015,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         label=None,
     )
 
-    venue_creation_info = venues_serialize.PostVenueBodyModel(
+    venue_creation_info = offerers_schemas.PostVenueBodyModel(
         address=address_body_model,
         comment=offerers_schemas.VenueComment(
             "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"

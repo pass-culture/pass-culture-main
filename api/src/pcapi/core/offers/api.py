@@ -6,7 +6,6 @@ import enum
 import functools
 import json
 import logging
-import re
 import time
 import typing
 from contextlib import suppress
@@ -266,7 +265,7 @@ def remove_video_data_from_offer_metadata(offer_meta_data: offers_models.OfferMe
 
 
 def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
-    video_id = extract_youtube_video_id(video_url)
+    video_id = offers_schemas.extract_youtube_video_id(video_url)
     if video_id is None:
         return None
     cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
@@ -301,7 +300,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     new_video_url = fields.pop("videoUrl", None)
     if new_video_url:
         video_metadata = get_video_metadata_from_cache(new_video_url)
-        video_id = extract_youtube_video_id(new_video_url)
+        video_id = offers_schemas.extract_youtube_video_id(new_video_url)
         if video_metadata is not None:
             if offer.metaData is None:
                 offer.metaData = models.OfferMetaData(offer=offer)
@@ -2591,21 +2590,3 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
         .where(reactions_models.Reaction.productId >= start, reactions_models.Reaction.productId < end)
         .group_by(reactions_models.Reaction.productId)
     )
-
-
-def extract_youtube_video_id(url: str) -> str | None:
-    if not isinstance(url, str):
-        return None
-
-    youtube_regex = (
-        r"(https?://)?"
-        r"(www\.)?"
-        r"(m\.)?"
-        r"(youtube\.com|youtu\.be)"
-        r'(/watch\?v=|/embed/|/v/|/e/|/shorts/|/)(?P<video_id>[^"&?\/\s]{11})'
-    )
-    pattern = re.compile(youtube_regex)
-    if match := pattern.match(url):
-        return match.group("video_id")
-
-    return None

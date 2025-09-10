@@ -32,9 +32,17 @@ class BaseModel(pydantic_v1.BaseModel):
                     value["nullable"] = True
 
 
+def to_camel(string: str) -> str:
+    # used to define root level lists, see https://docs.pydantic.dev/1.10/usage/models/#custom-root-types
+    if string == pydantic_v1.utils.ROOT_KEY:
+        return pydantic_v1.utils.ROOT_KEY
+    components = string.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
+
+
 class ConfiguredBaseModel(BaseModel):
     class Config:
-        alias_generator = serialization_utils.to_camel
+        alias_generator = to_camel
         allow_population_by_field_name = True
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}

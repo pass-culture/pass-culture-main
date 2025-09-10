@@ -17,7 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 from .common import models as common_models
 

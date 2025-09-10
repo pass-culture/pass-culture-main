@@ -2907,6 +2907,7 @@
             "OfferImage": {
                 "properties": {
                     "credit": {
+                        "nullable": true,
                         "title": "Credit",
                         "type": "string"
                     },

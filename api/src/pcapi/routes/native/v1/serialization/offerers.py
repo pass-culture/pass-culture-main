@@ -3,6 +3,7 @@ import typing
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -64,7 +65,7 @@ class VenueResponse(base.BaseVenueResponse):
     address: str | None
     accessibility: VenueAccessibilityModel
     venueTypeCode: offerers_schemas.VenueTypeCodeKey
-    bannerMeta: offerers_schemas.BannerMetaModel | None
+    bannerMeta: offerers_models.BannerMetaModel | None
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None

@@ -13,6 +13,7 @@ import pcapi.core.educational.api.institution as institution_api
 import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+import pcapi.core.educational.schemas as educational_schemas
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api import offer as educational_api_offer
@@ -20,7 +21,6 @@ from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.utils import db as db_utils
 
 
@@ -34,7 +34,7 @@ class CreateCollectiveOfferStocksTest:
             expirationDate=start_date + datetime.timedelta(days=100),
         )
         offer = educational_factories.CollectiveOfferFactory()
-        new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
+        new_stock = educational_schemas.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             startDatetime=start_date,
             endDatetime=start_date,
@@ -60,7 +60,7 @@ class CreateCollectiveOfferStocksTest:
             expirationDate=start_date + datetime.timedelta(days=100),
         )
         offer = educational_factories.CollectiveOfferFactory()
-        new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
+        new_stock = educational_schemas.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             startDatetime=start_date,
             endDatetime=start_date,
@@ -83,7 +83,7 @@ class CreateCollectiveOfferStocksTest:
             expirationDate=start_date + datetime.timedelta(days=100),
         )
         offer = educational_factories.CollectiveOfferFactory(validation=status)
-        created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
+        created_stock_data = educational_schemas.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             startDatetime=start_date,
             endDatetime=start_date,

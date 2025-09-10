@@ -20,8 +20,8 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import without_timezone
 from pcapi.utils.date import FrenchParserInfo
+from pcapi.utils.date import without_timezone
 
 
 logger = logging.getLogger(__name__)

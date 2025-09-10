@@ -10,6 +10,7 @@ from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers import schemas as providers_schemas
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
@@ -71,7 +72,7 @@ def list_venue_providers(
     api=blueprint.pro_private_schema,
 )
 def create_venue_provider(
-    body: venue_provider_serialize.PostVenueProviderBody,
+    body: providers_schemas.PostVenueProviderBody,
 ) -> venue_provider_serialize.VenueProviderResponse:
     body.venueIdAtOfferProvider = None
     venue = _get_venue_or_404(body.venueId)
@@ -128,7 +129,7 @@ def create_venue_provider(
     api=blueprint.pro_private_schema,
 )
 def update_venue_provider(
-    body: venue_provider_serialize.PostVenueProviderBody,
+    body: providers_schemas.PostVenueProviderBody,
 ) -> venue_provider_serialize.VenueProviderResponse:
     venue = _get_venue_or_404(body.venueId)
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)

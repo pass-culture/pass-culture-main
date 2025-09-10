@@ -44,12 +44,12 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
+from pcapi.core.users import schemas
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import repository
 from pcapi.utils import transaction_manager
@@ -821,7 +821,7 @@ def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None
     external_attributes_api.update_external_pro(new_pro_user.email)
 
 
-def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
+def create_pro_user(pro_user: schemas.ProUserCreationBodyV2Model) -> models.User:
     user_kwargs = {
         k: v for k, v in pro_user.dict(by_alias=True).items() if k not in ("contactOk", "token", "_sa_instance_state")
     }

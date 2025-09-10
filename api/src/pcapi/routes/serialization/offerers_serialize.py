@@ -1,4 +1,3 @@
-import enum
 from datetime import datetime
 from typing import Any
 from typing import Iterable
@@ -13,16 +12,14 @@ import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
 import pcapi.utils.date as date_utils
 from pcapi.core.offerers import schemas as offerers_schemas
-from pcapi.core.offerers.models import Target
+from pcapi.core.shared import schemas as shared_schemas
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
 from pcapi.models import db
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import finance_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseModel
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
-from pcapi.routes.shared import validation
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.email import sanitize_email
 
 
@@ -167,14 +164,9 @@ class GetOffererNameResponseModel(BaseModel):
         orm_mode = True
 
 
-class OffererMemberStatus(enum.Enum):
-    VALIDATED = "validated"
-    PENDING = "pending"
-
-
 class GetOffererMemberResponseModel(BaseModel):
     email: str
-    status: OffererMemberStatus
+    status: offerers_schemas.OffererMemberStatus
 
 
 class GetOffererMembersResponseModel(BaseModel):
@@ -257,39 +249,6 @@ class GetEducationalOfferersQueryModel(BaseModel):
 
 class GenerateOffererApiKeyResponse(BaseModel):
     apiKey: str
-
-
-class CreateOffererQueryModel(BaseModel):
-    city: str
-    latitude: float | None
-    longitude: float | None
-    name: str
-    postalCode: str
-    inseeCode: str | None
-    siren: str
-    street: str | None
-    phoneNumber: str | None
-
-    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
-
-
-class SaveNewOnboardingDataQueryModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel
-    createVenueWithoutSiret: bool = False
-    isOpenToPublic: bool
-    publicName: str | None
-    siret: str
-    target: Target
-    token: str
-    venueTypeCode: str
-    webPresence: str
-    phoneNumber: str | None
-
-    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
-
-    class Config:
-        extra = "forbid"
-        anystr_strip_whitespace = True
 
 
 class InviteMemberQueryModel(BaseModel):
@@ -426,7 +385,7 @@ class OffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
     offererId: int
-    address: AddressResponseModel
+    address: shared_schemas.AddressResponseModel
 
     class Config:
         orm_mode = True

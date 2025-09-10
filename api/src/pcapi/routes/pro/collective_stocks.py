@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -30,7 +31,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.pro_private_schema,
 )
 def create_collective_stock(
-    body: collective_stock_serialize.CollectiveStockCreationBodyModel,
+    body: educational_schemas.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)

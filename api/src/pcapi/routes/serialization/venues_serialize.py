@@ -23,15 +23,16 @@ from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.core.shared import schemas as shared_schemas
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
@@ -70,34 +71,6 @@ class DMSApplicationForEAC(BaseModel):
         return super().from_orm(collective_dms_application)
 
 
-class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    address: offerers_schemas.AddressBodyModel
-    bookingEmail: offerers_schemas.VenueBookingEmail
-    comment: offerers_schemas.VenueComment | None
-    isOpenToPublic: bool | None
-    managingOffererId: int
-    name: offerers_schemas.VenueName
-    publicName: offerers_schemas.VenuePublicName | None
-    siret: offerers_schemas.VenueSiret | None
-    venueLabelId: int | None
-    venueTypeCode: str
-    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
-    description: offerers_schemas.VenueDescription | None
-    contact: offerers_schemas.VenueContactModel | None
-
-    class Config:
-        extra = "forbid"
-
-    @validator("siret", always=True)
-    @classmethod
-    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
-        """siret is defined after comment, so the validator can access the previously validated value of comment"""
-        comment = values.get("comment")
-        if (comment and siret) or (not comment and not siret):
-            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
-        return siret
-
-
 class VenueResponseModel(BaseModel):
     id: int
 
@@ -124,7 +97,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(BaseModel):
-    image_credit: offerers_schemas.VenueImageCredit | None = None
+    image_credit: offerers_models.VenueImageCredit | None = None
     original_image_url: str | None = None
     crop_params: CropParams = CropParams()
 
@@ -198,7 +171,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
-            return address_serialize.AddressResponseIsLinkedToVenueModel(
+            return shared_schemas.AddressResponseIsLinkedToVenueModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
                 label=venue.common_name,
                 isLinkedToVenue=True,
@@ -252,7 +225,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     hasOffers: bool
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    address: shared_schemas.AddressResponseIsLinkedToVenueModel | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
@@ -401,7 +374,7 @@ class VenueListItemResponseGetterDict(GetterDict):
                 "isManualEdition": offerer_address.address.isManualEdition,
                 "departmentCode": offerer_address.address.departmentCode,
             }
-            return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
+            return shared_schemas.AddressResponseIsLinkedToVenueModel(**data)
 
         if key == "isCaledonian":
             return venue.is_caledonian
@@ -422,7 +395,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    address: shared_schemas.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
     isCaledonian: bool
 
@@ -469,7 +442,7 @@ class VenueBannerContentModel(BaseModel):
         content: bytes
     else:
         content: pydantic_v1.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
-    image_credit: offerers_schemas.VenueImageCredit | None
+    image_credit: offerers_models.VenueImageCredit | None
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
@@ -565,34 +538,6 @@ class VenuesEducationalStatusResponseModel(BaseModel):
 
 class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
-
-
-class AdageCulturalPartnerResponseModel(BaseModel):
-    id: int
-    statutId: int | None
-    siteWeb: str | None
-    domaineIds: list[int]
-
-    @validator("domaineIds", pre=True)
-    @classmethod
-    def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
-        if not domaine_ids:
-            return []
-
-        if isinstance(domaine_ids, list):
-            return domaine_ids
-
-        split_domaine_ids = domaine_ids.split(",")
-        ids = []
-        for domaine_id in split_domaine_ids:
-            if not domaine_id.isdigit():
-                raise ValueError("Domaine id must be an integer")
-            ids.append(int(domaine_id))
-
-        return ids
-
-    class Config:
-        orm_mode = True
 
 
 class CulturalPartner(BaseModel):

@@ -33,7 +33,7 @@ class _FIELDS:
 
             from pydantic.v1 import BaseModel
             from pydantic.v1 import Field
-            from pcapi.serialization.utils import to_camel
+            from pcapi.routes.serialization import to_camel
 
             MY_FIELD_CONSTANT = Field(description="a field description")
 

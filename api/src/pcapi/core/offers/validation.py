@@ -19,16 +19,16 @@ from pcapi.core.categories.subcategories import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.offers import schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
 
 
@@ -127,7 +127,7 @@ def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None
 
 
 def check_stocks_price(
-    stocks: list[serialization.EventStockCreateBodyModel] | list[serialization.EventStockUpdateBodyModel],
+    stocks: list[schemas.EventStockCreateBodyModel] | list[schemas.EventStockUpdateBodyModel],
     offer: models.Offer,
 ) -> None:
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
@@ -243,7 +243,7 @@ def check_stocks_count(stocks_count: int) -> None:
 
 
 def check_stocks_count_with_previous_offer_stock(
-    stocks_to_create: list[serialization.EventStockCreateBodyModel],
+    stocks_to_create: list[schemas.EventStockCreateBodyModel],
     offer: models.Offer,
 ) -> None:
     if stocks_to_create:

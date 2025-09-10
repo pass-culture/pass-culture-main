@@ -7,8 +7,8 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.api.booking import COLLECTIVE_BOOKING_EXPORT_HEADER
 from pcapi.core.testing import assert_num_queries
-from pcapi.routes.serialization.collective_bookings_serialize import COLLECTIVE_BOOKING_EXPORT_HEADER
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

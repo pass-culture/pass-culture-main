@@ -8,6 +8,7 @@ from datetime import date
 from datetime import datetime
 
 import psycopg2.extras
+import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as sa_psql
 import sqlalchemy.orm as sa_orm
@@ -36,8 +37,6 @@ from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import constants
-from pcapi.core.offerers.schemas import BannerMetaModel
-from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -71,6 +70,45 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
     OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
+
+
+class VenueTypeCode(enum.Enum):
+    ARTISTIC_COURSE = "Cours et pratique artistiques"
+    BOOKSTORE = "Librairie"
+    CONCERT_HALL = "Musique - Salle de concerts"
+    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    CULTURAL_CENTRE = "Centre culturel"
+    DIGITAL = "Offre numérique"
+    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
+    FESTIVAL = "Festival"
+    GAMES = "Jeux / Jeux vidéos"
+    LIBRARY = "Bibliothèque ou médiathèque"
+    MOVIE = "Cinéma - Salle de projections"
+    MUSEUM = "Musée"
+    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
+    OTHER = "Autre"
+    PATRIMONY_TOURISM = "Patrimoine et tourisme"
+    PERFORMING_ARTS = "Spectacle vivant"
+    RECORD_STORE = "Musique - Disquaire"
+    SCIENTIFIC_CULTURE = "Culture scientifique"
+    TRAVELING_CINEMA = "Cinéma itinérant"
+    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
+
+    # These methods are used by pydantic in order to return the enum name and validate the value
+    # instead of returning the enum directly.
+    @classmethod
+    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value: str | enum.Enum) -> str:
+        if isinstance(value, enum.Enum):
+            value = value.name
+
+        if not hasattr(cls, value):
+            raise ValueError(f"{value}: invalide")
+
+        return value
 
 
 PERMENANT_VENUE_TYPES = [
@@ -187,6 +225,21 @@ class Weekday(enum.Enum):
     FRIDAY = "FRIDAY"
     SATURDAY = "SATURDAY"
     SUNDAY = "SUNDAY"
+
+
+class RequiredStrippedString(pydantic_v1.ConstrainedStr):
+    strip_whitespace = True
+    min_length = 1
+
+
+class VenueImageCredit(RequiredStrippedString):
+    max_length = 255
+
+
+class BannerMetaModel(typing.TypedDict, total=False):
+    image_credit: VenueImageCredit | None
+    image_credit_url: str | None
+    is_from_google: bool
 
 
 class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):

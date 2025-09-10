@@ -7,7 +7,7 @@ import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 

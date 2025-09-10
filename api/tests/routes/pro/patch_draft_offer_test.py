@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
+from pcapi.core.offers import schemas
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -39,7 +40,7 @@ class Returns200Test:
             "extraData": {"gtl_id": "07000000"},
             "videoUrl": video_url,
         }
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = schemas.extract_youtube_video_id(video_url)
         app.redis_client.set(
             f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
@@ -431,7 +432,7 @@ class Returns200Test:
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
         video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = schemas.extract_youtube_video_id(video_url)
         app.redis_client.set(
             f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
@@ -462,7 +463,7 @@ class Returns200Test:
         )
 
         video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = schemas.extract_youtube_video_id(video_url)
         app.redis_client.set(
             f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(

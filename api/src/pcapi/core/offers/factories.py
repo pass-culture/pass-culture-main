@@ -15,7 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.factories import BaseFactory
-from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.models import db

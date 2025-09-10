@@ -15,13 +15,6 @@ class Coordinates(BaseModel):
     longitude: Decimal | None
 
 
-class AccessibilityComplianceMixin(PydanticBaseModel):
-    audioDisabilityCompliant: bool | None
-    mentalDisabilityCompliant: bool | None
-    motorDisabilityCompliant: bool | None
-    visualDisabilityCompliant: bool | None
-
-
 class AccessibilityComplianceStrictMixin(PydanticBaseModel):
     audioDisabilityCompliant: bool
     mentalDisabilityCompliant: bool

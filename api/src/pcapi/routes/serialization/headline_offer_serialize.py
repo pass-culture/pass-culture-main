@@ -1,6 +1,6 @@
 from pcapi.core.offers.models import OfferImage
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class HeadLineOfferResponseModel(BaseModel):

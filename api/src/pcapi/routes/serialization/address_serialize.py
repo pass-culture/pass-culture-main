@@ -3,36 +3,6 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers.models import OffererAddress
-from pcapi.routes.serialization import BaseModel
-
-
-class AddressResponseModel(BaseModel):
-    id: int
-    banId: str | None
-    inseeCode: str | None
-    postalCode: str
-    street: str | None
-    city: str
-    latitude: float
-    longitude: float
-    departmentCode: str | None
-
-    class Config:
-        orm_mode = True
-
-    @pydantic_v1.validator("latitude", "longitude")
-    def round(cls, value: float) -> float:
-        """Rounding to five digits to keep consistency
-        with the model definition.
-        """
-        return round(value, 5)
-
-
-class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
-    label: str | None = None
-    id_oa: int
-    isLinkedToVenue: bool | None
-    isManualEdition: bool
 
 
 class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):

@@ -5,7 +5,7 @@ from pcapi.core.educational.models import EducationalInstitution
 from pcapi.routes.public.documentation_constants.fields import LIMIT_DESCRIPTION
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20

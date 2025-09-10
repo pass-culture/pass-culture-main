@@ -25,6 +25,7 @@ from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users import schemas
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.password_utils import check_password_validity
@@ -52,7 +53,7 @@ logger = logging.getLogger(__name__)
 @blueprint.pro_private_api.route("/users/signup", methods=["POST"])
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
+def signup_pro(body: schemas.ProUserCreationBodyV2Model) -> None:
     try:
         check_web_recaptcha_token(
             body.token,

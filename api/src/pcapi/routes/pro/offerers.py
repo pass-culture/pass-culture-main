@@ -19,6 +19,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTE
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -150,7 +151,7 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
 @spectree_serialize(
     on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
-def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
+def create_offerer(body: offerers_schemas.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
     siren_info = api_entreprise.get_siren_open_data(body.siren)
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
@@ -177,7 +178,7 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
 def save_new_onboarding_data(
-    body: offerers_serialize.SaveNewOnboardingDataQueryModel,
+    body: offerers_schemas.SaveNewOnboardingDataQueryModel,
 ) -> offerers_serialize.PostOffererResponseModel:
     try:
         check_web_recaptcha_token(
