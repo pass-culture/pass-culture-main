@@ -23,7 +23,7 @@ class OfferCommandsTest:
         a_year_ago = datetime.date.today() - timedelta(days=366)
         offer_id = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago).id
 
-        run_command(app, "delete_unbookable_unbooked_old_offers")
+        run_command(app, "delete_unbookable_unbooked_old_offers", "0", f"{offer_id * 2}")
 
         assert db.session.get(offers_models.Offer, offer_id) is not None
 
@@ -34,7 +34,7 @@ class OfferCommandsTest:
         offer = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago)
         offer_id = offer.id
 
-        run_command(app, "delete_unbookable_unbooked_old_offers")
+        run_command(app, "delete_unbookable_unbooked_old_offers", "0", f"{offer_id * 2}")
 
         assert db.session.query(offers_models.Offer).filter_by(id=offer_id).count() == 0
 

@@ -634,7 +634,8 @@ class Returns200Test:
         # select feature
         # select price category
         # update offer
-        with assert_num_queries(8):
+        # select offer (again)
+        with assert_num_queries(9):
             response = http_client.patch(f"/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 
@@ -958,7 +959,6 @@ class Returns400Test:
                     "idAtProviders": ["Vous ne pouvez pas changer cette information"],
                     "lastProviderId": ["Vous ne pouvez pas changer cette information"],
                     "thumbCount": ["Vous ne pouvez pas changer cette information"],
-                    "subcategoryId": ["Vous ne pouvez pas changer cette information"],
                 },
             ),
             (

@@ -212,7 +212,7 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_schemas.deprecated.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
     is_from_private_api: bool = True,
@@ -303,7 +303,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     return video_metadata
 
 
-def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_schemas.deprecated.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
@@ -406,10 +406,34 @@ def create_offer(
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
+    product: offers_models.Product | None = None,
     is_from_private_api: bool = False,
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
+    """Main entry point to offer creation
+
+    Note:
+        For some historical reason this function was only used by public
+        API calls and the internal API calls were using another function.
+        Both should use the same entrypoint but this is still a work in
+        progress since some rules are slightly different.
+    """
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+
+    if is_from_private_api:
+        # TODO(jbaudet): should be ok to remove from this if-block since
+        # only internal api calls will pass product as a parameter.
+        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+
+        # TODO(jbaudet): should be ok to remove from this if-block
+        # but let's be sure before doing anything stupid
+        if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            validation.check_accessibility_compliance(
+                audio_disability_compliant=body.audio_disability_compliant,
+                mental_disability_compliant=body.mental_disability_compliant,
+                motor_disability_compliant=body.motor_disability_compliant,
+                visual_disability_compliant=body.visual_disability_compliant,
+            )
 
     validation.check_offer_withdrawal(
         withdrawal_type=body.withdrawal_type,
@@ -429,6 +453,30 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
+    fields.pop("videoUrl", None)
+
+    if is_from_private_api:
+        if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            disability_fields = {
+                "audioDisabilityCompliant",
+                "mentalDisabilityCompliant",
+                "motorDisabilityCompliant",
+                "visualDisabilityCompliant",
+            }
+            if not any(field for field in disability_fields if field in fields):
+                fields.update(_get_accessibility_compliance_fields(venue))
+
+        if not body.withdrawal_details:
+            fields.update({"withdrawalDetails": venue.withdrawalDetails})
+
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+        fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+
+        keys_to_remove = {"venueId", "callId"}
+        if product:
+            keys_to_remove |= {"extraData", "description", "durationMinutes"}
+
+        fields = {k: v for k, v in fields.items() if k not in keys_to_remove}
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -438,12 +486,18 @@ def create_offer(
     offer = models.Offer(
         **fields,
         venue=venue,
+        product=product,
         offererAddress=offerer_address,
         lastProvider=provider,
         validation=models.OfferValidationStatus.DRAFT,
         publicationDatetime=None,
     )
     repository.add_to_session(offer)
+
+    if body.video_url:
+        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+        db.session.add(offer_metadata)
+
     db.session.flush()
 
     # This log is used for analytics purposes.
@@ -470,6 +524,46 @@ def get_offerer_address_from_address_body(
         return venue.offererAddress
 
     return offerers_api.get_offerer_address_from_address(venue.managingOffererId, address_body)
+
+
+def update_offer_metadata(offer: models.Offer, body: offers_schemas.UpdateOffer) -> None:
+    new_video_url = body.video_url
+    if new_video_url:
+        video_metadata = get_video_metadata_from_cache(new_video_url)
+        video_id = extract_youtube_video_id(new_video_url)
+        if video_metadata is not None:
+            if offer.metaData is None:
+                offer.metaData = models.OfferMetaData(offer=offer)
+                logger.info(
+                    "Video has been added to offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.added",
+                )
+            elif offer.metaData.videoUrl is None:
+                logger.info(
+                    "Video has been added to offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.added",
+                )
+            else:
+                logger.info(
+                    "Video has been updated on offer",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
+                    technical_message_id="offer.video.updated",
+                )
+            offer.metaData.videoExternalId = video_id
+            offer.metaData.videoTitle = video_metadata.title
+            offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
+            offer.metaData.videoDuration = video_metadata.duration
+            offer.metaData.videoUrl = new_video_url
+            db.session.add(offer.metaData)
+    elif offer.metaData:
+        remove_video_data_from_offer_metadata(offer.metaData)
+        logger.info(
+            "Video has been deleted from offer",
+            extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+            technical_message_id="offer.video.deleted",
+        )
 
 
 def update_offer(
@@ -508,7 +602,7 @@ def update_offer(
         if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
-    if (
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
         or "motorDisabilityCompliant" in updates
@@ -559,6 +653,27 @@ def update_offer(
             provider=offer.lastProvider,
         )
 
+    update_offer_metadata(offer, body)
+
+    body_ean = body.extra_data.get("ean", None) if body.extra_data else None
+    if body_ean:
+        updates["ean"] = updates["extraData"].pop("ean")
+
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if offer.url and "url" in body.__fields_set__ and body.url is None:
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    else:
+        # - An URL must be provided if the offer has an online subcategory and had no URL before.
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+
+    if "subcategoryId" in updates and offer.status != models.OfferStatus.DRAFT:
+        raise offers_exceptions.UnallowedUpdate("subcategoryId")
+
     validation.check_validation_status(offer)
     if offer.lastProvider is not None:
         validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
@@ -582,10 +697,18 @@ def update_offer(
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
     # Otherwise, you will break some dashboards
-    logger.info(
-        "Offer has been updated",
-        extra={"offer_id": offer.id, "venue_id": offer.venueId, "product_id": offer.productId, "changes": {**changes}},
-        technical_message_id="offer.updated",
+    on_commit(
+        partial(
+            logger.info,
+            "Offer has been updated",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "product_id": offer.productId,
+                "changes": {**changes},
+            },
+            technical_message_id="offer.updated",
+        )
     )
 
     withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
