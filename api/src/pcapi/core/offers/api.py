@@ -203,63 +203,6 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
     }
 
 
-def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
-    venue: offerers_models.Venue,
-    product: offers_models.Product | None = None,
-    is_from_private_api: bool = True,
-) -> models.Offer:
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
-
-    body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
-
-    validation.check_offer_name_does_not_contain_ean(body.name)
-    body_ean = body.extra_data.pop("ean", None)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
-
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        validation.check_accessibility_compliance(
-            audio_disability_compliant=body.audio_disability_compliant,
-            mental_disability_compliant=body.mental_disability_compliant,
-            motor_disability_compliant=body.motor_disability_compliant,
-            visual_disability_compliant=body.visual_disability_compliant,
-        )
-
-    fields = {
-        key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId", "videoUrl")
-    }
-    fields.update({"ean": body_ean})
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        fields.update(_get_accessibility_compliance_fields(venue))
-    fields.update({"withdrawalDetails": venue.withdrawalDetails})
-    fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
-    if product:
-        fields.pop("extraData", None)
-        fields.pop("description", None)
-        fields.pop("durationMinutes", None)
-
-    offer = models.Offer(
-        **fields,
-        venue=venue,
-        validation=models.OfferValidationStatus.DRAFT,
-        product=product,
-    )
-
-    if body.video_url:
-        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-        db.session.add(offer_metadata)
-    db.session.add(offer)
-    db.session.flush()
-
-    update_external_pro(venue.bookingEmail)
-
-    return offer
-
-
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
@@ -346,10 +289,34 @@ def create_offer(
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
+    product: offers_models.Product | None = None,
     is_from_private_api: bool = False,
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
+    """Main entry point to offer creation
+
+    Note:
+        For some historical reason this function was only used by public
+        API calls and the internal API calls were using another function.
+        Both should use the same entrypoint but this is still a work in
+        progress since some rules are slightly different.
+    """
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+
+    if is_from_private_api:
+        # TODO(jbaudet): should be ok to remove from this if-block since
+        # only internal api calls will pass product as a parameter.
+        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+
+        # TODO(jbaudet): should be ok to remove from this if-block
+        # but let's be sure before doing anything stupid
+        if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            validation.check_accessibility_compliance(
+                audio_disability_compliant=body.audio_disability_compliant,
+                mental_disability_compliant=body.mental_disability_compliant,
+                motor_disability_compliant=body.motor_disability_compliant,
+                visual_disability_compliant=body.visual_disability_compliant,
+            )
 
     validation.check_offer_withdrawal(
         withdrawal_type=body.withdrawal_type,
@@ -369,6 +336,30 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
 
     fields = body.dict(by_alias=True)
+    breakpoint()
+
+    if is_from_private_api:
+        if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+            disability_fields = {
+                "audioDisabilityCompliant",
+                "mentalDisabilityCompliant",
+                "motorDisabilityCompliant",
+                "visualDisabilityCompliant"
+            }
+            if not any(field for field in disability_fields if field in fields):
+                fields.update(_get_accessibility_compliance_fields(venue))
+
+        if not body.withdrawal_details:
+            fields.update({"withdrawalDetails": venue.withdrawalDetails})
+
+        subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+        fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+
+        keys_to_remove = {"venueId", "callId", "videoUrl"}
+        if product:
+            keys_to_remove |= {"extraData", "description", "durationMinutes"}
+
+        fields = {k: v for k, v in fields.items() if k not in keys_to_remove}
 
     offerer_address = offerer_address or venue.offererAddress
 
@@ -384,6 +375,11 @@ def create_offer(
         publicationDatetime=None,
     )
     repository.add_to_session(offer)
+
+    if body.video_url:
+        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
+        db.session.add(offer_metadata)
+
     db.session.flush()
 
     # This log is used for analytics purposes.

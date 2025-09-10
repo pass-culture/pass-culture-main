@@ -242,7 +242,13 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     offers_api.batch_delete_draft_offers(query)
 
 
-@private_api.route("/offers/draft", methods=["POST"])
+def _fill_disability_field(from_body: bool | None, from_venue: bool | None) -> bool | None:
+    if from_body is None:
+        return from_venue
+    return from_body
+
+
+@private_api.route("/v2/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
@@ -250,9 +256,78 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 @atomic()
+def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
+    venue: offerers_models.Venue = first_or_404(
+        db.session.query(offerers_models.Venue)
+        .filter(offerers_models.Venue.id == body.venue_id)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
+        )
+    )
+
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
+    product = (
+        db.session.query(models.Product)
+        .filter(models.Product.ean == ean_code)
+        .filter(models.Product.id == body.product_id)
+        .one_or_none()
+    )
+
+    breakpoint()
+    create_offer_schema = offers_schemas.CreateOffer(
+        name=body.name,
+        subcategoryId=body.subcategory_id,
+        audioDisabilityCompliant=_fill_disability_field(
+            body.audio_disability_compliant, venue.audioDisabilityCompliant
+        ),
+        mentalDisabilityCompliant=_fill_disability_field(
+            body.mental_disability_compliant, venue.mentalDisabilityCompliant
+        ),
+        motorDisabilityCompliant=_fill_disability_field(
+            body.motor_disability_compliant, venue.motorDisabilityCompliant
+        ),
+        visualDisabilityCompliant=_fill_disability_field(
+            body.visual_disability_compliant, venue.visualDisabilityCompliant
+        ),
+        bookingContact=body.booking_contact,
+        bookingEmail=body.booking_email,
+        description=body.description,
+        durationMinutes=body.duration_minutes,
+        externalTicketOfficeUrl=body.external_ticket_office_url,
+        ean=ean_code,
+        extraData=body.extra_data,
+        idAtProvider=None,
+        isDuo=None,
+        url=body.url,
+        withdrawalDelay=body.withdrawal_delay,
+        withdrawalDetails=body.withdrawal_details,
+        withdrawalType=body.withdrawal_type,
+        videoUrl=body.video_url,
+        isNational=body.is_national,
+    )
+
+    offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
+    breakpoint()
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/draft", methods=["POST"])
+@login_required
+@spectree_serialize(
+    deprecated=True,
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
 def post_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel,
+    body: offers_schemas.deprecated.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
+    """
+    [DEPRECATED] Please migrate to new (generic/standard) offer creation route
+    """
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)
@@ -319,7 +394,9 @@ def patch_draft_offer(
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.GetIndividualOfferResponseModel:
+def post_offer(
+    body: offers_serialize.deprecated.PostOfferBodyModel,
+) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
         .filter(offerers_models.Venue.id == body.venue_id)

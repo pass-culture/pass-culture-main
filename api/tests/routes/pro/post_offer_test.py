@@ -1,5 +1,7 @@
+import contextlib
 from decimal import Decimal
 
+import flask
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
@@ -11,7 +13,101 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+DEFAULT_OFFER_NAME = "My offer"
+
+
+@pytest.fixture(name="venue")
+def venue_fixture():
+    return offerers_factories.VenueFactory()
+
+
+@pytest.fixture(name="user")
+def user_fixture(venue):
+    return offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
+
+
+@pytest.fixture(name="auth_client")
+def auth_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+@pytest.fixture(name="subcategory")
+def subcategory_fixture():
+    return subcategories.LIVRE_PAPIER
+
+
+@pytest.fixture(name="minimal_payload")
+def minimal_payload_fixture(venue, subcategory):
+    return {
+        "name": DEFAULT_OFFER_NAME,
+        "subcategoryId": subcategory.id,
+        "venueId": venue.id,
+        # following fields are not mandatory now but they should be
+        # once there is no risk of breaking change
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": True,
+        "visualDisabilityCompliant": True,
+    }
+
+
+@contextlib.contextmanager
+def assert_change_by(model, delta):
+    before = db.session.query(model).count()
+
+    yield
+
+    after = db.session.query(model).count()
+    assert (before + delta) == after
+
+
+class CreateOfferTest:
+    endpoint = "Private API.create_offer"
+
+    def test_create_with_minimal_payload(self, auth_client, minimal_payload, venue, subcategory):
+        with assert_change_by(Offer, 1):
+            response = self.send_create_request(auth_client, minimal_payload)
+            assert response.status_code == 201
+
+        offer = db.session.query(Offer).first()
+
+        assert offer.name == minimal_payload["name"]
+        assert offer.venueId == venue.id
+        assert offer.subcategoryId == subcategory.id
+        assert offer.audioDisabilityCompliant == venue.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
+
+        assert not offer.isEvent
+        assert not offer.isActive
+
+    def test_disability_fields_set_overrides_default_values_from_venue(self, auth_client, minimal_payload, venue):
+        payload = {
+            **minimal_payload,
+            "audioDisabilityCompliant": not venue.audioDisabilityCompliant,
+            "mentalDisabilityCompliant": not venue.mentalDisabilityCompliant,
+            "motorDisabilityCompliant": not venue.motorDisabilityCompliant,
+            "visualDisabilityCompliant": not venue.visualDisabilityCompliant,
+        }
+        response = self.send_create_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).first()
+
+        assert offer.audioDisabilityCompliant != venue.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant != venue.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant != venue.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant != venue.visualDisabilityCompliant
+
+    def send_create_request(self, client, json):
+        url = flask.url_for(self.endpoint)
+        return client.post(url, json=json)
+
+
 class Returns200Test:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
