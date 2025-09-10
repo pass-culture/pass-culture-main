@@ -12,7 +12,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -36,7 +35,6 @@ export const OfferSection = ({
 }: OfferSummaryProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -193,10 +191,7 @@ export const OfferSection = ({
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-          mode:
-            mode === OFFER_WIZARD_MODE.READ_ONLY
-              ? OFFER_WIZARD_MODE.EDITION
-              : mode,
+          mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
         aria-label="Modifier les détails de l’offre"
@@ -225,10 +220,7 @@ export const OfferSection = ({
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-          mode:
-            mode === OFFER_WIZARD_MODE.READ_ONLY
-              ? OFFER_WIZARD_MODE.EDITION
-              : mode,
+          mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
         aria-label="Modifier les informations pratiques de l’offre"

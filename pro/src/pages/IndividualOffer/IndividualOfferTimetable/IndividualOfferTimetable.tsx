@@ -10,13 +10,12 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferTimetableScreen } from './components/IndividualOfferTimetableScreen'
 
 export const IndividualOfferTimetable = (): JSX.Element | null => {
-  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
@@ -65,12 +64,7 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout
-      offer={offer}
-      title={getTitle(mode)}
-      mode={mode}
-      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
-    >
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferTimetableScreen
         offer={offer}
         mode={mode}

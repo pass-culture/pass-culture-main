@@ -32,6 +32,7 @@ const renderPriceCategoriesForm = (
   })
   const context = {
     offer,
+    offerId: offer.id,
     categories: [],
     subCategories: [subcategoryFactory({ id: offer.subcategoryId, canBeDuo })],
     isEvent: null,

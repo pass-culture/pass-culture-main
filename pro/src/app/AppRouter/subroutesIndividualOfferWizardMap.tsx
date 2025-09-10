@@ -178,14 +178,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     path: '/offre/individuelle/:offerId/creation/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
   },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOffer/IndividualOfferConfirmation/IndividualOfferConfirmation'
-      ),
-    path: '/offre/individuelle/:offerId/confirmation',
-    title: 'Confirmation - Offre individuelle publiée',
-  },
   // Summary pages
   {
     lazy: () =>
@@ -194,14 +186,6 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       ),
     path: '/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummary/IndividualOfferSummary'
-      ),
-    path: '/offre/individuelle/:offerId/recapitulatif',
-    title: 'Récapitulatif - Modifier une offre individuelle',
   },
 ]
 

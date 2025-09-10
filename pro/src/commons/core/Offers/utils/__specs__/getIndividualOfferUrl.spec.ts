@@ -98,7 +98,7 @@ describe('getIndividualOfferUrl', () => {
         mode: OFFER_WIZARD_MODE.READ_ONLY,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       },
-      expectedUrl: '/offre/individuelle/42/recapitulatif',
+      expectedUrl: '',
     },
     {
       props: {

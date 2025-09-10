@@ -70,6 +70,7 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     offer,
+    offerId: offer.id,
     ...params.contextValues,
   }
   const options: RenderWithProvidersOptions = {

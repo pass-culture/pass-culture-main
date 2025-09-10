@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { ReactNode } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -6,10 +7,12 @@ import {
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
 import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -27,25 +30,22 @@ import { IndividualOfferNavigation } from './IndividualOfferNavigation/Individua
 import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 import { Status } from './Status/Status'
+import { getTitle } from './utils/getTitle'
 
 export interface IndividualOfferLayoutProps {
-  title: string
   withStepper?: boolean
-  children: JSX.Element | JSX.Element[]
+  children: ReactNode
   offer: GetIndividualOfferWithAddressResponseModel | null
-  mode: OFFER_WIZARD_MODE
-  venueHasPublishedOfferWithSameEan?: boolean
 }
 
-// TODO (igabriele, 2025-08-18): Get `offer` and `venueHasPublishedOfferWithSameEan` directly from context (DRY, complexity).
+// TODO (igabriele, 2025-08-18): Get `offer` directly from context (DRY, complexity).
 export const IndividualOfferLayout = ({
-  title,
   children,
   withStepper = true,
   offer,
-  mode,
-  venueHasPublishedOfferWithSameEan,
 }: IndividualOfferLayoutProps) => {
+  const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const mode = useOfferWizardMode()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
@@ -110,7 +110,7 @@ export const IndividualOfferLayout = ({
       >
         <div className={styles['title-container']}>
           <div className={styles['title-and-back-to-nav-link']}>
-            <h1 className={styles.title}>{title}</h1>
+            <h1 className={styles.title}>{getTitle(mode)}</h1>
             <BackToNavLink className={styles['back-to-nav-link']} />
           </div>
           {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
@@ -160,7 +160,7 @@ export const IndividualOfferLayout = ({
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
 
-      {venueHasPublishedOfferWithSameEan && (
+      {hasPublishedOfferWithSameEan && (
         <Callout
           variant={CalloutVariant.ERROR}
           title="Votre brouillon d’offre est obsolète car vous avez déjà publié une offre avec cet EAN"

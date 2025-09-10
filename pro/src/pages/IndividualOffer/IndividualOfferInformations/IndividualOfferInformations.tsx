@@ -4,9 +4,7 @@ import { api } from '@/apiClient/api'
 import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferLocation } from '../IndividualOfferLocation/IndividualOfferLocation'
@@ -14,8 +12,7 @@ import { IndividualOfferInformationsScreen } from './components/IndividualOfferI
 
 // TODO (igabriele, 2025-08-14): Replace this page with `<IndividualOfferLocation />` once `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF is enabled in production.
 const IndividualOfferInformations = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
-  const { offer, hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const { offer } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -40,12 +37,7 @@ const IndividualOfferInformations = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout
-      offer={offer}
-      title={getTitle(mode)}
-      mode={mode}
-      venueHasPublishedOfferWithSameEan={hasPublishedOfferWithSameEan}
-    >
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferInformationsScreen
         offer={offer}
         selectedVenue={selectedVenue}

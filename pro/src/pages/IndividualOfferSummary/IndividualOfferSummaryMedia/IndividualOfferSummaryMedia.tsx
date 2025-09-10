@@ -1,6 +1,5 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
@@ -9,7 +8,6 @@ import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSec
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 const IndividualOfferSummaryMedia = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
 
   if (offer === null) {
@@ -17,7 +15,7 @@ const IndividualOfferSummaryMedia = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout offer={offer}>
       <SummaryLayout>
         <SummaryContent>
           <MediaSection

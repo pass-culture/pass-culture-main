@@ -1,15 +1,12 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 import { IndividualOfferPriceTable } from '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferPriceCategoriesScreen } from './components/IndividualOfferPriceCategoriesScreen'
 
 export const IndividualOfferPriceCategories = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -28,7 +25,7 @@ export const IndividualOfferPriceCategories = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferPriceCategoriesScreen offer={offer} />
     </IndividualOfferLayout>
   )

@@ -7,7 +7,6 @@ import { GET_OFFER_OPENING_HOURS_QUERY_KEY } from '@/commons/config/swrQueryKeys
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { areOpeningHoursEmpty } from '@/pages/IndividualOffer/IndividualOfferTimetable/commons/areOpeningHoursEmpty'
@@ -18,7 +17,6 @@ import { IndividualOfferSummaryStocksScreen } from './components/IndividualOffer
 import { IndividualOfferSummaryStocksTimetableScreen } from './components/IndividualOfferSummaryStocksTimetableScreen/IndividualOfferSummaryStocksTimetableScreen'
 
 const IndividualOfferSummaryStocks = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -39,7 +37,7 @@ const IndividualOfferSummaryStocks = (): JSX.Element | null => {
 
   if (isNewOfferCreationFlowFeatureActive) {
     return (
-      <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+      <IndividualOfferLayout offer={offer}>
         {!offerOpeningHoursQuery.data || openingHoursEmpty ? (
           <IndividualOfferSummaryStocksCalendarScreen offer={offer} />
         ) : (
@@ -57,7 +55,7 @@ const IndividualOfferSummaryStocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout offer={offer}>
       {offer.isEvent ? (
         <IndividualOfferSummaryStocksCalendarScreen offer={offer} />
       ) : (

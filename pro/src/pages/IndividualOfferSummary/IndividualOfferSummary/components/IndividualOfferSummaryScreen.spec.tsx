@@ -74,37 +74,41 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
   void,
   IndividualOfferContextValues
 > = (params) => {
-  const offer = getIndividualOfferFactory({
-    audioDisabilityCompliant: false,
-    bookingEmail: 'booking@example.com',
-    description: 'ma description',
-    isDigital: true,
-    isEvent: true,
-    lastProvider: {
-      name: 'Ciné Office',
-    },
-    mentalDisabilityCompliant: false,
-    motorDisabilityCompliant: false,
-    name: 'mon offre',
-    subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
-    status: OfferStatus.PUBLISHED,
-    url: 'https://offer-url.example.com',
-    venue: getOfferVenueFactory({
-      name: 'ma venue',
-      publicName: 'ma venue (nom public)',
-      isVirtual: true,
-      managingOfferer: getOfferManagingOffererFactory({
-        name: 'mon offerer',
+  const offer =
+    params.contextValues?.offer ??
+    getIndividualOfferFactory({
+      id: 1,
+      audioDisabilityCompliant: false,
+      bookingEmail: 'booking@example.com',
+      description: 'ma description',
+      isDigital: true,
+      isEvent: true,
+      lastProvider: {
+        name: 'Ciné Office',
+      },
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      name: 'mon offre',
+      subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
+      status: OfferStatus.PUBLISHED,
+      url: 'https://offer-url.example.com',
+      venue: getOfferVenueFactory({
+        name: 'ma venue',
+        publicName: 'ma venue (nom public)',
+        isVirtual: true,
+        managingOfferer: getOfferManagingOffererFactory({
+          name: 'mon offerer',
+        }),
       }),
-    }),
-    visualDisabilityCompliant: false,
-    withdrawalDetails: 'détails de retrait',
-  })
+      visualDisabilityCompliant: false,
+      withdrawalDetails: 'détails de retrait',
+    })
   const contextValues: IndividualOfferContextValues = {
     categories: MOCKED_CATEGORIES,
     hasPublishedOfferWithSameEan: false,
     isEvent: false,
     offer,
+    offerId: offer.id,
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
     ...params.contextValues,
@@ -135,14 +139,14 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
-            element={<IndividualOfferSummaryScreen />}
+            element={<IndividualOfferSummaryScreen offer={offer} />}
           />
           <Route
             path={getIndividualOfferPath({
               step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
-            element={<IndividualOfferSummaryScreen />}
+            element={<IndividualOfferSummaryScreen offer={offer} />}
           />
           <Route
             path={getIndividualOfferPath({
@@ -191,6 +195,7 @@ describe('IndividualOfferSummaryScreen', () => {
     hasPublishedOfferWithSameEan: false,
     isEvent: false,
     offer: offerBase,
+    offerId: offerBase.id,
     setIsEvent: vi.fn(),
     subCategories: MOCKED_SUBCATEGORIES,
   }
@@ -249,50 +254,6 @@ describe('IndividualOfferSummaryScreen', () => {
     expect(screen.getAllByText('ma description')).toHaveLength(2)
   }
 
-  describe('when mode = "READONLY"', () => {
-    const path = generatePath(
-      getIndividualOfferPath({
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
-      }),
-      { offerId: 1 }
-    )
-
-    it('should render component with informations on edition', async () => {
-      renderIndividualOfferSummaryScreen({ path })
-
-      await expectOfferFields()
-      expect(
-        screen.getByText('Retour à la liste des offres')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
-    })
-
-    it('should render public name if available', async () => {
-      renderIndividualOfferSummaryScreen({ path })
-
-      await expectOfferFields()
-      expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
-    })
-
-    it('should render name if no public name available', async () => {
-      const contextValues = {
-        offer: {
-          ...offerBase,
-          venue: getOfferVenueFactory({
-            name: 'ma venue (name)',
-            publicName: null,
-          }),
-        },
-      }
-
-      renderIndividualOfferSummaryScreen({ contextValues, path })
-
-      await expectOfferFields()
-      expect(screen.getByText('ma venue (name)')).toBeInTheDocument()
-    })
-  })
-
   describe('when mode = "CREATION"', () => {
     const path = generatePath(
       getIndividualOfferPath({
@@ -318,9 +279,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await expectOfferFields()
-      expect(
-        screen.queryByText('Visualiser dans l’app')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Visualiser dans l’app')).toBeInTheDocument()
     })
 
     it('should render a media section when media page is enabled (WIP_ADD_VIDEO)', () => {

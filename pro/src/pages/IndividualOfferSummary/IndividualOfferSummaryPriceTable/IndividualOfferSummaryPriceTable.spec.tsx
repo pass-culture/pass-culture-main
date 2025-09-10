@@ -4,7 +4,6 @@ import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -32,7 +31,6 @@ import {
 
 const LABELS = {
   headings: {
-    summary: 'Récapitulatif',
     priceTable: 'Tarifs',
   },
   texts: {
@@ -99,37 +97,9 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('heading', { name: LABELS.headings.summary })
+        screen.getByRole('heading', { name: LABELS.headings.priceTable })
       ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { name: LABELS.headings.priceTable })
-    ).toBeInTheDocument()
     expect(api.getStocks).toHaveBeenCalledWith(offer.id)
-  })
-
-  it('should use correct title according to mode (EDITION)', async () => {
-    vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
-      useOfferWizardMode: () => OFFER_WIZARD_MODE.EDITION,
-    }))
-    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-      hasStocks: true,
-      stockCount: 1,
-      stocks: [getOfferStockFactory()],
-    })
-
-    const offer = getIndividualOfferFactory({
-      id: 1,
-      hasStocks: true,
-      subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
-    })
-
-    renderIndividualOfferSummaryPriceTable({ offer })
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('heading', { name: LABELS.headings.summary })
-      ).toBeInTheDocument()
-    )
   })
 })

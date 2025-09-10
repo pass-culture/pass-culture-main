@@ -1,7 +1,6 @@
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -10,7 +9,6 @@ import { IndividualOfferSummaryLocation } from '../IndividualOfferSummaryLocatio
 import { IndividualOfferSummaryInformationsScreen } from './components/IndividualOfferSummaryInformationsScreen'
 
 const IndividualOfferSummaryInformations = (): JSX.Element | null => {
-  const mode = useOfferWizardMode()
   const { offer } = useIndividualOfferContext()
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -25,7 +23,7 @@ const IndividualOfferSummaryInformations = (): JSX.Element | null => {
   }
 
   return (
-    <IndividualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
+    <IndividualOfferLayout offer={offer}>
       <IndividualOfferSummaryInformationsScreen offer={offer} />
       <ActionBar
         step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY}
