@@ -401,7 +401,13 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
     product = db.session.query(offers_models.Product).get(product_id)
     db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(form.object_ids_list)).update(
-        {"productId": product.id, "name": product.name}
+        {
+            "productId": product.id,
+            "name": product.name,
+            "_description": None,
+            "_durationMinutes": None,
+            "_extraData": {},
+        },
     )
     flash(
         Markup("{pluralize} au produit avec succès").format(

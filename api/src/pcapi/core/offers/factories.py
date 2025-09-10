@@ -230,7 +230,7 @@ class OfferFactory(BaseFactory):
             kwargs["subcategoryId"] = product.subcategoryId
             kwargs["description"] = None
             kwargs["ean"] = product.ean
-            kwargs["extraData"] = None
+            kwargs["extraData"] = {}
             kwargs["durationMinutes"] = None
         else:
             if "extraData" not in kwargs:
