@@ -9,9 +9,6 @@ title: Pass Culture API change logs
 
 The following changes will be applied during **early september 2025**.
 
-- Offers location
-  - The field `offerVenue` must not be used anymore. In order to locate a collective offer, you must now use the `location` attribute in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic).
-  - **You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#-offers-location).**
 - Offers status
   - Collective offers that are currently `isActive = false` and do not have a related booking will be archived. This does not apply to offers that are under review or rejected by the validation process.
   - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
@@ -30,13 +27,12 @@ You will have two dates at your disposal :
 
 - The new collective offer status `offerStatus` now determines which actions are allowed on the offer. You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).
 - Both `isActive` and `isSoldOut` fields have been removed from all collective endpoints.
-- The `status` field has been removed from the following collective endpoints:
+- The `status` field has been removed from the following collective endpoints, the `offerStatus` field should be used instead:
   - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
   - [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic) (both in the query parameters and the response body)
   - [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
   - [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
-  
-  The `offerStatus` field should be used instead.
+- The `offerVenue` field has been removed from all collective endpoints. The `location` field must be used instead, and is now required in the request body of the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#offers-location).
 
 
 ## July 2025

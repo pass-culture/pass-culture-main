@@ -837,7 +837,6 @@ class CheckAllowedActionTest:
             "contactPhone",
             "domains",
             "students",
-            "offerVenue",
             "location",
             "interventionArea",
             "durationMinutes",

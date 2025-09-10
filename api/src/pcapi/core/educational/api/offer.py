@@ -140,56 +140,6 @@ class CollectiveOfferLocation:
     offerer_address: offerers_models.OffererAddress | None
 
 
-def get_location_from_offer_venue(
-    offer_venue: models.OfferVenueDict,
-    location_venue: offerers_models.Venue | None,
-    is_offer_located_at_venue: bool,
-) -> CollectiveOfferLocation:
-    """
-    location_venue corresponds to offer_venue["venueId"]
-    is_offer_located_at_venue is True if it is the same venue as offer.venue
-
-    When is_offer_located_at_venue is False (offer located at a different venue), we get or create a dedicated OA
-    """
-    match offer_venue["addressType"]:
-        case models.OfferAddressType.OFFERER_VENUE:
-            assert location_venue is not None
-            assert location_venue.offererAddress is not None
-
-            if is_offer_located_at_venue:
-                offerer_address = location_venue.offererAddress
-            else:
-                # offer is located at a different venue -> get or create a specific OA with same address and offerer as this venue
-                offerer_address = offerers_api.get_or_create_offerer_address(
-                    offerer_id=location_venue.managingOffererId,
-                    address_id=location_venue.offererAddress.addressId,
-                    label=location_venue.common_name,
-                )
-
-            return CollectiveOfferLocation(
-                location_type=models.CollectiveLocationType.ADDRESS,
-                location_comment=None,
-                offerer_address=offerer_address,
-            )
-
-        case models.OfferAddressType.SCHOOL:
-            return CollectiveOfferLocation(
-                location_type=models.CollectiveLocationType.SCHOOL,
-                location_comment=None,
-                offerer_address=None,
-            )
-
-        case models.OfferAddressType.OTHER:
-            return CollectiveOfferLocation(
-                location_type=models.CollectiveLocationType.TO_BE_DEFINED,
-                location_comment=offer_venue["otherAddress"],
-                offerer_address=None,
-            )
-
-        case _:
-            raise ValueError(f"Unexpected addressType received: {offer_venue['addressType']}")
-
-
 def check_venue_user_access(venue_id: int, user: User) -> None:
     location_venue = offerers_repository.get_venue_by_id(venue_id)
     if not location_venue:
@@ -536,8 +486,6 @@ def create_collective_offer_public(
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
         raise exceptions.CulturalPartnerNotFoundException("No venue has been found for the selected siren")
 
-    validation.validate_offer_venue(body.offer_venue)
-
     # check domains and national program
     educational_domains = get_educational_domains_from_ids(body.domains)
     validation.validate_national_program(body.national_program_id, educational_domains)
@@ -554,37 +502,7 @@ def create_collective_offer_public(
     end_datetime = body.end_datetime or body.start_datetime
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
-    location: CollectiveOfferLocation
-    offer_venue: models.OfferVenueDict
-
-    # when we receive offerVenue, we also write to OA fields
-    if body.offer_venue is not None:
-        offer_venue = {
-            "venueId": body.offer_venue.venueId,
-            "addressType": body.offer_venue.addressType,
-            "otherAddress": body.offer_venue.otherAddress or "",
-        }
-
-        location_venue = None
-        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
-            venue_id = offer_venue["venueId"]
-            if venue_id is None:
-                raise exceptions.VenueIdDontExist()
-
-            location_venue = repository.fetch_venue_for_new_offer(venue_id, requested_id)
-
-        location = get_location_from_offer_venue(
-            offer_venue=offer_venue,
-            location_venue=location_venue,
-            is_offer_located_at_venue=offer_venue["venueId"] == venue.id,
-        )
-    # when we receive OA fields, we also write to offerVenue
-    elif body.location is not None:
-        location, offer_venue = _get_location_and_offer_venue_from_public_model(
-            location_body=body.location, venue=venue
-        )
-    else:
-        raise ValueError("Location is required")
+    location, offer_venue = _get_location_and_offer_venue_from_public_model(location_body=body.location, venue=venue)
 
     collective_offer = models.CollectiveOffer(
         venue=venue,
@@ -699,39 +617,9 @@ def edit_collective_offer_public(
             booking_limit_datetime=after_update_booking_limit_datetime,
         )
 
-    if "offerVenue" in new_values and "location" in new_values:
-        raise ValueError("Cannot receive offerVenue and location at the same time")
-
-    # when we receive offerVenue, we also write to OA fields
-    offer_venue = new_values.get("offerVenue")
-
-    if offer_venue is not None:
-        location_venue = None
-        if offer_venue["addressType"] == models.OfferAddressType.OFFERER_VENUE:
-            venue_id = offer_venue["venueId"]
-            if venue_id is None:
-                raise exceptions.VenueIdDontExist()
-
-            location_venue = repository.fetch_venue_for_new_offer(venue_id, provider_id)
-            new_values["interventionArea"] = []
-
-        # we might receive None for otherAddress but we store str
-        if "otherAddress" in offer_venue:
-            offer_venue["otherAddress"] = offer_venue["otherAddress"] or ""
-
-        location = get_location_from_offer_venue(
-            offer_venue=offer_venue,
-            location_venue=location_venue,
-            is_offer_located_at_venue=offer_venue["venueId"] == offer.venue.id,
-        )
-
-        new_values["locationType"] = location.location_type
-        new_values["locationComment"] = location.location_comment
-        new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
-
-    # when we receive location, we also write to offerVenue
-    elif location_body is not None:
-        location, offer_venue_dict = _get_location_and_offer_venue_from_public_model(
+    # when we receive location, we also write to offerVenue for now
+    if location_body is not None:
+        location, offer_venue = _get_location_and_offer_venue_from_public_model(
             location_body=location_body, venue=offer.venue
         )
 
@@ -739,9 +627,7 @@ def edit_collective_offer_public(
         new_values["locationComment"] = location.location_comment
         new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
         new_values.pop("location", None)
-
-        # Also update offerVenue to keep backward compatibility
-        new_values["offerVenue"] = offer_venue_dict
+        new_values["offerVenue"] = offer_venue
 
     # check domains and national program
     domains_to_check = offer.domains
@@ -779,10 +665,6 @@ def edit_collective_offer_public(
                 raise exceptions.EducationalInstitutionIsNotActive()
 
             offer.institution = institution
-        elif key == "offerVenue":
-            offer.offerVenue["venueId"] = value.get("venueId")
-            offer.offerVenue["addressType"] = value.get("addressType")
-            offer.offerVenue["otherAddress"] = value.get("otherAddress") or ""
         elif key == "bookingLimitDatetime" and value is None:
             offer.collectiveStock.bookingLimitDatetime = new_values.get(
                 "startDatetime", offer.collectiveStock.startDatetime

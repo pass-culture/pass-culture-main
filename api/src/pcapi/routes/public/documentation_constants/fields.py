@@ -406,17 +406,15 @@ class _FIELDS:
         description="Can the offerer create collective offers?",
         example=True,
     )
-    COLLECTIVE_OFFER_VENUE = Field(description="[⚠️ DEPRECATED] Use the `location` attribute instead of `offerVenue`.")
-    OFFER_VENUE_ADDRESS_TYPE = Field(
-        description=descriptions.OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION,
-        example="offererVenue",
-    )
-    OFFER_VENUE_OTHER_ADDRESS = Field(description="Address that will be shared to the users", example=None)
     COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", example="75")
 
     COLLECTIVE_OFFER_LOCATION = Field(description=descriptions.COLLECTIVE_OFFER_LOCATION_DESCRIPTION, title="ADDRESS")
+    COLLECTIVE_OFFER_LOCATION_TYPE = Field(
+        description="Location type",
+        example="SCHOOL",
+    )
     COLLECTIVE_OFFER_LOCATION_ADDRESS_LABEL = Field(
-        description="Adresse label",
+        description="Address label",
         example="Zénith Paris",
     )
     COLLECTIVE_OFFER_LOCATION_ADDRESS_ID = Field(
@@ -424,7 +422,7 @@ class _FIELDS:
         example=1,
     )
     COLLECTIVE_OFFER_LOCATION_COMMENT = Field(
-        description="Comment",
+        description="Comment on the location",
         example="Lieu à définir avec l'organisateur",
     )
     COLLECTIVE_OFFER_LOCATION_IS_VENUE_ADDRESS = Field(

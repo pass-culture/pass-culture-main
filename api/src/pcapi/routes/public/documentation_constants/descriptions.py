@@ -1,3 +1,5 @@
+COLLECTIVE_LOCATION_PAGE = "/docs/understanding-our-api/resources/collective-offers#offers-location"
+
 # HIGH LEVEL INFORMATION
 PUBLIC_API_DESCRIPTION = """
 This the documentation of the Pass Culture public REST API.
@@ -41,14 +43,9 @@ You have **three options** for the location:
 - `"address"`: Use this if the offer takes place at a different location from your venue
 """
 
-OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION = """
-- `offererVenue` means a db-known venue (`venueId` field is then mandatory).
-- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).
-- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).
-"""
 
-COLLECTIVE_OFFER_LOCATION_DESCRIPTION = """
-Indicates where the collective offer will take place.
+COLLECTIVE_OFFER_LOCATION_DESCRIPTION = f"""
+Indicates where the collective offer will take place - [see this page]({COLLECTIVE_LOCATION_PAGE}).
 
 You have **three options** for the location:
 

@@ -233,11 +233,6 @@ def expected_serialized_offer(offer):
         "mentalDisabilityCompliant": offer.mentalDisabilityCompliant,
         "motorDisabilityCompliant": offer.motorDisabilityCompliant,
         "visualDisabilityCompliant": offer.visualDisabilityCompliant,
-        "offerVenue": {
-            "addressType": offer.offerVenue["addressType"],
-            "otherAddress": offer.offerVenue["otherAddress"],
-            "venueId": offer.offerVenue["venueId"],
-        },
         "imageCredit": offer.imageCredit,
         "imageUrl": offer.imageUrl,
         "nationalProgram": {"id": offer.nationalProgram.id, "name": offer.nationalProgram.name},
