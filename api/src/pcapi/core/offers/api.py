@@ -102,6 +102,9 @@ OFFER_LIKE_MODELS = {
     "CollectiveOfferTemplate",
 }
 
+VIDEO_URL_CACHE_TTL = 24 * 60 * 60  # 24 hours
+YOUTUBE_INFO_CACHE_PREFIX = "youtube_video_"
+
 
 class T_UNCHANGED(enum.Enum):
     TOKEN = 0
@@ -266,7 +269,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     video_id = extract_youtube_video_id(video_url)
     if video_id is None:
         return None
-    cached_video_metadata = current_app.redis_client.get(f"youtube_video_{video_id}")
+    cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
     if cached_video_metadata is None:
         video_metadata = youtube.get_video_metadata(video_id=video_id)
         if video_metadata is not None:
@@ -277,8 +280,9 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
                     "duration": video_metadata.duration,
                 }
             )
-            current_app.redis_client.set(f"youtube_video_{video_metadata.id}", json_video_metadata)
-            current_app.redis_client.expire(f"youtube_video_{video_metadata.id}", 24 * 60 * 60)  # 24 hours
+            current_app.redis_client.set(
+                f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
+            )  # 24 hours
     else:
         video_metadata_dict = json.loads(cached_video_metadata)
         video_metadata = youtube.YoutubeVideoMetadata(

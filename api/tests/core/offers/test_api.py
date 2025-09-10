@@ -15,6 +15,7 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 from factory.faker import faker
+from pydantic.v1 import ValidationError
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -36,7 +37,9 @@ import pcapi.core.reactions.models as reactions_models
 import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.connectors import youtube
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.connectors.serialization.youtube_serializers import YoutubeApiResponse
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
@@ -59,6 +62,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
 
 import tests
@@ -1284,28 +1288,20 @@ class CreateDraftOfferTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UpdateDraftOfferTest:
-    def test_basics(self):
-        offer = factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.ESCAPE_GAME.id,
-            description="description",
-        )
-        body = offers_schemas.PatchDraftOfferBodyModel(
-            name="New name",
-            description="New description",
-        )
-        offer = api.update_draft_offer(offer, body)
-        db.session.flush()
+class GetVideoMetadataFromCacheTest:
+    def test_get_video_metadata_from_cache_no_video_id(self):
+        video_metadata = api.get_video_metadata_from_cache(None)
+        assert video_metadata is None
 
-        assert offer.name == "New name"
-        assert offer.description == "New description"
-
-    def test_new_video_url(self, app):
+    @mock.patch("pcapi.connectors.youtube.requests.get")
+    def test_get_video_metadata_from_cache_with_data_in_cache(self, mock_requests_get, app):
+        mock_requests_get.raiseError.side_effect = AssertionError(
+            "Call to external service should not have been performed"
+        )
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
         video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
-            f"youtube_video_{video_id}",
+            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -1314,23 +1310,14 @@ class UpdateDraftOfferTest:
                 }
             ),
         )
-        offer = factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.ESCAPE_GAME.id,
-            description="description",
-        )
-        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl=video_url)
-        offer = api.update_draft_offer(offer, body)
-        db.session.flush()
-
-        assert offer.metaData.videoExternalId == "WtM4OW2qVjY"
-        assert offer.metaData.videoTitle == "Title"
-        assert offer.metaData.videoThumbnailUrl == "thumbnail url"
-        assert offer.metaData.videoDuration == 100
-        assert offer.metaData.videoUrl == video_url
+        video_metadata = api.get_video_metadata_from_cache(video_url)
+        assert video_metadata.id == video_id
+        assert video_metadata.title == "Title"
+        assert video_metadata.thumbnail_url == "thumbnail url"
+        assert video_metadata.duration == 100
 
     @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_new_video_url_without_metadata_in_redis_cache(self, mock_requests_get):
+    def test_get_video_metadata_from_cache_without_data_in_cache(self, mock_requests_get):
         mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
@@ -1349,6 +1336,50 @@ class UpdateDraftOfferTest:
         }
         mock_requests_get.return_value = mock_response
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+
+        video_metadata = api.get_video_metadata_from_cache(video_url)
+        assert video_metadata.id == "test_video_id"
+        assert video_metadata.title == "Test Video"
+        assert video_metadata.thumbnail_url == "https://example.com/high.jpg"
+        assert video_metadata.duration == 100
+
+    @mock.patch("pcapi.connectors.youtube.requests.get")
+    def test_get_video_metadata_from_cache_without_data_in_cache_connector_raise_error(self, mock_requests_get):
+        mock_requests_get.raiseError.side_effect = ValidationError("bad data", YoutubeApiResponse)
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+
+        with pytest.raises(ExternalAPIException):
+            api.get_video_metadata_from_cache(video_url)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateDraftOfferTest:
+    def test_basics(self):
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = offers_schemas.PatchDraftOfferBodyModel(
+            name="New name",
+            description="New description",
+        )
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.name == "New name"
+        assert offer.description == "New description"
+
+    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    def test_new_video_url(self, get_video_metadata_from_cache_mock):
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        video_id = api.extract_youtube_video_id(video_url)
+        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
+            id=video_id,
+            title="Title",
+            thumbnail_url="thumbnail url",
+            duration=100,
+        )
         offer = factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.ESCAPE_GAME.id,
@@ -1358,7 +1389,11 @@ class UpdateDraftOfferTest:
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
 
-        assert offer.metaData.videoUrl == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        assert offer.metaData.videoExternalId == video_id
+        assert offer.metaData.videoTitle == "Title"
+        assert offer.metaData.videoThumbnailUrl == "thumbnail url"
+        assert offer.metaData.videoDuration == 100
+        assert offer.metaData.videoUrl == video_url
 
     def test_can_delete_video_url(self):
         meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
