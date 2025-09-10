@@ -387,6 +387,35 @@ def _get_offers_by_ids(
             .scalar_subquery()
         )
 
+        # build an object which can be read by jinja macro as if it was the Offerer
+        aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
+        offerer_badges_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
+            sa.select(
+                sa.func.jsonb_build_object(
+                    "confidenceLevel",
+                    offerers_models.OffererConfidenceRule.confidenceLevel,
+                    "isTopActeur",
+                    aliased_offerer.is_top_acteur,
+                )
+            )
+            .select_from(aliased_offerer)
+            .outerjoin(offerers_models.OffererConfidenceRule)
+            .filter(aliased_offerer.id == offerers_models.Offerer.id)
+            .correlate(offerers_models.Offerer)
+            .scalar_subquery()
+        )
+
+        # build an object which can be read by jinja macro as if it was the Venue
+        venue_badges_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
+            sa.select(
+                sa.func.jsonb_build_object("confidenceLevel", offerers_models.OffererConfidenceRule.confidenceLevel)
+            )
+            .select_from(offerers_models.OffererConfidenceRule)
+            .filter(offerers_models.OffererConfidenceRule.venueId == offerers_models.Venue.id)
+            .correlate(offerers_models.Venue)
+            .scalar_subquery()
+        )
+
     else:
         # Compute displayed information in remaining stock column directly, don't joinedload/fetch huge stock data
         booked_quantity_subquery = (
@@ -430,6 +459,8 @@ def _get_offers_by_ids(
 
         # Those columns are not shown to non fraud pro users
         rules_subquery = sa.null()
+        offerer_badges_subquery = sa.null()
+        venue_badges_subquery = sa.null()
 
     # Aggregate min and max prices as dict returned in a single row
     min_max_prices_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = (
@@ -563,6 +594,8 @@ def _get_offers_by_ids(
             offer_booking_limit_datetimes.label("offer_booking_limit_datetimes"),
             tags_subquery.label("tags"),
             rules_subquery.label("rules"),
+            offerer_badges_subquery.label("offerer_badges"),
+            venue_badges_subquery.label("venue_badges"),
             min_max_prices_subquery.label("prices"),
             offer_mediation_subquery.label("offer_mediation"),
             product_mediation_uuid_subquery.label("product_mediation"),
@@ -599,16 +632,6 @@ def _get_offers_by_ids(
                         offerers_models.Offerer.siren,
                         offerers_models.Offerer.postalCode,
                     ),
-                    sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
-                        offerers_models.OffererConfidenceRule.confidenceLevel
-                    ),
-                    sa_orm.with_expression(
-                        offerers_models.Offerer.isTopActeur,
-                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
-                    ),
-                ),
-                sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
-                    offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
             ),
             sa_orm.joinedload(offers_models.Offer.author).load_only(
