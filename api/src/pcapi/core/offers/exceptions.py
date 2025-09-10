@@ -260,3 +260,14 @@ class HighlightNotFoundException(HighlightException):
 class UnavailableHighlightException(HighlightException):
     def __init__(self) -> None:
         super().__init__("highlight", "Highlight is unavailable")
+
+
+class UnallowedUpdate(OfferException):
+    def __init__(self, field: str | None = None, *args: typing.Any, **kwargs: typing.Any):
+        self.field = field
+        super().__init__(*args, **kwargs)
+
+    def __str__(self) -> str:
+        if self.field:
+            return f"unallowed update: {self.field}"
+        return "unallowed update"

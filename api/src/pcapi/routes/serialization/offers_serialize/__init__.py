@@ -33,6 +33,7 @@ from pcapi.serialization.utils import validate_datetime
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_video_url
 
 from . import deprecated  # noqa: F401
 
@@ -97,6 +98,12 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     shouldSendMail: bool | None
     publicationDatetime: datetime.datetime | NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
+    subcategory_id: str | None
+    video_url: HttpUrl | None
+    audio_disability_compliant: bool | None
+    mental_disability_compliant: bool | None
+    motor_disability_compliant: bool | None
+    visual_disability_compliant: bool | None
 
     _validation_publication_datetime = validate_datetime("publicationDatetime")
     _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
@@ -106,6 +113,24 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         if name:
             check_offer_name_length_is_valid(name)
         return name
+
+    @validator("video_url", pre=True)
+    def clean_video_url(cls, v: str) -> str | None:
+        if v == "":
+            return None
+        return v
+
+    @validator("video_url")
+    def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
+        check_video_url(video_url)
+        return video_url
+
+    @validator("subcategory_id", pre=True)
+    def validate_subcategory_id(cls, subcategory_id: str, values: dict) -> str:
+        from pcapi.core.offers.validation import check_offer_subcategory_is_valid
+
+        check_offer_subcategory_is_valid(subcategory_id)
+        return subcategory_id
 
     class Config:
         alias_generator = to_camel
