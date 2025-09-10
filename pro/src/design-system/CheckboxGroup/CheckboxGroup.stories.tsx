@@ -97,7 +97,7 @@ export const DefaultWithDefaultValue: Story = {
     options: defaultOptions,
     variant: 'default',
     display: 'vertical',
-    defaultValue: ['2'],
+    value: ['2'],
   },
 }
 
@@ -175,6 +175,6 @@ export const DetailedWithDefaultValue: Story = {
     options: detailedOptions,
     variant: 'detailed',
     display: 'vertical',
-    defaultValue: ['b'],
+    value: ['b'],
   },
 }
