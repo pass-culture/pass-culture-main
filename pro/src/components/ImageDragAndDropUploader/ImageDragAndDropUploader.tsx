@@ -175,8 +175,8 @@ export const ImageDragAndDropUploader = ({
           {...(mode === UploaderModeEnum.OFFER_COLLECTIVE
             ? {
                 minSizes: {
-                  width: 600,
-                  height: 400,
+                  width: 400,
+                  height: 600,
                 },
               }
             : {})}
