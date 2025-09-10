@@ -1478,7 +1478,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(
             name="New name",
             description="New description",
         )
@@ -1503,7 +1503,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl=video_url)
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(videoUrl=video_url)
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
 
@@ -1517,7 +1517,7 @@ class UpdateDraftOfferTest:
         meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
 
         offer = factories.OfferFactory(metaData=meta_data)
-        body = offers_schemas.PatchDraftOfferBodyModel(videoUrl="")
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(videoUrl="")
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
         db.session.refresh(offer)
@@ -1530,7 +1530,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = offers_schemas.PatchDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(
             name="New name 4759217254634",
             description="New description",
         )
@@ -1550,7 +1550,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
         )
 
-        body = offers_schemas.PatchDraftOfferBodyModel(url=None)
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(url=None)
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer(offer, body)
@@ -1567,7 +1567,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
         )
 
-        body = offers_schemas.PatchDraftOfferBodyModel(name="New Name", url=None)
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(name="New Name", url=None)
 
         api.update_draft_offer(offer, body)
         db.session.flush()
@@ -1583,7 +1583,7 @@ class UpdateDraftOfferTest:
             url="https://example.com",
         )
 
-        body = offers_schemas.PatchDraftOfferBodyModel(url=None)
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(url=None)
 
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer(offer, body)
