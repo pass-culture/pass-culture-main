@@ -173,7 +173,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -194,7 +194,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -242,7 +242,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -266,7 +266,7 @@ export class DefaultService {
         403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
         404: `La contremarque n'existe pas`,
         410: `La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -295,7 +295,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -324,7 +324,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -372,7 +372,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -387,7 +387,7 @@ export class DefaultService {
       url: '/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -412,7 +412,7 @@ export class DefaultService {
         404: `La contremarque n'existe pas`,
         410: `Cette contremarque a été validée.
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -437,7 +437,7 @@ export class DefaultService {
         404: `La contremarque n'existe pas`,
         410: `Cette contremarque a été validée.
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -473,7 +473,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -509,7 +509,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -545,7 +545,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -560,7 +560,7 @@ export class DefaultService {
       url: '/collective/bookings/pro/userHasBookings',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -581,7 +581,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -596,7 +596,7 @@ export class DefaultService {
       url: '/collective/educational-domains',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -647,7 +647,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -658,7 +658,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOffer(
-    requestBody: PostCollectiveOfferBodyModel,
+    requestBody?: PostCollectiveOfferBodyModel,
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -667,7 +667,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -678,7 +678,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveOfferTemplate(
-    requestBody: PostCollectiveOfferTemplateBodyModel,
+    requestBody?: PostCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<CollectiveOfferResponseIdModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -687,7 +687,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -698,7 +698,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersTemplateActiveStatus(
-    requestBody: PatchCollectiveOfferActiveStatusBodyModel,
+    requestBody?: PatchCollectiveOfferActiveStatusBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -707,7 +707,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -718,7 +718,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersTemplateArchive(
-    requestBody: PatchCollectiveOfferArchiveBodyModel,
+    requestBody?: PatchCollectiveOfferArchiveBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -727,7 +727,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -748,7 +748,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -769,7 +769,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -782,7 +782,7 @@ export class DefaultService {
    */
   public editCollectiveOfferTemplate(
     offerId: number,
-    requestBody: PatchCollectiveOfferTemplateBodyModel,
+    requestBody?: PatchCollectiveOfferTemplateBodyModel,
   ): CancelablePromise<GetCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -794,7 +794,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -815,7 +815,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -828,7 +828,7 @@ export class DefaultService {
    */
   public attachOfferTemplateImage(
     offerId: number,
-    formData: AttachImageFormModel,
+    formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -840,7 +840,7 @@ export class DefaultService {
       mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -862,7 +862,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -873,7 +873,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchCollectiveOffersArchive(
-    requestBody: PatchCollectiveOfferArchiveBodyModel,
+    requestBody?: PatchCollectiveOfferArchiveBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -882,7 +882,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -933,7 +933,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -984,7 +984,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1008,7 +1008,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1029,7 +1029,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1042,7 +1042,7 @@ export class DefaultService {
    */
   public editCollectiveOffer(
     offerId: number,
-    requestBody: PatchCollectiveOfferBodyModel,
+    requestBody?: PatchCollectiveOfferBodyModel,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1054,7 +1054,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1077,7 +1077,7 @@ export class DefaultService {
         400: `Bad Request`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1098,7 +1098,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1111,7 +1111,7 @@ export class DefaultService {
    */
   public patchCollectiveOffersEducationalInstitution(
     offerId: number,
-    requestBody: PatchCollectiveOfferEducationalInstitution,
+    requestBody?: PatchCollectiveOfferEducationalInstitution,
   ): CancelablePromise<GetCollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1124,7 +1124,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1145,7 +1145,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1158,7 +1158,7 @@ export class DefaultService {
    */
   public attachOfferImage(
     offerId: number,
-    formData: AttachImageFormModel,
+    formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1170,7 +1170,7 @@ export class DefaultService {
       mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1192,7 +1192,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1203,7 +1203,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createCollectiveStock(
-    requestBody: CollectiveStockCreationBodyModel,
+    requestBody?: CollectiveStockCreationBodyModel,
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1214,7 +1214,7 @@ export class DefaultService {
         400: `Bad Request`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1227,7 +1227,7 @@ export class DefaultService {
    */
   public editCollectiveStock(
     collectiveStockId: number,
-    requestBody: CollectiveStockEditionBodyModel,
+    requestBody?: CollectiveStockEditionBodyModel,
   ): CancelablePromise<CollectiveStockResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1242,7 +1242,7 @@ export class DefaultService {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1258,7 +1258,7 @@ export class DefaultService {
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1283,7 +1283,7 @@ export class DefaultService {
       errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1298,7 +1298,7 @@ export class DefaultService {
       url: '/features',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1313,7 +1313,7 @@ export class DefaultService {
       url: '/finance/bank-accounts',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1334,7 +1334,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1355,7 +1355,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1376,7 +1376,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1400,7 +1400,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1411,7 +1411,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createOfferer(
-    requestBody: CreateOffererQueryModel,
+    requestBody?: CreateOffererQueryModel,
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1420,7 +1420,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1441,7 +1441,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1468,7 +1468,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1479,7 +1479,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public saveNewOnboardingData(
-    requestBody: SaveNewOnboardingDataQueryModel,
+    requestBody?: SaveNewOnboardingDataQueryModel,
   ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1488,7 +1488,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1509,7 +1509,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1530,7 +1530,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1545,7 +1545,7 @@ export class DefaultService {
   public linkVenueToBankAccount(
     offererId: number,
     bankAccountId: number,
-    requestBody: LinkVenueToBankAccountBodyModel,
+    requestBody?: LinkVenueToBankAccountBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1558,7 +1558,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1579,7 +1579,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1600,7 +1600,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1613,7 +1613,7 @@ export class DefaultService {
    */
   public inviteMember(
     offererId: number,
-    requestBody: InviteMemberQueryModel,
+    requestBody?: InviteMemberQueryModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1625,7 +1625,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1638,7 +1638,7 @@ export class DefaultService {
    */
   public inviteMemberAgain(
     offererId: number,
-    requestBody: InviteMemberQueryModel,
+    requestBody?: InviteMemberQueryModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1650,7 +1650,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1671,7 +1671,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1697,7 +1697,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1718,7 +1718,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1739,7 +1739,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1787,7 +1787,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1798,7 +1798,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postOffer(
-    requestBody: PostOfferBodyModel,
+    requestBody?: PostOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1807,7 +1807,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1818,7 +1818,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchOffersActiveStatus(
-    requestBody: PatchOfferActiveStatusBodyModel,
+    requestBody?: PatchOfferActiveStatusBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1827,7 +1827,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1838,7 +1838,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchAllOffersActiveStatus(
-    requestBody: PatchAllOffersActiveStatusBodyModel,
+    requestBody?: PatchAllOffersActiveStatusBodyModel,
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1847,7 +1847,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1862,7 +1862,7 @@ export class DefaultService {
       url: '/offers/categories',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1873,7 +1873,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteDraftOffers(
-    requestBody: DeleteOfferRequestBody,
+    requestBody?: DeleteOfferRequestBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1882,7 +1882,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1893,7 +1893,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteHeadlineOffer(
-    requestBody: HeadlineOfferDeleteBodyModel,
+    requestBody?: HeadlineOfferDeleteBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1902,18 +1902,19 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
   /**
-   * post_draft_offer <POST>
+   * @deprecated
+   * [DEPRECATED] Please migrate to new (generic/standard) offer creation route
    * @param requestBody
    * @returns GetIndividualOfferResponseModel Created
    * @throws ApiError
    */
   public postDraftOffer(
-    requestBody: PostDraftOfferBodyModel,
+    requestBody?: PostDraftOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1922,7 +1923,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1935,7 +1936,7 @@ export class DefaultService {
    */
   public patchDraftOffer(
     offerId: number,
-    requestBody: PatchDraftOfferBodyModel,
+    requestBody?: PatchDraftOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1947,7 +1948,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1962,7 +1963,7 @@ export class DefaultService {
       url: '/offers/music-types',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1973,7 +1974,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchPublishOffer(
-    requestBody: PatchOfferPublishBodyModel,
+    requestBody?: PatchOfferPublishBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -1983,7 +1984,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -1994,7 +1995,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createThumbnail(
-    formData: CreateThumbnailBodyModel,
+    formData?: CreateThumbnailBodyModel,
   ): CancelablePromise<CreateThumbnailResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2003,7 +2004,7 @@ export class DefaultService {
       mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2024,7 +2025,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2035,7 +2036,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public upsertHeadlineOffer(
-    requestBody: HeadlineOfferCreationBodyModel,
+    requestBody?: HeadlineOfferCreationBodyModel,
   ): CancelablePromise<HeadLineOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2044,7 +2045,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2065,7 +2066,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2078,7 +2079,7 @@ export class DefaultService {
    */
   public patchOffer(
     offerId: number,
-    requestBody: PatchOfferBodyModel,
+    requestBody?: PatchOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2090,7 +2091,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2103,7 +2104,7 @@ export class DefaultService {
    */
   public postHighlightRequestOffer(
     offerId: number,
-    requestBody: CreateOfferHighlightRequestBodyModel,
+    requestBody?: CreateOfferHighlightRequestBodyModel,
   ): CancelablePromise<OfferHighlightResquestsResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2115,7 +2116,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2136,7 +2137,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2156,7 +2157,7 @@ export class DefaultService {
    */
   public upsertOfferOpeningHours(
     offerId: number,
-    requestBody: OfferOpeningHoursSchema,
+    requestBody?: OfferOpeningHoursSchema,
   ): CancelablePromise<OfferOpeningHoursSchema> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2168,7 +2169,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2181,7 +2182,7 @@ export class DefaultService {
    */
   public postPriceCategories(
     offerId: number,
-    requestBody: PriceCategoryBody,
+    requestBody?: PriceCategoryBody,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2193,7 +2194,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2217,7 +2218,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2238,7 +2239,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2282,7 +2283,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2295,7 +2296,7 @@ export class DefaultService {
    */
   public deleteAllFilteredStocks(
     offerId: number,
-    requestBody: DeleteFilteredStockListBody,
+    requestBody?: DeleteFilteredStockListBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2307,7 +2308,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2320,7 +2321,7 @@ export class DefaultService {
    */
   public deleteStocks(
     offerId: number,
-    requestBody: DeleteStockListBody,
+    requestBody?: DeleteStockListBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2332,7 +2333,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2356,7 +2357,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2386,7 +2387,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2397,7 +2398,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createThingStock(
-    requestBody: ThingStockCreateBodyModel,
+    requestBody?: ThingStockCreateBodyModel,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2406,7 +2407,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2417,7 +2418,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public bulkUpdateEventStocks(
-    requestBody: EventStocksBulkUpdateBodyModel,
+    requestBody?: EventStocksBulkUpdateBodyModel,
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2426,7 +2427,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2437,7 +2438,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public bulkCreateEventStocks(
-    requestBody: EventStocksBulkCreateBodyModel,
+    requestBody?: EventStocksBulkCreateBodyModel,
   ): CancelablePromise<StocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2446,7 +2447,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2467,7 +2468,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2480,7 +2481,7 @@ export class DefaultService {
    */
   public updateThingStock(
     stockId: number,
-    requestBody: ThingStockUpdateBodyModel,
+    requestBody?: ThingStockUpdateBodyModel,
   ): CancelablePromise<StockIdResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2492,7 +2493,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2513,7 +2514,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2524,7 +2525,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postCheckToken(
-    requestBody: CheckTokenBodyModel,
+    requestBody?: CheckTokenBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2534,7 +2535,7 @@ export class DefaultService {
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2555,7 +2556,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2566,7 +2567,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public cookiesConsent(
-    requestBody: CookieConsentRequest,
+    requestBody?: CookieConsentRequest,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2576,7 +2577,7 @@ export class DefaultService {
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2591,7 +2592,7 @@ export class DefaultService {
       url: '/users/current',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2602,7 +2603,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postUserEmail(
-    requestBody: UserResetEmailBodyModel,
+    requestBody?: UserResetEmailBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2611,7 +2612,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2626,7 +2627,7 @@ export class DefaultService {
       url: '/users/email_pending_validation',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2637,7 +2638,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchUserIdentity(
-    requestBody: UserIdentityBodyModel,
+    requestBody?: UserIdentityBodyModel,
   ): CancelablePromise<UserIdentityResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2646,7 +2647,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2657,7 +2658,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public submitUserReview(
-    requestBody: SubmitReviewRequestModel,
+    requestBody?: SubmitReviewRequestModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2666,7 +2667,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2677,7 +2678,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postNewPassword(
-    requestBody: NewPasswordBodyModel,
+    requestBody?: NewPasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2687,7 +2688,7 @@ export class DefaultService {
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2698,7 +2699,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postChangePassword(
-    requestBody: ChangePasswordBodyModel,
+    requestBody?: ChangePasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2708,7 +2709,7 @@ export class DefaultService {
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2719,7 +2720,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchUserPhone(
-    requestBody: UserPhoneBodyModel,
+    requestBody?: UserPhoneBodyModel,
   ): CancelablePromise<UserPhoneResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2728,7 +2729,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2739,7 +2740,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public resetPassword(
-    requestBody: ResetPasswordBodyModel,
+    requestBody?: ResetPasswordBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2748,7 +2749,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2763,7 +2764,7 @@ export class DefaultService {
       url: '/users/rgs-seen',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2774,7 +2775,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public signin(
-    requestBody: LoginUserBodyModel,
+    requestBody?: LoginUserBodyModel,
   ): CancelablePromise<SharedLoginUserResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2783,7 +2784,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2798,7 +2799,7 @@ export class DefaultService {
       url: '/users/signout',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2809,7 +2810,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public signupPro(
-    requestBody: ProUserCreationBodyV2Model,
+    requestBody?: ProUserCreationBodyV2Model,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -2818,7 +2819,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2833,7 +2834,7 @@ export class DefaultService {
       url: '/users/tuto-seen',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2844,7 +2845,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public patchValidateEmail(
-    requestBody: ChangeProEmailBody,
+    requestBody?: ChangeProEmailBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2853,7 +2854,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2874,7 +2875,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2895,7 +2896,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2925,7 +2926,27 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * create_offer <POST>
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel Created
+   * @throws ApiError
+   */
+  public createOffer(
+    requestBody?: PostOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/v2/offers',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2946,7 +2967,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2961,7 +2982,7 @@ export class DefaultService {
       url: '/venue-labels',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2976,7 +2997,7 @@ export class DefaultService {
       url: '/venue-types',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -2997,7 +3018,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3008,7 +3029,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public createVenueProvider(
-    requestBody: PostVenueProviderBody,
+    requestBody?: PostVenueProviderBody,
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'POST',
@@ -3017,7 +3038,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3028,7 +3049,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public updateVenueProvider(
-    requestBody: PostVenueProviderBody,
+    requestBody?: PostVenueProviderBody,
   ): CancelablePromise<VenueProviderResponse> {
     return this.httpRequest.request({
       method: 'PUT',
@@ -3037,7 +3058,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3060,7 +3081,7 @@ export class DefaultService {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3081,7 +3102,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3108,7 +3129,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3123,7 +3144,7 @@ export class DefaultService {
       url: '/venues-educational-statuses',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3144,7 +3165,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3165,7 +3186,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3178,7 +3199,7 @@ export class DefaultService {
    */
   public editVenue(
     venueId: number,
-    requestBody: EditVenueBodyModel,
+    requestBody?: EditVenueBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -3190,7 +3211,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3211,7 +3232,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3224,7 +3245,7 @@ export class DefaultService {
    */
   public editVenueCollectiveData(
     venueId: number,
-    requestBody: EditVenueCollectiveDataBodyModel,
+    requestBody?: EditVenueCollectiveDataBodyModel,
   ): CancelablePromise<GetVenueResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -3236,7 +3257,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -3249,7 +3270,7 @@ export class DefaultService {
    */
   public linkVenueToPricingPoint(
     venueId: number,
-    requestBody: LinkVenueToPricingPointBodyModel,
+    requestBody?: LinkVenueToPricingPointBodyModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -3261,7 +3282,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
