@@ -58,15 +58,14 @@ export const BasicLayout = ({
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
 
-  const isConnected = !!currentUser
   const isBackToNavLinkDisplayed =
-    areMainHeadingAndBackToNavLinkInChild || (mainHeading && isConnected)
+    areMainHeadingAndBackToNavLinkInChild || mainHeading
 
   const mainHeadingWrapper = mainHeading ? (
     <MainHeading
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
-      isConnected={isConnected}
+      isConnected
     />
   ) : null
 
