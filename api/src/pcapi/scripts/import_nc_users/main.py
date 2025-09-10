@@ -46,47 +46,41 @@ class ImportCounter(BaseModel):
 
 
 def create_pro(user_row: UserRow, offerer: offerers_models.Offerer, row_number: int, counters: ImportCounter) -> None:
-    user_in_db = db.session.query(users_models.User).filter_by(email=user_row["email"]).one_or_none()
+    pro_user = db.session.query(users_models.User).filter_by(email=user_row["email"]).one_or_none()
 
     counters.total += 1
-    if user_in_db is not None:
-        logger.info("User already present for email %s for row %s", user_row["email"], row_number)
+    if pro_user is not None:
+        logger.info("User already present for row %s", row_number)
         counters.already_present += 1
 
         user_offerer_in_db = (
-            db.session.query(offerers_models.UserOfferer).filter_by(offerer=offerer, user=user_in_db).one_or_none()
+            db.session.query(offerers_models.UserOfferer).filter_by(offerer=offerer, user=pro_user).one_or_none()
         )
 
         if user_offerer_in_db is not None:
             logger.info("User already linked to offerer for row %s", row_number)
             counters.already_linked += 1
         else:
-            offerers_api.grant_user_offerer_access(offerer=offerer, user=user_in_db)
+            offerers_api.grant_user_offerer_access(offerer=offerer, user=pro_user)
+    else:
+        ### Create the user
+        body = users_serializers.ProUserCreationBodyV2Model.parse_obj(
+            {
+                **user_row,
+                "password": random_password(),
+                "contactOk": False,
+                "token": "",
+            },
+        )
+        pro_user = users_api.create_pro_user(body)
+        users_api.validate_pro_user_email(pro_user)
+        offerers_api.grant_user_offerer_access(offerer=offerer, user=pro_user)
+        counters.created += 1
 
-        return
-
-    ### Create the user
-    body = users_serializers.ProUserCreationBodyV2Model.parse_obj(
-        {
-            **user_row,
-            "password": random_password(),
-            "contactOk": False,
-            "token": "",
-        },
-    )
-    pro_user = users_api.create_pro_user(body)
-
-    ### Validate the email
-    users_api.validate_pro_user_email(pro_user)
-
-    ### Link user to offerer
-    offerers_api.grant_user_offerer_access(offerer=offerer, user=pro_user)
     pro_user.add_pro_role()
 
     ### Update external tools
     external_attributes_api.update_external_pro(pro_user.email)  # this is done on_commit
-
-    counters.created += 1
 
 
 @atomic()
