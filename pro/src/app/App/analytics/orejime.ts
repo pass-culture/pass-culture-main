@@ -18,23 +18,7 @@ export const useOrejime = () => {
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
 
-  function addListener() {
-    orejime.manager.on(
-      'update',
-      (
-        updatedConsents: { [key in Consents]: boolean },
-        allConsents: { [key in Consents]: boolean }
-      ) => {
-        if (Object.keys(updatedConsents).length > 0) {
-          setConsentedToFirebase(allConsents[Consents.FIREBASE])
-          setConsentedToBeamer(allConsents[Consents.BEAMER])
-        }
-      }
-    )
-  }
-
   useEffect(() => {
-    // Initialize cookie consent modal
     if (location.pathname.indexOf('/adage-iframe') === -1) {
       setTimeout(() => {
         if (
@@ -47,7 +31,20 @@ export const useOrejime = () => {
         try {
           if (!orejime) {
             orejime = window.loadOrejime(orejimeConfig)
-            addListener()
+
+            orejime.manager.on(
+              'update',
+              (
+                updatedConsents: { [key in Consents]: boolean },
+                allConsents: { [key in Consents]: boolean }
+              ) => {
+                if (Object.keys(updatedConsents).length > 0) {
+                  setConsentedToFirebase(allConsents[Consents.FIREBASE])
+                  setConsentedToBeamer(allConsents[Consents.BEAMER])
+                }
+              }
+            )
+
             setConsentedToFirebase(
               orejime.manager.getConsent(Consents.FIREBASE) || false
             )
@@ -55,10 +52,21 @@ export const useOrejime = () => {
               orejime.manager.getConsent(Consents.BEAMER) || false
             )
           } else if (!document.cookie.includes('orejime')) {
-            // We force the banner to be displayed again if the cookie was deleted somehow
             orejime.manager.clearConsents()
             orejime = window.loadOrejime(orejimeConfig)
-            addListener()
+
+            orejime.manager.on(
+              'update',
+              (
+                updatedConsents: { [key in Consents]: boolean },
+                allConsents: { [key in Consents]: boolean }
+              ) => {
+                if (Object.keys(updatedConsents).length > 0) {
+                  setConsentedToFirebase(allConsents[Consents.FIREBASE])
+                  setConsentedToBeamer(allConsents[Consents.BEAMER])
+                }
+              }
+            )
           }
         } catch (e) {
           sendSentryCustomError(e)
