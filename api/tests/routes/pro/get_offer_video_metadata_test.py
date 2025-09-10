@@ -1,12 +1,11 @@
-import json
 from unittest import mock
 
 import pytest
 from factory.faker import faker
-from flask import current_app
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.connectors import youtube
 from pcapi.core import testing
 
 
@@ -15,25 +14,15 @@ Fake = faker.Faker(locale="fr_FR")
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_get_offer_video_metadata(self, mock_requests_get, client):
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "items": [
-                {
-                    "id": "test_video_id",
-                    "snippet": {
-                        "title": "Test Video",
-                        "thumbnails": {
-                            "high": {"url": "https://example.com/high.jpg"},
-                        },
-                    },
-                    "contentDetails": {"duration": "PT1M40S"},
-                }
-            ]
-        }
-        mock_requests_get.return_value = mock_response
+    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    def test_get_offer_video_metadata(self, get_video_metadata_from_cache_mock, client):
+        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
+            id="WtM4OW2qVjY",
+            title="Title",
+            thumbnail_url="https://example.com/high.jpg",
+            duration=100,
+        )
 
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -43,17 +32,12 @@ class Returns200Test:
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         with testing.assert_num_queries(num_queries):
-            response = test_client.get("/get-offer-video-data/?videoUrl=https://www.youtube.com/watch?v=b1kbLwvqugk")
+            response = test_client.get(f"/get-offer-video-data/?videoUrl={video_url}")
             assert response.status_code == 200
         assert response.json == {
-            "id": "test_video_id",
-            "title": "Test Video",
+            "id": "WtM4OW2qVjY",
+            "title": "Title",
             "thumbnailUrl": "https://example.com/high.jpg",
-            "duration": 100,
-        }
-        assert json.loads(current_app.redis_client.get("youtube_video_test_video_id")) == {
-            "title": "Test Video",
-            "thumbnail_url": "https://example.com/high.jpg",
             "duration": 100,
         }
 
@@ -75,25 +59,7 @@ class Returns400Test:
             )
             assert response.status_code == 400
 
-    @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_get_offer_video_metadata_unknown_url(self, mock_requests_get, client):
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "items": [
-                {
-                    "id": "test_video_id",
-                    "snippet": {
-                        "title": "Test Video",
-                        "thumbnails": {
-                            "high": {"url": "https://example.com/high.jpg"},
-                        },
-                    },
-                    "contentDetails": {"duration": "PT1M40S"},
-                }
-            ]
-        }
-        mock_requests_get.return_value = mock_response
+    def test_get_offer_video_metadata_unknown_url(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
