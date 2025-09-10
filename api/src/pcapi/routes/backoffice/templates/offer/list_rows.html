@@ -155,13 +155,13 @@
     <td>
       {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}
-        {{ badges.build_offer_offerer_fraud_badges(offer.venue.managingOfferer) }}
+        {{ badges.build_offer_offerer_fraud_badges(row.offerer_badges) }}
       {% endcall %}
     </td>
     <td>
       {{ links.build_venue_name_to_details_link(offer.venue) }}
       {% call badges.badges_container() %}
-        {{ badges.build_offer_venue_fraud_badges(offer.venue) }}
+        {{ badges.build_offer_venue_fraud_badges(row.venue_badges) }}
       {% endcall %}
     </td>
     <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>

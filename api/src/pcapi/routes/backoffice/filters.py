@@ -1089,12 +1089,15 @@ def format_user_offerer_status_badge(user_offerer: offerers_models.UserOfferer) 
 
 
 def format_confidence_level_badge(
-    confidence_level: offerers_models.OffererConfidenceLevel | None, show_no_rule: bool = False, info: str = ""
+    confidence_level: offerers_models.OffererConfidenceLevel | str | None, show_no_rule: bool = False, info: str = ""
 ) -> str:
     match confidence_level:
-        case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:
+        case (
+            offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
+            | offerers_models.OffererConfidenceLevel.MANUAL_REVIEW.value
+        ):
             return format_badge(f"Revue manuelle {info}", "warning")
-        case offerers_models.OffererConfidenceLevel.WHITELIST:
+        case offerers_models.OffererConfidenceLevel.WHITELIST | offerers_models.OffererConfidenceLevel.WHITELIST.value:
             return format_badge(f"Validation auto {info}", "success")
 
     if show_no_rule:
