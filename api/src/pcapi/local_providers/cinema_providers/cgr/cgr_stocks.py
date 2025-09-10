@@ -95,9 +95,9 @@ class CGRStocks(LocalProvider):
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
         if self.product:
             offer.name = self.product.name
-            offer.description = None
-            offer.durationMinutes = None
-            offer.extraData = None
+            offer._description = None
+            offer._durationMinutes = None
+            offer._extraData = {}
         else:
             offer.name = self.film_infos.Titre
             offer.description = self.film_infos.Synopsis

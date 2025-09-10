@@ -102,9 +102,9 @@ class BoostStocks(LocalProvider):
     ) -> None:
         if self.product:
             offer.name = self.product.name
-            offer.description = None
-            offer.durationMinutes = None
-            offer.extraData = None
+            offer._description = None
+            offer._durationMinutes = None
+            offer._extraData = {}
         else:
             offer.name = self.showtime_details.film.titleCnc
             if movie_information.duration:
