@@ -74,7 +74,7 @@ describe('SiretOrCommentFields', () => {
   it('should display Siret when siret is provided', () => {
     renderSiretOrComment(props)
 
-    const siretField = screen.getByLabelText('SIRET de la structure *')
+    const siretField = screen.getByLabelText(/SIRET de la structure/)
     expect(siretField).toBeInTheDocument()
     const commentField = screen.queryByText(
       'Commentaire de la structure sans SIRET'
@@ -85,7 +85,7 @@ describe('SiretOrCommentFields', () => {
   it('should display comment field when there is no siret', () => {
     renderSiretOrComment(props, '')
 
-    const siretField = screen.queryByText('SIRET de la structure')
+    const siretField = screen.queryByText(/SIRET de la structure/)
     expect(siretField).not.toBeInTheDocument()
     const commentField = screen.getByLabelText(
       'Commentaire de la structure sans SIRET',

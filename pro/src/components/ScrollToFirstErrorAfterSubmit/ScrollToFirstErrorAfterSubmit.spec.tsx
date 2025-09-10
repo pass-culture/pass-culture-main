@@ -4,8 +4,8 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { ScrollToFirstHookFormErrorAfterSubmit } from './ScrollToFirstErrorAfterSubmit'
 
@@ -63,6 +63,6 @@ describe('ScrollToFirstErrorAfterSubmit', () => {
       expect(scrollIntoViewMock).toHaveBeenCalled()
     })
 
-    expect(screen.getByLabelText('firstName *')).toHaveFocus()
+    expect(screen.getByLabelText(/firstName/)).toHaveFocus()
   })
 })

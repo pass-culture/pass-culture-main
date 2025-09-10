@@ -37,7 +37,7 @@ export const Default: Story = {
     description: 'Format: email@exemple.com',
     error: '',
     required: true,
-    asterisk: true,
+    currentCount: 10,
   },
   render: (args) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks

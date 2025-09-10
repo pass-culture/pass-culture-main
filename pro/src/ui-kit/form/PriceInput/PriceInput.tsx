@@ -10,18 +10,16 @@ import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import {
   TextInput,
   type TextInputProps,
-} from '@/ui-kit/form/TextInput/TextInput'
-
-import styles from './PriceInput.module.scss'
+} from '@/design-system/TextInput/TextInput'
 
 /**
  * Props for the PriceInput component.
  *
- * @extends Pick<TextInputProps, 'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'>
+ * @extends Pick<TextInputProps, 'name' | 'max' | 'icon' | 'disabled'>
  */
 export type PriceInputProps = Pick<
   TextInputProps,
-  'name' | 'max' | 'rightIcon' | 'disabled' | 'smallLabel' | 'className'
+  'name' | 'max' | 'icon' | 'disabled' | 'description'
 > & {
   /**
    * A label for the input,
@@ -55,7 +53,7 @@ export type PriceInputProps = Pick<
  *  label="Price"
  *  name="price"
  *  max={100}
- *  rightIcon={strokeEuroIcon}
+ *  icon={strokeEuroIcon}
  * />
  *
  * @accessibility
@@ -64,13 +62,12 @@ export type PriceInputProps = Pick<
 export const PriceInput = React.forwardRef(
   (
     {
-      className,
       name,
       label,
+      description,
       max,
-      rightIcon,
+      icon,
       disabled,
-      smallLabel,
       showFreeCheckbox,
       hideAsterisk = false,
       error,
@@ -137,22 +134,20 @@ export const PriceInput = React.forwardRef(
       <div ref={ref}>
         <TextInput
           ref={priceRef}
-          className={className}
-          labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
           required={!hideAsterisk}
           name={name}
           label={label}
+          description={description}
           type="number"
-          step="0.01"
+          step={0.01}
           min={0}
           max={max}
-          rightIcon={rightIcon}
+          icon={icon}
           disabled={disabled}
           asterisk={!hideAsterisk}
           onChange={onTextInputChange}
-          hasError={!!error}
           error={error}
-          {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
+          {...(showFreeCheckbox ? { extension: inputExtension } : {})}
         />
       </div>
     )

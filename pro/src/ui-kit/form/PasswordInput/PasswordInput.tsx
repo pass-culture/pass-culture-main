@@ -1,12 +1,10 @@
 import cn from 'classnames'
 import React, { type ForwardedRef, useState } from 'react'
 
-import strokeHideIcon from '@/icons/stroke-hide.svg'
-import strokeShowIcon from '@/icons/stroke-show.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { TextInput } from '@/design-system/TextInput/TextInput'
+import strokeHideIcon from '@/icons/full-hide.svg'
+import strokeShowIcon from '@/icons/full-show.svg'
 
-import { TextInput } from '../TextInput/TextInput'
 import styles from './PasswordInput.module.scss'
 
 export interface PasswordInputProps {
@@ -49,7 +47,6 @@ export const PasswordInput = React.forwardRef(
       >
         <TextInput
           ref={ref}
-          className={styles['password-input']}
           label={label}
           name={name}
           description={description}
@@ -58,18 +55,13 @@ export const PasswordInput = React.forwardRef(
           error={error}
           asterisk={asterisk}
           required={required}
-          rightButton={() => (
-            <Button
-              icon={isPasswordHidden ? strokeHideIcon : strokeShowIcon}
-              iconAlt={
-                isPasswordHidden
-                  ? 'Afficher le mot de passe'
-                  : 'Cacher le mot de passe'
-              }
-              onClick={handleToggleHidden}
-              variant={ButtonVariant.TERNARY}
-            />
-          )}
+          iconButton={{
+            icon: isPasswordHidden ? strokeHideIcon : strokeShowIcon,
+            label: isPasswordHidden
+              ? 'Afficher le mot de passe'
+              : 'Cacher le mot de passe',
+            onClick: handleToggleHidden,
+          }}
           {...props}
         />
       </div>

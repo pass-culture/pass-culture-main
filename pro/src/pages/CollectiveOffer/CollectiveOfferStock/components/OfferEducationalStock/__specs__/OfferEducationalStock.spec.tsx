@@ -176,7 +176,7 @@ it('should not disable description, price and places when action CAN_EDIT_DISCOU
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL}`,
   })
-  const priceInput = screen.getByLabelText('Prix total TTC')
+  const priceInput = screen.getByLabelText(/Prix total TTC/)
   const placeInput = screen.getByLabelText('Nombre de participants')
 
   expect(descriptionInput).not.toBeDisabled()
@@ -198,7 +198,7 @@ it('should disable description, price and places when allowed action CAN_EDIT_DI
   const descriptionInput = screen.getByRole('textbox', {
     name: `${DETAILS_PRICE_LABEL}`,
   })
-  const priceInput = screen.getByLabelText('Prix total TTC')
+  const priceInput = screen.getByLabelText(/Prix total TTC/)
   const placeInput = screen.getByLabelText('Nombre de participants')
 
   expect(descriptionInput).toBeDisabled()

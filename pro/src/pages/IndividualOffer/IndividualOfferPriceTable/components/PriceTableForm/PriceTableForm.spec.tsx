@@ -93,9 +93,9 @@ const LABELS = {
     submitActivationCodes: 'Valider',
   },
   fields: {
-    price: 'Prix',
-    label: 'Intitulé du tarif',
-    stock: 'Stock',
+    price: /Prix/,
+    label: /Intitulé du tarif/,
+    stock: /Stock/,
   },
 }
 
@@ -483,7 +483,7 @@ describe('PriceTableForm', () => {
     renderPriceTableForm({ offer })
 
     const priceInput = screen.getByRole('spinbutton', {
-      name: 'Prix *',
+      name: /Prix/,
     }) as HTMLInputElement
     await userEvent.clear(priceInput)
     await userEvent.type(priceInput, '23')

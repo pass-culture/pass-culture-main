@@ -26,7 +26,12 @@ describe('<PasswordInput />', () => {
   it('should render without accessibility violations', async () => {
     const { container } = renderPasswordInput()
 
-    expect(await axe(container)).toHaveNoViolations()
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
   })
 
   it('should render with an error message', () => {
@@ -45,8 +50,8 @@ describe('<PasswordInput />', () => {
       description: 'Choisissez un mot de passe fort et difficile à deviner',
     })
 
-    expect(screen.getByTestId('description-password')).toHaveTextContent(
-      'Choisissez un mot de passe fort et difficile à deviner'
-    )
+    expect(
+      screen.getByText('Choisissez un mot de passe fort et difficile à deviner')
+    ).toBeInTheDocument()
   })
 })

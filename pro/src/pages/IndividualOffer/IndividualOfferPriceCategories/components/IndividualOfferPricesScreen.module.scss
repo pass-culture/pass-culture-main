@@ -9,7 +9,7 @@
 }
 
 .price-input {
-  width: rem.torem(200px);
+  width: rem.torem(240px);
 }
 
 .duo-section {
@@ -24,11 +24,7 @@
 .delete-icon {
   padding: 0;
   height: fit-content;
-  margin-top: calc(
-    #{var(--typography-body-line-height)} + #{forms.$label-space-before-input} +
-      #{var(--typography-body-xs-line-height)} + rem.torem(4px) +
-      (#{size.$input-min-height} - #{size.$button-icon-size}) / 2
-  );
+  margin-top: calc(#{var(--typography-body-line-height)} + #{forms.$label-space-before-input} + #{var(--typography-body-xs-line-height)} + rem.torem(4px) + (#{size.$input-min-height} - #{size.$button-icon-size}) / 2);
 
   &-svg {
     width: rem.torem(24px);
@@ -49,7 +45,7 @@
   .label-input {
     width: rem.torem(424px);
 
-    &-label {
+    label {
       @include fonts.body-accent-xs;
 
       display: block;

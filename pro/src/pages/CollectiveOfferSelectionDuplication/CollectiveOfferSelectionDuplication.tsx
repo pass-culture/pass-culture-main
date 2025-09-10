@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
@@ -21,25 +20,17 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { CardLink } from '../../ui-kit/CardLink/CardLink'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 import { SkeletonLoader } from './CollectiveOfferSelectionLoaderSkeleton'
-
-type SearchFormValues = {
-  searchFilter: string
-}
-
-type SelectionFormValues = {
-  templateOfferId: string
-}
 
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const notify = useNotification()
@@ -49,13 +40,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const isCollectiveOaActive = useActiveFeature(
     'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
   )
-
-  const searchFilterForm = useForm<SearchFormValues>({
-    defaultValues: { searchFilter: '' },
-  })
-
-  const { register: registerSearch, handleSubmit: handleSubmitSearch } =
-    searchFilterForm
+  const [searchedOfferName, setSearchedOfferName] = useState('')
+  const [typedOfferName, setTypedOfferName] = useState('')
+  const [isCreatingNewOffer, setIsCreatingNewOffer] = useState(false)
 
   const queryParams = new URLSearchParams(location.search)
   const currentOffererId = useSelector(selectCurrentOffererId)
@@ -73,7 +60,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   } = serializeApiCollectiveFilters(
     {
       ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-      nameOrIsbn: searchFilterForm.watch('searchFilter'),
+      nameOrIsbn: searchedOfferName,
       offererId: currentOffererId ? currentOffererId.toString() : 'all',
       venueId: queryVenueId ? queryVenueId : 'all',
       status: [
@@ -85,49 +72,44 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
   )
 
-  const {
-    data: offers,
-    error,
-    isLoading,
-  } = useSWR([GET_COLLECTIVE_OFFERS_QUERY_KEY, nameOrIsbn], () =>
-    api.getCollectiveOffers(
-      nameOrIsbn,
-      offererId,
-      status,
-      venueId,
-      creationMode,
-      periodBeginningDate,
-      periodEndingDate,
-      CollectiveOfferType.TEMPLATE,
-      format
-    )
+  const { data: offers, isLoading } = useSWR(
+    [GET_COLLECTIVE_OFFERS_QUERY_KEY, nameOrIsbn],
+    () =>
+      api.getCollectiveOffers(
+        nameOrIsbn,
+        offererId,
+        status,
+        venueId,
+        creationMode,
+        periodBeginningDate,
+        periodEndingDate,
+        CollectiveOfferType.TEMPLATE,
+        format
+      ),
+    {
+      onError: (e) => {
+        notify.error(GET_DATA_ERROR_MESSAGE)
+      },
+    }
   )
 
-  const [isCreatingNewOffer, setIsCreatingNewOffer] = useState(false)
-
-  const templateOfferForm = useForm<SelectionFormValues>()
-
-  useEffect(() => {
-    if (!isLoading && offers && offers.length > 0) {
-      templateOfferForm.setValue('templateOfferId', String(offers[0].id))
-    }
-  }, [offers, isLoading, templateOfferForm])
-
-  const { handleSubmit: handleSubmitSelection } = templateOfferForm
-
-  const handleOnSubmit = async () => {
+  const navigateToOffer = async (offerId: number) => {
     setIsCreatingNewOffer(true)
-    const templateOfferId = templateOfferForm.watch('templateOfferId')
 
-    await createOfferFromTemplate(
-      navigate,
-      notify,
-      Number(templateOfferId),
-      isCollectiveOaActive,
-      undefined,
-      isMarseilleActive,
-      setIsCreatingNewOffer
-    )
+    try {
+      await createOfferFromTemplate(
+        navigate,
+        notify,
+        offerId,
+        isCollectiveOaActive,
+        undefined,
+        isMarseilleActive,
+        setIsCreatingNewOffer
+      )
+    } catch {
+      setIsCreatingNewOffer(false)
+      notify.error(GET_DATA_ERROR_MESSAGE)
+    }
   }
 
   if (isCreatingNewOffer) {
@@ -150,107 +132,88 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           <form
             className={styles['search-input-container']}
             aria-labelledby="search-filter"
-            onSubmit={handleSubmitSearch(({ searchFilter }) => {
-              searchFilterForm.setValue('searchFilter', searchFilter)
-              templateOfferForm.setValue(
-                'templateOfferId',
-                String(offers?.[0]?.id)
-              )
-
-              if (error) {
-                return notify.error(GET_DATA_ERROR_MESSAGE)
-              }
-            })}
+            onSubmit={(e) => {
+              setSearchedOfferName(typedOfferName)
+              e.stopPropagation()
+              e.preventDefault()
+            }}
           >
-            <TextInput
-              label="Rechercher l’offre vitrine à dupliquer"
-              {...registerSearch('searchFilter')}
-              name="searchFilter"
-              type="search"
-              autoComplete="off"
-              onChange={(e) => {
-                if (e.target.value === '') {
-                  searchFilterForm.setValue('searchFilter', e.target.value)
+            <div className={styles['search-input']}>
+              <TextInput
+                label="Rechercher l’offre vitrine à dupliquer"
+                value={typedOfferName}
+                name="searchFilter"
+                type="search"
+                autoComplete="off"
+                icon={strokeSearchIcon}
+                onChange={(e) => {
+                  setTypedOfferName(e.target.value)
+                }}
+                extension={
+                  <Button
+                    type="submit"
+                    className={styles['search-button']}
+                    disabled={isLoading}
+                  >
+                    Rechercher
+                  </Button>
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  searchFilterForm.setValue(
-                    'searchFilter',
-                    (e.target as HTMLInputElement).value
-                  )
-                }
-              }}
-              className={styles['search-input']}
-              InputExtension={
-                <Button
-                  type="submit"
-                  className={styles['search-button']}
-                  disabled={isLoading}
-                >
-                  Rechercher
-                </Button>
-              }
-            />
+              />
+            </div>
           </form>
 
           {isLoading ? (
             <SkeletonLoader />
           ) : (
             <>
+              {/** biome-ignore lint/a11y/useSemanticElements: What we want here is a role status */}
               <p className={styles['visually-hidden']} role="status">
                 {offers && pluralize(offers.length, 'offre vitrine trouvée')}
               </p>
-              <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-                <p className={styles['legend']}>
-                  {searchFilterForm.watch('searchFilter').length < 1
-                    ? 'Les dernières offres vitrines créées'
-                    : `${offers && pluralize(offers.length, 'offre')}` +
-                      ' vitrine'}
-                </p>
-                <ul className={styles['list']}>
-                  {(offers || []).slice(0, 5).map((offer) => (
-                    <li key={offer.id}>
-                      <CardLink
-                        label={offer.name}
-                        description={offer.venue.name}
-                        onClick={() => {
-                          templateOfferForm.setValue(
-                            'templateOfferId',
-                            offer.id.toString()
-                          )
-                          handleOnSubmit()
-                        }}
-                      />
-                    </li>
-                  ))}
-                </ul>
-
-                {offers && offers.length < 1 && (
-                  <div className={styles['search-no-results']}>
-                    <SvgIcon
-                      src={strokeSearchIcon}
-                      alt="Illustration de recherche"
-                      className={styles['search-no-results-icon']}
-                      width="124"
+              <p className={styles['legend']}>
+                {searchedOfferName.length < 1
+                  ? 'Les dernières offres vitrines créées'
+                  : `${offers && pluralize(offers.length, 'offre')}` +
+                    ' vitrine'}
+              </p>
+              <ul className={styles['list']}>
+                {(offers || []).slice(0, 5).map((offer) => (
+                  <li key={offer.id}>
+                    <CardLink
+                      label={offer.name}
+                      description={offer.venue.name}
+                      onClick={() => {
+                        navigateToOffer(offer.id)
+                      }}
                     />
-                    <p className={styles['search-no-results-text']}>
-                      Aucune offre trouvée pour votre recherche
-                    </p>
-                  </div>
-                )}
+                  </li>
+                ))}
+              </ul>
 
-                <ActionsBarSticky>
-                  <ActionsBarSticky.Left>
-                    <ButtonLink
-                      variant={ButtonVariant.SECONDARY}
-                      to={computeCollectiveOffersUrl({})}
-                    >
-                      Retour à la liste des offres
-                    </ButtonLink>
-                  </ActionsBarSticky.Left>
-                </ActionsBarSticky>
-              </form>
+              {offers && offers.length < 1 && (
+                <div className={styles['search-no-results']}>
+                  <SvgIcon
+                    src={strokeSearchIcon}
+                    alt="Illustration de recherche"
+                    className={styles['search-no-results-icon']}
+                    width="124"
+                  />
+                  <p className={styles['search-no-results-text']}>
+                    Aucune offre trouvée pour votre recherche
+                  </p>
+                </div>
+              )}
+
+              <ActionsBarSticky>
+                <ActionsBarSticky.Left>
+                  <ButtonLink
+                    variant={ButtonVariant.SECONDARY}
+                    to={computeCollectiveOffersUrl({})}
+                  >
+                    Retour à la liste des offres
+                  </ButtonLink>
+                </ActionsBarSticky.Left>
+              </ActionsBarSticky>
             </>
           )}
         </div>
