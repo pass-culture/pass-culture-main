@@ -1,23 +1,21 @@
-import type {
-  GetOffererResponseModel,
-  VenueTypeResponseModel,
-} from '@/apiClient/v1'
+import useSWR from 'swr'
+
+import { api } from '@/apiClient/api'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
+import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { Card } from '@/components/Card/Card'
 import { SoftDeletedOffererWarning } from '@/components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { OffererCreationLinks } from './components/OffererCreationLinks/OffererCreationLinks'
+import { OffererSkeleton } from './components/OffererSkeleton/OffererSkeleton'
 import { PartnerPages } from './components/PartnerPages/PartnerPages'
 import { VenueList } from './components/VenueList/VenueList'
-import styles from './Offerers.module.scss'
 
 export interface OfferersProps {
   selectedOfferer: GetOffererResponseModel | null
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
-  venueTypes: VenueTypeResponseModel[]
 }
 
 export const Offerers = ({
@@ -25,16 +23,12 @@ export const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  venueTypes,
 }: OfferersProps) => {
-  if (isLoading) {
-    return (
-      <Card>
-        <div className={styles['loader-container']}>
-          <Spinner />
-        </div>
-      </Card>
-    )
+  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
+    api.getVenueTypes()
+  )
+  if (true) {
+    return <OffererSkeleton />
   }
 
   const isOffererSoftDeleted = selectedOfferer && !selectedOfferer.isActive
@@ -50,7 +44,7 @@ export const Offerers = ({
             <PartnerPages
               venues={permanentVenues}
               offerer={selectedOfferer}
-              venueTypes={venueTypes}
+              venueTypes={venueTypesQuery?.data}
             />
           )}
 

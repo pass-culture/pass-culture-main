@@ -1,0 +1,56 @@
+.card {
+    border: 1px solid var(--border, #e6e6e6);
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+  }
+  
+  .header {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+    align-items: start;
+  
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .image {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .main {
+    display: grid;
+    gap: 8px;
+  }
+  
+  .inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .section {
+    margin-top: 16px;
+    display: grid;
+    gap: 8px;
+  }
+  
+  .list {
+    margin: 8px 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .listItem {
+    display: flex;
+    align-items: center;
+  }
+  
