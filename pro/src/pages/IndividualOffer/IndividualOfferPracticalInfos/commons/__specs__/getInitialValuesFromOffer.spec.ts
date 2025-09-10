@@ -23,7 +23,6 @@ describe('getInitialValuesFromOffer', () => {
 
     expect(getInitialValuesFromOffer(offer, withdrawableSubCategory)).toEqual(
       expect.objectContaining({
-        bookingAllowedMode: 'later',
         bookingContact: 'bookingContact@example.co',
         bookingEmail: 'bookingEmail@example.co',
         externalTicketOfficeUrl: 'http://url.co',
@@ -52,7 +51,6 @@ describe('getInitialValuesFromOffer', () => {
       )
     ).toEqual(
       expect.objectContaining({
-        bookingAllowedMode: 'now',
         withdrawalType: null,
         receiveNotificationEmails: false,
       })

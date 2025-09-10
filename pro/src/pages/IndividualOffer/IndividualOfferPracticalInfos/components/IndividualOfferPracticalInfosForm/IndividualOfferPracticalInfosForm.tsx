@@ -18,7 +18,6 @@ import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../commons/types'
 import styles from './IndividualOfferPracticalInfosForm.module.scss'
-import { IndividualOfferPracticalInfosFormPublication } from './IndividualOfferPracticalInfosFormPublication/IndividualOfferPracticalInfosFormPublication'
 import { IndividualOfferPracticalInfosFormWithdrawal } from './IndividualOfferPracticalInfosFormWithdrawal/IndividualOfferPracticalInfosFormWithdrawal'
 
 export type IndividualOfferPracticalInfosFormProps = {
@@ -57,9 +56,6 @@ export function IndividualOfferPracticalInfosForm({
   return (
     <FormLayout fullWidthActions>
       <FormLayout.Section title="Informations pratiques">
-        <IndividualOfferPracticalInfosFormPublication
-          isFormDisabled={isFormDisabled}
-        />
         {subCategory?.canBeWithdrawable ? (
           <IndividualOfferPracticalInfosFormWithdrawal
             isFormDisabled={isFormDisabled}

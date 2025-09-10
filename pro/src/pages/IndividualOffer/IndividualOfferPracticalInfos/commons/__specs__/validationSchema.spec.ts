@@ -6,7 +6,6 @@ import { getValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const defaultFormValues: IndividualOfferPracticalInfosFormValues = {
-    bookingAllowedMode: 'now',
     withdrawalType: null,
     bookingContact: null,
     bookingEmail: null,
@@ -26,14 +25,6 @@ describe('validationSchema', () => {
       description: 'valid for default form values',
       formValues: defaultFormValues,
       expectedErrors: [],
-    },
-    {
-      description: 'invalid for missing booking limit date or time',
-      formValues: { ...defaultFormValues, bookingAllowedMode: 'later' },
-      expectedErrors: [
-        'Veuillez sélectionner une date de réservabilité',
-        'Veuillez sélectionner une heure de réservabilité',
-      ],
     },
     {
       description: 'invalid for missing withdrawal informations',

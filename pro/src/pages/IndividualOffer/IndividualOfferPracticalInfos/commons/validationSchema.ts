@@ -3,24 +3,11 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
-import {
-  bookingAllowedDateValidationSchema,
-  bookingAllowedTimeValidationSchema,
-} from '@/pages/IndividualOfferSummary/IndividualOfferSummary/components/EventPublicationForm/validationSchema'
 
 import type { IndividualOfferPracticalInfosFormValues } from './types'
 
 export function getValidationSchema(canBeWithdrawable?: boolean) {
   return yup.object<IndividualOfferPracticalInfosFormValues>().shape({
-    bookingAllowedMode: yup.string<'now' | 'later'>().required(),
-    bookingAllowedDate: yup.string().when('bookingAllowedMode', {
-      is: 'later',
-      then: (schema) => bookingAllowedDateValidationSchema(schema),
-    }),
-    bookingAllowedTime: yup.string().when('bookingAllowedMode', {
-      is: 'later',
-      then: (schema) => bookingAllowedTimeValidationSchema(schema),
-    }),
     withdrawalType: nonEmptyStringOrNull()
       .oneOf(Object.values(WithdrawalTypeEnum))
       .when([], {

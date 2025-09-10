@@ -17,7 +17,6 @@ function renderIndividualOfferPracticalInfosFormWithdrawal(
   function IndividualOfferPracticalInfosFormWithdrawalWrapper() {
     const form = useForm<IndividualOfferPracticalInfosFormValues>({
       defaultValues: {
-        bookingAllowedMode: 'now',
         withdrawalType: WithdrawalTypeEnum.NO_TICKET,
       },
     })
