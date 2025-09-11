@@ -2,6 +2,7 @@ import datetime
 import json
 import pathlib
 from io import BytesIO
+from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
@@ -1418,3 +1419,19 @@ class SubscriptionMessageTest:
             pop_over_icon=subscription_models.PopOverIcon.ERROR,
             updated_at=datetime.datetime(2022, 10, 3),
         )
+
+
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.core.subscription.ubble.api.update_ubble_workflow")
+def test_pending_and_created_fraud_checks_are_updated(update_ubble_workflow_mock):
+    yesterday = datetime.date.today() - relativedelta(hours=13)
+    created_fraud_check = BeneficiaryFraudCheckFactory(
+        type=FraudCheckType.UBBLE, status=FraudCheckStatus.STARTED, dateCreated=yesterday
+    )
+    pending_fraud_check = BeneficiaryFraudCheckFactory(
+        type=FraudCheckType.UBBLE, status=FraudCheckStatus.PENDING, dateCreated=yesterday
+    )
+
+    ubble_subscription_api.update_pending_ubble_applications()
+
+    update_ubble_workflow_mock.assert_has_calls([call(created_fraud_check), call(pending_fraud_check)], any_order=True)

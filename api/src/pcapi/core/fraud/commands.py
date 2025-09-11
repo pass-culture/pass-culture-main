@@ -6,9 +6,9 @@ import click
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.core.subscription.dms import repository as dms_repository
+from pcapi.core.subscription.ubble.api import update_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.scripts.subscription import dms as dms_script
-from pcapi.scripts.subscription import ubble as ubble_script
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -80,7 +80,7 @@ def handle_deleted_dms_applications_cron() -> None:
 @blueprint.cli.command("update_pending_ubble_applications_cron")
 @cron_decorators.log_cron_with_transaction
 def update_pending_ubble_applications_cron() -> None:
-    ubble_script.update_pending_ubble_applications(dry_run=False)
+    update_pending_ubble_applications(dry_run=False)
 
 
 @blueprint.cli.command("archive_past_identifications_automation")

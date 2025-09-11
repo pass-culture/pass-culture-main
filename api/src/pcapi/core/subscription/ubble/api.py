@@ -1,3 +1,4 @@
+import datetime
 import logging
 import mimetypes
 import os
@@ -5,8 +6,11 @@ import pathlib
 import re
 import shutil
 import tempfile
+import typing
 
 import flask
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from pydantic.v1.networks import HttpUrl
 
 import pcapi.core.external.batch as batch_notification
@@ -19,12 +23,14 @@ from pcapi.connectors.beneficiaries import ubble
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import track_ubble_ko_event
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.users import models as users_models
+from pcapi.models import db
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 
@@ -34,6 +40,7 @@ from . import messages
 
 
 logger = logging.getLogger(__name__)
+PAGE_SIZE = 20_000
 
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
@@ -393,3 +400,79 @@ def get_ubble_subscription_message(
         return messages.get_ubble_not_retryable_message(ubble_fraud_check)
 
     return None
+
+
+def update_pending_ubble_applications(dry_run: bool = True) -> None:
+    """
+    Sometimes the ubble webhook does not reach our API. This is a problem because the application is still pending.
+    We want to be able to retrieve the processed applications and update the status of the application anyway.
+    """
+    pending_ubble_application_counter = 0
+    for pending_ubble_application_fraud_checks in _get_pending_fraud_checks_pages():
+        pending_ubble_application_counter += len(pending_ubble_application_fraud_checks)
+        for fraud_check in pending_ubble_application_fraud_checks:
+            try:
+                update_ubble_workflow(fraud_check)
+            except Exception:
+                logger.error(
+                    "Error while updating pending ubble application",
+                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                )
+                continue
+            db.session.refresh(fraud_check)
+            if fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+                logger.error(
+                    "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
+                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                )
+
+    if pending_ubble_application_counter > 0:
+        logger.warning(
+            "Found %d pending ubble application older than 12 hours and tried to update them.",
+            pending_ubble_application_counter,
+        )
+    else:
+        logger.info("No pending ubble application found older than 12 hours. This is good.")
+
+
+def _get_pending_fraud_checks_pages() -> typing.Generator[list[fraud_models.BeneficiaryFraudCheck], None, None]:
+    # Ubble guarantees an application is processed after 3 hours.
+    # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
+    twelve_hours_ago = datetime.date.today() - datetime.timedelta(hours=12)
+    last_fraud_check_id = 0
+    max_ubble_fraud_check_id = (
+        db.session.query(sa.func.max(fraud_models.BeneficiaryFraudCheck.id))
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+            fraud_models.BeneficiaryFraudCheck.dateCreated < twelve_hours_ago,
+        )
+        .scalar()
+    )
+
+    pending_fraud_check_query = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
+            fraud_models.BeneficiaryFraudCheck.status.in_(
+                [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
+            ),
+        )
+        .options(
+            sa_orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            .selectinload(users_models.User.deposits)
+            .selectinload(finance_models.Deposit.recredits)
+        )
+    )
+
+    has_next_page = True
+    while has_next_page:
+        upper_fraud_check_page_id = last_fraud_check_id + PAGE_SIZE
+        pending_fraud_check_page = pending_fraud_check_query.filter(
+            fraud_models.BeneficiaryFraudCheck.id >= last_fraud_check_id,
+            fraud_models.BeneficiaryFraudCheck.id < upper_fraud_check_page_id,
+        ).all()
+
+        yield pending_fraud_check_page
+
+        has_next_page = upper_fraud_check_page_id <= max_ubble_fraud_check_id
+        last_fraud_check_id = upper_fraud_check_page_id
