@@ -134,7 +134,11 @@ export const HeaderDropdown = () => {
             data-testid="header-dropdown-menu-div"
           >
             <DropdownMenu.Item className={styles['close-item']}>
-              <button className={styles['close-button']}>
+              <button
+                type="button"
+                aria-label="fermer"
+                className={styles['close-button']}
+              >
                 <SvgIcon
                   src={fullCloseIcon}
                   alt=""
