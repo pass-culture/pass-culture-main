@@ -11,7 +11,6 @@ from pcapi.workers.decorators import job
 def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
     query = offers_repository.get_offers_by_filters(
         user_id=filters["user_id"],
-        user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
         status=filters["status"],
         venue_id=filters["venue_id"],
