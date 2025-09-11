@@ -7,14 +7,6 @@
   resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.2.tgz#c836b1bd81e6d62cd6cdf3ee4948bcdce8ea79c8"
   integrity sha512-baYZExFpsdkBNuvGKTKWCwKH57HRZLVtycZS05WTQNVOiXVSeAki3nU35zlRbToeMW8aHlJfyS+1C4BOv27q0A==
 
-"@algolia/autocomplete-core@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.19.3.tgz#f480d638d2b4218f8161f313186db7a5aac99c90"
-  integrity sha512-45CVTxtd3PwVux5G3WLUA3So5tRKRXu+amupW0dg3KTaTeydt+KzvH1mrZhs3hUne7VQ+g8+ZRGWHbuL/Rb5mw==
-  dependencies:
-    "@algolia/autocomplete-plugin-algolia-insights" "1.19.3"
-    "@algolia/autocomplete-shared" "1.19.3"
-
 "@algolia/autocomplete-core@1.19.4":
   version "1.19.4"
   resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.19.4.tgz#db9e4ef88cd8f2ce5b25e376373a8898dcbe2945"
@@ -22,17 +14,6 @@
   dependencies:
     "@algolia/autocomplete-plugin-algolia-insights" "1.19.4"
     "@algolia/autocomplete-shared" "1.19.4"
-
-"@algolia/autocomplete-js@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-js/-/autocomplete-js-1.19.3.tgz#a3f733ac654201beb18c29e83b61653e5037c04c"
-  integrity sha512-uJPElcGy1jqi8WAzTBgX4xufu+cRYSaDfAZW3ed4AVTOu8oDwUkMgrKgpKxp5u8d6BhugSm47vGkYoj87jZQ/Q==
-  dependencies:
-    "@algolia/autocomplete-core" "1.19.3"
-    "@algolia/autocomplete-preset-algolia" "1.19.3"
-    "@algolia/autocomplete-shared" "1.19.3"
-    htm "^3.1.1"
-    preact "^10.13.2"
 
 "@algolia/autocomplete-js@1.19.4":
   version "1.19.4"
@@ -44,13 +25,6 @@
     "@algolia/autocomplete-shared" "1.19.4"
     htm "^3.1.1"
     preact "^10.13.2"
-
-"@algolia/autocomplete-plugin-algolia-insights@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.19.3.tgz#04e6e8150cd0964f7521acbb1eb1a3d650e9f60d"
-  integrity sha512-Oy6t0Ws99xWKCzrp7pFWncLqFA3MoBAv1DDbDrn2XN9NBE9GviXw2hZsBi6CFReR/9wK72xq4vT96LBshOxhaQ==
-  dependencies:
-    "@algolia/autocomplete-shared" "1.19.3"
 
 "@algolia/autocomplete-plugin-algolia-insights@1.19.4":
   version "1.19.4"
@@ -69,22 +43,15 @@
     "@algolia/autocomplete-preset-algolia" "1.19.4"
     "@algolia/autocomplete-shared" "1.19.4"
 
-"@algolia/autocomplete-plugin-recent-searches@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-recent-searches/-/autocomplete-plugin-recent-searches-1.19.3.tgz#f6a98362dc7d7fcf080b17202dd8b6207fe447d2"
-  integrity sha512-RfY6TyolCa2gV655EKsz5sMp7E19C59ENJ3LBe5lRyq3o6sO5jNAMMyEBAp7y8M7uGRdepa6Y7Tch1zSLlCEEw==
+"@algolia/autocomplete-plugin-recent-searches@1.19.4":
+  version "1.19.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-recent-searches/-/autocomplete-plugin-recent-searches-1.19.4.tgz#f3a013438f915aac8258481a6504a18bad432c8f"
+  integrity sha512-8LLAedqcvztFweNWFQuqz9lWIiVlPi+wLF+3qWLPWQZQY3E4bVsbnxVfL9z4AMX9G0lljd2dQitn+Vwkl96d7Q==
   dependencies:
-    "@algolia/autocomplete-core" "1.19.3"
-    "@algolia/autocomplete-js" "1.19.3"
-    "@algolia/autocomplete-preset-algolia" "1.19.3"
-    "@algolia/autocomplete-shared" "1.19.3"
-
-"@algolia/autocomplete-preset-algolia@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.19.3.tgz#027fd0937bc22b72c3eecf56053ab55f79e4b423"
-  integrity sha512-NIvRLWFnX5MclQVyRKPwNDxjNg214qXCTZ/jLLVXw17VmPsEYfgeSYEMWEGFapA8KKKMz+Kwb+nBOc4je6DXfg==
-  dependencies:
-    "@algolia/autocomplete-shared" "1.19.3"
+    "@algolia/autocomplete-core" "1.19.4"
+    "@algolia/autocomplete-js" "1.19.4"
+    "@algolia/autocomplete-preset-algolia" "1.19.4"
+    "@algolia/autocomplete-shared" "1.19.4"
 
 "@algolia/autocomplete-preset-algolia@1.19.4":
   version "1.19.4"
@@ -92,11 +59,6 @@
   integrity sha512-WhX4mYosy7yBDjkB6c/ag+WKICjvV2fqQv/+NWJlpvnk2JtMaZByi73F6svpQX945J+/PxpQe8YIRBZHuYsLAQ==
   dependencies:
     "@algolia/autocomplete-shared" "1.19.4"
-
-"@algolia/autocomplete-shared@1.19.3":
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.19.3.tgz#9bd9dfd80fa3e320461682e917f0f94404f60eba"
-  integrity sha512-zzpqoVm/I4eRFT5Mcempwa5SVKox83eVIsZyLAYQdV+7tmtEYayx225Kl7nwhGrJ7NCozE9YWMwuFFN2g5dSBg==
 
 "@algolia/autocomplete-shared@1.19.4":
   version "1.19.4"
