@@ -260,6 +260,9 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "bankAccountStatus":
             return parse_venue_bank_account_status(venue)
 
+        if key == "isVirtual":
+            return False
+
         return super().get(key, default)
 
 
@@ -447,6 +450,9 @@ class VenueListItemResponseGetterDict(GetterDict):
 
         if key == "isCaledonian":
             return venue.is_caledonian
+
+        if key == "isVirtual":
+            return False
 
         return super().get(key, default)
 

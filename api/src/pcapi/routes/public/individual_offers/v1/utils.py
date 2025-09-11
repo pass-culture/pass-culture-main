@@ -233,7 +233,6 @@ def get_price_category_from_event(
 def load_venue_and_provider_query(query: sa_orm.Query) -> sa_orm.Query:
     return query.options(
         sa_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
-        sa_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
     )
 
 

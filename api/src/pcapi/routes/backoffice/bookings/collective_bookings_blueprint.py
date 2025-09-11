@@ -84,7 +84,6 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
             sa_orm.joinedload(educational_models.CollectiveBooking.pricings)

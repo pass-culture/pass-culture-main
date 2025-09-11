@@ -513,16 +513,15 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         expected_num_queries = 1  # get api key
         expected_num_queries += 1  # get offer
 
-        expected_num_queries += 1  # get price categories
         expected_num_queries += 1  # get mediations
         expected_num_queries += 1  # get stocks
+        expected_num_queries += 1  # get price categories
 
         expected_num_queries += 1  # get feature flag
 
         expected_num_queries += 1  # select oa
         expected_num_queries += 1  # update offer
 
-        expected_num_queries += 1  # check venue offerer address
         with assert_num_queries(expected_num_queries):
             response = self.make_request(
                 plain_api_key,
