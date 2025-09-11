@@ -1,0 +1,15 @@
+{% macro accessibility_indicator(icon, value, title) %}
+  <figure class="figure p-2 accessibility-logo-container d-flex flex-column align-items-center gap-3">
+    <div class="accessibility-logo d-flex justify-content-center align-items-center position-relative border rounded-xs">
+      {{ icon }}
+      <div class="position-absolute top-100 start-50 translate-middle">
+        {% if value is true %}
+          <i class="bi bi-check-circle-fill small text-success"></i>
+        {% else %}
+          <i class="bi bi-x-circle-fill small text-body-secondary"></i>
+        {% endif %}
+      </div>
+    </div>
+    <figcaption class="figure-caption text-center fw-semibold">{{ title }}</figcaption>
+  </figure>
+{% endmacro %}
