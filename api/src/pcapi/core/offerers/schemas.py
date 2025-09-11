@@ -9,8 +9,10 @@ from pydantic.v1 import validator
 
 from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
+from pcapi.core.offerers.models import Target
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -273,3 +275,41 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         if (comment and siret) or (not comment and not siret):
             raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
         return siret
+
+
+class CreateOffererQueryModel(BaseModel):
+    city: str
+    latitude: float | None
+    longitude: float | None
+    name: str
+    postalCode: str
+    inseeCode: str | None
+    siren: str
+    street: str | None
+    phoneNumber: str | None
+
+    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+
+
+class SaveNewOnboardingDataQueryModel(BaseModel):
+    address: AddressBodyModel
+    createVenueWithoutSiret: bool = False
+    isOpenToPublic: bool
+    publicName: str | None
+    siret: str
+    target: Target
+    token: str
+    venueTypeCode: str
+    webPresence: str
+    phoneNumber: str | None
+
+    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+
+    class Config:
+        extra = "forbid"
+        anystr_strip_whitespace = True
+
+
+class OffererMemberStatus(enum.Enum):
+    VALIDATED = "validated"
+    PENDING = "pending"

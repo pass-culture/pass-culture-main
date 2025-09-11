@@ -4,6 +4,7 @@ from functools import partial
 
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.education import schemas as educational_schemas
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
@@ -11,7 +12,6 @@ from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
 from pcapi.utils.transaction_manager import on_commit
@@ -20,7 +20,9 @@ from pcapi.utils.transaction_manager import on_commit
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> educational_models.CollectiveStock | None:
+def create_collective_stock(
+    stock_data: educational_schemas.CollectiveStockCreationBodyModel,
+) -> educational_models.CollectiveStock | None:
     offer_id = stock_data.offer_id
     start = stock_data.start_datetime
     end = stock_data.end_datetime

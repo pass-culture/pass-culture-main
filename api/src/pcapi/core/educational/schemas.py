@@ -2,10 +2,14 @@ import dataclasses
 import datetime
 import decimal
 import typing
+from typing import Any
 
+from pydantic.v1 import Field
 from pydantic.v1 import PositiveInt
-from pydantic.v1.fields import Field
+from pydantic.v1 import validator
+from pydantic.v1.fields import ModelField
 
+from pcapi import settings
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models
 from pcapi.routes.serialization import BaseModel
@@ -200,3 +204,103 @@ class CollectiveOffersFilter:
     formats: list[EacFormat] | None = None
     location_type: models.CollectiveLocationType | None = None
     offerer_address_id: int | None = None
+
+
+def validate_start_datetime(
+    start_datetime: datetime.datetime, values: dict[str, Any], field: ModelField
+) -> datetime.datetime:
+    # we need a datetime withdatetime.datetime.timezone information which is not provided bydatetime.datetime.utcnow.
+    if start_datetime and start_datetime < datetime.datetime.now(datetime.timezone.utc):
+        raise ValueError("L'évènement ne peut commencer dans le passé.")
+    return start_datetime
+
+
+def start_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_start_datetime)
+
+
+def validate_end_datetime(
+    end_datetime: datetime.datetime, values: dict[str, Any], field: ModelField
+) -> datetime.datetime:
+    # we need a datetime withdatetime.datetime.timezone information which is not provided bydatetime.datetime.utcnow.
+    start_datetime = values.get("start_datetime")
+    if end_datetime and end_datetime < datetime.datetime.now(datetime.timezone.utc):
+        raise ValueError("L'évènement ne peut se terminer dans le passé.")
+    if start_datetime and end_datetime < start_datetime:
+        raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
+    return end_datetime
+
+
+def end_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_end_datetime)
+
+
+def validate_booking_limit_datetime(
+    booking_limit_datetime: datetime.datetime | None, values: dict[str, Any]
+) -> datetime.datetime | None:
+    if booking_limit_datetime and values.get("start_datetime") and booking_limit_datetime > values["start_datetime"]:
+        raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+    return booking_limit_datetime
+
+
+def booking_limit_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_booking_limit_datetime)
+
+
+def validate_price(price: float | None) -> float:
+    if price is None:
+        raise ValueError("Le prix ne peut pas être nul.")
+    if price < 0:
+        raise ValueError("Le prix ne peut pas être négatif.")
+    if price > settings.EAC_OFFER_PRICE_LIMIT:
+        raise ValueError("Le prix est trop élevé.")
+    return price
+
+
+def price_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True, pre=True)(validate_price)
+
+
+def validate_number_of_tickets(number_of_tickets: int | None) -> int:
+    if number_of_tickets is None:
+        raise ValueError("Le nombre de places ne peut pas être nul.")
+    if number_of_tickets < 0:
+        raise ValueError("Le nombre de places ne peut pas être négatif.")
+    if number_of_tickets > settings.EAC_NUMBER_OF_TICKETS_LIMIT:
+        raise ValueError("Le nombre de places est trop élevé.")
+    return number_of_tickets
+
+
+def number_of_tickets_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
+
+
+def price_detail_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_price_detail)
+
+
+def validate_price_detail(educational_price_detail: str | None) -> str | None:
+    if educational_price_detail and len(educational_price_detail) > 1000:
+        raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+    return educational_price_detail
+
+
+class CollectiveStockCreationBodyModel(BaseModel):
+    offer_id: int
+    start_datetime: datetime.datetime
+    end_datetime: datetime.datetime | None
+    booking_limit_datetime: datetime.datetime | None
+    total_price: decimal.Decimal
+    number_of_tickets: int
+    educational_price_detail: str | None
+
+    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
+    _validate_total_price = price_validator("total_price")
+    _validate_start_datetime = start_datetime_validator("start_datetime")
+    _validate_end_datetime = end_datetime_validator("end_datetime")
+    _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
+    _validate_educational_price_detail = price_detail_validator("educational_price_detail")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

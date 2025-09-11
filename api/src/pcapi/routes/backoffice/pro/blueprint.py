@@ -30,8 +30,6 @@ from pcapi.models import db
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -214,7 +212,7 @@ def create_offerer() -> utils.BackofficeResponse:
         )
         return _render_get_create_offerer_form(form), 400
 
-    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+    offerer_creation_info = offerers_schemas.CreateOffererQueryModel(
         siren=form.siret_info.siret[:9],
         name=form.public_name.data,
         street=address.street,  # [ND]
