@@ -12,6 +12,7 @@ from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.connectors.dms.exceptions import DmsGraphQLApiException
+from pcapi.connectors.dms.utils import lock_ds_application
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -670,3 +671,106 @@ def _process_instructor_annotation(application_content: fraud_models.DMSContent,
     application_content.state = dms_models.GraphQLApplicationStates.refused.value
     application_content.processed_datetime = datetime.datetime.utcnow()
     return True
+
+
+def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
+    already_processed_applications_ids = dms_repository._get_already_processed_applications_ids(procedure_id)
+    client = dms_connector_api.DMSGraphQLClient()
+    processed_applications: list = []
+    new_import_datetime = None
+    for application_details in client.get_applications_with_details(procedure_id):
+        if application_details.number in already_processed_applications_ids:
+            continue
+        try:
+            handle_dms_application(application_details)
+            processed_applications.append(application_details.number)
+            if new_import_datetime is None or application_details.latest_modification_datetime > new_import_datetime:
+                new_import_datetime = application_details.latest_modification_datetime
+        except Exception:
+            logger.exception("[DMS] Error in script while importing application %s", application_details.number)
+    if new_import_datetime is None:
+        # This is a normal situation outside prod, when we have few
+        # applications to process (and often no applications at all).
+        log = logger.error if settings.DS_LOGGER_ERROR else logger.info
+        log("[DMS] No import for procedure %s", procedure_id)
+        return
+    new_import_record = dms_models.LatestDmsImport(
+        procedureId=procedure_id,
+        latestImportDatetime=new_import_datetime,
+        isProcessing=False,
+        processedApplications=processed_applications,
+    )
+    repository.save(new_import_record)
+    logger.info(
+        "[DMS] End import of all applications from Démarches Simplifiées for procedure %s - Processed %s applications",
+        procedure_id,
+        len(processed_applications),
+    )
+
+
+def import_all_updated_dms_applications(procedure_number: int, forced_since: datetime.datetime | None = None) -> None:
+    logger.info("[DMS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
+
+    latest_dms_import_record: dms_models.LatestDmsImport | None = (
+        db.session.query(dms_models.LatestDmsImport)
+        .filter(dms_models.LatestDmsImport.procedureId == procedure_number)
+        .order_by(dms_models.LatestDmsImport.latestImportDatetime.desc())
+        .first()
+    )
+    if latest_dms_import_record is None:
+        logger.info("[DMS] No previous import found for procedure %s. Running first import.", procedure_number)
+        _import_all_dms_applications_initial_import(procedure_number)
+        logger.info(
+            "[DMS] End import of all applications from Démarches Simplifiées for procedure %s", procedure_number
+        )
+        return
+
+    new_import_datetime = None
+    if latest_dms_import_record.isProcessing:
+        logger.info("[DMS] Previous import is still processing for procedure %s", procedure_number)
+        return
+
+    latest_dms_import_record.isProcessing = True
+    repository.save(latest_dms_import_record)
+    processed_applications: list = []
+
+    try:
+        client = dms_connector_api.DMSGraphQLClient()
+
+        # It is OK to pass a UTC datetime as a param to DMS.
+        # Their API understands it is a UTC datetime and interprets it correctly, even if they return time in the local timezone.
+        for application_details in client.get_applications_with_details(
+            procedure_number, since=forced_since if forced_since else latest_dms_import_record.latestImportDatetime
+        ):
+            try:
+                latest_modification_datetime = application_details.latest_modification_datetime
+                if new_import_datetime is None or latest_modification_datetime > new_import_datetime:
+                    new_import_datetime = latest_modification_datetime
+
+                with lock_ds_application(application_details.number):
+                    handle_dms_application(application_details)
+                processed_applications.append(application_details.number)
+            except Exception:
+                logger.exception("[DMS] Error in script while importing application %s", application_details.number)
+
+    except Exception as e:
+        logger.exception(
+            "[DMS] Error in script while importing all applications for procedure %s", procedure_number, exc_info=e
+        )
+    latest_dms_import_record.isProcessing = False
+
+    if new_import_datetime is None:
+        new_import_datetime = latest_dms_import_record.latestImportDatetime
+
+    new_import_record = dms_models.LatestDmsImport(
+        procedureId=procedure_number,
+        latestImportDatetime=new_import_datetime,
+        isProcessing=False,
+        processedApplications=processed_applications,
+    )
+    repository.save(latest_dms_import_record, new_import_record)
+    logger.info(
+        "[DMS] End import of all applications from Démarches Simplifiées for procedure %s - Processed %s applications",
+        procedure_number,
+        len(processed_applications),
+    )

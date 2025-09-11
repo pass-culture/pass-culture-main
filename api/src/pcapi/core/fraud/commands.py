@@ -5,6 +5,7 @@ import click
 
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
+from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import repository as dms_repository
 from pcapi.core.subscription.ubble.api import update_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
@@ -47,7 +48,7 @@ def import_all_updated_dms_applications(since: str | None = None) -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_script.import_all_updated_dms_applications(procedure_id, forced_since=forced_since)
+        dms_api.import_all_updated_dms_applications(procedure_id, forced_since=forced_since)
 
 
 @blueprint.cli.command("handle_inactive_dms_applications_cron")
