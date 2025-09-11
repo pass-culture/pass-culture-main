@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releaseNumber: ${{ steps.version.outputs.releaseNumber }}
+      versionName: ${{ steps.version.outputs.versionName }}
       commitHash: ${{ steps.rc_commit.outputs.commitHash }}
     steps:
       - name: Checkout repository
@@ -47,6 +48,9 @@ jobs:
           releaseNumber=$((major + 1))
           echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
 
+          versionName="${releaseNumber}.0.0"
+          echo "versionName=$versionName" >> $GITHUB_OUTPUT
+
       - name: Get commit hash from RC tag
         id: rc_commit
         run: |
@@ -65,7 +69,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
-      releaseNumber: ${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}
+      releaseNumber: ${{ needs.get-version-and-trigger-release.outputs.versionName }}
       commitHash: ${{ needs.get-version-and-trigger-release.outputs.commitHash }}
 
   deploy-staging:
