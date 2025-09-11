@@ -75,11 +75,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.findByText('Étape suivante').click()
     cy.findByText('Veuillez sélectionner une des réponses ci-dessus')
 
-    cy.stepLog({ message: 'an error message is raised' })
-    cy.findByTestId('global-notification-error')
-      .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
-      .should('not.be.visible')
-
     cy.url().should('contain', '/inscription/structure/activite')
     cy.findByText('Au grand public').click()
     cy.stepLog({ message: 'I fill in missing target audience' })
@@ -263,11 +258,6 @@ describe('Signup journey with known offerer...', () => {
       cy.findByTestId('error-venueTypeCode').contains(
         'Veuillez sélectionner une activité principale'
       )
-
-      cy.stepLog({ message: 'an error message is raised' })
-      cy.findByTestId('global-notification-error')
-        .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
-        .should('not.be.visible')
 
       cy.stepLog({ message: 'I fill in missing main activity' })
       cy.url().should('contain', '/inscription/structure/activite')

@@ -11,8 +11,6 @@ import {
   type ActivityContext,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -24,7 +22,6 @@ import { defaultActivityFormValues } from './constants'
 import { validationSchema } from './validationSchema'
 
 export const Activity = (): JSX.Element => {
-  const notify = useNotification()
   const navigate = useNavigate()
   const { activity, setActivity } = useSignupJourneyContext()
 
@@ -79,13 +76,6 @@ export const Activity = (): JSX.Element => {
     }
   }
 
-  const handleNextStep = () => {
-    if (!methods.formState.isValid) {
-      notify.error(FORM_ERROR_MESSAGE)
-      return
-    }
-  }
-
   const onSubmit = (formValues: any) => {
     setActivity(serializeActivityFormToSubmit(formValues))
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -124,7 +114,6 @@ export const Activity = (): JSX.Element => {
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}
-            onClickNext={handleNextStep}
             isDisabled={methods.formState.isSubmitting}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION}

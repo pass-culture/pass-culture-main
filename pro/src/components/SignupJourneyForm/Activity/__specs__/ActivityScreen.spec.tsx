@@ -208,33 +208,4 @@ describe('screens:SignupJourney::Activity', () => {
 
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
-
-  it('should display error notification', async () => {
-    renderActivityScreen(contextValue)
-
-    expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
-    ).toBeInTheDocument()
-
-    await userEvent.click(screen.getByText('Au grand public'))
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(
-      screen.getByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByRole('heading', {
-        level: 2,
-        name: 'Et enfin, définissez l’activité de votre structure',
-      })
-    ).toBeInTheDocument()
-    expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
-  })
 })
