@@ -145,6 +145,7 @@ describe('Create individual offers with OA', () => {
     cy.wait(['@postEventStocks', '@getStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
+    cy.wait(['@getOffer'])
     cy.contains('Accepter les réservations "Duo" : Oui')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
