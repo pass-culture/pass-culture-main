@@ -8,12 +8,12 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.models as subscription_models
 import pcapi.notifications.push.testing as push_testing
-from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription import models as subscription_status
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
@@ -89,10 +89,10 @@ class EduconnectTest:
         app.redis_client.set(f"{self.request_id_key_prefix}{self.request_id}", user.id)
 
         # even if the user has failed educonnect
-        already_done_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        already_done_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.KO,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.KO,
             eligibilityType=user_models.EligibilityType.UNDERAGE,
         )
 
@@ -145,9 +145,9 @@ class EduconnectTest:
         }
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
-            .filter(fraud_models.BeneficiaryFraudCheck.id != already_done_check.id)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.EDUCONNECT)
+            .filter(subscription_models.BeneficiaryFraudCheck.id != already_done_check.id)
             .one()
         )
 
@@ -164,7 +164,7 @@ class EduconnectTest:
         }
         assert (
             subscription_api.get_identity_check_fraud_status(user, user_models.EligibilityType.UNDERAGE, fraud_check)
-            == subscription_status.SubscriptionItemStatus.OK
+            == subscription_schemas.SubscriptionItemStatus.OK
         )
         assert user.firstName == "ProfileFirstName"
         assert user.lastName == "ProfileLastName"
@@ -215,8 +215,12 @@ class EduconnectTest:
         )
 
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(
+                user=user,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
             .one()
         )
 
@@ -270,8 +274,8 @@ class EduconnectTest:
         }
 
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.EDUCONNECT)
             .first()
             is None
         )
@@ -357,8 +361,10 @@ class EduconnectTest:
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"}
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_USER]
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
+        )
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.DUPLICATE_USER]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert message.user_message == (
@@ -384,8 +390,10 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=DuplicateINE"
         )
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.DUPLICATE_INE]
+        fraud_check = (
+            db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=duplicate_user.id).one()
+        )
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.DUPLICATE_INE]
 
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert message.user_message == (
@@ -410,7 +418,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -433,7 +441,7 @@ class EduconnectTest:
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid18YearsOld"
         )
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -455,7 +463,7 @@ class EduconnectTest:
         assert response.location == (
             "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
         message = educonnect_subscription_api.get_educonnect_subscription_message(fraud_check)
         assert (
             message.user_message
@@ -531,7 +539,11 @@ class PerformanceTest:
 
         assert response.status_code == 302
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.EDUCONNECT, status=fraud_models.FraudCheckStatus.OK)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(
+                user=user,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.OK,
+            )
             .one()
         )

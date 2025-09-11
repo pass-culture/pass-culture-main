@@ -4,8 +4,8 @@ from pydantic.v1 import fields
 from pydantic.v1 import validator
 
 import pcapi.core.fraud.utils as fraud_utils
-from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -14,7 +14,7 @@ from pcapi.utils.date import format_into_utc_date
 class CallToActionMessage(BaseModel):
     title: str | None = fields.Field(None, alias="callToActionTitle")
     link: str | None = fields.Field(None, alias="callToActionLink")
-    icon: subscription_models.CallToActionIcon | None = fields.Field(None, alias="callToActionIcon")
+    icon: subscription_schemas.CallToActionIcon | None = fields.Field(None, alias="callToActionIcon")
 
     class Config:
         orm_mode = True
@@ -26,7 +26,7 @@ class CallToActionMessage(BaseModel):
 class SubscriptionMessage(BaseModel):
     user_message: str
     call_to_action: CallToActionMessage | None
-    pop_over_icon: subscription_models.PopOverIcon | None
+    pop_over_icon: subscription_schemas.PopOverIcon | None
     updated_at: datetime.datetime | None
 
     class Config:
@@ -41,7 +41,7 @@ class SubscriptionMessageV2(BaseModel):
     user_message: str
     message_summary: str | None = None
     call_to_action: CallToActionMessage | None
-    pop_over_icon: subscription_models.PopOverIcon | None
+    pop_over_icon: subscription_schemas.PopOverIcon | None
     updated_at: datetime.datetime | None
 
     class Config:
@@ -53,10 +53,10 @@ class SubscriptionMessageV2(BaseModel):
 
 
 class SubscriptionStepDetailsResponse(BaseModel):
-    name: subscription_models.SubscriptionStep
-    title: subscription_models.SubscriptionStepTitle
+    name: subscription_schemas.SubscriptionStep
+    title: subscription_schemas.SubscriptionStepTitle
     subtitle: str | None
-    completion_state: subscription_models.SubscriptionStepCompletionState
+    completion_state: subscription_schemas.SubscriptionStepCompletionState
 
     class Config:
         alias_generator = to_camel
@@ -66,10 +66,10 @@ class SubscriptionStepDetailsResponse(BaseModel):
 
 class SubscriptionStepperResponseV2(BaseModel):
     subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
-    allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
+    allowed_identity_check_methods: list[subscription_schemas.IdentityCheckMethod]
     has_identity_check_pending: bool
-    maintenance_page_type: subscription_models.MaintenancePageType | None
-    next_subscription_step: subscription_models.SubscriptionStep | None
+    maintenance_page_type: subscription_schemas.MaintenancePageType | None
+    next_subscription_step: subscription_schemas.SubscriptionStep | None
     title: str
     subtitle: str | None
     subscription_message: SubscriptionMessageV2 | None

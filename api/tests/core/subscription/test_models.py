@@ -2,22 +2,22 @@ import datetime
 
 import pytest
 
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models
-from pcapi.core.fraud.models import _parse_jouve_date
 from pcapi.core.mails.transactional.users import dms_subscription_emails
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.dms import messages as dms_subscription_messages
+from pcapi.core.subscription.dms import schemas as dms_schemas
+from pcapi.core.subscription.jouve.schemas import _parse_jouve_date
 
 
 class GetRegistrationDatetimeTest:
     @pytest.mark.parametrize(
         "factory_class",
         [
-            fraud_factories.UbbleContentFactory,
-            fraud_factories.DMSContentFactory,
-            fraud_factories.EduconnectContentFactory,
+            subscription_factories.UbbleContentFactory,
+            subscription_factories.DMSContentFactory,
+            subscription_factories.EduconnectContentFactory,
         ],
     )
     def test_has_no_timezone(self, factory_class):
@@ -29,7 +29,7 @@ class GetRegistrationDatetimeTest:
 
 class OrphanDmsApplicationTest:
     def test_default_values_on_creation(self):
-        orphan = fraud_factories.OrphanDmsFraudCheckFactory.build(process_id=1, application_id=2)
+        orphan = subscription_factories.OrphanDmsFraudCheckFactory.build(process_id=1, application_id=2)
         assert orphan.email is None
 
 
@@ -58,17 +58,17 @@ class FraudHelperFunctionsTest:
 
 class DmsErrorKeyLabelTest:
     def test_dms_mailing_labels(self):
-        for key in models.DmsFieldErrorKeyEnum:
+        for key in dms_schemas.DmsFieldErrorKeyEnum:
             assert dms_subscription_emails.FIELD_ERROR_LABELS.get(key) is not None
 
     def test_dms_api_labels(self):
-        for key in models.DmsFieldErrorKeyEnum:
+        for key in dms_schemas.DmsFieldErrorKeyEnum:
             assert dms_api.FIELD_ERROR_LABELS.get(key) is not None
 
     def test_dms_internal_mailing_labels(self):
-        for key in models.DmsFieldErrorKeyEnum:
+        for key in dms_schemas.DmsFieldErrorKeyEnum:
             assert dms_internal_mailing.FIELD_ERROR_LABELS.get(key) is not None
 
     def test_dms_subscription_messages(self):
-        for key in models.DmsFieldErrorKeyEnum:
+        for key in dms_schemas.DmsFieldErrorKeyEnum:
             assert dms_subscription_messages.FIELD_ERROR_LABELS.get(key) is not None

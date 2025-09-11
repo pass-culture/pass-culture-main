@@ -4,11 +4,11 @@ import logging
 import sqlalchemy as sa
 from dateutil.relativedelta import relativedelta
 
-import pcapi.core.fraud.models as fraud_models
-import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
-import pcapi.core.subscription.ubble.api as ubble_subscription
+import pcapi.core.subscription.schemas as subscription_schemas
+import pcapi.core.subscription.ubble.api as ubble_api
+import pcapi.core.subscription.ubble.constants as ubble_constants
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.mails.transactional import send_subscription_document_error_email
@@ -41,47 +41,48 @@ def send_reminders() -> None:
 
 
 def _find_users_to_remind(
-    days_ago: int, reason_codes_filter: list[fraud_models.FraudReasonCode]
-) -> list[tuple[users_models.User, fraud_models.FraudReasonCode]]:
+    days_ago: int, reason_codes_filter: list[subscription_models.FraudReasonCode]
+) -> list[tuple[users_models.User, subscription_models.FraudReasonCode]]:
     users: list[users_models.User] = (
         db.session.query(users_models.User)
         .join(users_models.User.beneficiaryFraudChecks)
         .filter(
             sa.not_(users_models.User.is_beneficiary),
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.status.in_(
-                [fraud_models.FraudCheckStatus.KO, fraud_models.FraudCheckStatus.SUSPICIOUS]
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.status.in_(
+                [subscription_models.FraudCheckStatus.KO, subscription_models.FraudCheckStatus.SUSPICIOUS]
             ),
-            fraud_models.BeneficiaryFraudCheck.dateCreated < datetime.datetime.utcnow() - relativedelta(days=days_ago),
-            fraud_models.BeneficiaryFraudCheck.dateCreated
+            subscription_models.BeneficiaryFraudCheck.dateCreated
+            < datetime.datetime.utcnow() - relativedelta(days=days_ago),
+            subscription_models.BeneficiaryFraudCheck.dateCreated
             >= datetime.datetime.utcnow() - relativedelta(days=days_ago + 1),
         )
         .all()
     )
 
-    users_with_reasons: list[tuple[users_models.User, fraud_models.FraudReasonCode]] = []
+    users_with_reasons: list[tuple[users_models.User, subscription_models.FraudReasonCode]] = []
     for user in users:
         if not (
             eligibility_api.is_eligible_for_next_recredit_activation_steps(user)
             and subscription_api.get_user_subscription_state(user).fraud_status
-            == subscription_models.SubscriptionItemStatus.TODO
+            == subscription_schemas.SubscriptionItemStatus.TODO
         ):
             continue
         latest_fraud_check_reason_codes = _get_latest_failed_ubble_fraud_check(user).reasonCodes or []
 
-        relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(latest_fraud_check_reason_codes)
+        relevant_reason_code = ubble_api.get_most_relevant_ubble_error(latest_fraud_check_reason_codes)
         if relevant_reason_code in reason_codes_filter:
             users_with_reasons.append((user, relevant_reason_code))
 
     return users_with_reasons
 
 
-def _get_latest_failed_ubble_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck:
+def _get_latest_failed_ubble_fraud_check(user: users_models.User) -> subscription_models.BeneficiaryFraudCheck:
     ubble_ko_checks = [
         check
         for check in user.beneficiaryFraudChecks
-        if check.type == fraud_models.FraudCheckType.UBBLE
-        and check.status in [fraud_models.FraudCheckStatus.KO, fraud_models.FraudCheckStatus.SUSPICIOUS]
+        if check.type == subscription_models.FraudCheckType.UBBLE
+        and check.status in [subscription_models.FraudCheckStatus.KO, subscription_models.FraudCheckStatus.SUSPICIOUS]
     ]
     if not ubble_ko_checks:
         raise ValueError("User has no failed ubble fraud check")

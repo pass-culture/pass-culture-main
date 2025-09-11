@@ -6,30 +6,12 @@ import re
 
 import pydantic.v1 as pydantic_v1
 
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 
 
 logger = logging.getLogger(__name__)
-
-
-class UbbleIdentificationStatus(enum.Enum):
-    # ubble v2
-    PENDING = "pending"
-    CAPTURE_IN_PROGRESS = "capture_in_progress"
-    CHECKS_IN_PROGRESS = "checks_in_progress"
-    APPROVED = "approved"
-    DECLINED = "declined"
-    RETRY_REQUIRED = "retry_required"
-    INCONCLUSIVE = "inconclusive"  # id verification is anonymized
-    REFUSED = "refused"  # user did not consent to the verification
-    # ubble v1
-    UNINITIATED = "uninitiated"  # Identification has only been created (user has not started the verification flow)
-    INITIATED = "initiated"  # User has started the verification flow
-    PROCESSING = "processing"  # User has ended the verification flow, identification-url is not usable anymore
-    PROCESSED = "processed"  # Identification is completely processed by Ubble
-    ABORTED = "aborted"  # User has left the identification, the identification-url is no longer usable (this status is in beta test)
-    EXPIRED = "expired"  # The identification-url has expired and is no longer usable (only uninitiated and initiated identifications can become expired)
 
 
 class UbbleDeclaredData(pydantic_v1.BaseModel):
@@ -77,7 +59,7 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
     applicant_id: str
     external_applicant_id: str | None
     user_journey_id: str
-    status: UbbleIdentificationStatus
+    status: ubble_schemas.UbbleIdentificationStatus
     links: UbbleLinks = pydantic_v1.Field(alias="_links")
     documents: list[UbbleDocument]
     response_codes: list[UbbleResponseCode]
@@ -91,13 +73,13 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
         return self.documents[0] if self.documents else None
 
     @property
-    def fraud_reason_codes(self) -> list["fraud_models.FraudReasonCode"]:
+    def fraud_reason_codes(self) -> list["subscription_models.FraudReasonCode"]:
         return [
-            fraud_models.UBBLE_REASON_CODE_MAPPING.get(
-                response_code.code, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+            ubble_schemas.UBBLE_REASON_CODE_MAPPING.get(
+                response_code.code, subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
             )
             for response_code in self.response_codes
-            if response_code.code != fraud_models.UBBLE_OK_REASON_CODE
+            if response_code.code != ubble_schemas.UBBLE_OK_REASON_CODE
         ]
 
     class Config:
@@ -106,14 +88,14 @@ class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
 
 def convert_identification_to_ubble_content(
     identification: UbbleV2IdentificationResponse,
-) -> "fraud_models.UbbleContent":
+) -> "ubble_schemas.UbbleContent":
     document = identification.document
     if not document:
         first_name, last_name = None, None
     else:
         first_name, last_name = _get_first_and_last_name(document)
 
-    content = fraud_models.UbbleContent(
+    content = ubble_schemas.UbbleContent(
         applicant_id=identification.applicant_id,
         birth_date=getattr(document, "birth_date", None),
         birth_place=getattr(document, "birth_place", None),
@@ -168,7 +150,7 @@ class UbbleV2AttemptResponse(pydantic_v1.BaseModel):
 class WebhookBodyData(pydantic_v1.BaseModel):
     # https://docs.ubble.ai/#section/Webhooks/Body
     identity_verification_id: str
-    status: UbbleIdentificationStatus
+    status: ubble_schemas.UbbleIdentificationStatus
 
 
 class WebhookBodyV2(pydantic_v1.BaseModel):
@@ -214,7 +196,7 @@ class UbbleIdentificationAttributes(UbbleIdentificationObject):
     redirect_url: str = pydantic_v1.Field(alias="redirect-url")
     score: float | None
     started_at: datetime.datetime | None = pydantic_v1.Field(None, alias="started-at")
-    status: UbbleIdentificationStatus
+    status: ubble_schemas.UbbleIdentificationStatus
     status_updated_at: datetime.datetime = pydantic_v1.Field(alias="status-updated-at")
     updated_at: datetime.datetime = pydantic_v1.Field(alias="updated-at")
     user_agent: str | None = pydantic_v1.Field(None, alias="user-agent")
@@ -330,7 +312,7 @@ class Configuration(pydantic_v1.BaseModel):
 
 class WebhookRequest(pydantic_v1.BaseModel):
     identification_id: str
-    status: UbbleIdentificationStatus
+    status: ubble_schemas.UbbleIdentificationStatus
     configuration: Configuration
 
 

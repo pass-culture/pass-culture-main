@@ -4,13 +4,13 @@ import pytest
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.finance.models as finance_models
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.fraud_check_api as fraud_api
 import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.repository as subscription_repository
+import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
-from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.users import constants as users_constants
 
 
@@ -22,7 +22,7 @@ class UserGeneratorTest:
         return any(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_check_type and fraud_check.status == fraud_models.FraudCheckStatus.OK
+            if fraud_check.type == fraud_check_type and fraud_check.status == subscription_models.FraudCheckStatus.OK
         )
 
     def assert_user_passed_email_validation(self, user: users_models.User):
@@ -33,7 +33,7 @@ class UserGeneratorTest:
         if user.age >= users_constants.ELIGIBILITY_AGE_18:
             assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
             assert user.phoneNumber
-            assert self.has_fraud_check_validated(user, fraud_models.FraudCheckType.PHONE_VALIDATION)
+            assert self.has_fraud_check_validated(user, subscription_models.FraudCheckType.PHONE_VALIDATION)
         elif user.age in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
             assert user.phoneNumber is None
             assert user.phoneValidationStatus is None
@@ -45,19 +45,19 @@ class UserGeneratorTest:
         assert user.firstName
         assert user.lastName
         assert user.postalCode
-        assert self.has_fraud_check_validated(user, fraud_models.FraudCheckType.PROFILE_COMPLETION)
+        assert self.has_fraud_check_validated(user, subscription_models.FraudCheckType.PROFILE_COMPLETION)
 
     def assert_user_passed_identity_check(self, user: users_models.User):
         self.assert_user_passed_profile_completion(user)
         assert user.validatedBirthDate
         assert user.idPieceNumber
         assert self.has_fraud_check_validated(
-            user, fraud_models.FraudCheckType.UBBLE
-        ) or self.has_fraud_check_validated(user, fraud_models.FraudCheckType.EDUCONNECT)
+            user, subscription_models.FraudCheckType.UBBLE
+        ) or self.has_fraud_check_validated(user, subscription_models.FraudCheckType.EDUCONNECT)
 
     def assert_user_passed_honor_statement(self, user: users_models.User):
         self.assert_user_passed_identity_check(user)
-        assert self.has_fraud_check_validated(user, fraud_models.FraudCheckType.HONOR_STATEMENT)
+        assert self.has_fraud_check_validated(user, subscription_models.FraudCheckType.HONOR_STATEMENT)
 
     def assert_user_is_beneficiary(
         self,
@@ -165,7 +165,7 @@ class UserGeneratorTest:
         )
         user = users_generator.generate_user(user_data)
         fraud_item = fraud_api.validate_id_piece_number_format_fraud_item(user.idPieceNumber)
-        assert fraud_item.status == fraud_models.FraudStatus.OK
+        assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
     def test_profile_completion_is_consistent_with_user_data(self):
         user_data = users_generator.GenerateUserData(
@@ -173,7 +173,7 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
         )
         user = users_generator.generate_user(user_data)
-        profile_completion = fraud_repository.get_completed_profile_check(user, user.eligibility)
+        profile_completion = subscription_repository.get_completed_profile_check(user, user.eligibility)
         assert profile_completion.resultContent["address"] == user.address
         assert profile_completion.resultContent["city"] == user.city
         assert profile_completion.resultContent["firstName"] == user.firstName
@@ -186,7 +186,7 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
         )
         user = users_generator.generate_user(user_data)
-        identity_check = fraud_repository.get_relevant_identity_fraud_check(user, user.eligibility)
+        identity_check = subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility)
         assert identity_check.resultContent["first_name"] == user.firstName
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
@@ -199,7 +199,7 @@ class UserGeneratorTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
         assert user.deposit.expirationDate < datetime.datetime.utcnow()
         user_subscription_state = subscription_api.get_user_subscription_state(user)
-        assert user_subscription_state.next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        assert user_subscription_state.next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
 
     @pytest.mark.parametrize(
         "id_provider",
@@ -225,14 +225,14 @@ class UserGeneratorTest:
         profile_completion_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+            if fraud_check.type == subscription_models.FraudCheckType.PROFILE_COMPLETION
         )
         assert profile_completion_check.dateCreated == date_in_the_past
 
         identity_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+            if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         )
         assert identity_fraud_check.dateCreated == date_in_the_past
         assert identity_fraud_check.source_data().get_registration_datetime().date() == date_in_the_past.date()

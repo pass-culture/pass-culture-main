@@ -16,16 +16,16 @@ from flask_jwt_extended import create_refresh_token
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.common.models as common_fraud_models
-import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.subscription.fraud_check_api as fraud_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
+import pcapi.core.subscription.repository as subscription_repository
+import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
@@ -239,7 +239,7 @@ def _update_user_information(
 
 
 def update_user_information_from_external_source(
-    user: models.User, data: common_fraud_models.IdentityCheckContent, *, id_piece_number: str | None = None
+    user: models.User, data: subscription_schemas.IdentityCheckContent, *, id_piece_number: str | None = None
 ) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
@@ -1409,7 +1409,7 @@ def has_profile_expired(user: models.User) -> bool:
     if not campaign_date:
         return False
 
-    latest_profile_completion = fraud_repository.get_latest_completed_profile_check(user)
+    latest_profile_completion = subscription_repository.get_latest_completed_profile_check(user)
     has_completed_profile_after_campaign_start = (
         latest_profile_completion and latest_profile_completion.dateCreated >= campaign_date
     )

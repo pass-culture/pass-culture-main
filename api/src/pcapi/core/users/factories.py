@@ -20,10 +20,10 @@ import pcapi.core.users.constants as users_constants
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.connectors.dms import models as dms_models
-from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
 from pcapi.core.finance.conf import RECREDIT_TYPE_AGE_MAPPING
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
@@ -110,16 +110,16 @@ class BaseUserFactory(BaseFactory):
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         return []
 
     @factory.post_generation
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -145,8 +145,8 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
+        import pcapi.core.subscription.factories as subscription_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if obj.age == users_constants.ELIGIBILITY_AGE_18:
@@ -154,7 +154,7 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
                 obj.phoneNumber = f"+336{obj.id:08}"
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(
-                fraud_factories.PhoneValidationFraudCheckFactory.create(
+                subscription_factories.PhoneValidationFraudCheckFactory.create(
                     user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
                 )
             )
@@ -164,9 +164,9 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -206,15 +206,15 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
+        import pcapi.core.subscription.factories as subscription_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         profile_completion_kwargs: dict = {"dateCreated": kwargs.get("dateCreated", datetime.utcnow())}
         if "eligibilityType" in kwargs:
             profile_completion_kwargs["eligibilityType"] = kwargs["eligibilityType"]
         fraud_checks.append(
-            fraud_factories.ProfileCompletionFraudCheckFactory.create(
+            subscription_factories.ProfileCompletionFraudCheckFactory.create(
                 user=obj,
                 resultContent__address=obj.address,
                 resultContent__city=obj.city,
@@ -230,9 +230,9 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -253,14 +253,14 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
+        import pcapi.core.subscription.factories as subscription_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if not kwargs.get("type"):
-            kwargs["type"] = fraud_models.FraudCheckType.UBBLE
-        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory.create(
-            user=obj, status=fraud_models.FraudCheckStatus.OK, **kwargs
+            kwargs["type"] = subscription_models.FraudCheckType.UBBLE
+        identity_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
+            user=obj, status=subscription_models.FraudCheckStatus.OK, **kwargs
         )
         fraud_checks.append(identity_fraud_check)
         return fraud_checks
@@ -269,9 +269,9 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -304,12 +304,12 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
+        import pcapi.core.subscription.factories as subscription_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         fraud_checks.append(
-            fraud_factories.HonorStatementFraudCheckFactory.create(
+            subscription_factories.HonorStatementFraudCheckFactory.create(
                 user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
             )
         )
@@ -319,9 +319,9 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -383,9 +383,9 @@ class Transition1718Factory(BeneficiaryFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+    ) -> list[subscription_models.BeneficiaryFraudCheck]:
         if not create:
             return []
 
@@ -665,10 +665,10 @@ class BeneficiaryGrant18Factory(BaseFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> fraud_models.BeneficiaryFraudCheck | None:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> subscription_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.subscription.factories as subscription_factories
 
         if not create:
             return None
@@ -676,20 +676,20 @@ class BeneficiaryGrant18Factory(BaseFactory):
         type_ = kwargs.get(
             "type",
             (
-                fraud_models.FraudCheckType.EDUCONNECT
+                subscription_models.FraudCheckType.EDUCONNECT
                 if obj.eligibility == models.EligibilityType.UNDERAGE
-                else fraud_models.FraudCheckType.UBBLE
+                else subscription_models.FraudCheckType.UBBLE
             ),
         )
 
         assert obj.dateOfBirth  # helps mypy
 
-        return fraud_factories.BeneficiaryFraudCheckFactory.create(
+        return subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            status=fraud_models.FraudCheckStatus.OK,
+            status=subscription_models.FraudCheckStatus.OK,
             type=type_,
             resultContent=(
-                fraud_factories.EduconnectContentFactory.create(
+                subscription_factories.EduconnectContentFactory.create(
                     first_name=obj.firstName,
                     last_name=obj.lastName,
                     birth_date=obj.dateOfBirth.date(),
@@ -697,7 +697,7 @@ class BeneficiaryGrant18Factory(BaseFactory):
                     registration_datetime=obj.dateCreated,
                 )
                 if obj.eligibility == models.EligibilityType.UNDERAGE
-                else fraud_factories.UbbleContentFactory.create(first_name=obj.firstName, last_name=obj.lastName)
+                else subscription_factories.UbbleContentFactory.create(first_name=obj.firstName, last_name=obj.lastName)
             ),
             eligibilityType=obj.eligibility,
         )
@@ -776,22 +776,22 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> fraud_models.BeneficiaryFraudCheck | None:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> subscription_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.subscription.factories as subscription_factories
 
         if not create:
             return None
 
         assert obj.dateOfBirth  # helps mypy
 
-        return fraud_factories.BeneficiaryFraudCheckFactory.create(
+        return subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             dateCreated=obj.dateCreated,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory.create(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
                 birth_date=obj.dateOfBirth.date(),
@@ -830,23 +830,23 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> fraud_models.BeneficiaryFraudCheck | None:
-        import pcapi.core.fraud.factories as fraud_factories
+    ) -> subscription_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.subscription.factories as subscription_factories
 
         if not create:
             return None
 
         assert obj.dateOfBirth  # helps mypy
 
-        return fraud_factories.BeneficiaryFraudCheckFactory.create(
+        return subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
             dateCreated=obj.dateCreated,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory.create(
-                status=ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=subscription_factories.UbbleContentFactory.create(
+                status=ubble_schemas.UbbleIdentificationStatus.PROCESSED,
                 first_name=obj.firstName,
                 last_name=obj.lastName,
                 birth_date=obj.dateOfBirth.date().isoformat(),
@@ -876,35 +876,35 @@ class EligibleActivableFactory(EligibleGrant18Factory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
     ) -> None:
-        import pcapi.core.fraud.factories as fraud_factories
+        import pcapi.core.subscription.factories as subscription_factories
 
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
-            resultContent=fraud_factories.UbbleContentFactory.create(
+            resultContent=subscription_factories.UbbleContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
             ),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
         )
         obj.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.AGE18,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory.create(
+        subscription_factories.ProfileCompletionFraudCheckFactory.create(
             user=obj, eligibilityType=models.EligibilityType.AGE18
         )
 
@@ -914,28 +914,28 @@ class EligibleActivableUnderageFactory(EligibleUnderageFactory):
     def beneficiaryFraudChecks(
         obj: models.User,
         create: bool,
-        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        extracted: subscription_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
     ) -> None:
-        import pcapi.core.fraud.factories as fraud_factories
+        import pcapi.core.subscription.factories as subscription_factories
 
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory.create(
+            resultContent=subscription_factories.EduconnectContentFactory.create(
                 first_name=obj.firstName,
                 last_name=obj.lastName,
             ),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=obj,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory.create(
+        subscription_factories.ProfileCompletionFraudCheckFactory.create(
             user=obj, eligibilityType=models.EligibilityType.UNDERAGE
         )
 

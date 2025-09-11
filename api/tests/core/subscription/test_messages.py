@@ -2,9 +2,9 @@ import datetime
 
 import pytest
 
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 
 
@@ -15,9 +15,9 @@ class SubscriptionMessagesTest:
         users_factories.UserFactory(ineHash="some_HASH", email="lucille.ellingson@example.com")
 
         user = users_factories.UserFactory()
-        content = fraud_factories.EduconnectContentFactory(ine_hash="some_HASH")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.EDUCONNECT, resultContent=content
+        content = subscription_factories.EduconnectContentFactory(ine_hash="some_HASH")
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.EDUCONNECT, resultContent=content
         )
 
         expected_message = (
@@ -27,7 +27,7 @@ class SubscriptionMessagesTest:
         )
 
         message = messages.build_duplicate_error_message(
-            user, messages.fraud_models.FraudReasonCode.DUPLICATE_INE, content
+            user, messages.subscription_models.FraudReasonCode.DUPLICATE_INE, content
         )
 
         assert message == expected_message
@@ -42,14 +42,14 @@ class SubscriptionMessagesTest:
         )
 
         user = users_factories.UserFactory()
-        content = fraud_factories.UbbleContentFactory(
+        content = subscription_factories.UbbleContentFactory(
             birth_date="2003-10-03",
             first_name="Lucille",
             last_name="Ellingson",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, resultContent=content
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, resultContent=content
         )
 
         expected_message = (
@@ -59,7 +59,7 @@ class SubscriptionMessagesTest:
         )
 
         message = messages.build_duplicate_error_message(
-            user, messages.fraud_models.FraudReasonCode.DUPLICATE_USER, content
+            user, messages.subscription_models.FraudReasonCode.DUPLICATE_USER, content
         )
 
         assert message == expected_message
@@ -69,9 +69,9 @@ class SubscriptionMessagesTest:
         users_factories.BeneficiaryGrant18Factory(email="lucille.ellingson@example.com", idPieceNumber="123456789")
 
         user = users_factories.UserFactory()
-        content = fraud_factories.DMSContentFactory(id_piece_number="123456789")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=content
+        content = subscription_factories.DMSContentFactory(id_piece_number="123456789")
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=content
         )
 
         expected_message = (
@@ -81,16 +81,16 @@ class SubscriptionMessagesTest:
         )
 
         message = messages.build_duplicate_error_message(
-            user, messages.fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, content
+            user, messages.subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, content
         )
 
         assert message == expected_message
 
     def test_build_duplicate_error_message_duplicate_user_not_found(self):
         user = users_factories.UserFactory()
-        content = fraud_factories.DMSContentFactory(id_piece_number="123456789")
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=content
+        content = subscription_factories.DMSContentFactory(id_piece_number="123456789")
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=content
         )
 
         expected_message = (
@@ -100,7 +100,7 @@ class SubscriptionMessagesTest:
         )
 
         message = messages.build_duplicate_error_message(
-            user, messages.fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, content
+            user, messages.subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER, content
         )
 
         assert message == expected_message

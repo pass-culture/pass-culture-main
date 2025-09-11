@@ -372,7 +372,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
 
 def get_user_attributes(user: users_models.User) -> models.UserAttributes:
-    from pcapi.core.fraud import api as fraud_api
+    from pcapi.core.subscription import fraud_check_api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
     user_bookings = get_user_bookings(user)

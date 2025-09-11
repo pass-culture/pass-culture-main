@@ -1,10 +1,9 @@
 import logging
 
 from pcapi import settings
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.common import models as common_fraud_models
-from pcapi.core.subscription import models
+from pcapi.core.subscription import fraud_check_api as fraud_api
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.users import models as users_models
 
 
@@ -14,35 +13,35 @@ logger = logging.getLogger(__name__)
 MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
 MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
-MAINTENANCE_PAGE_MESSAGE = models.SubscriptionMessage(
+MAINTENANCE_PAGE_MESSAGE = subscription_schemas.SubscriptionMessage(
     user_message="La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
     call_to_action=None,
-    pop_over_icon=models.PopOverIcon.CLOCK,
+    pop_over_icon=subscription_schemas.PopOverIcon.CLOCK,
 )
 
-REDIRECT_TO_DMS_CALL_TO_ACTION = models.CallToActionMessage(
+REDIRECT_TO_DMS_CALL_TO_ACTION = subscription_schemas.CallToActionMessage(
     title="Accéder au site Démarches-Simplifiées",
     link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
-    icon=models.CallToActionIcon.EXTERNAL,
+    icon=subscription_schemas.CallToActionIcon.EXTERNAL,
 )
 
-REDIRECT_TO_IDENTIFICATION_CHOICE = models.CallToActionMessage(
+REDIRECT_TO_IDENTIFICATION_CHOICE = subscription_schemas.CallToActionMessage(
     title="Réessayer la vérification de mon identité",
     link=f"{settings.WEBAPP_V2_URL}/verification-identite",
-    icon=models.CallToActionIcon.RETRY,
+    icon=subscription_schemas.CallToActionIcon.RETRY,
 )
 
 
-def compute_support_call_to_action(user_id: int) -> models.CallToActionMessage:
-    return models.CallToActionMessage(
+def compute_support_call_to_action(user_id: int) -> subscription_schemas.CallToActionMessage:
+    return subscription_schemas.CallToActionMessage(
         title="Contacter le support",
         link=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user_id),
-        icon=models.CallToActionIcon.EMAIL,
+        icon=subscription_schemas.CallToActionIcon.EMAIL,
     )
 
 
-def get_generic_ko_message(user_id: int) -> models.SubscriptionMessage:
-    return models.SubscriptionMessage(
+def get_generic_ko_message(user_id: int) -> subscription_schemas.SubscriptionMessage:
+    return subscription_schemas.SubscriptionMessage(
         user_message="Ton inscription n'a pas pu aboutir. Contacte le support pour plus d'informations",
         call_to_action=compute_support_call_to_action(user_id),
         pop_over_icon=None,
@@ -51,15 +50,15 @@ def get_generic_ko_message(user_id: int) -> models.SubscriptionMessage:
 
 def build_duplicate_error_message(
     user: users_models.User,
-    reason_code: fraud_models.FraudReasonCode,
-    application_content: common_fraud_models.IdentityCheckContent | None,
+    reason_code: subscription_models.FraudReasonCode,
+    application_content: subscription_schemas.IdentityCheckContent | None,
 ) -> str:
     match reason_code:
-        case fraud_models.FraudReasonCode.DUPLICATE_INE:
+        case subscription_models.FraudReasonCode.DUPLICATE_INE:
             message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé aux identifiants ÉduConnect que tu as fournis."
-        case fraud_models.FraudReasonCode.DUPLICATE_USER:
+        case subscription_models.FraudReasonCode.DUPLICATE_USER:
             message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire à ton nom."
-        case fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+        case subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
             message_start = "Ton dossier a été refusé car il y a déjà un compte bénéficiaire associé à ce numéro de pièce d’identité."
         case _:
             logger.error("Duplicate error with no matching body message %s", reason_code)

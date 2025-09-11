@@ -32,11 +32,11 @@ from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import constants as chronicles_constants
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.geography.repository import get_iris_from_address
 from pcapi.core.history.api import add_action
 from pcapi.core.mails import get_raw_contact_data
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -307,7 +307,7 @@ def _get_anonymize_pro_query(time_clause: sa.sql.elements.ColumnElement[bool]) -
         .filter(
             # only NON_ATTACHED_PRO, excluding other role in the same array (BENEFICIARY, etc.)
             models.User.roles == [models.UserRole.NON_ATTACHED_PRO],
-            fraud_models.BeneficiaryFraudCheck.id.is_(None),
+            subscription_models.BeneficiaryFraudCheck.id.is_(None),
             # never connected or not connected within the last 3 years
             time_clause,
             # attachment or offerer is no longer active
@@ -666,33 +666,33 @@ def _extract_gdpr_beneficiary_validation(
     user: models.User,
 ) -> list[users_serialization.GdprBeneficiaryValidation]:
     check_types = {
-        fraud_models.FraudCheckType.DMS.name: "Démarches simplifiées",
-        fraud_models.FraudCheckType.EDUCONNECT.name: "ÉduConnect",
-        fraud_models.FraudCheckType.HONOR_STATEMENT.name: "Attestation sur l'honneur",
-        fraud_models.FraudCheckType.INTERNAL_REVIEW.name: "Revue Interne",
-        fraud_models.FraudCheckType.JOUVE.name: "Jouve",
-        fraud_models.FraudCheckType.PHONE_VALIDATION.name: "Validation par téléphone",
-        fraud_models.FraudCheckType.PROFILE_COMPLETION.name: "Complétion du profil",
-        fraud_models.FraudCheckType.UBBLE.name: "Ubble",
-        fraud_models.FraudCheckType.USER_PROFILING.name: "Profilage d'utilisateur",
+        subscription_models.FraudCheckType.DMS.name: "Démarches simplifiées",
+        subscription_models.FraudCheckType.EDUCONNECT.name: "ÉduConnect",
+        subscription_models.FraudCheckType.HONOR_STATEMENT.name: "Attestation sur l'honneur",
+        subscription_models.FraudCheckType.INTERNAL_REVIEW.name: "Revue Interne",
+        subscription_models.FraudCheckType.JOUVE.name: "Jouve",
+        subscription_models.FraudCheckType.PHONE_VALIDATION.name: "Validation par téléphone",
+        subscription_models.FraudCheckType.PROFILE_COMPLETION.name: "Complétion du profil",
+        subscription_models.FraudCheckType.UBBLE.name: "Ubble",
+        subscription_models.FraudCheckType.USER_PROFILING.name: "Profilage d'utilisateur",
     }
     check_status = {
-        fraud_models.FraudCheckStatus.CANCELED.name: "Annulé",
-        fraud_models.FraudCheckStatus.ERROR.name: "Erreur",
-        fraud_models.FraudCheckStatus.KO.name: "Échec",
-        fraud_models.FraudCheckStatus.OK.name: "Succès",
-        fraud_models.FraudCheckStatus.PENDING.name: "En attente",
-        fraud_models.FraudCheckStatus.STARTED.name: "Commencé",
-        fraud_models.FraudCheckStatus.SUSPICIOUS.name: "Suspect",
+        subscription_models.FraudCheckStatus.CANCELED.name: "Annulé",
+        subscription_models.FraudCheckStatus.ERROR.name: "Erreur",
+        subscription_models.FraudCheckStatus.KO.name: "Échec",
+        subscription_models.FraudCheckStatus.OK.name: "Succès",
+        subscription_models.FraudCheckStatus.PENDING.name: "En attente",
+        subscription_models.FraudCheckStatus.STARTED.name: "Commencé",
+        subscription_models.FraudCheckStatus.SUSPICIOUS.name: "Suspect",
     }
     eligibility_types = {
         models.EligibilityType.AGE18.name: "Pass 18",
         models.EligibilityType.UNDERAGE.name: "Pass 15-17",
     }
     beneficiary_fraud_checks = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
-        .filter(fraud_models.BeneficiaryFraudCheck.userId == user.id)
-        .order_by(fraud_models.BeneficiaryFraudCheck.id)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
+        .filter(subscription_models.BeneficiaryFraudCheck.userId == user.id)
+        .order_by(subscription_models.BeneficiaryFraudCheck.id)
         .all()
     )
     return [
@@ -720,9 +720,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.Gd
     }
     bookings_data = (
         db.session.query(bookings_models.Booking)
-        .filter(
-            bookings_models.Booking.userId == user.id,
-        )
+        .filter(bookings_models.Booking.userId == user.id)
         .options(
             sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
             sa_orm.joinedload(bookings_models.Booking.venue),

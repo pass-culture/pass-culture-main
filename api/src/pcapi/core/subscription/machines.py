@@ -2,9 +2,9 @@ import enum
 
 import transitions
 
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import repository as subscription_repository
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
 
@@ -43,9 +43,9 @@ FINAL_STATES = [
 
 class SubscriptionStateMachineTemplate:
     state: SubscriptionStates
-    phone_validation_status: subscription_models.SubscriptionItemStatus | None = None
-    identity_fraud_check: fraud_models.BeneficiaryFraudCheck | None = None
-    identity_fraud_check_status: subscription_models.SubscriptionItemStatus | None = None
+    phone_validation_status: subscription_schemas.SubscriptionItemStatus | None = None
+    identity_fraud_check: subscription_models.BeneficiaryFraudCheck | None = None
+    identity_fraud_check_status: subscription_schemas.SubscriptionItemStatus | None = None
 
     def __init__(self, user: users_models.User):
         self.user = user
@@ -61,7 +61,9 @@ class SubscriptionStateMachineTemplate:
     def set_identity_fraud_check(self) -> None:
         from pcapi.core.subscription import api as subscription_api
 
-        self.identity_fraud_check = fraud_repository.get_relevant_identity_fraud_check(self.user, self.eligibility)
+        self.identity_fraud_check = subscription_repository.get_relevant_identity_fraud_check(
+            self.user, self.eligibility
+        )
         self.identity_fraud_check_status = subscription_api.get_identity_check_fraud_status(
             self.user, self.eligibility, self.identity_fraud_check
         )
@@ -82,22 +84,22 @@ class SubscriptionStateMachineTemplate:
         if not self.phone_validation_status:
             raise ValueError(f"Phone validation status of {self.user = } should not be None at {self.state = }")
 
-        return self.phone_validation_status == subscription_models.SubscriptionItemStatus.KO
+        return self.phone_validation_status == subscription_schemas.SubscriptionItemStatus.KO
 
     def has_validated_phone_number(self) -> bool:
         if not self.phone_validation_status:
             raise ValueError(f"Phone validation status of {self.user = } should not be None at {self.state = }")
 
         return self.phone_validation_status not in [
-            subscription_models.SubscriptionItemStatus.TODO,
-            subscription_models.SubscriptionItemStatus.KO,
+            subscription_schemas.SubscriptionItemStatus.TODO,
+            subscription_schemas.SubscriptionItemStatus.KO,
         ]
 
     def has_validated_email(self) -> bool:
         return bool(self.user.isEmailValidated)
 
     def has_admin_ko_review(self) -> bool:
-        return fraud_repository.has_admin_ko_review(self.user)
+        return subscription_repository.has_admin_ko_review(self.user)
 
     def has_completed_profile(self) -> bool:
         from pcapi.core.subscription import api as subscription_api
@@ -108,15 +110,15 @@ class SubscriptionStateMachineTemplate:
         return subscription_api.has_completed_profile_for_given_eligibility(self.user, self.eligibility)
 
     def is_identity_check_ok(self) -> bool:
-        return self.identity_fraud_check_status == subscription_models.SubscriptionItemStatus.OK
+        return self.identity_fraud_check_status == subscription_schemas.SubscriptionItemStatus.OK
 
     def is_identity_check_pending(self) -> bool:
-        return self.identity_fraud_check_status == subscription_models.SubscriptionItemStatus.PENDING
+        return self.identity_fraud_check_status == subscription_schemas.SubscriptionItemStatus.PENDING
 
     def has_failed_identity_check(self) -> bool:
         return self.identity_fraud_check_status in [
-            subscription_models.SubscriptionItemStatus.KO,
-            subscription_models.SubscriptionItemStatus.SUSPICIOUS,
+            subscription_schemas.SubscriptionItemStatus.KO,
+            subscription_schemas.SubscriptionItemStatus.SUSPICIOUS,
         ]
 
     def can_retry_identity_check(self) -> bool:
@@ -131,7 +133,7 @@ class SubscriptionStateMachineTemplate:
         if not self.eligibility:
             raise ValueError(f"Eligibility of {self.user = } should not be None at {self.state = }")
 
-        return bool(fraud_repository.get_completed_honor_statement(self.user, self.eligibility))
+        return bool(subscription_repository.get_completed_honor_statement(self.user, self.eligibility))
 
     def requires_manual_review_before_activation(self) -> bool:
         from pcapi.core.subscription import api as subscription_api
