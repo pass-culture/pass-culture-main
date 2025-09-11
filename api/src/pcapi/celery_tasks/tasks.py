@@ -6,6 +6,8 @@ from functools import wraps
 import pydantic.v1 as pydantic_v1
 from celery import shared_task
 
+import pcapi.celery_tasks.metrics as metrics
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,8 @@ def celery_async_task(
         @shared_task(name=name, autoretry_for=autoretry_for, retry_backoff=retry_backoff)
         @wraps(f)
         def task(payload: dict) -> None:
+            metrics.tasks_counter.labels(task=name).inc()
+            metrics.tasks_in_progress.labels(task=name).inc()
             if model is not None:
                 try:
                     # We want to ensure payload is JSON serializable, we do that by encoding and decoding
@@ -43,8 +47,15 @@ def celery_async_task(
                     parsed_payload = model.parse_obj(parsed_payload)
                 except pydantic_v1.ValidationError as exp:
                     logger.error("could not deserialize object", extra={"exception": exp})
-
-            f(parsed_payload)
+                    metrics.tasks_failed_counter.inc()
+            try:
+                f(parsed_payload)
+                metrics.tasks_succeeded_counter.labels(task=name).inc()
+            except Exception as exp:
+                metrics.tasks_failed_counter.labels(task=name).inc()
+                raise exp
+            finally:
+                metrics.tasks_in_progress.labels(task=name).dec()
 
         return task
 
