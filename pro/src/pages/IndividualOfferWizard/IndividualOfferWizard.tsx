@@ -12,6 +12,7 @@ import styles from './IndividualOfferWizard.module.scss'
 export const IndividualOfferWizard = () => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isConfirmationPage = pathname.endsWith('confirmation')
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
   if (isOnboarding && isDidacticOnboardingEnabled === false) {
@@ -34,7 +35,10 @@ export const IndividualOfferWizard = () => {
       {children}
     </OnboardingLayout>
   ) : (
-    <BasicLayout areMainHeadingAndBackToNavLinkInChild isStickyActionBarInChild>
+    <BasicLayout
+      areMainHeadingAndBackToNavLinkInChild
+      isStickyActionBarInChild={isConfirmationPage}
+    >
       {children}
     </BasicLayout>
   )
