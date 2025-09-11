@@ -935,9 +935,6 @@ def auto_tag_new_offerer(
                 else:
                     offerer.tags.append(tag)
 
-        if not siren_info.diffusible:
-            tag_names_to_apply.add("non-diffusible")
-
     if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
         tag_names_to_apply.add("partenaire-national")
 
