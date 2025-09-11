@@ -48,6 +48,8 @@ def celery_async_task(
                 except pydantic_v1.ValidationError as exp:
                     logger.error("could not deserialize object", extra={"exception": exp})
                     metrics.tasks_failed_counter.inc()
+            else:
+                parsed_payload = payload
             try:
                 f(parsed_payload)
                 metrics.tasks_succeeded_counter.labels(task=name).inc()
