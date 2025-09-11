@@ -78,8 +78,12 @@ export const FormStock = ({
           <span className={styles['label-container']}>
             Date de fin
             <Tooltip content="Le remboursement de votre offre sera effectué 2 à 3 semaines après la fin de votre évènement.">
-              <button className={styles['help-button']}>
-                <SvgIcon src={fullHelpIcon} alt="" />
+              <button
+                type="button"
+                aria-label="Aide pour le remboursement"
+                className={styles['help-button']}
+              >
+                <SvgIcon src={fullHelpIcon} />
               </button>
             </Tooltip>
           </span>
