@@ -21,22 +21,20 @@ export const Reimbursements = (): JSX.Element => {
     isLoading: isOffererLoading,
   } = useOfferer(selectedOffererId)
 
-  if (isOffererLoading || offererApiError) {
-    return (
-      <BasicLayout>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
+  const isNotReady = isOffererLoading || offererApiError
 
   return (
     <BasicLayout mainHeading="Gestion financière">
-      <div className={styles['reimbursements-container']}>
-        <div>
-          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
-          <Outlet context={{ selectedOfferer }} />
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <div className={styles['reimbursements-container']}>
+          <div>
+            <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+            <Outlet context={{ selectedOfferer }} />
+          </div>
         </div>
-      </div>
+      )}
     </BasicLayout>
   )
 }

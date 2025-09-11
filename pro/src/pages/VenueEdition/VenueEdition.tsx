@@ -106,36 +106,29 @@ export const VenueEdition = (): JSX.Element | null => {
     }
   }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
 
-  if (
+  const isNotReady =
     venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
     isOffererLoading ||
     !venue ||
     !offerer ||
     !venueTypes
-  ) {
-    return (
-      <BasicLayout>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
 
   const tabs: NavLinkItem[] = [
     {
       key: 'individual',
       label: 'Pour le grand public',
       url: generatePath('/structures/:offererId/lieux/:venueId', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
     {
       key: 'collective',
       label: 'Pour les enseignants',
       url: generatePath('/structures/:offererId/lieux/:venueId/collectif', {
-        offererId: String(venue.managingOfferer.id),
-        venueId: String(venue.id),
+        offererId: String(venue?.managingOfferer.id),
+        venueId: String(venue?.id),
       }),
     },
   ]
@@ -149,71 +142,77 @@ export const VenueEdition = (): JSX.Element | null => {
 
   return (
     <BasicLayout mainHeading={titleText}>
-      <div>
-        <FormLayout>
-          {context !== 'address' && venuesOptions.length > 1 && (
-            <>
-              <FormLayout.Row>
-                <FieldLayout
-                  label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
-                  name="venues"
-                  isOptional
-                  className={styles['select-page-partenaire']}
-                >
-                  <SelectInput
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <div>
+          <FormLayout>
+            {context !== 'address' && venuesOptions.length > 1 && (
+              <>
+                <FormLayout.Row>
+                  <FieldLayout
+                    label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                     name="venues"
-                    options={venuesOptions}
-                    value={venueId ?? ''}
-                    onChange={(e) => {
-                      const venueId = e.target.value
+                    isOptional
+                    className={styles['select-page-partenaire']}
+                  >
+                    <SelectInput
+                      name="venues"
+                      options={venuesOptions}
+                      value={venueId ?? ''}
+                      onChange={(e) => {
+                        const venueId = e.target.value
 
-                      if (context === 'partnerPage') {
-                        setSavedPartnerPageVenueId(
-                          'partnerPage',
-                          offererId,
+                        if (context === 'partnerPage') {
+                          setSavedPartnerPageVenueId(
+                            'partnerPage',
+                            offererId,
+                            venueId
+                          )
+
+                          dispatch(setSelectedPartnerPageId(venueId))
+                        }
+
+                        const path = getVenuePagePathToNavigateTo(
+                          offererId as string,
                           venueId
                         )
-
-                        dispatch(setSelectedPartnerPageId(venueId))
-                      }
-
-                      const path = getVenuePagePathToNavigateTo(
-                        offererId as string,
-                        venueId
-                      )
-                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                      navigate(path)
-                    }}
-                  />
-                </FieldLayout>
-              </FormLayout.Row>
-              <hr className={styles['separator']} />
-            </>
-          )}
-        </FormLayout>
-        <VenueEditionHeader
-          venue={venue}
-          offerer={offerer}
-          venueTypes={venueTypes}
-          context={context}
-          key={venueId}
-        />
-
-        {!venue.isPermanent && (
-          <NavLinkItems
-            links={tabs}
-            navLabel={`Sous menu - ${titleText}`}
-            selectedKey={context === 'collective' ? 'collective' : 'individual'}
-            className={styles['tabs']}
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        navigate(path)
+                      }}
+                    />
+                  </FieldLayout>
+                </FormLayout.Row>
+                <hr className={styles['separator']} />
+              </>
+            )}
+          </FormLayout>
+          <VenueEditionHeader
+            venue={venue}
+            offerer={offerer}
+            venueTypes={venueTypes}
+            context={context}
+            key={venueId}
           />
-        )}
 
-        {context === 'collective' ? (
-          <CollectiveDataEdition venue={venue} />
-        ) : (
-          <VenueEditionFormScreen venue={venue} />
-        )}
-      </div>
+          {!venue.isPermanent && (
+            <NavLinkItems
+              links={tabs}
+              navLabel={`Sous menu - ${titleText}`}
+              selectedKey={
+                context === 'collective' ? 'collective' : 'individual'
+              }
+              className={styles['tabs']}
+            />
+          )}
+
+          {context === 'collective' ? (
+            <CollectiveDataEdition venue={venue} />
+          ) : (
+            <VenueEditionFormScreen venue={venue} />
+          )}
+        </div>
+      )}
     </BasicLayout>
   )
 }

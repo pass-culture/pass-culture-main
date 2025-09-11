@@ -1,4 +1,3 @@
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   isCollectiveOfferTemplate,
   Mode,
@@ -25,36 +24,32 @@ export const CollectiveOfferEdition = ({
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
-  if (!isReady) {
-    return (
-      <BasicLayout isStickyActionBarInChild>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
-
   return (
     <CollectiveOfferLayout
       subTitle={offer.name}
       isTemplate={isTemplate}
       offer={offer}
     >
-      <OfferEducational
-        userOfferer={offerEducationalFormData.offerer}
-        domainsOptions={offerEducationalFormData.domains}
-        venues={offerEducationalFormData.venues}
-        offer={offer}
-        isOfferActive={offer.isActive}
-        isOfferBooked={
-          isOfferTemplate ? false : offer.collectiveStock?.isBooked
-        }
-        mode={
-          isCollectiveOfferDetailsEditable(offer)
-            ? Mode.EDITION
-            : Mode.READ_ONLY
-        }
-        isTemplate={isOfferTemplate}
-      />
+      {!isReady ? (
+        <Spinner />
+      ) : (
+        <OfferEducational
+          userOfferer={offerEducationalFormData.offerer}
+          domainsOptions={offerEducationalFormData.domains}
+          venues={offerEducationalFormData.venues}
+          offer={offer}
+          isOfferActive={offer.isActive}
+          isOfferBooked={
+            isOfferTemplate ? false : offer.collectiveStock?.isBooked
+          }
+          mode={
+            isCollectiveOfferDetailsEditable(offer)
+              ? Mode.EDITION
+              : Mode.READ_ONLY
+          }
+          isTemplate={isOfferTemplate}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }
