@@ -30,7 +30,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_patch_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
@@ -91,7 +91,7 @@ class Returns200Test:
         response_publication_datetime,
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
@@ -137,7 +137,7 @@ class Returns200Test:
         response_booking_allowed_datetime,
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
