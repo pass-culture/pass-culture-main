@@ -2,6 +2,7 @@ import type { UseFormReturn } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
@@ -13,6 +14,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
+import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
 import type { PriceTableFormValues } from '../schemas'
 import { saveEventOfferPriceTable } from '../utils/saveEventOfferPriceTable'
 import { saveNonEventOfferPriceTable } from '../utils/saveNonEventOfferPriceTable'
@@ -62,24 +64,36 @@ export const useSaveOfferPriceTable = ({
       } else {
         await saveNonEventOfferPriceTable(formValues, {
           offer,
-          setError: form.setError,
         })
       }
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
-    } catch (error) {
-      if (error instanceof Error) {
-        notify.error(error.message)
+
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        notify.success(getSuccessMessage(mode))
       }
-      return
+
+      navigate(nextStepUrl)
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        const serializedApiErrors = serializeApiErrors(error.body)
+        Object.entries(serializedApiErrors).forEach(([key, value], index) => {
+          const message = typeof value === 'string' ? value : value?.join(',  ')
+          const formKey = `entries.${index}.${key}`
+          form.setError(formKey as keyof PriceTableFormValues, {
+            message,
+          })
+        })
+
+        if (serializedApiErrors.priceLimitationRule) {
+          form.setError('entries.0.price', {
+            type: 'custom',
+            message: 'Non valide',
+          })
+        }
+      }
+
+      return notify.error(FAILED_PATCH_OFFER_USER_MESSAGE)
     }
-
-    await mutate([GET_OFFER_QUERY_KEY, offer.id])
-
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
-      notify.success(getSuccessMessage(mode))
-    }
-
-    navigate(nextStepUrl)
   }
 
   return { saveAndContinue }

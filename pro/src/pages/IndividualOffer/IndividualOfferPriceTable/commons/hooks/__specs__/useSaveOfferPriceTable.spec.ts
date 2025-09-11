@@ -2,8 +2,11 @@ import { act, renderHook } from '@testing-library/react'
 import { useForm } from 'react-hook-form'
 import * as reactRouter from 'react-router'
 
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
+import { ApiError } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import * as useNotification from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
@@ -21,9 +24,6 @@ vi.mock('react-router', async () => {
     useLocation: vi.fn(),
   }
 })
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: vi.fn(),
-}))
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
 }))
@@ -32,9 +32,6 @@ vi.mock('../../utils/saveEventOfferPriceTable', () => ({
 }))
 vi.mock('../../utils/saveNonEventOfferPriceTable', () => ({
   saveNonEventOfferPriceTable: vi.fn(() => Promise.resolve()),
-}))
-vi.mock('@/components/IndividualOffer/utils/getSuccessMessage', () => ({
-  getSuccessMessage: () => 'ok',
 }))
 
 const renderUseSaveOfferPriceTable = (params: {
@@ -78,18 +75,21 @@ describe('useSaveOfferPriceTable', () => {
     search: '',
     state: {},
   }
-  const useNotificationMockReturnValue: ReturnType<typeof useNotification> = {
-    success: vi.fn(),
-    error: vi.fn(),
-    information: vi.fn(),
-    close: () => ({
-      payload: undefined,
-      type: 'notifications/closeNotification',
-    }),
-  }
 
-  beforeEach(() => {
+  const notifyError = vi.fn()
+  const notifySuccess = vi.fn()
+
+  beforeEach(async () => {
     vi.clearAllMocks()
+
+    const notifsImport = (await vi.importActual(
+      '@/commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      success: notifySuccess,
+      error: notifyError,
+    }))
   })
 
   it('should early navigate + success when EDITION mode and form not dirty', async () => {
@@ -99,7 +99,6 @@ describe('useSaveOfferPriceTable', () => {
     )
     const useNavigateMock = vi.fn()
     vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
-    vi.mocked(useNotification).mockReturnValue(useNotificationMockReturnValue)
 
     const offer = getIndividualOfferFactory({ id: 99, isEvent: false })
 
@@ -114,7 +113,7 @@ describe('useSaveOfferPriceTable', () => {
     expect(useNavigateMock).toHaveBeenCalledWith(
       expect.stringMatching(`/offre/individuelle/${offer.id}/tarifs$`)
     )
-    expect(useNotification().success).toHaveBeenCalled()
+    expect(notifySuccess).toHaveBeenCalled()
   })
 
   it('should save non-event offer (creation) and navigate to summary', async () => {
@@ -176,7 +175,6 @@ describe('useSaveOfferPriceTable', () => {
     )
     const useNavigateMock = vi.fn()
     vi.spyOn(reactRouter, 'useNavigate').mockReturnValue(useNavigateMock)
-    vi.mocked(useNotification).mockReturnValue(useNotificationMockReturnValue)
     vi.mocked(saveNonEventOfferPriceTable).mockRejectedValueOnce(
       new Error('boom')
     )
@@ -191,7 +189,46 @@ describe('useSaveOfferPriceTable', () => {
       await result.current.saveAndContinue(result.current.form.getValues())
     })
 
-    expect(useNotification().error).toHaveBeenCalledWith('boom')
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de la mise à jour de votre offre'
+    )
     expect(useNavigateMock).not.toHaveBeenCalled()
+  })
+
+  it('should set the form with api error', async () => {
+    vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.CREATION)
+    vi.spyOn(reactRouter, 'useLocation').mockReturnValue(
+      useLocationMockReturnValue
+    )
+
+    vi.mocked(saveNonEventOfferPriceTable).mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            bookingLimitDatetime: ['API bookingLimitDatetime ERROR'],
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+
+    const offer = getIndividualOfferFactory({ id: 7, isEvent: false })
+
+    const { result } = renderUseSaveOfferPriceTable({ offer })
+
+    const spyFormSetError = vi.spyOn(result.current.form, 'setError')
+
+    await act(async () => {
+      await result.current.saveAndContinue(result.current.form.getValues())
+    })
+
+    expect(spyFormSetError).toHaveBeenCalledWith(
+      'entries.0.bookingLimitDatetime',
+      {
+        message: 'API bookingLimitDatetime ERROR',
+      }
+    )
   })
 })

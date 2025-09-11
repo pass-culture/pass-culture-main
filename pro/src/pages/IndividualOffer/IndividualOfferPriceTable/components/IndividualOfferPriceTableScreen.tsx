@@ -125,6 +125,7 @@ export const IndividualOfferPriceTableScreen = ({
                 mode={mode}
                 offer={offer}
                 schemaValidationContext={schemaValidationContext}
+                offerStocks={offerStocks}
               />
             </FormLayout.Section>
           </FormLayout>
