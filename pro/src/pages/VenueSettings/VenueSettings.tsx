@@ -44,7 +44,7 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venueProviders = venueProvidersQuery.data?.venue_providers
 
-  if (
+  const isNotReady =
     isOffererLoading ||
     venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
@@ -53,13 +53,6 @@ const VenueSettings = (): JSX.Element | null => {
     !venue ||
     !venueTypes ||
     !venueProviders
-  ) {
-    return (
-      <BasicLayout>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
 
   return (
     <BasicLayout
@@ -74,13 +67,17 @@ const VenueSettings = (): JSX.Element | null => {
         </Button>
       }
     >
-      <VenueSettingsScreen
-        initialValues={setInitialFormValues({ venue })}
-        offerer={offerer}
-        venueTypes={venueTypes}
-        venue={venue}
-        venueProviders={venueProviders}
-      />
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <VenueSettingsScreen
+          initialValues={setInitialFormValues({ venue })}
+          offerer={offerer}
+          venueTypes={venueTypes}
+          venue={venue}
+          venueProviders={venueProviders}
+        />
+      )}
     </BasicLayout>
   )
 }

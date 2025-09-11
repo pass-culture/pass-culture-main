@@ -96,25 +96,21 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  if (offersQuery.isLoading) {
-    return (
-      <BasicLayout>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
-
   return (
     <BasicLayout mainHeading="Offres vitrines">
-      <TemplateCollectiveOffersScreen
-        currentPageNumber={currentPageNumber}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offerer={offerer}
-        offers={offersQuery.data}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-      />
+      {offersQuery.isLoading ? (
+        <Spinner />
+      ) : (
+        <TemplateCollectiveOffersScreen
+          currentPageNumber={currentPageNumber}
+          initialSearchFilters={apiFilters}
+          isLoading={offersQuery.isLoading}
+          offerer={offerer}
+          offers={offersQuery.data}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          urlSearchFilters={urlSearchFilters}
+        />
+      )}
     </BasicLayout>
   )
 }

@@ -20,7 +20,7 @@ interface BasicLayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: React.ReactNode
+  mainHeading: React.ReactNode
   /**
    * Complementary name of the page to display in the main heading,
    * as a subheading.
@@ -52,14 +52,14 @@ export const BasicLayout = ({
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
 
-  const mainHeadingWrapper = mainHeading ? (
+  const mainHeadingWrapper = (
     <MainHeading
       className={styles['main-heading']}
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
       isConnected
     />
-  ) : null
+  )
 
   return (
     <div className={styles.layout}>
