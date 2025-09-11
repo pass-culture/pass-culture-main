@@ -210,7 +210,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     managingOffererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=False, index=True)
 
     managingOfferer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
-        "Offerer", foreign_keys=[managingOffererId], backref="managedVenues"
+        "Offerer", foreign_keys=[managingOffererId], back_populates="managedVenues"
     )
 
     bookingEmail = sa.Column(sa.String(120), nullable=True)
@@ -1072,6 +1072,8 @@ class Offerer(
     )
 
     _street = sa.Column("street", sa.Text(), nullable=True)
+
+    managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship("Venue", back_populates="managingOfferer")
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:

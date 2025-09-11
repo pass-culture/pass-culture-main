@@ -18,7 +18,10 @@ SEARCH_PARENT = -1
 
 
 def is_offerer_only_virtual(offerer: offerers_models.Offerer) -> bool:
-    return offerer.managedVenues and all(venue.isVirtual for venue in offerer.managedVenues)
+    if not offerer.managedVenues:
+        return False
+
+    return all(venue.isVirtual for venue in offerer.managedVenues)
 
 
 def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
