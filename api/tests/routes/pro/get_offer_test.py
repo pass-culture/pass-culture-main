@@ -204,7 +204,6 @@ class Returns200Test:
                 "city": venue.offererAddress.address.city,
                 "departementCode": venue.offererAddress.address.departmentCode,
                 "id": venue.id,
-                "isVirtual": False,
                 "managingOfferer": {
                     "id": offerer.id,
                     "name": "Test Offerer",
@@ -216,6 +215,7 @@ class Returns200Test:
                 "postalCode": venue.offererAddress.address.postalCode,
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
+                "isVirtual": False,
             },
             "videoData": {
                 "videoDuration": None,

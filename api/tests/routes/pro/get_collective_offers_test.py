@@ -82,8 +82,8 @@ class Returns200Test:
                 },
                 "venue": {
                     "id": venue.id,
-                    "departementCode": venue.offererAddress.address.departmentCode,
                     "isVirtual": False,
+                    "departementCode": venue.offererAddress.address.departmentCode,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -319,7 +319,7 @@ class Returns200Test:
                 "venue": {
                     "departementCode": venue.offererAddress.address.departmentCode,
                     "id": venue.id,
-                    "isVirtual": venue.isVirtual,
+                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,

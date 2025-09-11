@@ -62,6 +62,7 @@ class OfferersBankAccountTest:
         _another_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=another_venue, bankAccount=another_bank_account
         )
+        offers_factories.StockFactory(offer__venue=another_venue)
 
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -69,6 +70,8 @@ class OfferersBankAccountTest:
         expected_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
         expected_venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        offers_factories.StockFactory(offer__venue=expected_venue)
+        offers_factories.StockFactory(offer__venue=expected_venue_without_siret)
 
         http_client = client.with_session_auth(pro_user.email)
 
@@ -112,10 +115,9 @@ class OfferersBankAccountTest:
         expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         non_linked_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         non_linked_venue_bis = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = offers_factories.OfferFactory(venue=non_linked_venue)
-        offer_bis = offers_factories.OfferFactory(venue=non_linked_venue_bis)
-        offers_factories.StockFactory(offer=offer)
-        offers_factories.StockFactory(offer=offer_bis)
+        offers_factories.StockFactory(offer__venue=expected_venue)
+        offers_factories.StockFactory(offer__venue=non_linked_venue)
+        offers_factories.StockFactory(offer__venue=non_linked_venue_bis)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         offerers_factories.VenueBankAccountLinkFactory(
             venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
@@ -212,7 +214,9 @@ class OfferersBankAccountTest:
         )
 
         venue_linked = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
-        offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        other_venue_linked = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
+        offers_factories.StockFactory(offer__venue=venue_linked, price=0)
+        offers_factories.StockFactory(offer__venue=other_venue_linked, price=0)
         offerers_factories.VenueBankAccountLinkFactory(
             venueId=venue_linked.id,
             bankAccountId=first_bank_account.id,
@@ -226,8 +230,7 @@ class OfferersBankAccountTest:
         )
 
         venue_not_linked_with_free_offer = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
-        offer = offers_factories.OfferFactory(venue=venue_not_linked_with_free_offer)
-        offers_factories.StockFactory(offer=offer, price=0)
+        offers_factories.StockFactory(offer__venue=venue_not_linked_with_free_offer, price=0)
 
         http_client = client.with_session_auth(pro_user.email)
 
@@ -257,37 +260,3 @@ class OfferersBankAccountTest:
         assert managed_venues[0]["hasPricingPoint"] is True
         assert managed_venues[1]["hasPricingPoint"] is True
         assert managed_venues[2]["hasPricingPoint"] is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_user_should_only_see_non_virtual_venue_and_virtual_venues_that_have_at_least_one_offer(self, client):
-        pro_user = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerer_id = offerer.id
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
-        non_virtual_venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.StockFactory(price=0, offer__venue=non_virtual_venue_with_offer)
-
-        non_virtual_without_any_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        virtual_venue_with_offer = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offers_factories.StockFactory(price=0, offer__venue=virtual_venue_with_offer)
-
-        _virtual_venue_without_any_offer = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        http_client = client.with_session_auth(pro_user.email)
-
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
-            assert response.status_code == 200
-
-        offerer = response.json
-        assert not offerer["bankAccounts"]
-        managedVenues = sorted(offerer["managedVenues"], key=lambda v: v["id"])
-        assert len(managedVenues) == 3
-        assert managedVenues[0]["id"] == non_virtual_venue_with_offer.id
-        assert managedVenues[1]["id"] == non_virtual_without_any_offer.id
-        assert managedVenues[2]["id"] == virtual_venue_with_offer.id
