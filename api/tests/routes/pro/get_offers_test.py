@@ -55,7 +55,6 @@ class Returns200Test:
             assert response.status_code == 200
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=venue.id,
@@ -82,7 +81,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=None,
@@ -111,7 +109,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=offerer_id,
             offers_limit=101,
             venue_id=None,
@@ -138,7 +135,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=None,
@@ -165,7 +161,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=None,
@@ -238,7 +233,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=None,
@@ -265,7 +259,6 @@ class Returns200Test:
 
         mocked_get_capped_offers.assert_called_once_with(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offerer_id=None,
             offers_limit=101,
             venue_id=None,
@@ -527,7 +520,7 @@ class Returns200Test:
         db.session.add(soft_deleted_venue)
         db.session.flush()
 
-        offers = offers_repository.get_offers_by_filters(user_id=pro.id, user_is_admin=False).all()
+        offers = offers_repository.get_offers_by_filters(user_id=pro.id).all()
         assert len(offers) == 1
 
     def should_return_offers_filtered_by_offerer_address(self, client):

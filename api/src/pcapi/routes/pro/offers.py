@@ -54,7 +54,6 @@ logger = logging.getLogger(__name__)
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_repository.get_capped_offers_for_filters(
         user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
         offers_limit=offers_api.OFFERS_RECAP_LIMIT,
         offerer_id=query.offerer_id,
         status=query.status.value if query.status else None,

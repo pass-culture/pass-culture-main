@@ -50,7 +50,6 @@ class GetCappedOffersForFiltersTest:
         with assert_num_queries(3):
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=50,
             )
 
@@ -69,7 +68,6 @@ class GetCappedOffersForFiltersTest:
 
         offers = repository.get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=requested_max_offers_count,
         )
 
@@ -88,7 +86,6 @@ class GetCappedOffersForFiltersTest:
         # When
         offers = repository.get_capped_offers_for_filters(
             user_id=user.id,
-            user_is_admin=user.has_admin_role,
             offers_limit=10,
         )
 
@@ -108,7 +105,6 @@ class GetCappedOffersForFiltersTest:
         # when
         offers = repository.get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=10,
         )
 
@@ -131,7 +127,6 @@ class GetCappedOffersForFiltersTest:
 
         offers = repository.get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
-            user_is_admin=user_offerer.user.has_admin_role,
             offers_limit=10,
             category_id=pro_categories.FILM.id,
         )
@@ -151,7 +146,6 @@ class GetCappedOffersForFiltersTest:
 
         offers = repository.get_capped_offers_for_filters(
             user_id=pro_user.id,
-            user_is_admin=False,
             offers_limit=10,
             creation_mode="manual",
         )
@@ -160,7 +154,6 @@ class GetCappedOffersForFiltersTest:
 
         offers = repository.get_capped_offers_for_filters(
             user_id=pro_user.id,
-            user_is_admin=False,
             offers_limit=10,
             creation_mode="imported",
         )
@@ -183,7 +176,6 @@ class GetCappedOffersForFiltersTest:
         # When
         offers = repository.get_capped_offers_for_filters(
             user_id=pro.id,
-            user_is_admin=pro.has_admin_role,
             offers_limit=10,
             period_beginning_date="2020-01-01T00:00:00",
         )
@@ -247,94 +239,6 @@ class GetCappedOffersForFiltersTest:
         )
         assert len(offers) == 0
 
-    class WhenUserIsAdminTest:
-        @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
-            # given
-            admin = users_factories.AdminFactory()
-            offer_for_requested_venue = factories.OfferFactory()
-            # offer for other venue
-            factories.OfferFactory()
-
-            # when
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                venue_id=offer_for_requested_venue.venue.id,
-            )
-
-            # then
-            assert len(offers) == 1
-            assert offer_for_requested_venue.id == offers[0].id
-
-        @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
-            # given
-            admin = users_factories.AdminFactory()
-            admin_attachment_to_offerer = offerers_factories.UserOffererFactory(user=admin)
-            offer_for_requested_venue = factories.OfferFactory(
-                venue__managingOfferer=admin_attachment_to_offerer.offerer
-            )
-            # offer for other venue
-            factories.OfferFactory(venue__managingOfferer=admin_attachment_to_offerer.offerer)
-
-            # when
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                venue_id=offer_for_requested_venue.venue.id,
-            )
-
-            # then
-            assert len(offers) == 1
-            assert offer_for_requested_venue.id == offers[0].id
-
-        @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
-            # given
-            admin = users_factories.AdminFactory()
-            offer_for_requested_offerer = factories.OfferFactory()
-            # offer for other offerer
-            factories.OfferFactory()
-
-            # When
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
-            )
-
-            # then
-            assert len(offers) == 1
-            assert offer_for_requested_offerer.id == offers[0].id
-
-        @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
-            # given
-            admin = users_factories.AdminFactory()
-            admin_attachment_to_requested_offerer = offerers_factories.UserOffererFactory(user=admin)
-            admin_attachment_to_other_offerer = offerers_factories.UserOffererFactory(user=admin)
-            offer_for_requested_offerer = factories.OfferFactory(
-                venue__managingOfferer=admin_attachment_to_requested_offerer.offerer
-            )
-            # offer for other offerer
-            factories.OfferFactory(venue__managingOfferer=admin_attachment_to_other_offerer.offerer)
-
-            # When
-            offers = repository.get_capped_offers_for_filters(
-                user_id=admin.id,
-                user_is_admin=admin.has_admin_role,
-                offers_limit=10,
-                offerer_id=offer_for_requested_offerer.venue.managingOffererId,
-            )
-
-            # then
-            assert len(offers) == 1
-            assert offer_for_requested_offerer.id == offers[0].id
-
     class WhenUserIsProTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
@@ -347,7 +251,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -367,7 +270,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 venue_id=offer_for_requested_venue.venue.id,
             )
@@ -389,7 +291,6 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = repository.get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -412,7 +313,6 @@ class GetCappedOffersForFiltersTest:
             # When
             offers = repository.get_capped_offers_for_filters(
                 user_id=pro.id,
-                user_is_admin=pro.has_admin_role,
                 offers_limit=10,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
@@ -435,7 +335,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_ean="ocs",
             )
@@ -458,7 +357,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_ean="seras-tu",
             )
@@ -482,7 +380,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_ean="mon océan",
             )
@@ -504,7 +401,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_ean="ocean",
             )
@@ -532,7 +428,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
-                user_is_admin=user_offerer.user.has_admin_role,
                 offers_limit=10,
                 name_keywords_or_ean="1234567891234",
             )
@@ -773,7 +668,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="ACTIVE",
             )
@@ -810,7 +704,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="INACTIVE",
             )
@@ -847,7 +740,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=10,
                 status="SOLD_OUT",
             )
@@ -883,7 +775,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=10,
                 status="SOLD_OUT",
             )
@@ -903,7 +794,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="SOLD_OUT",
             )
@@ -922,7 +812,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="SOLD_OUT",
             )
@@ -941,7 +830,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="SOLD_OUT",
             )
@@ -958,7 +846,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="EXPIRED",
             )
@@ -1047,7 +934,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="SOLD_OUT",
                 venue_id=self.other_venue.id,
@@ -1079,7 +965,6 @@ class GetCappedOffersForFiltersTest:
             # when
             offers = repository.get_capped_offers_for_filters(
                 user_id=self.pro.id,
-                user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="ACTIVE",
                 period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").date(),
@@ -1174,15 +1059,6 @@ class GetOffersByIdsTest:
 
         assert query.count() == 1
         assert query.one() == offer1
-
-    def test_return_all_for_admins(self):
-        offer1 = factories.OfferFactory()
-        offer2 = factories.OfferFactory()
-        user = users_factories.AdminFactory()
-
-        query = repository.get_offers_by_ids(user, [offer1.id, offer2.id])
-
-        assert query.count() == 2
 
 
 @pytest.mark.usefixtures("db_session")

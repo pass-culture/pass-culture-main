@@ -72,7 +72,6 @@ class StocksOrderedBy(str, enum.Enum):
 def get_capped_offers_for_filters(
     *,
     user_id: int,
-    user_is_admin: bool,
     offers_limit: int,
     offerer_id: int | None = None,
     status: str | None = None,
@@ -86,7 +85,6 @@ def get_capped_offers_for_filters(
 ) -> list[models.Offer]:
     query = get_offers_by_filters(
         user_id=user_id,
-        user_is_admin=user_is_admin,
         offerer_id=offerer_id,
         status=status,
         venue_id=venue_id,
@@ -388,7 +386,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
 def get_offers_by_filters(
     *,
     user_id: int,
-    user_is_admin: bool,
     offerer_id: int | None = None,
     status: str | None = None,
     venue_id: int | None = None,
@@ -399,17 +396,16 @@ def get_offers_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
 ) -> sa_orm.Query:
-    query = db.session.query(models.Offer).join(models.Offer.venue)
-
-    if not user_is_admin:
-        query = (
-            query.join(offerers_models.Venue.managingOfferer)
-            .join(offerers_models.Offerer.UserOfferers)
-            .filter(
-                offerers_models.UserOfferer.userId == user_id,
-                offerers_models.UserOfferer.isValidated,
-            )
+    query = (
+        db.session.query(models.Offer)
+        .join(models.Offer.venue)
+        .join(offerers_models.Venue.managingOfferer)
+        .join(offerers_models.Offerer.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.userId == user_id,
+            offerers_models.UserOfferer.isValidated,
         )
+    )
     if offerer_id is not None:
         query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_id is not None:
