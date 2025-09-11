@@ -86,7 +86,7 @@ export const BasicLayout = ({
         ref={openButtonRef}
       />
       <div
-        className={cn(styles['page-layout-main'], {
+        className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
