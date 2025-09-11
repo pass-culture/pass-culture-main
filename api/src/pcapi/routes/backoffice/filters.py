@@ -1822,6 +1822,18 @@ def field_list_get_number_from_name(field_name: str) -> str:
     return field_name.split("-")[1]
 
 
+def format_collective_location_type(location_type: educational_models.CollectiveLocationType) -> str:
+    match location_type:
+        case educational_models.CollectiveLocationType.SCHOOL:
+            return "Dans l’établissement scolaire"
+        case educational_models.CollectiveLocationType.ADDRESS:
+            return "À l’adresse"
+        case educational_models.CollectiveLocationType.TO_BE_DEFINED:
+            return "À déterminer"
+        case _:
+            return location_type.value
+
+
 def format_legal_category_code(code: int | str) -> str:
     return offerers_constants.CODE_TO_CATEGORY_MAPPING.get(int(code), "Inconnu")
 
@@ -2004,3 +2016,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["offer_mediation_link"] = offer_mediation_link
     app.jinja_env.filters["product_mediation_link"] = product_mediation_link
     app.jinja_env.filters["format_artist_visibility_status"] = format_artist_visibility_status
+    app.jinja_env.filters["format_collective_location_type"] = format_collective_location_type

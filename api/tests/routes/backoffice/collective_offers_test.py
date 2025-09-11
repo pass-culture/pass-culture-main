@@ -1824,6 +1824,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__startDatetime=start_date,
             collectiveStock__endDatetime=end_date,
+            collectiveStock__collectiveOffer__durationMinutes=300,
+            collectiveStock__collectiveOffer__description="My super offer description",
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
                 firstName="Pacôme", lastName="De Champignac"
             ),
@@ -1848,12 +1850,43 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Cinéma Provider" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
-        assert descriptions["Date de l'évènement"] == f"{start_date:%d/%m/%Y} → {end_date:%d/%m/%Y}"
-        assert descriptions["Statut"] == "Réservée"
         assert "Utilisateur de la dernière validation" not in descriptions
-        assert "Date de dernière validation de l’offre" not in descriptions
-        assert descriptions["Enseignant"] == "Pacôme De Champignac"
+        # details
+        assert descriptions["Durée"] == "300 minutes"
         assert descriptions["Établissement"] == "Ecole de Marcinelle"
+        assert descriptions["Enseignant"] == "Pacôme De Champignac"
+        assert descriptions["Description"] == "My super offer description"
+        # info
+        assert descriptions["Date de l'évènement"] == f"{start_date:%d/%m/%Y} → {end_date:%d/%m/%Y}"
+        assert descriptions["Prix"] == "100,00 € pour 25 élèves"
+        assert descriptions["Informations sur le prix"] == "Prix: 100€ pour 25 tickets"
+        assert descriptions["Lieu"] == "À déterminer"
+        # public
+        assert descriptions["Niveau scolaire"] == "Lycée - Seconde"
+        assert "Accessibilité" in descriptions
+        # contact
+        assert descriptions["Téléphone"] == "+33199006328"
+        assert descriptions["email"] == "collectiveofferfactory+contact@example.com"
+        # column
+        # section 1
+        assert descriptions["CollectiveOffer ID"] == str(collective_booking.collectiveStock.collectiveOffer.id)
+        assert descriptions["Statut"] == "Réservée"
+        assert descriptions["Formats"] == "Projection audiovisuelle"
+        # section 2
+        assert (
+            descriptions["Entité juridique"]
+            == collective_booking.collectiveStock.collectiveOffer.venue.managingOfferer.name
+        )
+        assert descriptions["Partenaire culturel"] == collective_booking.collectiveStock.collectiveOffer.venue.name
+        # section 3
+        assert descriptions["Date de création"] == format_date(
+            data=collective_booking.collectiveStock.collectiveOffer.dateCreated,
+            strformat="%d/%m/%Y à %Hh%M",
+        )
+        assert descriptions["Date de dernière validation"] == format_date(
+            data=collective_booking.collectiveStock.collectiveOffer.lastValidationDate,
+            strformat="%d/%m/%Y à %Hh%M",
+        )
         assert descriptions["Offre vitrine liée"] == "offre Vito Cortizone pour lieu que l'on ne peut refuser"
 
     def test_processed_pricing(self, legit_user, authenticated_client):
