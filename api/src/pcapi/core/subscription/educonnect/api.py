@@ -4,10 +4,11 @@ import logging
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.users import models as users_models
 
 from . import exceptions
@@ -19,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 def handle_educonnect_authentication(
     user: users_models.User, educonnect_user: educonnect_models.EduconnectUser
-) -> list[fraud_models.FraudReasonCode] | None:
-    educonnect_content = fraud_models.EduconnectContent(
+) -> list[subscription_models.FraudReasonCode] | None:
+    educonnect_content = educonnect_schemas.EduconnectContent(
         birth_date=educonnect_user.birth_date,
         civility=educonnect_user.civility if educonnect_user.civility else None,
         educonnect_id=educonnect_user.educonnect_id,
@@ -40,7 +41,7 @@ def handle_educonnect_authentication(
 
     subscription_api.update_user_birth_date_if_not_beneficiary(user, educonnect_content.get_birth_date())
 
-    if fraud_check.status == fraud_models.FraudCheckStatus.OK:
+    if fraud_check.status == subscription_models.FraudCheckStatus.OK:
         try:
             is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
         except Exception:
@@ -50,18 +51,18 @@ def handle_educonnect_authentication(
         if not is_activated:
             external_attributes_api.update_external_user(user)
     else:
-        if fraud_models.FraudReasonCode.DUPLICATE_USER in (fraud_check.reasonCodes or []):
+        if subscription_models.FraudReasonCode.DUPLICATE_USER in (fraud_check.reasonCodes or []):
             transactional_mails.send_duplicate_beneficiary_email(
-                user, educonnect_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+                user, educonnect_content, subscription_models.FraudReasonCode.DUPLICATE_USER
             )
 
     return fraud_check.reasonCodes
 
 
 def get_educonnect_subscription_message(
-    educonnect_fraud_check: fraud_models.BeneficiaryFraudCheck,
-) -> subscription_models.SubscriptionMessage | None:
-    if educonnect_fraud_check.status == fraud_models.FraudCheckStatus.OK:
+    educonnect_fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> subscription_schemas.SubscriptionMessage | None:
+    if educonnect_fraud_check.status == subscription_models.FraudCheckStatus.OK:
         return None
 
     return messages.get_educonnect_failure_subscription_message(educonnect_fraud_check)

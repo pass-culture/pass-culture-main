@@ -15,8 +15,8 @@ from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factory
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
@@ -137,18 +137,18 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
         )
 
         # EDUCONNECT or UBBLE already created in factory, make subscription steps consistent with granted deposit
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             dateCreated=user.dateCreated,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory.create(
+        subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             dateCreated=user.dateCreated,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -299,7 +299,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         else:
             db.session.execute(sa.text("ALTER TABLE booking ENABLE TRIGGER booking_update;"))
 
-        fraud_factories.BeneficiaryFraudCheckFactory.create(user=beneficiary_and_exunderage)
+        subscription_factories.BeneficiaryFraudCheckFactory.create(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory.create(user=beneficiary_and_exunderage)
     beneficiary_and_exunderage.add_beneficiary_role()
     users.append(beneficiary_and_exunderage)

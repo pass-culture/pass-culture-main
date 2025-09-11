@@ -6,14 +6,16 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.fraud_check_api as fraud_api
+import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi import settings as pcapi_settings
-from pcapi.connectors.serialization import ubble_serializers
+from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.models import db
 
 
@@ -25,7 +27,7 @@ class CommonTest:
     )
     def test_id_piece_number_wrong_format(self, id_piece_number):
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
-        assert item.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert item.status == subscription_schemas.FraudStatus.SUSPICIOUS
 
     @pytest.mark.parametrize(
         "before,after",
@@ -45,20 +47,24 @@ class CommonTest:
     @pytest.mark.parametrize(
         "id_piece_number,procedure_number,result",
         [
-            ("123456789012", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("12345678901", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.SUSPICIOUS),
-            (" -_1;,@&2:34=56789012", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("12AB12345", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
-            ("*12AB1234?5./", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, fraud_models.FraudStatus.OK),
+            ("123456789012", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, subscription_schemas.FraudStatus.OK),
+            ("12345678901", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, subscription_schemas.FraudStatus.SUSPICIOUS),
+            (
+                " -_1;,@&2:34=56789012",
+                pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
+                subscription_schemas.FraudStatus.OK,
+            ),
+            ("12AB12345", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, subscription_schemas.FraudStatus.OK),
+            ("*12AB1234?5./", pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR, subscription_schemas.FraudStatus.OK),
             (
                 "this is the wrong format (too long)",
                 pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
-                fraud_models.FraudStatus.SUSPICIOUS,
+                subscription_schemas.FraudStatus.SUSPICIOUS,
             ),
             (
                 "this is the wrong format (too long)",
                 pcapi_settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
-                fraud_models.FraudStatus.OK,
+                subscription_schemas.FraudStatus.OK,
             ),
         ],
     )
@@ -92,21 +98,21 @@ class CommonTest:
 
     def test_create_profile_completion_fraud_check(self, caplog):
         user = users_factories.EligibleGrant18Factory()
-        content = fraud_factories.ProfileCompletionContentFactory(origin="Origine orignale")
+        content = subscription_factories.ProfileCompletionContentFactory(origin="Origine orignale")
         fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
         profile_completion_fraud_check = user.beneficiaryFraudChecks[0]
 
-        assert profile_completion_fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
-        assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.type == subscription_models.FraudCheckType.PROFILE_COMPLETION
+        assert profile_completion_fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert profile_completion_fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
 
 def filter_invalid_fraud_items_to_reason_codes(
-    fraud_items: list[fraud_models.FraudItem],
-) -> set[fraud_models.FraudReasonCode]:
+    fraud_items: list[subscription_schemas.FraudItem],
+) -> set[subscription_models.FraudReasonCode]:
     return set(
         itertools.chain.from_iterable(
-            item.reason_codes for item in fraud_items if item.status != fraud_models.FraudStatus.OK
+            item.reason_codes for item in fraud_items if item.status != subscription_schemas.FraudStatus.OK
         )
     )
 
@@ -116,20 +122,20 @@ class CommonFraudCheckTest:
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(user, "RANDOMID")
-        assert fraud_item.status == fraud_models.FraudStatus.OK
+        assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
         user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="RANDOMID")
         applicant = users_factories.UserFactory()
 
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
-        assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert fraud_item.status == subscription_schemas.FraudStatus.SUSPICIOUS
 
     def test_duplicate_id_piece_number_suspicious_not_self(self):
         applicant = users_factories.UserFactory(idPieceNumber="RANDOMID")
 
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, applicant.idPieceNumber)
-        assert fraud_item.status == fraud_models.FraudStatus.OK
+        assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
     def test_duplicate_user_fraud_ok(self):
         fraud_item = fraud_api._duplicate_user_fraud_item(
@@ -140,7 +146,7 @@ class CommonFraudCheckTest:
             excluded_user_id=1,
         )
 
-        assert fraud_item.status == fraud_models.FraudStatus.OK
+        assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
     def test_duplicate_user_fraud_suspicious(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -152,7 +158,7 @@ class CommonFraudCheckTest:
             excluded_user_id=1,
         )
 
-        assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert fraud_item.status == subscription_schemas.FraudStatus.SUSPICIOUS
 
     def test_duplicate_user_ok_if_self_found(self):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -164,33 +170,33 @@ class CommonFraudCheckTest:
             excluded_user_id=user.id,
         )
 
-        assert fraud_item.status == fraud_models.FraudStatus.OK
+        assert fraud_item.status == subscription_schemas.FraudStatus.OK
 
     @pytest.mark.parametrize(
         "fraud_check_type",
-        [fraud_models.FraudCheckType.DMS],
+        [subscription_models.FraudCheckType.DMS],
     )
     def test_user_validation_has_email_validated(self, fraud_check_type):
         user = users_factories.UserFactory(isEmailValidated=False)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(type=fraud_check_type, user=user)
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         invalid_codes = filter_invalid_fraud_items_to_reason_codes(fraud_items)
         assert len(invalid_codes) == 1
-        assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
+        assert subscription_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_underage_user_validation_has_email_validated(self, age):
         user = users_factories.UserFactory(isEmailValidated=False)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             user=user,
-            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+            resultContent=subscription_factories.EduconnectContentFactory(age=age),
         )
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         invalid_codes = filter_invalid_fraud_items_to_reason_codes(fraud_items)
-        assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
+        assert subscription_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
 
 @pytest.mark.usefixtures("db_session")
@@ -292,24 +298,24 @@ class FindDuplicateUserTest:
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
                 age=17,
-                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+                beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT,
             )
 
         # A year ago
         # user 1 is now 18 yo
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
             user2 = users_factories.BeneficiaryFactory(
-                age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
+                age=17, beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT
             )
             user3 = users_factories.BeneficiaryFactory(
-                age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
+                age=17, beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT
             )
 
         # users 2 and 3 are now 18 yo
-        ubble_fraud_check2 = fraud_factories.BeneficiaryFraudCheckFactory(
+        ubble_fraud_check2 = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user2,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
             resultContent={
                 "first_name": user1.firstName,
                 "last_name": user1.lastName,
@@ -317,10 +323,10 @@ class FindDuplicateUserTest:
                 "identification_id": str(uuid.uuid4()),
             },
         )
-        ubble_fraud_check3 = fraud_factories.BeneficiaryFraudCheckFactory(
+        ubble_fraud_check3 = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user3,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
             resultContent={
                 "id_document_number": user1.idPieceNumber,
                 "identification_id": str(uuid.uuid4()),
@@ -361,7 +367,7 @@ class EduconnectFraudTest:
 
         fraud_api.on_educonnect_result(
             user,
-            fraud_models.EduconnectContent(
+            educonnect_schemas.EduconnectContent(
                 birth_date=birth_date,
                 civility=users_models.GenderEnum.F,
                 educonnect_id="id-1",
@@ -375,18 +381,18 @@ class EduconnectFraudTest:
         )
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 user=user,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
             )
             .one_or_none()
         )
         assert fraud_check is not None
         assert fraud_check.userId == user.id
-        assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.type == subscription_models.FraudCheckType.EDUCONNECT
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.source_data().__dict__ == {
             "civility": users_models.GenderEnum.F,
             "educonnect_id": "id-1",
@@ -402,7 +408,7 @@ class EduconnectFraudTest:
         # If the user logs in again with another educonnect account, create another fraud check
         fraud_api.on_educonnect_result(
             user,
-            fraud_models.EduconnectContent(
+            educonnect_schemas.EduconnectContent(
                 birth_date=birth_date,
                 civility=users_models.GenderEnum.M,
                 educonnect_id="id-1",
@@ -416,16 +422,16 @@ class EduconnectFraudTest:
         )
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 user=user,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
             )
-            .filter(fraud_models.BeneficiaryFraudCheck.id != fraud_check.id)
+            .filter(subscription_models.BeneficiaryFraudCheck.id != fraud_check.id)
             .first()
         )
         assert fraud_check.userId == user.id
-        assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
+        assert fraud_check.type == subscription_models.FraudCheckType.EDUCONNECT
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
         assert fraud_check.source_data().__dict__ == {
             "civility": users_models.GenderEnum.M,
@@ -442,17 +448,19 @@ class EduconnectFraudTest:
     @pytest.mark.parametrize("age", [14, 18])
     def test_age_fraud_check_ko(self, age):
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory(age=age),
             user=user,
         )
         result = fraud_api.educonnect_fraud_checks(user, fraud_check.source_data())
 
         age_check = next(
-            fraud_item for fraud_item in result if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
+            fraud_item
+            for fraud_item in result
+            if subscription_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
         )
-        assert age_check.status == fraud_models.FraudStatus.KO
+        assert age_check.status == subscription_schemas.FraudStatus.KO
         assert (
             age_check.detail == f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi [15, 16, 17]"
         )
@@ -460,9 +468,9 @@ class EduconnectFraudTest:
     @pytest.mark.parametrize("age", [15, 16, 17])
     def test_age_fraud_check_ok(self, age):
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(age=age),
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory(age=age),
         )
         result = fraud_api.educonnect_fraud_checks(user, fraud_check.source_data())
 
@@ -470,7 +478,7 @@ class EduconnectFraudTest:
             (
                 fraud_item
                 for fraud_item in result
-                if fraud_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
+                if subscription_models.FraudReasonCode.AGE_NOT_VALID in fraud_item.reason_codes
             ),
             None,
         )
@@ -479,9 +487,9 @@ class EduconnectFraudTest:
     def test_duplicates_fraud_checks(self):
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         user = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory(
                 first_name=already_existing_user.firstName,
                 last_name=already_existing_user.lastName,
                 birth_date=already_existing_user.dateOfBirth,
@@ -493,17 +501,17 @@ class EduconnectFraudTest:
         fraud_items = fraud_api.on_identity_fraud_check_result(user, fraud_check)
 
         invalid_item = [
-            item for item in fraud_items if fraud_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
+            item for item in fraud_items if subscription_models.FraudReasonCode.DUPLICATE_USER in item.reason_codes
         ][0]
         assert f"Duplicat de l'utilisateur {already_existing_user.id}" in invalid_item.detail
-        assert invalid_item.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert invalid_item.status == subscription_schemas.FraudStatus.SUSPICIOUS
 
     def test_same_user_is_not_duplicate(self):
         underage_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
 
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory(
                 first_name=underage_user.firstName,
                 last_name=underage_user.lastName,
                 birth_date=underage_user.dateOfBirth,
@@ -513,22 +521,26 @@ class EduconnectFraudTest:
         )
         result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check.source_data())
 
-        assert not any(fraud_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes for fraud_item in result)
+        assert not any(
+            subscription_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes for fraud_item in result
+        )
 
     def test_ine_duplicates_fraud_checks(self):
         same_ine_user = users_factories.UnderageBeneficiaryFactory(ineHash="ylwavk71o3jiwyla83fxk5pcmmu0ws01")
         user_in_validation = users_factories.UserFactory()
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            resultContent=fraud_factories.EduconnectContentFactory(ine_hash=same_ine_user.ineHash),
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            resultContent=subscription_factories.EduconnectContentFactory(ine_hash=same_ine_user.ineHash),
             user=user_in_validation,
         )
         result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check.source_data())
 
         duplicate_ine_check = next(
-            fraud_item for fraud_item in result if fraud_models.FraudReasonCode.DUPLICATE_INE in fraud_item.reason_codes
+            fraud_item
+            for fraud_item in result
+            if subscription_models.FraudReasonCode.DUPLICATE_INE in fraud_item.reason_codes
         )
-        assert duplicate_ine_check.status == fraud_models.FraudStatus.SUSPICIOUS
+        assert duplicate_ine_check.status == subscription_schemas.FraudStatus.SUSPICIOUS
         assert (
             duplicate_ine_check.detail
             == f"L'INE ylwavk71o3jiwyla83fxk5pcmmu0ws01 est déjà pris par l'utilisateur {same_ine_user.id}"
@@ -540,10 +552,10 @@ def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AG
         dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=5),
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
-    fraud_factories.ProfileCompletionFraudCheckFactory(
+    subscription_factories.ProfileCompletionFraudCheckFactory(
         user=user,
         eligibilityType=eligibility_type,
-        resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
+        resultContent=subscription_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
     )
     return user
 
@@ -562,11 +574,15 @@ class HasUserPerformedIdentityCheckTest:
             (18, users_models.EligibilityType.AGE18),
         ],
     )
-    @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.UBBLE])
-    @pytest.mark.parametrize("status", [fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.OK])
+    @pytest.mark.parametrize(
+        "check_type", [subscription_models.FraudCheckType.DMS, subscription_models.FraudCheckType.UBBLE]
+    )
+    @pytest.mark.parametrize(
+        "status", [subscription_models.FraudCheckStatus.PENDING, subscription_models.FraudCheckStatus.OK]
+    )
     def test_has_user_performed_identity_check(self, age, eligibility_type, check_type, status):
         user = build_user_at_id_check(age, eligibility_type=eligibility_type)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             type=check_type, user=user, status=status, eligibilityType=eligibility_type
         )
 
@@ -584,8 +600,8 @@ class HasUserPerformedIdentityCheckTest:
         with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
             user = build_user_at_id_check(18)
             year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                type=fraud_models.FraudCheckType.UBBLE,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                type=subscription_models.FraudCheckType.UBBLE,
                 user=user,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
                 dateCreated=year_when_user_was_underage,
@@ -600,25 +616,25 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_has_user_performed_identity_check_status_initiated(self):
         user = build_user_at_id_check(18)
-        ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_serializers.UbbleIdentificationStatus.INITIATED
+        ubble_content = subscription_factories.UbbleContentFactory(
+            status=ubble_schemas.UbbleIdentificationStatus.INITIATED
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
             user=user,
             resultContent=ubble_content,
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=subscription_models.FraudCheckStatus.PENDING,
         )
 
         assert fraud_api.has_user_performed_identity_check(user)
 
     def test_has_user_performed_identity_check_ubble_suspicious(self):
         user = build_user_at_id_check(18)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
             user=user,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_EXPIRED],
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -628,11 +644,11 @@ class HasUserPerformedIdentityCheckTest:
     def test_has_user_performed_identity_check_ubble_suspicious_x3(self):
         user = build_user_at_id_check(18)
         for _ in range(3):
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                type=fraud_models.FraudCheckType.UBBLE,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                type=subscription_models.FraudCheckType.UBBLE,
                 user=user,
-                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-                reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
+                status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+                reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
                 eligibilityType=users_models.EligibilityType.AGE18,
             )
 
@@ -641,10 +657,10 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_has_user_performed_identity_check_ubble_ko(self):
         user = build_user_at_id_check(18)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
             user=user,
-            status=fraud_models.FraudCheckStatus.KO,
+            status=subscription_models.FraudCheckStatus.KO,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -660,11 +676,11 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_user_not_eligible_anymore_but_has_performed(self):
         user = build_user_at_id_check(20)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
         )
         user.roles = [users_models.UserRole.BENEFICIARY]
 
@@ -676,20 +692,20 @@ class DuplicateBeneficiaryEmailTest:
     def test_duplicate_user(self):
         rejected_user = users_factories.UserFactory()
         duplicater_user = users_factories.BeneficiaryGrant18Factory(email="shotgun@example.com")
-        identity_content = fraud_factories.UbbleContentFactory(
+        identity_content = subscription_factories.UbbleContentFactory(
             first_name=duplicater_user.firstName,
             last_name=duplicater_user.lastName,
             birth_date=duplicater_user.dateOfBirth.date().isoformat(),
         )
         assert (
             fraud_api.get_duplicate_beneficiary_anonymized_email(
-                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+                rejected_user, identity_content, subscription_models.FraudReasonCode.DUPLICATE_USER
             )
             == "sho***@example.com"
         )
         assert (
             fraud_api.get_duplicate_beneficiary_anonymized_email(
-                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+                rejected_user, identity_content, subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
             )
             is None
         )
@@ -697,16 +713,16 @@ class DuplicateBeneficiaryEmailTest:
     def test_duplicate_id_piece_number(self):
         rejected_user = users_factories.UserFactory()
         users_factories.BeneficiaryGrant18Factory(email="shotgun@example.com", idPieceNumber="123")
-        identity_content = fraud_factories.UbbleContentFactory(id_document_number="123")
+        identity_content = subscription_factories.UbbleContentFactory(id_document_number="123")
         assert (
             fraud_api.get_duplicate_beneficiary_anonymized_email(
-                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+                rejected_user, identity_content, subscription_models.FraudReasonCode.DUPLICATE_USER
             )
             is None
         )
         assert (
             fraud_api.get_duplicate_beneficiary_anonymized_email(
-                rejected_user, identity_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+                rejected_user, identity_content, subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
             )
             == "sho***@example.com"
         )

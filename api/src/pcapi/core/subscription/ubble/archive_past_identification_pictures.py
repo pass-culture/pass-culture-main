@@ -2,8 +2,8 @@ import logging
 from datetime import datetime
 
 import pcapi.core.subscription.ubble.api as ubble_api
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble.exceptions import UbbleDownloadedFileEmpty
 from pcapi.models import db
 from pcapi.utils.requests import ExternalAPIException
@@ -81,17 +81,19 @@ def archive_past_identification_pictures(
 
 def get_fraud_check_to_archive(
     start_date: datetime, end_date: datetime, status: bool | None, limit: int = DEFAULT_LIMIT, offset: int = 0
-) -> list[fraud_models.BeneficiaryFraudCheck]:
+) -> list[subscription_models.BeneficiaryFraudCheck]:
     query = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
-            fraud_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
-            fraud_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.thirdPartyId.not_like(f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"),
+            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.OK,
+            subscription_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
+            subscription_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.thirdPartyId.not_like(
+                f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"
+            ),
         )
-        .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.asc())
+        .order_by(subscription_models.BeneficiaryFraudCheck.dateCreated.asc())
         .limit(limit)
         .offset(offset)
     )

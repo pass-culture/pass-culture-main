@@ -12,7 +12,7 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.educonnect import exceptions as educonnect_subscription_exceptions
 from pcapi.core.users import constants
@@ -164,18 +164,21 @@ def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
 
 
 def _on_educonnect_authentication_errors(
-    error_codes: list[fraud_models.FraudReasonCode],
+    error_codes: list[subscription_models.FraudReasonCode],
     user: users_models.User,
     educonnect_user: educonnect_models.EduconnectUser,
     base_query_param: dict,
 ) -> Response:
     error_query_param = base_query_param
 
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
+    if subscription_models.FraudReasonCode.DUPLICATE_USER in error_codes:
         error_query_param |= {"code": "DuplicateUser"}
-    elif fraud_models.FraudReasonCode.DUPLICATE_INE in error_codes:
+    elif subscription_models.FraudReasonCode.DUPLICATE_INE in error_codes:
         error_query_param |= {"code": "DuplicateINE"}
-    elif fraud_models.FraudReasonCode.AGE_NOT_VALID or fraud_models.FraudReasonCode.NOT_ELIGIBLE in error_codes:
+    elif (
+        subscription_models.FraudReasonCode.AGE_NOT_VALID
+        or subscription_models.FraudReasonCode.NOT_ELIGIBLE in error_codes
+    ):
         if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == constants.ELIGIBILITY_AGE_18:
             error_query_param |= {"code": "UserAgeNotValid18YearsOld"}
         else:

@@ -4,14 +4,14 @@ import typing
 from pydantic.v1 import ValidationError
 
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions
-from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import profile_options
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 @authenticated_and_active_user_required
 def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponseV2:
     user_subscription_state = subscription_api.get_user_subscription_state(user)
+    subscription_message = user_subscription_state.subscription_message
     stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
     subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(user, user_subscription_state)
 
@@ -53,7 +54,9 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
         next_subscription_step=user_subscription_state.next_step,
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
-        subscription_message=user_subscription_state.subscription_message,  # type: ignore[arg-type]
+        subscription_message=serializers.SubscriptionMessageV2.from_orm(subscription_message)
+        if subscription_message
+        else None,
     )
 
 
@@ -138,7 +141,7 @@ def start_identification_session(
 
     if (
         not subscription_api.get_user_subscription_state(user).next_step
-        == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
     ):
         raise api_errors.ApiErrors(
             {"code": "IDCHECK_ALREADY_PROCESSED", "message": "Une identification a déjà été traitée"},
@@ -147,7 +150,7 @@ def start_identification_session(
 
     fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
     if fraud_check:
-        source_data = typing.cast(fraud_models.UbbleContent, fraud_check.source_data())
+        source_data = typing.cast(ubble_schemas.UbbleContent, fraud_check.source_data())
         if source_data.identification_url:
             return serializers.IdentificationSessionResponse(identificationUrl=source_data.identification_url)
 

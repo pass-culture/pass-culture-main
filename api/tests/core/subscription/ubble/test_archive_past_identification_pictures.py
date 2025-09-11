@@ -2,9 +2,9 @@ import datetime
 
 import pytest
 
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import get_fraud_check_to_archive
 
 
@@ -15,16 +15,16 @@ class ArchivePastIdentificationPicturesTest:
         start_date = datetime.datetime(2021, 1, 1)
         end_date = datetime.datetime(2021, 1, 31)
 
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             dateCreated=datetime.datetime(2021, 1, 15),
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
         )
-        deprecated_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        deprecated_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=f"{subscription_api.DEPRECATED_UBBLE_PREFIX}{fraud_check.thirdPartyId}",
             dateCreated=datetime.datetime(2021, 1, 15),
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
         )
 
         # When

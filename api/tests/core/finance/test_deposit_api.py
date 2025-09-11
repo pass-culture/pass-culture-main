@@ -16,8 +16,8 @@ from pcapi.core.finance import deposit_api as api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
@@ -46,12 +46,12 @@ class UpsertDepositTest:
         ):
             beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
         with time_machine.travel(datetime.datetime.utcnow() - relativedelta(month=1)):
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
-                resultContent=fraud_factories.EduconnectContentFactory(
+                resultContent=subscription_factories.EduconnectContentFactory(
                     age=age, registration_datetime=datetime.datetime.utcnow()
                 ),
             )
@@ -70,23 +70,25 @@ class UpsertDepositTest:
         beneficiary = users_factories.UserFactory(validatedBirthDate=seventeen_years_ago.date())
 
         when_user_is_15_years_and_11_months_old = datetime.datetime.utcnow() - relativedelta(years=1, months=2)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
-            status=fraud_models.FraudCheckStatus.STARTED,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(
+            resultContent=subscription_factories.EduconnectContentFactory(
                 registration_datetime=when_user_is_15_years_and_11_months_old
             ),
         )
 
         # Registration is completed 1 year and 2 months later, when user is 17 years and 1 month old
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+            resultContent=subscription_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.utcnow()
+            ),
         )
 
         # Deposit is created right after the validation of the registration
@@ -103,12 +105,12 @@ class UpsertDepositTest:
         beneficiary = users_factories.UserFactory(
             dateOfBirth=sixteen_years_ago, validatedBirthDate=sixteen_years_ago.date()
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(
+            resultContent=subscription_factories.EduconnectContentFactory(
                 registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
             ),
         )
@@ -220,9 +222,9 @@ class UserRecreditTest:
             user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=seventeen_years_ago.date()
         )
         users_factories.DepositGrantFactory(user=user)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.PENDING,
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.PENDING,
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=datetime.datetime.utcnow() + relativedelta(days=1),
@@ -274,10 +276,10 @@ class UserRecreditTest:
                 "school_uai": "school_uai",
                 "student_level": "student_level",
             }
-            fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
-                type=fraud_models.FraudCheckType.EDUCONNECT,
-                status=fraud_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.EDUCONNECT,
+                status=subscription_models.FraudCheckStatus.OK,
                 resultContent={},
                 dateCreated=datetime.datetime(2020, 5, 1),  # first fraud check created
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -293,11 +295,11 @@ class UserRecreditTest:
 
     def test_can_be_recredited_legacy_educonnect_fraud_check(self):
         user = users_factories.BeneficiaryFactory(age=15)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             dateCreated=datetime.datetime(2020, 5, 2),
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
@@ -404,7 +406,7 @@ class UserRecreditTest:
         )
 
         # The user first tried a AGE18 activation, but cancelled it.
-        fraud_factories.PhoneValidationFraudCheckFactory(
+        subscription_factories.PhoneValidationFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2022, 12, 5, 13, 42, 00),
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -412,52 +414,52 @@ class UserRecreditTest:
         user.phoneNumber = "0693949596"
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2022, 12, 5, 13, 43, 00),
-            status=fraud_models.FraudCheckStatus.CANCELED,
+            status=subscription_models.FraudCheckStatus.CANCELED,
             eligibilityType=users_models.EligibilityType.AGE18,
             reason="Completed in application step ; Eligibility type changed by the identity provider",
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2023, 5, 13, 16, 39, 00),
-            status=fraud_models.FraudCheckStatus.CANCELED,
+            status=subscription_models.FraudCheckStatus.CANCELED,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             reason="Eligibility type changed by the identity provider",
-            resultContent=fraud_factories.UbbleContentFactory(birth_date=real_birthdate),
+            resultContent=subscription_factories.UbbleContentFactory(birth_date=real_birthdate),
         )
         # Ubble updates the birth date
         user.validatedBirthDate = real_birthdate
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2023, 5, 13, 16, 43, 00),
-            status=fraud_models.FraudCheckStatus.OK,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             reason="statement from /subscription/honor_statement endpoint",
             resultContent=None,
         )
 
         # Then they try an UNDERAGE activation (because they are in fact not 18yo)
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2023, 5, 13, 16, 59, 00),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             reason="Completed in application step",
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2023, 5, 13, 16, 59, 00),
-            status=fraud_models.FraudCheckStatus.OK,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             reason="",
-            resultContent=fraud_factories.UbbleContentFactory(birth_date=real_birthdate),
+            resultContent=subscription_factories.UbbleContentFactory(birth_date=real_birthdate),
         )
-        fraud_factories.HonorStatementFraudCheckFactory(
+        subscription_factories.HonorStatementFraudCheckFactory(
             user=user,
             dateCreated=datetime.datetime(2023, 5, 14, 00, 9, 00),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -482,7 +484,7 @@ class UserRecreditTest:
         )
 
         # Another year after they start their 18yo application
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE17_18,
             dateCreated=datetime.datetime(2025, 3, 18, 11, 10, 00),
@@ -508,12 +510,12 @@ class UserRecreditTest:
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
         with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
             assert user.age == 18
-            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+            subscription_factories.PhoneValidationFraudCheckFactory(user=user)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
             )
-            fraud_factories.HonorStatementFraudCheckFactory(user=user)
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
             api.recredit_users()
 
@@ -533,12 +535,12 @@ class UserRecreditTest:
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
         with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
             assert user.age == 18
-            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+            subscription_factories.PhoneValidationFraudCheckFactory(user=user)
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
             )
-            fraud_factories.HonorStatementFraudCheckFactory(user=user)
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
             api.recredit_users()
 
@@ -560,10 +562,10 @@ class UserRecreditTest:
             assert len(user.deposit.recredits) == 1
 
             # Finish missing steps
-            fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-            fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.PhoneValidationFraudCheckFactory(user=user)
             user.phoneNumber = "+33600000000"
-            fraud_factories.HonorStatementFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
 
             # User can be recredited
             api.recredit_users()
@@ -581,10 +583,10 @@ class UserRecreditTest:
             user_2 = users_factories.BeneficiaryFactory(age=17, deposit__expirationDate=next_week)
 
         # finish steps for user 2
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user_2)
-        fraud_factories.PhoneValidationFraudCheckFactory(user=user_2)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user_2)
+        subscription_factories.PhoneValidationFraudCheckFactory(user=user_2)
         user_2.phoneNumber = "+33610000000"
-        fraud_factories.HonorStatementFraudCheckFactory(user=user_2)
+        subscription_factories.HonorStatementFraudCheckFactory(user=user_2)
 
         api.recredit_users()
 
@@ -637,14 +639,14 @@ class UserRecreditTest:
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(
                 age=17,
-                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+                beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT,
             )
         user.phoneNumber = "+33610000000"
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, status=subscription_models.FraudCheckStatus.KO
         )
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
 
         api.recredit_users()
 
@@ -669,10 +671,10 @@ class UserRecreditTest:
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
         # Finish missing steps
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.PhoneValidationFraudCheckFactory(user=user)
         user.phoneNumber = "+33600000000"
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
 
         # User can be recredited
         api.recredit_users()

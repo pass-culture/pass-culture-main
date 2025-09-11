@@ -1,12 +1,12 @@
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription.dms import schemas as dms_schemas
 
 
 FIELD_ERROR_LABELS = {
-    fraud_models.DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
-    fraud_models.DmsFieldErrorKeyEnum.first_name: "ton prénom",
-    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "ton numéro de pièce d'identité",
-    fraud_models.DmsFieldErrorKeyEnum.last_name: "ton nom de famille",
-    fraud_models.DmsFieldErrorKeyEnum.postal_code: "ton code postal",
+    dms_schemas.DmsFieldErrorKeyEnum.birth_date: "ta date de naissance",
+    dms_schemas.DmsFieldErrorKeyEnum.first_name: "ton prénom",
+    dms_schemas.DmsFieldErrorKeyEnum.id_piece_number: "ton numéro de pièce d'identité",
+    dms_schemas.DmsFieldErrorKeyEnum.last_name: "ton nom de famille",
+    dms_schemas.DmsFieldErrorKeyEnum.postal_code: "ton code postal",
 }
 
 DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
@@ -34,7 +34,7 @@ Lorsque tu recevras ta nouvelle pièce d'identité, tu pourras renouveler ta dem
 """
 
 
-def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErrorDetails]) -> str:
+def build_field_errors_user_message(field_errors: list[dms_schemas.DmsFieldErrorDetails]) -> str:
     error_keys = [error.key for error in field_errors]
     field_errors_list_str = "\n".join(f" - {FIELD_ERROR_LABELS.get(field.key)}" for field in field_errors)
     message = (
@@ -46,10 +46,10 @@ def build_field_errors_user_message(field_errors: list[fraud_models.DmsFieldErro
         'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
         'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n\n'
     )
-    if fraud_models.DmsFieldErrorKeyEnum.postal_code in error_keys:
+    if dms_schemas.DmsFieldErrorKeyEnum.postal_code in error_keys:
         message += "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
         message += '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n\n'
-    if fraud_models.DmsFieldErrorKeyEnum.id_piece_number in error_keys:
+    if dms_schemas.DmsFieldErrorKeyEnum.id_piece_number in error_keys:
         message += "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
         message += '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n\n'
     general_help_article_link = '<a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'

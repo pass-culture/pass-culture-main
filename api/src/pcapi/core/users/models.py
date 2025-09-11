@@ -48,8 +48,6 @@ if typing.TYPE_CHECKING:
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
-    from pcapi.core.fraud.models import BeneficiaryFraudCheck
-    from pcapi.core.fraud.models import BeneficiaryFraudReview
     from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import OffererInvitation
     from pcapi.core.offerers.models import UserOfferer
@@ -59,6 +57,8 @@ if typing.TYPE_CHECKING:
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.reminders.models import OfferReminder
+    from pcapi.core.subscription.models import BeneficiaryFraudCheck
+    from pcapi.core.subscription.models import BeneficiaryFraudReview
     from pcapi.models.beneficiary_import import BeneficiaryImport
 
 

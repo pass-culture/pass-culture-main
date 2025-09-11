@@ -15,6 +15,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.models as providers_models
+import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
@@ -146,11 +147,11 @@ tables_to_clean: list[type[Model]] = [
     finance_models.Deposit,
     BeneficiaryImportStatus,
     BeneficiaryImport,
-    fraud_models.ProductWhitelist,
-    fraud_models.OrphanDmsApplication,
     fraud_models.BlacklistedDomainName,
-    fraud_models.BeneficiaryFraudCheck,
-    fraud_models.BeneficiaryFraudReview,
+    fraud_models.ProductWhitelist,
+    subscription_models.BeneficiaryFraudCheck,
+    subscription_models.BeneficiaryFraudReview,
+    subscription_models.OrphanDmsApplication,
     offers_models.OfferValidationSubRule,
     offers_models.OfferValidationRule,
     offers_models.OfferPriceLimitationRule,

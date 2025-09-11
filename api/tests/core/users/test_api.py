@@ -10,9 +10,10 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import decode_token
 
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.dms.schemas as dms_schemas
+import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import api as bookings_api
@@ -468,8 +469,8 @@ class ChangeUserEmailTest:
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[])
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
             user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
@@ -481,12 +482,14 @@ class CreateBeneficiaryTest:
         user = users_factories.UserFactory(
             roles=[], validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
         )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+            resultContent=subscription_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.utcnow()
+            ),
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
             user, fraud_check.get_detailed_source(), users_models.EligibilityType.UNDERAGE
@@ -504,10 +507,10 @@ class CreateBeneficiaryTest:
         user = users_factories.UserFactory(
             externalIds=apps_flyer_data, validatedBirthDate=datetime.date.today() - relativedelta(years=16, months=4)
         )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
@@ -553,8 +556,8 @@ class CreateBeneficiaryTest:
             "firebase_pseudo_id": "firebase_pseudo_id",
         }
         user = users_factories.UserFactory(externalIds=apps_flyer_data)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
         )
         posted = requests_mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
         user = subscription_api.activate_beneficiary_for_eligibility(
@@ -586,8 +589,8 @@ class CreateBeneficiaryTest:
 
     def test_external_users_updated(self):
         user = users_factories.UserFactory(roles=[])
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
         )
         subscription_api.activate_beneficiary_for_eligibility(
             user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
@@ -607,12 +610,12 @@ class CreateBeneficiaryTest:
 
         fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
 
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=fifteen_year_old,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=one_month_ago),
+            resultContent=subscription_factories.EduconnectContentFactory(registration_datetime=one_month_ago),
         )
 
         subscription_api.activate_beneficiary_for_eligibility(
@@ -640,11 +643,11 @@ class CreateBeneficiaryTest:
         user.deposit.expirationDate = datetime.datetime.utcnow() - relativedelta(days=1)
 
         # Finish steps for 18yo user
-        id_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.UBBLE
+        id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, status=subscription_models.FraudCheckStatus.OK, type=subscription_models.FraudCheckType.UBBLE
         )
         user.phoneNumber = "+33612345678"
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
 
         subscription_api.activate_beneficiary_for_eligibility(
             user, id_fraud_check.get_detailed_source(), users_models.EligibilityType.AGE17_18
@@ -1299,7 +1302,7 @@ class BeneficiaryInformationUpdateTest:
             postalCode=None,
             dateOfBirth=declared_on_signup_date_of_birth,
         )
-        beneficiary_information = fraud_models.DMSContent(
+        beneficiary_information = dms_schemas.DMSContent(
             last_name="Doe",
             first_name="Jane",
             activity="Lycéen",
@@ -1336,7 +1339,7 @@ class BeneficiaryInformationUpdateTest:
             firstName=None,
             lastName=None,
         )
-        educonnect_data = fraud_factories.EduconnectContentFactory(
+        educonnect_data = subscription_factories.EduconnectContentFactory(
             first_name="Raoul",
             last_name="Dufy",
             birth_date=datetime.date(2000, 5, 1),
@@ -1351,7 +1354,7 @@ class BeneficiaryInformationUpdateTest:
 
     def test_update_user_information_from_ubble(self):
         user = users_factories.UserFactory(civility=None)
-        ubble_data = fraud_factories.UbbleContentFactory(
+        ubble_data = subscription_factories.UbbleContentFactory(
             first_name="Raoul",
             last_name="Dufy",
             birth_date=datetime.date(2000, 5, 1).isoformat(),
@@ -1370,14 +1373,14 @@ class BeneficiaryInformationUpdateTest:
 
     def test_update_user_information_from_ubble_with_married_name(self):
         user = users_factories.UserFactory(civility=None)
-        ubble_data = fraud_factories.UbbleContentFactory(married_name="Flouz")
+        ubble_data = subscription_factories.UbbleContentFactory(married_name="Flouz")
         new_user = users_api.update_user_information_from_external_source(user, ubble_data)
 
         assert new_user.married_name == "Flouz"
 
     def test_update_id_piece_number(self):
         user = users_factories.UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-        dms_data = fraud_factories.DMSContentFactory(id_piece_number="140 767100 016")
+        dms_data = subscription_factories.DMSContentFactory(id_piece_number="140 767100 016")
 
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
@@ -1385,7 +1388,7 @@ class BeneficiaryInformationUpdateTest:
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
-        dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
+        dms_data = subscription_factories.DMSContentFactory(phoneNumber="+33622222222")
 
         users_api.update_user_information_from_external_source(user, dms_data)
 
@@ -1394,7 +1397,7 @@ class BeneficiaryInformationUpdateTest:
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
         user = users_factories.UserFactory(phoneNumber="+33611111111")
-        dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
+        dms_data = subscription_factories.DMSContentFactory(phone="+33622222222")
 
         users_api.update_user_information_from_external_source(user, dms_data)
 
@@ -1402,7 +1405,7 @@ class BeneficiaryInformationUpdateTest:
 
     def test_incomplete_data(self):
         user = users_factories.UserFactory(firstName="Julie")
-        dms_data = fraud_factories.DMSContentFactory(birth_date=None)
+        dms_data = subscription_factories.DMSContentFactory(birth_date=None)
 
         with pytest.raises(users_exceptions.IncompleteDataException):
             users_api.update_user_information_from_external_source(user, dms_data)
@@ -1417,7 +1420,7 @@ class BeneficiaryInformationUpdateTest:
         )
 
         # When
-        users_api.update_user_information_from_external_source(user, fraud_factories.DMSContentFactory())
+        users_api.update_user_information_from_external_source(user, subscription_factories.DMSContentFactory())
 
         # Then
         assert user.birth_date == datetime.date(2000, 1, 1)
