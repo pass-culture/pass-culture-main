@@ -285,12 +285,6 @@ def _create_nc_invoice() -> None:
         pricing_point="self",
         bank_account=bank_account,
     )
-    virtual_venue = offerers_factories.VirtualVenueFactory.create(
-        managingOfferer=offerer,
-        name=f"{venue.name} (Offre numérique)",
-        pricing_point=venue,
-        bank_account=bank_account,
-    )
 
     thing_offer1 = offers_factories.ThingOfferFactory.create(name="Offre calédonienne remboursée 1", venue=venue)
     thing_offer2 = offers_factories.ThingOfferFactory.create(name="Offre calédonienne remboursée 2", venue=venue)
@@ -300,12 +294,8 @@ def _create_nc_invoice() -> None:
     book_offer2 = offers_factories.OfferFactory.create(
         name="Livre calédonien remboursé 2", venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id
     )
-    digital_offer1 = offers_factories.DigitalOfferFactory.create(
-        name="Calédonien numérique remboursé 1", venue=virtual_venue
-    )
-    digital_offer2 = offers_factories.DigitalOfferFactory.create(
-        name="Calédonien numérique remboursé 2", venue=virtual_venue
-    )
+    digital_offer1 = offers_factories.DigitalOfferFactory.create(name="Calédonien numérique remboursé 1", venue=venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory.create(name="Calédonien numérique remboursé 2", venue=venue)
     custom_rule_offer = offers_factories.ThingOfferFactory.create(name="Calédonien dérogatoire remboursé", venue=venue)
     finance_factories.CustomReimbursementRuleFactory.create(rate=0.94, offer=custom_rule_offer)
 

@@ -39,8 +39,8 @@ class Returns200Test:
                 "allowedActions": ["CAN_EDIT_DISCOUNT", "CAN_DUPLICATE", "CAN_CANCEL"],
                 "venue": {
                     "id": venue.id,
-                    "departementCode": venue.offererAddress.address.departmentCode,
                     "isVirtual": False,
+                    "departementCode": venue.offererAddress.address.departmentCode,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,

@@ -70,11 +70,13 @@ def venue_fixture(offerer) -> offerers_models.Venue:
     return venue
 
 
+# TODO: supprimer cette fixture qui était pour les venues virtuelles ?
 @pytest.fixture(scope="function", name="venue_with_no_siret")
 def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
     venue = offerers_factories.VenueWithoutSiretFactory(
         venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
         contact__website="www.example.com",
+        siret=None,
     )
     offerers_factories.VenuePricingPointLinkFactory(venue=venue)
     return venue

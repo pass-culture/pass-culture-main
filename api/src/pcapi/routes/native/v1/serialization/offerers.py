@@ -76,6 +76,7 @@ class VenueResponse(base.BaseVenueResponse):
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None
+    isVirtual: bool
 
     class Config:
         getter_dict = VenueResponseGetterDict

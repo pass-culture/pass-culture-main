@@ -8,7 +8,6 @@ from pcapi.core.external_bookings.factories import BookingFactory
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import CinemaStockProviderFactory
@@ -51,10 +50,6 @@ def _create_offers(provider: Provider) -> Venue:
         name=f"Cinéma - {provider_name}",
         managingOfferer=cinema_user_offerer.offerer,
         venueTypeCode=VenueTypeCode.MOVIE,
-    )
-    # offerers have always a virtual venue so we have to create one to match reality
-    VirtualVenueFactory.create(
-        name=f"Cinéma - {provider_name} Lieu Virtuel", managingOfferer=cinema_user_offerer.offerer
     )
 
     user_bene = BeneficiaryGrant18Factory.create(email=f"jeune-has-{provider_name}-external-bookings@example.com")

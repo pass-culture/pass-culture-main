@@ -47,9 +47,6 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         modifications.get("visualDisabilityCompliant", offerers_constants.UNCHANGED),
     ]
 
-    if venue.isVirtual:
-        raise ApiErrors(errors={"venue": ["Vous ne pouvez pas modifier un lieu Offre Numérique."]})
-
     if managing_offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous ne pouvez pas changer la structure d'un lieu"]})
     # modifications.get("siret") may be False if there is no change (ok) OR if it has been cleared (forbidden!)
@@ -62,8 +59,7 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
     if "name" in modifications and modifications["name"] != venue.name and (siret is None or venue.siret == siret):
         raise ApiErrors(errors={"name": ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]})
     if (
-        not venue.isVirtual
-        and None in venue_disability_compliance
+        None in venue_disability_compliance
         and None in modifications_disability_compliance
         and offerers_constants.UNCHANGED not in modifications_disability_compliance
     ):

@@ -19,7 +19,6 @@ from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.selectable import Exists
@@ -72,6 +71,7 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# TODO(xordoquy): dur à modifier si les venues virtuelles ne sont que soft deleted
 CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
@@ -271,13 +271,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     publicName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
-
-    isVirtual: sa_orm.Mapped[bool] = sa_orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-        server_default=expression.false(),
-    )
 
     isPermanent: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
 
@@ -483,6 +476,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         ),
         sa.Index("idx_venue_bookingEmail", bookingEmail),
     )
+    isVirtual = False
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -867,7 +861,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
                 Venue.id == self.id,
             )
             .exists()
@@ -888,7 +881,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 AliasedVenue.isPermanent.is_(True),
-                AliasedVenue.isVirtual.is_(False),
                 AliasedVenue.id == cls.id,
             )
             .exists()
@@ -1023,10 +1015,9 @@ def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None
 
 
 def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, Exception())
-        venue.store_departement_code()
+    if not venue.postalCode:
+        raise IntegrityError(None, None, Exception())
+    venue.store_departement_code()
     venue.store_timezone()
 
 
