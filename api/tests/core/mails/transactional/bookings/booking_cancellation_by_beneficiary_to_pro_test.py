@@ -164,7 +164,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_numerique_when_venue_is_virtual(self):
         # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VenueFactory()
         stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue)
         booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
 

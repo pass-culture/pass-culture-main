@@ -147,7 +147,6 @@ class Returns200Test:
             "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
             "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
-            "isVirtual": venue.isVirtual,
             "latitude": float(venue.latitude),
             "longitude": float(venue.longitude),
             "managingOfferer": {

@@ -772,18 +772,6 @@ def test_serialize_collective_offer_template_no_location_with_ff(caplog):
     assert log.message == f"Invalid locationType for collective offer template {collective_offer_template.id}"
 
 
-def test_serialize_collective_offer_template_virtual_venue():
-    # this should not happen, collective offers should be linked to physical venues
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=None, venue__isVirtual=True, venue__siret=None, venue__comment=None
-    )
-
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
-    assert serialized["venue"]["departmentCode"] is None
-    assert serialized["venue"]["academy"] is None
-    assert serialized["_geoloc"] == {"lat": serialization.DEFAULT_LATITUDE, "lng": serialization.DEFAULT_LONGITUDE}
-
-
 def test_serialize_collective_offer_template_legacy():
     # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")

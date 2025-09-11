@@ -31,10 +31,7 @@ def create_industrial_thing_offers(
     thing_index = 0
     offer_index = 0
     for offerer in offerers_by_name.values():
-        virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
-
-        physical_venue_name = virtual_venue.name.replace(" (Offre numérique)", "")
-        physical_venue = venues_by_name.get(physical_venue_name)
+        physical_venue = offerer.managedVenues[0]
 
         for venue_thing_index in range(0, THINGS_PER_OFFERER):
             thing_venue = None
@@ -42,13 +39,7 @@ def create_industrial_thing_offers(
             subcategory = thing_subcategories[subcategory_index]
             thing_name_index = (venue_thing_index + thing_index) % len(MOCK_NAMES)
             thing_name = MOCK_NAMES[thing_name_index]
-
-            if subcategory.is_offline_only:
-                thing_venue = physical_venue
-            elif subcategory.is_online_only:
-                thing_venue = virtual_venue
-            else:
-                thing_venue = physical_venue
+            thing_venue = physical_venue
 
             if thing_venue is None:
                 continue

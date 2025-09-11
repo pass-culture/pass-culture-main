@@ -246,7 +246,6 @@ def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffer
 
     return base_serializers.ListOffersVenueResponseModel(
         id=venue.id,
-        isVirtual=venue.isVirtual,
         name=venue.name,
         offererName=venue.managingOfferer.name,
         publicName=venue.publicName,

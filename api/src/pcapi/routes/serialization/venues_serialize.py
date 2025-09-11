@@ -415,7 +415,6 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     name: str
     offererName: str
     publicName: str | None
-    isVirtual: bool
     bookingEmail: str | None
     withdrawalDetails: str | None
     siret: str | None

@@ -20,14 +20,16 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         offerer_with_two_venues = offerers_factories.OffererFactory(
             name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
         )
-        digital_venue = offerers_factories.VirtualVenueFactory(
+        ex_virtual_venue = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16),
             name="Do you diji",
             publicName="Diji",
             venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
         )
-        providers_factories.VenueProviderFactory(venue=digital_venue, provider=provider, venueIdAtOfferProvider="Test")
+        providers_factories.VenueProviderFactory(
+            venue=ex_virtual_venue, provider=provider, venueIdAtOfferProvider="Test"
+        )
         physical_venue = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
@@ -61,7 +63,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         return (
             plain_api_key,
             offerer_with_two_venues,
-            digital_venue,
+            ex_virtual_venue,
             physical_venue,
             offerer_with_one_venue,
             other_physical_venue,

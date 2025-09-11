@@ -161,7 +161,7 @@ def test_update_external_pro_user_attributes(
         if attached == "all":
             offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer2)
-        venue2 = offerers_factories.VirtualVenueFactory(
+        venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer2,
             name="Théâtre en ligne",
             bookingEmail=email,
@@ -316,7 +316,6 @@ def test_update_external_pro_user_attributes(
 
     assert attributes.dms_application_submitted is create_dms_draft
     assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
-    assert attributes.isVirtual is create_virtual
     assert attributes.isPermanent is create_permanent
     assert attributes.isOpenToPublic is create_permanent
     assert attributes.has_individual_offers is create_individual_offer
@@ -371,7 +370,6 @@ def _check_user_without_validated_offerer(user):
 
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
-    assert attributes.isVirtual is None
     assert attributes.isPermanent is None
     assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None
@@ -418,7 +416,6 @@ def test_update_external_pro_booking_email_attributes():
 
     assert attributes.dms_application_submitted is False
     assert attributes.dms_application_approved is False
-    assert attributes.isVirtual is False
     assert attributes.isPermanent is True
     assert attributes.isOpenToPublic is True
     assert attributes.has_banner_url is False
@@ -523,7 +520,6 @@ def _check_no_matching_email(email):
 
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
-    assert attributes.isVirtual is None
     assert attributes.isPermanent is None
     assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None

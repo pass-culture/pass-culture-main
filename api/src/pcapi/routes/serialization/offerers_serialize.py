@@ -48,7 +48,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     departementCode: str | None
     hasCreatedOffer: bool
     hasAdageId: bool
-    isVirtual: bool
     name: str
     id: int
     postalCode: str | None
@@ -101,7 +100,6 @@ class GetOffererResponseModel(BaseModel):
     city: str
     dateCreated: datetime
     hasAvailablePricingPoints: bool
-    hasDigitalVenueAtLeastOneOffer: bool
     isValidated: bool
     isActive: bool
     # see end of `from_orm()`
@@ -141,9 +139,6 @@ class GetOffererResponseModel(BaseModel):
             .all()
         )
 
-        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
-            offerer.id
-        )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)
         offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
             offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
@@ -223,7 +218,6 @@ class GetOfferersNamesQueryModel(BaseModel):
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     id: int
-    isVirtual: bool
     publicName: str | None
     name: str
     postalCode: str | None
