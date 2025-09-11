@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
-import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
@@ -28,14 +27,6 @@ export const CollectiveOfferCreation = ({
     offer
   )
 
-  if (!isReady) {
-    return (
-      <BasicLayout isStickyActionBarInChild>
-        <Spinner />
-      </BasicLayout>
-    )
-  }
-
   return (
     <CollectiveOfferLayout
       subTitle={offer?.name}
@@ -44,14 +35,18 @@ export const CollectiveOfferCreation = ({
       requestId={requestId}
       offer={offer}
     >
-      <OfferEducational
-        userOfferer={offerEducationalFormData.offerer}
-        domainsOptions={offerEducationalFormData.domains}
-        venues={offerEducationalFormData.venues}
-        offer={offer}
-        mode={Mode.CREATION}
-        isTemplate={isTemplate}
-      />
+      {!isReady ? (
+        <Spinner />
+      ) : (
+        <OfferEducational
+          userOfferer={offerEducationalFormData.offerer}
+          domainsOptions={offerEducationalFormData.domains}
+          venues={offerEducationalFormData.venues}
+          offer={offer}
+          mode={Mode.CREATION}
+          isTemplate={isTemplate}
+        />
+      )}
     </CollectiveOfferLayout>
   )
 }

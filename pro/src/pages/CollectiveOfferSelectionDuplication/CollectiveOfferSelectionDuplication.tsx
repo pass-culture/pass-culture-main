@@ -130,134 +130,127 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     )
   }
 
-  if (isCreatingNewOffer) {
-    return (
-      <BasicLayout
-        mainHeading="Créer une offre réservable"
-        isStickyActionBarInChild
-      >
-        <div className="container">
-          <Spinner message="Création de la nouvelle offre réservable en cours" />
-        </div>
-      </BasicLayout>
-    )
-  }
-
   return (
     <BasicLayout
       mainHeading="Créer une offre réservable"
       isStickyActionBarInChild
     >
-      <div className="container">
-        <div className={styles['search-container']}>
-          <form
-            className={styles['search-input-container']}
-            aria-labelledby="search-filter"
-            onSubmit={handleSubmitSearch(({ searchFilter }) => {
-              searchFilterForm.setValue('searchFilter', searchFilter)
-              templateOfferForm.setValue(
-                'templateOfferId',
-                String(offers?.[0]?.id)
-              )
-
-              if (error) {
-                return notify.error(GET_DATA_ERROR_MESSAGE)
-              }
-            })}
-          >
-            <TextInput
-              label="Rechercher l’offre vitrine à dupliquer"
-              {...registerSearch('searchFilter')}
-              name="searchFilter"
-              type="search"
-              autoComplete="off"
-              onChange={(e) => {
-                if (e.target.value === '') {
-                  searchFilterForm.setValue('searchFilter', e.target.value)
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  searchFilterForm.setValue(
-                    'searchFilter',
-                    (e.target as HTMLInputElement).value
-                  )
-                }
-              }}
-              className={styles['search-input']}
-              InputExtension={
-                <Button
-                  type="submit"
-                  className={styles['search-button']}
-                  disabled={isLoading}
-                >
-                  Rechercher
-                </Button>
-              }
-            />
-          </form>
-
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : (
-            <>
-              <p className={styles['visually-hidden']} role="status">
-                {offers && pluralize(offers.length, 'offre vitrine trouvée')}
-              </p>
-              <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-                <p className={styles['legend']}>
-                  {searchFilterForm.watch('searchFilter').length < 1
-                    ? 'Les dernières offres vitrines créées'
-                    : `${offers && pluralize(offers.length, 'offre')}` +
-                      ' vitrine'}
-                </p>
-                <ul className={styles['list']}>
-                  {(offers || []).slice(0, 5).map((offer) => (
-                    <li key={offer.id}>
-                      <CardLink
-                        label={offer.name}
-                        description={offer.venue.name}
-                        onClick={() => {
-                          templateOfferForm.setValue(
-                            'templateOfferId',
-                            offer.id.toString()
-                          )
-                          handleOnSubmit()
-                        }}
-                      />
-                    </li>
-                  ))}
-                </ul>
-
-                {offers && offers.length < 1 && (
-                  <div className={styles['search-no-results']}>
-                    <SvgIcon
-                      src={strokeSearchIcon}
-                      alt="Illustration de recherche"
-                      className={styles['search-no-results-icon']}
-                      width="124"
-                    />
-                    <p className={styles['search-no-results-text']}>
-                      Aucune offre trouvée pour votre recherche
-                    </p>
-                  </div>
-                )}
-
-                <ActionsBarSticky>
-                  <ActionsBarSticky.Left>
-                    <ButtonLink
-                      variant={ButtonVariant.SECONDARY}
-                      to={computeCollectiveOffersUrl({})}
-                    >
-                      Retour à la liste des offres
-                    </ButtonLink>
-                  </ActionsBarSticky.Left>
-                </ActionsBarSticky>
-              </form>
-            </>
-          )}
+      {isCreatingNewOffer ? (
+        <div className="container">
+          <Spinner message="Création de la nouvelle offre réservable en cours" />
         </div>
-      </div>
+      ) : (
+        <div className="container">
+          <div className={styles['search-container']}>
+            <form
+              className={styles['search-input-container']}
+              aria-labelledby="search-filter"
+              onSubmit={handleSubmitSearch(({ searchFilter }) => {
+                searchFilterForm.setValue('searchFilter', searchFilter)
+                templateOfferForm.setValue(
+                  'templateOfferId',
+                  String(offers?.[0]?.id)
+                )
+
+                if (error) {
+                  return notify.error(GET_DATA_ERROR_MESSAGE)
+                }
+              })}
+            >
+              <TextInput
+                label="Rechercher l’offre vitrine à dupliquer"
+                {...registerSearch('searchFilter')}
+                name="searchFilter"
+                type="search"
+                autoComplete="off"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    searchFilterForm.setValue('searchFilter', e.target.value)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    searchFilterForm.setValue(
+                      'searchFilter',
+                      (e.target as HTMLInputElement).value
+                    )
+                  }
+                }}
+                className={styles['search-input']}
+                InputExtension={
+                  <Button
+                    type="submit"
+                    className={styles['search-button']}
+                    disabled={isLoading}
+                  >
+                    Rechercher
+                  </Button>
+                }
+              />
+            </form>
+
+            {isLoading ? (
+              <SkeletonLoader />
+            ) : (
+              <>
+                <p className={styles['visually-hidden']} role="status">
+                  {offers && pluralize(offers.length, 'offre vitrine trouvée')}
+                </p>
+                <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
+                  <p className={styles['legend']}>
+                    {searchFilterForm.watch('searchFilter').length < 1
+                      ? 'Les dernières offres vitrines créées'
+                      : `${offers && pluralize(offers.length, 'offre')}` +
+                        ' vitrine'}
+                  </p>
+                  <ul className={styles['list']}>
+                    {(offers || []).slice(0, 5).map((offer) => (
+                      <li key={offer.id}>
+                        <CardLink
+                          label={offer.name}
+                          description={offer.venue.name}
+                          onClick={() => {
+                            templateOfferForm.setValue(
+                              'templateOfferId',
+                              offer.id.toString()
+                            )
+                            handleOnSubmit()
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+
+                  {offers && offers.length < 1 && (
+                    <div className={styles['search-no-results']}>
+                      <SvgIcon
+                        src={strokeSearchIcon}
+                        alt="Illustration de recherche"
+                        className={styles['search-no-results-icon']}
+                        width="124"
+                      />
+                      <p className={styles['search-no-results-text']}>
+                        Aucune offre trouvée pour votre recherche
+                      </p>
+                    </div>
+                  )}
+
+                  <ActionsBarSticky>
+                    <ActionsBarSticky.Left>
+                      <ButtonLink
+                        variant={ButtonVariant.SECONDARY}
+                        to={computeCollectiveOffersUrl({})}
+                      >
+                        Retour à la liste des offres
+                      </ButtonLink>
+                    </ActionsBarSticky.Left>
+                  </ActionsBarSticky>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </BasicLayout>
   )
 }

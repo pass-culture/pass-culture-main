@@ -6,7 +6,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { BasicLayout } from './BasicLayout'
 
 const renderBasicLayout = () => {
-  renderWithProviders(<BasicLayout />)
+  renderWithProviders(<BasicLayout mainHeading="Titre" />)
 }
 
 describe('BasicLayout', () => {
