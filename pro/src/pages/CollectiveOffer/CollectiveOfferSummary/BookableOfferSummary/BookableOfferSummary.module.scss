@@ -3,6 +3,9 @@
 @use "styles/mixins/_size.scss" as size;
 
 .header-title {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   margin-bottom: rem.torem(24px);
   justify-content: space-between;
@@ -12,20 +15,6 @@
     flex-direction: column;
     gap: rem.torem(8px);
     align-items: unset;
-  }
-
-  .title-and-back-to-nav-link {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    .title {
-      @include fonts.title1;
-    }
-
-    .back-to-nav-link {
-      margin-left: rem.torem(16px);
-    }
   }
 
   span {

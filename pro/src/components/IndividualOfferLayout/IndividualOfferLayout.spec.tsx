@@ -73,7 +73,6 @@ const renderIndividualOfferLayout: RenderComponentFunction<
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
       <Notification />
-
       <IndividualOfferLayout {...props} />
     </IndividualOfferContext.Provider>,
     options
@@ -120,7 +119,6 @@ describe('IndividualOfferLayout', () => {
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
 
       expect(screen.getByText(/offer name/)).toBeInTheDocument()
-      expect(screen.getByText('Créer une offre')).toBeInTheDocument()
     })
 
     it('should not display stepper nor status when no stepper', () => {

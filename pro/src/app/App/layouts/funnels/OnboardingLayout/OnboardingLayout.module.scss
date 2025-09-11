@@ -70,7 +70,11 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .main-heading {
-  margin-bottom: 1rem;
+  width: 100%;
+
+  &-centered {
+    width: auto;
+  }
 }
 
 .onboarding-layout {

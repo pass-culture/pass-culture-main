@@ -33,7 +33,6 @@ import {
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeString } from '@/commons/utils/pluralize'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { EducationalInstitutionDetails } from '@/components/EducationalInstitutionDetails/EducationalInstitutionDetails'
@@ -202,12 +201,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     : getLocationForOfferVenue(offer.offerVenue)
 
   return (
-    <BasicLayout areMainHeadingAndBackToNavLinkInChild isStickyActionBarInChild>
+    <BasicLayout mainHeading={offer.name} isStickyActionBarInChild>
       <div className={styles['header-title']}>
-        <div className={styles['title-and-back-to-nav-link']}>
-          <h1 className={styles['title']}>{offer.name}</h1>
-          <BackToNavLink className={styles['back-to-nav-link']} />
-        </div>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </div>
       {isCollectiveOffer(offer) && offer.provider?.name && (

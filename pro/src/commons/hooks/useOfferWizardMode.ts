@@ -16,6 +16,10 @@ export const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
       mode: OFFER_WIZARD_MODE.CREATION,
     },
     {
+      pathPart: 'confirmation',
+      mode: OFFER_WIZARD_MODE.CREATION,
+    },
+    {
       pathPart: 'edition',
       mode: OFFER_WIZARD_MODE.EDITION,
     },
