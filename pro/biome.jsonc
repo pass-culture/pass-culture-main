@@ -262,7 +262,8 @@
           },
           "style": {
             "noDefaultExport": "off",
-            "noNamespace": "off"
+            "noNamespace": "off",
+            "noNonNullAssertion": "off"
           },
           "suspicious": {
             "noEmptyBlockStatements": "off",
