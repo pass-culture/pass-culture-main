@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import type { ReactNode } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router'
 
@@ -14,7 +13,6 @@ import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessTo
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
-import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -30,7 +28,6 @@ import { IndividualOfferNavigation } from './IndividualOfferNavigation/Individua
 import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 import { Status } from './Status/Status'
-import { getTitle } from './utils/getTitle'
 
 export interface IndividualOfferLayoutProps {
   withStepper?: boolean
@@ -103,60 +100,50 @@ export const IndividualOfferLayout = ({
 
   return (
     <>
-      <div
-        className={cn({
-          [styles['title-without-name']]: !offer?.name,
-        })}
-      >
-        <div className={styles['title-container']}>
-          <div className={styles['title-and-back-to-nav-link']}>
-            <h1 className={styles.title}>{getTitle(mode)}</h1>
-            <BackToNavLink className={styles['back-to-nav-link']} />
-          </div>
-          {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
-            <>
-              {shouldDisplayActionOnStatus && (
-                <span className={styles.status}>
-                  {
-                    <Status
-                      offer={offer}
-                      canEditPublicationDates={canEditPublicationDates}
-                    />
-                  }
-                </span>
-              )}
-              {displayUpdatePublicationAndBookingDates && (
-                <OfferPublicationEdition offer={offer} />
-              )}
-            </>
-          )}
-        </div>
-
-        {offer && (
-          <p className={styles['offer-title']}>
-            {offer.name}
-            {offer.isHeadlineOffer && (
-              <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
+      <div className={styles['title-container']}>
+        {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
+          <>
+            {shouldDisplayActionOnStatus && (
+              <span className={styles.status}>
+                {
+                  <Status
+                    offer={offer}
+                    canEditPublicationDates={canEditPublicationDates}
+                  />
+                }
+              </span>
             )}
-          </p>
+            {displayUpdatePublicationAndBookingDates && (
+              <OfferPublicationEdition offer={offer} />
+            )}
+          </>
         )}
-
-        {!isRefactoFutureOfferEnabled &&
-          mode !== OFFER_WIZARD_MODE.CREATION &&
-          offer?.status !== OfferStatus.ACTIVE &&
-          isDateValid(offer?.publicationDate) &&
-          new Date(offer.publicationDate) > new Date() && (
-            <div className={styles['publication-date']}>
-              <SvgIcon
-                src={fullWaitIcon}
-                alt=""
-                className={styles['publication-icon']}
-                width="24"
-              />
-              Publication prévue le {publicationDate} à {publicationTime}
-            </div>
-          )}
       </div>
+
+      {offer && (
+        <p className={styles['offer-title']}>
+          {offer.name}
+          {offer.isHeadlineOffer && (
+            <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
+          )}
+        </p>
+      )}
+
+      {!isRefactoFutureOfferEnabled &&
+        mode !== OFFER_WIZARD_MODE.CREATION &&
+        offer?.status !== OfferStatus.ACTIVE &&
+        isDateValid(offer?.publicationDate) &&
+        new Date(offer.publicationDate) > new Date() && (
+          <div className={styles['publication-date']}>
+            <SvgIcon
+              src={fullWaitIcon}
+              alt=""
+              className={styles['publication-icon']}
+              width="24"
+            />
+            Publication prévue le {publicationDate} à {publicationTime}
+          </div>
+        )}
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
 

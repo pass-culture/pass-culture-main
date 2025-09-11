@@ -31,11 +31,6 @@ interface BasicLayoutProps {
    */
   mainTopElement?: React.ReactNode
   /**
-   * In case both `<h1>` & back to nav link
-   * had to be declared within the children
-   */
-  areMainHeadingAndBackToNavLinkInChild?: boolean
-  /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
    * above it.
@@ -48,7 +43,6 @@ export const BasicLayout = ({
   mainHeading,
   mainSubHeading,
   mainTopElement,
-  areMainHeadingAndBackToNavLinkInChild = false,
   isStickyActionBarInChild = false,
 }: BasicLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -58,11 +52,9 @@ export const BasicLayout = ({
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
 
-  const isBackToNavLinkDisplayed =
-    areMainHeadingAndBackToNavLinkInChild || mainHeading
-
   const mainHeadingWrapper = mainHeading ? (
     <MainHeading
+      className={styles['main-heading']}
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
       isConnected
@@ -71,7 +63,7 @@ export const BasicLayout = ({
 
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink={!isBackToNavLinkDisplayed} />
+      <SkipLinks shouldDisplayTopPageLink={!mainHeading} />
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}

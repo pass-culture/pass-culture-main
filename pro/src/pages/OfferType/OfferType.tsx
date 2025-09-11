@@ -31,7 +31,11 @@ export const OfferType = (): JSX.Element => {
   const children = <OfferTypeScreen collectiveOnly={collectiveOnly} />
 
   return isOnboarding ? (
-    <OnboardingLayout mainHeading={mainHeading} isStickyActionBarInChild>
+    <OnboardingLayout
+      mainHeading={mainHeading}
+      isStickyActionBarInChild
+      isEntryScreen
+    >
       {children}
     </OnboardingLayout>
   ) : (

@@ -2,10 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
 
-.title-without-name {
-  margin-bottom: rem.torem(54px);
-}
-
 .content {
   margin-top: rem.torem(15px);
 }
@@ -16,35 +12,24 @@
   display: flex;
   flex-direction: column;
   gap: rem.torem(8px);
+  margin-top: rem.torem(-32px);
+  margin-bottom: rem.torem(64px);
 
   @media screen and (min-width: size.$tablet) {
     flex-direction: row;
     gap: rem.torem(16px);
+    margin-bottom: 0;
   }
 }
 
 .title-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: rem.torem(16px);
-  justify-content: space-between;
-}
+  position: absolute;
+  top: rem.torem(80px);
 
-.title-and-back-to-nav-link {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.title {
-  @include fonts.title1;
-
-  flex: auto;
-}
-
-.back-to-nav-link {
-  margin-left: rem.torem(16px);
+  @media screen and (min-width: size.$tablet) {
+    top: 0;
+    right: 0;
+  }
 }
 
 .status {

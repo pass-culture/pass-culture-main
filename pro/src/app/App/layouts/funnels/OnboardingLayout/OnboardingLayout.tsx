@@ -22,11 +22,6 @@ interface OnboardingLayoutProps {
    */
   mainHeading?: React.ReactNode
   /**
-   * In case both `<h1>` & back to nav link
-   * had to be declared within the children
-   */
-  areMainHeadingAndBackToNavLinkInChild?: boolean
-  /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
    * above it.
@@ -50,7 +45,6 @@ interface OnboardingLayoutProps {
 export const OnboardingLayout = ({
   children,
   mainHeading,
-  areMainHeadingAndBackToNavLinkInChild = false,
   isStickyActionBarInChild = false,
   verticallyCentered = false,
   isEntryScreen = false,
@@ -63,12 +57,12 @@ export const OnboardingLayout = ({
   }
 
   const isConnected = !!currentUser
-  const isBackToNavLinkDisplayed =
-    areMainHeadingAndBackToNavLinkInChild || isConnected
 
   const mainHeadingWrapper = mainHeading ? (
     <MainHeading
-      className={styles['main-heading']}
+      className={cn(styles['main-heading'], {
+        [styles['main-heading-centered']]: isEntryScreen,
+      })}
       mainHeading={mainHeading}
       isConnected={isConnected}
     />
@@ -80,7 +74,7 @@ export const OnboardingLayout = ({
 
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink={!isBackToNavLinkDisplayed} />
+      <SkipLinks shouldDisplayTopPageLink={!isConnected} />
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
