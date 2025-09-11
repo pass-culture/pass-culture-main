@@ -1,6 +1,10 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { DS_BANK_ACCOUNT_PROCEDURE_ID } from '@/commons/utils/config'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import {
+  DS_BANK_ACCOUNT_PROCEDURE_ID,
+  DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
+} from '@/commons/utils/config'
 import { Dialog } from '@/components/Dialog/Dialog'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeLinkIcon from '@/icons/stroke-link.svg'
@@ -23,6 +27,8 @@ export const AddBankInformationsDialog = ({
   dialogTriggerRef,
 }: ReimbursmentPointDialogProps) => {
   const { logEvent } = useAnalytics()
+  const isCaledonian = useIsCaledonian()
+
   return (
     <Dialog
       title="Vous allez être redirigé vers le site demarches-simplifiees.fr"
@@ -33,7 +39,11 @@ export const AddBankInformationsDialog = ({
       refToFocusOnClose={dialogTriggerRef}
     >
       <ButtonLink
-        to={DS_BANK_ACCOUNT_PROCEDURE_ID}
+        to={
+          isCaledonian
+            ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
+            : DS_BANK_ACCOUNT_PROCEDURE_ID
+        }
         isExternal
         opensInNewTab
         icon={fullLinkIcon}

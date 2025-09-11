@@ -3,13 +3,23 @@ import { userEvent } from '@testing-library/user-event'
 
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { AddBankInformationsDialog } from '../AddBankInformationsDialog'
 
 const mockLogEvent = vi.fn()
 
-describe('AddBankInformations', () => {
+vi.mock('@/commons/utils/config', async () => {
+  return {
+    ...(await vi.importActual('@/commons/utils/config')),
+    DS_BANK_ACCOUNT_PROCEDURE_ID: 'https://ds.fr',
+    DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID:
+      'https://ds-nouvelle-caledonie.fr',
+  }
+})
+
+describe('AddBankInformationsDialog', () => {
   it('should render dialog', () => {
     renderWithProviders(
       <AddBankInformationsDialog
@@ -57,5 +67,36 @@ describe('AddBankInformations', () => {
         offererId: 0,
       }
     )
+  })
+
+  it('should use DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID if isCaledonian is true', () => {
+    vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValueOnce(true)
+
+    renderWithProviders(
+      <AddBankInformationsDialog
+        closeDialog={vi.fn()}
+        offererId={0}
+        isDialogOpen
+      />
+    )
+
+    const link = screen.getByText('Continuer sur demarches-simplifiees.fr')
+
+    expect(link).toHaveAttribute('href', 'https://ds-nouvelle-caledonie.fr')
+  })
+
+  it('should use DS_BANK_ACCOUNT_PROCEDURE_ID if isCaledonian is false', () => {
+    vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValueOnce(false)
+
+    renderWithProviders(
+      <AddBankInformationsDialog
+        closeDialog={vi.fn()}
+        offererId={0}
+        isDialogOpen
+      />
+    )
+    const link = screen.getByText('Continuer sur demarches-simplifiees.fr')
+
+    expect(link).toHaveAttribute('href', 'https://ds.fr')
   })
 })
