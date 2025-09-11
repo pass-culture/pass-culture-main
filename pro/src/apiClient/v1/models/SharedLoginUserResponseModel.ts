@@ -17,7 +17,6 @@ export type SharedLoginUserResponseModel = {
   hasSeenProTutorials?: boolean | null;
   hasUserOfferer?: boolean | null;
   id: number;
-  isAdmin: boolean;
   isEmailValidated: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;

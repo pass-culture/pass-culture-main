@@ -194,12 +194,14 @@ class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_date(self):
         # given
-        admin = users_factories.AdminFactory()
+        pro = users_factories.ProFactory()
+        pro_attachment_to_offerer = offerers_factories.UserOffererFactory(user=pro)
         period_beginning_date = datetime.date(2020, 4, 21)
         period_ending_date = datetime.date(2020, 4, 21)
 
         cayenne_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="America/Cayenne")
         offer_in_cayenne = factories.OfferFactory(
+            venue__managingOfferer=pro_attachment_to_offerer.offerer,
             venue__postalCode="97300",
             offererAddress=cayenne_offerer_address,
         )
@@ -208,6 +210,7 @@ class GetCappedOffersForFiltersTest:
 
         mayotte_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="Indian/Mayotte")
         offer_in_mayotte = factories.OfferFactory(
+            venue__managingOfferer=pro_attachment_to_offerer.offerer,
             venue__postalCode="97600",
             offererAddress=mayotte_offerer_address,
         )
@@ -216,8 +219,7 @@ class GetCappedOffersForFiltersTest:
 
         # When
         offers = repository.get_capped_offers_for_filters(
-            user_id=admin.id,
-            user_is_admin=admin.has_admin_role,
+            user_id=pro.id,
             offers_limit=10,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
@@ -231,8 +233,7 @@ class GetCappedOffersForFiltersTest:
 
         # Now ensures the offers are filtered out if we begin the search the day after
         offers = repository.get_capped_offers_for_filters(
-            user_id=admin.id,
-            user_is_admin=admin.has_admin_role,
+            user_id=pro.id,
             offers_limit=10,
             period_beginning_date=period_beginning_date + datetime.timedelta(days=1),
         )
@@ -240,8 +241,7 @@ class GetCappedOffersForFiltersTest:
 
         # Now ensures the offers are filtered out if we end the search the day before
         offers = repository.get_capped_offers_for_filters(
-            user_id=admin.id,
-            user_is_admin=admin.has_admin_role,
+            user_id=pro.id,
             offers_limit=10,
             period_ending_date=period_ending_date - datetime.timedelta(days=1),
         )
@@ -1000,12 +1000,11 @@ class GetCappedOffersForFiltersTest:
             offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
-            user = pending_offer.venue.managingOfferer
+            pro_user = users_factories.ProFactory()
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=pending_offer.venue.managingOfferer)
 
             # when
-            offers = repository.get_capped_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_limit=5, status="PENDING"
-            )
+            offers = repository.get_capped_offers_for_filters(user_id=pro_user.id, offers_limit=5, status="PENDING")
 
             # then
             assert len(offers) == 1
@@ -1027,12 +1026,11 @@ class GetCappedOffersForFiltersTest:
             offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
-            user = rejected_offer.venue.managingOfferer
+            pro_user = users_factories.ProFactory()
+            offerers_factories.UserOffererFactory(user=pro_user, offerer=rejected_offer.venue.managingOfferer)
 
             # when
-            offers = repository.get_capped_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_limit=5, status="REJECTED"
-            )
+            offers = repository.get_capped_offers_for_filters(user_id=pro_user.id, offers_limit=5, status="REJECTED")
 
             # then
             assert len(offers) == 1

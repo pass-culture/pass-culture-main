@@ -70,7 +70,6 @@ class Returns200Test:
             "hasUserOfferer": False,
             "id": user.id,
             "idPieceNumber": None,
-            "isAdmin": False,
             "isEmailValidated": True,
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
             "lastName": "Smisse",
