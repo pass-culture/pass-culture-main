@@ -1,0 +1,35 @@
+{% macro offer_detail_image(url, credit) %}
+  <div class="flex-shrink-1">
+    {% if url %}
+      <figure class="figure">
+        <div class="d-flex justify-content-center align-items-center">
+          <object class="d-block offer-image"
+                  data="{{ url }}"
+                  type="image/jpeg">
+            <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+              <i class="bi bi-file-image fs-2"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="Image invalide"></i>
+            </div>
+          </object>
+        </div>
+        <figcaption class="figure-caption">
+          Crédits&nbsp;:
+          {% if credit %}
+            {{ credit }}
+          {% else %}
+            Non renseigné
+          {% endif %}
+        </figcaption>
+      </figure>
+    {% else %}
+      <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
+        <i class="bi bi-file-image fs-2"
+           data-bs-toggle="tooltip"
+           data-bs-placement="top"
+           data-bs-title="Pas d'image"></i>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}

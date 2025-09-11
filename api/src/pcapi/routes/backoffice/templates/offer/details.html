@@ -9,21 +9,8 @@
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% from "components/description.html" import description_detail_vertical %}
-{% macro accessibility_indicator(icon, value, title) %}
-  <figure class="figure p-2 accessibility-logo-container d-flex flex-column align-items-center gap-3">
-    <div class="accessibility-logo d-flex justify-content-center align-items-center position-relative border rounded-xs">
-      {{ icon }}
-      <div class="position-absolute top-100 start-50 translate-middle">
-        {% if value is true %}
-          <i class="bi bi-check-circle-fill small text-success"></i>
-        {% else %}
-          <i class="bi bi-x-circle-fill small text-body-secondary"></i>
-        {% endif %}
-      </div>
-    </div>
-    <figcaption class="figure-caption text-center fw-semibold">{{ title }}</figcaption>
-  </figure>
-{% endmacro %}
+{% from "components/presentation/accessibility.html" import accessibility_indicator %}
+{% from "components/presentation/images.html" import offer_detail_image %}
 {% block title %}{{ offer.name }}{% endblock %}
 {% block header_extra %}
   <div>
@@ -174,39 +161,7 @@
             {% if offer.bookingEmail %}{{ clipboard.copy_to_clipboard(offer.bookingEmail, "Copier") }}{% endif %}
           {% endcall %}
         </div>
-        <div class="flex-shrink-1">
-          {% if offer.image %}
-            <figure class="figure">
-              <div class="d-flex justify-content-center align-items-center">
-                <object class="d-block offer-image"
-                        data="{{ offer.image.url }}"
-                        type="image/jpeg">
-                  <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
-                    <i class="bi bi-file-image fs-2"
-                       data-bs-toggle="tooltip"
-                       data-bs-placement="top"
-                       data-bs-title="Image invalide"></i>
-                  </div>
-                </object>
-              </div>
-              <figcaption class="figure-caption">
-                Crédits&nbsp;:
-                {% if offer.image.credit %}
-                  {{ offer.image.credit }}
-                {% else %}
-                  Non renseigné
-                {% endif %}
-              </figcaption>
-            </figure>
-          {% else %}
-            <div class="d-flex bg-secondary-subtle justify-content-center align-items-center offer-no-image">
-              <i class="bi bi-file-image fs-2"
-                 data-bs-toggle="tooltip"
-                 data-bs-placement="top"
-                 data-bs-title="Pas d'image"></i>
-            </div>
-          {% endif %}
-        </div>
+        {{ offer_detail_image(offer.image.url, offer.image.credit) }}
       </div>
     {% endcall %}
     {# section info #}
