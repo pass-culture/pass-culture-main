@@ -15,26 +15,6 @@
     }
   }
 
-  &-section {
-    margin-bottom: rem.torem(32px);
-
-    &-header {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: rem.torem(24px);
-    }
-
-    &-title {
-      @include fonts.title3;
-    }
-
-    &-back-to-nav-link {
-      margin-left: rem.torem(16px);
-    }
-  }
-
   &-actions {
     max-width: rem.torem(486px);
     margin: rem.torem(40px) auto 0;

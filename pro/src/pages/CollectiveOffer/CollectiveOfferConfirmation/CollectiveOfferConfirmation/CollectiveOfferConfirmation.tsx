@@ -2,7 +2,6 @@ import cn from 'classnames'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -20,7 +19,6 @@ interface CollectiveOfferConfirmationProps {
 }
 
 const activeOffer = (institutionDisplayName?: string) => ({
-  title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
       Votre offre est désormais visible et réservable par les enseignants et
@@ -117,7 +115,7 @@ export const CollectiveOfferConfirmationScreen = ({
   const isNewCollectiveOffersStructureActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
-  const { title, description, icon } = mapOfferStatusToData(
+  const { description, icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
     institutionDisplayName
@@ -127,17 +125,7 @@ export const CollectiveOfferConfirmationScreen = ({
     <div className={styles['confirmation-wrapper']}>
       <div className={styles['confirmation']}>
         {icon}
-        <div className={styles['confirmation-section']}>
-          <div className={styles['confirmation-section-header']}>
-            <h1 className={styles['confirmation-section-title']}>{title}</h1>
-            <BackToNavLink
-              className={styles['confirmation-section-back-to-nav-link']}
-            />
-          </div>
-          <p className={styles['form-layout-section-description']}>
-            {description}
-          </p>
-        </div>
+        <div>{description}</div>
         <div className={styles['confirmation-actions']}>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}

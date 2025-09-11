@@ -26,7 +26,7 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <BasicLayout areMainHeadingAndBackToNavLinkInChild>
+    <BasicLayout mainHeading="Votre offre a été publiée sur ADAGE">
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer.displayedStatus}

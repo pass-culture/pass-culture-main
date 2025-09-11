@@ -21,6 +21,11 @@ describe('useOfferWizardMode', () => {
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
 
+  it('should return mode "creation"', () => {
+    const { result } = renderUseOfferWizardMode('/test/confirmation')
+    expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
+  })
+
   it('should return mode "read only"', () => {
     const { result } = renderUseOfferWizardMode('/test/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.READ_ONLY)
