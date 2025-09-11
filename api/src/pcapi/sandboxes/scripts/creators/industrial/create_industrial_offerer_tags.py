@@ -38,6 +38,3 @@ def create_industrial_offerer_tags() -> None:
     offerers_factories.OffererTagFactory.create(name=CONFORMITE_TAG_NAME, label="Conformité", categories=[homologation])
     offerers_factories.OffererTagFactory.create(name="adage", label="Adage", categories=[homologation])
     offerers_factories.OffererTagFactory.create(name="siren-caduc", label="SIREN caduc", categories=[homologation])
-    offerers_factories.OffererTagFactory.create(
-        name="non-diffusible", label="Non-diffusible", categories=[homologation]
-    )
