@@ -12,15 +12,13 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as getSiretData from '@/commons/core/Venue/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
-import {
-  DEFAULT_ADDRESS_FORM_VALUES,
-  DEFAULT_OFFERER_FORM_VALUES,
-} from '../constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import { Offerer } from '../Offerer'
 
 const fetchMock = createFetchMock(vi)
@@ -130,19 +128,6 @@ describe('Offerer', () => {
     )
   })
 
-  it('should display authentication signup journey if offerer is set', () => {
-    contextValue.offerer = {
-      siret: '12345678933333',
-      name: 'Test',
-      hasVenueWithSiret: false,
-      isDiffusible: true,
-      ...DEFAULT_ADDRESS_FORM_VALUES,
-    }
-
-    renderOffererScreen(contextValue)
-    expect(screen.getByText('Authentication screen')).toBeInTheDocument()
-  })
-
   it('should not display authentication screen on submit with form error', async () => {
     vi.spyOn(api, 'getStructureData').mockRejectedValue(
       new ApiError(
@@ -240,14 +225,34 @@ describe('Offerer', () => {
   })
 
   it('should redirect to offerers page if the offerer has a venue with the same siret', async () => {
-    contextValue.offerer = {
-      name: 'name',
-      siret: '12345678933333',
-      hasVenueWithSiret: true,
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererSiren: '123456789',
+      venues: [
+        {
+          id: 1,
+          name: 'First Venue',
+          isPermanent: true,
+          siret: '12345678933333',
+        },
+        { id: 2, name: 'Second Venue', isPermanent: true },
+      ],
+    })
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
+      address: null,
+      apeCode: '75',
       isDiffusible: true,
-      ...DEFAULT_ADDRESS_FORM_VALUES,
-    }
+      name: 'name',
+      siren: '123456789',
+      siret: '12345678933333',
+    })
+
     renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     await waitFor(() => {
       expect(screen.getByText('Offerers screen')).toBeInTheDocument()
@@ -255,14 +260,33 @@ describe('Offerer', () => {
   })
 
   it('should redirect to identification page if the offerer has no venue with the same siret', async () => {
-    contextValue.offerer = {
-      name: 'name',
-      siret: '12345678933333',
-      hasVenueWithSiret: false,
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererSiren: '123456789',
+      venues: [
+        {
+          id: 1,
+          name: 'First Venue',
+          isPermanent: true,
+        },
+        { id: 2, name: 'Second Venue', isPermanent: true },
+      ],
+    })
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
+      address: null,
+      apeCode: '75',
       isDiffusible: true,
-      ...DEFAULT_ADDRESS_FORM_VALUES,
-    }
+      name: 'name',
+      siren: '123456789',
+      siret: '12345678933333',
+    })
+
     renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
     await waitFor(() => {
       expect(screen.getByText('Authentication screen')).toBeInTheDocument()
