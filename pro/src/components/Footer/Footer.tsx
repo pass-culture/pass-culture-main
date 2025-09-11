@@ -14,7 +14,6 @@ type FooterProps = {
   layout?:
     | 'basic'
     | 'sticky-basic'
-    | 'funnel'
     | 'onboarding'
     | 'sticky-onboarding'
     | 'logged-out'
