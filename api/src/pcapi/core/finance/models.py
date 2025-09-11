@@ -150,7 +150,7 @@ class RecreditType(enum.Enum):
 
 class Recredit(PcObject, Base, Model):
     __tablename__ = "recredit"
-    depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
+    depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False, index=True)
 
     deposit: sa_orm.Mapped[Deposit] = sa_orm.relationship(
         "Deposit", foreign_keys=[depositId], back_populates="recredits"
