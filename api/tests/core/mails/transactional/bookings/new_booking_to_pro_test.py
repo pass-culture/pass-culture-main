@@ -111,7 +111,6 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__ean="1234567899999",
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            stock__offer__venue__isVirtual=True,
             stock__offer__venue__siret=None,
             stock__offer__venue__offererAddress=None,
         )
@@ -136,7 +135,6 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__extraData={},  # no EAN
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__venue__isVirtual=True,
             stock__offer__venue__siret=None,
             stock__offer__venue__offererAddress=None,
         )

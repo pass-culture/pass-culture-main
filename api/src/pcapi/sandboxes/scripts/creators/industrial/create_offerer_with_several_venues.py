@@ -45,15 +45,9 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
         venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
     )
     offerers_factories.VenueBankAccountLinkFactory.create(bankAccount=bank_account1, venue=venue4)
-    # offerers have always a virtual venue so we have to create one to match reality
-    virtual_venue = offerers_factories.VirtualVenueFactory.create(
-        name="Lieu virtuel de la structure avec plusieurs lieux ", managingOfferer=user_offerer.offerer
-    )
     in_two_month = datetime.datetime.utcnow() + datetime.timedelta(days=60)
-    for i in range(1, 6):
-        offer = offers_factories.DigitalOfferFactory.create(
-            name=f"Offre avec code d'activation {i}", venue=virtual_venue
-        )
+    for i, venue in enumerate([venue1, venue2, venue3, venue4]):
+        offer = offers_factories.DigitalOfferFactory.create(name=f"Offre avec code d'activation {i}", venue=venue)
 
         offers_factories.StockWithActivationCodesFactory.create(
             offer=offer,
