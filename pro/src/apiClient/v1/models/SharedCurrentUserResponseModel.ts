@@ -20,7 +20,6 @@ export type SharedCurrentUserResponseModel = {
   hasUserOfferer?: boolean | null;
   id: number;
   idPieceNumber?: string | null;
-  isAdmin: boolean;
   isEmailValidated: boolean;
   isImpersonated?: boolean;
   lastConnectionDate?: string | null;

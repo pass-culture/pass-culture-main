@@ -122,7 +122,6 @@ class SharedLoginUserResponseModel(BaseModel):
     hasSeenProTutorials: bool | None
     hasUserOfferer: bool | None
     id: int
-    isAdmin: bool
     isEmailValidated: bool
     lastConnectionDate: datetime | None
     lastName: str | None
@@ -141,7 +140,6 @@ class SharedLoginUserResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
-        user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
         result = super().from_orm(user)
         return result
@@ -162,7 +160,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     hasUserOfferer: bool | None
     id: int
     idPieceNumber: str | None
-    isAdmin: bool
     isEmailValidated: bool
     lastConnectionDate: datetime | None
     lastName: str | None
@@ -181,7 +178,6 @@ class SharedCurrentUserResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
-        user.isAdmin = user.has_admin_role
         user.hasUserOfferer = user.has_user_offerer
         user.isImpersonated = flask.session.get("internal_admin_email") is not None
         result = super().from_orm(user)

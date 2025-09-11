@@ -9,7 +9,6 @@ export const sharedCurrentUserFactory = (
   firstName: 'John',
   dateCreated: '2022-07-29T12:18:43.087097Z',
   email: 'john@do.net',
-  isAdmin: false,
   isEmailValidated: true,
   isImpersonated: false,
   roles: [],
