@@ -124,13 +124,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
         mock_index += 1
 
-        virtual_venue_name = "{} (Offre numérique)"
-        venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory.create(
-            managingOfferer=offerer,
-            name=virtual_venue_name.format(venue_name),
-            pricing_point=venue,
-        )
-
     # Venue Allocine
 
     allocine_offerer = offerers_factories.OffererFactory.create(name="Structure du lieu synchro allociné")

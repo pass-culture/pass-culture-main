@@ -57,7 +57,6 @@ class BaseVenueResponse(BaseModel):
 
 class ListOffersVenueResponseModel(BaseModel):
     id: int
-    isVirtual: bool
     name: str
     offererName: str
     publicName: str | None
