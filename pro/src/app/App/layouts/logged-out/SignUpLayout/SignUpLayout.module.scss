@@ -1,9 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_size.scss" as size;
-@use "styles/variables/_z-index.scss" as zIndex;
-
-$connect-as-header-height: rem.torem(52px);
 
 .layout {
   display: flex;
@@ -178,34 +175,30 @@ $connect-as-header-height: rem.torem(52px);
     padding: size.$main-content-padding size.$main-content-padding 0;
   }
 
-  &-sign-up {
-    display: flex;
+  .logo-sign-up {
+    color: var(--color-text-brand-primary);
+    max-width: rem.torem(135px);
+    align-self: center;
+    margin-top: rem.torem(32px);
 
-    .logo-sign-up {
-      color: var(--color-text-brand-primary);
-      max-width: rem.torem(135px);
-      align-self: center;
-      margin-top: rem.torem(32px);
-
-      @media (min-width: size.$laptop) {
-        align-self: flex-start;
-        margin-left: rem.torem(40px);
-        margin-top: rem.torem(40px);
-        flex-shrink: 0;
-      }
+    @media (min-width: size.$laptop) {
+      align-self: flex-start;
+      margin-left: rem.torem(40px);
+      margin-top: rem.torem(40px);
+      flex-shrink: 0;
     }
+  }
 
-    [id="content"] {
-      width: 100%;
-      max-width: rem.torem(640px);
-      align-self: center;
-      margin: auto;
-      padding-bottom: rem.torem(48px);
+  [id="content"] {
+    width: 100%;
+    max-width: rem.torem(640px);
+    align-self: center;
+    margin: auto;
+    padding-bottom: rem.torem(48px);
 
-      /* For ultra-wide screens, makes content little bit more larger */
-      @media (min-width: rem.torem(2600px)) {
-        max-width: rem.torem(800px);
-      }
+    /* For ultra-wide screens, makes content little bit more larger */
+    @media (min-width: rem.torem(2600px)) {
+      max-width: rem.torem(800px);
     }
   }
 }

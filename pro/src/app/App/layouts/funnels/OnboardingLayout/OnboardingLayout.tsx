@@ -86,7 +86,7 @@ export const OnboardingLayout = ({
       )}
       <Header disableHomeLink />
       <div
-        className={cn(styles['page-layout'], styles[`page-layout-onboarding`], {
+        className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >

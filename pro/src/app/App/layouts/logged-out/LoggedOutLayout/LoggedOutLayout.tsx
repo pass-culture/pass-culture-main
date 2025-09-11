@@ -26,9 +26,7 @@ export const LoggedOutLayout = ({
   return (
     <div className={styles.layout}>
       <SkipLinks shouldDisplayTopPageLink />
-      <div
-        className={cn(styles['page-layout'], styles[`page-layout-logged-out`])}
-      >
+      <div className={styles['page-layout']}>
         <div
           id="content-wrapper"
           className={cn(
@@ -45,12 +43,7 @@ export const LoggedOutLayout = ({
               width="135"
             />
           </header>
-          <div
-            className={cn(
-              styles['content-container'],
-              styles[`content-container-logged-out`]
-            )}
-          >
+          <div className={styles['content-container']}>
             <main id="content">
               <div id="orejimeElement" />
               <div className={cn(styles.content, styles[`content-logged-out`])}>
