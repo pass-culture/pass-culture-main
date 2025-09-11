@@ -875,13 +875,30 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
                 educational_models.EducationalRedactor.lastName,
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.institution).load_only(
-                educational_models.EducationalInstitution.name
+                educational_models.EducationalInstitution.name,
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.template).load_only(
                 educational_models.CollectiveOfferTemplate.name,
             ),
             sa_orm.joinedload(educational_models.CollectiveOffer.provider).load_only(
                 providers_models.Provider.name,
+            ),
+            sa_orm.joinedload(
+                educational_models.CollectiveOffer.offererAddress,
+            )
+            .joinedload(
+                offerers_models.OffererAddress.address,
+            )
+            .load_only(
+                geography_models.Address.city,
+                geography_models.Address.postalCode,
+                geography_models.Address.street,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains).load_only(
+                educational_models.EducationalDomain.name,
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram).load_only(
+                educational_models.NationalProgram.name,
             ),
         )
     )

@@ -275,6 +275,8 @@ def create_eac_offers(
         provider=provider_for_addresses,
     )
 
+    create_complete_collective_offers_with_template()
+
     search.index_all_collective_offers_and_templates()
 
 
@@ -1163,6 +1165,46 @@ def create_national_programs_and_domains() -> tuple[
     ]
 
     return national_programs, domains
+
+
+def create_complete_collective_offers_with_template() -> None:
+    national_program = db.session.query(educational_models.NationalProgram).first()
+    domains = db.session.query(educational_models.EducationalDomain).limit(2).all()
+    offerer_address = db.session.query(offerers_models.OffererAddress).first()
+    institution = db.session.query(educational_models.EducationalInstitution).first()
+    teacher = db.session.query(educational_models.EducationalRedactor).first()
+    provider = db.session.query(providers_models.Provider).first()
+
+    template = educational_factories.CollectiveOfferTemplateFactory(
+        name="a full offer with a full template",
+        educational_domains=domains,
+        venue=offerer_address.offerer.managedVenues[0],
+        motorDisabilityCompliant=True,
+        durationMinutes=300,
+        offererAddress=offerer_address,
+        locationType=educational_models.CollectiveLocationType.ADDRESS,
+        nationalProgram=national_program,
+        priceDetail="Some details on the price and why it's so expensive",
+    )
+    add_image_to_offer(template, "collective_offer_1.png")
+    collective_offer = educational_factories.CollectiveOfferFactory(
+        name="a full offer with a full template",
+        institution=institution,
+        educational_domains=domains,
+        venue=offerer_address.offerer.managedVenues[0],
+        motorDisabilityCompliant=True,
+        durationMinutes=300,
+        template=template,
+        teacher=teacher,
+        provider=provider,
+        offererAddress=offerer_address,
+        locationType=educational_models.CollectiveLocationType.ADDRESS,
+        nationalProgram=national_program,
+    )
+    add_image_to_offer(collective_offer, "collective_offer_2.jpg")
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock__collectiveOffer=collective_offer,
+    )
 
 
 def reset_offer_id_seq() -> None:

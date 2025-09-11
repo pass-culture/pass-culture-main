@@ -6,6 +6,9 @@
 {% from "components/connect_as.html" import build_connect_as %}
 {% from "components/description.html" import description_detail_horizontal %}
 {% from "components/description.html" import description_detail_vertical %}
+{% from "components/presentation/accessibility.html" import accessibility_indicator %}
+{% from "components/presentation/images.html" import offer_detail_image %}
+{% import "components/logo.html" as logo %}
 {% block title %}{{ collective_offer.name }}{% endblock %}
 {% block header_extra %}
   <div>
@@ -29,39 +32,40 @@
 {% endblock action_buttons %}
 {% block extra_title_bar %}
   {% call content_navbar("offer-details") %}
-    {{ content_navbar_element('info', 'Détails') }}
+    {{ content_navbar_element('details', 'Détails') }}
+    {{ content_navbar_element('info', 'Informations pratiques') }}
+    {{ content_navbar_element('publics', 'Public concerné') }}
+    {{ content_navbar_element('contact', 'Contact du partenaire culturel') }}
   {% endcall %}
 {% endblock extra_title_bar %}
 {% block details_container %}
   {% call details_content_wrapper("offer-details") %}
+    <!-- DETAILS -->
+    {% call nav_section("details", "Détails de l'offre") %}
+      <div class="d-flex gap-1">
+        <div class="flex-grow-1">
+          {% if collective_offer.institution %}
+            {% call description_detail_horizontal("Établissement") %}
+              {{ collective_offer.institution.name }}
+            {% endcall %}
+          {% endif %}
+          {% if collective_offer.teacher %}
+            {% call description_detail_horizontal("Enseignant") %}
+              {{ collective_offer.teacher.full_name }}
+            {% endcall %}
+          {% endif %}
+          {% call description_detail_horizontal("Durée") %}
+            {% if collective_offer.durationMinutes %}{{ collective_offer.durationMinutes }} minutes{% endif %}
+          {% endcall %}
+          {% call description_detail_horizontal("Description") %}
+            {{ collective_offer.description | nl2br }}
+          {% endcall %}
+        </div>
+        {{ offer_detail_image(collective_offer.imageUrl, collective_offer.imageCredit) }}
+      </div>
+    {% endcall %}
     <!-- INFO -->
-    {% call nav_section("info", "Détails de l'offre") %}
-      {% call description_detail_horizontal("Formats") %}
-        {{ collective_offer.formats | format_collective_offer_formats }}
-      {% endcall %}
-      {% if collective_offer.collectiveStock %}
-        {% call description_detail_horizontal("Prix") %}
-          {{ collective_offer.collectiveStock.price | format_amount }}
-        {% endcall %}
-      {% endif %}
-      {% if collective_offer.collectiveStock %}
-        {% call description_detail_horizontal("Places") %}
-          {{ collective_offer.collectiveStock.numberOfTickets }}
-        {% endcall %}
-      {% endif %}
-      {% if collective_offer.institution %}
-        {% call description_detail_horizontal("Établissement") %}
-          {{ collective_offer.institution.name }}
-        {% endcall %}
-      {% endif %}
-      {% if collective_offer.teacher %}
-        {% call description_detail_horizontal("Enseignant") %}
-          {{ collective_offer.teacher.full_name }}
-        {% endcall %}
-      {% endif %}
-      {% call description_detail_horizontal("Date de création") %}
-        {{ collective_offer.dateCreated | format_date }}
-      {% endcall %}
+    {% call nav_section("info", "Informations pratiques") %}
       {% call description_detail_horizontal("Date de l'évènement") %}
         {% if collective_offer.collectiveStock %}
           {% set start_date = collective_offer.start | format_date %}
@@ -69,6 +73,51 @@
           {{ start_date }}
           {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
         {% endif %}
+      {% endcall %}
+      {% call description_detail_horizontal("Prix") %}
+        {% if collective_offer.collectiveStock %}
+          {{ collective_offer.collectiveStock.price | format_amount }} pour {{ collective_offer.collectiveStock.numberOfTickets }} élèves
+        {% endif %}
+      {% endcall %}
+      {% call description_detail_horizontal("Informations sur le prix") %}
+        {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.priceDetail | nl2br }}{% endif %}
+      {% endcall %}
+      {% if collective_offer.locationType %}
+        {% call description_detail_horizontal("Lieu") %}
+          {% if collective_offer.locationType.value == 'ADDRESS' %}
+            <div>
+              <div>{{ collective_offer.offererAddress.address.street }}</div>
+              <div>{{ collective_offer.offererAddress.address.postalCode }} {{ collective_offer.offererAddress.address.city }}</div>
+            </div>
+          {% elif collective_offer.locationComment %}
+            {{ collective_offer.locationComment | nl2br }}
+          {% else %}
+            {{ collective_offer.locationType | format_collective_location_type }}
+          {% endif %}
+        {% endcall %}
+      {% endif %}
+    {% endcall %}
+    <!-- PUBLICS -->
+    {% call nav_section("publics", "Public concerné") %}
+      {% call description_detail_horizontal("Niveau scolaire") %}
+        {% for students in collective_offer.students %}<div>{{ students.value }}</div>{% endfor %}
+      {% endcall %}
+      {% call description_detail_horizontal("Accessibilité") %}
+        <div class="hstack gap-5">
+          {{ accessibility_indicator(logo.handicap_visual() , collective_offer.visualDisabilityCompliant, "Handicap visuel") }}
+          {{ accessibility_indicator(logo.handicap_mental() , collective_offer.mentalDisabilityCompliant, "Handicap mental") }}
+          {{ accessibility_indicator(logo.handicap_motor() , collective_offer.motorDisabilityCompliant, "Handicap moteur") }}
+          {{ accessibility_indicator(logo.handicap_audio() , collective_offer.audioDisabilityCompliant, "Handicap auditif") }}
+        </div>
+      {% endcall %}
+    {% endcall %}
+    <!-- CONTACT -->
+    {% call nav_section("contact", "Contact du partenaire culturel") %}
+      {% call description_detail_horizontal("Téléphone") %}
+        {% if collective_offer.contactPhone %}{{ collective_offer.contactPhone }}{% endif %}
+      {% endcall %}
+      {% call description_detail_horizontal("email") %}
+        {% if collective_offer.contactEmail %}{{ collective_offer.contactEmail }}{% endif %}
       {% endcall %}
     {% endcall %}
   {% endcall %}
@@ -93,6 +142,15 @@
     {% endcall %}
     {% call description_detail_vertical("Statut") %}
       {{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}
+    {% endcall %}
+    {% call description_detail_vertical("Formats") %}
+      {{ collective_offer.formats | format_collective_offer_formats }}
+    {% endcall %}
+    {% call description_detail_vertical("Domaine artistique") %}
+      {% for domain in collective_offer.domains %}<div>{{ domain.name }}</div>{% endfor %}
+    {% endcall %}
+    {% call description_detail_vertical("Dispositif national") %}
+      {% if collective_offer.nationalProgram %}{{ collective_offer.nationalProgram.name }}{% endif %}
     {% endcall %}
     <hr />
     {% call description_detail_vertical("Entité juridique") %}
@@ -122,6 +180,9 @@
         {{ collective_offer.rejectionReason | format_collective_offer_rejection_reason }}
       {% endcall %}
     {% endif %}
+    {% call description_detail_vertical("Date de création") %}
+      {{ collective_offer.dateCreated | format_date_time }}
+    {% endcall %}
     {% if collective_offer.lastValidationDate %}
       {% call description_detail_vertical("Date de dernière validation") %}
         {{ collective_offer.lastValidationDate | format_date_time }}
