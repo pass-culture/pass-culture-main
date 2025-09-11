@@ -3,15 +3,17 @@ import logging
 
 import sqlalchemy as sa
 
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.models import db
 
 
 logger = logging.getLogger()
 
 
-def get_orphan_dms_application_by_application_id(application_id: int) -> fraud_models.OrphanDmsApplication | None:
-    return db.session.query(fraud_models.OrphanDmsApplication).filter_by(application_id=application_id).first()
+def get_orphan_dms_application_by_application_id(
+    application_id: int,
+) -> subscription_models.OrphanDmsApplication | None:
+    return db.session.query(subscription_models.OrphanDmsApplication).filter_by(application_id=application_id).first()
 
 
 def create_orphan_dms_application(
@@ -20,7 +22,7 @@ def create_orphan_dms_application(
     latest_modification_datetime: datetime.datetime,
     email: str | None = None,
 ) -> None:
-    orphan_dms_application = fraud_models.OrphanDmsApplication(
+    orphan_dms_application = subscription_models.OrphanDmsApplication(
         application_id=application_number,
         process_id=procedure_number,
         email=email,
@@ -38,9 +40,9 @@ def get_already_processed_applications_ids(procedure_number: int) -> set[int]:
 
 def _get_already_processed_applications_ids_from_orphans(procedure_number: int) -> set[int]:
     orphans = (
-        db.session.query(fraud_models.OrphanDmsApplication)
-        .filter(fraud_models.OrphanDmsApplication.process_id == procedure_number)
-        .with_entities(fraud_models.OrphanDmsApplication.application_id)
+        db.session.query(subscription_models.OrphanDmsApplication)
+        .filter(subscription_models.OrphanDmsApplication.process_id == procedure_number)
+        .with_entities(subscription_models.OrphanDmsApplication.application_id)
         .all()
     )
 
@@ -49,23 +51,23 @@ def _get_already_processed_applications_ids_from_orphans(procedure_number: int) 
 
 def _get_already_processed_applications_ids_from_fraud_checks(procedure_number: int) -> set[int]:
     fraud_checks = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.DMS,
             sa.or_(
                 # If there was a parsing error, a fraudCheck exists but no resultContent
-                fraud_models.BeneficiaryFraudCheck.resultContent.is_(None),
-                fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(sa.Integer)
+                subscription_models.BeneficiaryFraudCheck.resultContent.is_(None),
+                subscription_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(sa.Integer)
                 == procedure_number,
             ),
-            fraud_models.BeneficiaryFraudCheck.status.notin_(
+            subscription_models.BeneficiaryFraudCheck.status.notin_(
                 [
-                    fraud_models.FraudCheckStatus.PENDING,
-                    fraud_models.FraudCheckStatus.STARTED,
+                    subscription_models.FraudCheckStatus.PENDING,
+                    subscription_models.FraudCheckStatus.STARTED,
                 ]
             ),
         )
-        .with_entities(fraud_models.BeneficiaryFraudCheck.thirdPartyId)
+        .with_entities(subscription_models.BeneficiaryFraudCheck.thirdPartyId)
     )
 
     return {int(fraud_check[0]) for fraud_check in fraud_checks}

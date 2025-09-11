@@ -14,6 +14,11 @@ from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.dms import schemas as dms_schemas
+from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
+from pcapi.core.subscription.ubble import fraud_check_api as ubble_api
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import eligibility_api
@@ -24,10 +29,6 @@ from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
-
-from . import models
-from .common import models as common_models
-from .ubble import api as ubble_api
 
 
 logger = logging.getLogger(__name__)
@@ -58,11 +59,11 @@ class DuplicateIneHash(fraud_exceptions.FraudException):
 
 
 def on_educonnect_result(
-    user: users_models.User, educonnect_content: models.EduconnectContent
-) -> models.BeneficiaryFraudCheck:
+    user: users_models.User, educonnect_content: educonnect_schemas.EduconnectContent
+) -> subscription_models.BeneficiaryFraudCheck:
     fraud_check = subscription_api.initialize_identity_fraud_check(
         eligibility_type=educonnect_content.get_eligibility_type_at_registration(),
-        fraud_check_type=models.FraudCheckType.EDUCONNECT,
+        fraud_check_type=subscription_models.FraudCheckType.EDUCONNECT,
         identity_content=educonnect_content,
         third_party_id=str(educonnect_content.educonnect_id),
         user=user,
@@ -72,13 +73,13 @@ def on_educonnect_result(
     return fraud_check
 
 
-def on_dms_fraud_result(user: users_models.User, fraud_check: models.BeneficiaryFraudCheck) -> None:
+def on_dms_fraud_result(user: users_models.User, fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     on_identity_fraud_check_result(user, fraud_check)
 
 
 def educonnect_fraud_checks(
-    user: users_models.User, educonnect_content: models.EduconnectContent
-) -> list[models.FraudItem]:
+    user: users_models.User, educonnect_content: educonnect_schemas.EduconnectContent
+) -> list[subscription_schemas.FraudItem]:
     fraud_items = []
     fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date(), user.departementCode))
     fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
@@ -86,7 +87,7 @@ def educonnect_fraud_checks(
     return fraud_items
 
 
-def dms_fraud_checks(user: users_models.User, content: models.DMSContent) -> list[models.FraudItem]:
+def dms_fraud_checks(user: users_models.User, content: dms_schemas.DMSContent) -> list[subscription_schemas.FraudItem]:
     fraud_items = []
     id_piece_number = content.get_id_piece_number()
     fraud_items.append(validate_id_piece_number_format_fraud_item(id_piece_number, content.procedure_number))
@@ -97,21 +98,22 @@ def dms_fraud_checks(user: users_models.User, content: models.DMSContent) -> lis
 
 def on_identity_fraud_check_result(
     user: users_models.User,
-    beneficiary_fraud_check: models.BeneficiaryFraudCheck,
-) -> list[models.FraudItem]:
-    fraud_items: list[models.FraudItem] = []
-    identity_content: common_models.IdentityCheckContent = beneficiary_fraud_check.source_data()
+    beneficiary_fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> list[subscription_schemas.FraudItem]:
+    fraud_items: list[subscription_schemas.FraudItem] = []
+    identity_content = beneficiary_fraud_check.source_data()
+    assert isinstance(identity_content, subscription_schemas.IdentityCheckContent)
 
-    if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
-        assert isinstance(identity_content, models.UbbleContent)
+    if beneficiary_fraud_check.type == subscription_models.FraudCheckType.UBBLE:
+        assert isinstance(identity_content, ubble_schemas.UbbleContent)
         fraud_items += ubble_api.ubble_fraud_checks(user, identity_content)
 
-    elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
-        assert isinstance(identity_content, models.DMSContent)
+    elif beneficiary_fraud_check.type == subscription_models.FraudCheckType.DMS:
+        assert isinstance(identity_content, dms_schemas.DMSContent)
         fraud_items += dms_fraud_checks(user, identity_content)
 
-    elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
-        assert isinstance(identity_content, models.EduconnectContent)
+    elif beneficiary_fraud_check.type == subscription_models.FraudCheckType.EDUCONNECT:
+        assert isinstance(identity_content, educonnect_schemas.EduconnectContent)
         fraud_items += educonnect_fraud_checks(user, identity_content)
 
     else:
@@ -144,14 +146,16 @@ def on_identity_fraud_check_result(
 
 def validate_id_piece_number_format_fraud_item(
     id_piece_number: str | None, procedure_number: int | None = None
-) -> models.FraudItem:
+) -> subscription_schemas.FraudItem:
     if procedure_number == settings.DMS_ENROLLMENT_PROCEDURE_ID_ET:  # Pièce d'identité étrangère
-        return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas française.")
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.OK, detail="La pièce d'identité n'est pas française."
+        )
     if not id_piece_number or not id_piece_number.strip():
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.SUSPICIOUS,
             detail="Le numéro de la pièce d'identité est vide",
-            reason_codes=[models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER],
+            reason_codes=[subscription_models.FraudReasonCode.EMPTY_ID_PIECE_NUMBER],
         )
 
     # Outil de test de regex: https://regex101.com/ FTW
@@ -169,12 +173,14 @@ def validate_id_piece_number_format_fraud_item(
 
     match = re.match(regexp, format_id_piece_number(id_piece_number))
     if not match:
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.SUSPICIOUS,
             detail="Le format du numéro de la pièce d'identité n'est pas valide",
-            reason_codes=[models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
+            reason_codes=[subscription_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail="Le numéro de pièce d'identité est valide")
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.OK, detail="Le numéro de pièce d'identité est valide"
+    )
 
 
 def _duplicate_user_fraud_item(
@@ -183,24 +189,24 @@ def _duplicate_user_fraud_item(
     married_name: str | None,
     birth_date: datetime.date,
     excluded_user_id: int,
-) -> models.FraudItem:
+) -> subscription_schemas.FraudItem:
     duplicate_user = find_duplicate_beneficiary(first_name, last_name, married_name, birth_date, excluded_user_id)
 
     if duplicate_user:
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.SUSPICIOUS,
             detail=f"Duplicat de l'utilisateur {duplicate_user.id}",
-            reason_codes=[models.FraudReasonCode.DUPLICATE_USER],
+            reason_codes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
             extra_data={"duplicate_id": duplicate_user.id},
         )
 
-    return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
+    return subscription_schemas.FraudItem(status=subscription_schemas.FraudStatus.OK, detail="Utilisateur non dupliqué")
 
 
-def _missing_data_fraud_item() -> models.FraudItem:
-    return models.FraudItem(
-        status=models.FraudStatus.SUSPICIOUS,
-        reason_codes=[models.FraudReasonCode.MISSING_REQUIRED_DATA],
+def _missing_data_fraud_item() -> subscription_schemas.FraudItem:
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.SUSPICIOUS,
+        reason_codes=[subscription_models.FraudReasonCode.MISSING_REQUIRED_DATA],
         detail="Des informations obligatoires (prénom, nom ou date de naissance) sont absentes du dossier",
     )
 
@@ -235,18 +241,22 @@ def find_duplicate_beneficiary(
     return None
 
 
-def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_number: str) -> models.FraudItem:
+def duplicate_id_piece_number_fraud_item(
+    user: users_models.User, id_piece_number: str
+) -> subscription_schemas.FraudItem:
     duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
 
     if duplicate_user:
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.SUSPICIOUS,
             detail=f"La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {duplicate_user.id}",
-            reason_codes=[models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
+            reason_codes=[subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
             extra_data={"duplicate_id": duplicate_user.id},
         )
 
-    return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée"
+    )
 
 
 def format_id_piece_number(id_piece_number: str) -> str:
@@ -267,17 +277,19 @@ def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_us
     )
 
 
-def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:
+def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> subscription_schemas.FraudItem:
     duplicate_user = find_duplicate_ine_hash_user(ine_hash, excluded_user_id)
 
     if duplicate_user:
-        return models.FraudItem(
-            status=models.FraudStatus.SUSPICIOUS,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.SUSPICIOUS,
             detail=f"L'INE {ine_hash} est déjà pris par l'utilisateur {duplicate_user.id}",
-            reason_codes=[models.FraudReasonCode.DUPLICATE_INE],
+            reason_codes=[subscription_models.FraudReasonCode.DUPLICATE_INE],
         )
 
-    return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.OK, detail="L'INE n'est pas déjà pris"
+    )
 
 
 def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> users_models.User | None:
@@ -290,16 +302,16 @@ def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> users_
 
 def _check_user_eligibility(
     user: users_models.User, eligibility: users_models.EligibilityType | None
-) -> models.FraudItem:
+) -> subscription_schemas.FraudItem:
     if not eligibility:
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.KO,
             detail="L'âge indiqué dans le dossier indique que l'utilisateur n'est pas éligible",
-            reason_codes=[models.FraudReasonCode.NOT_ELIGIBLE],
+            reason_codes=[subscription_models.FraudReasonCode.NOT_ELIGIBLE],
         )
 
-    return models.FraudItem(
-        status=models.FraudStatus.OK, detail="L'utilisateur est éligible à un nouveau statut bénéficiaire"
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.OK, detail="L'utilisateur est éligible à un nouveau statut bénéficiaire"
     )
 
 
@@ -317,7 +329,7 @@ def is_subscription_name_valid(name: str | None) -> bool:
     return True
 
 
-def _check_user_names_valid(first_name: str | None, last_name: str | None) -> models.FraudItem:
+def _check_user_names_valid(first_name: str | None, last_name: str | None) -> subscription_schemas.FraudItem:
     incorrect_fields = None
     is_valid_first_name = is_subscription_name_valid(first_name)
     is_valid_last_name = is_subscription_name_valid(last_name)
@@ -330,62 +342,67 @@ def _check_user_names_valid(first_name: str | None, last_name: str | None) -> mo
         incorrect_fields = "un nom de famille"
 
     if incorrect_fields:
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.KO,
             detail=f"L'utilisateur a {incorrect_fields} avec des caractères invalides",
-            reason_codes=[models.FraudReasonCode.NAME_INCORRECT],
+            reason_codes=[subscription_models.FraudReasonCode.NAME_INCORRECT],
         )
-    return models.FraudItem(
-        status=models.FraudStatus.OK, detail="L'utilisateur a un nom et prénom avec des caractères valides"
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.OK,
+        detail="L'utilisateur a un nom et prénom avec des caractères valides",
     )
 
 
-def _check_user_email_is_validated(user: users_models.User) -> models.FraudItem:
+def _check_user_email_is_validated(user: users_models.User) -> subscription_schemas.FraudItem:
     if not user.isEmailValidated:
-        return models.FraudItem(
-            status=models.FraudStatus.KO,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.KO,
             detail="L'email de l'utilisateur n'est pas validé",
-            reason_codes=[models.FraudReasonCode.EMAIL_NOT_VALIDATED],
+            reason_codes=[subscription_models.FraudReasonCode.EMAIL_NOT_VALIDATED],
         )
-    return models.FraudItem(status=models.FraudStatus.OK, detail="L'email est validé")
+    return subscription_schemas.FraudItem(status=subscription_schemas.FraudStatus.OK, detail="L'email est validé")
 
 
-def _underage_user_fraud_item(birth_date: datetime.date, department_code: str | None = None) -> models.FraudItem:
+def _underage_user_fraud_item(
+    birth_date: datetime.date, department_code: str | None = None
+) -> subscription_schemas.FraudItem:
     age = users_utils.get_age_from_birth_date(birth_date, department_code)
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-        return models.FraudItem(
-            status=models.FraudStatus.OK,
+        return subscription_schemas.FraudItem(
+            status=subscription_schemas.FraudStatus.OK,
             detail=f"L'âge de l'utilisateur est valide ({age} ans).",
         )
-    return models.FraudItem(
-        status=models.FraudStatus.KO,
+    return subscription_schemas.FraudItem(
+        status=subscription_schemas.FraudStatus.KO,
         detail=f"L'âge de l'utilisateur est invalide ({age} ans). Il devrait être parmi {constants.ELIGIBILITY_UNDERAGE_RANGE}",
-        reason_codes=[models.FraudReasonCode.AGE_NOT_VALID],
+        reason_codes=[subscription_models.FraudReasonCode.AGE_NOT_VALID],
     )
 
 
 def _create_failed_phone_validation_fraud_check(
     user: users_models.User,
-    fraud_check_data: models.PhoneValidationFraudData,
+    fraud_check_data: subscription_schemas.PhoneValidationFraudData,
     reason: str,
-    reason_codes: list[models.FraudReasonCode],
-) -> models.BeneficiaryFraudCheck:
-    fraud_check = models.BeneficiaryFraudCheck(
+    reason_codes: list[subscription_models.FraudReasonCode],
+) -> subscription_models.BeneficiaryFraudCheck:
+    fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
         reason=reason,
         reasonCodes=reason_codes,
-        type=models.FraudCheckType.PHONE_VALIDATION,
+        type=subscription_models.FraudCheckType.PHONE_VALIDATION,
         thirdPartyId=f"PC-{user.id}",
         resultContent=fraud_check_data.dict(),
         eligibilityType=user.eligibility,
-        status=models.FraudCheckStatus.KO,
+        status=subscription_models.FraudCheckStatus.KO,
     )
 
     repository.save(fraud_check)
     return fraud_check
 
 
-def handle_phone_already_exists(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
+def handle_phone_already_exists(
+    user: users_models.User, phone_number: str
+) -> subscription_models.BeneficiaryFraudCheck:
     orig_user_id = (
         db.session.query(users_models.User)
         .filter(users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated)
@@ -393,51 +410,57 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
         .id
     )
     reason = f"Le numéro est déjà utilisé par l'utilisateur {orig_user_id}"
-    reason_codes = [models.FraudReasonCode.PHONE_ALREADY_EXISTS]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    reason_codes = [subscription_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
+    fraud_check_data = subscription_schemas.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
-def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
+def handle_blacklisted_sms_recipient(
+    user: users_models.User, phone_number: str
+) -> subscription_models.BeneficiaryFraudCheck:
     reason = "Le numéro saisi est interdit"
-    reason_codes = [models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    reason_codes = [subscription_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
+    fraud_check_data = subscription_schemas.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
-def handle_invalid_country_code(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
+def handle_invalid_country_code(
+    user: users_models.User, phone_number: str
+) -> subscription_models.BeneficiaryFraudCheck:
     reason = "L'indicatif téléphonique est invalide"
-    reason_codes = [models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+    reason_codes = [subscription_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
+    fraud_check_data = subscription_schemas.PhoneValidationFraudData(phone_number=phone_number)
 
     return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
-    reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
+    reason_codes = [subscription_models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
+    fraud_check_data = subscription_schemas.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
-    reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
-    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
+    reason_codes = [subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
+    fraud_check_data = subscription_schemas.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
-def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.BeneficiaryFraudCheck) -> None:
+def _handle_duplicate(
+    fraud_items: list[subscription_schemas.FraudItem], fraud_check: subscription_models.BeneficiaryFraudCheck
+) -> None:
     duplicate_beneficiary_id = next(
         (
             fraud_item.get_duplicate_beneficiary_id()
             for fraud_item in fraud_items
-            if models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes
-            or models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in fraud_item.reason_codes
+            if subscription_models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes
+            or subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in fraud_item.reason_codes
         ),
         None,
     )
@@ -474,22 +497,24 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
 
 
 def validate_frauds(
-    fraud_items: list[models.FraudItem],
-    fraud_check: models.BeneficiaryFraudCheck,
-) -> list[models.FraudItem]:
-    if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
-        fraud_check_status = models.FraudCheckStatus.OK
-    elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
-        fraud_check_status = models.FraudCheckStatus.KO
+    fraud_items: list[subscription_schemas.FraudItem],
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> list[subscription_schemas.FraudItem]:
+    if all(fraud_item.status == subscription_schemas.FraudStatus.OK for fraud_item in fraud_items):
+        fraud_check_status = subscription_models.FraudCheckStatus.OK
+    elif any(fraud_item.status == subscription_schemas.FraudStatus.KO for fraud_item in fraud_items):
+        fraud_check_status = subscription_models.FraudCheckStatus.KO
     else:
-        fraud_check_status = models.FraudCheckStatus.SUSPICIOUS
+        fraud_check_status = subscription_models.FraudCheckStatus.SUSPICIOUS
 
     reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
-        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
+        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != subscription_schemas.FraudStatus.OK
     )
     reason_codes = set(
         itertools.chain.from_iterable(
-            fraud_item.reason_codes for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
+            fraud_item.reason_codes
+            for fraud_item in fraud_items
+            if fraud_item.status != subscription_schemas.FraudStatus.OK
         )
     )
 
@@ -505,12 +530,12 @@ def validate_frauds(
 
 def has_user_pending_identity_check(user: users_models.User) -> bool:
     return db.session.query(
-        db.session.query(models.BeneficiaryFraudCheck)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
-            models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
-            models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
+            subscription_models.BeneficiaryFraudCheck.user == user,
+            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.PENDING,
+            subscription_models.BeneficiaryFraudCheck.type.in_(subscription_models.IDENTITY_CHECK_TYPES),
+            subscription_models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,
         )
         .exists()
     ).scalar()
@@ -522,36 +547,43 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
 
     user_subscription_state = subscription_api.get_user_subscription_state(user)
     return user_subscription_state.fraud_status not in (
-        subscription_models.SubscriptionItemStatus.TODO,
-        subscription_models.SubscriptionItemStatus.VOID,
+        subscription_schemas.SubscriptionItemStatus.TODO,
+        subscription_schemas.SubscriptionItemStatus.VOID,
     )
 
 
-def get_last_filled_identity_fraud_check(user: users_models.User) -> models.BeneficiaryFraudCheck | None:
+def get_last_filled_identity_fraud_check(user: users_models.User) -> subscription_models.BeneficiaryFraudCheck | None:
     user_identity_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in models.IDENTITY_CHECK_TYPES
-        and fraud_check.resultContent is not None
-        and fraud_check.source_data().get_last_name() is not None
-        and fraud_check.source_data().get_first_name() is not None
-        and fraud_check.source_data().get_birth_date() is not None
+        if fraud_check.type in subscription_models.IDENTITY_CHECK_TYPES and fraud_check.resultContent is not None
     ]
+    filled_fraud_checks = []
+    for fraud_check in user_identity_fraud_checks:
+        source_data = fraud_check.source_data()
+        if not isinstance(source_data, subscription_schemas.IdentityCheckContent):
+            continue
+        is_filled = (
+            source_data.get_last_name() is not None
+            and source_data.get_first_name() is not None
+            and source_data.get_birth_date() is not None
+        )
+        if is_filled:
+            filled_fraud_checks.append(fraud_check)
 
-    return (
-        max(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated)
-        if user_identity_fraud_checks
-        else None
-    )
+    if not filled_fraud_checks:
+        return None
+
+    return max(filled_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated)
 
 
 def create_honor_statement_fraud_check(
     user: users_models.User, origin: str, eligibility_type: users_models.EligibilityType | None = None
 ) -> None:
-    fraud_check = models.BeneficiaryFraudCheck(
+    fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=models.FraudCheckType.HONOR_STATEMENT,
-        status=models.FraudCheckStatus.OK,
+        type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+        status=subscription_models.FraudCheckStatus.OK,
         reason=origin,
         thirdPartyId=f"internal_check_{user.id}",
         eligibilityType=eligibility_type if eligibility_type else user.eligibility,
@@ -562,14 +594,16 @@ def create_honor_statement_fraud_check(
 
 def handle_ok_manual_review(
     user: users_models.User,
-    _review: models.BeneficiaryFraudReview,
+    _review: subscription_models.BeneficiaryFraudReview,
     eligibility: users_models.EligibilityType | None,
 ) -> None:
     fraud_check = get_last_filled_identity_fraud_check(user)
     if not fraud_check:
         raise FraudCheckError("Pas de vérification d'identité effectuée")
 
-    source_data: common_models.IdentityCheckContent = fraud_check.source_data()
+    source_data = fraud_check.source_data()
+    assert isinstance(source_data, subscription_schemas.IdentityCheckContent)
+
     id_piece_number = user.idPieceNumber or source_data.get_id_piece_number()
     try:
         _check_id_piece_number_unicity(user, id_piece_number)
@@ -615,7 +649,7 @@ def handle_ok_manual_review(
 
 def handle_dms_redirection_review(
     user: users_models.User,
-    review: models.BeneficiaryFraudReview,
+    review: subscription_models.BeneficiaryFraudReview,
     _eligibility: users_models.EligibilityType | None,
 ) -> None:
     if review.reason is None:
@@ -623,13 +657,15 @@ def handle_dms_redirection_review(
     else:
         review.reason += " ; Redirigé vers DMS"
 
-    transaction_mails.send_subscription_document_error_email(user.email, models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
+    transaction_mails.send_subscription_document_error_email(
+        user.email, subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+    )
 
 
 REVIEW_HANDLERS = {
-    models.FraudReviewStatus.OK: handle_ok_manual_review,
-    models.FraudReviewStatus.REDIRECTED_TO_DMS: handle_dms_redirection_review,
-    models.FraudReviewStatus.KO: None,
+    subscription_models.FraudReviewStatus.OK: handle_ok_manual_review,
+    subscription_models.FraudReviewStatus.REDIRECTED_TO_DMS: handle_dms_redirection_review,
+    subscription_models.FraudReviewStatus.KO: None,
 }
 
 
@@ -637,13 +673,13 @@ def validate_beneficiary(
     user: users_models.User,
     reviewer: users_models.User,
     reason: str,
-    review: models.FraudReviewStatus,
+    review: subscription_models.FraudReviewStatus,
     reviewed_eligibility: users_models.EligibilityType | None,
-) -> models.BeneficiaryFraudReview:
+) -> subscription_models.BeneficiaryFraudReview:
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = models.BeneficiaryFraudReview(
+    review = subscription_models.BeneficiaryFraudReview(
         user=user,
         author=reviewer,
         reason=reason,
@@ -654,7 +690,7 @@ def validate_beneficiary(
     )
 
     if review.review is not None:
-        handler = REVIEW_HANDLERS.get(models.FraudReviewStatus(review.review))
+        handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(review.review))
         if handler:
             handler(user, review, None if user.eligibility is None else reviewed_eligibility)
 
@@ -685,13 +721,13 @@ def _check_ine_hash_unicity(user: users_models.User, ine_hash: str | None) -> No
 def create_profile_completion_fraud_check(
     user: users_models.User,
     eligibility: users_models.EligibilityType | None,
-    fraud_check_content: models.ProfileCompletionContent,
+    fraud_check_content: subscription_schemas.ProfileCompletionContent,
 ) -> None:
-    fraud_check = models.BeneficiaryFraudCheck(
+    fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=models.FraudCheckType.PROFILE_COMPLETION,
+        type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
         resultContent=fraud_check_content.dict(),
-        status=models.FraudCheckStatus.OK,
+        status=subscription_models.FraudCheckStatus.OK,
         thirdPartyId=f"profile-completion-{user.id}",
         eligibilityType=eligibility,
         reason=fraud_check_content.origin,
@@ -699,10 +735,10 @@ def create_profile_completion_fraud_check(
     repository.save(fraud_check)
 
 
-def get_duplicate_beneficiary(fraud_check: models.BeneficiaryFraudCheck) -> users_models.User | None:
+def get_duplicate_beneficiary(fraud_check: subscription_models.BeneficiaryFraudCheck) -> users_models.User | None:
     identity_content = fraud_check.source_data()
 
-    if not isinstance(identity_content, common_models.IdentityCheckContent):
+    if not isinstance(identity_content, subscription_schemas.IdentityCheckContent):
         raise ValueError("Invalid fraud check identity content type")
 
     first_name = identity_content.get_first_name()
@@ -722,12 +758,12 @@ def get_duplicate_beneficiary(fraud_check: models.BeneficiaryFraudCheck) -> user
 
 
 def invalidate_fraud_check_for_duplicate_user(
-    fraud_check: models.BeneficiaryFraudCheck, duplicate_user_id: int
+    fraud_check: subscription_models.BeneficiaryFraudCheck, duplicate_user_id: int
 ) -> None:
-    fraud_check.status = models.FraudCheckStatus.SUSPICIOUS
+    fraud_check.status = subscription_models.FraudCheckStatus.SUSPICIOUS
     if not fraud_check.reasonCodes:
         fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(models.FraudReasonCode.DUPLICATE_USER)
+    fraud_check.reasonCodes.append(subscription_models.FraudReasonCode.DUPLICATE_USER)
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user_id}"
 
     repository.save(fraud_check)
@@ -735,16 +771,16 @@ def invalidate_fraud_check_for_duplicate_user(
 
 def get_duplicate_beneficiary_anonymized_email(
     rejected_user: users_models.User,
-    identity_content: common_models.IdentityCheckContent,
-    duplicate_reason_code: models.FraudReasonCode,
+    identity_content: subscription_schemas.IdentityCheckContent,
+    duplicate_reason_code: subscription_models.FraudReasonCode,
 ) -> str | None:
     duplicate_beneficiary = None
 
-    if duplicate_reason_code == models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
+    if duplicate_reason_code == subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER:
         duplicate_beneficiary = find_duplicate_id_piece_number_user(
             identity_content.get_id_piece_number(), rejected_user.id
         )
-    elif duplicate_reason_code == models.FraudReasonCode.DUPLICATE_USER:
+    elif duplicate_reason_code == subscription_models.FraudReasonCode.DUPLICATE_USER:
         first_name = identity_content.get_first_name()
         last_name = identity_content.get_last_name()
         birth_date = identity_content.get_birth_date()
@@ -756,7 +792,7 @@ def get_duplicate_beneficiary_anonymized_email(
                 birth_date,
                 rejected_user.id,
             )
-    elif duplicate_reason_code == models.FraudReasonCode.DUPLICATE_INE:
+    elif duplicate_reason_code == subscription_models.FraudReasonCode.DUPLICATE_INE:
         ine_hash = identity_content.get_ine_hash()
         if ine_hash:
             duplicate_beneficiary = find_duplicate_ine_hash_user(ine_hash, rejected_user.id)

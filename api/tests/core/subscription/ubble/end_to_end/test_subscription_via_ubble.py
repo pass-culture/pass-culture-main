@@ -11,11 +11,11 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
-from pcapi.connectors.serialization.ubble_serializers import UbbleIdentificationStatus
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -42,19 +42,19 @@ class UbbleV2EndToEndTest:
             firstName="Catherine",
             lastName="Destivelle",
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user, resultContent__first_name="Catherine", resultContent__last_name="Destivelle"
         )
         registration_date = datetime.datetime.strptime(
             fixtures.ID_VERIFICATION_APPROVED_RESPONSE["created_on"], DATE_ISO_FORMAT
         )
         eighteen_years_before_registration = registration_date - relativedelta(years=18, months=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.STARTED,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.STARTED,
             thirdPartyId="",
-            resultContent=fraud_models.UbbleContent(
+            resultContent=ubble_schemas.UbbleContent(
                 birth_date=eighteen_years_before_registration.date(),
                 external_applicant_id="eaplt_61313A10000000000000000000",
                 id_document_number=f"{user.id:012}",
@@ -142,9 +142,9 @@ class UbbleV2EndToEndTest:
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+            if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         ]
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
 
     def _retry_ubble_workflow(self, user, client, requests_mocker) -> None:
         requests_mocker.post(
@@ -174,9 +174,9 @@ class UbbleV2EndToEndTest:
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+            if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         ]
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.PENDING
 
     def _receive_and_handle_verification_approved_webhook_notification(
         self, user, client, ubble_client, requests_mocker
@@ -194,13 +194,13 @@ class UbbleV2EndToEndTest:
         ubble_fraud_checks = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+            if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         ]
         (deprecated_ubble_fraud_check, ok_ubble_fraud_check) = sorted(
             ubble_fraud_checks, key=lambda check: check.thirdPartyId
         )
         assert "deprecated" in deprecated_ubble_fraud_check.thirdPartyId, [c.thirdPartyId for c in ubble_fraud_checks]
-        assert ok_ubble_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert ok_ubble_fraud_check.status == subscription_models.FraudCheckStatus.OK
 
     def _create_honor_statement_fraud_check(self, user, client) -> None:
         response = client.with_token(user.email).post("/native/v1/subscription/honor_statement")
@@ -235,21 +235,25 @@ class UbbleEndToEndTest:
             schoolType=users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
             phoneNumber="+33612345678",
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Raoul", last_name="de Toulouz"),
+            resultContent=subscription_factories.ProfileCompletionContentFactory(
+                first_name="Raoul", last_name="de Toulouz"
+            ),
         )
 
         ubble_client = TestClient(app.test_client())
         client.with_token(user.email)
 
         # Step 1: The user initializes a subscription with ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             thirdPartyId=fixtures.IDENTIFICATION_ID,
-            status=fraud_models.FraudCheckStatus.STARTED,
-            resultContent=fraud_factories.UbbleContentFactory(status=UbbleIdentificationStatus.UNINITIATED),
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.UNINITIATED
+            ),
         )
 
         # Step 2: Ubble calls the webhook to inform that the identification has been initiated by user
@@ -278,12 +282,12 @@ class UbbleEndToEndTest:
         assert response.status_code == 200
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(userId=user.id, type=fraud_models.FraudCheckType.UBBLE)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(userId=user.id, type=subscription_models.FraudCheckType.UBBLE)
             .one()
         )
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.source_data().status == UbbleIdentificationStatus.INITIATED
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.INITIATED
 
         # in case the user wants to continue the identification, we should return the same identification_id
         response = client.post(
@@ -294,7 +298,7 @@ class UbbleEndToEndTest:
         assert response.json == {"identificationUrl": f"https://id.ubble.ai/{fixtures.IDENTIFICATION_ID}"}
 
         next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.IDENTITY_CHECK
+        assert next_step == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
 
         # Step 3: Ubble calls the webhook to inform that the identification has been completed by the user
         webhook_request_payload = {
@@ -320,20 +324,20 @@ class UbbleEndToEndTest:
             )
 
         assert response.status_code == 200
-        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
-        assert fraud_check.source_data().status == UbbleIdentificationStatus.PROCESSING
+        assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
+        assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.PROCESSING
 
         next_step = subscription_api.get_user_subscription_state(user).next_step
-        assert next_step == subscription_models.SubscriptionStep.HONOR_STATEMENT
+        assert next_step == subscription_schemas.SubscriptionStep.HONOR_STATEMENT
 
         # Step 4: The user performs the HONOR_STATEMENT step
         response = client.post("/native/v1/subscription/honor_statement")
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.HONOR_STATEMENT)
             .one()
             .status
-            == fraud_models.FraudCheckStatus.OK
+            == subscription_models.FraudCheckStatus.OK
         )
 
         # Step 5: Ubble calls the webhook to inform that the identification has been manually processed
@@ -361,8 +365,8 @@ class UbbleEndToEndTest:
             )
 
         assert response.status_code == 200
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
-        assert fraud_check.source_data().status == UbbleIdentificationStatus.PROCESSED
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.PROCESSED
         assert fraud_check.source_data().processed_datetime == datetime.datetime(
             2018, 1, 1, 8, 41, 2, 504663, tzinfo=datetime.timezone.utc
         )

@@ -4,8 +4,8 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.finance.models import DepositType
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -287,7 +287,7 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
     identity_provider_birthday_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        if fraud_check.status == subscription_models.FraudCheckStatus.OK
         and fraud_check.get_identity_check_birth_date() is not None
         and fraud_check.dateCreated < at_date
     ]

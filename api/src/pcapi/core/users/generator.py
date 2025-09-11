@@ -2,7 +2,7 @@ import dataclasses
 import datetime
 import enum
 
-import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi import settings
@@ -12,9 +12,9 @@ from . import exceptions
 
 
 class GeneratedIdProvider(enum.Enum):
-    DMS = fraud_models.FraudCheckType.DMS
-    EDUCONNECT = fraud_models.FraudCheckType.EDUCONNECT
-    UBBLE = fraud_models.FraudCheckType.UBBLE
+    DMS = subscription_models.FraudCheckType.DMS
+    EDUCONNECT = subscription_models.FraudCheckType.EDUCONNECT
+    UBBLE = subscription_models.FraudCheckType.UBBLE
 
 
 class GeneratedSubscriptionStep(enum.Enum):

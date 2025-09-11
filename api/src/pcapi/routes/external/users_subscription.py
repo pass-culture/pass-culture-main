@@ -4,12 +4,13 @@ from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import utils as dms_utils
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
-from pcapi.core.fraud.models import FraudCheckStatus
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.subscription.models import FraudCheckStatus
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
+from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
@@ -56,12 +57,12 @@ def ubble_v2_webhook_update_application_status(
     logger.info("Ubble webhook v2 called", extra=log_extra_data)
 
     should_process_webhook_call = status in (
-        ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
-        ubble_serializers.UbbleIdentificationStatus.APPROVED,
-        ubble_serializers.UbbleIdentificationStatus.DECLINED,
-        ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED,
-        ubble_serializers.UbbleIdentificationStatus.INCONCLUSIVE,
-        ubble_serializers.UbbleIdentificationStatus.REFUSED,
+        ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+        ubble_schemas.UbbleIdentificationStatus.APPROVED,
+        ubble_schemas.UbbleIdentificationStatus.DECLINED,
+        ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
+        ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
+        ubble_schemas.UbbleIdentificationStatus.REFUSED,
     )
     if not should_process_webhook_call:
         return ubble_serializers.WebhookDummyReponse()

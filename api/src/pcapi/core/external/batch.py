@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.models as finance_models
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.models as offers_models
+import pcapi.core.subscription.models as subscription_models
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.external.batch_utils import shorten_for_batch
@@ -158,7 +158,7 @@ def track_account_recredited(user_id: int, deposit: finance_models.Deposit, depo
     batch_tasks.track_event_task.delay(payload)
 
 
-def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_models.FraudCheckType) -> None:
+def track_identity_check_started_event(user_id: int, fraud_check_type: subscription_models.FraudCheckType) -> None:
     event_name = BatchEvent.USER_IDENTITY_CHECK_STARTED
     payload = TrackBatchEventRequest(
         event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
@@ -166,7 +166,7 @@ def track_identity_check_started_event(user_id: int, fraud_check_type: fraud_mod
     batch_tasks.track_event_task.delay(payload)
 
 
-def track_ubble_ko_event(user_id: int, reason_code: fraud_models.FraudReasonCode) -> None:
+def track_ubble_ko_event(user_id: int, reason_code: subscription_models.FraudReasonCode) -> None:
     event_name = BatchEvent.HAS_UBBLE_KO_STATUS
     payload = TrackBatchEventRequest(
         event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id

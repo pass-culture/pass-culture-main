@@ -16,14 +16,15 @@ from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.connectors.dms.exceptions import DmsGraphQLApiException
 from pcapi.connectors.dms.utils import lock_ds_application
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.dms import api as fraud_dms_api
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.dms import dms_internal_mailing
+from pcapi.core.subscription.dms import fraud_check_api as fraud_dms_api
 from pcapi.core.subscription.dms import messages
+from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
@@ -40,11 +41,11 @@ from . import repository as dms_repository
 logger = logging.getLogger(__name__)
 
 FIELD_ERROR_LABELS = {
-    fraud_models.DmsFieldErrorKeyEnum.birth_date: "La date de naissance",
-    fraud_models.DmsFieldErrorKeyEnum.first_name: "Le prénom",
-    fraud_models.DmsFieldErrorKeyEnum.id_piece_number: "Le numéro de pièce d'identité",
-    fraud_models.DmsFieldErrorKeyEnum.last_name: "Le nom de famille",
-    fraud_models.DmsFieldErrorKeyEnum.postal_code: "Le code postal",
+    dms_schemas.DmsFieldErrorKeyEnum.birth_date: "La date de naissance",
+    dms_schemas.DmsFieldErrorKeyEnum.first_name: "Le prénom",
+    dms_schemas.DmsFieldErrorKeyEnum.id_piece_number: "Le numéro de pièce d'identité",
+    dms_schemas.DmsFieldErrorKeyEnum.last_name: "Le nom de famille",
+    dms_schemas.DmsFieldErrorKeyEnum.postal_code: "Le code postal",
 }
 
 UPDATE_STATE_TIMEOUT = 30
@@ -76,7 +77,7 @@ APPLICATION_LABEL_TO_SETTINGS_LABEL_ID: dict[int, dict[ApplicationLabel, str | N
 
 
 def try_dms_orphan_adoption(user: users_models.User) -> None:
-    dms_orphan = db.session.query(fraud_models.OrphanDmsApplication).filter_by(email=user.email).first()
+    dms_orphan = db.session.query(subscription_models.OrphanDmsApplication).filter_by(email=user.email).first()
     if not dms_orphan:
         return
 
@@ -88,17 +89,18 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
 
 
 def _is_fraud_check_up_to_date(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, new_content: fraud_models.DMSContent
+    fraud_check: subscription_models.BeneficiaryFraudCheck, new_content: dms_schemas.DMSContent
 ) -> bool:
     if not fraud_check.resultContent:
         return False
 
     fraud_check_content = fraud_check.source_data()
+    assert isinstance(fraud_check_content, dms_schemas.DMSContent)
     return compute_dms_checksum(new_content) == compute_dms_checksum(fraud_check_content)
 
 
 def _update_fraud_check_with_new_content(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, new_content: fraud_models.DMSContent
+    fraud_check: subscription_models.BeneficiaryFraudCheck, new_content: dms_schemas.DMSContent
 ) -> None:
     fraud_check.reason = None
     fraud_check.reasonCodes = []
@@ -112,23 +114,23 @@ def _update_fraud_check_with_new_content(
 
 
 def _compute_birth_date_error_details(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, application_content: fraud_models.DMSContent
-) -> fraud_models.DmsFieldErrorDetails | None:
+    fraud_check: subscription_models.BeneficiaryFraudCheck, application_content: dms_schemas.DMSContent
+) -> dms_schemas.DmsFieldErrorDetails | None:
     if fraud_check.eligibilityType is not None:
         return None
 
     birth_date = application_content.get_birth_date()
 
-    return fraud_models.DmsFieldErrorDetails(
-        key=fraud_models.DmsFieldErrorKeyEnum.birth_date,
+    return dms_schemas.DmsFieldErrorDetails(
+        key=dms_schemas.DmsFieldErrorKeyEnum.birth_date,
         value=birth_date.isoformat() if birth_date else None,
     )
 
 
 def _process_dms_application(
-    application_content: fraud_models.DMSContent,
+    application_content: dms_schemas.DMSContent,
     application_scalar_id: str,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
     state: dms_models.GraphQLApplicationStates,
     user: users_models.User,
 ) -> None:
@@ -138,7 +140,7 @@ def _process_dms_application(
         _process_in_progress_application(
             fraud_check,
             application_content,
-            fraud_models.FraudCheckStatus.STARTED,
+            subscription_models.FraudCheckStatus.STARTED,
             application_scalar_id,
             birth_date_error,
             is_application_updatable=True,
@@ -148,7 +150,7 @@ def _process_dms_application(
         _process_in_progress_application(
             fraud_check,
             application_content,
-            fraud_models.FraudCheckStatus.PENDING,
+            subscription_models.FraudCheckStatus.PENDING,
             application_scalar_id,
             birth_date_error,
             is_application_updatable=False,
@@ -158,11 +160,11 @@ def _process_dms_application(
         _process_accepted_application(user, fraud_check, application_content.field_errors)
 
     elif state == dms_models.GraphQLApplicationStates.refused:
-        fraud_check.status = fraud_models.FraudCheckStatus.KO
-        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+        fraud_check.status = subscription_models.FraudCheckStatus.KO
+        fraud_check.reasonCodes = [subscription_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
 
     _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
 
@@ -171,7 +173,7 @@ def _process_dms_application(
 
 def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
-) -> fraud_models.BeneficiaryFraudCheck | None:
+) -> subscription_models.BeneficiaryFraudCheck | None:
     application_number = dms_application.number
     user_email = email_utils.sanitize_email(dms_application.applicant.email or dms_application.profile.email)
     application_scalar_id = dms_application.id
@@ -228,7 +230,7 @@ def handle_dms_application(
 
         fraud_check = subscription_api.initialize_identity_fraud_check(
             eligibility_type=eligibility_type,
-            fraud_check_type=fraud_models.FraudCheckType.DMS,
+            fraud_check_type=subscription_models.FraudCheckType.DMS,
             identity_content=application_content,
             third_party_id=str(application_number),
             user=user,
@@ -238,7 +240,7 @@ def handle_dms_application(
             logger.info("[DMS] FraudCheck already up to date", extra=log_extra_data)
             return fraud_check
 
-        if fraud_check.status == fraud_models.FraudCheckStatus.OK:
+        if fraud_check.status == subscription_models.FraudCheckStatus.OK:
             logger.warning("[DMS] Skipping because FraudCheck already has OK status", extra=log_extra_data)
             return fraud_check
 
@@ -251,9 +253,9 @@ def handle_dms_application(
 
 def _update_application_annotations(
     application_scalar_id: str,
-    application_content: fraud_models.DMSContent,
-    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    application_content: dms_schemas.DMSContent,
+    birth_date_error: dms_schemas.DmsFieldErrorDetails | None,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
 ) -> None:
     annotation = application_content.annotation
     if not annotation:
@@ -275,15 +277,16 @@ def _update_application_annotations(
             extra={"error": str(exc), "application_scalar_id": application_scalar_id},
         )
         return
-    new_annotation = fraud_models.DmsAnnotation(id=annotation.id, label=annotation.label, text=new_annotation_value)
+    new_annotation = dms_schemas.DmsAnnotation(id=annotation.id, label=annotation.label, text=new_annotation_value)
     fraud_check_content = fraud_check.source_data()
+    assert isinstance(fraud_check_content, dms_schemas.DMSContent)
     fraud_check_content.annotation = new_annotation
     fraud_check.resultContent = fraud_check_content.dict()
 
 
 def _compute_new_annotation(
-    field_errors: list[fraud_models.DmsFieldErrorDetails] | None,
-    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    field_errors: list[dms_schemas.DmsFieldErrorDetails] | None,
+    birth_date_error: dms_schemas.DmsFieldErrorDetails | None,
 ) -> str:
     annotation = ""
     if birth_date_error:
@@ -302,7 +305,7 @@ def _compute_new_annotation(
 
 
 def _send_field_error_dms_email(
-    field_errors: list[fraud_models.DmsFieldErrorDetails], application_scalar_id: str
+    field_errors: list[dms_schemas.DmsFieldErrorDetails], application_scalar_id: str
 ) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     client.send_user_message(
@@ -332,11 +335,11 @@ def _send_eligibility_error_dms_email(
 
 
 def _process_in_progress_application(
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    application_content: fraud_models.DMSContent,
-    fraud_check_status: fraud_models.FraudCheckStatus,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+    application_content: dms_schemas.DMSContent,
+    fraud_check_status: subscription_models.FraudCheckStatus,
     application_scalar_id: str,
-    birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    birth_date_error: dms_schemas.DmsFieldErrorDetails | None,
     *,
     is_application_updatable: bool,
 ) -> None:
@@ -350,13 +353,13 @@ def _process_in_progress_application(
     if birth_date_error is not None:
         if is_application_updatable:
             _send_eligibility_error_dms_email(birth_date_error.value, application_scalar_id, fraud_check.thirdPartyId)
-        reason_codes.append(fraud_models.FraudReasonCode.AGE_NOT_VALID)
+        reason_codes.append(subscription_models.FraudReasonCode.AGE_NOT_VALID)
         errors.append(birth_date_error)
 
     if application_content.field_errors:
         if is_application_updatable:
             _send_field_error_dms_email(application_content.field_errors, application_scalar_id)
-        reason_codes.append(fraud_models.FraudReasonCode.ERROR_IN_DATA)
+        reason_codes.append(subscription_models.FraudReasonCode.ERROR_IN_DATA)
         errors.extend(application_content.field_errors)
 
     logger.info(
@@ -375,10 +378,10 @@ def _process_in_progress_application(
 
 
 def _update_fraud_check_with_field_errors(
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    field_errors: list[fraud_models.DmsFieldErrorDetails],
-    fraud_check_status: fraud_models.FraudCheckStatus,
-    reason_codes: list[fraud_models.FraudReasonCode],
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+    field_errors: list[dms_schemas.DmsFieldErrorDetails],
+    fraud_check_status: subscription_models.FraudCheckStatus,
+    reason_codes: list[subscription_models.FraudReasonCode],
 ) -> None:
     errors = ",".join([f"'{field_error.key.value}' ({field_error.value})" for field_error in field_errors])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
@@ -391,7 +394,7 @@ def _update_fraud_check_with_field_errors(
 def _create_profile_completion_fraud_check_from_dms(
     user: users_models.User,
     eligibility: users_models.EligibilityType | None,
-    content: fraud_models.DMSContent,
+    content: dms_schemas.DMSContent,
     application_id: str,
 ) -> None:
     """Creates a PROFILE_COMPLETION fraud check from a DMS content, provided that all necessary fields are filled."""
@@ -410,7 +413,7 @@ def _create_profile_completion_fraud_check_from_dms(
     fraud_api.create_profile_completion_fraud_check(
         user,
         eligibility,
-        fraud_models.ProfileCompletionContent(
+        subscription_schemas.ProfileCompletionContent(
             activity=activity,
             address=address,
             city=city,
@@ -463,8 +466,8 @@ def _process_user_not_found_error(
 
 def _process_accepted_application(
     user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    field_errors: list[fraud_models.DmsFieldErrorDetails] | None,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
+    field_errors: list[dms_schemas.DmsFieldErrorDetails] | None,
 ) -> None:
     if field_errors:
         transactional_mails.send_pre_subscription_from_dms_error_email_to_beneficiary(
@@ -472,11 +475,15 @@ def _process_accepted_application(
             field_errors,
         )
         _update_fraud_check_with_field_errors(
-            fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR, [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+            fraud_check,
+            field_errors,
+            subscription_models.FraudCheckStatus.ERROR,
+            [subscription_models.FraudReasonCode.ERROR_IN_DATA],
         )
         return
 
-    dms_content: fraud_models.DMSContent = fraud_check.source_data()
+    dms_content = fraud_check.source_data()
+    assert isinstance(dms_content, dms_schemas.DMSContent)
 
     try:
         fraud_api.on_dms_fraud_result(user, fraud_check)
@@ -484,7 +491,7 @@ def _process_accepted_application(
         logger.exception("Error on dms fraud check result: %s", exc)
         return
 
-    if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+    if fraud_check.status != subscription_models.FraudCheckStatus.OK:
         error_codes = fraud_check.reasonCodes or []
         _handle_validation_errors(user, error_codes, dms_content)
 
@@ -525,16 +532,16 @@ def _process_accepted_application(
 
 def _handle_validation_errors(
     user: users_models.User,
-    reason_codes: list[fraud_models.FraudReasonCode],
-    dms_content: fraud_models.DMSContent,
+    reason_codes: list[subscription_models.FraudReasonCode],
+    dms_content: dms_schemas.DMSContent,
 ) -> None:
-    if fraud_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
+    if subscription_models.FraudReasonCode.DUPLICATE_USER in reason_codes:
         transactional_mails.send_duplicate_beneficiary_email(
-            user, dms_content, fraud_models.FraudReasonCode.DUPLICATE_USER
+            user, dms_content, subscription_models.FraudReasonCode.DUPLICATE_USER
         )
-    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
+    elif subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in reason_codes:
         transactional_mails.send_duplicate_beneficiary_email(
-            user, dms_content, fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+            user, dms_content, subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
         )
 
     reason = ", ".join([code.name for code in reason_codes])
@@ -549,24 +556,26 @@ def _handle_validation_errors(
 
 
 def get_dms_subscription_message(
-    dms_fraud_check: fraud_models.BeneficiaryFraudCheck,
-) -> subscription_models.SubscriptionMessage | None:
-    if dms_fraud_check.resultContent is None:
+    dms_fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> subscription_schemas.SubscriptionMessage | None:
+    application_content = None
+    birth_date_error = None
+    if dms_fraud_check.resultContent is not None:
         # old FraudChecks may not have resultContent filled
-        application_content = None
-        birth_date_error = None
-    else:
         application_content = dms_fraud_check.source_data()
+        assert isinstance(application_content, dms_schemas.DMSContent)
         birth_date_error = _compute_birth_date_error_details(dms_fraud_check, application_content)
 
-    if dms_fraud_check.status == fraud_models.FraudCheckStatus.STARTED:
+    assert application_content is None or isinstance(application_content, dms_schemas.DMSContent)
+
+    if dms_fraud_check.status == subscription_models.FraudCheckStatus.STARTED:
         if dms_fraud_check.reasonCodes:
             return messages.get_error_updatable_message(
                 application_content, birth_date_error, dms_fraud_check.updatedAt
             )
         return messages.get_application_received_message(dms_fraud_check)
 
-    if dms_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+    if dms_fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
         if dms_fraud_check.reasonCodes:
             return messages.get_error_not_updatable_message(
                 dms_fraud_check.user,
@@ -578,9 +587,9 @@ def get_dms_subscription_message(
         return messages.get_application_received_message(dms_fraud_check)
 
     if dms_fraud_check.status in (
-        fraud_models.FraudCheckStatus.SUSPICIOUS,
-        fraud_models.FraudCheckStatus.KO,
-        fraud_models.FraudCheckStatus.ERROR,
+        subscription_models.FraudCheckStatus.SUSPICIOUS,
+        subscription_models.FraudCheckStatus.KO,
+        subscription_models.FraudCheckStatus.ERROR,
     ):
         return messages.get_error_processed_message(
             dms_fraud_check.user,
@@ -594,7 +603,7 @@ def get_dms_subscription_message(
     return None
 
 
-def compute_dms_checksum(content: fraud_models.DMSContent) -> str:
+def compute_dms_checksum(content: dms_schemas.DMSContent) -> str:
     """
     Compute the checksum for a DMS fraud check.
     """
@@ -621,7 +630,7 @@ def compute_dms_checksum(content: fraud_models.DMSContent) -> str:
 
 
 def _process_check_birth_date(
-    application_content: fraud_models.DMSContent,
+    application_content: dms_schemas.DMSContent,
     procedure_number: int,
     application_scalar_id: str,
     labels: list[dms_models.DMSLabel],
@@ -650,7 +659,7 @@ def _add_application_label(procedure_number: int, application_scalar_id: str, la
         pass  # label is a helper, do not fail; already logged
 
 
-def _process_instructor_annotation(application_content: fraud_models.DMSContent, application_scalar_id: str) -> bool:
+def _process_instructor_annotation(application_content: dms_schemas.DMSContent, application_scalar_id: str) -> bool:
     if not FeatureToggle.ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION.is_active():
         return False
 
@@ -668,9 +677,9 @@ def _process_instructor_annotation(application_content: fraud_models.DMSContent,
         return False
 
     match application_content.instructor_annotation.value:
-        case fraud_models.DmsInstructorAnnotationEnum.NEL:
+        case dms_schemas.DmsInstructorAnnotationEnum.NEL:
             motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE
-        case fraud_models.DmsInstructorAnnotationEnum.IDP:
+        case dms_schemas.DmsInstructorAnnotationEnum.IDP:
             motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED
         case _:
             return False
@@ -823,22 +832,22 @@ def archive_applications(procedure_number: int, dry_run: bool = True) -> None:
 
 
 def _get_latest_deleted_application_datetime(procedure_number: int) -> datetime.datetime | None:
-    fraud_check: fraud_models.BeneficiaryFraudCheck | None = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
+    fraud_check: subscription_models.BeneficiaryFraudCheck | None = (
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,
-            fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
-            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(sa.Integer)
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.DMS,
+            subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.CANCELED,
+            subscription_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+            subscription_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(sa.Integer)
             == procedure_number,
-            fraud_models.BeneficiaryFraudCheck.resultContent.has_key("deletion_datetime"),
+            subscription_models.BeneficiaryFraudCheck.resultContent.has_key("deletion_datetime"),
         )
-        .order_by(fraud_models.BeneficiaryFraudCheck.resultContent["deletion_datetime"].desc())
+        .order_by(subscription_models.BeneficiaryFraudCheck.resultContent["deletion_datetime"].desc())
         .first()
     )
     if fraud_check:
         content = fraud_check.source_data()
-        if isinstance(content, fraud_models.DMSContent):
+        if isinstance(content, dms_schemas.DMSContent):
             return content.deletion_datetime
 
         raise ValueError(f"fraud_check.source_data() is not a DMSContent. Fraud check: {fraud_check.id}")
@@ -863,12 +872,12 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
         applications_to_mark_as_deleted[str(deleted_application.number)] = deleted_application
 
     fraud_checks_to_mark_as_deleted = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.CANCELED,
-            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.OK,
+            subscription_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.DMS,
+            subscription_models.BeneficiaryFraudCheck.status != subscription_models.FraudCheckStatus.CANCELED,
+            subscription_models.BeneficiaryFraudCheck.status != subscription_models.FraudCheckStatus.OK,
         )
         .yield_per(100)
     )
@@ -877,7 +886,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
     for fraud_check in fraud_checks_to_mark_as_deleted:
         dms_information: dms_models.DmsDeletedApplication = applications_to_mark_as_deleted[fraud_check.thirdPartyId]
         try:
-            fraud_check_data: fraud_models.DMSContent = fraud_check.source_data()
+            fraud_check_data: dms_schemas.DMSContent = fraud_check.source_data()
             fraud_check_data.deletion_datetime = dms_information.deletion_datetime
             fraud_check.resultContent = fraud_check_data.dict()
         except ValueError:
@@ -886,7 +895,7 @@ def handle_deleted_dms_applications(procedure_number: int) -> None:
                 extra={"fraud_check": fraud_check.id, "deletion_datetime": dms_information.deletion_datetime},
             )
 
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         fraud_check.reason = f"Dossier supprimé sur démarches-simplifiées. Motif: {dms_information.reason}"
 
         db.session.add(fraud_check)
@@ -977,12 +986,12 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
 def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
     try:
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter(
-                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-                fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
-                fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
-                fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
+                subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.DMS,
+                subscription_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
+                subscription_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+                subscription_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
             )
             .one_or_none()
         )
@@ -991,7 +1000,7 @@ def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
         return
 
     if fraud_check:
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         fraud_check.reason = f"Automatiquement classé sans_suite car aucune activité n'a eu lieu depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours"
         repository.save(fraud_check)
 

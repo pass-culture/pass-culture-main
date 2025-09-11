@@ -3,8 +3,7 @@ import datetime
 import wtforms
 from flask_wtf import FlaskForm
 
-from pcapi.core.fraud.models import UBBLE_OK_REASON_CODE
-from pcapi.core.fraud.models import UBBLE_REASON_CODE_MAPPING
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
@@ -73,10 +72,10 @@ class UserDeletionForm(utils.PCForm):
 
 
 def _get_ubble_final_code_choices() -> list[tuple[int, str]]:
-    ok_response_codes = [(UBBLE_OK_REASON_CODE, "10000 - OK")]
+    ok_response_codes = [(ubble_schemas.UBBLE_OK_REASON_CODE, "10000 - OK")]
     ubble_final_error_reason_code_choices = [
         (reason_code, f"{reason_code} - {fraud_reason_code.name}")
-        for reason_code, fraud_reason_code in UBBLE_REASON_CODE_MAPPING.items()
+        for reason_code, fraud_reason_code in ubble_schemas.UBBLE_REASON_CODE_MAPPING.items()
         if reason_code > 62000
     ]
     return ok_response_codes + ubble_final_error_reason_code_choices
@@ -85,7 +84,7 @@ def _get_ubble_final_code_choices() -> list[tuple[int, str]]:
 def _get_ubble_intermediate_code_choices() -> list[tuple[int, str]]:
     ubble_intermediate_reason_code_choices = [
         (reason_code, f"{reason_code} - {fraud_reason_code.name}")
-        for reason_code, fraud_reason_code in UBBLE_REASON_CODE_MAPPING.items()
+        for reason_code, fraud_reason_code in ubble_schemas.UBBLE_REASON_CODE_MAPPING.items()
         if 61000 < reason_code < 62000
     ]
     return ubble_intermediate_reason_code_choices

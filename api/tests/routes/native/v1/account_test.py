@@ -16,7 +16,9 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.constants as users_constants
 from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
@@ -28,8 +30,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.finance import deposit_api
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -253,7 +253,7 @@ class AccountTest:
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         client.with_token(user.email)
 
         expected_num_queries = 9  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement + action_history
@@ -267,7 +267,7 @@ class AccountTest:
             == "La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite."
         )
         assert msg["callToAction"] is None
-        assert msg["popOverIcon"] == subscription_models.PopOverIcon.CLOCK.value
+        assert msg["popOverIcon"] == subscription_schemas.PopOverIcon.CLOCK.value
 
     def test_subscription_message_with_call_to_action(self, client):
         user = users_factories.UserFactory(
@@ -276,13 +276,13 @@ class AccountTest:
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
 
         client.with_token(user.email)
@@ -357,13 +357,13 @@ class AccountTest:
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
         client.with_token(user.email)
 
@@ -479,7 +479,9 @@ class AccountTest:
         before_profile_expiry_date = campaign_date - relativedelta(days=1)
         users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
         user = users_factories.PhoneValidatedUserFactory(dateCreated=before_profile_expiry_date)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=campaign_date + relativedelta(days=1))
+        subscription_factories.ProfileCompletionFraudCheckFactory(
+            user=user, dateCreated=campaign_date + relativedelta(days=1)
+        )
 
         response = client.with_token(user.email).get("/native/v1/me")
 
@@ -491,7 +493,7 @@ class AccountTest:
         before_campaign_date = campaign_date - relativedelta(days=1)
         users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date, isActive=True)
         user = users_factories.PhoneValidatedUserFactory()
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_campaign_date)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_campaign_date)
 
         response = client.with_token(user.email).get("/native/v1/me")
         assert response.status_code == 200
@@ -1596,12 +1598,12 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
                 thirdPartyId=f"PC-{user.id}",
-                status=fraud_models.FraudCheckStatus.KO,
+                status=subscription_models.FraudCheckStatus.KO,
             )
             .one_or_none()
         )
@@ -1611,7 +1613,7 @@ class SendPhoneValidationCodeTest:
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
         assert fraud_check.reason == expected_reason
         assert content["phone_number"] == "+33601020304"
 
@@ -1690,12 +1692,12 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
                 thirdPartyId=f"PC-{user.id}",
-                status=fraud_models.FraudCheckStatus.KO,
+                status=subscription_models.FraudCheckStatus.KO,
             )
             .one_or_none()
         )
@@ -1704,13 +1706,13 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         content = fraud_check.resultContent
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
         assert fraud_check.reason == f"Le numéro est déjà utilisé par l'utilisateur {orig_user.id}"
         assert content["phone_number"] == "+33102030405"
 
         assert (
             subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
-            == subscription_models.SubscriptionItemStatus.KO
+            == subscription_schemas.SubscriptionItemStatus.KO
         )
 
     def test_send_phone_validation_code_with_invalid_number(self, client):
@@ -1735,9 +1737,9 @@ class SendPhoneValidationCodeTest:
         assert response.json["message"] == "L'indicatif téléphonique n'est pas accepté"
         assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
-        assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
+        assert fraud_check.type == subscription_models.FraudCheckType.PHONE_VALIDATION
 
     @pytest.mark.settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client):
@@ -1757,12 +1759,12 @@ class SendPhoneValidationCodeTest:
 
         # check that a fraud check has been created
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
                 thirdPartyId=f"PC-{user.id}",
-                status=fraud_models.FraudCheckStatus.KO,
+                status=subscription_models.FraudCheckStatus.KO,
             )
             .one_or_none()
         )
@@ -1770,7 +1772,7 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         content = fraud_check.resultContent
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
         assert fraud_check.reason == "Le numéro saisi est interdit"
         assert content["phone_number"] == "+33601020304"
 
@@ -1795,11 +1797,11 @@ class ValidatePhoneNumberTest:
         assert not user.has_beneficiary_role
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.PHONE_VALIDATION)
             .one()
         )
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
@@ -1829,13 +1831,15 @@ class ValidatePhoneNumberTest:
             activity="Lycéen",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
         token = create_phone_validation_token(user, "+33607080900")
@@ -1870,10 +1874,10 @@ class ValidatePhoneNumberTest:
         assert attempts_count == 1
 
         fraud_checks = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
                 thirdPartyId=f"PC-{user.id}",
             )
             .all()
@@ -1883,7 +1887,9 @@ class ValidatePhoneNumberTest:
 
             expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
             content = fraud_check.resultContent
-            assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
+            assert fraud_check.reasonCodes == [
+                subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED
+            ]
 
             assert fraud_check.reason == expected_reason
             assert content["phone_number"] == "+33607080900"
@@ -1925,16 +1931,16 @@ class ValidatePhoneNumberTest:
             response.json["message"]
             == "Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste 1 tentative."
         )
-        assert db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).first() is None
+        assert db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).first() is None
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_VALIDATION_ATTEMPTS"
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
-        assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(userId=user.id).one()
+        assert fraud_check.type == subscription_models.FraudCheckType.PHONE_VALIDATION
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
         assert not db.session.get(users_models.User, user.id).is_phone_validated
         assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
@@ -2012,10 +2018,10 @@ def build_user_at_id_check(age):
         dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
-    fraud_factories.ProfileCompletionFraudCheckFactory(
+    subscription_factories.ProfileCompletionFraudCheckFactory(
         user=user,
         eligibilityType=users_models.EligibilityType.AGE18,
-        resultContent=fraud_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
+        resultContent=subscription_factories.ProfileCompletionContentFactory(first_name="Sally", last_name="Mara"),
     )
     return user
 

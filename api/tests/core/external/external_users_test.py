@@ -21,12 +21,12 @@ from pcapi.core.external.attributes.models import BookingsAttributes
 from pcapi.core.external.attributes.models import UserAttributes
 from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
@@ -389,7 +389,9 @@ def test_get_user_attributes_double_beneficiary():
 
     # At 18 years old
     user = db.session.get(User, user.id)
-    fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, status=fraud_models.FraudCheckStatus.OK)
+    fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+        user=user, status=subscription_models.FraudCheckStatus.OK
+    )
     user = subscription_api.activate_beneficiary_for_eligibility(
         user, fraud_check.get_detailed_source(), users_models.EligibilityType.AGE18
     )
@@ -411,11 +413,13 @@ def test_get_user_attributes_not_beneficiary():
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
 
-    fraud_factories.BeneficiaryFraudCheckFactory(
-        user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+    subscription_factories.BeneficiaryFraudCheckFactory(
+        user=user,
+        type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+        status=subscription_models.FraudCheckStatus.OK,
     )
-    fraud_factories.BeneficiaryFraudCheckFactory(
-        user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.PENDING
+    subscription_factories.BeneficiaryFraudCheckFactory(
+        user=user, type=subscription_models.FraudCheckType.DMS, status=subscription_models.FraudCheckStatus.PENDING
     )
 
     with assert_no_duplicated_queries():

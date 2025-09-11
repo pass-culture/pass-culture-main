@@ -5,7 +5,7 @@ import pytest
 from brevo_python.rest import ApiException
 
 from pcapi.core import token as token_utils
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import factories as users_factories
@@ -54,9 +54,11 @@ class EnsurePhoneNumberUnicityTest:
         assert in_validation_user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
         unvalidated_by_peer_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(userId=already_validated_user.id).one()
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(userId=already_validated_user.id)
+            .one()
         )
-        assert unvalidated_by_peer_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER]
+        assert unvalidated_by_peer_check.reasonCodes == [subscription_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER]
         assert (
             unvalidated_by_peer_check.reason
             == f"Phone number +33607080900 was unvalidated by user {in_validation_user.id}"
@@ -64,16 +66,18 @@ class EnsurePhoneNumberUnicityTest:
         assert unvalidated_by_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         unvalidated_for_peer_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=in_validation_user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+                status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             )
             .one()
         )
 
-        assert unvalidated_for_peer_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER]
+        assert unvalidated_for_peer_check.reasonCodes == [
+            subscription_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER
+        ]
         assert (
             unvalidated_for_peer_check.reason
             == f"The phone number validation had the following side effect: phone number +33607080900 was unvalidated for user {already_validated_user.id}"
@@ -81,11 +85,11 @@ class EnsurePhoneNumberUnicityTest:
         assert unvalidated_for_peer_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         success_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
             .filter_by(
                 userId=in_validation_user.id,
-                type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-                status=fraud_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+                status=subscription_models.FraudCheckStatus.OK,
             )
             .one()
         )
@@ -174,8 +178,8 @@ class BypassPhoneValidationTest:
         assert user.phoneNumber == "+33600000000"
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
         phone_validation_fraud_check = user.beneficiaryFraudChecks[-1]
-        assert phone_validation_fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
-        assert phone_validation_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert phone_validation_fraud_check.type == subscription_models.FraudCheckType.PHONE_VALIDATION
+        assert phone_validation_fraud_check.status == subscription_models.FraudCheckStatus.OK
 
     def test_doesnt_validate_if_email_doesnt_have_e2e_suffix_and_code_is_wrong(self):
         user = users_factories.UserFactory(email="x@example.com")
