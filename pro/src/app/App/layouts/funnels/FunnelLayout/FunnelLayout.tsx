@@ -23,12 +23,12 @@ export const FunnelLayout = ({ children }: FunnelLayoutProps) => {
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <div
-        className={cn(styles['page-layout-funnel'], {
+        className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
         <div id="content-wrapper" className={styles['content-wrapper']}>
-          <div className={styles['content-container-funnel']}>
+          <div className={styles['content-container']}>
             <main id="content">
               <div id="orejimeElement" />
               {children}

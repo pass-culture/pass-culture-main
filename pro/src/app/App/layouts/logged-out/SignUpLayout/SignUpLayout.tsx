@@ -27,7 +27,7 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
   return (
     <div className={styles.layout}>
       <SkipLinks shouldDisplayTopPageLink />
-      <div className={cn(styles['page-layout'], styles[`page-layout-sign-up`])}>
+      <div className={styles['page-layout']}>
         <div
           id="content-wrapper"
           className={cn(
@@ -79,12 +79,7 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
               />
             </div>
           </header>
-          <div
-            className={cn(
-              styles['content-container'],
-              styles[`content-container-sign-up`]
-            )}
-          >
+          <div className={styles['content-container']}>
             <NavLink className={styles['logo-sign-up']} to="/connexion">
               <SvgIcon
                 viewBox="0 0 282 120"
