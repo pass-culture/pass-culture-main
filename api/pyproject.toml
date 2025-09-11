@@ -99,7 +99,7 @@ zeep = "4.3.1"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^4.8.4"
+commitizen = "^4.9.1"
 debugpy = "^1.8.16"
 djlint = "1.36.4"
 fakeredis = "^2.31.1"
