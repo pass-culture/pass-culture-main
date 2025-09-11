@@ -6,6 +6,7 @@ until psql $DATABASE_URL -c '\q'; do
   sleep 1
 done
 
+export PROMETHEUS_MULTIPROC_DIR="/tmp/prometheus"
 celery -A pcapi.celery_tasks.celery_worker worker \
   -Q "celery.external_calls.priority,celery.internal_calls.priority,celery.internal_calls.default,celery.external_calls.default" \
-  --loglevel=DEBUG
+  --loglevel=INFO
