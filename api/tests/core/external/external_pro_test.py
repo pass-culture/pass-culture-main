@@ -28,10 +28,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 EXPECTED_PRO_ATTR_NUM_QUERIES = 6
 
 
-def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
+def _build_params(subs, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
     return pytest.param(
         subs,
-        virt,
         perman,
         draft,
         accep,
@@ -42,7 +41,7 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
         tploff,
         megoff,
         id=(
-            f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, "
+            f"sub:{subs}, per:{perman}, dra:{draft}, "
             f"acc:{accep}, off:{offer}, boo:{book}, "
             f"att:{attach}, colloff:{colloff}, tploff:{tploff}, megoff:{megoff}"
         ),
@@ -50,22 +49,17 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
 
 
 @pytest.mark.parametrize(
-    "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
+    "enable_subscription,create_permanent,create_dms_draft,create_dms_accepted,"
     "create_individual_offer,create_booking,attached,create_collective_offer,create_template_offer,create_collective_offer_meg",
     [
-        #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff
-        _build_params(False, False, False, False, False, False, False, "none", False, False, False),
-        _build_params(True, False, True, True, False, True, False, "one", True, False, False),
-        _build_params(False, True, False, False, True, True, False, "all", False, True, False),
-        _build_params(True, True, True, True, True, True, True, "none", True, True, False),
-        _build_params(False, True, True, False, True, False, False, "one", True, False, False),
-        _build_params(True, True, True, True, True, True, True, "all", True, True, False),
-        _build_params(False, False, False, False, False, False, False, "none", True, False, True),
+        #             subs, perman, draft, accep, offer, book, attach, colloff, tploff, megoff
+        _build_params(False, False, False, False, False, False, "none", False, False, False),
+        _build_params(True, True, True, False, True, False, "one", True, False, False),
+        _build_params(False, False, False, False, False, False, "none", True, False, True),
     ],
 )
 def test_update_external_pro_user_attributes(
     enable_subscription,
-    create_virtual,
     create_permanent,
     create_dms_draft,
     create_dms_accepted,
@@ -155,26 +149,6 @@ def test_update_external_pro_user_attributes(
             venue=venue1b,
             bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
         )
-
-    if create_virtual:
-        offerer2 = offerers_factories.OffererFactory(siren="444555666", name="Culture en ligne")
-        if attached == "all":
-            offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer2)
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer2)
-        venue2 = offerers_factories.VirtualVenueFactory(
-            managingOfferer=offerer2,
-            name="Théâtre en ligne",
-            bookingEmail=email,
-            isPermanent=create_permanent,
-            venueTypeCode=VenueTypeCode.DIGITAL,
-            venueLabelId=None,
-        )
-
-        if create_dms_accepted:
-            offerers_factories.VenueBankAccountLinkFactory(
-                venue=venue2,
-                bankAccount=finance_factories.BankAccountFactory(status=BankAccountApplicationStatus.ACCEPTED),
-            )
 
     # Offerer not linked to user email but with the same booking email
     offerer3 = offerers_factories.OffererFactory(
@@ -280,30 +254,20 @@ def test_update_external_pro_user_attributes(
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is True
     assert attributes.marketing_email_subscription is enable_subscription
-    assert (
-        attributes.offerers_names == {"Culture en ligne", "Juste Libraire", "Plage Culture", "Plage Events"}
-        if create_virtual
-        else {"Juste Libraire", "Plage Culture", "Plage Events"}
-    )
+    assert attributes.offerers_names == {"Juste Libraire", "Plage Culture", "Plage Events"}
     assert attributes.offerers_tags == {"top-acteur", "collectivite"}
-    assert len(attributes.venues_ids) == 5 if create_virtual else 4
-    assert (
-        attributes.venues_names
-        == {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Théâtre en ligne", "Librairie du port"}
-        if create_virtual
-        else {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Librairie du port"}
-    )
-    assert (
-        attributes.venues_types
-        == {
-            VenueTypeCode.DIGITAL.name,
-            VenueTypeCode.MOVIE.name,
-            VenueTypeCode.PERFORMING_ARTS.name,
-            VenueTypeCode.BOOKSTORE.name,
-        }
-        if create_virtual
-        else {VenueTypeCode.MOVIE.name, VenueTypeCode.PERFORMING_ARTS.name, VenueTypeCode.BOOKSTORE.name}
-    )
+    assert len(attributes.venues_ids) == 4
+    assert attributes.venues_names == {
+        "Cinéma de la plage",
+        "Festival de la mer",
+        "Théâtre de la plage",
+        "Librairie du port",
+    }
+    assert attributes.venues_types == {
+        VenueTypeCode.MOVIE.name,
+        VenueTypeCode.PERFORMING_ARTS.name,
+        VenueTypeCode.BOOKSTORE.name,
+    }
     assert attributes.venues_labels == {"Cinéma d'art et d'essai", "Scènes conventionnées"}
     assert attributes.departement_code == {"06", "83", "13"}
     assert attributes.postal_code == {"06590", "83700", "13260"}
@@ -316,7 +280,6 @@ def test_update_external_pro_user_attributes(
 
     assert attributes.dms_application_submitted is create_dms_draft
     assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
-    assert attributes.isVirtual is create_virtual
     assert attributes.isPermanent is create_permanent
     assert attributes.isOpenToPublic is create_permanent
     assert attributes.has_individual_offers is create_individual_offer
@@ -371,7 +334,6 @@ def _check_user_without_validated_offerer(user):
 
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
-    assert attributes.isVirtual is None
     assert attributes.isPermanent is None
     assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None
@@ -418,7 +380,6 @@ def test_update_external_pro_booking_email_attributes():
 
     assert attributes.dms_application_submitted is False
     assert attributes.dms_application_approved is False
-    assert attributes.isVirtual is False
     assert attributes.isPermanent is True
     assert attributes.isOpenToPublic is True
     assert attributes.has_banner_url is False
@@ -523,7 +484,6 @@ def _check_no_matching_email(email):
 
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
-    assert attributes.isVirtual is None
     assert attributes.isPermanent is None
     assert attributes.isOpenToPublic is None
     assert attributes.has_offers is None

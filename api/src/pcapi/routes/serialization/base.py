@@ -31,7 +31,6 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
 
 
 class BaseVenueResponse(BaseModel):
-    isVirtual: bool
     name: str
 
     street: str | None
@@ -57,7 +56,6 @@ class BaseVenueResponse(BaseModel):
 
 class ListOffersVenueResponseModel(BaseModel):
     id: int
-    isVirtual: bool
     name: str
     offererName: str
     publicName: str | None

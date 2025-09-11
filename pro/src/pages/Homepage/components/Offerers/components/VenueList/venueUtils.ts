@@ -6,25 +6,13 @@ import {
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
 import type { VenueThing } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 
-export const getVirtualVenueFromOfferer = (
-  offerer?: GetOffererResponseModel | null
-): GetOffererVenueResponseModel | null => {
-  if (!offerer?.hasDigitalVenueAtLeastOneOffer) {
-    return null
-  }
-
-  return offerer.managedVenues?.find((venue) => venue.isVirtual) ?? null
-}
-
 export const getPhysicalVenuesFromOfferer = (
   offerer?: GetOffererResponseModel | null
-): GetOffererVenueResponseModel[] =>
-  offerer?.managedVenues?.filter((venue) => !venue.isVirtual) ?? []
+): GetOffererVenueResponseModel[] => offerer?.managedVenues ?? []
 
 export const hasOffererAtLeastOnePhysicalVenue = (
   offerer?: GetOffererResponseModel | null
-): boolean =>
-  offerer?.managedVenues?.some((venue) => !venue.isVirtual && venue.id) ?? false
+): boolean => offerer?.managedVenues?.some((venue) => venue.id) ?? false
 
 export const shouldDisplayEACInformationSectionForVenue = (
   venue?: VenueThing

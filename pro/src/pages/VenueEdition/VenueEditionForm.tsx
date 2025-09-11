@@ -134,9 +134,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             <FormLayout.SubSection
               title="À propos de votre activité"
               description={
-                venue.isVirtual
-                  ? undefined
-                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
+                'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
               }
             >
               <FormLayout.Row>

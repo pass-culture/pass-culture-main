@@ -49,9 +49,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
   }
 
   const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}`
-  const venueDisplayName = venue.isVirtual
-    ? 'Offres numériques'
-    : venue.publicName || venue.name
+  const venueDisplayName = venue.publicName || venue.name
 
   return (
     <Card data-testid="venue-wrapper">

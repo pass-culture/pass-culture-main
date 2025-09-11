@@ -154,7 +154,6 @@ export const getOfferVenueFactory = (
     id: currentVenueId,
     street: 'Ma Rue',
     city: 'Ma Ville',
-    isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     postalCode: '11100',
     publicName: 'Mon Lieu',
@@ -245,7 +244,6 @@ export const venueListItemFactory = (
 
   return {
     id,
-    isVirtual: false,
     name: `Le nom du lieu ${id}`,
     publicName: undefined,
     venueTypeCode: VenueTypeCode.AUTRE,
@@ -270,7 +268,6 @@ export const makeVenueListItem = <
 
   return {
     id,
-    isVirtual: false,
     name: `Le nom du lieu ${id}`,
     publicName: undefined,
     venueTypeCode: VenueTypeCode.AUTRE,
@@ -364,7 +361,6 @@ export function getOffererNameFactory(
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasAvailablePricingPoints: false,
-  hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: true,
   hasPendingBankAccount: false,
   hasNonFreeOffer: true,
@@ -389,7 +385,6 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     collectiveDmsApplications: [],
     hasAdageId: false,
     hasCreatedOffer: false,
-    isVirtual: false,
     name: 'Mon super lieu',
     id: 1,
     venueTypeCode: VenueTypeCode.AUTRE,

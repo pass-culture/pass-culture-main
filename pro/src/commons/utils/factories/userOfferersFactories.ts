@@ -22,7 +22,6 @@ export const managedVenueFactory = (
       address: '2 bis Street Name',
       postalCode: '93100',
       city: 'Montreuil',
-      isVirtual: false,
     },
     userVenueExtends
   )

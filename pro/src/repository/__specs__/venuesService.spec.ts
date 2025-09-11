@@ -4,7 +4,6 @@ import { offererAddressFactory } from '@/commons/utils/factories/offererAddressF
 
 import {
   computeAddressDisplayName,
-  computeVenueDisplayName,
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from '../venuesService'
@@ -14,16 +13,14 @@ describe('formatAndOrderVenues', () => {
     const venues = [
       venueListItemFactory({
         id: 1,
-        name: 'Offre numérique',
+        name: 'gilbert Joseph - Offre numérique',
         offererName: 'gilbert Joseph',
-        isVirtual: true,
       }),
       venueListItemFactory({
         id: 1,
         name: 'a venue name',
         publicName: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
-        isVirtual: false,
       }),
     ]
 
@@ -65,48 +62,6 @@ describe('formatAndOrderVenues', () => {
         },
       ])
     })
-  })
-})
-
-describe('computeVenueDisplayName', () => {
-  it('should give venue name when venue is not virtual and has no public name', () => {
-    const venue = {
-      id: 12,
-      name: 'Librairie Fnac',
-      offererName: 'gilbert Joseph',
-      isVirtual: false,
-    }
-
-    const computedVenueDisplayName = computeVenueDisplayName(venue)
-
-    expect(computedVenueDisplayName).toBe('Librairie Fnac')
-  })
-
-  it('should give venue public name when venue is not virtual and has a public name', () => {
-    const venue = {
-      id: 12,
-      name: 'Librairie Fnac',
-      offererName: 'gilbert Joseph',
-      publicName: 'Ma petite librairie',
-      isVirtual: false,
-    }
-
-    const computedVenueDisplayName = computeVenueDisplayName(venue)
-
-    expect(computedVenueDisplayName).toBe('Ma petite librairie')
-  })
-
-  it('should give the offerer name with "- Offre numérique" when venue is virtual', () => {
-    const venue = {
-      id: 12,
-      name: 'Librairie Fnac',
-      offererName: 'gilbert Joseph',
-      isVirtual: true,
-    }
-
-    const computedVenueDisplayName = computeVenueDisplayName(venue)
-
-    expect(computedVenueDisplayName).toBe('gilbert Joseph - Offre numérique')
   })
 })
 

@@ -1,5 +1,3 @@
-import { computeVenueDisplayName } from 'repository/venuesService'
-
 import {
   type CategoryResponseModel,
   type GetIndividualOfferResponseModel,
@@ -88,26 +86,13 @@ export const completeSubcategoryConditionalFields = (
     ...(subcategory?.isEvent ? ['durationMinutes'] : []),
   ] as (keyof DetailsFormValues)[]
 
-export function filterAvailableVenues(
-  venues: VenueListItemResponseModel[],
-  isOfferVirtual: boolean | undefined = undefined
-): VenueListItemResponseModel[] {
-  const physicalVenues = venues.filter((v) => !v.isVirtual)
-
-  if (isOfferVirtual !== false && physicalVenues.length === 0) {
-    return venues
-  }
-
-  return physicalVenues
-}
-
 export function getVenuesAsOptions(
   venues: readonly VenueListItemResponseModel[]
 ): Option[] {
   return venues
     .map((v) => ({
       value: String(v.id),
-      label: computeVenueDisplayName(v),
+      label: v.publicName || v.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }

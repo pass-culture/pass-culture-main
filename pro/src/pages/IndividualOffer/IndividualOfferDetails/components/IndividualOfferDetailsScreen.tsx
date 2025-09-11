@@ -43,7 +43,6 @@ import type {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
-  filterAvailableVenues,
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
   getInitialValuesFromVenues,
@@ -95,14 +94,10 @@ export const IndividualOfferDetailsScreen = ({
 
   const isOfferVirtual =
     categoryStatus === CATEGORY_STATUS.ONLINE || Boolean(offer?.isDigital)
-  const availableVenues = filterAvailableVenues(venues, isOfferVirtual)
-  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
+  const availableVenuesAsOptions = getVenuesAsOptions(venues)
 
   const initialValues = isDraftOffer
-    ? getInitialValuesFromVenues(
-        availableVenues,
-        isNewOfferCreationFlowFeatureActive
-      )
+    ? getInitialValuesFromVenues(venues, isNewOfferCreationFlowFeatureActive)
     : getInitialValuesFromOffer({
         offer,
         subcategories: subCategories,

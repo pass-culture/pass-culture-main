@@ -27,7 +27,6 @@ describe('applyVenueDefaultsToFormValues', () => {
         managedVenues: [
           {
             id: 2,
-            isVirtual: true,
             name: 'test',
             audioDisabilityCompliant: true,
             mentalDisabilityCompliant: true,
@@ -60,7 +59,6 @@ describe('applyVenueDefaultsToFormValues', () => {
         managedVenues: [
           {
             id: 2,
-            isVirtual: true,
             name: 'test',
           },
         ],
@@ -91,7 +89,6 @@ describe('applyVenueDefaultsToFormValues', () => {
         managedVenues: [
           {
             id: 2,
-            isVirtual: true,
             name: 'test',
             collectiveEmail: 'test@email.co',
             collectivePhone: '00000000',
@@ -121,7 +118,6 @@ describe('applyVenueDefaultsToFormValues', () => {
         managedVenues: [
           {
             id: 2,
-            isVirtual: true,
             name: 'test',
             collectiveEmail: 'test@email.co',
             collectivePhone: '00000000',

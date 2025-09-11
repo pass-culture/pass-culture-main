@@ -36,7 +36,6 @@ import type {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import {
-  filterAvailableVenues,
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
   getInitialValuesFromVenues,
@@ -77,12 +76,11 @@ export const IndividualOfferDetailsScreenNext = ({
   const { handleEanImage } = useIndividualOfferImageUpload(initialOfferImage)
 
   const isNewOfferDraft = !initialOffer
-  const availableVenues = filterAvailableVenues(venues)
-  const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
+  const availableVenuesAsOptions = getVenuesAsOptions(venues)
 
   const getInitialValues = () => {
     return isNewOfferDraft
-      ? getInitialValuesFromVenues(availableVenues, true)
+      ? getInitialValuesFromVenues(venues, true)
       : getInitialValuesFromOffer({
           offer: initialOffer,
           subcategories: subCategories,
@@ -106,7 +104,7 @@ export const IndividualOfferDetailsScreenNext = ({
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')
-  const isEanSearchAvailable = isRecordStore(availableVenues)
+  const isEanSearchAvailable = isRecordStore(venues)
   const isEanSearchInputDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
   const isEanSearchCalloutDisplayed =

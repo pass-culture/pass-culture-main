@@ -17,7 +17,6 @@ import {
   buildShowSubTypeOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-  filterAvailableVenues,
   getAccessibilityFormValuesFromOffer,
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
@@ -152,64 +151,6 @@ describe('buildSubcategoryFields', () => {
         })
       )
     ).toStrictEqual(['gtl_id', 'author', 'ean'])
-  })
-})
-
-describe('filterAvailableVenues', () => {
-  const physicalVenue = venueListItemFactory({
-    id: 1,
-    name: 'Physical Venue',
-    isVirtual: false,
-  })
-  const virtualVenue = venueListItemFactory({
-    id: 2,
-    name: 'Virtual Venue',
-    isVirtual: true,
-  })
-
-  it('should return only physical venues if at least one exists', () => {
-    const venues = [physicalVenue, virtualVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual([physicalVenue])
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual([physicalVenue])
-  })
-
-  it('should return an empty array for a physical offer with only virtual venues', () => {
-    const venues = [virtualVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual([])
-  })
-
-  it('should return virtual venues for a virtual offer if NO physical venues exist', () => {
-    const venues = [virtualVenue]
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual([virtualVenue])
-  })
-
-  it('should return all physical venues if only physical venues are provided', () => {
-    const anotherPhysicalVenue = venueListItemFactory({
-      id: 3,
-      name: 'Another Physical',
-      isVirtual: false,
-    })
-    const venues = [physicalVenue, anotherPhysicalVenue]
-
-    const physicalOfferResult = filterAvailableVenues(venues, false)
-
-    expect(physicalOfferResult).toEqual(venues)
-
-    const virtualOfferResult = filterAvailableVenues(venues, true)
-
-    expect(virtualOfferResult).toEqual(venues)
   })
 })
 

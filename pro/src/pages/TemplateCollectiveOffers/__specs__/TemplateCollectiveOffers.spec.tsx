@@ -38,13 +38,11 @@ const proVenues = [
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
-    isVirtual: false,
   }),
   makeVenueListItem({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
-    isVirtual: true,
   }),
 ]
 

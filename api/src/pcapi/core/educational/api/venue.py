@@ -12,7 +12,6 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
         db.session.query(offerers_models.Venue)
         .filter(
             offerers_models.Venue.siret == siret,
-            sa.not_(offerers_models.Venue.isVirtual),
         )
         .options(*_get_common_joinedload_options())
         .one()
@@ -26,10 +25,6 @@ def get_relative_venues_by_siret(siret: str, permanent_only: bool = False) -> li
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
-        # constraint on retrieved venues
-        sa.not_(offerers_models.Venue.isVirtual),
-        # constraint on searched venue
-        sa.not_(aliased_venue.isVirtual),
         aliased_venue.siret == siret,
     )
     if permanent_only:
@@ -50,9 +45,6 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
 
     return (
         db.session.query(offerers_models.Venue)
-        .filter(
-            sa.not_(offerers_models.Venue.isVirtual),
-        )
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
         .limit(per_page)
@@ -78,7 +70,6 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
                 sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
                 sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             ),
-            sa.not_(offerers_models.Venue.isVirtual),
         )
         .options(*_get_common_joinedload_options())
         .all()
@@ -96,10 +87,6 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.join(aliased_venue, offerers_models.Offerer.managedVenues)
     query = query.filter(
-        # constraint on retrieved venues
-        sa.not_(offerers_models.Venue.isVirtual),
-        # constraint on searched venue
-        sa.not_(aliased_venue.isVirtual),
         sa.or_(
             sa.func.immutable_unaccent(aliased_venue.name).ilike(f"%{name}%"),
             sa.func.immutable_unaccent(aliased_venue.publicName).ilike(f"%{name}%"),

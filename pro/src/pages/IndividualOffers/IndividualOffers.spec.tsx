@@ -46,13 +46,11 @@ const proVenues = [
     name: 'Ma venue',
     offererName: 'Mon offerer',
     publicName: undefined,
-    isVirtual: false,
   }),
   venueListItemFactory({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
-    isVirtual: true,
   }),
 ]
 
