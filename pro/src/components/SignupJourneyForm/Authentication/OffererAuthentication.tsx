@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -74,12 +74,6 @@ export const OffererAuthentication = (): JSX.Element => {
       )
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
   })
-
-  useEffect(() => {
-    if (offerer?.siret === '' || offerer?.siren === '') {
-      handlePreviousStep()
-    }
-  }, [handlePreviousStep, offerer?.siren, offerer?.siret])
 
   return (
     <FormLayout>
