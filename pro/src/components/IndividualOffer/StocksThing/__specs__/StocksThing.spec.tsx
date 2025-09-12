@@ -395,7 +395,7 @@ describe('screens:StocksThing', () => {
 
       const priceInput = screen.getByLabelText('Prix *')
       await userEvent.clear(priceInput)
-      await userEvent.type(priceInput, '14.01')
+      await userEvent.type(priceInput, '14,01')
       const expirationInput = screen.getByLabelText("Date d'expiration *")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
@@ -487,11 +487,15 @@ describe('screens:StocksThing', () => {
   })
 
   const setNumberPriceValue = [
-    { value: '20', expectedNumber: 20 },
-    { value: 'azer', expectedNumber: null },
-    { value: 'AZER', expectedNumber: null },
-    { value: '2fsqjk', expectedNumber: 2 },
-    { value: '2fsqm0', expectedNumber: 20 },
+    { value: '20', expectedNumber: '20' },
+    { value: 'azer', expectedNumber: '' },
+    { value: 'AZER', expectedNumber: '' },
+    { value: '2fsqjk', expectedNumber: '2' },
+    { value: '2fsqm0', expectedNumber: '20' },
+    { value: '20.50', expectedNumber: '2050' },
+    { value: '20,50', expectedNumber: '20,50' },
+    { value: '20,504', expectedNumber: '20,50' },
+    { value: '20,5,2', expectedNumber: '20,52' },
   ]
   it.each(setNumberPriceValue)(
     'should only type numbers for price input',
@@ -623,31 +627,89 @@ describe('screens:StocksThing', () => {
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
 
-  it('should display the price in F CFP when offerer is Caledonian', async () => {
-    vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-      data: {
-        ...defaultGetOffererResponseModel,
-        isCaledonian: true,
-      },
-      isLoading: false,
-      error: undefined,
-      mutate: vi.fn(),
-      isValidating: false,
+  describe('New caledonian offerer', () => {
+    beforeEach(() => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
+        data: {
+          ...defaultGetOffererResponseModel,
+          isCaledonian: true,
+        },
+        isLoading: false,
+        error: undefined,
+        mutate: vi.fn(),
+        isValidating: false,
+      })
     })
 
-    props.offer = {
-      ...offer,
-      isDigital: false,
-    }
+    it('should display the price in F CFP when offerer is Caledonian', async () => {
+      props.offer = {
+        ...offer,
+        isDigital: false,
+      }
 
-    const stocks = [
-      getOfferStockFactory({
-        price: 20,
-      }),
-    ]
+      const stocks = [
+        getOfferStockFactory({
+          price: 20,
+        }),
+      ]
 
-    await renderStockThingScreen(stocks, props, contextValue)
+      await renderStockThingScreen(stocks, props, contextValue)
 
-    expect(screen.getByDisplayValue('2385')).toBeInTheDocument()
+      expect(screen.getByDisplayValue('2385')).toBeInTheDocument()
+    })
+
+    it('should display the price in F CFP when offerer is Caledonian', async () => {
+      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
+        data: {
+          ...defaultGetOffererResponseModel,
+          isCaledonian: true,
+        },
+        isLoading: false,
+        error: undefined,
+        mutate: vi.fn(),
+        isValidating: false,
+      })
+
+      props.offer = {
+        ...offer,
+        isDigital: false,
+      }
+
+      const stocks = [
+        getOfferStockFactory({
+          price: 20,
+        }),
+      ]
+
+      await renderStockThingScreen(stocks, props, contextValue)
+
+      expect(screen.getByDisplayValue('2385')).toBeInTheDocument()
+    })
+
+    it('should submit stock form when click on "Enregistrer et continuer" with "," decimal price', async () => {
+      vi.spyOn(api, 'createThingStock').mockResolvedValue({
+        id: 12,
+      })
+      await renderStockThingScreen([], props, contextValue)
+      const nextButton = screen.getByRole('button', {
+        name: 'Enregistrer et continuer',
+      })
+      await userEvent.type(screen.getByLabelText('Prix *'), '2000,50')
+      expect((screen.getByLabelText('Prix *') as HTMLInputElement).value).toBe(
+        '2000,50'
+      )
+      await userEvent.click(nextButton)
+
+      await waitFor(() => {
+        expect(api.createThingStock).toHaveBeenCalledWith({
+          offerId: offer.id,
+          bookingLimitDatetime: null,
+          price: 16.76,
+          quantity: null,
+        })
+      })
+      expect(screen.getByText('Next page')).toBeInTheDocument()
+      expect(api.getOffer).toHaveBeenCalledWith(offer.id)
+    })
   })
 })
