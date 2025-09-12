@@ -79,8 +79,7 @@ class Returns200Test:
             "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-    def test_refuse_collective_booking_with_oa(self, client):
+    def test_refuse_collective_booking_location(self, client):
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,

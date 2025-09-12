@@ -11,7 +11,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
     redactor = booking.educationalRedactor
 
     return {
-        "address": offer.offerVenue["otherAddress"],
+        "address": "",
         "accessibility": _get_educational_offer_accessibility(offer),
         "startDatetime": format_into_utc_date(stock.startDatetime),
         "endDatetime": format_into_utc_date(stock.endDatetime),

@@ -11,7 +11,9 @@ from pcapi.core.testing import assert_num_queries
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
     def test_get_educational_institution(self, client):
         redactor = EducationalRedactorFactory(
@@ -64,7 +66,6 @@ class Returns200Test:
             "prebookings": [expected_serialized_prebooking(booking)],
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_get_educational_institution_school(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -88,7 +89,6 @@ class Returns200Test:
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Dans l'établissement scolaire"}],
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_get_educational_institution_address(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -119,7 +119,6 @@ class Returns200Test:
             ],
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
     def test_get_educational_institution_to_be_defined(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -206,7 +205,6 @@ class Returns200Test:
         }
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_get_educational_institution_not_found(self, client):
         educational_year = EducationalYearFactory()
