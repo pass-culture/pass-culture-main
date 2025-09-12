@@ -1,13 +1,13 @@
 import pytest
 
 from pcapi.core.chronicles import factories
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.products import factories as products_factories
 from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
 def test_increment_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     factories.ChronicleFactory.create(products=[product])
 
     assert product.chroniclesCount == 1
@@ -15,7 +15,7 @@ def test_increment_product_count():
 
 @pytest.mark.usefixtures("db_session")
 def test_decrement_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
 
     chronicle = factories.ChronicleFactory.create(products=[product])
     assert product.chroniclesCount == 1

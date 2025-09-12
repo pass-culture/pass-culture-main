@@ -16,7 +16,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors

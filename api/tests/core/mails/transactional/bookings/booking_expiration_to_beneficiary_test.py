@@ -16,7 +16,7 @@ from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary i
     send_expired_bookings_to_beneficiary_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 
 
 @pytest.mark.usefixtures("db_session")

@@ -8,6 +8,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.categories import subcategories
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -73,7 +75,7 @@ class UpdateObjectsTest:
     def test_updates_existing_object(self, next_function):
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = ProvidableInfo(date_modified_at_provider=datetime(2018, 1, 1))
-        offers_factories.ThingProductFactory(
+        products_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2000, 1, 1),
             lastProvider=provider,
             name="Old product name",
@@ -93,7 +95,7 @@ class UpdateObjectsTest:
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = ProvidableInfo(date_modified_at_provider=datetime(2018, 1, 1))
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2020, 1, 1),
             lastProvider=provider,
             name="Old product name",
@@ -106,7 +108,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        product = db.session.query(offers_models.Product).one()
+        product = db.session.query(products_models.Product).one()
         assert product.name == "Old product name"
         assert product.dateModifiedAtLastProvider == datetime(2020, 1, 1)
 
@@ -123,7 +125,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_objects_when_provider_is_not_active(self, next_function):
@@ -137,7 +139,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProviderNoCreation.__next__")
     def test_does_not_create_new_object_when_can_create_is_false(self, next_function):
@@ -151,7 +153,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_only_one_object_when_limit_is_one(self, next_function):
@@ -197,7 +199,7 @@ class CreateObjectTest:
         assert api_errors.value.errors["url"] == [
             "Une offre de sous-catégorie Achat instrument ne peut pas être numérique"
         ]
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
         provider_event = db.session.query(providers_models.LocalProviderEvent).one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
@@ -208,7 +210,7 @@ class HandleUpdateTest:
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = ProvidableInfo()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             name="Old product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             lastProvider=provider,
@@ -219,7 +221,7 @@ class HandleUpdateTest:
         local_provider._handle_update(product, providable_info)
 
         # Then
-        product = db.session.query(offers_models.Product).one()
+        product = db.session.query(products_models.Product).one()
         assert product.name == "New Product"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -252,7 +254,7 @@ class HandleThumbTest:
     def test_handle_thumb_increments_thumbCount(self):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             lastProvider=provider,
         )
         local_provider = provider_test_utils.TestLocalProviderWithThumb()
@@ -273,7 +275,7 @@ class UploadThumbTest:
     def test_first_thumb(self, app):
         # Given
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             lastProvider=provider,
             thumbCount=0,
         )
@@ -291,7 +293,7 @@ class UploadThumbTest:
     @patch("pcapi.core.object_storage.store_public_object")
     def test_fifth_thumb(self, mock_store_public_object):
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             lastProvider=provider,
             thumbCount=4,
         )

@@ -10,7 +10,8 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products.factories import ProductFactory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
 from pcapi.models import db
@@ -49,7 +50,7 @@ def test_partially_index_offers(app):
 @mock.patch("pcapi.core.search.async_index_offer_ids")
 def test_update_products_booking_count_and_reindex_offers(mocked_async_index_offer_ids, app):
     ean = "1234567890123"
-    product = offers_factories.ProductFactory(ean=ean)
+    product = products_factories.ProductFactory(ean=ean)
     offer_with_ean = offers_factories.OfferFactory(ean=ean, product=product)
     offer_with_no_ean = offers_factories.OfferFactory(extraData={})
 
@@ -74,8 +75,8 @@ def test_update_products_booking_count_and_reindex_offers(mocked_async_index_off
 def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_async_index_offer_ids, app):
     ean_1 = "1234567890123"
     ean_2 = "9876543219876"
-    product1 = offers_factories.ProductFactory(ean=ean_1)
-    product2 = offers_factories.ProductFactory(ean=ean_2)
+    product1 = products_factories.ProductFactory(ean=ean_1)
+    product2 = products_factories.ProductFactory(ean=ean_2)
     offer_with_ean = offers_factories.OfferFactory(product=product1, ean=ean_1)
     offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(ean=ean_1, product=product1)
     offer_with_different_ean = offers_factories.OfferFactory(ean=ean_2, product=product2)

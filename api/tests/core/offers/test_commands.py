@@ -1,10 +1,8 @@
 import datetime
-import logging
 from unittest import mock
 
 import pytest
 
-import pcapi.core.chronicles.factories as chronicles_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.reminders.factories as reminders_factories
@@ -37,23 +35,6 @@ class OfferCommandsTest:
         run_command(app, "delete_unbookable_unbooked_old_offers")
 
         assert db.session.query(offers_models.Offer).filter_by(id=offer_id).count() == 0
-
-    @pytest.mark.usefixtures("clean_database")
-    def test_command_check_product_counts_consistency(self, app, caplog):
-        product_1 = offers_factories.ProductFactory()
-        product_2 = offers_factories.ProductFactory()
-        chronicles_factories.ChronicleFactory.create(products=[product_1, product_2])
-
-        product_1.chroniclesCount = 0
-        product_2.chroniclesCount = 0
-        product_1_id = product_1.id
-        product_2_id = product_2.id
-        db.session.commit()
-
-        with caplog.at_level(logging.ERROR):
-            run_command(app, "check_product_counts_consistency")
-
-        assert caplog.records[0].extra["product_ids"] == {product_1_id, product_2_id}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.usefixtures("clean_database")

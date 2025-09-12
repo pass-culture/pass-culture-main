@@ -9,6 +9,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core import testing
+from pcapi.core.products import factories as products_factories
 from pcapi.utils.human_ids import humanize
 
 
@@ -21,8 +22,8 @@ class OffererStatsTest:
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        product = offers_factories.ProductFactory()
-        product_mediation = offers_factories.ProductMediationFactory(product=product, uuid="my_id")
+        product = products_factories.ProductFactory()
+        product_mediation = products_factories.ProductMediationFactory(product=product, uuid="my_id")
         offer_1 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id, product=product)
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         mediation = offers_factories.MediationFactory(offer=offer_2)

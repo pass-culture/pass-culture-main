@@ -18,6 +18,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.products import models as products_models
 from pcapi.core.search.backends import base
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -527,25 +528,25 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
         .options(
             sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
-                offers_models.Product.id,
-                offers_models.Product.last_30_days_booking,
-                offers_models.Product.ean,
-                offers_models.Product.extraData,
-                offers_models.Product.description,
-                offers_models.Product.chroniclesCount,
-                offers_models.Product.headlinesCount,
-                offers_models.Product.likesCount,
-                offers_models.Product.thumbCount,
+                products_models.Product.id,
+                products_models.Product.last_30_days_booking,
+                products_models.Product.ean,
+                products_models.Product.extraData,
+                products_models.Product.description,
+                products_models.Product.chroniclesCount,
+                products_models.Product.headlinesCount,
+                products_models.Product.likesCount,
+                products_models.Product.thumbCount,
             )
             .options(
-                sa_orm.joinedload(offers_models.Product.productMediations).load_only(
-                    offers_models.ProductMediation.id,
-                    offers_models.ProductMediation.imageType,
-                    offers_models.ProductMediation.uuid,
+                sa_orm.joinedload(products_models.Product.productMediations).load_only(
+                    products_models.ProductMediation.id,
+                    products_models.ProductMediation.imageType,
+                    products_models.ProductMediation.uuid,
                 )
             )
             .options(
-                sa_orm.joinedload(offers_models.Product.artists).load_only(
+                sa_orm.joinedload(products_models.Product.artists).load_only(
                     artist_models.Artist.id, artist_models.Artist.name, artist_models.Artist.image
                 )
             )
@@ -796,17 +797,17 @@ def get_last_30_days_bookings_for_eans() -> dict[str, int]:
 
 def get_last_x_days_bookings_for_movies(days: int = 30) -> dict[int, int]:
     result = db.session.execute(
-        sa.select(offers_models.Product.id, sa.func.count())
+        sa.select(products_models.Product.id, sa.func.count())
         .select_from(bookings_models.Booking)
         .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(offers_models.Offer.product)
         .filter(
-            offers_models.Product.subcategoryId == subcategories.SEANCE_CINE.id,
+            products_models.Product.subcategoryId == subcategories.SEANCE_CINE.id,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
             bookings_models.Booking.dateCreated > datetime.date.today() - datetime.timedelta(days=days),
         )
-        .group_by(offers_models.Product.id)
+        .group_by(products_models.Product.id)
     )
     return {row[0]: row[1] for row in result}
 
@@ -841,7 +842,7 @@ def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
         )
 
 
-def update_last_30_days_bookings_for_eans() -> list[offers_models.Product]:
+def update_last_30_days_bookings_for_eans() -> list[products_models.Product]:
     booking_count_by_ean = get_last_30_days_bookings_for_eans()
     updated_products = []
     current_product_batch = []
@@ -850,7 +851,7 @@ def update_last_30_days_bookings_for_eans() -> list[offers_models.Product]:
     eans = list(booking_count_by_ean.keys())
     for batch in range(0, len(booking_count_by_ean), batch_size):
         ean_batch = eans[batch : batch + batch_size]
-        for product in db.session.query(offers_models.Product).filter(offers_models.Product.ean.in_(ean_batch)):
+        for product in db.session.query(products_models.Product).filter(products_models.Product.ean.in_(ean_batch)):
             ean = product.ean
             old_last_x_days_booking = product.last_30_days_booking
             updated_last_x_days_booking = booking_count_by_ean.get(ean)
@@ -867,7 +868,7 @@ def update_last_30_days_bookings_for_eans() -> list[offers_models.Product]:
     return updated_products
 
 
-def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
+def update_last_30_days_bookings_for_movies() -> list[products_models.Product]:
     booking_count_by_product = get_last_x_days_bookings_for_movies(days=30)
     updated_products = []
     current_product_batch = []
@@ -875,8 +876,8 @@ def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
     batch_size = 100
     product_ids = list(booking_count_by_product.keys())
     for start in range(0, len(product_ids), batch_size):
-        batch = db.session.query(offers_models.Product).filter(
-            offers_models.Product.id.in_(product_ids[start : start + batch_size])
+        batch = db.session.query(products_models.Product).filter(
+            products_models.Product.id.in_(product_ids[start : start + batch_size])
         )
         for product in batch:
             old_last_x_days_booking = product.last_30_days_booking
@@ -895,7 +896,7 @@ def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
     return updated_products
 
 
-def update_booking_count_by_product() -> list[offers_models.Product]:
+def update_booking_count_by_product() -> list[products_models.Product]:
     updated_ean_products = update_last_30_days_bookings_for_eans()
     updated_movie_products = update_last_30_days_bookings_for_movies()
 

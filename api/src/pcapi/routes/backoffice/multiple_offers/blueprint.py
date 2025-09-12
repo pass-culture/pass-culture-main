@@ -13,6 +13,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -63,7 +64,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     ean = form.ean.data
 
-    product = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).one_or_none()
+    product = db.session.query(products_models.Product).filter(products_models.Product.ean == ean).one_or_none()
 
     if not product:
         flash("Aucun produit n'a été trouvé avec cet EAN-13", "warning")

@@ -14,7 +14,7 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
