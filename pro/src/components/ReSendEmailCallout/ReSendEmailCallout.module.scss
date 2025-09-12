@@ -4,12 +4,12 @@
 .re-send-callout {
   @include fonts.body-s;
 
-  color: var(--color-grey-dark);
+  color: var(--color-text-subtle);
 
   &-button {
     @include fonts.body-s;
 
-    color: var(--color-primary);
+    color: var(--color-text-brand-secondary);
     margin: 0;
   }
 }
