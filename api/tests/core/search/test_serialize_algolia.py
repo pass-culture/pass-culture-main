@@ -714,8 +714,7 @@ def test_serialize_collective_offer_template_other():
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
-@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-def test_serialize_collective_offer_template_school_with_ff():
+def test_serialize_collective_offer_template_location_school_with_ff():
     venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         venue__offererAddress=venue_offerer_address,
@@ -728,8 +727,7 @@ def test_serialize_collective_offer_template_school_with_ff():
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
-@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-def test_serialize_collective_offer_template_address_with_ff():
+def test_serialize_collective_offer_template_location_address():
     offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=offerer_address
@@ -740,8 +738,7 @@ def test_serialize_collective_offer_template_address_with_ff():
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
-@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-def test_serialize_collective_offer_template_to_be_defined_with_ff():
+def test_serialize_collective_offer_template_location_to_be_defined():
     venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         venue__offererAddress=venue_offerer_address,
@@ -754,8 +751,7 @@ def test_serialize_collective_offer_template_to_be_defined_with_ff():
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
 
 
-@pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-def test_serialize_collective_offer_template_no_location_with_ff(caplog):
+def test_serialize_collective_offer_template_no_location(caplog):
     venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         venue__offererAddress=venue_offerer_address,

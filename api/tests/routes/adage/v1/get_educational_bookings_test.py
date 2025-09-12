@@ -5,6 +5,7 @@ from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -41,19 +42,19 @@ class Returns200Test:
             ]
         }
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-    def test_get_collective_bookings_with_oa(self, client):
+    def test_get_collective_bookings_with_address(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
+        venue = VenueFactory()
         booking = ConfirmedCollectiveBookingFactory(
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
+            collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
-            collectiveStock__collectiveOffer__offererAddress=None,
+            collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
             collectiveStock__collectiveOffer__locationComment=None,
         )
         offer = booking.collectiveStock.collectiveOffer
-        offer.offererAddress = offer.venue.offererAddress
 
         with assert_no_duplicated_queries():
             response = client.with_eac_token().get(

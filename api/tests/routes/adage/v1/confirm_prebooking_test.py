@@ -81,8 +81,7 @@ class Returns200Test:
             == CollectiveBookingStatus.CONFIRMED
         )
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=True)
-    def test_confirm_collective_prebooking_with_oa(self, client) -> None:
+    def test_confirm_collective_prebooking_with_address(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory()
         venue = VenueFactory()
