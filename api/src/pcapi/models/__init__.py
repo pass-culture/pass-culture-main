@@ -21,6 +21,7 @@ def install_models() -> None:
     import pcapi.core.finance.models
     import pcapi.core.fraud.models
     import pcapi.core.geography.models
+    import pcapi.core.highlights.models
     import pcapi.core.history.models
     import pcapi.core.mails.models
     import pcapi.core.offerers.models
