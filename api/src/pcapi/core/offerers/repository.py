@@ -116,13 +116,16 @@ def get_ids_of_venues_with_offers(offererIds: list[int]) -> typing.Iterable[int]
 
 def get_filtered_venues(
     pro_user_id: int,
-    user_is_admin: bool,
     active_offerers_only: bool | None = False,
     offerer_id: int | None = None,
     validated_offerer: bool | None = None,
 ) -> list[models.Venue]:
     query = (
         db.session.query(models.Venue)
+        .filter(
+            models.UserOfferer.userId == pro_user_id,
+            models.UserOfferer.isValidated,
+        )
         .join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
         .options(sa_orm.joinedload(models.Venue.managingOfferer))
@@ -130,11 +133,6 @@ def get_filtered_venues(
         .options(sa_orm.joinedload(models.Venue.accessibilityProvider))
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     )
-    if not user_is_admin:
-        query = query.filter(
-            models.UserOfferer.userId == pro_user_id,
-            models.UserOfferer.isValidated,
-        )
 
     if validated_offerer is not None:
         if validated_offerer:
