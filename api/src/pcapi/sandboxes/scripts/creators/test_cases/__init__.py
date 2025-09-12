@@ -23,6 +23,7 @@ from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.highlights import factories as highlights_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
@@ -55,6 +56,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import crea
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
+from pcapi.utils import db as db_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -69,6 +71,7 @@ def save_test_cases_sandbox() -> None:
     create_cinema_data()
     create_offers_interactions()
     create_offers_with_video_url()
+    create_highlights()
     create_venues_across_cities()
     create_offers_with_compliance_score()
     create_offers_for_each_subcategory()
@@ -757,6 +760,45 @@ def create_offers_with_video_url() -> None:
         offer__name="Offre avec video",
     )
     offers_factories.StockFactory.create(offer=metadata.offer)
+
+
+@log_func_duration
+def create_highlights() -> None:
+    highlights_factories.HighlightFactory.create(
+        name="Temps fort passé",
+        description="Ceci est un temps fort passé",
+        availability_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            end=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+        ),
+        highlight_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            end=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        ),
+    )
+    highlights_factories.HighlightFactory.create(
+        name="Temps fort actuel disponible",
+        description="Ceci est un temps fort actuel, auquel les acteurices culturelles peuvent proposer des offres",
+        availability_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            end=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        ),
+        highlight_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow() + datetime.timedelta(days=11),
+            end=datetime.datetime.utcnow() + datetime.timedelta(days=12),
+        ),
+    )
+    highlights_factories.HighlightFactory.create(
+        name="Temps fort actuel non disponible",
+        description="Ceci est un temps fort actuel, auquel les acteurices culturelles ne peuvent plus proposer des offres",
+        availability_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        ),
+        highlight_timespan=db_utils.make_timerange(
+            start=datetime.datetime.utcnow(), end=datetime.datetime.utcnow() + datetime.timedelta(days=8)
+        ),
+    )
 
 
 @log_func_duration
