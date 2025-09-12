@@ -158,9 +158,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE = "Activer la nouvelle page détail de l'offre réservable"
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE = "Activer l'association des offres collectives à des adresses."
-    WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API = (
-        "Activer les autorisations liées au nouveau statut des offres collectives sur l'api publique."
-    )
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
     WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
     WIP_FREE_ELIGIBILITY = (
@@ -245,7 +242,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE,
-    FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,

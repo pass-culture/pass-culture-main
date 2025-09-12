@@ -79,11 +79,6 @@ def check_confirmation_limit_date_has_not_passed(booking: models.CollectiveBooki
         raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
 
-def check_collective_booking_status_pending(booking: models.CollectiveBooking) -> None:
-    if booking.status is not models.CollectiveBookingStatus.PENDING:
-        raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
-
-
 def check_collective_offer_number_of_collective_stocks(
     collective_offer: models.CollectiveOffer,
 ) -> None:
