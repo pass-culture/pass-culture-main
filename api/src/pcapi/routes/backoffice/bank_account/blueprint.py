@@ -96,8 +96,9 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
             offerers_models.VenueBankAccountLink.bankAccountId == bank_account_id,
             offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
         )
+        .join(offerers_models.VenueBankAccountLink.venue)  # excludes soft-deleted
         .options(
-            sa_orm.joinedload(offerers_models.VenueBankAccountLink.venue).load_only(
+            sa_orm.contains_eager(offerers_models.VenueBankAccountLink.venue).load_only(
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,

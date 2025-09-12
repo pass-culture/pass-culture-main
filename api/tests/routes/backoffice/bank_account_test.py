@@ -16,6 +16,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -151,9 +152,8 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
     def test_get_linked_venues(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
 
-        offerer = offerers_factories.OffererFactory()
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
-        venue_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=bank_account.offerer)
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=bank_account.offerer)
 
         link_venue1_date = datetime.datetime(2022, 10, 3, 13, 1)
         offerers_factories.VenueBankAccountLinkFactory(
@@ -187,6 +187,27 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
         assert rows[1]["ID"] == str(venue_2.id)
         assert rows[1]["Nom"] == venue_2.name
         assert rows[1]["Date de rattachement"].startswith(link_venue2_date.strftime("%d/%m/%Y à "))
+
+    def test_do_not_show_soft_deleted_venues(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+
+        venue_1 = offerers_factories.VenueFactory(managingOfferer=bank_account.offerer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue_1, bankAccount=bank_account)
+
+        venue_2 = offerers_factories.VenueFactory(managingOfferer=bank_account.offerer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue_2, bankAccount=bank_account)
+        venue_2.isSoftDeleted = True
+        db.session.flush()
+
+        url = url_for(self.endpoint, bank_account_id=bank_account.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(venue_1.id)
 
 
 class GetBankAccountHistoryTest(GetEndpointHelper):
