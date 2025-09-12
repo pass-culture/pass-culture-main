@@ -24,6 +24,7 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.models import User
@@ -304,7 +305,7 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)

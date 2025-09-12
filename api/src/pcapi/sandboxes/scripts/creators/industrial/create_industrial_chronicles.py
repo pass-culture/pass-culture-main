@@ -6,7 +6,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
@@ -47,20 +48,20 @@ def create_industrial_chronicles() -> None:
         "9782253251491",
         "9791035208547",
     ):
-        offers_factories.ProductFactory.create(ean=ean)
+        products_factories.ProductFactory.create(ean=ean)
 
     products_with_ean = (
-        db.session.query(offers_models.Product)
+        db.session.query(products_models.Product)
         .filter(
-            ~offers_models.Product.ean.is_(None),
+            ~products_models.Product.ean.is_(None),
         )
-        .order_by(offers_models.Product.id)
+        .order_by(products_models.Product.id)
         .limit(9)
     )
 
-    products_with_allocine_id: list[offers_models.Product] = []
+    products_with_allocine_id: list[products_models.Product] = []
     for allocineId in (1000002449, 1000007194, 1000004644):
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             name=f"Film avec chronique {len(products_with_allocine_id) + 1}",
             extraData={"allocineId": allocineId},
             subcategoryId=subcategories.SEANCE_CINE.id,

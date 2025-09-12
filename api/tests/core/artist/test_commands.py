@@ -18,7 +18,7 @@ from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistAlias
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 from pcapi.models import db
 
 from . import fixtures

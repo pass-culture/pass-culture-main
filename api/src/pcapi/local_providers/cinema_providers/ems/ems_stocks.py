@@ -13,9 +13,10 @@ from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
@@ -113,7 +114,7 @@ class EMSStocks:
             if offer.product and not offer.product.productMediations:
                 try:
                     image_id = str(uuid.uuid4())
-                    mediation = offers_models.ProductMediation(
+                    mediation = products_models.ProductMediation(
                         productId=offer.product.id,
                         lastProvider=self.provider,
                         imageType=offers_models.ImageType.POSTER,
@@ -146,10 +147,10 @@ class EMSStocks:
             self.errored_objects,
         )
 
-    def get_or_create_movie_product(self, movie: ems_serializers.Event) -> offers_models.Product | None:
+    def get_or_create_movie_product(self, movie: ems_serializers.Event) -> products_models.Product | None:
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid_for_offer(movie.id, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = products_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 
@@ -174,7 +175,7 @@ class EMSStocks:
         return offer
 
     def fill_offer_attributes(
-        self, offer: offers_models.Offer, product: offers_models.Product | None, event: ems_serializers.Event
+        self, offer: offers_models.Offer, product: products_models.Product | None, event: ems_serializers.Event
     ) -> offers_models.Offer:
         offer.isDuo = self.is_duo
         if product:

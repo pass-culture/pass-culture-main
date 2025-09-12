@@ -3,8 +3,8 @@ from typing import Iterator
 
 from pcapi.connectors import api_allocine
 from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.offers.models import Movie
 from pcapi.core.offers.models import OfferExtraData
+from pcapi.core.products.models import Movie
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
 from pcapi.models import db
@@ -17,7 +17,7 @@ MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
 def synchronize_products() -> None:
-    from pcapi.core.offers.api import upsert_movie_product_from_provider
+    from pcapi.core.products.api import upsert_movie_product_from_provider
 
     movies = get_movie_list()
     allocine_products_provider = get_allocine_products_provider()

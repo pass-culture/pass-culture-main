@@ -1,11 +1,11 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers.models import Offer
+from pcapi.core.products import factories as products_factories
 from pcapi.models import db
 
 
@@ -96,7 +96,7 @@ class Returns201Test:
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="9782123456803",
         )
@@ -182,7 +182,7 @@ class Returns201Test:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
             ean="1234567891234",
             extraData={"gtl_id": "07000000"},
