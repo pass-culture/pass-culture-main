@@ -35,6 +35,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import models as products_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
@@ -2201,7 +2202,7 @@ def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
             chronicles_models.Chronicle.productIdentifier,
             chronicles_models.Chronicle.isPublished,
             sa.func.coalesce(
-                offers_models.Product.name,
+                products_models.Product.name,
                 chronicles_models.Chronicle.productIdentifier,
                 "",
             ).label("title"),
@@ -2211,7 +2212,7 @@ def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
             chronicles_models.ProductChronicle,
             chronicles_models.Chronicle.id == chronicles_models.ProductChronicle.chronicleId,
         )
-        .outerjoin(offers_models.Product, chronicles_models.ProductChronicle.productId == offers_models.Product.id)
+        .outerjoin(products_models.Product, chronicles_models.ProductChronicle.productId == products_models.Product.id)
         .filter(chronicles_models.Chronicle.userId == user_id)
     ).all()
 

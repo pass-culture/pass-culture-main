@@ -19,6 +19,8 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -60,7 +62,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
     def test_search_product_with_offers(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             name="Product with EAN",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="9783161484100",
@@ -88,7 +90,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
     def test_search_product_with_offers_and_manual_offers(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             name="Product with EAN",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="9783161484100",
@@ -119,7 +121,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
     def test_search_product_without_offers(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
-        offers_factories.ThingProductFactory(
+        products_factories.ThingProductFactory(
             name="Product without offer",
             ean="9783161484100",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -154,7 +156,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
     def test_search_product_without_offer(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
-        offers_factories.ThingProductFactory(
+        products_factories.ThingProductFactory(
             name="Product without offer",
             ean="9783161484100",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -182,17 +184,17 @@ class SearchMultipleOffersTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "compatibility,expected_gcu_display",
         [
-            (offers_models.GcuCompatibilityType.COMPATIBLE, "Oui"),
-            (offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, "Non (d'après le provider)"),
+            (products_models.GcuCompatibilityType.COMPATIBLE, "Oui"),
+            (products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, "Non (d'après le provider)"),
             (
-                offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+                products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
                 "Non (sur décision de l'équipe Fraude & Conformité)",
             ),
         ],
     )
     def test_product_compatibility(self, authenticated_client, compatibility, expected_gcu_display):
         provider = providers_factories.PublicApiProviderFactory()
-        offers_factories.ThingProductFactory(
+        products_factories.ThingProductFactory(
             ean="9781234567890",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             gcuCompatibilityType=compatibility,
@@ -211,7 +213,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         provider = providers_factories.PublicApiProviderFactory()
         criterion1 = criteria_models.Criterion(name="One criterion")
         criterion2 = criteria_models.Criterion(name="Another criterion")
-        product = offers_factories.ThingProductFactory(ean="9783161484100", lastProvider=provider)
+        product = products_factories.ThingProductFactory(ean="9783161484100", lastProvider=provider)
         offers_factories.ThingOfferFactory(product=product, criteria=[criterion1], isActive=True)
         offers_factories.ThingOfferFactory(product=product, criteria=[criterion1, criterion2], isActive=True)
         offers_factories.ThingOfferFactory(product=product, criteria=[], isActive=True)
@@ -243,7 +245,7 @@ class AddCriteriaToOffersButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         provider = providers_factories.PublicApiProviderFactory()
-        product = offers_factories.ThingProductFactory(ean="9781234567890", lastProvider=provider)
+        product = products_factories.ThingProductFactory(ean="9781234567890", lastProvider=provider)
         offers_factories.ThingOfferFactory(product=product)
         return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
@@ -257,7 +259,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
     def test_edit_product_offers_criteria_from_ean(self, authenticated_client):
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
-        product = offers_factories.ProductFactory(ean="9783161484100")
+        product = products_factories.ProductFactory(ean="9783161484100")
         offer1 = offers_factories.OfferFactory(product=product, criteria=[criterion1])
         offer2 = offers_factories.OfferFactory(product=product)
         inactive_offer = offers_factories.OfferFactory(product=product, isActive=False)
@@ -277,7 +279,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         assert not unmatched_offer.criteria
 
     def test_edit_product_offers_criteria_from_ean_without_offers(self, authenticated_client):
-        offers_factories.ProductFactory(ean="9783161484100")
+        products_factories.ProductFactory(ean="9783161484100")
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         response = self.post_to_endpoint(
@@ -295,7 +297,7 @@ class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         provider = providers_factories.PublicApiProviderFactory()
-        offers_factories.ThingProductFactory(ean="9781234567890", lastProvider=provider)
+        products_factories.ThingProductFactory(ean="9781234567890", lastProvider=provider)
         return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
 
@@ -308,15 +310,15 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
     @pytest.mark.parametrize(
         "validation_status,gcu_compatibility_type",
         [
-            (OfferValidationStatus.DRAFT, offers_models.GcuCompatibilityType.COMPATIBLE),
-            (OfferValidationStatus.PENDING, offers_models.GcuCompatibilityType.COMPATIBLE),
-            (OfferValidationStatus.REJECTED, offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE),
-            (OfferValidationStatus.APPROVED, offers_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.DRAFT, products_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.PENDING, products_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.REJECTED, products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE),
+            (OfferValidationStatus.APPROVED, products_models.GcuCompatibilityType.COMPATIBLE),
         ],
     )
     def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status, gcu_compatibility_type):
         provider = providers_factories.PublicApiProviderFactory()
-        product_1 = offers_factories.ThingProductFactory(
+        product_1 = products_factories.ThingProductFactory(
             description="premier produit inapproprié",
             ean="9781234567890",
             gcuCompatibilityType=gcu_compatibility_type,
@@ -338,10 +340,10 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
             "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890"
         )
 
-        product = db.session.query(offers_models.Product).one()
+        product = db.session.query(products_models.Product).one()
         offers = db.session.query(Offer).order_by("id").all()
 
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         for offer in offers:
             assert offer.validation == offers_models.OfferValidationStatus.REJECTED
             if offer.id in initially_rejected:
@@ -354,10 +356,10 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
     @pytest.mark.usefixtures("db_session")
     def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
         provider = providers_factories.PublicApiProviderFactory()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             description="Produit inapproprié",
             ean="9781234567890",
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.COMPATIBLE,
             lastProvider=provider,
         )
         venue = offerers_factories.VenueFactory()
@@ -380,10 +382,10 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
 
     @pytest.mark.usefixtures("clean_database")
     def test_with_bookings_finance_events_and_pricings(self, authenticated_client):
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             description="Produit inapproprié",
             ean="9781234567890",
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.COMPATIBLE,
             lastProvider=providers_factories.PublicApiProviderFactory(),
         )
         offer = offers_factories.OfferFactory(product=product)
@@ -429,10 +431,10 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         db.session.close()
         db.session.begin()
 
-        product = db.session.query(offers_models.Product).one()
+        product = db.session.query(products_models.Product).one()
         offer = db.session.query(offers_models.Offer).one()
 
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
         assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)

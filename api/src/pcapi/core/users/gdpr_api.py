@@ -37,6 +37,7 @@ from pcapi.core.geography.repository import get_iris_from_address
 from pcapi.core.history.api import add_action
 from pcapi.core.mails import get_raw_contact_data
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.products import models as products_models
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -497,8 +498,8 @@ def _extract_gdpr_chronicles(user: models.User) -> list[users_serialization.Gdpr
         )
         .options(
             sa_orm.joinedload(chronicles_models.Chronicle.products).load_only(
-                offers_models.Product.ean,
-                offers_models.Product.name,
+                products_models.Product.ean,
+                products_models.Product.name,
             )
         )
     )

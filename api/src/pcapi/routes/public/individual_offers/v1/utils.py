@@ -9,6 +9,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -38,13 +39,13 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
         .options(
             sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
-                offers_models.Product.id,
-                offers_models.Product.thumbCount,
-                offers_models.Product.description,
-                offers_models.Product.durationMinutes,
-                offers_models.Product.extraData,
+                products_models.Product.id,
+                products_models.Product.thumbCount,
+                products_models.Product.description,
+                products_models.Product.durationMinutes,
+                products_models.Product.extraData,
             )
-            .selectinload(offers_models.Product.productMediations)
+            .selectinload(products_models.Product.productMediations)
         )
         .options(
             sa_orm.selectinload(offers_models.Offer.priceCategories).joinedload(

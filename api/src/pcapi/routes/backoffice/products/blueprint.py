@@ -17,6 +17,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.connectors.serialization import titelive_serializers
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
+from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.fraud import models as fraud_models
@@ -25,6 +26,8 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -138,12 +141,12 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
     ]
 
     product = (
-        db.session.query(offers_models.Product)
-        .filter(offers_models.Product.id == product_id)
+        db.session.query(products_models.Product)
+        .filter(products_models.Product.id == product_id)
         .options(
-            sa_orm.selectinload(offers_models.Product.offers).options(*common_options),
-            sa_orm.selectinload(offers_models.Product.productMediations),
-            sa_orm.joinedload(offers_models.Product.lastProvider),
+            sa_orm.selectinload(products_models.Product.offers).options(*common_options),
+            sa_orm.selectinload(products_models.Product.productMediations),
+            sa_orm.joinedload(products_models.Product.lastProvider),
         )
         .one_or_none()
     )
@@ -164,15 +167,15 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             .order_by(offers_models.Offer.id)
         )
         identifier_type = product.identifierType
-        if identifier_type == offers_models.ProductIdentifierType.EAN:
+        if identifier_type == products_models.ProductIdentifierType.EAN:
             unlinked_offers_query = unlinked_offers_query.filter(offers_models.Offer.ean == product.ean)
             unlinked_offers = unlinked_offers_query.all()
         # The allocineId data exists only for products. We need to find offers that have the visa of this product.
         elif (
-            identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID
+            identifier_type == products_models.ProductIdentifierType.ALLOCINE_ID
             and product.extraData
             and product.extraData.get("visa")
-        ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+        ) or identifier_type == products_models.ProductIdentifierType.VISA:
             assert product.extraData  # helps mypy
             unlinked_offers_query = unlinked_offers_query.filter(
                 offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
@@ -255,7 +258,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/synchro_titelive", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_synchronize_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -294,14 +297,14 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> utils.Backoff
 @list_products_blueprint.route("/<int:product_id>/synchro-titelive", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
     try:
-        titelive_data = offers_api.get_new_product_from_ean13(product.ean)
-        offers_api.fetch_or_update_product_with_titelive_data(titelive_data.product)
-        offers_api.create_or_update_product_mediations(product, titelive_data.images)
+        titelive_data = get_new_product_from_ean13(product.ean)
+        products_api.fetch_or_update_product_with_titelive_data(titelive_data.product)
+        products_api.create_or_update_product_mediations(product, titelive_data.images)
     except requests.ExternalAPIException as err:
         mark_transaction_as_invalid()
         flash(
@@ -317,7 +320,7 @@ def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeRespon
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -335,11 +338,11 @@ def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/whitelist", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def whitelist_product(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
-    product.gcuCompatibilityType = offers_models.GcuCompatibilityType.COMPATIBLE
+    product.gcuCompatibilityType = products_models.GcuCompatibilityType.COMPATIBLE
     flash("Le produit a été marqué compatible avec les CGU", "success")
     return redirect(request.referrer or url_for(".get_product_details", product_id=product_id), 303)
 
@@ -347,7 +350,7 @@ def whitelist_product(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -365,11 +368,11 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/blacklist", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def blacklist_product(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         raise NotFound()
 
-    if offers_api.reject_inappropriate_products([product.ean], current_user, rejected_by_fraud_action=True):
+    if products_api.reject_inappropriate_products([product.ean], current_user, rejected_by_fraud_action=True):
         db.session.commit()
         flash("Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées", "success")
     else:
@@ -403,7 +406,7 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
-    product = db.session.query(offers_models.Product).filter(offers_models.Product.id == product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter(products_models.Product.id == product_id).one_or_none()
     if not product:
         raise NotFound()
 
@@ -429,8 +432,8 @@ def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
 def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
     product = (
-        db.session.query(offers_models.Product)
-        .options(sa_orm.selectinload(offers_models.Product.offers))
+        db.session.query(products_models.Product)
+        .options(sa_orm.selectinload(products_models.Product.offers))
         .get(product_id)
     )
     if not product:
@@ -443,18 +446,18 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
     )
 
     identifier_type = product.identifierType
-    if identifier_type == offers_models.ProductIdentifierType.EAN:
+    if identifier_type == products_models.ProductIdentifierType.EAN:
         unlinked_offers_query = unlinked_offers_query.filter(offers_models.Offer.ean == product.ean)
         identifier_string = " cet EAN-13"
     # The allocineId data exists only for products. We need to find offers that have the visa of this product.
     elif (
-        identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
-    ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+        identifier_type == products_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
+    ) or identifier_type == products_models.ProductIdentifierType.VISA:
         unlinked_offers_query = unlinked_offers_query.filter(
             offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
         )
         identifier_string = (
-            "ce visa" if identifier_type == offers_models.ProductIdentifierType.VISA else "cet ID Allociné"
+            "ce visa" if identifier_type == products_models.ProductIdentifierType.VISA else "cet ID Allociné"
         )
 
     unlinked_active_offers_count = unlinked_offers_query.count()
@@ -484,7 +487,7 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
 @list_products_blueprint.route("/<int:product_id>/add-criteria", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS)
 def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
-    product = db.session.query(offers_models.Product).get(product_id)
+    product = db.session.query(products_models.Product).get(product_id)
     if not product:
         raise NotFound()
 
@@ -493,12 +496,12 @@ def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
 
     identifier_type = product.identifierType
-    if identifier_type == offers_models.ProductIdentifierType.EAN:
+    if identifier_type == products_models.ProductIdentifierType.EAN:
         success = offers_api.add_criteria_to_offers(form.criteria.data, ean=product.ean, include_unlinked_offers=True)
     # The allocineId data exists only for products. We need to find offers that have the visa of this product.
     elif (
-        identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
-    ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+        identifier_type == products_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
+    ) or identifier_type == products_models.ProductIdentifierType.VISA:
         success = offers_api.add_criteria_to_offers(
             form.criteria.data, visa=product.extraData["visa"], include_unlinked_offers=True
         )
@@ -537,15 +540,15 @@ def search_product() -> utils.BackofficeResponse:
 
     product = None
     FILTER_MAP = {
-        forms.ProductFilterTypeEnum.VISA: offers_models.Product.extraData["visa"].astext,
-        forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"],
+        forms.ProductFilterTypeEnum.VISA: products_models.Product.extraData["visa"].astext,
+        forms.ProductFilterTypeEnum.ALLOCINE_ID: products_models.Product.extraData["allocineId"],
     }
     if result_type in FILTER_MAP:
         field_to_filter = FILTER_MAP[result_type]
-        product = db.session.query(offers_models.Product).filter(field_to_filter == search_query).one_or_none()
+        product = db.session.query(products_models.Product).filter(field_to_filter == search_query).one_or_none()
     elif result_type == forms.ProductFilterTypeEnum.EAN:
         ean = search_query
-        product = db.session.query(offers_models.Product).filter_by(ean=ean).one_or_none()
+        product = db.session.query(products_models.Product).filter_by(ean=ean).one_or_none()
         if not product:
             titelive_data = {}
             try:
@@ -612,7 +615,7 @@ def import_product_from_titelive(ean: str) -> utils.BackofficeResponse:
     is_ineligible = request.args.get("is_ineligible", "false").lower() == "true"
 
     try:
-        product = offers_api.whitelist_product(ean, update_images=True)
+        product = products_api.whitelist_product(ean, update_images=True)
     except offers_exceptions.TiteLiveAPINotExistingEAN:
         flash(Markup("L'EAN <b>{ean}</b> n'existe pas chez Titelive").format(ean=ean), "warning")
     except GtlIdError:

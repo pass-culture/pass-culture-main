@@ -11,6 +11,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_name
@@ -112,7 +114,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product is not None
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.ean == self.EAN_TEST
@@ -137,7 +139,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         expected_truncated_title = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la…"
         assert product.name == expected_truncated_title
         assert len(product.name) == 140
@@ -155,7 +157,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("gtl_id") == expected_padded_gtl
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
@@ -178,7 +180,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("author") == expected_author_string
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
@@ -191,7 +193,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     @pytest.mark.parametrize("taux_tva", ["20", "20.00"])
@@ -204,7 +206,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_does_not_create_product_when_product_is_extracurricular(self, mock_execute, settings):
@@ -216,7 +218,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     @pytest.mark.parametrize(
@@ -240,7 +242,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_does_not_create_product_when_product_is_lectorat_eighteen(self, mock_execute, settings):
@@ -254,7 +256,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     @pytest.mark.parametrize(
@@ -274,7 +276,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     @pytest.mark.parametrize("title", ["Le guide officiel du test TOEIC", "Réussir le TOEFL"])
@@ -287,7 +289,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_does_not_create_product_when_product_is_paper_press(self, mock_execute, settings):
@@ -301,7 +303,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_creates_product_when_ineligible_but_in_whitelist(self, mock_execute, settings):
@@ -314,8 +316,8 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert db.session.query(offers_models.Product).count() == 1
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        assert db.session.query(products_models.Product).count() == 1
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product is not None
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
@@ -327,7 +329,7 @@ class BigQueryProductSyncTest:
             "bookFormat": "POCHE",
             "editeur": "Ancien Éditeur",
         }
-        offers_factories.ProductFactory.create(
+        products_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             extraData=initial_extra_data,
             lastProviderId=provider.id,
@@ -340,7 +342,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("date_parution") == "2015-06-11"
         assert product.extraData.get("prix_livre") == "22.9"
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.name
@@ -349,10 +351,10 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_update_should_not_override_fraud_incompatibility(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        offers_factories.ProductFactory.create(
+        products_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             name="Ancien Titre",
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
             lastProviderId=provider.id,
         )
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, title="Titre Mis à Jour")
@@ -363,14 +365,14 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.name == "Titre Mis à Jour"
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_reject_product_when_it_becomes_ineligible(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
+        product = products_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -379,12 +381,12 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_reject_product_and_cancel_bookings(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
+        product = products_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
         offer = offers_factories.OfferFactory.create(product=product)
         stock = offers_factories.StockFactory.create(offer=offer)
         booking = bookings_factories.BookingFactory.create(stock=stock)
@@ -396,17 +398,17 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         assert offer.validation == OfferValidationStatus.REJECTED
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_approve_product_when_it_becomes_eligible(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -421,10 +423,10 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_approve_product_and_offers(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
         )
         offer = offers_factories.OfferFactory.create(
             product=product,
@@ -445,10 +447,10 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_approval_should_not_override_fraud_incompatibility(self, mock_execute, settings):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         )
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -458,7 +460,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.datetime(2024, 1, 1), to_date=datetime.datetime(2024, 1, 2)
         )
 
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_creates_images_for_new_product(self, mock_execute):
@@ -474,8 +476,8 @@ class BigQueryProductSyncTest:
             from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
         )
 
-        product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
-        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        product = db.session.query(products_models.Product).filter_by(ean=self.EAN_TEST).one()
+        mediations = db.session.query(products_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
         mediation_map = {m.imageType: m.uuid for m in mediations}
         assert mediation_map[offers_models.ImageType.RECTO] == recto_uuid
@@ -484,11 +486,11 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_replaces_all_images_on_full_update(self, mock_execute):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
-        offers_factories.ProductMediationFactory(
+        product = products_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
         )
-        offers_factories.ProductMediationFactory(
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
         )
         new_recto_uuid = str(uuid.uuid4())
@@ -503,7 +505,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
         )
 
-        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        mediations = db.session.query(products_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
         mediation_map = {m.imageType: m.uuid for m in mediations}
         assert mediation_map[offers_models.ImageType.RECTO] == new_recto_uuid
@@ -512,11 +514,11 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_replaces_all_images_even_on_partial_update(self, mock_execute):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
-        offers_factories.ProductMediationFactory(
+        product = products_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
         )
-        offers_factories.ProductMediationFactory(
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
         )
         new_recto_uuid = str(uuid.uuid4())
@@ -530,7 +532,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
         )
 
-        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        mediations = db.session.query(products_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 1
         assert mediations[0].imageType == offers_models.ImageType.RECTO
         assert mediations[0].uuid == new_recto_uuid
@@ -538,11 +540,11 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_does_not_change_images_when_uuids_are_null(self, mock_execute):
         provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
-        offers_factories.ProductMediationFactory(
+        product = products_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
         )
-        offers_factories.ProductMediationFactory(
+        products_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.VERSO, uuid="old-verso-uuid"
         )
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
@@ -555,7 +557,7 @@ class BigQueryProductSyncTest:
             from_date=datetime.date(2025, 1, 1), to_date=datetime.date(2025, 1, 2)
         )
 
-        mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
+        mediations = db.session.query(products_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
         assert mediations[0].uuid == "old-recto-uuid"
         assert mediations[1].uuid == "old-verso-uuid"

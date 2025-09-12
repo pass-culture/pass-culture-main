@@ -7,7 +7,6 @@ import typing
 import psycopg2
 import pytz
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
@@ -17,6 +16,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.reactions import models as reactions_models
@@ -25,7 +25,6 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
-from pcapi.utils.decorators import retry
 
 from . import exceptions
 from . import models
@@ -156,10 +155,10 @@ def get_capped_offers_for_filters(
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
-                models.Product.id,
-                models.Product.thumbCount,
+                products_models.Product.id,
+                products_models.Product.thumbCount,
             )
-            .joinedload(models.Product.productMediations)
+            .joinedload(products_models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .options(
@@ -262,10 +261,10 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
-                models.Product.id,
-                models.Product.thumbCount,
+                products_models.Product.id,
+                products_models.Product.thumbCount,
             )
-            .joinedload(models.Product.productMediations)
+            .joinedload(products_models.Product.productMediations)
         )
         .filter(models.Offer.id.in_(offer_data_by_id.keys()))
         .order_by(models.Offer.id)
@@ -359,19 +358,19 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
-                models.Product.id,
-                models.Product.description,
-                models.Product.extraData,
-                models.Product.last_30_days_booking,
-                models.Product.thumbCount,
-                models.Product.durationMinutes,
-                models.Product.chroniclesCount,
-                models.Product.likesCount,
+                products_models.Product.id,
+                products_models.Product.description,
+                products_models.Product.extraData,
+                products_models.Product.last_30_days_booking,
+                products_models.Product.thumbCount,
+                products_models.Product.durationMinutes,
+                products_models.Product.chroniclesCount,
+                products_models.Product.likesCount,
             )
-            .joinedload(models.Product.productMediations)
+            .joinedload(products_models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.metaData))
-        .options(sa_orm.joinedload(models.Offer.product).selectinload(models.Product.artists))
+        .options(sa_orm.joinedload(models.Offer.product).selectinload(products_models.Product.artists))
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
@@ -839,16 +838,16 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
         db.session.query(models.HeadlineOffer)
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
         .outerjoin(models.Mediation, models.Mediation.offerId == models.Offer.id)
-        .outerjoin(models.Product, models.Offer.productId == models.Product.id)
+        .outerjoin(products_models.Product, models.Offer.productId == products_models.Product.id)
         .outerjoin(
-            models.ProductMediation,
-            models.ProductMediation.productId == models.Product.id,
+            products_models.ProductMediation,
+            products_models.ProductMediation.productId == products_models.Product.id,
         )
         .filter(
             sa.or_(
                 typed_status != offer_mixin.OfferStatus.ACTIVE,
                 sa.and_(
-                    models.ProductMediation.id.is_(None),
+                    products_models.ProductMediation.id.is_(None),
                     models.Mediation.id.is_(None),
                 ),
             ),
@@ -859,17 +858,6 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
             ),
         )
         .all()
-    )
-
-
-def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
-    return (
-        sa.select(sa.func.count(reactions_models.Reaction.id))
-        .select_from(reactions_models.Reaction)
-        .where(reactions_models.Reaction.productId == models.Product.id)
-        .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
-        .correlate(models.Product)
-        .scalar_subquery()
     )
 
 
@@ -924,7 +912,9 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "meta_data" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.metaData))
         if "product" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
+            query = query.options(
+                sa_orm.joinedload(models.Offer.product).joinedload(products_models.Product.productMediations)
+            )
         if "headline_offer" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.headlineOffers))
         if "price_category" in load_options:
@@ -1222,58 +1212,6 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
         base_query = base_query.filter(models.Offer.id != offer_id)
 
     return db.session.query(base_query.exists()).scalar()
-
-
-def get_movie_products_matching_allocine_id_or_film_visa(
-    allocine_id: str | None,
-    visa: str | None,
-) -> list[models.Product]:
-    """
-    One of the two parameters must be defined.
-
-    As there are unique indexes on `extraData["allocineId"]` and `extraData["visa"]`,
-    this function can return at most 2 products.
-    """
-    filters = []
-
-    if not allocine_id and not visa:
-        raise ValueError("`allocine_id` or `visa` must be defined")
-
-    if allocine_id:
-        filters.append((models.Product.extraData["allocineId"] == str(allocine_id)))
-
-    if visa:
-        filters.append((models.Product.extraData["visa"].astext == visa))
-
-    return db.session.query(models.Product).filter(sa.or_(*filters)).all()
-
-
-def _log_deletion_error(_to_keep: models.Product, to_delete: models.Product) -> None:
-    logger.info("Failed to delete product %d", to_delete.id)
-
-
-@retry(
-    exception=sa_exc.IntegrityError,
-    exception_handler=_log_deletion_error,
-    logger=logger,
-    max_attempts=3,
-)
-def merge_products(to_keep: models.Product, to_delete: models.Product) -> models.Product:
-    # It has already happened that an offer is created by another SQL session
-    # in between the transfer of the offers and the product deletion.
-    # This causes the product deletion to fail with an IntegrityError
-    # `update or delete on table "product" violates foreign key constraint "offer_productId_fkey" on table "offer"`
-    # To fix this race condition requires to force taking an Access Exclusive lock on the product to delete.
-    # Because this situation is rare, we use a `retry` instead. That should be sufficient.
-
-    db.session.query(models.Offer).filter(models.Offer.productId == to_delete.id).update({"productId": to_keep.id})
-    db.session.query(reactions_models.Reaction).filter(reactions_models.Reaction.productId == to_delete.id).update(
-        {"productId": to_keep.id}
-    )
-    db.session.delete(to_delete)
-    db.session.flush()
-
-    return to_keep
 
 
 def venues_have_individual_and_collective_offers(

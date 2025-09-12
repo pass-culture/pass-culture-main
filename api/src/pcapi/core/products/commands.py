@@ -4,6 +4,7 @@ import logging
 import click
 
 import pcapi.utils.cron as cron_decorators
+from pcapi.core.products import api as products_api
 from pcapi.core.providers.titelive_bq_book_search import BigQueryProductSync
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
@@ -11,6 +12,15 @@ from pcapi.utils.blueprint import Blueprint
 
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
+
+
+@blueprint.cli.command("check_product_counts_consistency")
+@click.argument("batch_size", required=False, type=int, default=10_000)
+def check_product_counts_consistency(batch_size: int) -> None:
+    product_ids = products_api.fetch_inconsistent_products(batch_size)
+
+    if product_ids:
+        logger.error("Inconsistent product counts found", extra={"product_ids": product_ids})
 
 
 @blueprint.cli.command("synchronize_titelive_book_products_from_bigquery")

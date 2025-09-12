@@ -13,6 +13,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -427,7 +428,7 @@ class Returns200Test:
     def test_update_offer_accepts_video_url_for_product_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
         video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
@@ -543,7 +544,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
         )
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="1111111111111",
             name="Name",

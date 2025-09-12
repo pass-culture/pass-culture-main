@@ -11,9 +11,10 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import ImageType
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
@@ -69,7 +70,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
 
         allocine_provider = providers_factories.AllocineProviderFactory.create(isActive=True)
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             description="Une offre pour tester",
             ean="1234567891234",
             extraData={"author": "Jean-Christophe Rufin", "editeur": "Editor", "gtl_id": "08010000"},
@@ -157,7 +158,7 @@ class GetProductDetailsTest(GetEndpointHelper):
     def test_get_detail_product_display_music_type_only_for_music_support(
         self, mock_get_by_ean13, subcategory_id, authenticated_client
     ):
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategory_id,
             extraData={"gtl_id": "08010000"},
         )
@@ -183,7 +184,7 @@ class GetProductDetailsTest(GetEndpointHelper):
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product_without_ean(self, mock_get_by_ean13, authenticated_client):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
+        product = products_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         # The following 7 queries are not executed in this case:
@@ -210,7 +211,7 @@ class GetProductDetailsTest(GetEndpointHelper):
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product_titelive_api_raise_error(self, mock_get_by_ean13, titelive_error, authenticated_client):
         mock_get_by_ean13.side_effect = titelive_error
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             description="Une offre pour tester",
             ean="1234567891234",
             extraData={"author": "Jean-Christophe Rufin", "editeur": "Editor", "gtl_id": "08010000"},
@@ -241,7 +242,7 @@ class ProductSynchronizationWithTiteliveButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         return url_for("backoffice_web.product.get_product_details", product_id=product.id)
 
     def test_button_when_can_add_one(self, authenticated_client):
@@ -270,7 +271,7 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
         article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
         mock_get_by_ean13.return_value = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
 
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -310,7 +311,7 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
     ):
         mock_get_by_ean13.side_effect = requests.ExternalAPIException(is_retryable=True)
 
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         with assert_num_queries(self.expected_num_queries + 1):  # +1 for ROLLBACK
@@ -339,12 +340,12 @@ class PostProductSynchronizationWithTiteliveTest(PostEndpointHelper):
         oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
 
         ean = "1234567899999"
-        product = offers_factories.ProductFactory.create(ean=ean, extraData={})
+        product = products_factories.ProductFactory.create(ean=ean, extraData={})
         provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-        recto_mediation_before_sync = offers_factories.ProductMediationFactory.create(
+        recto_mediation_before_sync = products_factories.ProductMediationFactory.create(
             product=product, imageType=ImageType.RECTO, uuid=uuid.uuid4(), lastProvider=provider
         )
-        verso_mediation_before_sync = offers_factories.ProductMediationFactory.create(
+        verso_mediation_before_sync = products_factories.ProductMediationFactory.create(
             product=product, imageType=ImageType.VERSO, uuid=uuid.uuid4(), lastProvider=provider
         )
 
@@ -381,8 +382,8 @@ class WhitelistProductButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        product = offers_factories.ProductFactory.create(
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        product = products_factories.ProductFactory.create(
+            gcuCompatibilityType=products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         )
         return url_for("backoffice_web.product.get_product_details", product_id=product.id)
 
@@ -396,7 +397,7 @@ class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_confirm_product_whitelist_form(self, authenticated_client):
-        product = offers_factories.ProductFactory.create(name="One Piece")
+        product = products_factories.ProductFactory.create(name="One Piece")
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -418,16 +419,16 @@ class PostProductWhitelistTest(PostEndpointHelper):
 
     def test_whitelist_product(self, authenticated_client):
         ean = "1234567899999"
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             ean=ean,
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         )
 
         response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
 
         assert response.status_code == 200
         assert "Le produit a été marqué compatible avec les CGU" in html_parser.extract_alerts(response.data)
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.COMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.COMPATIBLE
 
 
 class BlacklistProductButtonTest(button_helpers.ButtonHelper):
@@ -436,8 +437,8 @@ class BlacklistProductButtonTest(button_helpers.ButtonHelper):
 
     @property
     def path(self):
-        product = offers_factories.ProductFactory.create(
-            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        product = products_factories.ProductFactory.create(
+            gcuCompatibilityType=products_models.GcuCompatibilityType.COMPATIBLE
         )
         return url_for("backoffice_web.product.get_product_details", product_id=product.id)
 
@@ -451,7 +452,7 @@ class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_confirm_product_blacklist_form(self, authenticated_client):
-        product = offers_factories.ProductFactory.create(name="One Piece")
+        product = products_factories.ProductFactory.create(name="One Piece")
 
         url = url_for(self.endpoint, product_id=product.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
@@ -473,8 +474,8 @@ class PostProductBlacklistTest(PostEndpointHelper):
 
     def test_blacklist_product(self, authenticated_client):
         ean = "1234567899999"
-        product = offers_factories.ProductFactory.create(
-            ean=ean, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
+        product = products_factories.ProductFactory.create(
+            ean=ean, gcuCompatibilityType=products_models.GcuCompatibilityType.COMPATIBLE
         )
         offer = offers_factories.OfferFactory.create(product=product)
         offers_factories.StockFactory.create(offer=offer, price=10)
@@ -489,7 +490,7 @@ class PostProductBlacklistTest(PostEndpointHelper):
             "Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées"
             in html_parser.extract_alerts(response.data)
         )
-        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.status == OfferStatus.REJECTED
         assert unlinked_offer.status == OfferStatus.REJECTED
 
@@ -501,7 +502,7 @@ class LinkUnlinkedOfferToProductButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         ean = "1234567899999"
-        product = offers_factories.ProductFactory.create(ean=ean)
+        product = products_factories.ProductFactory.create(ean=ean)
         offers_factories.OfferFactory.create(ean=ean)
         return url_for("backoffice_web.product.get_product_details", product_id=product.id)
 
@@ -520,7 +521,7 @@ class GetProductLinkOfferFormTest(PostEndpointHelper):
         ],
     )
     def test_confirm_product_link_offers_form(self, authenticated_client, identifier_props, offers_count):
-        product = offers_factories.ProductFactory.create(**identifier_props)
+        product = products_factories.ProductFactory.create(**identifier_props)
         unlinked_offers = offers_factories.OfferFactory.create_batch(offers_count, **identifier_props)
 
         response = self.post_to_endpoint(
@@ -548,7 +549,7 @@ class LinkUnlinkedOfferToProductTest(PostEndpointHelper):
         ],
     )
     def test_link_offers_to_product(self, authenticated_client, identifier_props, offers_count):
-        product = offers_factories.ProductFactory.create(**identifier_props)
+        product = products_factories.ProductFactory.create(**identifier_props)
         unlinked_offers = offers_factories.OfferFactory.create_batch(offers_count, **identifier_props)
 
         response = self.post_to_endpoint(
@@ -571,7 +572,7 @@ class TagOffersButtonTest(button_helpers.ButtonHelper):
     @property
     def path(self):
         ean = "1234567890123"
-        product = offers_factories.ProductFactory.create(ean=ean)
+        product = products_factories.ProductFactory.create(ean=ean)
         offers_factories.OfferFactory.create(product=product)
         return url_for("backoffice_web.product.get_product_details", product_id=product.id)
 
@@ -597,7 +598,7 @@ class GetTagOffersFormTest(GetEndpointHelper):
         ],
     )
     def test_get_tag_offers_form_with_active_offers(self, authenticated_client, identifier_props, identifier_string):
-        product = offers_factories.ProductFactory.create(**identifier_props)
+        product = products_factories.ProductFactory.create(**identifier_props)
         offers_factories.OfferFactory.create_batch(3, product=product, isActive=True)
         offers_factories.OfferFactory.create_batch(4, product=product, isActive=False)
         offers_factories.OfferFactory.create_batch(2, productId=None, isActive=True, **identifier_props)
@@ -636,7 +637,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         ],
     )
     def test_add_criteria_to_offers_success(self, db_session, authenticated_client, identifier_props):
-        product = offers_factories.ProductFactory.create(**identifier_props)
+        product = products_factories.ProductFactory.create(**identifier_props)
         criterion_to_add = criteria_factories.CriterionFactory()
 
         linked_offer = offers_factories.OfferFactory.create(product=product, **identifier_props)

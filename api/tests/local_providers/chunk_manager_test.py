@@ -4,6 +4,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.products import factories as products_factories
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.models import db
 
@@ -19,7 +20,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_save_chunks_insert_1_offer_in_chunk():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     venue = offerers_factories.VenueFactory()
     offer = offers_factories.OfferFactory.build(
         idAtProvider="1%12345678912345",
@@ -33,7 +34,7 @@ def test_save_chunks_insert_1_offer_in_chunk():
 
 
 def test_save_chunks_insert_1_offer_and_1_stock_in_chunk():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     venue = offerers_factories.VenueFactory()
     offer = offers_factories.OfferFactory.build(
         id=1,

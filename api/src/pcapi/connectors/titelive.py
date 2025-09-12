@@ -14,7 +14,7 @@ from pcapi import settings
 from pcapi.connectors.serialization.titelive_serializers import TiteliveImage
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers import models as offer_models
+from pcapi.core.products import models as products_models
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
@@ -174,7 +174,7 @@ class GtlIdError(Exception):
 
 @dataclasses.dataclass
 class TiteliveProductData:
-    product: offer_models.Product
+    product: products_models.Product
     images: TiteliveImage | None
 
 
@@ -207,7 +207,7 @@ def get_new_product_from_ean13(ean: str) -> TiteliveProductData:
 
     provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
 
-    product = offers_models.Product(
+    product = products_models.Product(
         lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",

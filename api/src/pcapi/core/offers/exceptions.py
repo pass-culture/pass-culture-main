@@ -124,10 +124,6 @@ class OfferNotFound(Exception):
         super().__init__()
 
 
-class ProductNotFound(Exception):
-    pass
-
-
 class CollectiveStockNotFound(Exception):
     pass
 
@@ -145,10 +141,6 @@ class UnexpectedCinemaProvider(Exception):
 
 
 class TiteLiveAPINotExistingEAN(Exception):
-    pass
-
-
-class NotUpdateProductOrOffers(Exception):
     pass
 
 

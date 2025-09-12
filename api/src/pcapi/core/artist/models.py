@@ -11,7 +11,7 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offers.models import Product
+    from pcapi.core.products.models import Product
 
 
 class ArtistType(enum.Enum):

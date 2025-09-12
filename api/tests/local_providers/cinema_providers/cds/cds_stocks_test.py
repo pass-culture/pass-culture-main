@@ -15,9 +15,10 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import ProductMediation
 from pcapi.core.offers.models import Stock
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products.models import Product
+from pcapi.core.products.models import ProductMediation
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 
@@ -54,13 +55,13 @@ def setup_cinema() -> tuple[providers_models.CDSCinemaDetails, providers_models.
 @pytest.mark.usefixtures("db_session")
 class CDSStocksTest:
     def _create_products(self):
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Coupez !",
             description="Description du produit allociné 1",
             durationMinutes=111,
             extraData={"allocineId": 291483},
         )
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Top Gun",
             description="Description du produit allociné 2",
             durationMinutes=222,
@@ -838,8 +839,8 @@ class CDSStocksTest:
         requests_mock.get("https://example.com/coupez.png", content=bytes())
         requests_mock.get("https://example.com/topgun.png", content=bytes())
 
-        product_1 = offers_factories.ProductFactory(name="Produit 1", extraData={"visa": "123456"})
-        product_2 = offers_factories.ProductFactory(name="Produit 2", extraData={"visa": "333333"})
+        product_1 = products_factories.ProductFactory(name="Produit 1", extraData={"visa": "123456"})
+        product_2 = products_factories.ProductFactory(name="Produit 2", extraData={"visa": "333333"})
 
         cgr_stocks = CDSStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()

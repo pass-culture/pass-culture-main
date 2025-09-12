@@ -13,6 +13,8 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -63,7 +65,7 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     ean = form.ean.data
 
-    product = db.session.query(offers_models.Product).filter(offers_models.Product.ean == ean).one_or_none()
+    product = db.session.query(products_models.Product).filter(products_models.Product.ean == ean).one_or_none()
 
     if not product:
         flash("Aucun produit n'a été trouvé avec cet EAN-13", "warning")
@@ -141,7 +143,7 @@ def set_product_gcu_incompatible() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-    elif offers_api.reject_inappropriate_products([form.ean.data], current_user, rejected_by_fraud_action=True):
+    elif products_api.reject_inappropriate_products([form.ean.data], current_user, rejected_by_fraud_action=True):
         db.session.commit()
         flash("Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées", "success")
     else:

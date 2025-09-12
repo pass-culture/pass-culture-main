@@ -6,8 +6,9 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import ImageType
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products.models import GcuCompatibilityType
 
 
 Fake = faker.Faker(locale="fr_FR")
@@ -21,7 +22,7 @@ class Returns200Test:
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -33,8 +34,8 @@ class Returns200Test:
             },
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
 
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES
@@ -61,7 +62,7 @@ class Returns200Test:
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             description=None,
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -86,7 +87,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -118,7 +119,7 @@ class Returns422Test:
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -166,7 +167,7 @@ class Returns422Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -194,7 +195,7 @@ class Returns422Test:
     def test_offerer_does_not_exist(self, client):
         ean = Fake.ean13()
         user = users_factories.UserFactory()
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             description="Product description",
             name="Product name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,

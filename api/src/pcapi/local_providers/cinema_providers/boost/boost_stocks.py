@@ -13,10 +13,11 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -139,7 +140,7 @@ class BoostStocks(LocalProvider):
                 if image and self.product and not self.product.productMediations:
                     try:
                         image_id = str(uuid.uuid4())
-                        mediation = offers_models.ProductMediation(
+                        mediation = products_models.ProductMediation(
                             productId=self.product.id,
                             lastProvider=self.provider,
                             imageType=offers_models.ImageType.POSTER,
@@ -209,11 +210,11 @@ class BoostStocks(LocalProvider):
             price_category = self.get_or_create_price_category(price, price_label)
             stock.priceCategory = price_category
 
-    def get_or_create_movie_product(self, movie: boost_serializers.Film2) -> offers_models.Product | None:
+    def get_or_create_movie_product(self, movie: boost_serializers.Film2) -> products_models.Product | None:
         assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid(movie.id, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = products_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 

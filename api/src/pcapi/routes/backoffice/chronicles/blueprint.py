@@ -16,8 +16,8 @@ import pcapi.core.chronicles.api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
-from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import search_utils
@@ -41,9 +41,9 @@ chronicles_blueprint = utils.child_backoffice_blueprint(
 
 def _get_chronicle_query() -> sa_orm.Query:
     product_subquery = (
-        sa.select(sa.func.array_agg(offers_models.Product.name))
+        sa.select(sa.func.array_agg(products_models.Product.name))
         .select_from(chronicles_models.ProductChronicle)
-        .join(offers_models.Product, offers_models.Product.id == chronicles_models.ProductChronicle.productId)
+        .join(products_models.Product, products_models.Product.id == chronicles_models.ProductChronicle.productId)
         .filter(chronicles_models.ProductChronicle.chronicleId == chronicles_models.Chronicle.id)
         .scalar_subquery()
     )
@@ -76,9 +76,9 @@ def list_chronicles() -> utils.BackofficeResponse:
         product_identifier = form.q.data
         q_filters.append(
             sa.or_(
-                offers_models.Product.ean == product_identifier,
-                offers_models.Product.extraData["allocineId"] == product_identifier,
-                offers_models.Product.extraData["visa"].astext == product_identifier,
+                products_models.Product.ean == product_identifier,
+                products_models.Product.extraData["allocineId"] == product_identifier,
+                products_models.Product.extraData["visa"].astext == product_identifier,
             )
         )
     elif form.q.data:
@@ -98,7 +98,7 @@ def list_chronicles() -> utils.BackofficeResponse:
             else:
                 query = query.join(chronicles_models.Chronicle.products)
             split_product_name = "%".join(form.q.data.split(" "))
-            q_filters.append(offers_models.Product.name.ilike(f"%{split_product_name}%"))
+            q_filters.append(products_models.Product.name.ilike(f"%{split_product_name}%"))
     if q_filters:
         query = query.filter(sa.or_(*q_filters))
 
@@ -160,9 +160,9 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         )
         .options(
             sa_orm.joinedload(chronicles_models.Chronicle.products).load_only(
-                offers_models.Product.name,
-                offers_models.Product.ean,
-                offers_models.Product.extraData,
+                products_models.Product.name,
+                products_models.Product.ean,
+                products_models.Product.extraData,
             )
         )
         .one_or_none()
@@ -314,20 +314,20 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
     match selected_chronicle.productIdentifierType:
         case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
             products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["allocineId"] == form.product_identifier.data)
+                db.session.query(products_models.Product)
+                .filter(products_models.Product.extraData["allocineId"] == form.product_identifier.data)
                 .all()
             )
         case chronicles_models.ChronicleProductIdentifierType.EAN:
             products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.ean == form.product_identifier.data)
+                db.session.query(products_models.Product)
+                .filter(products_models.Product.ean == form.product_identifier.data)
                 .all()
             )
         case chronicles_models.ChronicleProductIdentifierType.VISA:
             products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["visa"].astext == form.product_identifier.data)
+                db.session.query(products_models.Product)
+                .filter(products_models.Product.extraData["visa"].astext == form.product_identifier.data)
                 .all()
             )
         case _:

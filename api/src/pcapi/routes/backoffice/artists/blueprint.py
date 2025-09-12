@@ -14,8 +14,8 @@ from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
 from pcapi.core.artist import models as artist_models
-from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -105,7 +105,7 @@ ARTIST_SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "PRODUCT_NAME": {
         "field": "string",
-        "column": offers_models.Product.name,
+        "column": products_models.Product.name,
         "inner_join": "product",
     },
     "CREATION_DATE": {
@@ -131,7 +131,7 @@ ARTIST_JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         },
         {
             "name": "product",
-            "args": (offers_models.Product, artist_models.ArtistProductLink.product_id == offers_models.Product.id),
+            "args": (products_models.Product, artist_models.ArtistProductLink.product_id == products_models.Product.id),
         },
     ],
 }
@@ -288,9 +288,9 @@ def get_artist_details(artist_id: str) -> utils.BackofficeResponse:
         .options(
             sa_orm.joinedload(artist_models.Artist.products).options(
                 sa_orm.load_only(
-                    offers_models.Product.id,
-                    offers_models.Product.name,
-                    offers_models.Product.subcategoryId,
+                    products_models.Product.id,
+                    products_models.Product.name,
+                    products_models.Product.subcategoryId,
                 )
             ),
             sa_orm.selectinload(artist_models.Artist.aliases).options(
@@ -423,7 +423,7 @@ def get_unlink_product_form(artist_id: str, product_id: int) -> utils.Backoffice
     if not artist:
         raise NotFound()
 
-    product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
+    product = db.session.query(products_models.Product).filter_by(id=product_id).one_or_none()
     if not product:
         flash("Produit non trouvé.", "warning")
         raise NotFound()
@@ -499,13 +499,13 @@ def associate_product(artist_id: str) -> utils.BackofficeResponse:
     id_type = forms.ProductIdentifierTypeEnum[search_form.identifier_type.data]
     id_value = search_form.identifier_value.data
 
-    query = db.session.query(offers_models.Product)
+    query = db.session.query(products_models.Product)
     if id_type == forms.ProductIdentifierTypeEnum.EAN:
         query = query.filter_by(ean=id_value)
     elif id_type == forms.ProductIdentifierTypeEnum.ALLOCINE_ID:
-        query = query.filter(offers_models.Product.extraData["allocineId"] == id_value)
+        query = query.filter(products_models.Product.extraData["allocineId"] == id_value)
     elif id_type == forms.ProductIdentifierTypeEnum.VISA:
-        query = query.filter(offers_models.Product.extraData["visa"].astext == id_value)
+        query = query.filter(products_models.Product.extraData["visa"].astext == id_value)
 
     found_product = query.one_or_none()
     if not found_product:
@@ -635,7 +635,7 @@ def get_split_artist_form(artist_id: str) -> utils.BackofficeResponse:
         db.session.query(artist_models.Artist)
         .options(
             sa_orm.joinedload(artist_models.Artist.products).load_only(
-                offers_models.Product.id, offers_models.Product.name
+                products_models.Product.id, products_models.Product.name
             )
         )
         .filter_by(id=artist_id)
@@ -665,7 +665,7 @@ def post_split_artist(artist_id: str) -> utils.BackofficeResponse:
         db.session.query(artist_models.Artist)
         .options(
             sa_orm.joinedload(artist_models.Artist.products).load_only(
-                offers_models.Product.id, offers_models.Product.name
+                products_models.Product.id, products_models.Product.name
             )
         )
         .filter_by(id=artist_id)

@@ -30,6 +30,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -1237,7 +1238,7 @@ def generate_beneficiary():
         stock__offer__venue__name="venue2_name",
         stock__offer__venue__managingOfferer__name="offerer2_name",
     )
-    product = offers_factories.ProductFactory(
+    product = products_factories.ProductFactory(
         name="my super book",
         ean="1234567890123",
     )

@@ -2,9 +2,9 @@ import itertools
 import pathlib
 from decimal import Decimal
 
-import pcapi.core.offers.models as offers_models
 import pcapi.sandboxes.thumbs.generic_pictures as generic_pictures_thumbs
 from pcapi.connectors import thumb_storage
+from pcapi.core.products import models as products_models
 
 
 def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> str | None:
@@ -31,7 +31,7 @@ def get_price_by_short_name(occurrence_short_name: str | None = None) -> Decimal
     return Decimal(str(sum(map(ord, occurrence_short_name)) % 50))
 
 
-def create_products_thumb(products: list[offers_models.Product]) -> None:
+def create_products_thumb(products: list[products_models.Product]) -> None:
     image_dir = pathlib.Path(generic_pictures_thumbs.__path__[0])
     image_paths = image_dir.iterdir()
 

@@ -11,7 +11,7 @@ from pcapi.core.chronicles import api
 from pcapi.core.chronicles import constants
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.products import factories as products_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 
@@ -384,7 +384,7 @@ class SaveBookClubChronicleTest:
         assert not chronicle.isSocialMediaDiffusible
 
     def test_save_book_club_chronicle_link_to_product(self):
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             ean="1234567890123",
         )
         form = typeform.TypeformResponse(
@@ -808,7 +808,7 @@ class SaveCineClubChronicleTest:
         assert not chronicle.isSocialMediaDiffusible
 
     def test_save_cine_club_chronicle_link_to_product(self):
-        product = offers_factories.ProductFactory(extraData={"allocineId": 1000013191})
+        product = products_factories.ProductFactory(extraData={"allocineId": 1000013191})
         form = typeform.TypeformResponse(
             response_id=random_string(),
             date_submitted=datetime.datetime(2024, 10, 24),

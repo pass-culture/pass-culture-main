@@ -14,6 +14,7 @@ from pcapi.core.mails.transactional.pro.event_offer_postponed_confirmation_to_pr
     send_event_offer_postponement_confirmation_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.products import factories as products_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -27,7 +28,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="test@bookingEmail.fr")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 1))
 
@@ -54,7 +55,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="test@bookingEmail.fr")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 2))
 

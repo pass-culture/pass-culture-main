@@ -6,47 +6,23 @@ from sqlalchemy import exc as sa_exc
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.utils.db as db_utils
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.utils import human_ids
 from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-class ProductModelTest:
-    def test_thumb_url(self):
-        product = factories.ProductFactory(thumbCount=1)
-        human_id = human_ids.humanize(product.id)
-        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{human_id}"
-
-    def test_no_thumb_url(self):
-        product = models.Product(thumbCount=0)
-        assert product.thumbUrl is None
-
-    @pytest.mark.parametrize(
-        "gcu_compatible, can_be_synchronized, product_count",
-        [
-            (models.GcuCompatibilityType.COMPATIBLE, True, 1),
-            (models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE, False, 0),
-            (models.GcuCompatibilityType.FRAUD_INCOMPATIBLE, False, 0),
-        ],
-    )
-    def test_gcu_compatible(self, gcu_compatible, can_be_synchronized, product_count):
-        product = factories.ProductFactory(gcuCompatibilityType=gcu_compatible)
-
-        assert product.can_be_synchronized == can_be_synchronized
-        assert db.session.query(models.Product).filter(models.Product.can_be_synchronized).count() == product_count
-        db.session.query(models.Product).delete()
 
 
 class OfferIsDigitalTest:
@@ -154,7 +130,7 @@ class OfferThumbUrlTest:
         assert offer.thumbUrl == mediation.thumbUrl
 
     def test_use_product(self):
-        product = factories.ProductFactory(thumbCount=1)
+        product = products_factories.ProductFactory(thumbCount=1)
         offer = factories.OfferFactory(product=product)
         assert offer.thumbUrl.startswith("http")
         assert offer.thumbUrl == product.thumbUrl
@@ -804,14 +780,14 @@ class HeadlineOfferTest:
         )
 
     def test_headline_offer_with_product_mediation_is_active(self):
-        product = factories.ProductFactory(
+        product = products_factories.ProductFactory(
             name="Capitale du sud-est",
             description="La cité c'est le sang",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            gcuCompatibilityType=models.GcuCompatibilityType.COMPATIBLE,
+            gcuCompatibilityType=products_models.GcuCompatibilityType.COMPATIBLE,
         )
-        factories.ProductMediationFactory(product=product, imageType=models.ImageType.RECTO)
-        factories.ProductMediationFactory(product=product, imageType=models.ImageType.VERSO)
+        products_factories.ProductMediationFactory(product=product, imageType=offers_models.ImageType.RECTO)
+        products_factories.ProductMediationFactory(product=product, imageType=offers_models.ImageType.VERSO)
 
         offer = factories.OfferFactory(product=product)
         headline_offer = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
@@ -847,7 +823,7 @@ class HeadlineOfferTest:
             factories.HeadlineOfferFactory(offer=another_offer_on_the_same_venue)
 
     def test_new_headline_increments_product_count(self):
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         factories.HeadlineOfferFactory(offer__product=product)
 
         assert product.headlinesCount == 1
@@ -856,13 +832,13 @@ class HeadlineOfferTest:
         now = datetime.datetime.utcnow()
         past_datetime = now - datetime.timedelta(days=1)
 
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         factories.HeadlineOfferFactory(offer__product=product, timespan=(past_datetime, now))
 
         assert product.headlinesCount == 0
 
     def test_headline_deletion_decrements_product_count(self):
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         headline_offer = factories.HeadlineOfferFactory(offer__product=product)
         assert product.headlinesCount == 1
 
@@ -877,7 +853,7 @@ class OnSetTimespanTest:
         now = datetime.datetime.utcnow()
         past_datetime = now - datetime.timedelta(days=1)
 
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         headline_offer = factories.HeadlineOfferFactory(offer__product=product)
         db.session.refresh(headline_offer)
 
@@ -891,7 +867,7 @@ class OnSetTimespanTest:
         now = datetime.datetime.utcnow()
         future_datetime = now + datetime.timedelta(days=1)
 
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         headline_offer = factories.HeadlineOfferFactory(offer__product=product)
         db.session.refresh(headline_offer)
 
@@ -905,7 +881,7 @@ class OnSetTimespanTest:
         now = datetime.datetime.utcnow()
         past_datetime = now - datetime.timedelta(days=1)
 
-        product = factories.ProductFactory()
+        product = products_factories.ProductFactory()
         headline_offer = factories.HeadlineOfferFactory(offer__product=product, timespan=(past_datetime, now))
         db.session.refresh(headline_offer)
 

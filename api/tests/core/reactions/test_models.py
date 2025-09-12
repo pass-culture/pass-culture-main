@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+from pcapi.core.products import factories as products_factories
 from pcapi.core.reactions import factories
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.models import db
@@ -8,7 +8,7 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 def test_like_insertion_increments_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     factories.ReactionFactory.create(product=product, reactionType=ReactionTypeEnum.LIKE)
 
     assert product.likesCount == 1
@@ -16,7 +16,7 @@ def test_like_insertion_increments_product_count():
 
 @pytest.mark.usefixtures("db_session")
 def test_like_deletion_decrements_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
 
     like = factories.ReactionFactory.create(product=product, reactionType=ReactionTypeEnum.LIKE)
     assert product.likesCount == 1
@@ -29,7 +29,7 @@ def test_like_deletion_decrements_product_count():
 
 @pytest.mark.usefixtures("db_session")
 def test_update_to_like_increments_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
 
     like = factories.ReactionFactory.create(product=product, reactionType=ReactionTypeEnum.DISLIKE)
     assert product.likesCount == 0
@@ -42,7 +42,7 @@ def test_update_to_like_increments_product_count():
 
 @pytest.mark.usefixtures("db_session")
 def test_update_from_like_decrements_product_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
 
     like = factories.ReactionFactory.create(product=product, reactionType=ReactionTypeEnum.LIKE)
     assert product.likesCount == 1
