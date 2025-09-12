@@ -2,10 +2,10 @@
 @use "styles/mixins/_size.scss" as size;
 
 .banner-cta {
-  color: var(--color-white);
+  color: var(--color-text-inverted);
 
   &:focus-visible {
-    outline-color: var(--color-white);
+    outline-color: var(--color-border-inverted);
   }
 }
 
