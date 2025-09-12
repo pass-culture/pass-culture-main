@@ -40,6 +40,7 @@ import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
+from pcapi.connectors import youtube
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.thumb_storage import create_thumb
@@ -106,6 +107,9 @@ OFFER_LIKE_MODELS = {
     "CollectiveOffer",
     "CollectiveOfferTemplate",
 }
+
+VIDEO_URL_CACHE_TTL = 24 * 60 * 60  # 24 hours
+YOUTUBE_INFO_CACHE_PREFIX = "youtube_video_"
 
 
 class T_UNCHANGED(enum.Enum):
@@ -267,17 +271,43 @@ def remove_video_data_from_offer_metadata(offer_meta_data: offers_models.OfferMe
         setattr(offer_meta_data, field, None)
 
 
+def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
+    video_id = extract_youtube_video_id(video_url)
+    if video_id is None:
+        return None
+    cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
+    if cached_video_metadata is None:
+        video_metadata = youtube.get_video_metadata(video_id=video_id)
+        if video_metadata is not None:
+            json_video_metadata = json.dumps(
+                {
+                    "title": video_metadata.title,
+                    "thumbnail_url": video_metadata.thumbnail_url,
+                    "duration": video_metadata.duration,
+                }
+            )
+            current_app.redis_client.set(
+                f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
+            )  # 24 hours
+    else:
+        video_metadata_dict = json.loads(cached_video_metadata)
+        video_metadata = youtube.YoutubeVideoMetadata(
+            id=video_id,
+            title=video_metadata_dict["title"],
+            thumbnail_url=video_metadata_dict["thumbnail_url"],
+            duration=video_metadata_dict["duration"],
+        )
+    return video_metadata
+
+
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     new_video_url = fields.pop("videoUrl", None)
     if new_video_url:
+        video_metadata = get_video_metadata_from_cache(new_video_url)
         video_id = extract_youtube_video_id(new_video_url)
-        video_metadata = None
-        cached_video_metadata = current_app.redis_client.get(f"youtube_video_{video_id}")
-        if cached_video_metadata is not None:
-            video_metadata = json.loads(cached_video_metadata)
         if video_metadata is not None:
             if offer.metaData is None:
                 offer.metaData = models.OfferMetaData(offer=offer)
@@ -299,9 +329,9 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
                     technical_message_id="offer.video.updated",
                 )
             offer.metaData.videoExternalId = video_id
-            offer.metaData.videoTitle = video_metadata["title"]
-            offer.metaData.videoThumbnailUrl = video_metadata["thumbnail_url"]
-            offer.metaData.videoDuration = video_metadata["duration"]
+            offer.metaData.videoTitle = video_metadata.title
+            offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
+            offer.metaData.videoDuration = video_metadata.duration
             offer.metaData.videoUrl = new_video_url
             db.session.add(offer.metaData)
     elif offer.metaData:

@@ -41,7 +41,7 @@ class Returns200Test:
         }
         video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
-            f"youtube_video_{video_id}",
+            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -433,7 +433,7 @@ class Returns200Test:
         video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
         video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
-            f"youtube_video_{video_id}",
+            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -464,7 +464,7 @@ class Returns200Test:
         video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
         video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
-            f"youtube_video_{video_id}",
+            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
