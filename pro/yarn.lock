@@ -4593,10 +4593,10 @@ lazy-ass@^1.6.0:
   resolved "https://registry.yarnpkg.com/lazy-ass/-/lazy-ass-1.6.0.tgz#7999655e8646c17f089fdd187d150d3324d54513"
   integrity sha512-cc8oEVoctTvsFZ/Oje/kGnHbpWHYBe8IAJe4C0QNc3t8uM/0Y8+erSz/7Y1ALuXTEZTMvxXwO6YbX1ey3ujiZw==
 
-libphonenumber-js@1.12.15:
-  version "1.12.15"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.15.tgz#548da03454e94f2fa445fe4fc9fd70c44c0ce16b"
-  integrity sha512-TMDCtIhWUDHh91wRC+wFuGlIzKdPzaTUHHVrIZ3vPUEoNaXFLrsIQ1ZpAeZeXApIF6rvDksMTvjrIQlLKaYxqQ==
+libphonenumber-js@1.12.16:
+  version "1.12.16"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.16.tgz#6e59b68943ceff5cfe20f151ad7eaa4cda876d7d"
+  integrity sha512-Ut/2lKjVnoVayb0dVUxWzGO5UB57bTcuJr41W6MQ2V8YolOsHWEah6I0bO5LQ71SY6WYZd3e4A4Z9r4B6zQC2g==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
