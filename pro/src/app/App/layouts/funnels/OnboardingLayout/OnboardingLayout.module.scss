@@ -43,10 +43,6 @@ $connect-as-header-height: rem.torem(52px);
   flex-direction: column;
   justify-content: space-between;
 
-  @media screen and (min-width: size.$tablet) {
-    padding: size.$main-content-padding size.$main-content-padding 0;
-  }
-
   &-sticky-onboarding {
     margin: 0 auto size.$action-bar-sticky-height auto;
     padding: 0;
