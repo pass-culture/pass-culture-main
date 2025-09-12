@@ -15,7 +15,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
-import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
@@ -58,6 +58,7 @@ export const Offerer = (): JSX.Element => {
     setValue,
     handleSubmit,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = hookForm
 
@@ -198,9 +199,15 @@ export const Offerer = (): JSX.Element => {
                 className={styles['input-siret']}
                 {...register('siret', { required: true })}
                 error={errors.siret?.message}
-                onChange={(e) =>
-                  setValue('siret', humanizeSiret(e.target.value))
-                }
+                onChange={(e) => {
+                  if (
+                    watch('siret').length === 0 ||
+                    unhumanizeSiret(e.target.value) !==
+                      watch('siret').replace(/\s/, '')
+                  ) {
+                    setValue('siret', unhumanizeSiret(e.target.value))
+                  }
+                }}
               />
             </FormLayout.Row>
           </FormLayout.Section>
