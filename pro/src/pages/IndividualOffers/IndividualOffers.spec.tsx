@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
-import { beforeEach, expect } from 'vitest'
+import { beforeEach, expect, type MockInstance } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
@@ -109,10 +109,15 @@ const renderIndividualOffers = async (
 }
 
 describe('IndividualOffers', () => {
+  let fetchSpy: MockInstance<typeof fetch>
   let offersRecap: ListOffersOfferResponseModel[]
   offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
 
   beforeEach(() => {
+    fetchSpy = vi
+      .spyOn(window, 'fetch')
+      .mockImplementation(() => Promise.resolve(new Response()))
+
     vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [],
@@ -122,6 +127,8 @@ describe('IndividualOffers', () => {
   })
 
   afterEach(() => {
+    fetchSpy.mockRestore()
+
     window.sessionStorage.clear()
   })
 

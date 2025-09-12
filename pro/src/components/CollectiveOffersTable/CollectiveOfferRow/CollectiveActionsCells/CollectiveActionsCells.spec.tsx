@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { beforeEach, expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
+import { beforeEach, expect, type MockInstance } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
@@ -32,9 +31,6 @@ import {
   CollectiveActionsCells,
   type CollectiveActionsCellsProps,
 } from './CollectiveActionsCells'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 const mockNavigate = vi.fn()
 vi.mock('react-router', async () => {
@@ -94,8 +90,11 @@ vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
 describe('CollectiveActionsCells', () => {
   const notifyError = vi.fn()
   const notifySuccess = vi.fn()
+  let fetchSpy: MockInstance<typeof fetch>
 
   beforeEach(async () => {
+    fetchSpy = vi.spyOn(global, 'fetch')
+
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
@@ -107,6 +106,10 @@ describe('CollectiveActionsCells', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+  })
+
+  afterEach(() => {
+    fetchSpy.mockRestore()
   })
 
   it('should archive an offer on click on the action', async () => {
@@ -309,7 +312,7 @@ describe('CollectiveActionsCells', () => {
       )
       await userEvent.click(screen.getByText('Dupliquer'))
       expect(api.duplicateCollectiveOffer).toBeCalledWith(200)
-      expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
+      expect(fetchSpy).toHaveBeenCalledWith('https://http.cat/201')
       expect(api.attachOfferImage).toBeCalledWith(201, {
         credit: 'chats',
         croppingRectHeight: 1,
@@ -405,7 +408,7 @@ describe('CollectiveActionsCells', () => {
         venueId: 4,
         visualDisabilityCompliant: false,
       })
-      expect(fetchMock).toHaveBeenCalledWith('https://http.cat/201')
+      expect(fetchSpy).toHaveBeenCalledWith('https://http.cat/201')
       expect(api.attachOfferImage).toBeCalledWith(202, {
         credit: 'chats',
         croppingRectHeight: 1,

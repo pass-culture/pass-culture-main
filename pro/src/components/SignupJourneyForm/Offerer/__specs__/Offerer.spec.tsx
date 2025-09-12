@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
@@ -22,9 +21,6 @@ import {
   DEFAULT_OFFERER_FORM_VALUES,
 } from '../constants'
 import { Offerer } from '../Offerer'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 // Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
