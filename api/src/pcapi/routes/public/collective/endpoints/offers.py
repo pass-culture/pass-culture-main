@@ -10,7 +10,6 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public import utils
@@ -312,16 +311,15 @@ def patch_collective_offer_public(
         )
 
     # check allowed actions
-    if feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active():
-        try:
-            educational_api_offer.check_edit_collective_offer_public_allowed_action(offer=offer, new_values=new_values)
-        except educational_exceptions.CollectiveOfferForbiddenAction:
-            raise api_errors.ApiErrors(
-                errors={
-                    "global": f"Cette action n'est pas autorisée car le statut de l'offre est {offer.displayedStatus.value}"
-                },
-                status_code=400,
-            )
+    try:
+        educational_api_offer.check_edit_collective_offer_public_allowed_action(offer=offer, new_values=new_values)
+    except educational_exceptions.CollectiveOfferForbiddenAction:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": f"Cette action n'est pas autorisée car le statut de l'offre est {offer.displayedStatus.value}"
+            },
+            status_code=400,
+        )
 
     # check new venueId and update offer venue
     if new_values.get("venueId") and new_values["venueId"] != offer.venueId:
@@ -459,15 +457,6 @@ def patch_collective_offer_public(
         educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
     ):
         raise api_errors.ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
-    except educational_exceptions.CollectiveOfferForbiddenFields as e:
-        raise api_errors.ApiErrors(
-            errors={"global": [f"Seuls les champs {', '.join(e.allowed_fields)} peuvent être modifiés."]},
-            status_code=400,
-        )
-    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
-        raise api_errors.ApiErrors(
-            errors={"price": ["Le prix ne peut pas etre supérieur au prix existant"]}, status_code=400
-        )
 
     # dates errors
     except educational_exceptions.StartAndEndEducationalYearDifferent:

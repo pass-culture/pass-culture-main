@@ -96,11 +96,6 @@ def edit_collective_stock(
         raise ApiErrors(
             {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
         )
-    except educational_exceptions.PriceRequesteCantBedHigherThanActualPrice:
-        raise ApiErrors(
-            {"educationalStock": "Le prix demandé ne peux être supérieur aux prix actuel si l'offre a été confirmée."},
-            status_code=403,
-        )
     except (
         offers_exceptions.OfferException,
     ) as error:  # (tcoudray-pass, 14/05/2025) TODO: Refactor, should not raise this kind of error
