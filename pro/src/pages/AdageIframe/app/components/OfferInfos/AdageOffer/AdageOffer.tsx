@@ -10,7 +10,6 @@ import strokeUserIcon from '@/icons/stroke-user.svg'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import { DisabledPrebookCallout } from '../../DisabledPrebookCallout/DisabledPrebookCallout'
 import styles from './AdageOffer.module.scss'
 import { AdageOfferDetailsSection } from './AdageOfferDetailsSection/AdageOfferDetailsSection'
 import { AdageOfferInfoSection } from './AdageOfferDetailsSection/AdageOfferInfoSection'
@@ -41,11 +40,6 @@ export const AdageOffer = ({
 
   return (
     <div className={styles['offer']}>
-      {!offer.isTemplate && !isPreview && (
-        <DisabledPrebookCallout
-          className={styles['disabled-prebook-callout']}
-        />
-      )}
       <div className={styles['offer-header']}>
         <AdageOfferHeader
           offer={offer}
