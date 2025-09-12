@@ -1,4 +1,4 @@
-"""Add Highlight table"""
+"""Add Highlight and HighlightRequest tables"""
 
 import sqlalchemy as sa
 from alembic import op
