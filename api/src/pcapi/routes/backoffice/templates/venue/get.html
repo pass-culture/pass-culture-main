@@ -86,7 +86,8 @@
                   {% if address.latitude and address.longitude %}
                     <p class="mb-1">
                       <span class="fw-bold">Coordonnées :</span>
-                      {{ address.latitude }} (latitude) / {{ address.longitude }} (longitude)
+                      {{ address.latitude }}, {{ address.longitude }}
+                      {{ links.build_google_maps_icon(address) }}
                     </p>
                   {% endif %}
                 {% endif %}
