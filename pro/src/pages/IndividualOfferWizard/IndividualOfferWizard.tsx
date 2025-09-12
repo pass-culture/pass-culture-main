@@ -7,9 +7,9 @@ import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/Onb
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { getTitle } from '@/components/IndividualOfferLayout/utils/getTitle'
 
 import styles from './IndividualOfferWizard.module.scss'
+import { getTitle } from './utils/getTitle'
 
 export const IndividualOfferWizard = () => {
   const mode = useOfferWizardMode()
