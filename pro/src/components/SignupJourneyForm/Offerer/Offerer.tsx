@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
@@ -124,36 +124,26 @@ export const Offerer = (): JSX.Element => {
         'search-addressAutocomplete': `${addressValues?.street} ${addressValues?.postalCode} ${addressValues?.city}`,
       })
 
+      const hasVenueWithSiret =
+        venueOfOffererProvidersResponse.venues.find(
+          (venue) => venue.siret === formattedSiret
+        ) !== undefined
+
       setOfferer({
         ...formValues,
         name: offererSiretData.name ?? '',
         ...addressValues,
-        hasVenueWithSiret:
-          venueOfOffererProvidersResponse.venues.find(
-            (venue) => venue.siret === formattedSiret
-          ) !== undefined,
+        hasVenueWithSiret,
         apeCode: offererSiretData.apeCode ?? undefined,
         siren: venueOfOffererProvidersResponse.offererSiren,
         isDiffusible: offererSiretData.isDiffusible,
       })
-    } catch (error) {
-      notify.error(
-        isError(error)
-          ? error.message || 'Une erreur est survenue'
-          : GET_DATA_ERROR_MESSAGE
-      )
-      return
-    }
-  }
 
-  // Need to wait for offerer to be updated in the context to redirect user
-  useEffect(() => {
-    if (offerer?.siret && offerer.siret !== '') {
       const redirection = {
-        to: offerer.hasVenueWithSiret
+        to: hasVenueWithSiret
           ? SIGNUP_JOURNEY_STEP_IDS.OFFERERS
           : SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-        path: offerer.hasVenueWithSiret
+        path: hasVenueWithSiret
           ? '/inscription/structure/rattachement'
           : '/inscription/structure/identification',
       }
@@ -166,8 +156,15 @@ export const Offerer = (): JSX.Element => {
         to: redirection.to,
         used: OnboardingFormNavigationAction.ActionBar,
       })
+    } catch (error) {
+      notify.error(
+        isError(error)
+          ? error.message || 'Une erreur est survenue'
+          : GET_DATA_ERROR_MESSAGE
+      )
+      return
     }
-  }, [logEvent, navigate, offerer])
+  }
 
   return (
     <>

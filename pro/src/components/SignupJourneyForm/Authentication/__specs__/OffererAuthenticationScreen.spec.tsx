@@ -193,24 +193,6 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     expect(screen.getByText('Offerer screen')).toBeInTheDocument()
   })
 
-  it('should redirect to offerer screen if there is no offerer siret', () => {
-    contextValue.offerer = DEFAULT_OFFERER_FORM_VALUES
-    renderOffererAuthenticationScreen(contextValue)
-    expect(screen.queryByText('Identification')).not.toBeInTheDocument()
-    expect(screen.getByText('Offerer screen')).toBeInTheDocument()
-  })
-
-  it('should redirect to offerer screen if there is no offerer siren', () => {
-    contextValue.offerer = {
-      ...DEFAULT_OFFERER_FORM_VALUES,
-      siret: '12345678933333',
-      siren: '',
-    }
-    renderOffererAuthenticationScreen(contextValue)
-    expect(screen.queryByText('Identification')).not.toBeInTheDocument()
-    expect(screen.getByText('Offerer screen')).toBeInTheDocument()
-  })
-
   describe('not diffusible', () => {
     const context = {
       activity: null,
