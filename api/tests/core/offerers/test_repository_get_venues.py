@@ -74,7 +74,7 @@ class GetFilteredVenuesForProUserTest:
         venue_3 = offerers_factories.VenueFactory(name="CC - name", managingOfferer=offerer)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id)
 
         # then
         assert len(venue_list) == 3
@@ -88,7 +88,7 @@ class GetFilteredVenuesForProUserTest:
         pro_user = users_factories.ProFactory(email="user.pro@test.com")
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id)
 
         # then
         assert len(venue_list) == 0
@@ -100,7 +100,7 @@ class GetFilteredVenuesForProUserTest:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
+        venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id)
 
         # then
         assert len(venue_list) == 4
@@ -120,7 +120,6 @@ class GetFilteredVenuesForProUserTest:
         # when
         venue_list = offerers_repository.get_filtered_venues(
             pro_user_id=pro_user.id,
-            user_is_admin=False,
             validated_offerer=True,
         )
 
@@ -141,7 +140,6 @@ class GetFilteredVenuesForProUserTest:
         # when
         venue_list = offerers_repository.get_filtered_venues(
             pro_user_id=pro_user.id,
-            user_is_admin=False,
             validated_offerer=False,
         )
 
@@ -161,7 +159,6 @@ class GetFilteredVenuesForProUserTest:
         # when
         venue_list = offerers_repository.get_filtered_venues(
             pro_user_id=pro_user.id,
-            user_is_admin=False,
             offerer_id=expected_venue.managingOfferer.id,
         )
 
@@ -180,7 +177,6 @@ class GetFilteredVenuesForProUserTest:
         # when
         venue_list = offerers_repository.get_filtered_venues(
             pro_user_id=pro_user.id,
-            user_is_admin=False,
             active_offerers_only=True,
         )
 
@@ -199,7 +195,6 @@ class GetFilteredVenuesForProUserTest:
         # when
         venue_list = offerers_repository.get_filtered_venues(
             pro_user_id=pro_user.id,
-            user_is_admin=False,
             active_offerers_only=False,
         )
 
@@ -239,60 +234,3 @@ class GetFilteredVenuesForAdminTest:
             "other_venue": other_venue,
             "other_venue_not_validated": other_venue_not_validated,
         }
-
-    @pytest.mark.usefixtures("db_session")
-    def test_get_all_venues(self, app):
-        # given
-        admin = users_factories.AdminFactory()
-        venues = self._setup_venues_for_users()
-
-        # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=admin.id,
-            user_is_admin=True,
-        )
-
-        # then
-        assert len(venue_list) == 4
-
-        venue_ids = [venue.id for venue in venue_list]
-        assert venues["venue"].id in venue_ids
-        assert venues["venue_not_validated"].id in venue_ids
-        assert venues["other_venue"].id in venue_ids
-        assert venues["other_venue_not_validated"].id in venue_ids
-
-    @pytest.mark.usefixtures("db_session")
-    def test_get_all_validated_venues(self, app):
-        # given
-        admin = users_factories.AdminFactory()
-        venues = self._setup_venues_for_users()
-
-        # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=admin.id, user_is_admin=True, validated_offerer=True
-        )
-
-        # then
-        assert len(venue_list) == 2
-
-        venue_ids = [venue.id for venue in venue_list]
-        assert venues["venue"].id in venue_ids
-        assert venues["other_venue"].id in venue_ids
-
-    @pytest.mark.usefixtures("db_session")
-    def test_get_all_not_validated_venues(self, app):
-        # given
-        admin = users_factories.AdminFactory()
-        venues = self._setup_venues_for_users()
-
-        # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=admin.id, user_is_admin=True, validated_offerer=False
-        )
-
-        # then
-        assert len(venue_list) == 2
-
-        venue_ids = [venue.id for venue in venue_list]
-        assert venues["venue_not_validated"].id in venue_ids
-        assert venues["other_venue_not_validated"].id in venue_ids
