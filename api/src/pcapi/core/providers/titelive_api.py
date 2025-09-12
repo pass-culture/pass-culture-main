@@ -95,7 +95,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
         last_sync_event = (
             db.session.query(providers_models.LocalProviderEvent)
             .filter(
-                providers_models.LocalProviderEvent.provider == self.provider,
+                providers_models.LocalProviderEvent.providerId == self.provider.id,
                 providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
                 providers_models.LocalProviderEvent.payload == self.titelive_base.value,
             )
@@ -273,7 +273,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
         """
         product_mediations = db.session.query(offers_models.ProductMediation).filter(
             offers_models.ProductMediation.productId == product.id,
-            offers_models.ProductMediation.lastProvider == self.provider,
+            offers_models.ProductMediation.lastProviderId == self.provider.id,
         )
         for product_mediation in product_mediations:
             db.session.delete(product_mediation)

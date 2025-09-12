@@ -45,7 +45,7 @@ def get_roles() -> utils.BackofficeResponse:
         "admin/roles.html",
         active_tab=request.args.get("active_tab", "matrix"),
         roles=roles,
-        permissions=dict(roles_for_permissions),
+        permissions=dict(roles_for_permissions),  # type: ignore [arg-type]
     )
 
 

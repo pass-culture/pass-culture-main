@@ -253,7 +253,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .filter_by(bookingEmail=email)
         .join(
             offerers_models.Offerer,
-            sa.and_(  # type: ignore[type-var]
+            sa.and_(
                 offerers_models.Offerer.id == offerers_models.Venue.managingOffererId,
                 offerers_models.Offerer.isActive,
                 offerers_models.Offerer.isValidated,

@@ -753,7 +753,7 @@ class SearchBankAccountTest:
             assert response.status_code == 303
 
         assert response.location == url_for(
-            "backoffice_web.bank_account.get", bank_account_id=expected_id, q=str(search_query), _external=True
+            "backoffice_web.bank_account.get", bank_account_id=expected_id, q=str(search_query)
         )
 
     def test_search_bank_account_by_humanized_id(self, authenticated_client):
@@ -859,7 +859,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
 
         # check url form
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -879,7 +879,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
 
         # check url form
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -906,7 +906,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -938,7 +938,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         if warning:
             redirected_response = authenticated_client.get(response.location)
             assert html_parser.extract_alert(redirected_response.data) == warning
@@ -979,7 +979,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -996,7 +996,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1019,7 +1019,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1049,7 +1049,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1112,7 +1112,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1128,7 +1128,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1148,7 +1148,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1175,7 +1175,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1241,7 +1241,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1257,7 +1257,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1280,7 +1280,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1310,7 +1310,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1374,7 +1374,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1390,7 +1390,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1412,7 +1412,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1441,7 +1441,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1507,7 +1507,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1523,7 +1523,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1546,7 +1546,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1576,7 +1576,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1642,7 +1642,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1658,7 +1658,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1681,7 +1681,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)
@@ -1711,7 +1711,7 @@ class ConnectAsProUserTest(PostEndpointHelper):
         )
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
+        assert response.location == url_for("backoffice_web.home")
         redirected_response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(redirected_response.data)

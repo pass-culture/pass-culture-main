@@ -134,7 +134,7 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 @spectree_serialize(response_model=serializers.ChangeBeneficiaryEmailResponse, on_success_status=200, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> serializers.ChangeBeneficiaryEmailResponse:
     try:
-        user = email_api.update.validate_email_update_request(body.token)
+        user: users_models.User | None = email_api.update.validate_email_update_request(body.token)
     except pydantic_v1.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
@@ -151,6 +151,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
         token = token_utils.Token.load_without_checking(body.token)
         user = db.session.get(users_models.User, token.user_id)
 
+    assert user  # helps mypy
     if user.is_eligible and not user.is_beneficiary:
         try:
             dms_subscription_api.try_dms_orphan_adoption(user)

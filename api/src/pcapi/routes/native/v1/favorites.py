@@ -78,7 +78,7 @@ def _fill_favorite_offer(
 
 
 def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favorite]:
-    active_stock_filters = sa.and_(Offer.isActive, Stock.isSoftDeleted.is_(False))  # type: ignore[type-var]
+    active_stock_filters = sa.and_(Offer.isActive, Stock.isSoftDeleted.is_(False))
     stock_filters = sa.and_(
         sa.not_(Stock.isEventExpired),
         sa.not_(Stock.hasBookingLimitDatetimePassed),
@@ -149,7 +149,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
     if favorite_id:
         query = query.filter(Favorite.id == favorite_id)
 
-    favorites = query.all()
+    results = query.all()
 
     for (
         favorite,
@@ -159,7 +159,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
         max_beginning_datetime,
         non_expired_count,
         active_count,
-    ) in favorites:
+    ) in results:
         _fill_favorite_offer(
             favorite=favorite,
             min_price=min_price,
@@ -170,7 +170,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             active_count=active_count,
         )
 
-    favorites = [fav for (fav, *_) in favorites]
+    favorites = [fav for (fav, *_) in results]
 
     return favorites
 
@@ -205,9 +205,10 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
     except sa.exc.IntegrityError as exception:
-        favorite = db.session.query(Favorite).filter_by(offerId=body.offerId, userId=user.id).one_or_none()
-        if not favorite:
+        candidate = db.session.query(Favorite).filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+        if not candidate:
             raise exception
+        favorite = candidate
     else:
         update_external_user(user)
         track_offer_added_to_favorites_event(user.id, offer)

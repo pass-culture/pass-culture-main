@@ -36,7 +36,7 @@ def get_reminders(user: users_models.User) -> serialization.GetRemindersResponse
 @authenticated_and_active_user_required
 @atomic()
 def post_reminder(user: users_models.User, body: serialization.PostReminderRequest) -> serialization.ReminderResponse:
-    offer: offers_models.Offer = db.session.query(offers_models.Offer).filter_by(id=body.offer_id).one_or_none()
+    offer: offers_models.Offer | None = db.session.query(offers_models.Offer).filter_by(id=body.offer_id).one_or_none()
 
     if not offer:
         raise NotFound()
@@ -54,7 +54,7 @@ def post_reminder(user: users_models.User, body: serialization.PostReminderReque
 @authenticated_and_active_user_required
 @atomic()
 def delete_reminder(user: users_models.User, reminder_id: int) -> None:
-    reminder: reminders_models.OfferReminder = (
+    reminder: reminders_models.OfferReminder | None = (
         db.session.query(reminders_models.OfferReminder).filter_by(id=reminder_id, user=user).one_or_none()
     )
 
