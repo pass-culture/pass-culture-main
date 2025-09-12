@@ -164,7 +164,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     students: list[educational_models.StudentLevels]
     # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenue
-    location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
+    location: educational_schemas.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None

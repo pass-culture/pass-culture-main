@@ -53,14 +53,11 @@ def generate_hmac_signature(
 
 
 def convert_real_booking_dates_utc_to_venue_timezone(
-    date_without_timezone: datetime | None, booking: "CollectiveBooking"
 ) -> datetime | None:
     if booking.venue.departementCode:
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venue.departementCode
         )
     offerer_department_code = postal_code_utils.PostalCode(booking.offerer.postalCode).get_departement_code()
-    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
 
 
 def _apply_departement_timezone(naive_datetime: datetime | None, departement_code: str) -> datetime | None:
@@ -68,27 +65,20 @@ def _apply_departement_timezone(naive_datetime: datetime | None, departement_cod
     return naive_datetime.astimezone(departement_tz) if naive_datetime is not None else None
 
 
-def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime, booking: "Booking") -> datetime | None:
     if booking.offerDepartmentCode:
         department_code = booking.offerDepartmentCode
-        return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
     if booking.venueDepartmentCode:
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
         )
     offerer_department_code = postal_code_utils.PostalCode(booking.offererPostalCode).get_departement_code()
-    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
 
 
 def convert_collective_booking_dates_utc_to_venue_timezone(
-    date_without_timezone: datetime, booking: "CollectiveBooking"
 ) -> datetime | None:
     if booking.venueDepartmentCode:
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
         )
     offerer_department_code = postal_code_utils.PostalCode(booking.offererPostalCode).get_departement_code()
-    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
 
 
 def get_cooldown_datetime_by_subcategories(sub_category_id: str) -> datetime:

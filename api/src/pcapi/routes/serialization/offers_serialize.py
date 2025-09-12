@@ -18,7 +18,7 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models.offer_mixin import OfferStatus
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
@@ -317,7 +317,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
+    collective_offer_type: educational_schemas.CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:

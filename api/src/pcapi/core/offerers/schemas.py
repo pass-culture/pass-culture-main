@@ -10,7 +10,7 @@ from pydantic.v1 import validator
 from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
 from pcapi.core.offerers.models import Target
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared import validation
 from pcapi.serialization.utils import to_camel

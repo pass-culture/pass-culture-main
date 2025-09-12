@@ -14,6 +14,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.core.educational import schemas
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational import utils
 from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
@@ -101,15 +102,15 @@ def unindex_expired_or_archived_collective_offers_template(process_all_expired: 
 
 
 def list_collective_offers_for_pro_user(
-    filters: schemas.CollectiveOffersFilter, offer_type: collective_offers_serialize.CollectiveOfferType | None = None
+    filters: schemas.CollectiveOffersFilter, offer_type: educational_schemas.CollectiveOfferType | None = None
 ) -> list[models.CollectiveOffer | models.CollectiveOfferTemplate]:
     all_offers: list[models.CollectiveOffer | models.CollectiveOfferTemplate] = []
 
-    if offer_type in (None, collective_offers_serialize.CollectiveOfferType.offer):
+    if offer_type in (None, educational_schemas.CollectiveOfferType.offer):
         offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=OFFERS_RECAP_LIMIT)
         all_offers.extend(offers)
 
-    if offer_type in (None, collective_offers_serialize.CollectiveOfferType.template):
+    if offer_type in (None, educational_schemas.CollectiveOfferType.template):
         templates = repository.get_collective_offers_template_for_filters(
             filters=filters, offers_limit=OFFERS_RECAP_LIMIT
         )
@@ -243,7 +244,7 @@ def get_offer_venue_from_location(
 
 
 def get_location_values(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    offer_data: educational_schemas.PostCollectiveOfferBodyModel,
     user: User,
     venue: offerers_models.Venue,
 ) -> tuple[offerers_models.OffererAddress | None, list[str], models.OfferVenueDict]:
@@ -283,7 +284,7 @@ def get_location_values(
 
 
 def create_collective_offer_template(
-    offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
+    offer_data: educational_schemas.PostCollectiveOfferTemplateBodyModel, user: User
 ) -> models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
 
@@ -344,7 +345,7 @@ def create_collective_offer_template(
 
 
 def create_collective_offer(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    offer_data: educational_schemas.PostCollectiveOfferBodyModel,
     user: User,
     offer_id: int | None = None,
 ) -> models.CollectiveOffer:
@@ -413,7 +414,7 @@ def create_collective_offer(
 
 
 def get_venue_and_check_access_for_offer_creation(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    offer_data: educational_schemas.PostCollectiveOfferBodyModel,
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
@@ -530,7 +531,7 @@ def _get_location_and_offer_venue_from_public_model(
 
 def create_collective_offer_public(
     requested_id: int,
-    body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
+    body: educational_schemas.PostCollectiveOfferBodyModel,
 ) -> models.CollectiveOffer:
     venue = repository.fetch_venue_for_new_offer(body.venue_id, requested_id)
     if not offerers_api.can_offerer_create_educational_offer(venue.managingOffererId):
@@ -1335,7 +1336,7 @@ def move_collective_offer_venue(
 
 
 def update_collective_offer(
-    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferBodyModel", user: users_models.User
+    offer_id: int, body: "educational_schemas.PatchCollectiveOfferBodyModel", user: users_models.User
 ) -> None:
     new_values = body.dict(exclude_unset=True)
 
@@ -1371,7 +1372,7 @@ def update_collective_offer(
 
 
 def update_collective_offer_template(
-    offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel", user: users_models.User
+    offer_id: int, body: "educational_schemas.PatchCollectiveOfferTemplateBodyModel", user: users_models.User
 ) -> None:
     new_values = body.dict(exclude_unset=True)
 
@@ -1422,7 +1423,7 @@ def update_collective_offer_template(
 def _update_collective_offer(
     offer: AnyCollectiveOffer,
     new_values: dict,
-    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
+    location_body: "educational_schemas.CollectiveOfferLocationModel | None",
     user: users_models.User,
 ) -> list[str]:
     offer_validation.check_validation_status(offer)

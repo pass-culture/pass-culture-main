@@ -154,7 +154,7 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
     ),
 )
 def post_collective_offer_public(
-    body: offers_serialization.PostCollectiveOfferBodyModel,
+    body: educational_schemas.PostCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
     Create Collective Offer
@@ -280,7 +280,7 @@ def post_collective_offer_public(
 )
 def patch_collective_offer_public(
     offer_id: int,
-    body: offers_serialization.PatchCollectiveOfferBodyModel,
+    body: educational_schemas.PatchCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
     """
     Update Collective Offer

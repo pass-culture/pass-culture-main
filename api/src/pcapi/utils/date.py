@@ -304,3 +304,12 @@ def get_naive_utc_now() -> datetime:
 
 def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
     return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)
+
+
+def without_timezone(d: datetime.datetime) -> datetime.datetime:
+    """Copy input without timezone information
+
+    The day, hour, etc. are copied without any translation regarding
+    the original timezone.
+    """
+    return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)

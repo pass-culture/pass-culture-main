@@ -6,7 +6,7 @@ import pydantic.v1 as pydantic_v1
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils import date as date_utils
 
 
 NOW_LITERAL = typing.Literal["now"]
@@ -115,7 +115,6 @@ def string_length_validator(field_name: str, *, length: int) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
 
 
-def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     # We need this ugly workaround because
     # the api users send us datetimes like "2020-12-03T14:00:00Z"
     # (note the "Z" suffix). Pydantic deserializes it as a datetime
@@ -129,26 +128,16 @@ def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
     return d.astimezone(pytz.utc).replace(tzinfo=None)
 
 
-def without_timezone(d: datetime.datetime) -> datetime.datetime:
-    """Copy input without timezone information
-
-    The day, hour, etc. are copied without any translation regarding
-    the original timezone.
-    """
-    return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
-
-
 def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
     if not value:
         return None
     if value == "now":
-        return get_naive_utc_now()
+        return date_utils.get_naive_utc_now()
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
 
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
-    no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < datetime.datetime.utcnow():
         raise ValueError("The datetime must be in the future.")
     return no_tz_value

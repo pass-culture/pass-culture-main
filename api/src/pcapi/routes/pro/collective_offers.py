@@ -215,7 +215,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     api=blueprint.pro_private_schema,
 )
 def create_collective_offer(
-    body: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    body: educational_schemas.PostCollectiveOfferBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
     try:
         offer = api_offer.create_collective_offer(offer_data=body, user=current_user)
@@ -287,7 +287,7 @@ def create_collective_offer(
     api=blueprint.pro_private_schema,
 )
 def edit_collective_offer(
-    offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferBodyModel
+    offer_id: int, body: educational_schemas.PatchCollectiveOfferBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(offer_id)
@@ -359,7 +359,7 @@ def edit_collective_offer(
     api=blueprint.pro_private_schema,
 )
 def edit_collective_offer_template(
-    offer_id: int, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
+    offer_id: int, body: educational_schemas.PatchCollectiveOfferTemplateBodyModel
 ) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_template_id(offer_id)
