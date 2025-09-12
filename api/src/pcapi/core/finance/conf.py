@@ -21,6 +21,9 @@ REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT = 60 * 60 * 24  # 24h
 # Age in days before generating a cashflow and a debit note when total pricings is positive
 DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW = 90
 
+# Days after creation before deletion of an unsed duplicate bank account
+DUPLICATE_BANK_ACCOUNT_GRACE_DAYS = 61
+
 GRANT_18_VALIDITY_IN_YEARS = 2
 
 GRANTED_DEPOSIT_AMOUNT_15 = decimal.Decimal(20)
