@@ -43,10 +43,6 @@ $connect-as-header-height: rem.torem(52px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  @media screen and (min-width: size.$tablet) {
-    padding: size.$main-content-padding size.$main-content-padding 0;
-  }
 }
 
 .content {
