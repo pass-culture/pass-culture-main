@@ -21,7 +21,7 @@ spec:
             cpu: 1
         env:
           - name: REDIS_URL
-            value: "redis://redis-${PRID}-master.pcapi-pr-${PRID}.svc.cluster.local:6379"
+            value: "redis://redis-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:6379"
           - name: DATABASE_URL
             value: "postgresql://postgres:$(PGSQL_PWD)@pgsql-pr-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:5432/postgres"
         envFrom:
