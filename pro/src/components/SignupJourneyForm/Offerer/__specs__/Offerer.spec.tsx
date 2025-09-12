@@ -226,7 +226,7 @@ describe('Offerer', () => {
       hasVenueWithSiret: false,
       name: 'ma super stucture',
       siren: '123456789',
-      siret: '123 456 789 33333',
+      siret: '12345678933333',
       banId: '49759_1304_00002',
       city: 'Paris',
       inseeCode: '75056',
@@ -321,7 +321,7 @@ describe('Offerer', () => {
     await waitFor(() => {
       expect(
         screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
-      ).toHaveValue('123 456 789 33367')
+      ).toHaveValue('12345678933367')
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
@@ -373,7 +373,7 @@ describe('Offerer', () => {
     await waitFor(() => {
       expect(
         screen.getByLabelText('Numéro de SIRET à 14 chiffres *')
-      ).toHaveValue('123 456 789 33334')
+      ).toHaveValue('12345678933334')
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
