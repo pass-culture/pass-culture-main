@@ -53,7 +53,7 @@
                 {% if user.birth_date %}<span>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans)</span>{% endif %}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">Lieu de naissance :</span> <span>{{ user.birthPlace }}</span>
+                <span class="fw-bold">Lieu de naissance :</span> <span>{{ user.birthPlace | empty_string_if_null }}</span>
               </p>
               {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
                 <p class="mb-1">
