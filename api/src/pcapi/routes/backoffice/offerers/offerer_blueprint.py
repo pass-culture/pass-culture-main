@@ -1,7 +1,6 @@
 import datetime
 import decimal
 import typing
-from functools import partial
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -47,7 +46,6 @@ from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
-from pcapi.utils.transaction_manager import on_commit
 
 from .. import utils
 from ..forms import empty as empty_forms
@@ -537,12 +535,7 @@ def delete_offerer(offerer_id: int) -> utils.BackofficeResponse:
         return _self_redirect(offerer.id)
 
     for email in emails:
-        on_commit(
-            partial(
-                external_attributes_api.update_external_pro,
-                email,
-            ),
-        )
+        external_attributes_api.update_external_pro(email)
 
     flash(
         Markup("L'entité juridique <b>{offerer_name}</b> ({offerer_id}) a été supprimée").format(
