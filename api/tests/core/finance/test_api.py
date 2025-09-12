@@ -8,6 +8,7 @@ from unittest import mock
 
 import pytest
 import pytz
+import sqlalchemy as sa
 import time_machine
 
 from pcapi.core.bookings import api as bookings_api
@@ -4586,3 +4587,78 @@ class ValidateFinanceIncidentTest:
             booking_date=datetime.datetime.utcnow(),
             deposit=deposit,
         )
+
+
+class CleanDuplicateBankAccountsTest:
+    def _create_bank_account_linked_to_venue(self):
+        venue = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        factories.BankAccountStatusHistoryFactory(
+            bankAccount=bank_account,
+            status=models.BankAccountApplicationStatus.ACCEPTED,
+            timespan=(datetime.datetime.utcnow(),),
+        )
+        return bank_account
+
+    def _create_duplicate(self, bank_account, days_ago_created=100):
+        duplicate = factories.BankAccountFactory(
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago_created),
+            iban=bank_account.iban,
+            bic=bank_account.bic,
+            offerer=bank_account.offerer,
+        )
+        factories.BankAccountStatusHistoryFactory(
+            bankAccount=duplicate,
+            status=models.BankAccountApplicationStatus.ACCEPTED,
+            timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=days_ago_created - 1),),
+        )
+        return duplicate
+
+    def test_basic_delete_duplicates(self):
+        ba = self._create_bank_account_linked_to_venue()
+        self._create_duplicate(ba)
+        self._create_duplicate(ba)
+
+        api.clean_duplicate_bank_accounts()
+
+        assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id}
+
+    def test_keep_recent_duplicate(self):
+        ba = self._create_bank_account_linked_to_venue()
+        duplicate = self._create_duplicate(ba, days_ago_created=20)
+
+        api.clean_duplicate_bank_accounts()
+
+        assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id, duplicate.id}
+
+    def test_keep_duplicate_previously_linked_to_a_venue(self):
+        ba = self._create_bank_account_linked_to_venue()
+        duplicate = self._create_duplicate(ba)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue__managingOfferer=ba.offerer,
+            bankAccount=duplicate,
+            timespan=(
+                datetime.datetime.utcnow() - datetime.timedelta(days=200),
+                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+            ),
+        )
+
+        api.clean_duplicate_bank_accounts()
+
+        assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id, duplicate.id}
+
+    def test_keep_duplicate_on_different_offerer(self):
+        ba = self._create_bank_account_linked_to_venue()
+        duplicate = factories.BankAccountFactory(iban=ba.iban, bic=ba.bic, offerer=offerers_factories.OffererFactory())
+
+        api.clean_duplicate_bank_accounts()
+
+        assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id, duplicate.id}
+
+    def test_keep_unused_bank_account_not_duplicate(self):
+        ba = factories.BankAccountFactory()
+
+        api.clean_duplicate_bank_accounts()
+
+        assert set(db.session.query(sa.func.array_agg(models.BankAccount.id)).scalar()) == {ba.id}

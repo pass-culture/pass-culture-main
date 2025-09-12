@@ -3774,3 +3774,56 @@ def mark_bank_account_without_continuation(ds_application_id: int) -> None:
     # We don't want any cashflows to be generated using non valid bank accounts (non valid as not validated by the compliance).
     # Hence this bank account can no longer be linked to any venue, if any.
     deprecate_venue_bank_account_links(bank_account)
+
+
+def clean_duplicate_bank_accounts() -> None:
+    """
+    Delete bank accounts never linked to a venue and which have same IBAN, BIC and offerer as another bank account which
+    is currently linked to a venue. This helps cleaning the list of bank account for an offerer.
+    """
+    other_bank_account = sa_orm.aliased(models.BankAccount)
+    other_link = sa_orm.aliased(offerers_models.VenueBankAccountLink)
+    now = datetime.datetime.utcnow()
+
+    bank_accounts = (
+        db.session.query(models.BankAccount)
+        .filter(models.BankAccount.dateCreated < now - datetime.timedelta(days=conf.DUPLICATE_BANK_ACCOUNT_GRACE_DAYS))
+        .outerjoin(models.BankAccount.venueLinks)
+        .filter(offerers_models.VenueBankAccountLink.id.is_(None))
+        .join(
+            other_bank_account,
+            sa.and_(
+                other_bank_account.iban == models.BankAccount.iban,
+                other_bank_account.bic == models.BankAccount.bic,
+                other_bank_account.offererId == models.BankAccount.offererId,
+            ),
+        )
+        .join(
+            other_link,
+            sa.and_(
+                other_link.bankAccountId == other_bank_account.id,
+                other_link.timespan.contains(now),
+            ),
+        )
+        .distinct()
+        .all()
+    )
+
+    logger.info("Found %s duplicate bank accounts to delete", len(bank_accounts))
+
+    for bank_account in bank_accounts:
+        logger.info(
+            "Delete duplicate bank account %s",
+            bank_account.id,
+            extra={
+                "bank_account_id": bank_account.id,
+                "offerer_id": bank_account.offererId,
+                "iban": f"...{bank_account.iban[-4:]}",
+                "ds_application_id": bank_account.dsApplicationId,
+                "status": bank_account.status,
+            },
+        )
+        db.session.query(models.BankAccountStatusHistory).filter_by(bankAccountId=bank_account.id).delete(
+            synchronize_session=False
+        )
+        db.session.delete(bank_account)
