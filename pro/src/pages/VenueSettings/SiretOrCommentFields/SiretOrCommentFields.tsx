@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
-import { humanizeSiret, unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
@@ -23,14 +23,19 @@ export const SiretOrCommentFields = ({
     setValue,
     setError,
     register,
+    watch,
     formState: { errors, defaultValues },
   } = useFormContext<VenueSettingsFormValues>()
   const hasSiret = (defaultValues?.siret ?? '').length > 0
   const formatSiret = (siret: string) => {
     // remove character when it's not a number
     // this way we're sure that this field only accept number
-    if (!(siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {
-      setValue('siret', humanizeSiret(siret))
+    if (
+      watch('siret').length === 0 ||
+      siret.replace(/(\d|\s)*/, '').length > 0 ||
+      siret.length === 14
+    ) {
+      setValue('siret', unhumanizeSiret(siret))
     }
   }
 
