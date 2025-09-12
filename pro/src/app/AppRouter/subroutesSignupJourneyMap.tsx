@@ -8,9 +8,9 @@ import { Offerer } from '@/components/SignupJourneyForm/Offerer/Offerer'
 import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyForm/Offerers/Offerers'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
-import type { RouteConfig } from './routesMap'
+import type { CustomRouteObject } from './types'
 
-export const routesSignupJourney: RouteConfig[] = [
+export const routesSignupJourney: CustomRouteObject[] = [
   {
     element: <Offerer />,
     path: '/inscription/structure/recherche',

@@ -1,6 +1,6 @@
 import { type Location, matchPath } from 'react-router'
 
-import { type RouteConfig, routes } from '@/app/AppRouter/routesMap'
+import { routes } from '@/app/AppRouter/routesMap'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,
@@ -9,8 +9,11 @@ import { routesSignupJourney } from '@/app/AppRouter/subroutesSignupJourneyMap'
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
 
 import { routesReimbursements } from './subroutesReimbursements'
+import type { CustomRouteObject } from './types'
 
-export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
+export const findCurrentRoute = (
+  location: Location
+): CustomRouteObject | undefined =>
   [
     ...routes,
     ...routesIndividualOfferWizard,
@@ -23,5 +26,6 @@ export const findCurrentRoute = (location: Location): RouteConfig | undefined =>
     // are matched before their parents (e.g. /inscription/*)
     .reverse()
     .find(
-      ({ path }: RouteConfig) => matchPath(path, location.pathname) !== null
+      ({ path }: CustomRouteObject) =>
+        matchPath(path, location.pathname) !== null
     )

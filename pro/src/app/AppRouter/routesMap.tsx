@@ -13,20 +13,7 @@ import {
 import { routesReimbursements } from './subroutesReimbursements'
 import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
-
-interface RouteMeta {
-  public?: boolean
-}
-
-export interface RouteConfig {
-  path: string
-  title: string
-  element?: JSX.Element
-  lazy?: any
-  meta?: RouteMeta
-  featureName?: string
-  children?: RouteConfig[]
-}
+import type { CustomRouteObject } from './types'
 
 const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
   const { search } = useLocation()
@@ -34,7 +21,7 @@ const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
   return <Navigate {...props} to={`${to}/${token}`} />
 }
 
-export const routes: RouteConfig[] = [
+export const routes: CustomRouteObject[] = [
   {
     element: <Navigate to="/accueil" />,
     path: '/',
@@ -308,6 +295,7 @@ export const routes: RouteConfig[] = [
     title: 'Détails - Modifier une offre collective réservable',
   },
   {
+    // @ts-expect-error `withCollectiveOfferFromParams` HOC seems to confuse the type checker.
     lazy: () =>
       import(
         '@/pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'

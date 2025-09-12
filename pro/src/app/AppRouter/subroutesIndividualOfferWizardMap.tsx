@@ -1,8 +1,8 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import type { RouteConfig } from './routesMap'
+import type { CustomRouteObject } from './types'
 
-export const routesIndividualOfferWizard: RouteConfig[] = [
+export const routesIndividualOfferWizard: CustomRouteObject[] = [
   // Details pages
   {
     lazy: () =>
@@ -189,7 +189,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
 ]
 
-export const routesOnboardingIndividualOfferWizard: RouteConfig[] = [
+export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
   // details pages
   {
     lazy: () =>

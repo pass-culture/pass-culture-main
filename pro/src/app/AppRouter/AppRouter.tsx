@@ -7,6 +7,7 @@ import { routes } from '@/app/AppRouter/routesMap'
 import { selectActiveFeatures } from '@/commons/store/features/selectors'
 
 import { ErrorBoundary } from './ErrorBoundary'
+import { redirectedRoutes } from './redirectedRoutes'
 
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
@@ -26,6 +27,7 @@ export const AppRouter = (): JSX.Element => {
         errorElement: <ErrorBoundary />,
         children: [
           ...activeRoutes,
+          ...redirectedRoutes,
           {
             lazy: () => import('@/pages/Errors/NotFound/NotFound'),
             path: '*',
