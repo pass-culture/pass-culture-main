@@ -73,6 +73,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
+  const priceSeparator = ','
+  const priceDecimal = 2
+  const [priceDisplayValue, setPriceDisplayValue] = useState('')
+
   const isCaledonian = useIsCaledonian()
 
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
@@ -86,7 +90,14 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
-      reset(buildInitialValues(offer, response.stocks))
+      const builtInitialValues = buildInitialValues(offer, response.stocks)
+      reset(builtInitialValues)
+
+      const priceAmountConverted =
+        isCaledonian && builtInitialValues.price
+          ? convertEuroToPacificFranc(builtInitialValues.price)
+          : builtInitialValues.price
+      setPriceDisplayValue(numberToCommaSeparated(priceAmountConverted))
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -113,6 +124,53 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
+  const onPriceInputKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+    ]
+
+    if (
+      !/\d/.test(event.key) &&
+      event.key !== ',' &&
+      !allowedKeys.includes(event.key)
+    ) {
+      event.preventDefault()
+    }
+    if (
+      event.key === priceSeparator &&
+      event.currentTarget.value.includes(priceSeparator)
+    ) {
+      event.preventDefault()
+    }
+
+    if (
+      event.currentTarget.value.split(priceSeparator)[1]?.length >=
+        priceDecimal &&
+      !allowedKeys.includes(event.key)
+    ) {
+      event.preventDefault()
+    }
+  }
+
+  const commaSeparatedToNumber = (
+    value: string | undefined
+  ): number | undefined => (value ? Number(value.replace(',', '.')) : undefined)
+  const numberToCommaSeparated = (value: number | undefined): string => {
+    return value?.toString().replace('.', ',') || ''
+  }
+  const onPriceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPriceDisplayValue(event.target.value)
+    setValue('price', commaSeparatedToNumber(event.target.value), {
+      shouldDirty: true,
+    })
+  }
+
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     if (isCaledonian && values.price) {
       values.price = convertPacificFrancToEuro(Number(values.price))
@@ -128,6 +186,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
     })
+
     if (!isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
@@ -373,10 +432,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
     : undefined
 
-  const [isPriceTouched, setIsPriceTouched] = useState(false)
-
-  const euroPrice = getValues('price')
-
   return (
     <>
       <DialogStockThingDeleteConfirm
@@ -407,30 +462,19 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             />
             <div className={styles.row}>
               <TextInput
+                value={priceDisplayValue}
                 name="price"
                 error={errors.price?.message}
                 required
-                label={'Prix'}
+                label="Prix"
                 disabled={readOnlyFields.includes('price')}
-                type="number"
+                type="text"
                 data-testid="input-price"
                 rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-                step="0.01"
                 min={0}
                 className={styles['field-layout-xsmall']}
-                value={
-                  isCaledonian
-                    ? isPriceTouched
-                      ? (watch('price') ?? '')
-                      : convertEuroToPacificFranc(Number(euroPrice ?? 0)) || ''
-                    : (watch('price') ?? '')
-                }
-                onChange={(e) => {
-                  setIsPriceTouched(true)
-                  setValue('price', Number(e.target.value), {
-                    shouldDirty: true,
-                  })
-                }}
+                onKeyDown={onPriceInputKeyDown}
+                onChange={onPriceInputChange}
               />
               <DatePicker
                 {...register('bookingLimitDatetime')}
