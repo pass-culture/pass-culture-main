@@ -347,12 +347,28 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           command: |
-            export POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api --field-selector=status.phase==Running -o json |jq -r '.items[] | "\(.metadata.name)"'|head -n 1)
+            ENV=${{ inputs.environment}}
+            POD_NAME=$(kubectl -n $ENV get pods -l role=api --field-selector=status.phase==Running -o json | jq -r '.items[] | "\(.metadata.name)"' | head -n 1)
+            FAIL=0
             echo "flask commands runs on ${POD_NAME}"
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings artists --not-dry
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --not-dry
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry
-            kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings venues --not-dry
+
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings artists --not-dry; then
+                echo "Failed to apply algolia settings for artists"
+                FAIL=1
+            fi
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings offers --not-dry; then
+                echo "Failed to apply algolia settings for offers"
+                FAIL=1
+            fi
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry; then
+                echo "Failed to apply algolia settings for collective_offers"
+                FAIL=1
+            fi
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings venues --not-dry; then
+                echo "Failed to apply algolia settings for venues"
+                FAIL=1
+            fi
+            exit $FAIL
 
   deploy-image-resizing-ehp:
     name: "Deploy image-resizing EHP"
