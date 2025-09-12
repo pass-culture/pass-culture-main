@@ -189,7 +189,6 @@ class GetAllBookingsPerYearQueryModel(BaseModel):
 @dataclasses.dataclass(kw_only=True, slots=True, frozen=True)
 class CollectiveOffersFilter:
     user_id: int
-    user_is_admin: bool
     offerer_id: int | None = None
     statuses: list[models.CollectiveOfferDisplayedStatus] | None = None
     venue_id: int | None = None

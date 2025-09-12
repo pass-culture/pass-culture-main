@@ -920,9 +920,11 @@ class ListPublicCollectiveOffersTest:
         assert len(offers) == 2
 
 
-@pytest.fixture(name="admin_user", scope="function")
-def admin_user_fixture():
-    return users_factories.AdminFactory()
+@pytest.fixture(name="pro_user", scope="function")
+def pro_user_fixture():
+    user = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=user)
+    return user
 
 
 class GetFilteredCollectiveOffersTest:
@@ -961,7 +963,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 statuses=[models.CollectiveOfferDisplayedStatus.PREBOOKED],
             )
         )
@@ -984,7 +985,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 statuses=[models.CollectiveOfferDisplayedStatus.ENDED],
             )
         )
@@ -1003,7 +1003,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 formats=[EacFormat.CONCERT],
             )
         )
@@ -1024,7 +1023,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 statuses=[models.CollectiveOfferDisplayedStatus.ARCHIVED],
             )
         )
@@ -1039,7 +1037,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = educational_repository.get_collective_offers_by_filters(
-            filters=schemas.CollectiveOffersFilter(user_id=user_offerer.userId, user_is_admin=False)
+            filters=schemas.CollectiveOffersFilter(user_id=user_offerer.userId)
         )
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
@@ -1047,7 +1045,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 statuses=[models.CollectiveOfferDisplayedStatus.DRAFT],
             )
         )
@@ -1094,7 +1091,6 @@ class GetFilteredCollectiveOffersTest:
         offers = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
                 user_id=user_offerer.userId,
-                user_is_admin=False,
                 statuses=[models.CollectiveOfferDisplayedStatus.EXPIRED],
             )
         )
@@ -1109,13 +1105,14 @@ class GetFilteredCollectiveOffersTest:
         "offer_status",
         set(models.CollectiveOfferDisplayedStatus) - {models.CollectiveOfferDisplayedStatus.HIDDEN},
     )
-    def test_filter_each_status(self, admin_user, offer_status):
-        offer = educational_factories.create_collective_offer_by_status(offer_status)
+    def test_filter_each_status(self, pro_user, offer_status):
+        offer = educational_factories.create_collective_offer_by_status(
+            offer_status, venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
 
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id,
-                user_is_admin=True,
+                user_id=pro_user.id,
                 statuses=[offer_status],
             )
         )
@@ -1124,91 +1121,121 @@ class GetFilteredCollectiveOffersTest:
         statuses_no_result = set(models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+                user_id=pro_user.id,
+                statuses=statuses_no_result,
             )
         )
         assert result.count() == 0
 
-    def test_filter_hidden(self, admin_user):
+    def test_filter_hidden(self, pro_user):
         for status in models.CollectiveOfferDisplayedStatus:
             educational_factories.create_collective_offer_by_status(status)
 
         # The HIDDEN filter does not correspond to any collective offer (only templates)
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id,
-                user_is_admin=True,
+                user_id=pro_user.id,
                 statuses=[models.CollectiveOfferDisplayedStatus.HIDDEN],
             )
         )
         assert result.count() == 0
 
-    def test_filter_location_type(self, admin_user):
-        offer_school = educational_factories.CollectiveOfferOnSchoolLocationFactory()
-        offer_address = educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
-        offer_to_be_defined = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
+    def test_filter_location_type(self, pro_user):
+        offer_school = educational_factories.CollectiveOfferOnSchoolLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
+        offer_address = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
+        offer_to_be_defined = educational_factories.CollectiveOfferOnToBeDefinedLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
 
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.SCHOOL
+                user_id=pro_user.id,
+                location_type=models.CollectiveLocationType.SCHOOL,
             )
         )
         assert result.one() == offer_school
 
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.ADDRESS
+                user_id=pro_user.id,
+                location_type=models.CollectiveLocationType.ADDRESS,
             )
         )
         assert result.one() == offer_address
 
         result = educational_repository.get_collective_offers_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, location_type=models.CollectiveLocationType.TO_BE_DEFINED
+                user_id=pro_user.id,
+                location_type=models.CollectiveLocationType.TO_BE_DEFINED,
             )
         )
         assert result.one() == offer_to_be_defined
 
-    def test_filter_offerer_address(self, admin_user):
+    def test_filter_offerer_address(self, pro_user):
         oa = offerers_factories.OffererAddressFactory()
-        offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(offererAddress=oa)
-        educational_factories.CollectiveOfferOnOtherAddressLocationFactory()
-        educational_factories.CollectiveOfferOnSchoolLocationFactory()
-        educational_factories.CollectiveOfferOnToBeDefinedLocationFactory()
+        offer = educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
+            offererAddress=oa, venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
+        educational_factories.CollectiveOfferOnOtherAddressLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
+        educational_factories.CollectiveOfferOnSchoolLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
+        educational_factories.CollectiveOfferOnToBeDefinedLocationFactory(
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
 
         result = educational_repository.get_collective_offers_by_filters(
-            filters=schemas.CollectiveOffersFilter(user_id=admin_user.id, user_is_admin=True, offerer_address_id=oa.id)
+            filters=schemas.CollectiveOffersFilter(
+                user_id=pro_user.id,
+                offerer_address_id=oa.id,
+            )
         )
         assert result.one() == offer
 
 
 class GetCollectiveOffersTemplateByFiltersTest:
     @pytest.mark.parametrize("offer_status", models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
-    def test_filter_each_status(self, admin_user, offer_status):
-        template = educational_factories.create_collective_offer_template_by_status(offer_status)
+    def test_filter_each_status(self, pro_user, offer_status):
+        template = educational_factories.create_collective_offer_template_by_status(
+            offer_status, venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
 
         result = educational_repository.get_collective_offers_template_by_filters(
-            filters=schemas.CollectiveOffersFilter(user_id=admin_user.id, user_is_admin=True, statuses=[offer_status])
+            filters=schemas.CollectiveOffersFilter(
+                user_id=pro_user.id,
+                statuses=[offer_status],
+            )
         )
         assert result.one() == template
 
         statuses_no_result = set(models.CollectiveOfferDisplayedStatus) - {offer_status}
         result = educational_repository.get_collective_offers_template_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, statuses=statuses_no_result
+                user_id=pro_user.id,
+                statuses=statuses_no_result,
             )
         )
         assert result.count() == 0
 
-    def test_formats_filter(self, admin_user):
+    def test_formats_filter(self, pro_user):
         template = educational_factories.CollectiveOfferTemplateFactory(
-            formats=[EacFormat.CONCERT, EacFormat.CONFERENCE_RENCONTRE]
+            formats=[EacFormat.CONCERT, EacFormat.CONFERENCE_RENCONTRE],
+            venue__managingOfferer=pro_user.UserOfferers[0].offerer,
         )
-        educational_factories.CollectiveOfferTemplateFactory(formats=[EacFormat.CONFERENCE_RENCONTRE])
+        educational_factories.CollectiveOfferTemplateFactory(
+            formats=[EacFormat.CONFERENCE_RENCONTRE], venue__managingOfferer=pro_user.UserOfferers[0].offerer
+        )
 
         result = educational_repository.get_collective_offers_template_by_filters(
             filters=schemas.CollectiveOffersFilter(
-                user_id=admin_user.id, user_is_admin=True, formats=[EacFormat.CONCERT]
+                user_id=pro_user.id,
+                formats=[EacFormat.CONCERT],
             )
         ).one()
         assert result.id == template.id

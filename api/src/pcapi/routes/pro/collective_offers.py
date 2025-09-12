@@ -39,7 +39,6 @@ def _get_filters_from_query(
 ) -> schemas.CollectiveOffersFilter:
     return schemas.CollectiveOffersFilter(
         user_id=current_user.id,
-        user_is_admin=current_user.has_admin_role,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
