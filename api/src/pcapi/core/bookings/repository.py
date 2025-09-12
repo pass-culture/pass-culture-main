@@ -262,17 +262,6 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None 
     )
 
 
-def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[models.Booking]:
-    return (
-        db.session.query(models.Booking)
-        .filter(
-            models.Booking.offererId == offerer_id,
-            models.Booking.status == models.BookingStatus.CONFIRMED,
-        )
-        .all()
-    )
-
-
 def get_bookings_from_deposit(deposit_id: int) -> list[models.Booking]:
     return (
         db.session.query(models.Booking)
