@@ -142,10 +142,9 @@ describe('Create individual offers with OA', () => {
     )
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
-    cy.wait(['@postEventStocks', '@getStocks'])
-
+    cy.wait(['@postEventStocks', '@getStocks', '@getOffer'])
+    cy.findByText('11 dates').should('be.visible')
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer'])
     cy.contains('Accepter les réservations "Duo" : Oui')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
