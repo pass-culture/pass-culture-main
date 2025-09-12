@@ -29,7 +29,6 @@ def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
 def update_all_collective_offers_active_status_job(filters: dict, is_active: bool) -> None:
     offer_filters = educational_schemas.CollectiveOffersFilter(
         user_id=filters["user_id"],
-        user_is_admin=filters["is_user_admin"],
         offerer_id=filters["offerer_id"],
         statuses=[filters["status"]] if filters["status"] else None,
         venue_id=filters["venue_id"],
