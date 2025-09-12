@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
 import {
@@ -22,9 +21,6 @@ import {
 } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferSummaryEdition } from './CollectiveOfferSummaryEdition'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 vi.mock('@/apiClient/api', () => ({
   api: {

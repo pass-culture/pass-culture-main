@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { HttpResponse, http } from 'msw'
 import * as router from 'react-router'
 
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
@@ -35,6 +36,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { fetchMockServer } from '@/vitest.setup'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {
@@ -267,8 +269,11 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should return an error when trying to get offerer image', async () => {
-    // eslint-disable-next-line no-undef
-    fetchMock.mockResponse('Service Unavailable', { status: 503 })
+    fetchMockServer.use(
+      http.get('*', () =>
+        HttpResponse.text('Service Unavailable', { status: 503 })
+      )
+    )
 
     renderCollectiveEditingOfferNavigation({
       ...props,

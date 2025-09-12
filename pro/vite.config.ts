@@ -37,7 +37,11 @@ export default defineConfig(({ mode }) => {
       root: '.',
       globals: true,
       environment: 'jsdom',
-      setupFiles: ['allure-vitest/setup', './src/vitest.setup.ts'],
+      setupFiles: [
+        './src/vitest.polyfills.ts',
+        'allure-vitest/setup',
+        './src/vitest.setup.ts',
+      ],
       reporters: process.env.GITHUB_ACTIONS
         ? ['verbose', 'github-actions']
         : ['verbose'],
@@ -58,6 +62,7 @@ export default defineConfig(({ mode }) => {
           'src/apiClient/adage/*',
           'src/apiClient/adresse/*',
           'src/apiClient/v1/*',
+          'src/vitest.*.ts',
           ...coverageConfigDefaults.exclude,
         ],
       },

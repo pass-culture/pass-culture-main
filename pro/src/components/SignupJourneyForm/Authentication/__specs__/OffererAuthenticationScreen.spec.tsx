@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
-import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
@@ -15,9 +14,6 @@ import { Notification } from '@/components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { OffererAuthentication } from '../OffererAuthentication'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
@@ -50,27 +46,6 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
     inseeCode: '75003',
   },
 ])
-
-// Mock https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address} called by getDataFromAddress
-fetchMock.mockResponse(
-  JSON.stringify({
-    features: [
-      {
-        properties: {
-          name: 'name',
-          city: 'city',
-          id: 'id',
-          label: 'label',
-          postcode: 'postcode',
-        },
-        geometry: {
-          coordinates: [0, 0],
-        },
-      },
-    ],
-  }),
-  { status: 200 }
-)
 
 const renderOffererAuthenticationScreen = (
   contextValue: SignupJourneyContextValues,

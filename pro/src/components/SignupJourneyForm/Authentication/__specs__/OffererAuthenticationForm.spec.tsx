@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import {
@@ -23,9 +22,6 @@ import {
   OffererAuthenticationForm,
   type OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
@@ -58,26 +54,6 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
     inseeCode: '75003',
   },
 ])
-
-fetchMock.mockResponse(
-  JSON.stringify({
-    features: [
-      {
-        properties: {
-          name: 'name',
-          city: 'city',
-          id: 'id',
-          label: 'label',
-          postcode: 'postcode',
-        },
-        geometry: {
-          coordinates: [0, 0],
-        },
-      },
-    ],
-  }),
-  { status: 200 }
-)
 
 const renderOffererAuthenticationForm = (
   {

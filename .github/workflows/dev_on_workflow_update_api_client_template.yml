@@ -111,10 +111,10 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
       - name: "Cache node dependencies"
         uses: pass-culture-github-actions/cache@v1.0.0
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'

@@ -1,30 +1,27 @@
 import 'regenerator-runtime/runtime'
-import { expect, vi } from 'vitest'
+import { expect } from 'vitest'
 import '@testing-library/jest-dom/vitest'
+import { HttpResponse, http } from 'msw'
+import { setupServer } from 'msw/node'
 import * as matchers from 'vitest-axe/matchers'
 import failOnConsole from 'vitest-fail-on-console'
-import createFetchMock from 'vitest-fetch-mock'
 import 'vitest-canvas-mock'
 
 expect.extend(matchers)
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
-fetchMock.mockResponse((req) => {
-  // eslint-disable-next-line
-  console.error(`
-  ----------------------------------------------------------------------------
-  /!\\ UNMOCKED FETCH CALL TO :  [${req.method}] ${req.url}
-  ----------------------------------------------------------------------------
-  `)
 
-  // We do not await this Promise so that Vitest considers it as
-  // an unhandled rejection and thus fails the test
-  // (otherwise the console.error will appear but not fail the test)
-  void Promise.reject('Unmocked fetch call')
-
-  // And now return a Promise so that fetchMock is happy
-  return Promise.reject('Unmocked fetch call')
-})
+const httpHandlerMock = () => HttpResponse.json({})
+export const fetchMockServer = setupServer(
+  http.get('*', httpHandlerMock),
+  http.post('*', httpHandlerMock),
+  http.put('*', httpHandlerMock),
+  http.patch('*', httpHandlerMock),
+  http.delete('*', httpHandlerMock),
+  http.options('*', httpHandlerMock),
+  http.head('*', httpHandlerMock)
+)
+beforeAll(() => void fetchMockServer.listen({ onUnhandledRequest: 'error' }))
+afterEach(() => void fetchMockServer.resetHandlers())
+afterAll(() => void fetchMockServer.close())
 
 // Mock the ResizeObserver for Charts
 class ResizeObserver {

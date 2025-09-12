@@ -1,14 +1,17 @@
-import createFetchMock from 'vitest-fetch-mock'
+import { HttpResponse, http } from 'msw'
 
 import { api } from '@/apiClient/api'
 import { URL_FOR_MAINTENANCE } from '@/commons/utils/config'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
+import { fetchMockServer } from '@/vitest.setup'
 
 describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
-    fetchMock.mockResponse('Service Unavailable', { status: 503 })
+    // Force all GET requests in this test to return 503
+    fetchMockServer.use(
+      http.get('*', () =>
+        HttpResponse.text('Service Unavailable', { status: 503 })
+      )
+    )
 
     const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {
@@ -25,7 +28,11 @@ describe('Maintenance', () => {
   })
 
   it('should redirect to maintenance page api v2 responds with status 503', async () => {
-    fetchMock.mockResponse('Service Unavailable', { status: 503 })
+    fetchMockServer.use(
+      http.get('*', () =>
+        HttpResponse.text('Service Unavailable', { status: 503 })
+      )
+    )
 
     const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {

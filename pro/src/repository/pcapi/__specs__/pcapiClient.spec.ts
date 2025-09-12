@@ -1,18 +1,17 @@
 import { client } from 'repository/pcapi/pcapiClient'
-import createFetchMock from 'vitest-fetch-mock'
+import type { MockInstance } from 'vitest'
 
 import { API_URL } from '@/commons/utils/config'
 
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
-
 describe('pcapiClient', () => {
+  let fetchSpy: MockInstance<typeof fetch>
+
   beforeEach(() => {
-    fetchMock.mockResponse(JSON.stringify({}), { status: 200 })
+    fetchSpy = vi.spyOn(global, 'fetch')
   })
 
   afterEach(() => {
-    fetchMock.resetMocks()
+    fetchSpy.mockRestore()
   })
 
   describe('postWithFormData', () => {
@@ -33,7 +32,7 @@ describe('pcapiClient', () => {
       await client.postWithFormData(path, body)
 
       // Then
-      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchSpy).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         headers: { encode: 'multipart/form-data' },
         method: 'POST',
@@ -57,8 +56,8 @@ describe('pcapiClient', () => {
       // When
       await client.postWithFormData(path, body, false)
 
-      // Then
-      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      // Then (no credentials when not required)
+      expect(fetchSpy).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: { encode: 'multipart/form-data' },
         method: 'POST',
         body: body,

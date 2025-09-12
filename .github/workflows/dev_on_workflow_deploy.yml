@@ -220,9 +220,9 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "${{ inputs.doc-api-entrypoint }}/.nvmrc"
+          node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
       - name: "Build documentation"
         run: |
           set -e

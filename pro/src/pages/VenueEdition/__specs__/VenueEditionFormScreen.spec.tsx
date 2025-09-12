@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
-import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
@@ -18,9 +17,6 @@ import {
 import { Notification } from '@/components/Notification/Notification'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
-
-const fetchMock = createFetchMock(vi)
-fetchMock.enableMocks()
 
 function renderForm(
   venue: GetVenueResponseModel,
@@ -102,28 +98,6 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
     inseeCode: '75003',
   },
 ])
-
-// Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
-// Appel fait dans getDataFromAddress
-fetchMock.mockResponse(
-  JSON.stringify({
-    features: [
-      {
-        properties: {
-          name: 'name',
-          city: 'city',
-          id: 'id',
-          label: 'label',
-          postcode: 'postcode',
-        },
-        geometry: {
-          coordinates: [0, 0],
-        },
-      },
-    ],
-  }),
-  { status: 200 }
-)
 
 vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
