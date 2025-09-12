@@ -1,3 +1,4 @@
+from pcapi.core.educational import repository as educational_offers_repository
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.api import offer as educational_api_offer
@@ -48,3 +49,13 @@ def update_venue_synchronized_offers_active_status_job(venue_id: int, provider_i
     )
 
     offers_api.batch_update_offers(venue_synchronized_offers_query, activate=is_active)
+
+
+@job(worker.low_queue)
+def update_venue_synchronized_collective_offers_active_status_job(
+    venue_id: int, provider_id: int, is_active: bool
+) -> None:
+    venue_synchronized_offers_query = (
+        educational_offers_repository.get_synchronized_collective_offers_with_provider_for_venue(venue_id, provider_id)
+    )
+    educational_api_offer.batch_update_collective_offers(venue_synchronized_offers_query, {"isActive": is_active})
