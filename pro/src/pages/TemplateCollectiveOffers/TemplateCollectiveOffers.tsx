@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -96,26 +96,22 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  if (offersQuery.isLoading) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
-
   return (
-    <Layout mainHeading="Offres vitrines">
-      <TemplateCollectiveOffersScreen
-        currentPageNumber={currentPageNumber}
-        initialSearchFilters={apiFilters}
-        isLoading={offersQuery.isLoading}
-        offerer={offerer}
-        offers={offersQuery.data}
-        redirectWithUrlFilters={redirectWithUrlFilters}
-        urlSearchFilters={urlSearchFilters}
-      />
-    </Layout>
+    <BasicLayout mainHeading="Offres vitrines">
+      {offersQuery.isLoading ? (
+        <Spinner />
+      ) : (
+        <TemplateCollectiveOffersScreen
+          currentPageNumber={currentPageNumber}
+          initialSearchFilters={apiFilters}
+          isLoading={offersQuery.isLoading}
+          offerer={offerer}
+          offers={offersQuery.data}
+          redirectWithUrlFilters={redirectWithUrlFilters}
+          urlSearchFilters={urlSearchFilters}
+        />
+      )}
+    </BasicLayout>
   )
 }
 

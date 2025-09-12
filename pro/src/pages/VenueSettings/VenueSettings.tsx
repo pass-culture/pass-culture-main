@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
@@ -44,7 +44,7 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venueProviders = venueProvidersQuery.data?.venue_providers
 
-  if (
+  const isNotReady =
     isOffererLoading ||
     venueQuery.isLoading ||
     venueTypesQuery.isLoading ||
@@ -53,16 +53,9 @@ const VenueSettings = (): JSX.Element | null => {
     !venue ||
     !venueTypes ||
     !venueProviders
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
 
   return (
-    <Layout
+    <BasicLayout
       mainHeading="Paramètres généraux"
       mainTopElement={
         <Button
@@ -74,14 +67,18 @@ const VenueSettings = (): JSX.Element | null => {
         </Button>
       }
     >
-      <VenueSettingsScreen
-        initialValues={setInitialFormValues({ venue })}
-        offerer={offerer}
-        venueTypes={venueTypes}
-        venue={venue}
-        venueProviders={venueProviders}
-      />
-    </Layout>
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <VenueSettingsScreen
+          initialValues={setInitialFormValues({ venue })}
+          offerer={offerer}
+          venueTypes={venueTypes}
+          venue={venue}
+          venueProviders={venueProviders}
+        />
+      )}
+    </BasicLayout>
   )
 }
 

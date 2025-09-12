@@ -9,7 +9,7 @@ import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferType,
 } from '@/apiClient/v1'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -130,132 +130,128 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     )
   }
 
-  if (isCreatingNewOffer) {
-    return (
-      <Layout
-        layout={'sticky-actions'}
-        mainHeading="Créer une offre réservable"
-      >
+  return (
+    <BasicLayout
+      mainHeading="Créer une offre réservable"
+      isStickyActionBarInChild
+    >
+      {isCreatingNewOffer ? (
         <div className="container">
           <Spinner message="Création de la nouvelle offre réservable en cours" />
         </div>
-      </Layout>
-    )
-  }
+      ) : (
+        <div className="container">
+          <div className={styles['search-container']}>
+            <form
+              className={styles['search-input-container']}
+              aria-labelledby="search-filter"
+              onSubmit={handleSubmitSearch(({ searchFilter }) => {
+                searchFilterForm.setValue('searchFilter', searchFilter)
+                templateOfferForm.setValue(
+                  'templateOfferId',
+                  String(offers?.[0]?.id)
+                )
 
-  return (
-    <Layout layout={'sticky-actions'} mainHeading="Créer une offre réservable">
-      <div className="container">
-        <div className={styles['search-container']}>
-          <form
-            className={styles['search-input-container']}
-            aria-labelledby="search-filter"
-            onSubmit={handleSubmitSearch(({ searchFilter }) => {
-              searchFilterForm.setValue('searchFilter', searchFilter)
-              templateOfferForm.setValue(
-                'templateOfferId',
-                String(offers?.[0]?.id)
-              )
-
-              if (error) {
-                return notify.error(GET_DATA_ERROR_MESSAGE)
-              }
-            })}
-          >
-            <TextInput
-              label="Rechercher l’offre vitrine à dupliquer"
-              {...registerSearch('searchFilter')}
-              name="searchFilter"
-              type="search"
-              autoComplete="off"
-              onChange={(e) => {
-                if (e.target.value === '') {
-                  searchFilterForm.setValue('searchFilter', e.target.value)
+                if (error) {
+                  return notify.error(GET_DATA_ERROR_MESSAGE)
                 }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  searchFilterForm.setValue(
-                    'searchFilter',
-                    (e.target as HTMLInputElement).value
-                  )
+              })}
+            >
+              <TextInput
+                label="Rechercher l’offre vitrine à dupliquer"
+                {...registerSearch('searchFilter')}
+                name="searchFilter"
+                type="search"
+                autoComplete="off"
+                onChange={(e) => {
+                  if (e.target.value === '') {
+                    searchFilterForm.setValue('searchFilter', e.target.value)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    searchFilterForm.setValue(
+                      'searchFilter',
+                      (e.target as HTMLInputElement).value
+                    )
+                  }
+                }}
+                className={styles['search-input']}
+                InputExtension={
+                  <Button
+                    type="submit"
+                    className={styles['search-button']}
+                    disabled={isLoading}
+                  >
+                    Rechercher
+                  </Button>
                 }
-              }}
-              className={styles['search-input']}
-              InputExtension={
-                <Button
-                  type="submit"
-                  className={styles['search-button']}
-                  disabled={isLoading}
-                >
-                  Rechercher
-                </Button>
-              }
-            />
-          </form>
+              />
+            </form>
 
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : (
-            <>
-              <p className={styles['visually-hidden']} role="status">
-                {offers && pluralize(offers.length, 'offre vitrine trouvée')}
-              </p>
-              <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
-                <p className={styles['legend']}>
-                  {searchFilterForm.watch('searchFilter').length < 1
-                    ? 'Les dernières offres vitrines créées'
-                    : `${offers && pluralize(offers.length, 'offre')}` +
-                      ' vitrine'}
+            {isLoading ? (
+              <SkeletonLoader />
+            ) : (
+              <>
+                <p className={styles['visually-hidden']} role="status">
+                  {offers && pluralize(offers.length, 'offre vitrine trouvée')}
                 </p>
-                <ul className={styles['list']}>
-                  {(offers || []).slice(0, 5).map((offer) => (
-                    <li key={offer.id}>
-                      <CardLink
-                        label={offer.name}
-                        description={offer.venue.name}
-                        onClick={() => {
-                          templateOfferForm.setValue(
-                            'templateOfferId',
-                            offer.id.toString()
-                          )
-                          handleOnSubmit()
-                        }}
+                <form onSubmit={handleSubmitSelection(handleOnSubmit)}>
+                  <p className={styles['legend']}>
+                    {searchFilterForm.watch('searchFilter').length < 1
+                      ? 'Les dernières offres vitrines créées'
+                      : `${offers && pluralize(offers.length, 'offre')}` +
+                        ' vitrine'}
+                  </p>
+                  <ul className={styles['list']}>
+                    {(offers || []).slice(0, 5).map((offer) => (
+                      <li key={offer.id}>
+                        <CardLink
+                          label={offer.name}
+                          description={offer.venue.name}
+                          onClick={() => {
+                            templateOfferForm.setValue(
+                              'templateOfferId',
+                              offer.id.toString()
+                            )
+                            handleOnSubmit()
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+
+                  {offers && offers.length < 1 && (
+                    <div className={styles['search-no-results']}>
+                      <SvgIcon
+                        src={strokeSearchIcon}
+                        alt="Illustration de recherche"
+                        className={styles['search-no-results-icon']}
+                        width="124"
                       />
-                    </li>
-                  ))}
-                </ul>
+                      <p className={styles['search-no-results-text']}>
+                        Aucune offre trouvée pour votre recherche
+                      </p>
+                    </div>
+                  )}
 
-                {offers && offers.length < 1 && (
-                  <div className={styles['search-no-results']}>
-                    <SvgIcon
-                      src={strokeSearchIcon}
-                      alt="Illustration de recherche"
-                      className={styles['search-no-results-icon']}
-                      width="124"
-                    />
-                    <p className={styles['search-no-results-text']}>
-                      Aucune offre trouvée pour votre recherche
-                    </p>
-                  </div>
-                )}
-
-                <ActionsBarSticky>
-                  <ActionsBarSticky.Left>
-                    <ButtonLink
-                      variant={ButtonVariant.SECONDARY}
-                      to={computeCollectiveOffersUrl({})}
-                    >
-                      Retour à la liste des offres
-                    </ButtonLink>
-                  </ActionsBarSticky.Left>
-                </ActionsBarSticky>
-              </form>
-            </>
-          )}
+                  <ActionsBarSticky>
+                    <ActionsBarSticky.Left>
+                      <ButtonLink
+                        variant={ButtonVariant.SECONDARY}
+                        to={computeCollectiveOffersUrl({})}
+                      >
+                        Retour à la liste des offres
+                      </ButtonLink>
+                    </ActionsBarSticky.Left>
+                  </ActionsBarSticky>
+                </form>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </Layout>
+      )}
+    </BasicLayout>
   )
 }
 

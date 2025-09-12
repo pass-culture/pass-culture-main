@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
@@ -64,66 +64,65 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
-  if (
+  const isNotReady =
     offererNamesQuery.isLoading ||
     venueTypesQuery.isLoading ||
     !offererNames ||
     !venueTypes
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
 
   return (
-    <Layout mainHeading="Bienvenue sur votre espace partenaire">
-      <div className={styles['reimbursements-banners']}>
-        <AddBankAccountCallout offerer={selectedOfferer} />
-        <LinkVenueCallout offerer={selectedOfferer} />
-        <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
-      </div>
-      {!isOffererValidating && (selectedOfferer || offererApiError) && (
-        <OffererBanners
-          isUserOffererValidated={isUserOffererValidated}
-          offerer={selectedOfferer}
-        />
-      )}
-
-      {selectedOfferer?.isValidated && selectedOfferer.isActive && (
-        <section className={styles.section}>
-          <StatisticsDashboard offerer={selectedOfferer} />
-        </section>
-      )}
-
-      <section className={styles.section} ref={offerersRef}>
-        <Offerers
-          selectedOfferer={selectedOfferer}
-          isLoading={isOffererLoading}
-          offererOptions={offererOptions}
-          isUserOffererValidated={isUserOffererValidated}
-          venueTypes={venueTypes}
-        />
-      </section>
-
-      {isUserOffererValidated &&
-        hasNoVenueVisible &&
-        selectedOfferer !== null && (
-          <section className={styles['step-section']}>
-            <VenueOfferSteps
-              hasVenue={!hasNoVenueVisible}
+    <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className={styles['reimbursements-banners']}>
+            <AddBankAccountCallout offerer={selectedOfferer} />
+            <LinkVenueCallout offerer={selectedOfferer} />
+            <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
+          </div>
+          {!isOffererValidating && (selectedOfferer || offererApiError) && (
+            <OffererBanners
+              isUserOffererValidated={isUserOffererValidated}
               offerer={selectedOfferer}
             />
-          </section>
-        )}
+          )}
 
-      <section className={styles.section} ref={profileRef}>
-        <div className={styles.newsletter}>
-          <Newsletter />
-        </div>
-      </section>
-    </Layout>
+          {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+            <section className={styles.section}>
+              <StatisticsDashboard offerer={selectedOfferer} />
+            </section>
+          )}
+
+          <section className={styles.section} ref={offerersRef}>
+            <Offerers
+              selectedOfferer={selectedOfferer}
+              isLoading={isOffererLoading}
+              offererOptions={offererOptions}
+              isUserOffererValidated={isUserOffererValidated}
+              venueTypes={venueTypes}
+            />
+          </section>
+
+          {isUserOffererValidated &&
+            hasNoVenueVisible &&
+            selectedOfferer !== null && (
+              <section className={styles['step-section']}>
+                <VenueOfferSteps
+                  hasVenue={!hasNoVenueVisible}
+                  offerer={selectedOfferer}
+                />
+              </section>
+            )}
+
+          <section className={styles.section} ref={profileRef}>
+            <div className={styles.newsletter}>
+              <Newsletter />
+            </div>
+          </section>
+        </>
+      )}
+    </BasicLayout>
   )
 }
 

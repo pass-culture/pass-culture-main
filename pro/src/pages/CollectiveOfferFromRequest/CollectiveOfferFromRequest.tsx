@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Layout } from '@/app/App/layout/Layout'
+import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
@@ -71,101 +71,101 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     )
   }
 
-  if (isLoading || !informations) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
+  const isNotReady = isLoading || !informations
 
   return (
-    <Layout mainHeading="Récapitulatif de la demande">
-      <div className={styles['eac-section']}>
-        Vous avez reçu une demande de création d’offres de la part d’un
-        établissement scolaire. Vous pouvez créer une offre à partir des
-        informations saisies par l’enseignant. Toutes les informations sont
-        modifiables.
-        <br /> L’offre sera visible par l’enseignant sur ADAGE.
-      </div>
-      <SummarySection title="Détails de la demande">
-        <div className={styles['eac-section']}>
-          <SummaryDescriptionList
-            descriptions={[
-              {
-                title: 'Demande reçue le',
-                text: informations.dateCreated
-                  ? getDateToFrenchText(informations.dateCreated)
-                  : '-',
-              },
-              {
-                title: 'Offre concernée',
-                text: offerTemplate?.name,
-              },
-            ]}
-          />
-        </div>
+    <BasicLayout mainHeading="Récapitulatif de la demande">
+      {isNotReady ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className={styles['eac-section']}>
+            Vous avez reçu une demande de création d’offres de la part d’un
+            établissement scolaire. Vous pouvez créer une offre à partir des
+            informations saisies par l’enseignant. Toutes les informations sont
+            modifiables.
+            <br /> L’offre sera visible par l’enseignant sur ADAGE.
+          </div>
+          <SummarySection title="Détails de la demande">
+            <div className={styles['eac-section']}>
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Demande reçue le',
+                    text: informations.dateCreated
+                      ? getDateToFrenchText(informations.dateCreated)
+                      : '-',
+                  },
+                  {
+                    title: 'Offre concernée',
+                    text: offerTemplate?.name,
+                  },
+                ]}
+              />
+            </div>
 
-        <div className={styles['eac-section']}>
-          <SummaryDescriptionList
-            descriptions={[
-              {
-                title: 'Etablissement scolaire',
-                text: (
-                  <div>
-                    {`${informations.institution.institutionType} ${informations.institution.name}`.trim()}
-                    <br />
-                    {`${informations.institution.postalCode} ${informations.institution.city}`}
-                  </div>
-                ),
-              },
-              {
-                title: "Prénom et nom de l'enseignant",
-                text: `${informations.redactor.firstName} ${informations.redactor.lastName}`,
-              },
-              {
-                title: 'Téléphone',
-                text: informations.phoneNumber ?? '-',
-              },
-              {
-                title: 'Email',
-                text: informations.redactor.email,
-              },
-            ]}
-          />
-        </div>
+            <div className={styles['eac-section']}>
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Etablissement scolaire',
+                    text: (
+                      <div>
+                        {`${informations.institution.institutionType} ${informations.institution.name}`.trim()}
+                        <br />
+                        {`${informations.institution.postalCode} ${informations.institution.city}`}
+                      </div>
+                    ),
+                  },
+                  {
+                    title: "Prénom et nom de l'enseignant",
+                    text: `${informations.redactor.firstName} ${informations.redactor.lastName}`,
+                  },
+                  {
+                    title: 'Téléphone',
+                    text: informations.phoneNumber ?? '-',
+                  },
+                  {
+                    title: 'Email',
+                    text: informations.redactor.email,
+                  },
+                ]}
+              />
+            </div>
 
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: "Nombre d'élèves",
-              text: informations.totalStudents ?? '-',
-            },
-            {
-              title: "Nombre d'accompagnateurs",
-              text: informations.totalTeachers ?? '-',
-            },
-            {
-              title: 'Date souhaitée',
-              text: informations.requestedDate
-                ? getDateToFrenchText(informations.requestedDate)
-                : '-',
-            },
-            {
-              title: 'Descriptif de la demande',
-              text: informations.comment,
-            },
-          ]}
-        />
-      </SummarySection>
-      <ActionsBarSticky>
-        <ActionsBarSticky.Right>
-          <Button onClick={handleButtonClick}>
-            Créer l’offre pour l’enseignant
-          </Button>
-        </ActionsBarSticky.Right>
-      </ActionsBarSticky>
-    </Layout>
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: "Nombre d'élèves",
+                  text: informations.totalStudents ?? '-',
+                },
+                {
+                  title: "Nombre d'accompagnateurs",
+                  text: informations.totalTeachers ?? '-',
+                },
+                {
+                  title: 'Date souhaitée',
+                  text: informations.requestedDate
+                    ? getDateToFrenchText(informations.requestedDate)
+                    : '-',
+                },
+                {
+                  title: 'Descriptif de la demande',
+                  text: informations.comment,
+                },
+              ]}
+            />
+          </SummarySection>
+          <ActionsBarSticky>
+            <ActionsBarSticky.Right>
+              <Button onClick={handleButtonClick}>
+                Créer l’offre pour l’enseignant
+              </Button>
+            </ActionsBarSticky.Right>
+          </ActionsBarSticky>
+        </>
+      )}
+    </BasicLayout>
   )
 }
 

@@ -13,9 +13,8 @@ import styles from './Footer.module.scss'
 type FooterProps = {
   layout?:
     | 'basic'
-    | 'funnel'
+    | 'sticky-basic'
     | 'onboarding'
-    | 'sticky-actions'
     | 'sticky-onboarding'
     | 'logged-out'
     | 'sign-up'
