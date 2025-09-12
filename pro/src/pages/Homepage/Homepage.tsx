@@ -1,17 +1,13 @@
 import { useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
 import { Layout } from '@/app/App/layout/Layout'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'
 import { LinkVenueCallout } from './components/LinkVenueCallout/LinkVenueCallout'
@@ -32,11 +28,6 @@ export const Homepage = (): JSX.Element => {
   const offererNamesQuery = useOffererNamesQuery()
 
   const offererNames = offererNamesQuery.data?.offerersNames
-
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({
@@ -64,18 +55,13 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
-  if (
-    offererNamesQuery.isLoading ||
-    venueTypesQuery.isLoading ||
-    !offererNames ||
-    !venueTypes
-  ) {
-    return (
-      <Layout>
-        <Spinner />
-      </Layout>
-    )
-  }
+  // if (offererNamesQuery.isLoading || !offererNames) {
+  //   return (
+  //     <Layout>
+  //       <Spinner />
+  //     </Layout>
+  //   )
+  // }
 
   return (
     <Layout mainHeading="Bienvenue sur votre espace partenaire">
@@ -100,10 +86,9 @@ export const Homepage = (): JSX.Element => {
       <section className={styles.section} ref={offerersRef}>
         <Offerers
           selectedOfferer={selectedOfferer}
-          isLoading={isOffererLoading}
+          isLoading={true}
           offererOptions={offererOptions}
           isUserOffererValidated={isUserOffererValidated}
-          venueTypes={venueTypes}
         />
       </section>
 
