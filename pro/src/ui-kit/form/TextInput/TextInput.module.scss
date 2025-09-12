@@ -9,7 +9,7 @@
   display: grid;
   grid-template-columns: minmax(100px, 1fr);
   grid-template-rows: repeat(3, auto);
-  grid-gap: rem.torem(8px) rem.torem(16px);
+  gap: rem.torem(8px) rem.torem(16px);
   align-items: center;
 
   &:not(.has-footer) {
