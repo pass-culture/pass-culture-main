@@ -1791,3 +1791,11 @@ def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.L
             offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
         ),
     )
+
+
+def get_synchronized_collective_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> sa_orm.Query:
+    return (
+        db.session.query(models.CollectiveOffer)
+        .filter(models.CollectiveOffer.venueId == venue_id)
+        .filter(models.CollectiveOffer.providerId == provider_id)
+    )
