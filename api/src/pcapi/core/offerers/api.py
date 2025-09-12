@@ -1209,12 +1209,7 @@ def validate_offerer_attachment(
 
     db.session.flush()
 
-    on_commit(
-        functools.partial(
-            external_attributes_api.update_external_pro,
-            user_offerer.user.email,
-        ),
-    )
+    external_attributes_api.update_external_pro(user_offerer.user.email)
 
     transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer)
 
