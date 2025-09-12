@@ -1,3 +1,4 @@
+import pcapi.celery_tasks.metrics as metrics
 from pcapi.celery_tasks import sendinblue  # noqa: F401
 from pcapi.core.offers import tasks  # noqa: F401
 from pcapi.flask_app import app as flask_app
