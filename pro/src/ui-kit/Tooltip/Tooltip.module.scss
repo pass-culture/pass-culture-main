@@ -56,6 +56,6 @@ $arrow-triangle-height: rem.torem(4px);
   /* Do not use the whole visually-hidden mixin here, otherwise the offset width cannot be computed */
   position: absolute;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   border: 0;
 }
