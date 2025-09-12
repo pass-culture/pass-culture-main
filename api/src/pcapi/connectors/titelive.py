@@ -12,6 +12,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.products import models as products_models
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
@@ -169,7 +170,7 @@ class GtlIdError(Exception):
     """Exception when GTL is not found."""
 
 
-def get_new_product_from_ean13(ean: str) -> offers_models.Product:
+def get_new_product_from_ean13(ean: str) -> products_models.Product:
     json = get_by_ean13(ean)
     oeuvre = json["oeuvre"]
     article = oeuvre["article"][0]
@@ -197,7 +198,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
     csr = get_closest_csr(gtl_id)
 
     provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-    return offers_models.Product(
+    return products_models.Product(
         lastProvider=provider,
         description=html.unescape(article["resume"]) if "resume" in article else None,
         name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",

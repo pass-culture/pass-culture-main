@@ -4,6 +4,7 @@ from factory import SubFactory
 
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.users.factories import UserFactory
 
 from . import models
@@ -16,7 +17,7 @@ class ReactionFactory(BaseFactory):
     reactionType = models.ReactionTypeEnum.NO_REACTION
     user = SubFactory(UserFactory)
     offer: offers_models.Offer | None = None
-    product: offers_models.Product | None = None
+    product: products_models.Product | None = None
 
     @classmethod
     def _create(cls, model_class: type[models.Reaction], *args: typing.Any, **kwargs: typing.Any) -> models.Reaction:

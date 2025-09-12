@@ -10,6 +10,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import get_reminder_7_days_before_event_email_data
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.products import factories as products_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -20,7 +21,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="offer@bookingEmail.com")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
         bookings_factories.BookingFactory(stock=stock)
@@ -49,7 +50,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         # Given
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail=None)
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
         bookings_factories.BookingFactory(stock=stock)
@@ -76,7 +77,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
     def test_get_email_metadata(self):
         offerer = offerers_factories.OffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="offer@bookingEmail.com")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 2, 14, 20))
         bookings_factories.BookingFactory(stock=stock)

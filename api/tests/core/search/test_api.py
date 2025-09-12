@@ -13,6 +13,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.search import redis_queues
 from pcapi.core.search import serialization
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -27,8 +28,8 @@ def make_bookable_offer(venue: offerers_models.Venue | None = None) -> offers_mo
 
 
 def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
-    product = offers_factories.ProductFactory()
-    offers_factories.ProductMediationFactory(product=product)
+    product = products_factories.ProductFactory()
+    products_factories.ProductMediationFactory(product=product)
     offer = offers_factories.OfferFactory(product=product, venue=venue or offerers_factories.VenueFactory())
     offers_factories.StockFactory(offer=offer)
     return offer
@@ -402,7 +403,7 @@ def test_unindex_all_offers():
 class UpdateProductBookingCountTest:
     @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={})
     def test_booking_on_product_without_ean(self, _mock):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         bookings_factories.BookingFactory(stock__offer__product=product)
 
         search.update_last_30_days_bookings_for_eans()
@@ -422,7 +423,7 @@ class UpdateProductBookingCountTest:
     @mock.patch("pcapi.core.search.update_booking_count_by_product")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_all_offers_are_indexed(self, mock_async_index_offer_ids, mock_update_booking_count_by_product, app):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         mock_update_booking_count_by_product.return_value = [product]
         offer1 = offers_factories.OfferFactory(product=product)
         offer2 = offers_factories.OfferFactory(product=product)
@@ -436,7 +437,7 @@ class UpdateProductBookingCountTest:
 
 class ReadProductBookingCountTest:
     def test_is_reindexed(self):
-        product = offers_factories.ProductFactory(last_30_days_booking=1)
+        product = products_factories.ProductFactory(last_30_days_booking=1)
         stock = offers_factories.StockFactory(offer__product=product)
 
         search.reindex_offer_ids([stock.offer.id])
@@ -445,7 +446,7 @@ class ReadProductBookingCountTest:
 
     @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={"1234567890987": 1})
     def test_reindex_latest_computed_booking_count_only(self, _mock):
-        product = offers_factories.ProductFactory(ean="1234567890987")
+        product = products_factories.ProductFactory(ean="1234567890987")
         offer = offers_factories.OfferFactory(product=product)
         bookings_factories.BookingFactory(stock__offer=offer)
 
@@ -469,7 +470,7 @@ def test_limit_products_to_reindex_depending_on_algolia_limit(_mock_eans, _mock_
 
 
 def test_booking_count_for_movies():
-    product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+    product = products_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
     offer = offers_factories.OfferFactory(product=product)
     bookings_factories.BookingFactory(
         stock__offer=offer,

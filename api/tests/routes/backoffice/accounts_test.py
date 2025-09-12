@@ -26,10 +26,10 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
@@ -1357,7 +1357,7 @@ class GetUserActivityTest(GetEndpointHelper):
             user=user,
             productIdentifier="9782370730541",
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-            products=[offers_factories.ProductFactory(ean="9782370730541", name="Le Backoffice pour les nuls")],
+            products=[products_factories.ProductFactory(ean="9782370730541", name="Le Backoffice pour les nuls")],
         )
 
         special_event_response = operations_factories.SpecialEventResponseFactory(

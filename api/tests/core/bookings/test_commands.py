@@ -18,7 +18,7 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 )
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offer_models
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models import db
 from pcapi.utils import repository

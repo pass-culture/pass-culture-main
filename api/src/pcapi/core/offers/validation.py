@@ -23,6 +23,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -670,7 +671,7 @@ def check_offer_extra_data(
 
 
 def check_product_for_venue_and_subcategory(
-    product: models.Product | None,
+    product: products_models.Product | None,
     subcategory_id: str | None,
     venue_type_code: VenueTypeCode,
 ) -> None:
@@ -709,7 +710,7 @@ def _check_offer_has_product(offer: models.Offer | None) -> None:
 
 
 def check_product_cgu_and_offerer(
-    product: models.Product | None, ean: str, offerer: offerers_models.Offerer | None
+    product: products_models.Product | None, ean: str, offerer: offerers_models.Offerer | None
 ) -> None:
     if product is None:
         raise api_errors.ApiErrors(

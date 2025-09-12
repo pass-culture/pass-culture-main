@@ -25,7 +25,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products.factories import ProductFactory
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.users import models as users_models

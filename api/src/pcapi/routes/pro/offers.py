@@ -22,6 +22,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -263,9 +264,9 @@ def post_draft_offer(
 
     ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
     product = (
-        db.session.query(models.Product)
-        .filter(models.Product.ean == ean_code)
-        .filter(models.Product.id == body.product_id)
+        db.session.query(products_models.Product)
+        .filter(products_models.Product.ean == ean_code)
+        .filter(products_models.Product.id == body.product_id)
         .one_or_none()
     )
 
@@ -670,20 +671,20 @@ def get_active_venue_offer_by_ean(venue_id: int, ean: str) -> offers_serialize.G
 @atomic()
 def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
-        db.session.query(models.Product)
-        .filter(models.Product.ean == ean)
+        db.session.query(products_models.Product)
+        .filter(products_models.Product.ean == ean)
         .options(
             sa_orm.load_only(
-                models.Product.id,
-                models.Product.extraData,
-                models.Product.gcuCompatibilityType,
-                models.Product.name,
-                models.Product.description,
-                models.Product.subcategoryId,
-                models.Product.thumbCount,
+                products_models.Product.id,
+                products_models.Product.extraData,
+                products_models.Product.gcuCompatibilityType,
+                products_models.Product.name,
+                products_models.Product.description,
+                products_models.Product.subcategoryId,
+                products_models.Product.thumbCount,
             )
         )
-        .options(sa_orm.joinedload(models.Product.productMediations))
+        .options(sa_orm.joinedload(products_models.Product.productMediations))
         .one_or_none()
     )
     offerer = (

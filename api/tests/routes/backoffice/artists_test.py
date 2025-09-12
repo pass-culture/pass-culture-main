@@ -6,8 +6,8 @@ from flask import url_for
 
 from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
@@ -36,7 +36,7 @@ class GetArtistDetailsTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_artist_details_success(self, authenticated_client):
-        product1 = offers_factories.ProductFactory.create()
+        product1 = products_factories.ProductFactory.create()
         artist = artist_factories.ArtistFactory.create(description="A famous artist.", products=[product1])
         artist_factories.ArtistAliasFactory.create(artist=artist, artist_alias_name="Alias 1")
 
@@ -227,7 +227,7 @@ class PostConfirmAssociationTest(PostEndpointHelper):
 
     def test_associate_product_success(self, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         form_data = {"product_id": product.id, "artist_type": artist_models.ArtistType.AUTHOR.name}
         response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, form=form_data)
 
@@ -242,7 +242,7 @@ class PostConfirmAssociationTest(PostEndpointHelper):
 
     def test_already_associtated_product(self, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         artist_factories.ArtistProductLinkFactory.create(artist_id=artist.id, product_id=product.id)
 
         form_data = {"product_id": product.id, "artist_type": artist_models.ArtistType.AUTHOR.name}
@@ -264,7 +264,7 @@ class GetUnlinkProductFormTest(GetEndpointHelper):
 
     def test_get_unlink_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         url = url_for(self.endpoint, artist_id=artist.id, product_id=product.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -284,7 +284,7 @@ class PostUnlinkProductTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_unlink_product_success(self, db_session, authenticated_client):
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         artist = artist_factories.ArtistFactory.create(products=[product])
 
         response = self.post_to_endpoint(
@@ -341,8 +341,8 @@ class PostMergeArtistsTest(PostEndpointHelper):
 
     def test_merge_artists_success(self, db_session, authenticated_client):
         artist_to_keep = artist_factories.ArtistFactory.create()
-        product1 = offers_factories.ProductFactory.create()
-        product2 = offers_factories.ProductFactory.create()
+        product1 = products_factories.ProductFactory.create()
+        product2 = products_factories.ProductFactory.create()
         artist_to_delete = artist_factories.ArtistFactory.create(products=[product1, product2])
         artist_to_delete_id = artist_to_delete.id
 
@@ -388,7 +388,7 @@ class GetSplitArtistFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_split_form_success(self, authenticated_client):
-        product1 = offers_factories.ProductFactory.create()
+        product1 = products_factories.ProductFactory.create()
         artist = artist_factories.ArtistFactory.create(products=[product1])
 
         url = url_for(self.endpoint, artist_id=artist.id)
@@ -410,7 +410,7 @@ class PostSplitArtistTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     def test_split_artist_success(self, db_session, authenticated_client):
-        product_to_move = offers_factories.ProductFactory.create()
+        product_to_move = products_factories.ProductFactory.create()
         source_artist = artist_factories.ArtistFactory.create(products=[product_to_move])
         new_artist_name = "New Split Artist"
 
@@ -454,7 +454,7 @@ class ListArtistsTest(GetEndpointHelper):
         artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Daniel B.")
         artist_factories.ArtistAliasFactory(artist=artist1, artist_alias_name="Balavoine D.")
 
-        offers_factories.ProductFactory(artists=[artist1], name="Je ne suis pas un héros")
+        products_factories.ProductFactory(artists=[artist1], name="Je ne suis pas un héros")
 
         artist2 = artist_factories.ArtistFactory(
             name="Édith Piaf", is_blacklisted=True, date_created=now - datetime.timedelta(days=10)
@@ -463,7 +463,7 @@ class ListArtistsTest(GetEndpointHelper):
         artist3 = artist_factories.ArtistFactory(
             name="Charles Aznavour", is_blacklisted=False, date_created=now - datetime.timedelta(days=5)
         )
-        offers_factories.ProductFactory(artists=[artist3], name="La Bohème")
+        products_factories.ProductFactory(artists=[artist3], name="La Bohème")
 
         db_session.flush()
         return [artist1, artist2, artist3]

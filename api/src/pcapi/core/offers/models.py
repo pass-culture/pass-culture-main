@@ -22,7 +22,6 @@ from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
-from pcapi import settings
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
@@ -55,11 +54,9 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers import models as offerers_models
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
+    from pcapi.core.products import models as products_models
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.users.models import User
-
-
-UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
 class OfferExtraData(typing.TypedDict, total=False):
@@ -132,125 +129,6 @@ class ImageType(enum.Enum):
     POSTER = "poster"
     RECTO = "recto"
     VERSO = "verso"
-
-
-class ProductMediation(PcObject, Base, Model):
-    __tablename__ = "product_mediation"
-
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType: sa_orm.Mapped[ImageType] = sa.Column(sa.Enum(ImageType), nullable=False)
-    lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
-    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
-    productId: int = sa.Column(
-        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
-    )
-    uuid: str = sa.Column(sa.Text, nullable=False, unique=True)
-
-    @property
-    def url(self) -> str:
-        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
-
-
-class GcuCompatibilityType(enum.Enum):
-    COMPATIBLE = "COMPATIBLE"
-    PROVIDER_INCOMPATIBLE = "PROVIDER_INCOMPATIBLE"
-    FRAUD_INCOMPATIBLE = "FRAUD_INCOMPATIBLE"
-
-
-class ProductIdentifierType(enum.Enum):
-    ALLOCINE_ID = "ALLOCINE_ID"
-    EAN = "EAN"
-    VISA = "VISA"
-
-
-class Product(PcObject, Base, Model, HasThumbMixin):
-    __tablename__ = "product"
-
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    description: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
-    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
-    gcuCompatibilityType = sa.Column(
-        db_utils.MagicEnum(GcuCompatibilityType),
-        nullable=False,
-        default=GcuCompatibilityType.COMPATIBLE,
-        server_default=GcuCompatibilityType.COMPATIBLE.value,
-    )
-    last_30_days_booking = sa.Column(sa.Integer, nullable=True)
-    lastProviderId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
-    lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
-    name: str = sa.Column(sa.String(140), nullable=False)
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
-    thumb_path_component = "products"
-    reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
-    productMediations: sa_orm.Mapped[list[ProductMediation]] = sa_orm.relationship(
-        "ProductMediation",
-        backref="product",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
-    ean = sa.Column(sa.Text, sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"), nullable=True)
-
-    chroniclesCount: int | None = sa.Column(
-        sa.BigInteger,
-        sa.CheckConstraint('"chroniclesCount" >= 0', name="check_chronicles_count_is_positive"),
-        nullable=False,
-        server_default=sa.text("0"),
-    )
-    headlinesCount: int | None = sa.Column(
-        sa.BigInteger,
-        sa.CheckConstraint('"headlinesCount" >= 0', name="check_headlines_count_is_positive"),
-        nullable=False,
-        server_default=sa.text("0"),
-    )
-    likesCount: int | None = sa.Column(
-        sa.BigInteger,
-        sa.CheckConstraint('"likesCount" >= 0', name="check_likes_count_is_positive"),
-        nullable=False,
-        server_default=sa.text("0"),
-    )
-
-    sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
-    sa.Index("product_visa_idx", extraData["visa"].astext)
-    sa.Index("unique_ix_product_ean", ean, unique=True)
-    sa.Index("idx_product_trgm_name", name, postgresql_using="gin")
-
-    @property
-    def subcategory(self) -> subcategories.Subcategory:
-        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
-        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
-
-    @property
-    def isGcuCompatible(self) -> bool:
-        return self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE
-
-    @hybrid_property
-    def can_be_synchronized(self) -> bool:
-        return (self.gcuCompatibilityType == GcuCompatibilityType.COMPATIBLE) & (
-            self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
-        )
-
-    @hybrid_property
-    def images(self) -> dict[str, str | None]:
-        if self.productMediations:
-            return {pm.imageType.value: pm.url for pm in self.productMediations if pm.imageType in ImageType}
-        return {ImageType.RECTO.value: self.thumbUrl}
-
-    @property
-    def identifierType(self) -> ProductIdentifierType:
-        # We first check if the product has an EAN.
-        # Then, we check for allocineId before visa because a product can have both,
-        # but allocineId is much more common and generally more reliable than visa.
-        # Therefore, we prioritize allocineId over visa for identifying the product.
-        if self.ean:
-            return ProductIdentifierType.EAN
-        elif self.extraData and self.extraData.get("allocineId"):
-            return ProductIdentifierType.ALLOCINE_ID
-        elif self.extraData and self.extraData.get("visa"):
-            return ProductIdentifierType.VISA
-        else:
-            raise ValueError()
 
 
 class Mediation(PcObject, Base, Model, HasThumbMixin, DeactivableMixin):
@@ -582,6 +460,8 @@ class HeadlineOffer(PcObject, Base, Model):
 
     @isActive.expression  # type: ignore[no-redef]
     def isActive(cls) -> bool:
+        from pcapi.core.products import models as products_models
+
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
             cls.timespan.contains(sa.cast(sa.func.now(), sa.TIMESTAMP)),
@@ -589,7 +469,7 @@ class HeadlineOffer(PcObject, Base, Model):
             offer_alias.status == OfferStatus.ACTIVE,
             sa.or_(
                 sa.exists().where(Mediation.offerId == offer_alias.id),
-                sa.exists().where(ProductMediation.productId == offer_alias.productId),
+                sa.exists().where(products_models.ProductMediation.productId == offer_alias.productId),
             ),
         )
 
@@ -652,8 +532,12 @@ def after_delete_headline_offer(
 
 
 def _increment_product_headlines_count(connection: sa.engine.Connection, product_id: int, increment: int) -> None:
+    from pcapi.core.products import models as products_models
+
     connection.execute(
-        sa.update(Product).where(Product.id == product_id).values(headlinesCount=Product.headlinesCount + increment)
+        sa.update(products_models.Product)
+        .where(products_models.Product.id == product_id)
+        .values(headlinesCount=products_models.Product.headlinesCount + increment)
     )
 
 
@@ -756,8 +640,8 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     )
     name: str = sa.Column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship("PriceCategory", back_populates="offer")
-    product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
-        Product, backref=sa_orm.backref("offers", order_by="Offer.id")
+    product: sa_orm.Mapped["products_models.Product | None"] = sa_orm.relationship(
+        "Product", backref=sa_orm.backref("offers", order_by="Offer.id")
     )
     productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True)
     rankingWeight = sa.Column(sa.Integer, nullable=True)
@@ -1593,17 +1477,6 @@ class TiteliveGtlMapping(PcObject, Base, Model):
     gtlLabelLevel4: str = sa.Column(sa.Text, nullable=True, unique=False)
 
     sa.Index("gtl_type_idx", gtlType, postgresql_using="hash")
-
-
-@dataclass
-class Movie:
-    allocine_id: str | None
-    description: str | None
-    duration: int | None
-    poster_url: str | None
-    visa: str | None
-    title: str
-    extra_data: OfferExtraData | None
 
 
 class ComplianceValidationStatusPrediction(enum.Enum):

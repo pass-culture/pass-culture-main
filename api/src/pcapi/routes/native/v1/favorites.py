@@ -13,9 +13,9 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offer_by_id
+from pcapi.core.products.models import Product
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.models import db

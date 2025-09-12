@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic.v1 import validator
 
-import pcapi.core.offers.models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -29,8 +29,8 @@ class Event(BaseModel):
             return None
         return value
 
-    def to_generic_movie(self) -> offers_models.Movie:
-        return offers_models.Movie(
+    def to_generic_movie(self) -> products_models.Movie:
+        return products_models.Movie(
             allocine_id=str(self.allocine_id) if self.allocine_id else None,
             duration=self.duration,
             description=self.synopsis,
