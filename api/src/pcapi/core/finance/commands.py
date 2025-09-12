@@ -237,6 +237,11 @@ def mark_without_continuation_applications() -> None:
     ds.mark_without_continuation_applications()
 
 
+@blueprint.cli.command("clean_duplicate_bank_accounts")
+def clean_duplicate_bank_accounts() -> None:
+    finance_api.clean_duplicate_bank_accounts()
+
+
 @blueprint.cli.command("push_bank_accounts")
 @click.option(
     "--count",
