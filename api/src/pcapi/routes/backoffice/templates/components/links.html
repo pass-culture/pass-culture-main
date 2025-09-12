@@ -149,6 +149,16 @@
      data-bs-placement="top"
      data-bs-title="Accéder à data.gouv"
      class="link-primary">{{ address.latitude }}, {{ address.longitude }} <i class="bi bi-box-arrow-up-right"></i></a>
+  {{ build_google_maps_icon(address) }}
+{% endmacro %}
+{% macro build_google_maps_icon(address) %}
+  <a href="https://www.google.com/maps/place/{{ address.latitude }},{{ address.longitude }}"
+     target="_blank"
+     rel="noreferrer noopener"
+     data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     data-bs-title="Voir sur Google Maps"
+     class="link-primary px-1"><i class="bi bi-geo-alt-fill"></i></a>
 {% endmacro %}
 {% macro build_ds_application_external_link(ds_dossier_id, ds_procedure_id=none, prefix="", subpath="") %}
   {% if ds_procedure_id %}
