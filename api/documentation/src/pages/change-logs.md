@@ -4,16 +4,6 @@ title: Pass Culture API change logs
 
 # Change logs
 
-:::warning
-💡 Important notice concerning the **collective offers**.
-
-The following changes will be applied during **early september 2025**.
-
-- Offers status
-  - Collective offers that are currently `isActive = false` and do not have a related booking will be archived. This does not apply to offers that are under review or rejected by the validation process.
-  - **You can find details on the new status and the allowed actions [here](/docs/understanding-our-api/resources/collective-offers#collective-offer-status-and-allowed-actions).**
-:::
-
 :::info
 Soon, a `bookingAllowedDatetime` param will be available at offer creation and update. Thanks to this new param, you will be able to precise when your offer becomes bookable. 
 
@@ -33,6 +23,7 @@ You will have two dates at your disposal :
   - [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
   - [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
 - The `offerVenue` field has been removed from all collective endpoints. The `location` field must be used instead, and is now required in the request body of the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#offers-location).
+- Collective offers with `isActive = false` and no related booking have been archived. This does not apply to offers that are under review or rejected by the validation process.
 
 
 ## July 2025
