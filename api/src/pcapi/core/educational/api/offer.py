@@ -558,36 +558,8 @@ def edit_collective_offer_public(
     offer: models.CollectiveOffer,
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation | None,
 ) -> models.CollectiveOffer:
-    if not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active():
-        is_editable = offer.validation not in [
-            offer_mixin.OfferValidationStatus.PENDING,
-            offer_mixin.OfferValidationStatus.REJECTED,
-        ]
-        if not is_editable:
-            raise exceptions.CollectiveOfferNotEditable()
-
     if provider_id != offer.providerId:
         raise exceptions.CollectiveOfferNotEditable()
-
-    collective_stock_unique_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
-    if (
-        not feature.FeatureToggle.WIP_ENABLE_COLLECTIVE_NEW_STATUS_PUBLIC_API.is_active()
-        and collective_stock_unique_booking is not None
-    ):
-        if collective_stock_unique_booking.status == models.CollectiveBookingStatus.CONFIRMED:
-            # if the booking is CONFIRMED, we can only edit the price related fields and the price cannot be increased
-            allowed_fields_for_confirmed_booking = {"price", "priceDetail", "numberOfTickets"}
-            unallowed_fields = set(new_values) - allowed_fields_for_confirmed_booking
-            if unallowed_fields:
-                raise exceptions.CollectiveOfferForbiddenFields(
-                    allowed_fields=["totalPrice", "educationalPriceDetail", "numberOfTickets"]
-                )
-
-            if "price" in new_values and offer.collectiveStock.price < new_values["price"]:
-                raise exceptions.PriceRequesteCantBedHigherThanActualPrice()
-        else:
-            # if the booking is PENDING, we can edit any field
-            validation.check_collective_booking_status_pending(collective_stock_unique_booking)
 
     offer_fields = {field for field in dir(models.CollectiveOffer) if not field.startswith("_")}
     stock_fields = {field for field in dir(models.CollectiveStock) if not field.startswith("_")}
@@ -676,9 +648,10 @@ def edit_collective_offer_public(
         else:
             raise ValueError(f"unknown field {key}")
 
+    current_booking = offer.collectiveStock.get_unique_non_cancelled_booking()
     api_shared.update_collective_stock_booking(
         stock=offer.collectiveStock,
-        current_booking=collective_stock_unique_booking,
+        current_booking=current_booking,
         start_datetime_has_changed="startDatetime" in new_values,
     )
 

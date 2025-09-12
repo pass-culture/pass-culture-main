@@ -73,10 +73,6 @@ class CollectiveStockDoesNotExist(EducationalException):
     pass
 
 
-class PriceRequesteCantBedHigherThanActualPrice(Exception):
-    pass
-
-
 class CollectiveOfferStockBookedAndBookingNotPending(Exception):
     def __init__(self, status: "CollectiveBookingStatus", booking_id: int) -> None:
         self.booking_status = status
@@ -136,12 +132,6 @@ class CollectiveOfferForbiddenAction(Exception):
 class CollectiveOfferTemplateForbiddenAction(Exception):
     def __init__(self, action: "CollectiveOfferTemplateAllowedAction") -> None:
         self.action = action
-        super().__init__()
-
-
-class CollectiveOfferForbiddenFields(Exception):
-    def __init__(self, allowed_fields: list[str]) -> None:
-        self.allowed_fields = allowed_fields
         super().__init__()
 
 
