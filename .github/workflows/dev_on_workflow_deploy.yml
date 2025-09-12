@@ -297,7 +297,6 @@ jobs:
     if: |
       inputs.apply_algolia_config == true &&
       (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped')
-    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
