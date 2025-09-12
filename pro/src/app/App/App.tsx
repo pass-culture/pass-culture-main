@@ -13,10 +13,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
-import {
-  GET_DATA_ERROR_MESSAGE,
-  SAVED_OFFERER_ID_KEY,
-} from '@/commons/core/shared/constants'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -25,9 +22,7 @@ import {
   selectCurrentOffererId,
   selectCurrentOffererIsOnboarded,
 } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Notification } from '@/components/Notification/Notification'
 
 import { useBeamer } from './analytics/beamer'
@@ -101,28 +96,12 @@ export const App = (): JSX.Element | null => {
 
   const isAwaitingRattachment = !isOffererValidating && offererApiError
 
-  const hasLogout = location.search.includes('logout')
-
-  useEffect(() => {
-    if (!hasLogout) {
-      return
-    }
-
-    api.signout()
-    if (storageAvailable('localStorage')) {
-      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-    }
-    dispatch(updateUser(null))
-    dispatch(updateCurrentOfferer(null))
-  }, [hasLogout, dispatch])
-
   const currentRoute = findCurrentRoute(location)
   if (currentRoute && !currentRoute.meta?.public && currentUser === null) {
     const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
+
     const loginUrl =
-      fromUrl.includes('logout') || location.pathname === '/'
-        ? '/connexion'
-        : `/connexion?de=${fromUrl}`
+      location.pathname === '/' ? '/connexion' : `/connexion?de=${fromUrl}`
 
     return <Navigate to={loginUrl} replace />
   }

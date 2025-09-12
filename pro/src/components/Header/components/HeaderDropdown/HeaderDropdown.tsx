@@ -1,17 +1,20 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
+import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
+import { updateUser } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
@@ -106,6 +109,22 @@ export const HeaderDropdown = () => {
       window.removeEventListener('resize', handleResize)
     }
   }, [])
+
+  const dispatch = useDispatch()
+
+  const logout = () => {
+    logEvent(Events.CLICKED_LOGOUT, {
+      from: pathname,
+    })
+
+    api.signout()
+
+    if (storageAvailable('localStorage')) {
+      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
+    }
+    dispatch(updateUser(null))
+    dispatch(updateCurrentOfferer(null))
+  }
 
   return (
     <DropdownMenu.Root onOpenChange={() => setSubOpen(false)}>
@@ -309,17 +328,13 @@ export const HeaderDropdown = () => {
               </>
             )}
             <DropdownMenu.Item className={styles['menu-item']} asChild>
-              <ButtonLink
+              <Button
                 icon={fullLogoutIcon}
-                to={`${pathname}?logout`}
-                onClick={() =>
-                  logEvent(Events.CLICKED_LOGOUT, {
-                    from: pathname,
-                  })
-                }
+                variant={ButtonVariant.TERNARY}
+                onClick={() => logout()}
               >
                 Se déconnecter
-              </ButtonLink>
+              </Button>
             </DropdownMenu.Item>
           </div>
         </DropdownMenu.Content>
