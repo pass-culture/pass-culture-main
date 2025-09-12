@@ -52,7 +52,7 @@ def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | O
     if isinstance(offer, CollectiveOfferTemplate):
         return f"/offre/T-{offer.id}/collectif/recapitulatif"
 
-    return f"/offre/individuelle/{offer.id}/recapitulatif"
+    return f"/offre/individuelle/{offer.id}/recapitulatif/details"
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:

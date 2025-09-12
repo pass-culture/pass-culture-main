@@ -59,5 +59,5 @@ class ReportedOfferByUserEmailTest:
             "OFFER_ID": offer.id,
             "OFFER_NAME": offer.name,
             "REASON": "Le contenu est inapproprié",
-            "OFFER_URL": "http://localhost:3001/offre/" + f"individuelle/{offer.id}/recapitulatif",
+            "OFFER_URL": "http://localhost:3001/offre/" + f"individuelle/{offer.id}/recapitulatif/details",
         }

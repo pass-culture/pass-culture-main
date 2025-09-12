@@ -7,9 +7,9 @@ import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankIn
 import { Income } from '@/pages/Reimbursements/Income/Income'
 import { ReimbursementsInvoices } from '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
-import type { RouteConfig } from './routesMap'
+import type { CustomRouteObject } from './types'
 
-export const routesReimbursements: RouteConfig[] = [
+export const routesReimbursements: CustomRouteObject[] = [
   {
     element: <ReimbursementsInvoices />,
     path: '/remboursements',
