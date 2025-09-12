@@ -32,13 +32,13 @@ const renderOffer = (
 }
 
 describe('IndividualOfferPriceCategories', () => {
-  it('should display', () => {
+  it('should render when the offer is set', () => {
     renderOffer()
-    expect(screen.getByText('Modifier l’offre')).toBeInTheDocument()
+    expect(screen.queryByTestId('spinner')).not.toBeInTheDocument()
   })
 
-  it('should not render when the offer is not set', () => {
+  it('should not render anything but a spinner when the offer is set', () => {
     renderOffer({ offer: null })
-    expect(screen.queryByText('Modifier l’offre')).not.toBeInTheDocument()
+    expect(screen.getByTestId('spinner')).toBeInTheDocument()
   })
 })

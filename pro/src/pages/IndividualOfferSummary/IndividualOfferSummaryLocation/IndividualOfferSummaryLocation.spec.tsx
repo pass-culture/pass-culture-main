@@ -75,7 +75,7 @@ describe('<IndividualOfferSummaryLocation />', () => {
     expect(screen.getByText(LABELS.texts.spinner)).toBeInTheDocument()
   })
 
-  it('should render the layout with title and nested screen when offer is present', () => {
+  it('should render the layout nested screen when offer is present', () => {
     renderIndividualOfferSummaryLocation({})
 
     expect(
