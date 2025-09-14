@@ -39,9 +39,9 @@ jobs:
 
       - uses: technote-space/workflow-conclusion-action@v3
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
@@ -133,9 +133,9 @@ jobs:
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
             CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
 
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
