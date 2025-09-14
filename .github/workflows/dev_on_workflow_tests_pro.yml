@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
@@ -60,9 +60,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
 
       - name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v2"
@@ -92,7 +92,9 @@ jobs:
             yarn install --immutable
 
       - name: Run tests with coverage
-        run: yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run:
+          yarn test:unit:ci --reporter=blob --reporter=allure-vitest/reporter --shard=${{ matrix.shardIndex }}/${{
+          matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -170,9 +172,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: "pro/.nvmrc"
+          node-version-file: "pro/package.json"
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
@@ -248,7 +250,9 @@ jobs:
     with:
       channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
       color: "#A30002"
-      message: ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Unit Tests> a échoué sur `master`"
+      message:
+        ":github-failure: <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|Pro Unit Tests> a
+        échoué sur `master`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

@@ -51,9 +51,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.REF }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version-file: 'pro/.nvmrc'
+          node-version-file: "pro/package.json"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"
