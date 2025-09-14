@@ -58,15 +58,15 @@ Il est recommandé d'utiliser **nvm** pour installer et gérer la version de Nod
 
 > **[Installer nvm](https://github.com/nvm-sh/nvm)**
 
-Une fois nvm installé, on peut installer et utiliser la version 20 de Node.js (_la dernière encore compatible avec Yarn 1.22.22_) :
+Une fois nvm installé, on peut installer et utiliser la bonne version de Node.js :
 
 ```bash
-nvm install 20
+nvm install 24.8
 
-nvm use 20
+nvm use 24.8
 
-# (Conseillé : pour utiliser la version 20 par défaut)
-nvm alias default 20
+# (Conseillé : pour utiliser la version 24.8 par défaut)
+nvm alias default 24.8
 ```
 
 ## <img src="docs/yarn.svg" height="20" /> Yarn
