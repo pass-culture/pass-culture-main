@@ -84,6 +84,11 @@ export const MOCKED_SUBCATEGORY = {
     canBeWithdrawable: true,
     onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
   }),
+  CAN_BE_DUO: typedSubcategoryFactory({
+    id: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
+    categoryId: MOCKED_CATEGORY.A.id,
+    canBeDuo: true,
+  }),
 } satisfies Record<string, SubcategoryResponseModelWithId>
 
 export const MOCKED_SUBCATEGORIES = Object.values(MOCKED_SUBCATEGORY)
