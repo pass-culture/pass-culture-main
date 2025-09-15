@@ -46,8 +46,18 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content {
-  position: relative;
-  max-width: 100%;
-  border: none;
-  margin: 0;
+  min-height: calc(
+    100vh -
+      (
+        size.$action-bar-sticky-height + size.$footer-height +
+          size.$action-bar-sticky-height
+      )
+  );
+  margin: rem.torem(32px) auto 0 auto;
+  padding: rem.torem(24px);
+  max-width: size.$signup-content-width;
+
+  @media screen and (min-width: size.$tablet) {
+    padding-bottom: rem.torem(size.$action-bar-sticky-height);
+  }
 }

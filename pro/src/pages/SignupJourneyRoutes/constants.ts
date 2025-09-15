@@ -1,4 +1,4 @@
-export enum OnboardingFormNavigationAction {
+export enum SignupJourneyAction {
   Breadcrumb = 'Breadcrumb',
   ActionBar = 'ActionBar',
   NewOfferer = 'NewOfferer',
