@@ -45,6 +45,7 @@ export const IndividualOfferPriceTableScreen = ({
   const { pathname } = useLocation()
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
+
   const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isCaledonian = useIsCaledonian()
 
@@ -64,6 +65,10 @@ export const IndividualOfferPriceTableScreen = ({
     mode,
     offer,
   }
+
+  const canBeDuo = subCategories.find(
+    (subCategory) => subCategory.id === offer.subcategoryId
+  )?.canBeDuo
 
   const form = useForm({
     context: schemaValidationContext,
@@ -110,7 +115,6 @@ export const IndividualOfferPriceTableScreen = ({
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(saveAndContinue)}>
           <ScrollToFirstHookFormErrorAfterSubmit />
-
           <FormLayout>
             <FormLayout.MandatoryInfo />
 
@@ -128,8 +132,7 @@ export const IndividualOfferPriceTableScreen = ({
               />
             </FormLayout.Section>
           </FormLayout>
-
-          {offer.isEvent && (
+          {canBeDuo && (
             <FormLayout fullWidthActions>
               <FormLayout.Section title="Réservations “Duo”">
                 <DuoCheckbox
@@ -140,7 +143,6 @@ export const IndividualOfferPriceTableScreen = ({
               </FormLayout.Section>
             </FormLayout>
           )}
-
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}

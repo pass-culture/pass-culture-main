@@ -198,4 +198,22 @@ describe('<IndividualOfferPriceTableScreen />', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('should display the duo checkbox if the offer subcatefory can be duo', async () => {
+    renderPriceTableScreen({
+      props: {
+        offer: getIndividualOfferFactory({
+          subcategoryId: MOCKED_SUBCATEGORY.CAN_BE_DUO.id,
+        }),
+      },
+    })
+
+    expect(
+      await screen.findByRole('heading', { name: LABELS.section })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('checkbox', { name: /Accepter les réservations “Duo“/ })
+    ).toBeInTheDocument()
+  })
 })
