@@ -260,7 +260,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
         if response_json.get("Status", {}).get("value") == "Balanced":
             # Set invoice to Open in Cegid
             set_open_url = f"{self.base_url}/{self._interface}/Bill/ReleaseBill"
-            set_open_response = self._request("POST", set_open_url, json={"Entity": {"value": response_json["id"]}})
+            set_open_response = self._request("POST", set_open_url, json={"Entity": {"id": response_json["id"]}})
 
             if set_open_response.status_code != 200:
                 raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
