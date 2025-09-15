@@ -51,7 +51,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
-            "FORMATTED_OFFER_PRICE": "10,10 €",
+            "FORMATTED_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": "OFFERER",
             "REJECTED": False,
@@ -105,7 +105,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
             "IS_ONLINE": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
-            "FORMATTED_OFFER_PRICE": "10,10 €",
+            "FORMATTED_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": "OFFERER",
             "REJECTED": False,
@@ -128,7 +128,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         )
         mail_params = mails_testing.outbox[0]["params"]
         assert mail_params["OFFER_PRICE"] == 20.00
-        assert mail_params["FORMATTED_OFFER_PRICE"] == "2385 F"
+        assert mail_params["FORMATTED_PRICE"] == "2385 F"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -159,7 +159,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
-            "FORMATTED_OFFER_PRICE": "10,10 €",
+            "FORMATTED_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -195,7 +195,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": True,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
-            "FORMATTED_OFFER_PRICE": "10,10 €",
+            "FORMATTED_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -228,7 +228,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
             "IS_THING": False,
             "OFFER_NAME": booking.stock.offer.name,
             "OFFER_PRICE": decimal.Decimal("10.10"),
-            "FORMATTED_OFFER_PRICE": "10,10 €",
+            "FORMATTED_PRICE": "10,10 €",
             "OFFERER_NAME": booking.offerer.name,
             "REASON": None,
             "REJECTED": False,
@@ -281,4 +281,4 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
         # Then
         assert sendinblue_data.params["OFFER_PRICE"] == 20.00
-        assert sendinblue_data.params["FORMATTED_OFFER_PRICE"] == "2385 F"
+        assert sendinblue_data.params["FORMATTED_PRICE"] == "2385 F"
