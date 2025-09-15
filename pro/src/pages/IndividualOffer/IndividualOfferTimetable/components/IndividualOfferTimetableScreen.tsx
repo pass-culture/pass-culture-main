@@ -23,7 +23,6 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { StocksThing } from '@/components/IndividualOffer/StocksThing/StocksThing'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
-import { StocksCalendarCancelBanner } from '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/components/IndividualOfferSummaryStocksCalendarScreen/IndividualOfferSummaryStocksCalendarScreen'
 import { cleanOpeningHours } from '@/pages/VenueEdition/serializers'
 
 import { areOpeningHoursEmpty } from '../commons/areOpeningHoursEmpty'
@@ -163,11 +162,6 @@ export function IndividualOfferTimetableScreen({
 
   return (
     <FormProvider {...form}>
-      {!isNewOfferCreationFlowFFEnabled && (
-        <div className={styles['cancel-banner']}>
-          <StocksCalendarCancelBanner />
-        </div>
-      )}
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {isOfferTimetableTypeEditable && (
           <div className={styles['group']}>

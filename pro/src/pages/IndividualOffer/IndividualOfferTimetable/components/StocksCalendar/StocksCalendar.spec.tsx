@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 
 import { api } from '@/apiClient/api'
+import { OfferStatus } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -41,7 +42,9 @@ function renderStocksCalendar(
   renderWithProviders(
     <>
       <StocksCalendar
-        offer={getIndividualOfferFactory()}
+        offer={getIndividualOfferFactory({
+          priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        })}
         mode={OFFER_WIZARD_MODE.CREATION}
         timetableTypeRadioGroupShown={false}
         {...props}
@@ -62,6 +65,32 @@ describe('StocksCalendar', () => {
     expect(
       screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
     ).toBeInTheDocument()
+  })
+
+  it('should display an info banner', async () => {
+    renderStocksCalendar([])
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByText(/Les bénéficiaires ont 48h pour annuler/)
+    ).toBeInTheDocument()
+  })
+
+  it('should not display an info banner if the offer is disabled', async () => {
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({ status: OfferStatus.REJECTED }),
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByText(/Les bénéficiaires ont 48h pour annuler/)
+    ).not.toBeInTheDocument()
   })
 
   it('should open the recurrence form when clicking on the button when there are no stocks yet', async () => {
@@ -164,7 +193,7 @@ describe('StocksCalendar', () => {
 
     await userEvent.type(screen.getByLabelText('Horaire 1 *'), '22:22')
 
-    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '6')
+    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '1')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 

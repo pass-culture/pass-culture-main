@@ -14,6 +14,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -36,6 +37,7 @@ import type {
 import { RecurrenceForm } from './RecurrenceForm/RecurrenceForm'
 import styles from './StocksCalendar.module.scss'
 import { StocksCalendarActionsBar } from './StocksCalendarActionsBar/StocksCalendarActionsBar'
+import { StocksCalendarCancelBanner } from './StocksCalendarCancelBanner/StocksCalendarCancelBanner'
 import { StocksCalendarFilters } from './StocksCalendarFilters/StocksCalendarFilters'
 import { StocksCalendarTable } from './StocksCalendarTable/StocksCalendarTable'
 
@@ -188,6 +190,11 @@ export function StocksCalendar({
       )}
       {isLoading && offer.hasStocks && (
         <Spinner className={styles['spinner']} />
+      )}
+      {!isOfferDisabled(offer.status) && (
+        <div className={styles['cancel-banner']}>
+          <StocksCalendarCancelBanner />
+        </div>
       )}
       {!offer.hasStocks && (
         <div className={styles['no-stocks-content']}>
