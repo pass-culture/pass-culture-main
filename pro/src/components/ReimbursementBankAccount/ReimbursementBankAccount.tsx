@@ -50,8 +50,7 @@ export const ReimbursementBankAccount = ({
           {bankAccount.label}
         </div>
         <div className={styles['informations-section-content']}>
-          <div>IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}</div>
-          <div>BIC : {bankAccount.bic}</div>
+          IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}
         </div>
       </div>
       {bankAccount.status === BankAccountApplicationStatus.EN_CONSTRUCTION ||

@@ -434,7 +434,6 @@ export const defaultGetBookingResponse: GetBookingResponse = {
 }
 
 export const defaultBankAccount: BankAccountResponseModel = {
-  bic: 'CCOPFRPP',
   dateCreated: '2020-05-07',
   dsApplicationId: 1,
   id: 1,

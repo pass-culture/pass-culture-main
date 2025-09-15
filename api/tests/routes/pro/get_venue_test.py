@@ -213,7 +213,6 @@ class Returns200Test:
             "hasAdageId": True,
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
             "bankAccount": {
-                "bic": bank_account_link.bankAccount.bic,
                 "dateCreated": format_into_utc_date(bank_account_link.bankAccount.dateCreated),
                 "dsApplicationId": bank_account_link.bankAccount.dsApplicationId,
                 "id": bank_account_link.bankAccount.id,

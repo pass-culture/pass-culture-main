@@ -88,7 +88,6 @@ class OfferersBankAccountTest:
         bank_account = bank_accounts.pop()
         assert bank_account["label"] == expected_bank_account.label
         assert bank_account["obfuscatedIban"] == f"XXXX XXXX XXXX {expected_bank_account.iban[-4:]}"
-        assert bank_account["bic"] == expected_bank_account.bic
         assert bank_account["isActive"] is True
         assert bank_account["status"] == "accepte"
         assert not bank_account["linkedVenues"]
@@ -168,7 +167,6 @@ class OfferersBankAccountTest:
         bank_account = bank_accounts.pop()
         assert bank_account["label"] == expected_bank_account.label
         assert bank_account["obfuscatedIban"] == f"XXXX XXXX XXXX {expected_bank_account.iban[-4:]}"
-        assert bank_account["bic"] == expected_bank_account.bic
         assert bank_account["isActive"] is True
 
     @pytest.mark.usefixtures("db_session")

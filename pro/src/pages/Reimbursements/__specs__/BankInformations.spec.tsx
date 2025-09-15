@@ -21,7 +21,6 @@ import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankIn
 import type { ReimbursementsContextProps } from '@/pages/Reimbursements/Reimbursements'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
-  bic: 'bic',
   dateCreated: '2020-05-07',
   dsApplicationId: 1,
   id: 1,
