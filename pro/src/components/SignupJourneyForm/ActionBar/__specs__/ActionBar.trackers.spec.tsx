@@ -10,8 +10,8 @@ import {
   ActionBar,
   type ActionBarProps,
 } from '@/components/SignupJourneyForm/ActionBar/ActionBar'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 const mockLogEvent = vi.fn()
 
@@ -54,7 +54,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       {
         from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
-        used: OnboardingFormNavigationAction.ActionBar,
+        used: SignupJourneyAction.ActionBar,
       }
     )
   })
@@ -94,7 +94,7 @@ describe('screens:SignupJourney::ActionBar', () => {
       {
         from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-        used: OnboardingFormNavigationAction.ActionBar,
+        used: SignupJourneyAction.ActionBar,
       }
     )
   })

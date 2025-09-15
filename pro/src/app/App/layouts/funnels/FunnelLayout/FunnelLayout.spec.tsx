@@ -22,7 +22,7 @@ const renderLayout = ({
   ...props
 }: FunnelLayoutTestProps = {}) => {
   renderWithProviders(
-    <FunnelLayout {...props} />,
+    <FunnelLayout {...props} mainHeading="Votre structure" />,
     isConnected
       ? {
           user: sharedCurrentUserFactory({

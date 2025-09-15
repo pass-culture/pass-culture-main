@@ -17,8 +17,8 @@ import {
   DEFAULT_ADDRESS_FORM_VALUES,
   DEFAULT_OFFERER_FORM_VALUES,
 } from '@/components/SignupJourneyForm/Offerer/constants'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 
@@ -120,7 +120,7 @@ describe('test renderSignupJourneyStepper', () => {
       {
         from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-        used: OnboardingFormNavigationAction.Breadcrumb,
+        used: SignupJourneyAction.Breadcrumb,
       }
     )
   })
@@ -176,7 +176,7 @@ describe('test renderSignupJourneyStepper', () => {
       {
         from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-        used: OnboardingFormNavigationAction.Breadcrumb,
+        used: SignupJourneyAction.Breadcrumb,
       }
     )
 
@@ -190,7 +190,7 @@ describe('test renderSignupJourneyStepper', () => {
       {
         from: '/inscription/structure/activite',
         to: SIGNUP_JOURNEY_STEP_IDS.CONFIRMATION,
-        used: OnboardingFormNavigationAction.Breadcrumb,
+        used: SignupJourneyAction.Breadcrumb,
       }
     )
 
@@ -204,7 +204,7 @@ describe('test renderSignupJourneyStepper', () => {
       {
         from: '/inscription/structure/confirmation',
         to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-        used: OnboardingFormNavigationAction.Breadcrumb,
+        used: SignupJourneyAction.Breadcrumb,
       }
     )
   })

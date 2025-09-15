@@ -6,7 +6,6 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
@@ -33,9 +32,9 @@ import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import fullEditIcon from '@/icons/full-edit.svg'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -197,11 +196,6 @@ export const Validation = (): JSX.Element => {
   return (
     <div className={styles['validation-screen']}>
       <section>
-        {/* eslint-disable-next-line react/forbid-elements */}
-        <MainHeading
-          mainHeading="Votre structure"
-          className={styles['main-heading-wrapper']}
-        />
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Vos informations</h2>
           <ButtonLink
@@ -210,7 +204,7 @@ export const Validation = (): JSX.Element => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-                used: OnboardingFormNavigationAction.UpdateFromValidation,
+                used: SignupJourneyAction.UpdateFromValidation,
               })
             }}
             variant={ButtonVariant.TERNARY}
@@ -240,7 +234,7 @@ export const Validation = (): JSX.Element => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
                 from: location.pathname,
                 to: SIGNUP_JOURNEY_STEP_IDS.ACTIVITY,
-                used: OnboardingFormNavigationAction.UpdateFromValidation,
+                used: SignupJourneyAction.UpdateFromValidation,
               })
             }}
             variant={ButtonVariant.TERNARY}
