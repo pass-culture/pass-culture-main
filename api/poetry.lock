@@ -4423,18 +4423,18 @@ tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pyopenssl"
-version = "25.1.0"
+version = "25.2.0"
 description = "Python wrapper module around the OpenSSL library"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "pyopenssl-25.1.0-py3-none-any.whl", hash = "sha256:2b11f239acc47ac2e5aca04fd7fa829800aeee22a2eb30d744572a157bd8a1ab"},
-    {file = "pyopenssl-25.1.0.tar.gz", hash = "sha256:8d031884482e0c67ee92bf9a4d8cceb08d92aba7136432ffb0703c5280fc205b"},
+    {file = "pyopenssl-25.2.0-py3-none-any.whl", hash = "sha256:8a3d87605158baffa5d35d097539b2221908f7b15c3ee03c99cdd49e79a7d5ae"},
+    {file = "pyopenssl-25.2.0.tar.gz", hash = "sha256:71db4c6a4badb88b9804ade80886dc19b7eec3678a4a23c9029f97024c65191a"},
 ]
 
 [package.dependencies]
-cryptography = ">=41.0.5,<46"
+cryptography = ">=45.0.7,<46"
 typing-extensions = {version = ">=4.9", markers = "python_version < \"3.13\" and python_version >= \"3.8\""}
 
 [package.extras]
@@ -6960,4 +6960,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "0a07afd8d35d4b828d44871a10890138244038ec0b7c86f7df07374f6c78e5bb"
+content-hash = "a2b3dc97d3d4c30830ad2b071d805784f5e8302f3ce23afb01f16fe6a0c3176e"
