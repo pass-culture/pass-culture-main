@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def save_sandbox(
-    name: str,
+    name: tuple[str],
     with_clean: bool = True,
     with_clean_bucket: bool = False,
     steps_to_skip: typing.Iterable[str] | None = None,
@@ -28,11 +28,12 @@ def save_sandbox(
     if with_clean_bucket:
         clean_industrial_mediations_bucket()
 
-    script_name = "sandbox_" + name
-    sandbox_module = getattr(scripts, script_name)
+    for sandbox_name in name:
+        script_name = f"sandbox_{sandbox_name}"
+        sandbox_module = getattr(scripts, script_name)
 
-    with helpers.skip_steps(steps=steps_to_skip):
-        sandbox_module.save_sandbox()
+        with helpers.skip_steps(steps=steps_to_skip):
+            sandbox_module.save_sandbox()
 
     logger.info("Sandbox %s saved", name)
     _index_all_offers()
