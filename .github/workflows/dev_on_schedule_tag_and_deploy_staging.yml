@@ -62,7 +62,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
-      releaseNumber: ${{ needs.get-version-and-trigger-release.outputs.versionName }}
+      releaseNumber: ${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}
       commitHash: ${{ needs.get-version-and-trigger-release.outputs.commitHash }}
 
   deploy-staging:
@@ -71,7 +71,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: staging
-      app_version: ${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}
+      app_version: ${{ needs.get-version-and-trigger-release.outputs.versionName }}
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
