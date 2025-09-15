@@ -9,6 +9,8 @@ from pcapi.connectors import api_adresse
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.highlights import factories as highlights_factories
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -273,6 +275,50 @@ class AutocompleteProvidersTest(AutocompleteTestBase):
         providers_factories.ProviderFactory(id=12, name="Bon providér")
         providers_factories.ProviderFactory(id=5, name="provider with number 12")
         providers_factories.ProviderFactory(id=912, name="A good id")
+
+        self._test_autocomplete(
+            authenticated_client, search_query, expected_texts, expected_num_queries=expected_queries
+        )
+
+
+class AutocompleteHighlightsTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_highlights"
+
+    @pytest.mark.parametrize(
+        "search_query, expected_texts, expected_queries",
+        [
+            ("", set(), 2),
+            (
+                "co",
+                {
+                    f"Temps costaud - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                },
+                3,
+            ),
+            (
+                "fort",
+                {
+                    f"Temps Fôrt - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                },
+                3,
+            ),
+            (
+                "1",
+                {
+                    f"Temps costaud - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
+                },
+                3,
+            ),
+            ("nothing", set(), 3),
+        ],
+    )
+    def test_autocomplete_highlights(self, authenticated_client, search_query, expected_texts, expected_queries):
+        db.session.query(highlights_models.Highlight).delete()
+        highlights_factories.HighlightFactory(id=1, name="Temps costaud")
+        highlights_factories.HighlightFactory(id=5, name="Temps Fôrt")
 
         self._test_autocomplete(
             authenticated_client, search_query, expected_texts, expected_num_queries=expected_queries

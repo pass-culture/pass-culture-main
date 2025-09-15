@@ -21,6 +21,7 @@ from pcapi.core.finance import conf as finance_conf
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.highlights import factories as highlight_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import constants as offerers_constants
@@ -986,6 +987,23 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-boolean": "false",
         }
         with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+    def test_list_offers_by_highlight_request(self, authenticated_client):
+        highlight_request = highlight_factories.HighlightRequestFactory(offer__name="good")
+        offers_factories.OfferFactory(name="bad")
+        query_args = {
+            "search-0-search_field": "HIGHLIGHT_REQUEST",
+            "search-0-operator": "IN",
+            "search-0-boolean": "true",
+            "search-0-highlight": highlight_request.highlightId,
+        }
+        with assert_num_queries(self.expected_num_queries + 1):  # fetch highlights (selectinload: 1 query)
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
