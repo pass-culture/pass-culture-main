@@ -95,6 +95,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_user_account_update_requ
     create_user_account_update_requests,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_user_offerers import create_user_offerers
+from pcapi.sandboxes.scripts.getters.native import create_accessibility_offers
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import repository
 
@@ -212,3 +213,6 @@ def save_industrial_sandbox() -> None:
 
     # run this last as we fill out missing user offerers
     create_user_offerers()
+
+    # Access42 audit offers
+    create_accessibility_offers()

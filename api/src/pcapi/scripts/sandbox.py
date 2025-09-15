@@ -9,11 +9,11 @@ blueprint = Blueprint(__name__, __name__)
 
 
 @blueprint.cli.command("sandbox")
-@click.option("-n", "--name", help="Sandbox name", default="classic")
+@click.option("-n", "--name", help="Sandbox name", default=["classic"], multiple=True)
 @click.option("-c", "--clean", help="Clean database first", default="true")
 @click.option("-cb", "--clean-bucket", help="Clean mediation bucket", default="false")
 @click.option("-sts", "--step-to-skip", help="Name of function to skip. Can provide multiple values", multiple=True)
-def sandbox(name: str, clean: str, clean_bucket: str, step_to_skip: tuple[str]) -> None:
+def sandbox(name: tuple[str], clean: str, clean_bucket: str, step_to_skip: tuple[str]) -> None:
     if settings.CAN_RUN_SANDBOX:
         with_clean = clean == "true"
         with_clean_bucket = clean_bucket == "true"
