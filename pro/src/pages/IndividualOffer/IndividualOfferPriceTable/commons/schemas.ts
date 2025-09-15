@@ -1,6 +1,10 @@
 import { isValid } from 'date-fns'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import {
+  convertEuroToPacificFranc,
+  convertPacificFrancToEuro,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import { yup } from '@/commons/utils/yup'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 import { readonly } from '@/commons/utils/yup/readonly'
@@ -70,15 +74,26 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .number()
     .default(null)
     .defined()
-    .when(['$isCaledonian', '$mode', 'id'], (vals, schema) => {
-      const [isCaledonian, mode, id] = vals as [
+    .when(['$isCaledonian', '$mode', 'id', '$isCast'], (vals, schema) => {
+      const [isCaledonian, mode, id, isCast] = vals as [
         PriceTableFormContext['isCaledonian'],
         PriceTableFormContext['mode'],
         PriceTableEntryModel['id'],
+        boolean?,
       ]
 
+      const nextSchema = schema.transform((_value, originalValue) => {
+        if (isCaledonian) {
+          if (isCast) {
+            return convertEuroToPacificFranc(originalValue)
+          }
+          return convertPacificFrancToEuro(originalValue)
+        }
+        return originalValue
+      })
+
       if (mode === OFFER_WIZARD_MODE.CREATION || id !== undefined) {
-        return schema
+        return nextSchema
           .typeError('Veuillez renseigner un prix')
           .min(
             0,
@@ -97,7 +112,7 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
           .required('Veuillez renseigner un prix')
       }
 
-      return schema.optional()
+      return nextSchema.optional()
     }),
 
   quantity: yup

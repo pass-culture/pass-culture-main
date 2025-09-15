@@ -198,7 +198,6 @@ class CancelBookingTest:
         requests_mock.post(
             "https://cinema-0.example.com/web_service",
             text=fixtures.cgr_annulation_response_template(
-                success=False,
                 message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
             ),
         )
@@ -211,3 +210,22 @@ class CancelBookingTest:
             str(exception.value)
             == "Error on CGR API on AnnulationPassCulture : L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible"
         )
+
+    def test_when_cgr_returns_element_already_cancelled_on_cgr_side(self, requests_mock):
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get("https://cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "https://cinema-0.example.com/web_service",
+            text=fixtures.cgr_annulation_response_template(
+                message_error="Annulation impossible : La réservation a déjà fait l'objet d'une annulation",
+                error_code=1,
+            ),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+
+        # should not raise
+        cgr.cancel_booking(barcodes=["CINE-987654321"])
