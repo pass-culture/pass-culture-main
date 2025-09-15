@@ -754,7 +754,7 @@ class CegidFinanceBackendTest:
         set_open_request_matcher = requests_mock.register_uri(
             "POST",
             f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
-            json={"Entity": {"value": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
+            json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
             status_code=200,
             headers={"content-type": "application/json"},
         )
@@ -971,7 +971,7 @@ class CegidFinanceBackendTest:
         set_open_request_matcher = requests_mock.register_uri(
             "POST",
             f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
-            json={"Entity": {"value": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
+            json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
             status_code=200,
             headers={"content-type": "application/json"},
         )
