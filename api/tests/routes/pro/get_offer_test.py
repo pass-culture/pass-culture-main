@@ -71,9 +71,7 @@ class Returns200Test:
 
         response_json = response.json
         assert "iban" not in response_json["venue"]
-        assert "bic" not in response_json["venue"]
         assert "iban" not in response_json["venue"]["managingOfferer"]
-        assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
         assert response_json["id"] == offer.id

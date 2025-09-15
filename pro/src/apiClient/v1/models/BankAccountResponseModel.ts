@@ -5,7 +5,6 @@
 import type { BankAccountApplicationStatus } from './BankAccountApplicationStatus';
 import type { LinkedVenues } from './LinkedVenues';
 export type BankAccountResponseModel = {
-  bic: string;
   dateCreated: string;
   dsApplicationId?: number | null;
   id: number;

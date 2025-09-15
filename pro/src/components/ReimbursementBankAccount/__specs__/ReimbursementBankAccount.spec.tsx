@@ -59,7 +59,6 @@ describe('ReimbursementBankAccount', () => {
       isActive: true,
       label: 'Bank account label',
       obfuscatedIban: 'XXXX XXXX XXXX 0637',
-      bic: 'BDFEFRPP',
       dsApplicationId: 6,
       status: BankAccountApplicationStatus.ACCEPTE,
       dateCreated: '2023-09-22T12:44:05.410448',
@@ -81,7 +80,6 @@ describe('ReimbursementBankAccount', () => {
 
     expect(screen.getByText('Bank account label')).toBeInTheDocument()
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
-    expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
 
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
@@ -96,7 +94,6 @@ describe('ReimbursementBankAccount', () => {
 
     expect(screen.getByText('Bank account label')).toBeInTheDocument()
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
-    expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
 
     expect(screen.getByText(/informations manquantes/)).toBeInTheDocument()
     expect(screen.getByText(/Compléter le dossier/)).toBeInTheDocument()
@@ -111,7 +108,6 @@ describe('ReimbursementBankAccount', () => {
 
     expect(screen.getByText('Bank account label')).toBeInTheDocument()
     expect(screen.getByText('IBAN : **** 0637')).toBeInTheDocument()
-    expect(screen.getByText('BIC : BDFEFRPP')).toBeInTheDocument()
 
     expect(screen.getByText(/en cours de validation/)).toBeInTheDocument()
     expect(screen.getByText('Voir le dossier')).toBeInTheDocument()
