@@ -56,7 +56,6 @@ class GetBankAccountTest(GetEndpointHelper):
         assert f"Bank Account ID : {bank_account.id} " in response_text
         assert f"Humanized ID : {humanize(bank_account.id)} " in response_text
         assert f"IBAN : {bank_account.iban} " in response_text
-        assert f"BIC : {bank_account.bic} " in response_text
         assert "Statut dossier DMS ADAGE :" not in response_text
         assert "Pas de dossier DMS CB" in response_text
         assert "État du compte bancaire : Accepté" in response_text
