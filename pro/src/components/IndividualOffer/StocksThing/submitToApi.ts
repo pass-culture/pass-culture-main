@@ -1,4 +1,4 @@
-import type { UseFormReset, UseFormSetError } from 'react-hook-form'
+import type { UseFormSetError } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import {
@@ -6,7 +6,10 @@ import {
   isErrorAPIError,
   serializeApiErrors,
 } from '@/apiClient/helpers'
-import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferWithAddressResponseModel,
+  GetStocksResponseModel,
+} from '@/apiClient/v1'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 
 import {
@@ -14,15 +17,15 @@ import {
   serializeUpdateThingStock,
 } from './adapters/serializers'
 import type { StockThingFormValues } from './types'
-import { buildInitialValues } from './utils/buildInitialValues'
 
 export const submitToApi = async (
   values: StockThingFormValues,
   offer: GetIndividualOfferWithAddressResponseModel,
-  resetForm: UseFormReset<StockThingFormValues>,
   setErrors: UseFormSetError<StockThingFormValues>,
   readOnlyFields: string[]
-) => {
+): Promise<
+  [GetIndividualOfferWithAddressResponseModel, GetStocksResponseModel]
+> => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
   } catch {
@@ -74,5 +77,6 @@ export const submitToApi = async (
     api.getOffer(offer.id),
     api.getStocks(offer.id),
   ])
-  resetForm(buildInitialValues(offerResponse, stockResponse.stocks))
+
+  return [offerResponse, stockResponse]
 }
