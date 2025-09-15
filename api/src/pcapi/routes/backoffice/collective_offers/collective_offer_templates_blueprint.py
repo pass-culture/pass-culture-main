@@ -484,7 +484,11 @@ def get_collective_offer_template_details(collective_offer_template_id: int) -> 
                         offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
                     ),
                 ),
-            )
+            ),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.offererAddress).joinedload(
+                offerers_models.OffererAddress.address
+            ),
         )
     )
     collective_offer_template = collective_offer_template_query.one_or_none()

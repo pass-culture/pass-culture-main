@@ -1870,7 +1870,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         # section 1
         assert descriptions["CollectiveOffer ID"] == str(collective_booking.collectiveStock.collectiveOffer.id)
         assert descriptions["Statut"] == "Réservée"
-        assert descriptions["Formats"] == "Projection audiovisuelle"
+        assert descriptions["Format"] == "Projection audiovisuelle"
         # section 2
         assert (
             descriptions["Entité juridique"]
