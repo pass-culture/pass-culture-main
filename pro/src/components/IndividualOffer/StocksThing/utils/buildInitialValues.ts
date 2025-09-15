@@ -4,6 +4,7 @@ import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import { convertEuroToPacificFranc } from '@/commons/utils/convertEuroToPacificFranc'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
@@ -13,7 +14,8 @@ import type { StockThingFormValues } from '../types'
 
 export const buildInitialValues = (
   offer: GetIndividualOfferWithAddressResponseModel,
-  stocks: GetOfferStockResponseModel[]
+  stocks: GetOfferStockResponseModel[],
+  isCaledonian?: boolean
 ): StockThingFormValues => {
   if (stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
@@ -33,7 +35,9 @@ export const buildInitialValues = (
           FORMAT_ISO_DATE_ONLY
         )
       : '',
-    price: stocks[0].price,
+    price: isCaledonian
+      ? convertEuroToPacificFranc(Number(stocks[0].price))
+      : stocks[0].price,
     activationCodesExpirationDatetime: isDateValid(
       stocks[0].activationCodesExpirationDatetime
     )

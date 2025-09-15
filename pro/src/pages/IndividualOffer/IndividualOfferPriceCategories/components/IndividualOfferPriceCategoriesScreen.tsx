@@ -27,8 +27,6 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from '@/ui-kit/Button/Button'
@@ -320,22 +318,25 @@ export const IndividualOfferPriceCategoriesScreen = ({
                     autoComplete="off"
                   />
                   <PriceInput
-                    {...register(`priceCategories.${index}.price`)}
-                    className={styles['price-input']}
                     name={`priceCategories.${index}.price`}
+                    className={styles['price-input']}
+                    value={watch(`priceCategories.${index}.price`)}
                     label="Prix par personne"
-                    rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+                    currency={isCaledonian ? 'XPF' : 'EUR'}
                     disabled={isDisabled}
                     showFreeCheckbox
                     hideAsterisk={true}
                     smallLabel
-                    updatePriceValue={(value) =>
+                    onChange={(event) => {
+                      const newPriceAmount: string = event.target.value
                       setValue(
                         `priceCategories.${index}.price`,
-                        isCaledonian ? Number(value) : parseFloat(value),
-                        { shouldValidate: true }
+                        newPriceAmount !== '' && newPriceAmount !== undefined
+                          ? Number(newPriceAmount)
+                          : '',
+                        { shouldValidate: true, shouldDirty: true }
                       )
-                    }
+                    }}
                     error={errors.priceCategories?.[index]?.price?.message}
                   />
 

@@ -371,7 +371,7 @@ export const RecurrenceForm = ({
                   label="Date limite de réservation (en nombre de jours avant le début de l’évènement)"
                   isLabelHidden
                   type="number"
-                  step="1"
+                  step={1}
                   min={0}
                   className={styles['booking-date-limit-input']}
                   error={

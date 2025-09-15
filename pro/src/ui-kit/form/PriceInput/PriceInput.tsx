@@ -1,12 +1,9 @@
-import React, {
-  type ChangeEvent,
-  type ForwardedRef,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { type ForwardedRef, useEffect, useRef, useState } from 'react'
 
+import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import strokeEuroIcon from '@/icons/stroke-euro.svg'
+import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import {
   TextInput,
   type TextInputProps,
@@ -29,6 +26,22 @@ export type PriceInputProps = Pick<
    */
   label: string
   /**
+   * The name of the input, mind what's being used in the form.
+   */
+  name?: string
+  /**
+   * A callback when the quantity changes.
+   */
+  onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
+  /**
+   * A callback when the quantity text input is blurred.
+   */
+  onBlur?: React.InputHTMLAttributes<HTMLInputElement>['onBlur']
+  /**
+   * The quantity value. Should be `undefined` if the quantity is unlimited.
+   */
+  value?: number | ''
+  /**
    * A flag to show the "Gratuit" checkbox.
    */
   showFreeCheckbox?: boolean
@@ -38,7 +51,11 @@ export type PriceInputProps = Pick<
    * If this prop is provided, the error message will be displayed and the field will be marked as errored
    */
   error?: string
-  updatePriceValue: (value: string) => void
+  /**
+   * Currency to use to display price amount
+   * @default EUR
+   */
+  currency?: Currency
 }
 
 /**
@@ -67,6 +84,7 @@ export const PriceInput = React.forwardRef(
       className,
       name,
       label,
+      value,
       max,
       rightIcon,
       disabled,
@@ -74,16 +92,22 @@ export const PriceInput = React.forwardRef(
       showFreeCheckbox,
       hideAsterisk = false,
       error,
-      updatePriceValue,
+      currency = 'EUR',
+      onChange,
+      onBlur,
     }: PriceInputProps,
     ref: ForwardedRef<HTMLInputElement>
-  ): JSX.Element => {
+  ) => {
     const priceRef = useRef<HTMLInputElement>(null)
 
     const freeName = `${name}.free`
     const freeRef = useRef<HTMLInputElement>(null)
+    const initialIsFree = value === 0
+    const [isFree, setIsFree] = useState(initialIsFree)
 
-    const [isFree, setIsFree] = useState(false)
+    const currencyIcon = currency === 'XPF' ? strokeFrancIcon : strokeEuroIcon
+    const step = currency === 'XPF' ? 1 : 0.01
+    const hasDecimal = currency === 'EUR'
 
     useEffect(() => {
       // Move focus to the price input if free is unchecked.
@@ -94,32 +118,29 @@ export const PriceInput = React.forwardRef(
       }
     }, [isFree])
 
-    useEffect(() => {
-      if (freeRef.current && priceRef.current?.value === '0') {
-        setIsFree(true)
-      }
-    }, [])
+    const onTextInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.({
+        target: { value: event.target.value },
+      } as React.ChangeEvent<HTMLInputElement>)
 
-    const onTextInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-      updatePriceValue(e.target.value)
-      showFreeCheckbox && setIsFree(e.target.value === '0')
+      showFreeCheckbox && setIsFree(event.target.value === '0')
     }
+
     const onCheckboxChange = () => {
-      const nextIsFreeState = !isFree
-      setIsFree(nextIsFreeState)
+      const nextIsFree = !isFree
+      setIsFree(nextIsFree)
 
       let nextFieldValue = ''
-      if (nextIsFreeState) {
+      if (nextIsFree) {
         // If the checkbox is going to be checked,
-        // we need to clear the quantity field as an empty
-        // string means unlimited quantity.
+        // we need to set the price to '0'
+        // '0' means free offer.
         nextFieldValue = '0'
       }
 
-      if (priceRef.current) {
-        updatePriceValue(nextFieldValue)
-        priceRef.current.value = nextFieldValue
-      }
+      onChange?.({
+        target: { value: nextFieldValue },
+      } as React.ChangeEvent<HTMLInputElement>)
     }
 
     const inputExtension = (
@@ -137,19 +158,23 @@ export const PriceInput = React.forwardRef(
       <div ref={ref}>
         <TextInput
           ref={priceRef}
+          data-testid="input-price"
           className={className}
           labelClassName={smallLabel ? styles['input-layout-small-label'] : ''}
           required={!hideAsterisk}
           name={name}
           label={label}
+          value={value ?? ''}
           type="number"
-          step="0.01"
+          step={step}
+          hasDecimal={hasDecimal}
           min={0}
           max={max}
-          rightIcon={rightIcon}
+          rightIcon={rightIcon || currencyIcon}
           disabled={disabled}
           asterisk={!hideAsterisk}
           onChange={onTextInputChange}
+          onBlur={onBlur}
           hasError={!!error}
           error={error}
           {...(showFreeCheckbox ? { InputExtension: inputExtension } : {})}
@@ -158,4 +183,5 @@ export const PriceInput = React.forwardRef(
     )
   }
 )
+
 PriceInput.displayName = 'PriceInput'
