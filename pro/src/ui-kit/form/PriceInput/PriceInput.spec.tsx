@@ -1,18 +1,28 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { useState } from 'react'
 import { axe } from 'vitest-axe'
 
 import { PriceInput, type PriceInputProps } from './PriceInput'
 
 const renderPriceInput = (props: Partial<PriceInputProps>) => {
-  return render(
-    <PriceInput
-      {...props}
-      name="price"
-      label="Prix"
-      updatePriceValue={() => {}}
-    />
-  )
+  const Wrapper = () => {
+    const [value, setValue] = useState<number | undefined>(undefined)
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+      setValue(Number(event.target.value))
+
+    return (
+      <PriceInput
+        {...props}
+        name="price"
+        label="Prix"
+        value={value}
+        onChange={onChange}
+      />
+    )
+  }
+
+  return render(<Wrapper />)
 }
 
 const LABELS = {
@@ -93,8 +103,32 @@ describe('PriceInput', () => {
 
       await userEvent.click(checkbox)
       await userEvent.click(checkbox)
-      expect(input).toHaveValue(null)
+      expect(input).toHaveValue(0)
       expect(input).toHaveFocus()
     })
+  })
+
+  describe('Input validation', () => {
+    const setNumberPriceValue = [
+      { value: '20', expectedNumber: 20 },
+      { value: 'azer', expectedNumber: null },
+      { value: 'AZER', expectedNumber: null },
+      { value: '2fsqjk', expectedNumber: 2 },
+      { value: '2fsqm0', expectedNumber: 20 },
+      { value: '20.50', expectedNumber: 20.5 },
+      { value: '20.504', expectedNumber: 20.504 },
+      { value: '20.5.2', expectedNumber: 20.52 },
+    ]
+    it.each(setNumberPriceValue)(
+      'should only type numbers for price input',
+      async ({ value, expectedNumber }) => {
+        renderPriceInput({})
+
+        const input = screen.getByRole('spinbutton', { name: LABELS.input })
+        await userEvent.type(input, value)
+        await userEvent.tab()
+        expect(input).toHaveValue(expectedNumber)
+      }
+    )
   })
 })

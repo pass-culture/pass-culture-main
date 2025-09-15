@@ -45,3 +45,5 @@ export interface AddressFormValues {
   latitude: string
   longitude: string
 }
+
+export type Currency = 'EUR' | 'XPF'

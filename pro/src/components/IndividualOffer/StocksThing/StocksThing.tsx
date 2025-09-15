@@ -24,10 +24,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import {
-  convertEuroToPacificFranc,
-  convertPacificFrancToEuro,
-} from '@/commons/utils/convertEuroToPacificFranc'
+import { convertPacificFrancToEuro } from '@/commons/utils/convertEuroToPacificFranc'
 import { getToday, getYearMonthDay, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
@@ -37,12 +34,11 @@ import { FormLayoutDescription } from '@/components/FormLayout/FormLayoutDescrip
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/components/DialogStockThingDeleteConfirm/DialogStockThingDeleteConfirm'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import type { Link } from '@/ui-kit/LinkNodes/LinkNodes'
@@ -86,7 +82,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
-      reset(buildInitialValues(offer, response.stocks))
+      const newValues = buildInitialValues(offer, response.stocks, isCaledonian)
+      reset(newValues)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -128,6 +125,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
       isOnboarding,
     })
+
     if (!isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
@@ -146,7 +144,15 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(values, offer, reset, setError, readOnlyFields)
+      const [offerResponse, stockResponse] = await submitToApi(
+        values,
+        offer,
+        setError,
+        readOnlyFields
+      )
+      reset(
+        buildInitialValues(offerResponse, stockResponse.stocks, isCaledonian)
+      )
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -172,7 +178,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     resolver: yupResolver<StockThingFormValues, unknown, unknown>(
       getValidationSchema(mode, bookingsQuantity, stockId, isCaledonian)
     ),
-    defaultValues: buildInitialValues(offer, stocks),
+    defaultValues: buildInitialValues(offer, stocks, isCaledonian),
     mode: 'onBlur',
   })
 
@@ -233,6 +239,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const onQuantityChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newQuantity: string = event.target.value
+
     let remainingQuantity: string =
       // No need to test
       /* istanbul ignore next */
@@ -247,6 +254,17 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setValue(`quantity`, newQuantity !== '' ? Number(newQuantity) : undefined, {
       shouldDirty: true,
     })
+  }
+
+  const onPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newPriceAmount: string = event.target.value
+    setValue(
+      'price',
+      newPriceAmount !== '' ? Number(newPriceAmount) : undefined,
+      {
+        shouldDirty: true,
+      }
+    )
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
@@ -373,10 +391,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
     : undefined
 
-  const [isPriceTouched, setIsPriceTouched] = useState(false)
-
-  const euroPrice = getValues('price')
-
   return (
     <>
       <DialogStockThingDeleteConfirm
@@ -406,31 +420,15 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               className={styles['callout-area-margin']}
             />
             <div className={styles.row}>
-              <TextInput
+              <PriceInput
                 name="price"
+                value={watch('price')}
                 error={errors.price?.message}
-                required
-                label={'Prix'}
+                label="Prix"
                 disabled={readOnlyFields.includes('price')}
-                type="number"
-                data-testid="input-price"
-                rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-                step="0.01"
-                min={0}
+                currency={isCaledonian ? 'XPF' : 'EUR'}
                 className={styles['field-layout-xsmall']}
-                value={
-                  isCaledonian
-                    ? isPriceTouched
-                      ? (watch('price') ?? '')
-                      : convertEuroToPacificFranc(Number(euroPrice ?? 0)) || ''
-                    : (watch('price') ?? '')
-                }
-                onChange={(e) => {
-                  setIsPriceTouched(true)
-                  setValue('price', Number(e.target.value), {
-                    shouldDirty: true,
-                  })
-                }}
+                onChange={onPriceChange}
               />
               <DatePicker
                 {...register('bookingLimitDatetime')}

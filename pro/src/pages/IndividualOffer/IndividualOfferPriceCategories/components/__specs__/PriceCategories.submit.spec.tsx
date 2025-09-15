@@ -72,7 +72,9 @@ describe('PriceCategories', () => {
       screen.getByLabelText('Intitulé du tarif'),
       'Mon tarif'
     )
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    const priceInput = screen.getByLabelText('Prix par personne')
+    await userEvent.type(priceInput, '20')
+    await userEvent.tab()
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
@@ -90,7 +92,9 @@ describe('PriceCategories', () => {
         priceCategories: [priceCategoryFactory({ id: 666 })],
       }),
     })
-    await userEvent.type(screen.getByLabelText('Prix par personne'), '20')
+    const priceInput = screen.getByLabelText('Prix par personne')
+    await userEvent.type(priceInput, '20')
+    await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(

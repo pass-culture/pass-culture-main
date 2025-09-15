@@ -11,8 +11,6 @@ import { ActivationCodeFormDialog } from '@/components/IndividualOffer/StocksThi
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeEuroIcon from '@/icons/stroke-euro.svg'
-import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/components/DialogStockThingDeleteConfirm/DialogStockThingDeleteConfirm'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -186,15 +184,16 @@ export const PriceTableForm = ({
             )}
 
             <PriceInput
-              {...register(`entries.${index}.price`)}
+              name="price"
+              value={watch(`entries.${index}.price`)}
               className={styles['input-price']}
               disabled={isReadOnly}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
-              rightIcon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+              currency={isCaledonian ? 'XPF' : 'EUR'}
               showFreeCheckbox
-              updatePriceValue={(value) =>
-                setValue(`entries.${index}.price`, Number(value), {
+              onChange={(event) =>
+                setValue(`entries.${index}.price`, Number(event.target.value), {
                   shouldDirty: true,
                 })
               }
