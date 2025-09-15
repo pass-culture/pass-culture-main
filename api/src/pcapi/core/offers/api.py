@@ -12,7 +12,6 @@ import typing
 from contextlib import suppress
 from functools import partial
 
-import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
@@ -34,13 +33,11 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.validation as offers_validation
-import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
-from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
@@ -53,9 +50,6 @@ from pcapi.core.categories.genres import music
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
-from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
-from pcapi.core.external_bookings.cds.exceptions import CineDigitalServiceAPIException
-from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
@@ -1583,108 +1577,6 @@ def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
             return True
 
     return False
-
-
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
-    if not _should_try_to_update_offer_stock_quantity(offer):
-        return
-    try:
-        venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
-        validation.check_offer_is_from_current_cinema_provider(offer)
-    except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
-        offer.publicationDatetime = None
-        db.session.add(offer)
-        db.session.flush()
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
-            log_extra={"active": False},
-        )
-        return
-
-    sentry_sdk.set_tag("cinema-venue-provider", venue_provider.provider.localClass)
-    logger.info(
-        "Getting up-to-date show stock from booking provider on offer view",
-        extra={"offer": offer.id, "venue_provider": venue_provider.id},
-    )
-    offer_current_stocks = offer.bookableStocks
-
-    try:
-        shows_remaining_places = get_shows_remaining_places_from_provider(venue_provider.provider.localClass, offer)
-    except (EMSAPIException, BoostAPIException, CineDigitalServiceAPIException, CGRAPIException) as e:
-        # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
-        # This is not ideal, I believe this function should be called on its own, or asynchronously
-        # However this means frontend code (probably) so this temporarily fixes crashes for end users
-        # TODO: (lixxday, 29/05/2024): remove this try/catch when the function is no longer called directly in GET /offer route
-        logger.exception(
-            "Failed to get shows remaining places from provider",
-            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
-        )
-        return
-    except Exception as e:
-        logger.exception(
-            "Unknown error when getting shows remaining places from provider",
-            extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
-        )
-        return
-
-    offer_has_new_sold_out_stock = False
-    for stock in offer_current_stocks:
-        showtime_id = cinema_providers_utils.get_showtime_id_from_uuid(
-            stock.idAtProviders, venue_provider.provider.localClass
-        )
-        assert showtime_id
-        remaining_places = shows_remaining_places.pop(str(showtime_id), None)
-        # make this stock sold out, instead of soft-deleting it (don't update its bookings)
-        logger.info(
-            "Updating stock quantity to match cinema remaining places",
-            extra={
-                "stock_id": stock.id,
-                "stock_quantity": stock.quantity,
-                "stock_dnBookedQuantity": stock.dnBookedQuantity,
-                "remaining_places": remaining_places,
-            },
-        )
-        if remaining_places is None or remaining_places <= 0:
-            try:
-                offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
-            except sa_exc.InternalError:
-                # The SQLAlchemy session is invalidated as soon as an InternalError is raised
-                db.session.rollback()
-                logger.info(
-                    "Recompute dnBookedQuantity of a stock",
-                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
-                )
-                bookings_api.recompute_dnBookedQuantity([stock.id])
-                logger.info(
-                    "New value for dnBookedQuantity of a stock",
-                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
-                )
-                offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
-            offer_has_new_sold_out_stock = True
-        # to prevent a duo booking to fail
-        if remaining_places == 1:
-            stock.quantity = stock.dnBookedQuantity + 1
-            db.session.add(stock)
-            db.session.flush()
-
-        logger.info(
-            "Successfully updated stock quantity",
-            extra={
-                "stock_id": stock.id,
-                "stock_quantity": stock.quantity,
-                "stock_dnBookedQuantity": stock.dnBookedQuantity,
-            },
-        )
-
-    if offer_has_new_sold_out_stock:
-        search.async_index_offer_ids(
-            [offer.id],
-            reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
-            log_extra={"sold_out": True},
-        )
-
-    return
 
 
 def whitelist_product(idAtProviders: str) -> models.Product:
