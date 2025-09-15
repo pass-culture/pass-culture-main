@@ -14,6 +14,8 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
@@ -29,10 +31,10 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "post"
 
     @staticmethod
-    def _get_base_product(ean: str | None = None) -> tuple[str, offers_models.Product]:
+    def _get_base_product(ean: str | None = None) -> tuple[str, products_models.Product]:
         ean = ean or "1234567890123"
         product_provider = providers_factories.ProviderFactory()
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean,
             lastProviderId=product_provider.id,
@@ -68,7 +70,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=venue_provider.provider.id,
@@ -120,7 +122,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=venue_provider.provider.id,
@@ -216,12 +218,12 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=venue_provider.provider.id,
         )
-        product_with_existing_offer = offers_factories.ProductFactory(
+        product_with_existing_offer = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="2461567890123",
             lastProviderId=venue_provider.provider.id,
@@ -271,12 +273,12 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=venue_provider.provider.id,
         )
-        product_with_existing_offer = offers_factories.ProductFactory(
+        product_with_existing_offer = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="2461567890123",
             lastProviderId=venue_provider.provider.id,
@@ -299,7 +301,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_update_stock_quantity_with_previous_bookings(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
         offer = offers_factories.ThingOfferFactory(
@@ -334,7 +336,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_update_last_provider_for_existing_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         old_provider = providers_factories.ProviderFactory()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
         offer = offers_factories.ThingOfferFactory(
@@ -359,7 +361,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         ean = "1234567890123"
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean=ean
         )
 
@@ -387,10 +389,10 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
 
-        cd_product = offers_factories.ThingProductFactory(
+        cd_product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
-        book_product = offers_factories.ThingProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=book_ean)
+        book_product = products_factories.ThingProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=book_ean)
 
         cd_offer = offers_factories.ThingOfferFactory(product=cd_product, venue=venue)
         book_offer = offers_factories.ThingOfferFactory(
@@ -432,7 +434,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         cd_stock = db.session.query(offers_models.Stock).filter_by(id=cd_stock_id).one()
         book_stock = db.session.query(offers_models.Stock).filter_by(id=book_stock_id).one()
-        book_product = db.session.query(offers_models.Product).filter_by(ean=book_ean).one()
+        book_product = db.session.query(products_models.Product).filter_by(ean=book_ean).one()
         venue = db.session.query(offerers_models.Venue).one()
         venue_provider = db.session.query(providers_models.VenueProvider).one()
 
@@ -454,7 +456,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=product_provider.id,
@@ -492,13 +494,13 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     @pytest.mark.parametrize(
         "gcu_compatibility_type",
         [
-            offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
-            offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
+            products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE,
+            products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE,
         ],
     )
     def test_does_not_create_an_offer_of_non_compatible_product(self, gcu_compatibility_type):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ProductFactory(ean="1234567890123", gcuCompatibilityType=gcu_compatibility_type)
+        product = products_factories.ProductFactory(ean="1234567890123", gcuCompatibilityType=gcu_compatibility_type)
 
         payload = {
             "products": [{"ean": product.ean, "stock": {"price": 1234, "quantity": 3}}],
@@ -510,7 +512,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_400_when_quantity_is_too_big(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
@@ -604,7 +606,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     )
     def test_400_when_dates_are_incorrect_or_incoherent(self, product_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers_factories.ThingProductFactory(
+        products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
@@ -617,7 +619,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_400_when_ean_wrong_format(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offers_factories.ProductFactory(ean="1234567890123")
+        products_factories.ProductFactory(ean="1234567890123")
 
         payload = {
             "products": [{"ean": "123456789", "stock": {"price": 1234, "quantity": 3}}],
@@ -631,7 +633,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_400_when_price_too_high(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
 
@@ -647,7 +649,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         product_provider = providers_factories.ProviderFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean="1234567890123",
             lastProviderId=product_provider.id,
@@ -746,7 +748,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_update_offerer_address_for_existing_offer(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        product = offers_factories.ThingProductFactory(
+        product = products_factories.ThingProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, ean="1234567890123"
         )
         offer = offers_factories.ThingOfferFactory(
@@ -775,12 +777,12 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         venue_id = venue_provider.venue.id
         ean_to_update = "1234567890123"
         ean_to_create = "1234567897123"
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean_to_update,
             lastProviderId=product_provider.id,
         )
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             ean=ean_to_create,
             lastProviderId=product_provider.id,

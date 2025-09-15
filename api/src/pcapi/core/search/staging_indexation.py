@@ -4,6 +4,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers import models as offerer_models
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 
 
@@ -49,9 +50,9 @@ def get_offers_with_gtl(size: int) -> set[int]:
     query = (
         db.session.query(offers_models.Offer)
         .outerjoin(offers_models.Stock)
-        .outerjoin(offers_models.Product)
+        .outerjoin(products_models.Product)
         .filter(
-            offers_models.Product.extraData["gtl_id"].is_not(None),
+            products_models.Product.extraData["gtl_id"].is_not(None),
             offers_models.Offer.is_eligible_for_search,
         )
         .with_entities(offers_models.Offer.id)
@@ -68,9 +69,9 @@ def get_offers_for_each_gtl_level_1(size_per_gtl: int) -> set[int]:
         query = (
             db.session.query(offers_models.Offer)
             .outerjoin(offers_models.Stock)
-            .outerjoin(offers_models.Product)
+            .outerjoin(products_models.Product)
             .filter(
-                offers_models.Product.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
+                products_models.Product.extraData["gtl_id"].astext.startswith(str(i).zfill(2)),
                 offers_models.Offer.is_eligible_for_search,
             )
             .with_entities(offers_models.Offer.id)

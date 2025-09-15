@@ -7,7 +7,7 @@ import pytest
 from pcapi.connectors.api_allocine import ALLOCINE_API_URL
 from pcapi.connectors.api_allocine import AllocineException
 from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.offers.models import Product
+from pcapi.core.products.models import Product
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.allocine import get_movie_list
 from pcapi.core.providers.allocine import get_movie_poster

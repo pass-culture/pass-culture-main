@@ -6,7 +6,6 @@ from typing import Iterator
 
 import PIL
 
-import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -18,6 +17,8 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.offerers.models import Venue
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
@@ -104,9 +105,9 @@ class CDSStocks(LocalProvider):
 
     def get_existing_object(
         self,
-        model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
+        model_type: type[products_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,
-    ) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+    ) -> products_models.Product | offers_models.Offer | offers_models.Stock | None:
         if model_type == offers_models.Offer:
             query = db.session.query(model_type).filter_by(idAtProvider=id_at_providers)
         elif model_type == offers_models.Stock:
@@ -168,7 +169,7 @@ class CDSStocks(LocalProvider):
                 if image and self.product and not self.product.productMediations:
                     try:
                         image_id = str(uuid.uuid4())
-                        mediation = offers_models.ProductMediation(
+                        mediation = products_models.ProductMediation(
                             productId=self.product.id,
                             lastProvider=self.provider,
                             imageType=offers_models.ImageType.POSTER,
@@ -308,10 +309,10 @@ class CDSStocks(LocalProvider):
 
         return shows_with_pass_culture_tariff
 
-    def get_or_create_movie_product(self, movie: MediaCDS) -> offers_models.Product | None:
+    def get_or_create_movie_product(self, movie: MediaCDS) -> products_models.Product | None:
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid(movie.id, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = products_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 

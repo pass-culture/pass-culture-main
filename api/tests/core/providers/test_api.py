@@ -17,6 +17,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
@@ -51,7 +52,7 @@ class CreateVenueProviderTest:
 
 
 def create_product(ean, **kwargs):
-    return offers_factories.ProductFactory(
+    return products_factories.ProductFactory(
         idAtProviders=ean,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"prix_livre": 12},

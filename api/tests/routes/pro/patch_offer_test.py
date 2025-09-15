@@ -18,6 +18,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -392,7 +393,7 @@ class Returns200Test:
     def test_patch_offer_with_product_with_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="1111111111111",
             name="New name",
@@ -413,7 +414,7 @@ class Returns200Test:
     def test_patch_offer_with_product_with_same_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="1111111111111",
             name="New name",
@@ -1070,7 +1071,7 @@ class Returns400Test:
     def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean="1111111111111",
             name="New name",

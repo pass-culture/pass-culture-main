@@ -1,7 +1,7 @@
 import factory
 
 from pcapi.core.factories import BaseFactory
-from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 
 from . import models
 
@@ -40,4 +40,4 @@ class ArtistProductLinkFactory(BaseFactory):
         model = models.ArtistProductLink
 
     artist_id = factory.SubFactory(models.Artist)
-    product_id = factory.SubFactory(offers_models.Product)
+    product_id = factory.SubFactory(products_models.Product)

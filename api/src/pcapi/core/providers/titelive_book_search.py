@@ -10,6 +10,7 @@ from pcapi.connectors.titelive import TiteliveBase
 from pcapi.connectors.titelive import get_by_ean_list
 from pcapi.core.categories.subcategories import LIVRE_PAPIER
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants
 from pcapi.models import db
 from pcapi.utils.csr import get_closest_csr
@@ -52,8 +53,8 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         return titelive_product_page, list(non_allowed_eans)
 
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, offers_models.Product]
-    ) -> dict[str, offers_models.Product]:
+        self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, products_models.Product]
+    ) -> dict[str, products_models.Product]:
         title = self.truncate_string(titelive_search_result.titre)
         authors = titelive_search_result.auteurs_multi
         for article in titelive_search_result.article:
@@ -65,8 +66,8 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
                 products_by_ean[ean] = self.update_product(article, title, authors, product)
         return products_by_ean
 
-    def create_product(self, article: TiteLiveBookArticle, title: str, authors: list[str]) -> offers_models.Product:
-        return offers_models.Product(
+    def create_product(self, article: TiteLiveBookArticle, title: str, authors: list[str]) -> products_models.Product:
+        return products_models.Product(
             description=article.resume,
             extraData=build_book_extra_data(article, authors),
             ean=article.gencod,
@@ -80,8 +81,8 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         article: TiteLiveBookArticle,
         title: str,
         authors: list[str],
-        product: offers_models.Product,
-    ) -> offers_models.Product:
+        product: products_models.Product,
+    ) -> products_models.Product:
         ean = article.gencod
         product.description = article.resume
         if product.extraData is None:

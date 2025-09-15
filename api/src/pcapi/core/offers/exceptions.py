@@ -122,10 +122,6 @@ class OfferNotFound(Exception):
     pass
 
 
-class ProductNotFound(Exception):
-    pass
-
-
 class CollectiveStockNotFound(Exception):
     pass
 
@@ -143,10 +139,6 @@ class UnexpectedCinemaProvider(Exception):
 
 
 class TiteLiveAPINotExistingEAN(Exception):
-    pass
-
-
-class NotUpdateProductOrOffers(Exception):
     pass
 
 

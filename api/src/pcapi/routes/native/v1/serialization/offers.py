@@ -30,6 +30,7 @@ from pcapi.core.offers.api import extract_youtube_video_id
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
@@ -269,7 +270,7 @@ MAX_PREVIEW_CHRONICLES = 5
 class BaseOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         offer: models.Offer = self._obj
-        product: models.Product | None = offer.product
+        product: products_models.Product | None = offer.product
 
         if key == "reactions_count":
             if product:
