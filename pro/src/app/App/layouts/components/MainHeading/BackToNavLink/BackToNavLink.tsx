@@ -16,8 +16,9 @@ export const BackToNavLink = ({
   const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   return (
+    // biome-ignore lint/correctness/useUniqueElementIds: This is always rendered once per page, so there cannot be id duplications.
     <a
-      id={'back-to-nav-link'}
+      id="back-to-nav-link"
       aria-label="Revenir à la barre de navigation"
       href={isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'}
       className={classnames(className, styles['back-to-nav-link'])}

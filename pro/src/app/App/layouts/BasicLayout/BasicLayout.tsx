@@ -57,13 +57,13 @@ export const BasicLayout = ({
       className={styles['main-heading']}
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
-      isConnected
+      shouldDisplayBackToNavLink
     />
   )
 
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink={!mainHeading} />
+      <SkipLinks />
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
