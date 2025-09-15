@@ -1,7 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest import mock
-from unittest.mock import patch
 
 import pytest
 import time_machine
@@ -35,10 +33,6 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
 from pcapi.utils import date as date_utils
-
-from tests.connectors.cgr import soap_definitions
-from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
-from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -329,63 +323,6 @@ class OffersTest:
         assert response.json["venue"]["isPermanent"]
         assert response.json["stocks"][0]["features"] == []
 
-    @pytest.mark.parametrize(
-        "provider_class,ff_name,ff_value,booking_disabled",
-        [
-            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, True),
-            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", False, False),
-            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", True, True),
-            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", False, False),
-            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", True, True),
-            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", False, False),
-            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", True, True),
-            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", False, False),
-            ("BoostStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, False),
-        ],
-    )
-    def test_offer_external_booking_is_disabled_by_ff(
-        self, features, client, provider_class, ff_name, ff_value, booking_disabled
-    ):
-        provider = get_provider_by_local_class(provider_class)
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory(
-            product=product,
-            venue__isPermanent=True,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProvider=provider,
-        )
-        providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
-
-        offer_id = offer.id
-        setattr(features, ff_name, ff_value)
-
-        # 1. select offer
-        # 2. select product with artists
-        # 3. select stocks
-        # 4. select mediations
-        # 5. check cinema venue_provider exists
-        # 6. check offer is from current cinema provider
-        # 7. select active cinema provider
-        # 8. update offer
-        # 9. select chronicles
-        # 10. selecte features
-        # 11. reload offer
-
-        nb_queries = self.nb_queries
-        nb_queries += 1  # product with artists
-        nb_queries += 1  # check cinema venue_provider exists
-        nb_queries += 1  # check offer is from current cinema provider
-        nb_queries += 1  # select active cinema provider
-        nb_queries += 1  # update offer
-        nb_queries += 1  # select features
-        nb_queries += 1  # reload offer
-        with assert_num_queries(nb_queries):
-            with assert_no_duplicated_queries():
-                response = client.get(f"/native/v1/offer/{offer_id}")
-                assert response.status_code == 200
-
-        assert response.json["isExternalBookingsDisabled"] is booking_disabled
-
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
@@ -451,190 +388,6 @@ class OffersTest:
         with assert_num_queries(2):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 404
-
-    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
-    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
-        movie_id = 54
-        show_id = 5008
-
-        mocked_get_shows_stock.return_value = {5008: 0}
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-
-        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        stock = offers_factories.EventStockFactory(
-            offer=offer,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}",
-        )
-        offer_id = offer.id
-
-        nb_queries = self.nb_queries
-        nb_queries += 1  # check cinema venue_provider exists
-        nb_queries += 1  # select active cinema provider
-        nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
-        nb_queries += 1  # update stock
-        with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offer/{offer_id}")
-            assert response.status_code == 200
-
-        assert stock.remainingQuantity == 0
-        assert response.json["stocks"][0]["isSoldOut"]
-
-    @time_machine.travel("2023-01-01")
-    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
-    @patch("pcapi.connectors.boost.requests.get")
-    def test_get_boost_sync_offer_updates_stock(self, request_get, client):
-        movie_id = 207
-        first_show_id = 36683
-        will_be_sold_out_show = 36684
-
-        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
-        response_return_value.json = mock.MagicMock(
-            return_value=boost_fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
-        )
-        request_get.return_value = response_return_value
-
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.BoostCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
-        )
-        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        first_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
-        )
-        will_be_sold_out_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
-        )
-
-        offer_id = offer.id
-
-        nb_queries = self.nb_queries
-        nb_queries += 1  # select EXISTS venue_provider
-        nb_queries += 1  # select EXISTS provider
-        nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
-        nb_queries += 1  # select EXISTS provider
-        nb_queries += 1  # select boost_cinema_details
-        nb_queries += 1  # update stock
-        with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offer/{offer_id}")
-            assert response.status_code == 200
-        assert first_show_stock.remainingQuantity == 96
-        assert will_be_sold_out_show_stock.remainingQuantity == 0
-
-    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
-    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
-        allocine_movie_id = 234099
-        still_scheduled_show = 182021
-        descheduled_show = 182022
-        requests_mock.get(
-            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
-        )
-        requests_mock.post(
-            "https://cgr-cinema-0.example.com/web_service",
-            text=cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_234099_WITH_THREE_SEANCES]),
-        )
-
-        cgr_provider = get_provider_by_local_class("CGRStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CGRCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
-        )
-        offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        still_scheduled_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{still_scheduled_show}", quantity=95
-        )
-        descheduled_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
-        )
-
-        offer_id = offer.id
-
-        nb_queries = self.nb_queries
-        nb_queries += 1  # select EXISTS venue_provider
-        nb_queries += 1  # select EXISTS provider
-        nb_queries += 1  # select cinema_provider_pivot
-        nb_queries += 1  # select feature
-        nb_queries += 1  # select EXISTS provider
-        nb_queries += 1  # select cgr_cinema_details
-        nb_queries += 1  # update stock
-
-        with assert_num_queries(nb_queries):
-            response = client.get(f"/native/v1/offer/{offer_id}")
-            assert response.status_code == 200
-
-        assert still_scheduled_show_stock.remainingQuantity == 95
-        assert descheduled_show_stock.remainingQuantity == 0
-
-    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_get_inactive_cinema_provider_offer(self, client):
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider="toto",
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
-
-        offer_id = offer.id
-
-        nb_query = self.nb_queries
-        nb_query += 1  # check cinema venue_provider exists
-        nb_query += 1  # select active cinema provider
-        nb_query += 1  # update offer
-        nb_query += 1  # select feature
-
-        with assert_num_queries(nb_query):
-            response = client.get(f"/native/v1/offer/{offer_id}")
-            assert response.status_code == 200
-
-        assert response.json["isReleased"] is False
-        assert offer.isActive is False
 
     def should_have_metadata_describing_the_offer(self, client):
         offer = offers_factories.ThingOfferFactory()
@@ -760,7 +513,6 @@ class OffersV2Test:
     base_num_queries += 1  # select stocks (selectinload)
     base_num_queries += 1  # select opening hours (selectinload)
     base_num_queries += 1  # select chronicles (selectinload)
-    base_num_queries += 1  # select feature
 
     num_queries_with_product = 1  # select artists (selectinload)
 
@@ -1024,47 +776,6 @@ class OffersV2Test:
         assert response.json["venue"]["isOpenToPublic"]
         assert response.json["stocks"][0]["features"] == []
 
-    @pytest.mark.parametrize(
-        "provider_class,ff_name,ff_value,booking_disabled",
-        [
-            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, True),
-            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", False, False),
-            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", True, True),
-            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", False, False),
-            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", True, True),
-            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", False, False),
-            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", True, True),
-            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", False, False),
-            ("BoostStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, False),
-        ],
-    )
-    def test_offer_external_booking_is_disabled_by_ff(
-        self, features, client, provider_class, ff_name, ff_value, booking_disabled
-    ):
-        provider = get_provider_by_local_class(provider_class)
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory(
-            product=product,
-            venue__isPermanent=True,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProvider=provider,
-        )
-        providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
-
-        offer_id = offer.id
-        setattr(features, ff_name, ff_value)
-
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
-        num_queries += 1  # select products with artists (selectinload)
-        num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # update offer
-        num_queries += 1  # reload offer
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert response.json["isExternalBookingsDisabled"] is booking_disabled
-
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
         # given
         stock = offers_factories.StockWithActivationCodesFactory()
@@ -1140,317 +851,6 @@ class OffersV2Test:
         with assert_num_queries(2):
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 404
-
-    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
-    def test_get_cds_sync_offer_updates_stock(self, mocked_get_shows_stock, client):
-        movie_id = 54
-        show_id = 5008
-
-        mocked_get_shows_stock.return_value = {5008: 0}
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-
-        offer_id_at_provider = f"{movie_id}%{venue_provider.venue.siret}"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        stock = offers_factories.EventStockFactory(
-            offer=offer,
-            idAtProviders=f"{offer_id_at_provider}#{show_id}",
-        )
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert stock.remainingQuantity == 0
-        assert response.json["stocks"][0]["isSoldOut"]
-
-    @time_machine.travel("2023-01-01")
-    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
-    @patch("pcapi.connectors.boost.requests.get")
-    def test_get_boost_sync_offer_updates_stock(self, request_get, client):
-        movie_id = 207
-        first_show_id = 36683
-        will_be_sold_out_show = 36684
-
-        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
-        response_return_value.json = mock.MagicMock(
-            return_value=boost_fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA_3_SHOWTIMES
-        )
-        request_get.return_value = response_return_value
-
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.BoostCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
-        )
-        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        first_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=96
-        )
-        will_be_sold_out_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
-        )
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select boost_cinema_details
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-        assert response.status_code == 200
-        assert first_show_stock.remainingQuantity == 96
-        assert will_be_sold_out_show_stock.remainingQuantity == 0
-
-    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
-    def test_get_cgr_sync_offer_updates_stock(self, requests_mock, client):
-        allocine_movie_id = 234099
-        still_scheduled_show = 182021
-        descheduled_show = 182022
-        requests_mock.get(
-            "https://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
-        )
-        requests_mock.post(
-            "https://cgr-cinema-0.example.com/web_service",
-            text=cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_234099_WITH_THREE_SEANCES]),
-        )
-
-        cgr_provider = get_provider_by_local_class("CGRStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CGRCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
-        )
-        offer_id_at_provider = f"{allocine_movie_id}%{venue_provider.venueId}%CGR"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        still_scheduled_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{still_scheduled_show}", quantity=95
-        )
-        descheduled_show_stock = offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
-        )
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema + self.num_queries_for_stock_sync
-        num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select cgr_cinema_details
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert still_scheduled_show_stock.remainingQuantity == 95
-        assert descheduled_show_stock.remainingQuantity == 0
-
-    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
-    @patch("pcapi.connectors.ems.requests.post")
-    def test_offer_route_does_not_crash_when_ems_errors(self, requests_post, client):
-        requests_post.return_value = mock.MagicMock(status_code=500)
-
-        provider = get_provider_by_local_class("EMSStocks")
-        venue = VenueFactory(isPermanent=True)
-        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue,
-            provider=provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.EMSCinemaProviderPivotFactory(cinemaProviderPivot=cinema_provider_pivot, venue=venue)
-
-        allocine_movie_id = 234099
-        offer_id_at_provider = f"{allocine_movie_id}%{venue.id}%EMS"
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
-        offer = offers_factories.OfferFactory(
-            product=product,
-            venue=venue,
-            lastProvider=provider,
-            idAtProvider=offer_id_at_provider,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        offers_factories.EventStockFactory(offer=offer, quantity=1)
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_with_product + self.num_queries_for_cinema
-        num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select EXISTS venue_provider
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert offer.stocks[0].remainingQuantity == 1
-
-    @pytest.mark.features(ENABLE_CGR_INTEGRATION=True)
-    def test_offer_route_does_not_crash_when_cgr_errors(self, requests_mock, client):
-        requests_mock.get("https://cgr-cinema-0.example.com/?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
-        requests_mock.post("https://cgr-cinema-0.example.com/", text="", status_code=500)
-
-        provider = get_provider_by_local_class("CGRStocks")
-        venue = VenueFactory(isPermanent=True)
-        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue,
-            provider=provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-
-        allocine_movie_id = 234099
-        offer_id_at_provider = f"{allocine_movie_id}%{venue.id}%CGR"
-        offer = offers_factories.OfferFactory(
-            venue=venue,
-            lastProvider=provider,
-            idAtProvider=offer_id_at_provider,
-            subcategoryId=subcategories.SEANCE_CINE.id,
-        )
-        offers_factories.EventStockFactory(offer=offer, quantity=1)
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
-        num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select cgr_cinema_details
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert offer.stocks[0].remainingQuantity == 1
-
-    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    @patch("pcapi.connectors.cine_digital_service.requests.get")
-    def test_offer_route_does_not_crash_when_cds_errors(self, requests_get, client):
-        requests_get.return_value = mock.MagicMock(status_code=500)
-
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider="toto",
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto", quantity=1)
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
-        num_queries += 1  # update offer (why?)
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert offer.stocks[0].remainingQuantity == 1
-
-    @pytest.mark.features(ENABLE_BOOST_API_INTEGRATION=True)
-    @patch("pcapi.connectors.boost.requests.get")
-    def test_offer_route_does_not_crash_when_boost_errors(self, requests_get, client):
-        requests_get.return_value = mock.MagicMock(status_code=500)
-
-        movie_id = 207
-        first_show_id = 36683
-
-        boost_provider = get_provider_by_local_class("BoostStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.BoostCinemaDetailsFactory(
-            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/"
-        )
-        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%Boost"
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider=offer_id_at_provider,
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        offers_factories.EventStockFactory(
-            offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=1
-        )
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
-        num_queries += 1  # select cinema_provider_pivot
-        num_queries += 1  # select EXISTS venue_provider
-        num_queries += 1  # select boost_cinema_details
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert offer.stocks[0].remainingQuantity == 1
-
-    @pytest.mark.features(ENABLE_UPDATE_CINEMA_EXTERNAL_STOCKS=False)
-    @patch("pcapi.routes.native.v1.offers.api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places")
-    def test_does_not_update_stocks_when_disabled(self, mock_update_stock_function, client):
-        offer = offers_factories.OfferFactory(isActive=True)
-
-        client.get(f"/native/v2/offer/{offer.id}")
-
-        mock_update_stock_function.assert_not_called()
-
-    @pytest.mark.features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_get_inactive_cinema_provider_offer(self, client):
-        cds_provider = get_provider_by_local_class("CDSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider, isActive=False)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            idAtProvider=venue_provider.venueIdAtOfferProvider,
-        )
-        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            idAtProvider="toto",
-            lastProviderId=venue_provider.providerId,
-            venue=venue_provider.venue,
-        )
-        offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
-
-        offer_id = offer.id
-        num_queries = self.base_num_queries + self.num_queries_for_cinema
-        num_queries += 1  # update offer
-        with assert_num_queries(num_queries):
-            response = client.get(f"/native/v2/offer/{offer_id}")
-
-        assert response.json["isReleased"] is False
-        assert offer.isActive is False
 
     def test_get_closed_offerer_offer(self, client):
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerers_factories.ClosedOffererFactory())
@@ -1626,6 +1026,44 @@ class OffersV2Test:
 
         assert response.status_code == 200
         assert response.json["reactionsCount"] == {"likes": 0}
+
+    @pytest.mark.parametrize(
+        "provider_class,ff_name,ff_value,booking_disabled",
+        [
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, True),
+            ("EMSStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", False, False),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", True, True),
+            ("CGRStocks", "DISABLE_CGR_EXTERNAL_BOOKINGS", False, False),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", True, True),
+            ("CDSStocks", "DISABLE_CDS_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", True, True),
+            ("BoostStocks", "DISABLE_BOOST_EXTERNAL_BOOKINGS", False, False),
+            ("BoostStocks", "DISABLE_EMS_EXTERNAL_BOOKINGS", True, False),
+        ],
+    )
+    def test_offer_external_booking_is_disabled_by_ff(
+        self, features, client, provider_class, ff_name, ff_value, booking_disabled
+    ):
+        provider = get_provider_by_local_class(provider_class)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(
+            product=product,
+            venue__isPermanent=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProvider=provider,
+        )
+        providers_factories.VenueProviderFactory(venue=offer.venue, provider=provider)
+
+        offer_id = offer.id
+        setattr(features, ff_name, ff_value)
+
+        num_queries = self.base_num_queries + self.num_queries_for_cinema
+        num_queries += 1  # select products with artists (selectinload)
+        with assert_num_queries(num_queries):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["isExternalBookingsDisabled"] is booking_disabled
 
     def test_offers_has_own_address(self, client):
         address = AddressFactory()
@@ -1826,7 +1264,9 @@ class OffersV2Test:
     def test_get_not_headline_offer(self, client):
         headline_offer = offers_factories.HeadlineOfferFactory()
         offer_id = headline_offer.offer.id
-        with assert_num_queries(self.base_num_queries):
+        num_queries = self.base_num_queries + 1  # feature
+
+        with assert_num_queries(num_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
