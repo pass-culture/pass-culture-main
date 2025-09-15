@@ -1386,7 +1386,6 @@ def _row_formatter(row: typing.Any) -> tuple:
         _clean_for_accounting(row.iban),
         "",
         "",
-        _clean_for_accounting(row.bic),
         _clean_for_accounting(row.offerer_siren),
         "",
         "EXO",
@@ -1422,7 +1421,6 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         "IBAN",
         "Compte de trésorerie",
         "Nature économique",
-        "BIC",
         "SIREN",
         "Numéro de TVA Intracom",
         "Zone de taxes",
@@ -1442,7 +1440,6 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
             models.BankAccount.id,
             models.BankAccount.label,
             models.BankAccount.iban,
-            models.BankAccount.bic,
             offerers_models.Offerer.name,
             offerers_models.Offerer.siren,
             offerers_models.Offerer.street,
@@ -1459,7 +1456,6 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         offerers_models.Offerer.postalCode.label("offerer_postal_code"),
         models.BankAccount.label.label("label"),
         models.BankAccount.iban.label("iban"),
-        models.BankAccount.bic.label("bic"),
     )
 
     return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)

@@ -615,13 +615,9 @@ def test_generate_bank_accounts_file(clean_temp_files):
     venue_4 = offerers_factories.VenueFactory(managingOfferer=offerer)
     venue_5 = offerers_factories.VenueFactory(managingOfferer=offerer)
     venue_6 = offerers_factories.VenueFactory(managingOfferer=offerer)
-    bank_account_1 = factories.BankAccountFactory(
-        label="old-label", iban="older-iban", bic="older-bic", offerer=offerer
-    )
-    bank_account_2 = factories.BankAccountFactory(label="some-label", iban="some-iban", bic="some-bic", offerer=offerer)
-    bank_account_3 = factories.BankAccountFactory(
-        label="newer-label", iban="newer-iban", bic="newer-bic", offerer=offerer
-    )
+    bank_account_1 = factories.BankAccountFactory(label="old-label", iban="older-iban", offerer=offerer)
+    bank_account_2 = factories.BankAccountFactory(label="some-label", iban="some-iban", offerer=offerer)
+    bank_account_3 = factories.BankAccountFactory(label="newer-label", iban="newer-iban", offerer=offerer)
     bank_account_4 = factories.BankAccountFactory(label="Fourth bank account", offerer=offerer)
     _bank_account_5 = factories.BankAccountFactory(label="Fifth bank account", offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
@@ -693,7 +689,6 @@ def test_generate_bank_accounts_file(clean_temp_files):
             "IBAN": bank_account.iban,
             "Compte de trésorerie": "",
             "Nature économique": "",
-            "BIC": bank_account.bic,
             "SIREN": bank_account.offerer.siren,
             "Numéro de TVA Intracom": "",
             "Zone de taxes": "EXO",
