@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
@@ -172,7 +173,12 @@ export const PriceTableForm = ({
         const entry = watch(`entries.${index}`)
 
         return (
-          <div key={field.id} className={styles['row']}>
+          <div
+            key={field.id}
+            className={classNames(styles['row'], {
+              [styles['event']]: offer.isEvent,
+            })}
+          >
             {offer.isEvent && (
               <TextInput
                 {...register(`entries.${index}.label`)}
@@ -182,6 +188,8 @@ export const PriceTableForm = ({
                 error={errors.entries?.[index]?.label?.message}
                 label="Intitulé du tarif"
                 maxLength={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
+                count={entry.label?.length || 0}
+                description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
               />
             )}
 
@@ -279,7 +287,6 @@ export const PriceTableForm = ({
 
             {!offer.isEvent && offer.isDigital && (
               <ListIconButton
-                className={styles['button-action']}
                 icon={fullCodeIcon}
                 onClick={() => setActivationCodeEntryIndexToUpload(index)}
                 readOnly={isReadOnly}
@@ -288,12 +295,13 @@ export const PriceTableForm = ({
               />
             )}
             {fields.length > 1 && (
-              <ListIconButton
-                className={styles['button-action']}
-                icon={fullTrashIcon}
-                onClick={() => askForRemovalConfirmationOrRemove(index)}
-                tooltipContent="Supprimer ce tarif"
-              />
+              <div className={styles['trash-button']}>
+                <ListIconButton
+                  icon={fullTrashIcon}
+                  onClick={() => askForRemovalConfirmationOrRemove(index)}
+                  tooltipContent="Supprimer ce tarif"
+                />
+              </div>
             )}
           </div>
         )
