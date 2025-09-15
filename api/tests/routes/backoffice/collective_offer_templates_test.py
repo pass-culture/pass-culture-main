@@ -19,6 +19,7 @@ from pcapi.core.users import factories as user_factory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.backoffice.filters import format_date
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -297,6 +298,10 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
     def test_nominal(self, authenticated_client):
         collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+            durationMinutes=300,
+            priceDetail="Some detail aubout the price",
+            locationType=educational_models.CollectiveLocationType.ADDRESS,
+            offererAddress=offerers_factories.OffererAddressFactory(),
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
         with assert_num_queries(self.expected_num_queries):
@@ -307,12 +312,37 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         assert "• Validée" in badges
 
         descriptions = html_parser.extract_descriptions(response.data)
-        assert descriptions["Statut"] == "Publiée"
-        assert descriptions["Date de création"] == f"{collectiveOfferTemplate.dateCreated:%d/%m/%Y}"
+
+        # details
+        start = format_date(collectiveOfferTemplate.dateRange.lower, "%d/%m/%Y à %Hh%M")
+        end = format_date(collectiveOfferTemplate.dateRange.upper, "%d/%m/%Y à %Hh%M")
+        assert descriptions["Période de validitée"] == f"{start} → {end}"
+        assert descriptions["Durée"] == f"{collectiveOfferTemplate.durationMinutes} minutes"
         assert descriptions["Description"] == collectiveOfferTemplate.description
+        # info
+        assert descriptions["Informations sur le prix"] == collectiveOfferTemplate.priceDetail
+        assert descriptions["Zone de mobilité"] == "2A, 2B"
+        address = collectiveOfferTemplate.offererAddress.address
+        assert descriptions["Lieu"] == f"{address.street} {address.postalCode} {address.city}"
+        # public
+        assert descriptions["Niveau scolaire"] == "Lycée - Seconde"
+        assert "Accessibilité" in descriptions
+        # contact
+        assert descriptions["Téléphone"] == "+33199006328"
+        assert descriptions["Email"] == "collectiveofferfactory+contact@example.com"
+        # column
+        # section 1
+        assert descriptions["CollectiveOfferTemplate ID"] == str(collectiveOfferTemplate.id)
+        assert descriptions["Statut"] == "Publiée"
+        assert descriptions["Format"] == "Projection audiovisuelle"
+        # section 2
         assert descriptions["Entité juridique"] == collectiveOfferTemplate.venue.managingOfferer.name
         assert descriptions["Partenaire culturel"] == collectiveOfferTemplate.venue.name
-        assert descriptions["Formats"] == EacFormat.PROJECTION_AUDIOVISUELLE.value
+        # section 3
+        assert descriptions["Date de création"] == format_date(
+            data=collectiveOfferTemplate.dateCreated,
+            strformat="%d/%m/%Y à %Hh%M",
+        )
 
     def test_collective_offer_template_not_found(self, authenticated_client):
         url = url_for(self.endpoint, collective_offer_template_id=1)

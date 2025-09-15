@@ -143,10 +143,12 @@
     {% call description_detail_vertical("Statut") %}
       {{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}
     {% endcall %}
-    {% call description_detail_vertical("Formats") %}
+    {% set formats_label = collective_offer.formats | length | pluralize("Format", "Formats") %}
+    {% call description_detail_vertical(formats_label) %}
       {{ collective_offer.formats | format_collective_offer_formats }}
     {% endcall %}
-    {% call description_detail_vertical("Domaine artistique") %}
+    {% set domains_label = collective_offer.domains | length | pluralize("Domaine artistique", "Domaines artistiques") %}
+    {% call description_detail_vertical(domains_label) %}
       {% for domain in collective_offer.domains %}<div>{{ domain.name }}</div>{% endfor %}
     {% endcall %}
     {% call description_detail_vertical("Dispositif national") %}
