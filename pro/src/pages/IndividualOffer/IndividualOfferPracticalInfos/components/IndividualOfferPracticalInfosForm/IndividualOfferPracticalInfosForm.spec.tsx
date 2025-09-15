@@ -7,6 +7,7 @@ import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
+  subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -105,6 +106,22 @@ describe('IndividualOfferPracticalInfosForm', () => {
 
     expect(
       screen.getByLabelText('Email auquel envoyer les notifications *')
+    ).toBeInTheDocument()
+  })
+
+  it('should show a warning callout with a 10 days expiration if the offer is a physical book', () => {
+    renderIndividualOfferPracticalInfosForm({
+      offer: getIndividualOfferFactory({
+        subcategoryId: SubcategoryIdEnum.LIVRE_PAPIER,
+        isEvent: false,
+      }),
+      subCategory: subcategoryFactory({ id: SubcategoryIdEnum.LIVRE_PAPIER }),
+    })
+
+    expect(
+      screen.getByText(
+        /la réservation sera automatiquement annulée et remise en vente au bout de 10 jours/
+      )
     ).toBeInTheDocument()
   })
 })

@@ -1,9 +1,10 @@
 import { useFormContext } from 'react-hook-form'
 
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-  SubcategoryResponseModel,
+import {
+  type GetIndividualOfferWithAddressResponseModel,
+  type GetOfferStockResponseModel,
+  SubcategoryIdEnum,
+  type SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
@@ -49,6 +50,9 @@ export function IndividualOfferPracticalInfosForm({
       subCategory?.reimbursementRule === REIMBURSEMENT_RULES.BOOK) &&
     hasNonFreeStock
 
+  const reimbursmentDelay =
+    subCategory?.id === SubcategoryIdEnum.LIVRE_PAPIER ? 10 : 30
+
   const isPhysicalAndOffline =
     !subCategory?.isEvent &&
     subCategory?.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE
@@ -69,7 +73,7 @@ export function IndividualOfferPracticalInfosForm({
                 ? ' pour que votre structure soit remboursée'
                 : ''}
               , sinon la réservation sera automatiquement annulée et remise en
-              vente.
+              vente au bout de {reimbursmentDelay} jours.
             </Callout>
           </FormLayout.Row>
         )}

@@ -4,18 +4,13 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { getStockWarningText } from '@/pages/IndividualOfferSummary/commons/getStockWarningText'
-import { Callout } from '@/ui-kit/Callout/Callout'
 
 type StocksCalendarSummaryScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
 }
-
-const HOW_TO_CANCEL_EVENT_URL =
-  'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-'
 
 export function IndividualOfferSummaryStocksCalendarScreen({
   offer,
@@ -34,8 +29,6 @@ export function IndividualOfferSummaryStocksCalendarScreen({
     >
       {getStockWarningText(offer)}
 
-      {!isOfferDisabled(offer.status) && <StocksCalendarCancelBanner />}
-
       <StocksCalendar
         offer={offer}
         mode={OFFER_WIZARD_MODE.READ_ONLY}
@@ -44,19 +37,3 @@ export function IndividualOfferSummaryStocksCalendarScreen({
     </SummarySection>
   )
 }
-
-export const StocksCalendarCancelBanner = () => (
-  <Callout
-    links={[
-      {
-        href: HOW_TO_CANCEL_EVENT_URL,
-        label: 'Comment reporter ou annuler un évènement ?',
-        isExternal: true,
-      },
-    ]}
-  >
-    Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas
-    le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en
-    supprimant la ligne de stock associée. Cette action est irréversible.
-  </Callout>
-)
