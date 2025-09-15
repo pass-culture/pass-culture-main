@@ -59,7 +59,15 @@ def cgr_reservation_response_template(ticket_response: dict) -> str:
         """.strip()
 
 
-def cgr_annulation_response_template(success: bool = True, message_error: str = str) -> str:
+def cgr_annulation_response_template(
+    message_error: str | None = None,
+    error_code: int | None = None,
+) -> str:
+    if message_error:
+        error_code = error_code or 99
+    else:
+        error_code = 0
+
     return f"""
        <?xml version="1.0" encoding="UTF-8"?>
         <SOAP-ENV:Envelope
@@ -70,14 +78,7 @@ def cgr_annulation_response_template(success: bool = True, message_error: str = 
             <SOAP-ENV:Body>
                 <ns1:AnnulationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
                     <AnnulationPassCultureResult>
-                        {
-        json.dumps(
-            {
-                "CodeErreur": 0 if success else 99,
-                "IntituleErreur": "" if success else message_error,
-            }
-        )
-    }
+                        {json.dumps({"CodeErreur": error_code, "IntituleErreur": message_error})}
                     </AnnulationPassCultureResult>
                 </ns1:AnnulationPassCultureResponse>
             </SOAP-ENV:Body>

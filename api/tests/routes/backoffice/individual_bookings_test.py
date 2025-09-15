@@ -1118,7 +1118,6 @@ class CancelBookingTest(PostEndpointHelper):
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",
             text=cgr_fixtures.cgr_annulation_response_template(
-                success=False,
                 message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
             ),
         )

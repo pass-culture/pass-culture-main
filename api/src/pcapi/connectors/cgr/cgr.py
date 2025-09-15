@@ -96,6 +96,10 @@ def annulation_pass_culture(
     service = get_cgr_service_proxy(cinema_url, request_timeout=request_timeout)
     response = service.AnnulationPassCulture(User=user, mdp=password, pQrCode=qr_code)
     response = json.loads(response)
+
+    if response["CodeErreur"] == 1:  # booking is already cancelled on their side
+        return
+
     _check_response_is_ok(response, "AnnulationPassCulture")
 
 
