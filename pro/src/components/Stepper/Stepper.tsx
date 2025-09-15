@@ -41,7 +41,9 @@ export const Stepper = ({
   }, [])
 
   return (
+    // biome-ignore lint/correctness/useUniqueElementIds: We assume stepper is used once per page. There cannot be id duplications.
     <ol
+      id="stepper"
       className={cn(styles.stepper, className)}
       data-testid="stepper"
       ref={listRef}
@@ -53,6 +55,7 @@ export const Stepper = ({
 
         return (
           <li
+            {...(isActive ? { id: 'active' } : {})}
             className={cn(
               styles['step-container'],
               isSelectionnable && styles.selectionnable,

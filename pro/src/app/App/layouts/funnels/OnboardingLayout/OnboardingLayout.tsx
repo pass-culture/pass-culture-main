@@ -56,15 +56,12 @@ export const OnboardingLayout = ({
     return <Navigate to="/accueil" />
   }
 
-  const isConnected = !!currentUser
-
   const mainHeadingWrapper = (
     <MainHeading
       className={cn(styles['main-heading'], {
         [styles['main-heading-centered']]: isEntryScreen,
       })}
       mainHeading={mainHeading}
-      isConnected={isConnected}
     />
   )
 
@@ -74,7 +71,7 @@ export const OnboardingLayout = ({
 
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink={!isConnected} />
+      <SkipLinks />
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}

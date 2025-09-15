@@ -26,7 +26,7 @@ interface SignUpLayoutProps {
 export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink />
+      <SkipLinks />
       <div className={styles['page-layout']}>
         <div
           id="content-wrapper"
@@ -92,7 +92,7 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
             <main id="content">
               <div id="orejimeElement" />
               <div className={cn(styles.content, styles[`content-sign-up`])}>
-                <MainHeading mainHeading={mainHeading} isConnected={false} />
+                <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>
             </main>
