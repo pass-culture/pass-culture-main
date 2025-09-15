@@ -1,41 +1,24 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
+@use "styles/variables/_forms.scss" as forms;
+
+$icon-button-height: rem.torem(32px);
 
 .row {
   align-items: flex-start;
   display: flex;
-  flex-direction: column;
   margin-top: rem.torem(16px);
-
-  > .input-label {
-    width: rem.torem(424px);
-  }
+  gap: rem.torem(8px);
+  flex-flow: column wrap;
 
   .input-price,
   .input-stock {
     width: rem.torem(200px);
   }
 
-  > .input-booking-limit-datetime,
-  > .input-activation-codes-expiration-datetime {
+  >.input-booking-limit-datetime,
+  >.input-activation-codes-expiration-datetime {
     width: rem.torem(224px);
-  }
-
-  > .input-readonly {
-    &--first {
-      margin-left: rem.torem(16px);
-    }
-
-    &,
-    &--first {
-      > span {
-        margin-top: rem.torem(7.5px);
-      }
-    }
-  }
-
-  .button-action {
-    margin-top: rem.torem(37px);
   }
 }
 
@@ -44,5 +27,13 @@
   .row {
     flex-direction: row;
     gap: rem.torem(16px);
+  }
+
+  .trash-button {
+    margin-top: calc(#{var(--typography-body-line-height)} + #{forms.$label-space-before-input} + #{var(--typography-body-xs-line-height)} + (#{size.$input-min-height} - $icon-button-height) / 2);
+  }
+
+  .row.event .input-price {
+    margin-top: var(--typography-body-xs-line-height);
   }
 }
