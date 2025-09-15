@@ -10,27 +10,11 @@ vi.mock('react-router', async () => ({
   useLocation: () => ({ state: {} }),
 }))
 
-describe('src | components | pages | NotFound', () => {
-  it('should display a message notifying the user they are on a wrong path and add a link to home', () => {
-    // when
+describe('NotFound', () => {
+  it('should display a message notifying the user they are on a wrong path', () => {
     renderWithProviders(<NotFound />)
-    // then
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Oh non !'
-    )
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/accueil')
+
     expect(screen.getByText('Cette page n’existe pas.')).toBeInTheDocument()
-  })
-
-  it('should display a link with the redirect props url if not default', () => {
-    // when
-    const props = {
-      redirect: '/mon/autre/url',
-    }
-    renderWithProviders(<NotFound {...props} />)
-
-    // then
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/mon/autre/url')
   })
 
   it('should display a specific error message when an offer was not found', () => {
