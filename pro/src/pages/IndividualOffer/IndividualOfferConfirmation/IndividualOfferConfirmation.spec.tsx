@@ -31,7 +31,8 @@ vi.mock('@/commons/utils/config', async () => {
 })
 
 const renderOffer = (
-  contextOverride: Partial<IndividualOfferContextValues>
+  contextOverride: Partial<IndividualOfferContextValues>,
+  features?: string[]
 ) => {
   const contextValue = individualOfferContextValuesFactory(contextOverride)
 
@@ -52,6 +53,7 @@ const renderOffer = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/confirmation'],
+      features,
     }
   )
 }
@@ -137,5 +139,13 @@ describe('IndividualOfferConfirmation', () => {
       'href',
       `/offre/creation?structure=${offererId}&lieu=${venueId}`
     )
+  })
+
+  it('should redirect to offer creation first step if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', () => {
+    renderOffer(contextOverride, ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'])
+
+    expect(
+      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
+    ).toHaveAttribute('href', `/offre/individuelle/creation/details`)
   })
 })

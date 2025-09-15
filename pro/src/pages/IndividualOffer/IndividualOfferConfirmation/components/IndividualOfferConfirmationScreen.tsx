@@ -2,6 +2,12 @@ import {
   type GetIndividualOfferResponseModel,
   OfferStatus,
 } from '@/apiClient/v1'
+import {
+  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
+  OFFER_WIZARD_MODE,
+} from '@/commons/core/Offers/constants'
+import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -20,6 +26,10 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
+  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
+
   const isPublishedInTheFuture =
     isDateValid(offer.publicationDate) &&
     new Date() < new Date(offer.publicationDate)
@@ -70,7 +80,15 @@ export const IndividualOfferConfirmationScreen = ({
 
       <div className={styles['confirmation-actions']}>
         <ButtonLink
-          to={`/offre/creation${queryString}`}
+          to={
+            isNewOfferCreationFlowFFEnabled
+              ? getIndividualOfferUrl({
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                  isOnboarding: false,
+                })
+              : `/offre/creation${queryString}`
+          }
           isExternal
           className={styles['confirmation-action']}
           variant={ButtonVariant.SECONDARY}
