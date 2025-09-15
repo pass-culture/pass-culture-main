@@ -19,12 +19,12 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateUser } from '@/commons/store/user/reducer'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -94,7 +94,7 @@ export const Offerers = (): JSX.Element => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.AUTHENTICATION,
-      used: OnboardingFormNavigationAction.NewOfferer,
+      used: SignupJourneyAction.NewOfferer,
     })
     setOfferer(newOfferer)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -105,7 +105,7 @@ export const Offerers = (): JSX.Element => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: '/inscription/structure/rattachement/confirmation',
-      used: OnboardingFormNavigationAction.JoinModal,
+      used: SignupJourneyAction.JoinModal,
     })
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
@@ -134,7 +134,7 @@ export const Offerers = (): JSX.Element => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: 'LinkModal',
-      used: OnboardingFormNavigationAction.LinkModalActionButton,
+      used: SignupJourneyAction.LinkModalActionButton,
     })
     setShowLinkDialog(true)
   }
@@ -143,7 +143,7 @@ export const Offerers = (): JSX.Element => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: 'LinkModal',
       to: location.pathname,
-      used: OnboardingFormNavigationAction.LinkModalActionButton,
+      used: SignupJourneyAction.LinkModalActionButton,
     })
     setShowLinkDialog(false)
   }

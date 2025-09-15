@@ -1,7 +1,7 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
@@ -14,12 +14,14 @@ export const ConfirmedAttachment = (): JSX.Element => {
     logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
       from: location.pathname,
       to: SIGNUP_JOURNEY_STEP_IDS.COMPLETED,
-      used: OnboardingFormNavigationAction.WaitingLinkButton,
+      used: SignupJourneyAction.WaitingLinkButton,
     })
   }
   return (
     <div className={styles['confirmed-attachment-layout']}>
-      <div className={styles['title']}>Votre demande a été prise en compte</div>
+      <h2 className={styles['subtitle']}>
+        Votre demande a été prise en compte
+      </h2>
       <div>
         Un email vous sera envoyé lors de la validation de votre demande. Vous
         aurez alors accès à l’ensemble des fonctionnalités du pass Culture Pro.
