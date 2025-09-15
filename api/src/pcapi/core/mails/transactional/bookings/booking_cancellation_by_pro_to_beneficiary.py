@@ -37,7 +37,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": booking.total_amount,
-            "FORMATTED_OFFER_PRICE": format_price(booking.total_amount, beneficiary),
+            "FORMATTED_PRICE": format_price(booking.total_amount, beneficiary),
             "OFFERER_NAME": offer.venue.managingOfferer.name,
             "REASON": booking.cancellationReason.value if booking.cancellationReason else None,
             "REJECTED": rejected_by_fraud_action,
