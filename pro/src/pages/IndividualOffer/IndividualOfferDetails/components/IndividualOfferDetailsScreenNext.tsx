@@ -86,20 +86,16 @@ export const IndividualOfferDetailsScreenNext = ({
   } = useIndividualOfferImageUpload(initialOfferImage)
 
   const isNewOfferDraft = !initialOffer
-  const isNewOfferCreationFlowFeatureActive = true
   const availableVenues = filterAvailableVenues(venues)
   const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
 
   const getInitialValues = () => {
     return isNewOfferDraft
-      ? getInitialValuesFromVenues(
-          availableVenues,
-          isNewOfferCreationFlowFeatureActive
-        )
+      ? getInitialValuesFromVenues(availableVenues, true)
       : getInitialValuesFromOffer({
           offer: initialOffer,
           subcategories: subCategories,
-          isNewOfferCreationFlowFeatureActive,
+          isNewOfferCreationFlowFeatureActive: true,
         })
   }
 
@@ -127,7 +123,7 @@ export const IndividualOfferDetailsScreenNext = ({
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
     hasSelectedProduct,
-    isNewOfferCreationFlowFeatureActive
+    true
   )
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
@@ -145,18 +141,12 @@ export const IndividualOfferDetailsScreenNext = ({
 
       if (isNewOfferDraft) {
         response = await api.postDraftOffer(
-          serializeDetailsPostData(
-            formValues,
-            isNewOfferCreationFlowFeatureActive
-          )
+          serializeDetailsPostData(formValues, true)
         )
       } else if (!shouldNotPatchData && initialOfferId) {
         response = await api.patchDraftOffer(
           initialOfferId,
-          serializeDetailsPatchData(
-            formValues,
-            isNewOfferCreationFlowFeatureActive
-          )
+          serializeDetailsPatchData(formValues, true)
         )
       }
 
@@ -219,10 +209,8 @@ export const IndividualOfferDetailsScreenNext = ({
 
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(`${isOnboarding ? '/onboarding' : ''}/offre/creation`)
+      navigate(isOnboarding ? '/onboarding/individuel' : '/offre/creation')
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: initialOffer?.id,
