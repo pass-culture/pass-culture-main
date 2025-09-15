@@ -49,6 +49,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     OFFERER = "Entité juridique"
     TAG = "Tag"
     HEADLINE = "Offres à la une"
+    HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
 
 
@@ -98,6 +99,7 @@ form_field_configuration = {
     "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "PROVIDER": {"field": "provider", "operator": ["IN", "NOT_IN"]},
     "HEADLINE": {"field": "boolean", "operator": ["EQUALS"]},
+    "HIGHLIGHT_REQUEST": {"field": "highlight", "operator": ["IN"]},
     "VALIDATED_OFFERER": {"field": "boolean", "operator": ["EQUALS"]},
 }
 
@@ -157,6 +159,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
             "all_available_fields": [
                 "address",
                 "category",
+                "highlight",
                 "criteria",
                 "date",
                 "department",
@@ -185,6 +188,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_venues_choices(self.venue)
         autocomplete.prefill_addresses_choices(self.address)
         autocomplete.prefill_providers_choices(self.provider)
+        autocomplete.prefill_highlights_choices(self.highlight)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -212,6 +216,15 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
     category = fields.PCSelectMultipleField(
         "Catégories",
         choices=forms_utils.choices_from_enum(pro_categories.CategoryIdLabelEnum),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    highlight = fields.PCTomSelectField(
+        "Temps forts",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_highlights",
         search_inline=True,
         field_list_compatibility=True,
     )

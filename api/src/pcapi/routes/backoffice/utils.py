@@ -341,7 +341,6 @@ def generate_search_query(
 
             query = query_modifier(query, filter_value)
             continue
-
         column = meta_field["column"]
         if OPERATOR_DICT[operator].get("outer_join", False):
             if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
