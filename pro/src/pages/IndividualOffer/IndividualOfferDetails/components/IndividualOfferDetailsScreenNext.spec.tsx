@@ -1321,7 +1321,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       })
     })
 
-    it('should not render when the offer is not set', async () => {
+    it('should redirect to the offer creation type screen', async () => {
       renderDetailsScreen({
         props: {
           venues: [venueListItemFactory({ id: 189 })],
@@ -1336,7 +1336,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       })
       await userEvent.click(screen.getByText('Retour'))
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/offre/creation')
+        expect(mockNavigate).toHaveBeenCalledWith('/onboarding/individuel')
       })
     })
   })

@@ -190,9 +190,8 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
               />
             )}
 
-            {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-              <IndividualOfferType />
-            )}
+            {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
+              !isNewOfferCreationFlowFeatureActive && <IndividualOfferType />}
 
             {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
               (isOffererLoading ? (

@@ -35,4 +35,14 @@ describe('OfferType', () => {
       })
     ).not.toBeInTheDocument()
   })
+
+  it('should not show the individual categories options if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', () => {
+    renderOfferTypeScreen({}, ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'])
+
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Votre offre est',
+      })
+    ).not.toBeInTheDocument()
+  })
 })
