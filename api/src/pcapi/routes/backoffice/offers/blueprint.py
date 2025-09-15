@@ -33,6 +33,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -187,6 +188,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "special": lambda x: x == "true",
         "column": offers_models.Offer.is_headline_offer,
     },
+    "HIGHLIGHT_REQUEST": {
+        "field": "highlight",
+        "column": highlights_models.HighlightRequest.highlightId,
+        "inner_join": "highlight_request",
+    },
     "PROVIDER": {
         "field": "provider",
         "column": offers_models.Offer.lastProviderId,
@@ -271,6 +277,15 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "venue",
             "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+    ],
+    "highlight_request": [
+        {
+            "name": "highlight_request",
+            "args": (
+                highlights_models.HighlightRequest,
+                highlights_models.HighlightRequest.offerId == offers_models.Offer.id,
+            ),
         },
     ],
     "offerer": [

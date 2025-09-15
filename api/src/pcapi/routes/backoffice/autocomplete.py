@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -11,6 +12,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
@@ -205,6 +207,29 @@ def prefill_venues_choices(autocomplete_field: fields.PCTomSelectField, only_wit
         autocomplete_field.choices = [(venue.id, _get_venue_choice_label(venue)) for venue in venues]
 
 
+def prefill_highlights_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        highlights = (
+            db.session.query(highlights_models.Highlight)
+            .filter(highlights_models.Highlight.id.in_(autocomplete_field.data))
+            .order_by(highlights_models.Highlight.name)
+            .options(
+                sa_orm.load_only(
+                    highlights_models.Highlight.id,
+                    highlights_models.Highlight.name,
+                    highlights_models.Highlight.highlight_timespan,
+                )
+            )
+        )
+        autocomplete_field.choices = [
+            (
+                highlight.id,
+                f"{highlight.name} - {datetime.strftime(highlight.highlight_timespan.lower.date(), '%d/%m/%Y')} - {datetime.strftime(highlight.highlight_timespan.upper.date(), '%d/%m/%Y')}",
+            )
+            for highlight in highlights
+        ]
+
+
 def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
     query_string = request.args.get("q", "").strip()
 
@@ -272,6 +297,40 @@ def autocomplete_providers() -> AutocompleteResponse:
     providers = query.limit(NUM_RESULTS)
     return AutocompleteResponse(
         items=[AutocompleteItem(id=provider.id, text=f"{provider.id} - {provider.name}") for provider in providers]
+    )
+
+
+@blueprint.backoffice_web.route("/autocomplete/highlights", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_highlights() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    query = db.session.query(highlights_models.Highlight).options(
+        sa_orm.load_only(
+            highlights_models.Highlight.id,
+            highlights_models.Highlight.name,
+            highlights_models.Highlight.highlight_timespan,
+        )
+    )
+    if string_utils.is_numeric(query_string):
+        query = query.filter(highlights_models.Highlight.id == int(query_string))
+    elif query_string:
+        query = query.filter(
+            sa.func.unaccent(highlights_models.Highlight.name).ilike(f"%{clean_accents(query_string)}%")
+        )
+    else:
+        return AutocompleteResponse(items=[])
+
+    highlights = query.limit(NUM_RESULTS)
+    return AutocompleteResponse(
+        items=[
+            AutocompleteItem(
+                id=highlight.id,
+                text=f"{highlight.name} - {datetime.strftime(highlight.highlight_timespan.lower.date(), '%d/%m/%Y')} - {datetime.strftime(highlight.highlight_timespan.upper.date(), '%d/%m/%Y')}",
+            )
+            for highlight in highlights
+        ]
     )
 
 
