@@ -22,11 +22,10 @@ export interface FunnelLayoutProps {
 
 export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
-  const isConnected = !!currentUser
 
   return (
     <div className={styles.layout}>
-      <SkipLinks shouldDisplayTopPageLink={false} />
+      <SkipLinks />
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
@@ -41,10 +40,7 @@ export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
             <main id="content">
               <div id="orejimeElement" />
               <div className={styles.content}>
-                <MainHeading
-                  mainHeading={mainHeading}
-                  isConnected={isConnected}
-                />
+                <MainHeading mainHeading={mainHeading} />
                 {children}
               </div>
             </main>

@@ -1,22 +1,26 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
 
-import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
-
+import { BackToNavLink } from './BackToNavLink/BackToNavLink'
 import styles from './MainHeading.module.scss'
 
 interface MainHeadingProps {
   className?: string
   mainHeading: React.ReactNode
   mainSubHeading?: string
-  isConnected?: boolean
+  /**
+   * Whether to display a "Back to navigation" link under the heading.
+   * We expect this link in connected layouts, and as long as the navigation
+   * is rendered.
+   */
+  shouldDisplayBackToNavLink?: boolean
 }
 
 export const MainHeading = ({
   className,
   mainHeading,
   mainSubHeading,
-  isConnected = true,
+  shouldDisplayBackToNavLink,
 }: MainHeadingProps): JSX.Element => {
   return (
     <div
@@ -32,7 +36,7 @@ export const MainHeading = ({
           </span>
         )}
       </h1>
-      {isConnected && (
+      {shouldDisplayBackToNavLink && (
         <BackToNavLink
           className={cn(styles['main-heading-back-to-nav-link'], {
             [styles['main-heading-back-to-nav-link-with-subtitle']]:
