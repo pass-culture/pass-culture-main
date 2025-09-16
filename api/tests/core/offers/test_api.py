@@ -4915,7 +4915,7 @@ class ProductCountsConsistencyTest:
         ("youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
         ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
         ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
-        ("https://www.youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+        ("https://www.youtube.com/shorts/dQw4w9WgXcQ", None),  # we do not accept shorts
         ("https://www.other.com", None),
         ("dQw4w9WgXcQ", None),
     ],
