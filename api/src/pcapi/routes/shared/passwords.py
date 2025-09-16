@@ -66,7 +66,7 @@ def post_new_password(body: NewPasswordBodyModel) -> None:
             db.session.query(users_models.User)
             .options(sa_orm.selectinload(users_models.User.deposits).selectinload(finance_models.Deposit.recredits))
             .filter_by(id=token.user_id)
-            .one_or_none()
+            .one()
         )
     except users_exceptions.InvalidToken:
         errors = ApiErrors()

@@ -6,7 +6,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -27,7 +26,7 @@ class ImportStatus(enum.Enum):
     WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
-class BeneficiaryImportStatus(PcObject, Base, Model):
+class BeneficiaryImportStatus(PcObject, Model):
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 
@@ -42,13 +41,17 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
         updated_at = datetime.strftime(self.date, "%d/%m/%Y")
         return f"{self.status.value}, le {updated_at} par {author}"
 
-    status: ImportStatus = sa.Column(sa.Enum(ImportStatus, create_constraint=False), nullable=False)
+    status: sa_orm.Mapped[ImportStatus] = sa_orm.mapped_column(
+        sa.Enum(ImportStatus, create_constraint=False), nullable=False
+    )
 
-    date: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
+    date: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    )
 
-    detail = sa.Column(sa.String(255), nullable=True)
+    detail = sa_orm.mapped_column(sa.String(255), nullable=True)
 
-    beneficiaryImportId: int = sa.Column(
+    beneficiaryImportId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("beneficiary_import.id"), index=True, nullable=False
     )
 
@@ -56,6 +59,6 @@ class BeneficiaryImportStatus(PcObject, Base, Model):
         "BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses"
     )
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author: sa_orm.Mapped["users_models.User | None"] = relationship("User", foreign_keys=[authorId])

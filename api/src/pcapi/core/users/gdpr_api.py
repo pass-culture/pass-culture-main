@@ -135,10 +135,10 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
     user.dateOfBirth = user.dateOfBirth.replace(day=1, month=1) if user.dateOfBirth else None
     user.address = None
     user.city = None
-    user.externalIds = []
+    user.externalIds = {}
     user.idPieceNumber = None
     user.user_email_history = []
-    user.irisFrance = iris
+    user.irisFranceId = iris.id if iris else None
     user.validatedBirthDate = user.validatedBirthDate.replace(day=1, month=1) if user.validatedBirthDate else None
 
     external_email_anonymized = api.remove_external_user(user)
@@ -191,7 +191,8 @@ def anonymize_non_pro_non_beneficiary_users() -> None:
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+                    typing.cast(sa_orm.Mapped[datetime.datetime], models.User.suspension_date)
+                    < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -253,6 +254,7 @@ def anonymize_beneficiary_users() -> None:
     years, and whose deposit has been expired for at least 5 years and if they have been suspended
     it was at least 5 years ago.
     """
+    typed_user_suspension_date = typing.cast(sa_orm.Mapped[datetime.datetime], models.User.suspension_date)
     beneficiaries = (
         db.session.query(models.User)
         .outerjoin(
@@ -268,7 +270,7 @@ def anonymize_beneficiary_users() -> None:
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+                    typed_user_suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -284,7 +286,7 @@ def anonymize_beneficiary_users() -> None:
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+                    typed_user_suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -295,7 +297,7 @@ def anonymize_beneficiary_users() -> None:
                 transaction_manager.mark_transaction_as_invalid()
 
 
-def _get_anonymize_pro_query(time_clause: sa.sql.elements.BooleanClauseList) -> typing.Any:
+def _get_anonymize_pro_query(time_clause: sa.sql.elements.ColumnElement[bool]) -> typing.Any:
     aliased_user_offerer = sa_orm.aliased(offerers_models.UserOfferer)
     aliased_offerer = sa_orm.aliased(offerers_models.Offerer)
 
@@ -467,7 +469,10 @@ def clean_gdpr_extracts() -> None:
 
     extracts_to_delete = (
         db.session.query(models.GdprUserDataExtract)
-        .filter(models.GdprUserDataExtract.expirationDate < datetime.datetime.utcnow())  # type: ignore [operator]
+        .filter(
+            typing.cast(sa_orm.Mapped[datetime.datetime], models.GdprUserDataExtract.expirationDate)
+            < datetime.datetime.utcnow(),
+        )
         .with_entities(models.GdprUserDataExtract.id)
     )
     for extract in extracts_to_delete:
@@ -581,7 +586,7 @@ def _extract_gdpr_devices_history(
 ) -> list[users_serialization.GdprLoginDeviceHistorySerializer]:
     login_devices_data = (
         db.session.query(models.LoginDeviceHistory)
-        .filter(models.LoginDeviceHistory.user == user)
+        .filter(models.LoginDeviceHistory.userId == user.id)
         .order_by(models.LoginDeviceHistory.id)
         .all()
     )
@@ -595,7 +600,7 @@ def _extract_gdpr_deposits(user: models.User) -> list[users_serialization.GdprDe
     }
     deposits_data = (
         db.session.query(finance_models.Deposit)
-        .filter(finance_models.Deposit.user == user)
+        .filter(finance_models.Deposit.userId == user.id)
         .order_by(finance_models.Deposit.id)
         .all()
     )
@@ -616,7 +621,7 @@ def _extract_gdpr_email_history(user: models.User) -> list[users_serialization.G
     emails = (
         db.session.query(models.UserEmailHistory)
         .filter(
-            models.UserEmailHistory.user == user,
+            models.UserEmailHistory.userId == user.id,
             models.UserEmailHistory.eventType.in_(
                 [
                     models.EmailHistoryEventTypeEnum.CONFIRMATION,
@@ -646,7 +651,7 @@ def _extract_gdpr_action_history(user: models.User) -> list[users_serialization.
     actions_history = (
         db.session.query(history_models.ActionHistory)
         .filter(
-            history_models.ActionHistory.user == user,
+            history_models.ActionHistory.userId == user.id,
             history_models.ActionHistory.actionType.in_(
                 [
                     history_models.ActionType.USER_SUSPENDED,
@@ -691,7 +696,7 @@ def _extract_gdpr_beneficiary_validation(
     }
     beneficiary_fraud_checks = (
         db.session.query(fraud_models.BeneficiaryFraudCheck)
-        .filter(fraud_models.BeneficiaryFraudCheck.user == user)
+        .filter(fraud_models.BeneficiaryFraudCheck.userId == user.id)
         .order_by(fraud_models.BeneficiaryFraudCheck.id)
         .all()
     )
@@ -721,7 +726,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.Gd
     bookings_data = (
         db.session.query(bookings_models.Booking)
         .filter(
-            bookings_models.Booking.user == user,
+            bookings_models.Booking.userId == user.id,
         )
         .options(
             sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
@@ -821,7 +826,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
         name=f"{extract.id}.zip",
         archive=archive.getvalue(),
     )
-    add_action(history_models.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=extract.user)
+    add_action(history_models.ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=user)
     db.session.flush()
 
 
@@ -840,6 +845,7 @@ def _release_extract_beneficiary_data_lock() -> None:
 
 
 def extract_beneficiary_data_command() -> bool:
+    typed_expiration_date = typing.cast(sa_orm.Mapped[datetime.datetime], models.GdprUserDataExtract.expirationDate)
     counter = ExtractBeneficiaryDataCounter(
         key=constants.GDPR_EXTRACT_DATA_COUNTER, max_value=settings.GDPR_MAX_EXTRACT_PER_DAY
     )
@@ -856,7 +862,7 @@ def extract_beneficiary_data_command() -> bool:
         db.session.query(models.GdprUserDataExtract)
         .filter(
             models.GdprUserDataExtract.dateProcessed.is_(None),
-            models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),  # type: ignore [operator]
+            typed_expiration_date > datetime.datetime.utcnow(),
         )
         .options(
             sa_orm.joinedload(models.GdprUserDataExtract.user),

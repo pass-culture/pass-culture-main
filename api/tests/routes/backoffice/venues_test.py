@@ -816,7 +816,7 @@ class DeleteVenueTest(PostEndpointHelper):
         )
         assert db.session.query(educational_models.AdageVenueAddress).filter_by(venueId=venue_to_delete_id).count() == 0
 
-        expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
+        expected_url = url_for("backoffice_web.pro.search_pro")
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -835,7 +835,7 @@ class DeleteVenueTest(PostEndpointHelper):
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
         )
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id, _external=True)
+        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -854,7 +854,7 @@ class DeleteVenueTest(PostEndpointHelper):
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 1
         )
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id, _external=True)
+        expected_url = url_for("backoffice_web.venue.get", venue_id=venue_to_delete.id)
         assert response.location == expected_url
         response = authenticated_client.get(expected_url)
         assert (
@@ -973,7 +973,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_addresses = db.session.query(offerers_models.OffererAddress).order_by(
@@ -1077,7 +1077,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1232,7 +1232,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_addresses = (
@@ -1320,7 +1320,7 @@ class UpdateVenueTest(PostEndpointHelper):
             response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         offerer_address = (
@@ -1388,7 +1388,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
         address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
@@ -1700,7 +1700,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1762,7 +1762,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1779,7 +1779,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -1807,7 +1807,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
         assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
 
@@ -2633,7 +2633,7 @@ class CommentVenueTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+        expected_url = url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert response.location == expected_url
 
         db.session.refresh(venue)
@@ -3573,9 +3573,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         assert action.venueId == venue_id
         assert action.extraData["provider_id"] == provider_id
         assert action.extraData["provider_name"] == "Test provider"
-        assert response.location == url_for(
-            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
-        )
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue_provider.venue.id)
 
         response = authenticated_client.get(response.location)
         assert (
@@ -3616,9 +3614,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             == 1
         )
         assert db.session.query(history_models.ActionHistory).count() == 0
-        assert response.location == url_for(
-            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
-        )
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue_provider.venue.id)
 
         response = authenticated_client.get(response.location)
         assert (

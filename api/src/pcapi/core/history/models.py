@@ -9,7 +9,6 @@ from sqlalchemy.ext import mutable as sa_mutable
 
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import db as db_utils
@@ -97,7 +96,7 @@ class ActionType(enum.Enum):
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
 
 
-class ActionHistory(PcObject, Base, Model):
+class ActionHistory(PcObject, Model):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
 
@@ -121,22 +120,28 @@ class ActionHistory(PcObject, Base, Model):
 
     __tablename__ = "action_history"
 
-    actionType: ActionType = sa.Column(db_utils.MagicEnum(ActionType), nullable=False)
+    actionType: sa_orm.Mapped[ActionType] = sa_orm.mapped_column(db_utils.MagicEnum(ActionType), nullable=False)
     sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash")
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
-    actionDate = sa.Column(sa.DateTime, nullable=True, server_default=sa.func.now(), default=datetime.datetime.utcnow)
+    actionDate = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, server_default=sa.func.now(), default=datetime.datetime.utcnow
+    )
 
     # User (beneficiary, pro, admin...) who *initiated* the action
     # nullable because of old actions without known author migrated here or lines which must be kept in case an admin
     # author is removed; but the author is mandatory for any new action
-    authorUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    authorUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
     authorUser: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship("User", foreign_keys=[authorUserId])
 
-    extraData: sa_orm.Mapped[dict | None] = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
+    extraData: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
+        "jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB)
+    )
 
     # ActionHistory.userId.is_(None) is used in a query, keep non-conditional index
-    userId: int | None = sa.Column(
+    userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
     )
     user: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship(
@@ -146,7 +151,7 @@ class ActionHistory(PcObject, Base, Model):
     )
 
     # ActionHistory.offererId.is_(None) is used in a query, keep non-conditional index
-    offererId: int | None = sa.Column(
+    offererId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=True
     )
     offerer: sa_orm.Mapped["offerers_models.Offerer | None"] = sa_orm.relationship(
@@ -155,14 +160,16 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True)
+    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
+    )
     venue: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship(
         "Venue",
         foreign_keys=[venueId],
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    financeIncidentId: int | None = sa.Column(
+    financeIncidentId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("finance_incident.id", ondelete="CASCADE"), nullable=True
     )
     financeIncident: sa_orm.Mapped["finance_models.FinanceIncident | None"] = sa_orm.relationship(
@@ -171,7 +178,7 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
     )
 
-    bankAccountId: int | None = sa.Column(
+    bankAccountId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), nullable=True
     )
 
@@ -181,7 +188,7 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    ruleId: int | None = sa.Column(
+    ruleId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=True
     )
 
@@ -191,7 +198,9 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    chronicleId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), nullable=True)
+    chronicleId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), nullable=True
+    )
 
     chronicle: sa_orm.Mapped[chronicles_models.Chronicle | None] = sa_orm.relationship(
         "Chronicle",
@@ -199,7 +208,7 @@ class ActionHistory(PcObject, Base, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
-    comment = sa.Column(sa.Text(), nullable=True)
+    comment = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(

@@ -252,6 +252,7 @@ def delete_venues_banners(venues: list[offerers_models.Venue]) -> None:
     venues_ids_with_deleted_banners = set()
     for place_info in google_places_info_query:
         try:
+            assert place_info.bannerUrl  #  helps mypy
             delete_public_object(GOOGLE_PLACES_BANNER_STORAGE_FOLDER, place_info.bannerUrl.split("/")[-1])
         except Exception as e:
             logger.exception(

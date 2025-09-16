@@ -12,6 +12,7 @@ from pcapi.core.educational.factories import PendingCollectiveBookingFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.validation import check_institution_fund
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -51,6 +52,7 @@ class EducationalValidationTest:
             educationalYear=educational_year,
             amount=Decimal(1400.00),
         )
+        db.session.add(educational_deposit)
         PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(2000.00),
             educationalInstitution=educational_institution,
@@ -95,6 +97,7 @@ class EducationalValidationTest:
             amount=Decimal(1400.00),
             isFinal=False,
         )
+        db.session.add(educational_deposit)
         ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
@@ -128,6 +131,7 @@ class EducationalValidationTest:
             educationalYear=educational_year,
             amount=Decimal(400.00),
         )
+        db.session.add(educational_deposit)
         ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,

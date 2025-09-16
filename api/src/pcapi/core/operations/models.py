@@ -7,47 +7,46 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
 
 
-class SpecialEvent(PcObject, Base, Model):
+class SpecialEvent(PcObject, Model):
     __tablename__ = "special_event"
-    dateCreated: datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
-    externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
-    title: str = sa.Column(sa.Text(), nullable=False)
-    endImportDate: date = sa.Column(sa.Date, index=True, nullable=False)
-    eventDate: date = sa.Column(sa.Date, index=True, nullable=False, server_default=sa.func.now())
-    offererId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True)
-    offerer: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    venueId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True)
-    venue: sa_orm.Mapped[offerers_models.Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId])
-
-    __table_args__ = (
-        sa.Index(
-            "ix_special_event_trgm_unaccent_title",
-            sa.func.immutable_unaccent(title),
-            postgresql_using="gin",
-        ),
+    externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), index=True, unique=True, nullable=False)
+    title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    endImportDate: sa_orm.Mapped[date] = sa_orm.mapped_column(sa.Date, index=True, nullable=False)
+    eventDate: sa_orm.Mapped[date] = sa_orm.mapped_column(
+        sa.Date, index=True, nullable=False, server_default=sa.func.now()
     )
+    offererId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True
+    )
+    offerer: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True
+    )
+    venue: sa_orm.Mapped[offerers_models.Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
     @property
     def isFinished(self) -> bool:
         return self.endImportDate < date.today()
 
 
-class SpecialEventQuestion(PcObject, Base, Model):
+class SpecialEventQuestion(PcObject, Model):
     __tablename__ = "special_event_question"
-    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False)
+    eventId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False
+    )
     event: sa_orm.Mapped[SpecialEvent] = sa_orm.relationship(
         "SpecialEvent", foreign_keys=[eventId], backref=sa_orm.backref("questions")
     )
-    externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
-    title: str = sa.Column(sa.Text(), nullable=False)
+    externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), index=True, unique=True, nullable=False)
+    title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
 
 
 class SpecialEventResponseStatus(enum.StrEnum):
@@ -60,7 +59,7 @@ class SpecialEventResponseStatus(enum.StrEnum):
     REJECTED = "REJECTED"
 
 
-class SpecialEventResponse(PcObject, Base, Model):
+class SpecialEventResponse(PcObject, Model):
     """
     User response to a special event, linked with his/her answers.
     Email should be the same as the one stored in user table, but is stored here in case of "no match".
@@ -69,18 +68,20 @@ class SpecialEventResponse(PcObject, Base, Model):
     """
 
     __tablename__ = "special_event_response"
-    eventId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event.id"), nullable=False)
+    eventId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("special_event.id"), nullable=False)
     event: sa_orm.Mapped[SpecialEvent] = sa_orm.relationship(
         "SpecialEvent", foreign_keys=[eventId], backref=sa_orm.backref("responses")
     )
-    externalId: str = sa.Column(sa.Text(), index=True, unique=True, nullable=False)
-    dateSubmitted: datetime = sa.Column(sa.DateTime, nullable=False)
-    phoneNumber: str | None = sa.Column(sa.Text(), nullable=True)
-    email: str | None = sa.Column(sa.Text(), nullable=True)
-    status: SpecialEventResponseStatus = sa.Column(
+    externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), index=True, unique=True, nullable=False)
+    dateSubmitted: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
+    phoneNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    email: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    status: sa_orm.Mapped[SpecialEventResponseStatus] = sa_orm.mapped_column(
         MagicEnum(SpecialEventResponseStatus), nullable=False, default=SpecialEventResponseStatus.NEW
     )
-    userId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
     user: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship(
         "User", foreign_keys=[userId], backref=sa_orm.backref("specialEventResponses")
     )
@@ -88,15 +89,19 @@ class SpecialEventResponse(PcObject, Base, Model):
     __table_args__ = (sa.Index("ix_special_event_response_eventid_status", eventId, status),)
 
 
-class SpecialEventAnswer(PcObject, Base, Model):
+class SpecialEventAnswer(PcObject, Model):
     """
     Answer to every single question when applying for a special event.
     """
 
     __tablename__ = "special_event_answer"
-    responseId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_response.id"), index=True, nullable=False)
+    responseId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("special_event_response.id"), index=True, nullable=False
+    )
     response: sa_orm.Mapped[SpecialEventResponse] = sa_orm.relationship(
         "SpecialEventResponse", foreign_keys=[responseId], backref=sa_orm.backref("answers")
     )
-    questionId: int = sa.Column(sa.BigInteger, sa.ForeignKey("special_event_question.id"), index=True, nullable=False)
-    text: str = sa.Column(sa.Text(), nullable=False)
+    questionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("special_event_question.id"), index=True, nullable=False
+    )
+    text: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)

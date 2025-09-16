@@ -13,6 +13,7 @@ class Returns403Test:
     num_queries += 1  # get venue
     num_queries += 1  # check user_offerer exists
     num_queries += 1  # rollback
+    num_queries += 1  # rollback
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -77,6 +78,7 @@ class Returns404Test:
     num_queries += 1  # venue
     num_queries += 1  # user offerer
     num_queries += 1  # payload (joined query)
+    num_queries += 1  # rollback
     num_queries += 1  # rollback
 
     def test_access_to_not_existing_ean(self, client):

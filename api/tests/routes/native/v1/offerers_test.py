@@ -252,6 +252,6 @@ class OffererHeadlineOfferTest:
         offerer = user_offerer.offerer
 
         client = client.with_session_auth(email=pro.email)
-        with assert_num_queries(self.num_queries + 1):  # +1 for atomic rollback
+        with assert_num_queries(self.num_queries + 2):  # +2 for atomic rollback
             response = client.get(f"/offerers/{offerer.id}/headline-offer")
             assert response.status_code == 404

@@ -17,6 +17,7 @@ _backends = [
 def push_invoice(invoice_id: int) -> dict | None:
     backend = _get_backend()
     invoice = db.session.get(finance_models.Invoice, invoice_id)
+    assert invoice  # helps mypy
     return backend.push_invoice(invoice)
 
 

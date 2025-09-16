@@ -78,6 +78,7 @@ def test_return_price_categories_and_schedule_count_by_date(client):
     client = client.with_session_auth(user_offerer.user.email)
     offer_id = offer.id
     queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select offer
     queries += 1  # offer timezone
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
@@ -104,6 +105,7 @@ def test_return_empty_list_when_no_stock(client):
     client = client.with_session_auth(user_offerer.user.email)
     offer_id = offer.id
     queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select offer
     queries += 1  # offer timezone
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
@@ -124,8 +126,10 @@ def test_user_is_forbidden(client):
     client = client.with_session_auth(user_offerer.user.email)
     offer_id = offer.id
     queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select offer
     queries += 1  # select venue
     queries += 1  # check user_offerer exists
+    queries += 1  # rollback
     queries += 1  # rollback
     with testing.assert_num_queries(queries):
         response = client.get(f"/bookings/dates/{offer_id}")

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 from urllib.parse import urlencode
 
 from flask import flash
@@ -276,7 +277,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
 
     token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
-    params = {}
+    params: dict[str, typing.Any] = {}
     if token:
         params["accessToken"] = token.encoded_token
         expiration_date = (
