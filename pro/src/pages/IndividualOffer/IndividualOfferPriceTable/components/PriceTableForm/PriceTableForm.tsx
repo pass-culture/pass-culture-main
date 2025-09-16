@@ -6,8 +6,11 @@ import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { isAllocineOffer } from '@/commons/core/Providers/utils/localProvider'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/isOfferSynchronized'
+import { isOfferSynchronizedViaAllocine } from '@/commons/core/Offers/utils/isOfferSynchronizedViaAllocine'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -44,13 +47,13 @@ export interface PriceTableFormProps {
 }
 export const PriceTableForm = ({
   isCaledonian,
-  isReadOnly = false,
   mode,
   offer,
   schemaValidationContext,
-  offerStocks,
 }: PriceTableFormProps) => {
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
+
+  const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
 
   const {
     control,
@@ -72,10 +75,12 @@ export const PriceTableForm = ({
   const [entryIndexToConfirmAndRemove, setEntryIndexToConfirmAndRemove] =
     useState<number | null>(null)
 
-  const isOfferSynchronized = Boolean(offer.lastProvider)
-  const isOfferSynchronizedAllocine = isAllocineOffer(offer)
-  const disableEverythingButQuantity =
-    !isReadOnly && isOfferSynchronized && !isOfferSynchronizedAllocine
+  const areAllFieldsReadonly =
+    isOfferDisabled(offer) || hasPublishedOfferWithSameEan
+  const areAllFieldsReadonlyButQuantity =
+    !areAllFieldsReadonly &&
+    isOfferSynchronized(offer) &&
+    !isOfferSynchronizedViaAllocine(offer)
 
   const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
     offer,
@@ -182,9 +187,7 @@ export const PriceTableForm = ({
         const entry = watch(`entries.${index}`)
 
         const hasActivationCodes =
-          (!disableEverythingButQuantity &&
-            (watch(`entries.${index}.activationCodes`) || []).length > 0) ||
-          (offerStocks.length > 0 && offerStocks[0].hasActivationCode)
+          (watch(`entries.${index}.activationCodes`) || []).length > 0
 
         return (
           <div
@@ -200,8 +203,8 @@ export const PriceTableForm = ({
                 className={styles['input-label']}
                 disabled={
                   fields.length <= 1 ||
-                  isReadOnly ||
-                  disableEverythingButQuantity
+                  areAllFieldsReadonly ||
+                  areAllFieldsReadonlyButQuantity
                 }
                 error={errors.entries?.[index]?.label?.message}
                 label="Intitulé du tarif"
@@ -215,7 +218,7 @@ export const PriceTableForm = ({
               name="price"
               value={watch(`entries.${index}.price`)}
               className={styles['input-price']}
-              disabled={isReadOnly || disableEverythingButQuantity}
+              disabled={areAllFieldsReadonly || areAllFieldsReadonlyButQuantity}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
               currency={isCaledonian ? 'XPF' : 'EUR'}
@@ -231,7 +234,9 @@ export const PriceTableForm = ({
               <DatePicker
                 {...register(`entries.${index}.bookingLimitDatetime`)}
                 className={styles['input-booking-limit-datetime']}
-                disabled={isReadOnly || disableEverythingButQuantity}
+                disabled={
+                  areAllFieldsReadonly || areAllFieldsReadonlyButQuantity
+                }
                 error={errors.entries?.[index]?.bookingLimitDatetime?.message}
                 label="Date limite de réservation"
                 maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
@@ -257,7 +262,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <QuantityInput
                 className={styles['input-stock']}
-                disabled={isReadOnly || hasActivationCodes}
+                disabled={areAllFieldsReadonly || hasActivationCodes}
                 error={errors.entries?.[index]?.quantity?.message}
                 label="Stock"
                 minimum={computeEntryConstraints(entry).quantityMin}
@@ -308,7 +313,9 @@ export const PriceTableForm = ({
               <ListIconButton
                 icon={fullCodeIcon}
                 onClick={() => setActivationCodeEntryIndexToUpload(index)}
-                readOnly={isReadOnly}
+                readOnly={
+                  areAllFieldsReadonly || areAllFieldsReadonlyButQuantity
+                }
                 ref={activationCodeButtonRef}
                 tooltipContent="Ajouter des codes d'activation"
               />
@@ -329,7 +336,7 @@ export const PriceTableForm = ({
       {offer.isEvent && (
         <div className={styles['row']}>
           <Button
-            disabled={isReadOnly}
+            disabled={areAllFieldsReadonly || areAllFieldsReadonlyButQuantity}
             icon={fulleMoreIcon}
             onClick={addEntry}
             type="button"

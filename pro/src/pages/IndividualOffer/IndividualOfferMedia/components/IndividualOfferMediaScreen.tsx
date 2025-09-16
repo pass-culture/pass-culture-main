@@ -261,9 +261,7 @@ export const IndividualOfferMediaScreen = ({
         <ActionBar
           onClickPrevious={handlePreviousStep}
           step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA}
-          isDisabled={
-            form.formState.isSubmitting || isOfferDisabled(offer.status)
-          }
+          isDisabled={form.formState.isSubmitting || isOfferDisabled(offer)}
         />
         <RouteLeavingGuardIndividualOffer
           when={isFormDirty && !form.formState.isSubmitting}

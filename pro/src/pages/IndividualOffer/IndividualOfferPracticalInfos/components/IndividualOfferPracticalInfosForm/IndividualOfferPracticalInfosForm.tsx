@@ -41,7 +41,7 @@ export function IndividualOfferPracticalInfosForm({
   const receiveNotificationEmails = form.watch('receiveNotificationEmails')
   const bookingEmail = form.watch('bookingEmail')
 
-  const isFormDisabled = isOfferDisabled(offer.status)
+  const isFormDisabled = isOfferDisabled(offer)
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 

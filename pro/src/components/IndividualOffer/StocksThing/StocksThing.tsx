@@ -101,7 +101,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         ? bookingsQuantity
         : 0
       : 1
-  const isDisabled = isOfferDisabled(offer.status)
+  const isDisabled = isOfferDisabled(offer)
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
     getDepartmentCode(offer)

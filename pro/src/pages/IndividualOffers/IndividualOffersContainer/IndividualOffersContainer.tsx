@@ -188,12 +188,10 @@ export const IndividualOffersContainer = ({
         variant={TableVariant.COLLAPSE}
         selectable={true}
         selectedIds={selectedOfferIds}
-        onSelectionChange={(rows) =>
-          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+        onSelectionChange={(offers) =>
+          setSelectedOfferIds(new Set(offers.map((r) => r.id)))
         }
-        isRowSelectable={(row: ListOffersOfferResponseModel) =>
-          !isOfferDisabled(row.status)
-        }
+        isRowSelectable={(offer) => !isOfferDisabled(offer)}
         noResult={{
           message: 'Aucune offre trouvée pour votre recherche',
           resetMessage: 'Afficher toutes les offres',

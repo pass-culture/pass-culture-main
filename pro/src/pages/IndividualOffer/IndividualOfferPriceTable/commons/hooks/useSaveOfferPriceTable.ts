@@ -1,10 +1,8 @@
 import type { UseFormReturn } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
 
 import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -30,7 +28,6 @@ export const useSaveOfferPriceTable = ({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const notify = useNotification()
-  const { mutate } = useSWRConfig()
 
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
@@ -66,7 +63,6 @@ export const useSaveOfferPriceTable = ({
           offer,
         })
       }
-      await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success(getSuccessMessage(mode))

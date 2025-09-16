@@ -313,7 +313,7 @@ export const IndividualOfferDetailsScreenNext = ({
             dirtyForm={form.formState.isDirty || isNewOfferDraft}
             isDisabled={
               form.formState.isSubmitting ||
-              Boolean(initialOffer && isOfferDisabled(initialOffer.status)) ||
+              Boolean(initialOffer && isOfferDisabled(initialOffer)) ||
               hasPublishedOfferWithSameEan
             }
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
