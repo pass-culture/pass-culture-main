@@ -4,7 +4,6 @@
 import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
 import { parse } from '@/commons/utils/query-string'
-import { UNAVAILABLE_ERROR_PAGE } from '@/commons/utils/routes'
 
 import {
   routesIndividualOfferWizard,
@@ -58,9 +57,10 @@ export const routes: CustomRouteObject[] = [
   },
   {
     lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
-    path: UNAVAILABLE_ERROR_PAGE,
+    path: '/erreur/indisponible',
     title: 'Page indisponible',
     meta: { public: true },
+    isErrorPage: true,
   },
   {
     lazy: () => import('@/pages/Homepage/Homepage'),
@@ -444,5 +444,6 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
+    isErrorPage: true,
   },
 ]

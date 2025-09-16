@@ -11,4 +11,5 @@ export interface CustomRouteObject extends NonIndexRouteObject {
   meta?: CustomRouteMeta
   featureName?: string
   children?: CustomRouteObject[]
+  isErrorPage?: boolean
 }

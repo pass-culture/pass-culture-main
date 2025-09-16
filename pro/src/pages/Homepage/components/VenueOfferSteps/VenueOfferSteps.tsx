@@ -11,7 +11,6 @@ import {
   VenueEvents,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { UNAVAILABLE_ERROR_PAGE } from '@/commons/utils/routes'
 import { Card } from '@/components/Card/Card'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
@@ -53,7 +52,7 @@ export const VenueOfferSteps = ({
 
   const venueCreationUrl = isVenueCreationAvailable
     ? `/inscription/structure/recherche`
-    : UNAVAILABLE_ERROR_PAGE
+    : '/erreur/indisponible'
 
   const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
 
