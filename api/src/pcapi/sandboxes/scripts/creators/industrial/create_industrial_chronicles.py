@@ -167,6 +167,7 @@ la convoitise.
 
     logger.info("Creating 'CINÉ' type chronicles with all fields")
     for user, product, i in zip(itertools.cycle(users), itertools.cycle(products_with_allocine_id), range(15)):
+        assert product.extraData  # helps mypy
         allocine_id = str(product.extraData["allocineId"])
         chronicles_factories.ChronicleFactory.create(
             age=(20 + (i % 7)),
@@ -186,6 +187,7 @@ la convoitise.
 
     logger.info("Creating 'CINÉ' type chronicles without user")
     for product, i in zip(itertools.cycle(products_with_allocine_id), range(3)):
+        assert product.extraData  # helps mypy
         allocine_id = str(product.extraData["allocineId"])
         chronicles_factories.ChronicleFactory.create(
             age=(20 + (i % 7)),

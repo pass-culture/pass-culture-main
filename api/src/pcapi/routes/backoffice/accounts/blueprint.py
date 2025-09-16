@@ -403,7 +403,7 @@ def render_public_account_details(
         eligibility_history, [fraud_models.FraudCheckType.UBBLE, fraud_models.FraudCheckType.DMS]
     )
 
-    kwargs = {}
+    kwargs: dict[str, typing.Any] = {}
 
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
         if not edit_account_form:

@@ -45,7 +45,7 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: typing.Callable[[str, list[str]], sa_orm.Query]
+    fetch_rows_func: typing.Callable[[str, typing.Iterable[str]], sa_orm.Query]
     endpoint: str
     row_id_name: str
 
