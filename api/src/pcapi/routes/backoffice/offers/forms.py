@@ -1,3 +1,4 @@
+import decimal
 import enum
 import json
 import re
@@ -603,7 +604,7 @@ class EditStockForm(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
-    def __init__(self, old_price: int):
+    def __init__(self, old_price: float | decimal.Decimal):
         super().__init__()
         self.price.validators = [
             wtforms.validators.Optional(),

@@ -444,7 +444,7 @@ def _get_offers_by_ids(
         remaining_quantity_case = sa.case(
             (
                 # Same as Offer.isReleased which is not an hybrid property
-                sa.and_(  # type: ignore[type-var]
+                sa.and_(
                     offers_models.Offer._released,
                     offerers_models.Offerer.isActive,
                     offerers_models.Offerer.isValidated,
@@ -1367,7 +1367,7 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
     )
 
     if stock_count == 1:
-        stock.priceCategory.price = new_price
+        stock.priceCategory.price = decimal.Decimal(str(new_price))
         db.session.add(stock.priceCategory)
         return False
 
@@ -1431,7 +1431,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
 
     if form.percent.data:
         price_percent = decimal.Decimal((100 - float(form.percent.data)) / 100)
-        new_price = stock.price * price_percent
+        new_price = float(stock.price * price_percent)
         offers_api.update_used_stock_price(stock=stock, price_percent=price_percent)
 
     db.session.flush()

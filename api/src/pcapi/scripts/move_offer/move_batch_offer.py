@@ -14,6 +14,7 @@ import typing
 from functools import partial
 
 import click
+import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 
 import pcapi.core.providers.constants as providers_constants
@@ -496,6 +497,8 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
         if invalidity_reason:
             invalid_venues.append((origin_venue_id, destination_venue_id, invalidity_reason))
         else:
+            assert origin_venue  # helps mypy
+            assert destination_venue  # helps mypy
             try:
                 with atomic():
                     offers_repository.lock_stocks_for_venue(origin_venue_id)
@@ -536,9 +539,9 @@ def _move_all_venue_offers(dry_run: bool, origin: int | None, destination: int |
 @click.option("--destination", type=int, required=False)
 def move_batch_offer(not_dry: bool, origin: int | None, destination: int | None) -> None:
     dry_run = not not_dry
-    db.session.execute("SET SESSION statement_timeout = '1200s'")  # 20 minutes
+    db.session.execute(sa.text("SET SESSION statement_timeout = '1200s'"))  # 20 minutes
     _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
-    db.session.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    db.session.execute(sa.text(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}"))
 
     if not dry_run:
         logger.info("Finished")

@@ -335,7 +335,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
-                offerers_models.Venue.bannerUrl,
+                typing.cast(sa_orm.QueryableAttribute, offerers_models.Venue.bannerUrl),
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.timezone,
             )
@@ -477,7 +477,8 @@ def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.
 
 
 def _filter_by_status(query: sa_orm.Query, status: str) -> sa_orm.Query:
-    return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
+    typed_status = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], models.Offer.status)
+    return query.filter(typed_status == offer_mixin.OfferStatus[status].name)
 
 
 def venue_already_has_validated_offer(offer: models.Offer) -> bool:
@@ -608,7 +609,7 @@ def lock_stocks_for_venue(venue_id: int) -> None:
         .join(models.Stock.offer)
         .filter(models.Offer.venueId == venue_id)
         .with_for_update()
-        .options(sa.orm.load_only(models.Stock.id))
+        .options(sa_orm.load_only(models.Stock.id))
         .all()
     )
 
@@ -833,6 +834,7 @@ def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
 
 
 def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
+    typed_status = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], models.Offer.status)
     return (
         db.session.query(models.HeadlineOffer)
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
@@ -844,8 +846,8 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
         )
         .filter(
             sa.or_(
-                models.Offer.status != offer_mixin.OfferStatus.ACTIVE,
-                sa.and_(  # type: ignore
+                typed_status != offer_mixin.OfferStatus.ACTIVE,
+                sa.and_(
                     models.ProductMediation.id.is_(None),
                     models.Mediation.id.is_(None),
                 ),
@@ -952,10 +954,10 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                     offerers_models.OffererAddress._isLinkedToVenue,
                     offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
                 ),
-                sa_orm.joinedload(models.Offer.venue)
+                sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.Offer.venue)
+                sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .with_expression(
                     offerers_models.OffererAddress._isLinkedToVenue,
@@ -1020,7 +1022,12 @@ def offer_has_bookable_stocks(offer_id: int) -> bool:
 
 
 def _order_stocks_by(query: sa_orm.Query, order_by: StocksOrderedBy, order_by_desc: bool) -> sa_orm.Query:
-    column: sa_orm.Mapped[int] | sa.cast[sa.Date | sa.Time, sa_orm.Mapped[datetime.datetime | None]]
+    column: (
+        sa_orm.Mapped[int | None]
+        | sa.Cast[datetime.date]
+        | sa.Cast[datetime.time]
+        | sa_orm.Mapped[datetime.datetime | None]
+    )
     match order_by:
         case StocksOrderedBy.DATE:
             column = sa.cast(models.Stock.beginningDatetime, sa.Date)
@@ -1198,7 +1205,7 @@ def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Q
 
 def get_next_offer_id_from_database() -> int:
     sequence: sa.Sequence = sa.Sequence("offer_id_seq")
-    return db.session.execute(sequence)
+    return typing.cast(int, db.session.execute(sequence))
 
 
 def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, offer_id: int | None) -> bool:
@@ -1206,7 +1213,7 @@ def has_active_offer_with_ean(ean: str | None, venue: offerers_models.Venue, off
         # We should never be there (an ean or an ean must be given), in case we are alert sentry.
         logger.error("Could not search for an offer without ean")
     base_query = db.session.query(models.Offer).filter(
-        models.Offer.venue == venue,
+        models.Offer.venueId == venue.id,
         models.Offer.isActive,
         models.Offer.ean == ean,
     )

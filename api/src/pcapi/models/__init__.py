@@ -56,7 +56,6 @@ if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
 if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
-Base = declarative_base()
 
 db = flask_sqlalchemy.SQLAlchemy(engine_options=_engine_options)
 

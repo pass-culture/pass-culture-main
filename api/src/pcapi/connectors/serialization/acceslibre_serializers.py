@@ -1,6 +1,5 @@
 import pydantic.v1 as pydantic_v1
 
-from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 
 
@@ -52,13 +51,11 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
     mentalDisability: MentalDisabilityModel = MentalDisabilityModel()
 
     @classmethod
-    def from_accessibility_infos(
-        cls, accessibility_infos: AccessibilityInfo | None
-    ) -> "ExternalAccessibilityDataModel":
+    def from_accessibility_infos(cls, accessibility_infos: dict | None) -> "ExternalAccessibilityDataModel":
         if not accessibility_infos:
             return ExternalAccessibilityDataModel()
         accessibility_data = cls.parse_obj(accessibility_infos)
-        for key, value in accessibility_infos.items():  # type: ignore[attr-defined]
+        for key, value in accessibility_infos.items():
             match key:
                 case "access_modality":
                     # access_modality is a list, which has either exterior or entrance access informations, both or None

@@ -1,3 +1,5 @@
+import typing
+
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -59,7 +61,7 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
     is_venue_tied_to_api_key = db.session.query(
         db.session.query(providers_models.VenueProvider)
         .filter(
-            providers_models.VenueProvider.provider == current_api_key.provider,
+            providers_models.VenueProvider.providerId == current_api_key.providerId,
             providers_models.VenueProvider.venueId == venue_id,
             providers_models.VenueProvider.isActive,
         )
@@ -88,7 +90,7 @@ def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
         .join(offerers_models.Venue)
         .join(offerers_models.Venue.venueProviders)
         .join(providers_models.VenueProvider.provider)
-        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive)
         .options(sa_orm.joinedload(offers_models.Offer.venue))
     )
@@ -102,8 +104,8 @@ def get_filtered_offers_linked_to_provider(
         db.session.query(offers_models.Offer)
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
-        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .filter(offers_models.Offer.isEvent == is_event)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+        .filter(typing.cast(sa_orm.Mapped[bool], offers_models.Offer.isEvent) == is_event)
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(
