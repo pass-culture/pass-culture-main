@@ -10,7 +10,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
 import styles from '@/components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
@@ -37,7 +36,6 @@ const individualFilterStatus = [
   {
     label: 'Programmée',
     value: OfferStatus.SCHEDULED,
-    onlyWithFutureOfferFFEnabled: true,
   },
   { label: 'En pause', value: OfferStatus.INACTIVE },
   { label: 'Épuisée', value: OfferStatus.SOLD_OUT },
@@ -57,10 +55,6 @@ export const IndividualOffersSearchFilters = ({
   categories,
   searchButtonRef,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
-  const isRefactoFutureOfferEnabled = useActiveFeature(
-    'WIP_REFACTO_FUTURE_OFFER'
-  )
-
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
   ) => {
@@ -139,11 +133,7 @@ export const IndividualOffersSearchFilters = ({
             name="status"
             onChange={storeOfferStatus}
             disabled={disableAllFilters}
-            options={individualFilterStatus.filter(
-              (option) =>
-                isRefactoFutureOfferEnabled ||
-                !option.onlyWithFutureOfferFFEnabled
-            )}
+            options={individualFilterStatus}
           />
         </FieldLayout>
         <FieldLayout label="Localisation" name="address" isOptional>

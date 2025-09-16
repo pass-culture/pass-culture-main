@@ -144,8 +144,9 @@ describe('IndividualOfferLayout', () => {
 
       renderIndividualOfferLayout({ props })
 
-      expect(screen.getByTestId('status')).toBeInTheDocument()
-      expect(screen.getByText('Mettre en pause')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Modifier' })
+      ).toBeInTheDocument()
       expect(screen.getByText('publiée')).toBeInTheDocument()
     })
 
@@ -185,20 +186,6 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props: { offer } })
 
       expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
-    })
-
-    it('should display publication date when it is in the future', () => {
-      vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.READ_ONLY)
-
-      const future = addDays(new Date(), 3)
-      const offer = getIndividualOfferFactory({
-        publicationDate: future.toISOString(),
-        status: OfferStatus.INACTIVE,
-      })
-
-      renderIndividualOfferLayout({ props: { offer } })
-
-      expect(screen.getByText(/Publication prévue le/)).toBeInTheDocument()
     })
 
     it('should not display publication date in creation', () => {
@@ -323,7 +310,6 @@ describe('IndividualOfferLayout', () => {
 
     it('should not show the update publication button when the offer is not published, inactive or scheduled', () => {
       const options = {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
         initialRouterEntries: ['/offre/creation'],
       }
       const props = {
@@ -392,29 +378,10 @@ describe('IndividualOfferLayout', () => {
           status: OfferStatus.PUBLISHED,
         },
       }
-      const options = {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
-      }
 
-      renderIndividualOfferLayout({ props, options })
+      renderIndividualOfferLayout({ props })
 
       expect(screen.getByText('publiée')).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Modifier' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
-      renderIndividualOfferLayout({
-        props: {
-          offer: getIndividualOfferFactory({
-            status: OfferStatus.PUBLISHED,
-            isEvent: true,
-          }),
-          children: <></>,
-        },
-      })
-
       expect(
         screen.queryByRole('button', { name: 'Modifier' })
       ).not.toBeInTheDocument()
@@ -468,9 +435,8 @@ describe('IndividualOfferLayout', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should show the update publication button when the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
+    it('should show the update publication button', () => {
       const options = {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
         initialRouterEntries: ['/offre/creation'],
       }
       const props = {

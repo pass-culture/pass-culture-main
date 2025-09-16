@@ -14,7 +14,6 @@ import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
@@ -137,15 +136,10 @@ export const IndividualOffersContainer = ({
       page: currentPageNumber + 1,
     })
 
-  const isRefactoFutureOfferEnabled = useActiveFeature(
-    'WIP_REFACTO_FUTURE_OFFER'
-  )
-
   const { headlineOffer, isHeadlineOfferAllowedForOfferer } =
     useHeadlineOfferContext()
 
   const columns = getIndividualOfferColumns(
-    isRefactoFutureOfferEnabled,
     headlineOffer,
     isHeadlineOfferAllowedForOfferer
   )

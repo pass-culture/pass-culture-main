@@ -18,7 +18,6 @@ import { OfferNameCell } from './components/OfferNameCell/OfferNameCell'
 import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
 export function getIndividualOfferColumns(
-  isRefactoFutureOfferEnabled: boolean,
   headlineOffer: HeadLineOfferResponseModel | null,
   isHeadlineOfferAllowedForOfferer: boolean
 ): Column<ListOffersOfferResponseModel>[] {
@@ -62,7 +61,7 @@ export function getIndividualOfferColumns(
     },
     {
       id: 'status',
-      label: isRefactoFutureOfferEnabled ? 'Publication' : 'Statut',
+      label: 'Publication',
       render: (offer) => (
         <OfferStatusCell
           offer={offer}
@@ -72,44 +71,40 @@ export function getIndividualOfferColumns(
         />
       ),
     },
-  ]
-
-  if (isRefactoFutureOfferEnabled) {
-    columns.push({
+    {
       id: 'bookingsCount',
       label: 'Réservations',
       render: (offer) => <OfferBookingCell offer={offer} />,
-    })
-  }
-
-  columns.push({
-    id: 'actions',
-    label: 'Actions',
-    render: (offer) => {
-      const offerLink = getIndividualOfferUrl({
-        offerId: offer.id,
-        mode:
-          offer.status === OFFER_STATUS_DRAFT
-            ? OFFER_WIZARD_MODE.CREATION
-            : OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-      })
-
-      const editionStockLink = getIndividualOfferUrl({
-        offerId: offer.id,
-        mode: OFFER_WIZARD_MODE.EDITION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      })
-
-      return (
-        <IndividualActionsCells
-          offer={offer}
-          editionOfferLink={offerLink}
-          editionStockLink={editionStockLink}
-        />
-      )
     },
-  })
+    {
+      id: 'actions',
+      label: 'Actions',
+      render: (offer) => {
+        const offerLink = getIndividualOfferUrl({
+          offerId: offer.id,
+          mode:
+            offer.status === OFFER_STATUS_DRAFT
+              ? OFFER_WIZARD_MODE.CREATION
+              : OFFER_WIZARD_MODE.READ_ONLY,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        })
+
+        const editionStockLink = getIndividualOfferUrl({
+          offerId: offer.id,
+          mode: OFFER_WIZARD_MODE.EDITION,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+        })
+
+        return (
+          <IndividualActionsCells
+            offer={offer}
+            editionOfferLink={offerLink}
+            editionStockLink={editionStockLink}
+          />
+        )
+      },
+    },
+  ]
 
   return columns
 }

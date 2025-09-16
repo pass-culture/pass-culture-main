@@ -143,24 +143,17 @@ describe('IndividualOffersScreen', () => {
     expect(headers[1].textContent).toEqual('Nom de l’offre')
     expect(headers[2].textContent).toEqual('Localisation')
     expect(headers[3].textContent).toEqual('Stocks')
-    expect(headers[4].textContent).toEqual('Statut')
-    expect(headers[5].textContent).toEqual('Actions')
+    expect(headers[4].textContent).toEqual('Publication')
+    expect(headers[5].textContent).toEqual('Réservations')
+    expect(headers[6].textContent).toEqual('Actions')
   })
 
-  it('should display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
-    renderOffers(props, { features: ['WIP_REFACTO_FUTURE_OFFER'] })
+  it('should display the Publication column', () => {
+    renderOffers(props)
 
     expect(
       screen.getByRole('columnheader', { name: 'Publication' })
     ).toBeInTheDocument()
-  })
-
-  it('should not display the Publication column if FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
-    renderOffers(props)
-
-    expect(
-      screen.queryByRole('columnheader', { name: 'Publication' })
-    ).not.toBeInTheDocument()
   })
 
   it('should render as much offers as returned by the api', () => {
@@ -651,20 +644,10 @@ describe('IndividualOffersScreen', () => {
     expect(screen.getByText('My offer')).toBeInTheDocument()
   })
 
-  it('should display the publication and booking columns if the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
-    renderOffers(
-      { ...props, offers: [listOffersOfferFactory()] },
-      { features: ['WIP_REFACTO_FUTURE_OFFER'] }
-    )
+  it('should display the publication and booking columns', () => {
+    renderOffers({ ...props, offers: [listOffersOfferFactory()] })
 
     expect(screen.getByText('Publication')).toBeInTheDocument()
     expect(screen.getByText('Réservations')).toBeInTheDocument()
-  })
-
-  it('should not display the publication and booking columns if the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
-    renderOffers({ ...props, offers: [listOffersOfferFactory()] })
-
-    expect(screen.queryByText('Publication')).not.toBeInTheDocument()
-    expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
   })
 })

@@ -2,7 +2,6 @@ import type { ChangeEvent } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -63,19 +62,13 @@ export const EventPublicationForm = () => {
     useFormContext<EventPublicationFormValues>()
   const publicationMode = watch('publicationMode')
 
-  const isNewPublicationDatetimeEnabled = useActiveFeature(
-    'WIP_REFACTO_FUTURE_OFFER'
-  )
-
-  const sectionTitle = isNewPublicationDatetimeEnabled ? (
+  const sectionTitle = (
     <div className={styles['title-container']}>
       <span className={styles['title']}>Publication et réservation</span>
       <div className={styles['tag']}>
         <Tag label="Nouveau" variant={TagVariant.NEW} />
       </div>
     </div>
-  ) : (
-    'Date de publication'
   )
 
   const updatePublicationDate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -158,56 +151,54 @@ export const EventPublicationForm = () => {
             />
           </FormLayout.Row>
         </FormLayout.Section>
-        {isNewPublicationDatetimeEnabled && (
-          <FormLayout.Section>
-            <RadioButtonGroup
-              label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
-              name="bookingAllowedMode"
-              variant="detailed"
-              options={[
-                {
-                  label: 'Rendre réservable dès la publication',
-                  value: 'now',
-                },
-                {
-                  label: 'Rendre réservable plus tard',
-                  description:
-                    'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
-                  value: 'later',
-                  collapsed: watch('bookingAllowedMode') === 'later' && (
-                    <FormLayout.Row inline className={styles['publish-later']}>
-                      <DatePicker
-                        label="Date"
-                        minDate={today}
-                        className={styles['date-picker']}
-                        required
-                        {...register('bookingAllowedDate')}
-                        error={formState.errors.bookingAllowedDate?.message}
-                      />
-                      <Select
-                        label="Heure"
-                        options={getPublicationHoursOptions()}
-                        defaultOption={{ label: 'HH:MM', value: '' }}
-                        className={styles['time-picker']}
-                        required
-                        {...register('bookingAllowedTime')}
-                        error={formState.errors.bookingAllowedTime?.message}
-                      />
-                    </FormLayout.Row>
-                  ),
-                },
-              ]}
-              checkedOption={watch('bookingAllowedMode')}
-              onChange={(event) => {
-                setValue(
-                  'bookingAllowedMode',
-                  event.target
-                    .value as EventPublicationFormValues['bookingAllowedMode']
-                )
-              }}
-            />
-          </FormLayout.Section>
-        )}
+        <FormLayout.Section>
+          <RadioButtonGroup
+            label="Quand votre offre pourra-t-elle être réservable&nbsp;?"
+            name="bookingAllowedMode"
+            variant="detailed"
+            options={[
+              {
+                label: 'Rendre réservable dès la publication',
+                value: 'now',
+              },
+              {
+                label: 'Rendre réservable plus tard',
+                description:
+                  'En activant cette option, vous permettez au public de visualiser l’entièreté de votre offre, de la mettre en favori et pouvoir la suivre mais sans qu’elle puisse être réservable.',
+                value: 'later',
+                collapsed: watch('bookingAllowedMode') === 'later' && (
+                  <FormLayout.Row inline className={styles['publish-later']}>
+                    <DatePicker
+                      label="Date"
+                      minDate={today}
+                      className={styles['date-picker']}
+                      required
+                      {...register('bookingAllowedDate')}
+                      error={formState.errors.bookingAllowedDate?.message}
+                    />
+                    <Select
+                      label="Heure"
+                      options={getPublicationHoursOptions()}
+                      defaultOption={{ label: 'HH:MM', value: '' }}
+                      className={styles['time-picker']}
+                      required
+                      {...register('bookingAllowedTime')}
+                      error={formState.errors.bookingAllowedTime?.message}
+                    />
+                  </FormLayout.Row>
+                ),
+              },
+            ]}
+            checkedOption={watch('bookingAllowedMode')}
+            onChange={(event) => {
+              setValue(
+                'bookingAllowedMode',
+                event.target
+                  .value as EventPublicationFormValues['bookingAllowedMode']
+              )
+            }}
+          />
+        </FormLayout.Section>
       </FormLayout>
 
       <Divider />
