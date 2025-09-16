@@ -176,6 +176,9 @@ def book_event_ticket(
 
     if not provider:
         raise providers_exceptions.InactiveProvider()
+    if not provider.hmacKey:
+        raise Exception("Provider should have a hmackey")
+
     sentry_sdk.set_tag("external-provider", provider.name)
 
     venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
@@ -193,6 +196,9 @@ def book_event_ticket(
 
     if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.bookingExternalUrl:
         booking_url = venue_provider.externalUrls.bookingExternalUrl
+
+    if not booking_url:
+        raise Exception("no booking url found for this provider")
 
     response = requests.post(
         booking_url,
@@ -277,6 +283,8 @@ def cancel_event_ticket(
     venue_provider: providers_models.VenueProvider | None,
 ) -> None:
     sentry_sdk.set_tag("external-provider", provider.name)
+    if not provider.hmacKey:
+        raise Exception("Provider should have a hmackey")
 
     validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
 
@@ -290,6 +298,9 @@ def cancel_event_ticket(
 
     if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.cancelExternalUrl:
         cancel_url = venue_provider.externalUrls.cancelExternalUrl
+
+    if not cancel_url:
+        raise Exception("no cancel url found for this provider")
 
     response = requests.post(
         cancel_url,

@@ -39,7 +39,7 @@ def upsert_opening_hours(
         weekday = offerers_models.Weekday[raw_weekday]
         db.session.add(
             offerers_models.OpeningHours(
-                offer=offer,  # type: ignore[arg-type]
+                offer=offer,
                 venue=venue,
                 weekday=weekday,
                 timespan=timespan_str_to_numrange(timespans),

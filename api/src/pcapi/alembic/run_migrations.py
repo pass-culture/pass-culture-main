@@ -9,12 +9,12 @@ from sqlalchemy import create_engine
 from sqlalchemy import schema
 
 from pcapi import settings
-from pcapi.models import Base
+from pcapi.models import Model
 
 
 logger = logging.getLogger(__name__)
 
-target_metadata = Base.metadata
+target_metadata = Model.metadata
 
 
 def _is_enum_column(type_: str, object_: schema.SchemaItem) -> bool:

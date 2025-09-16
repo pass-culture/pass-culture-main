@@ -12,7 +12,7 @@ class BaseQuery(typing.Generic[ModelType]):
     def __init__(self) -> None:
         self.backend = clickhouse_connector.get_backend()
 
-    def _get_rows(self, params: typing.Tuple) -> list:
+    def _get_rows(self, params: tuple) -> typing.Sequence:
         return self.backend.run_query(self.raw_query, params)
 
     @property
@@ -23,6 +23,6 @@ class BaseQuery(typing.Generic[ModelType]):
     def model(self) -> type[ModelType]:
         raise NotImplementedError()
 
-    def execute(self, params: typing.Tuple) -> list[ModelType]:
+    def execute(self, params: tuple) -> list[ModelType]:
         rows = self._get_rows(params)
         return [self.model.from_orm(row) for row in rows]

@@ -82,7 +82,7 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         .filter(User.id.in_(user_ids))
         .filter(
             User.isActive.is_(True),
-            sa.or_(  # type: ignore[type-var]
+            sa.or_(
                 sa.and_(
                     sa.not_(User.has_pro_role),
                     sa.not_(User.has_non_attached_pro_role),
@@ -127,7 +127,7 @@ def update_brevo_and_batch_loop(chunk_size: int, min_id: int, max_id: int, sync_
     # Process users in the order of ids so that we can resume easily in case the script is interrupted.
     # Start from the most recent users is almost an arbitrary choice (supposed to be most active users).
     if not max_id:
-        max_id = db.session.query(User).order_by(User.id.desc()).first().id
+        max_id = db.session.query(User.id).order_by(User.id.desc()).limit(1).scalar() or 0
 
     try:
         for current_max_id in range(max_id, min_id, -chunk_size):

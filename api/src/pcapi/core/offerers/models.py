@@ -29,7 +29,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.utils.db as db_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
-from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
@@ -38,7 +37,6 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import constants
 from pcapi.core.offerers.schemas import BannerMetaModel
 from pcapi.core.offerers.schemas import VenueTypeCode
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -189,65 +187,65 @@ class Weekday(enum.Enum):
     SUNDAY = "SUNDAY"
 
 
-class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
+class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
     __tablename__ = "venue"
 
-    name: str = sa.Column(sa.String(140), nullable=False)
-    sa.Index("ix_venue_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
-    siret = sa.Column(sa.String(14), nullable=True, unique=True)
+    siret = sa_orm.mapped_column(sa.String(14), nullable=True, unique=True)
 
-    departementCode = sa.Column(sa.String(3), nullable=True, index=True)
+    departementCode = sa_orm.mapped_column(sa.String(3), nullable=True, index=True)
 
-    latitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+    latitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
-    longitude: decimal.Decimal | None = sa.Column(sa.Numeric(8, 5), nullable=True)
+    longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
     venueProviders: sa_orm.Mapped[list["providers_models.VenueProvider"]] = sa_orm.relationship(
         "VenueProvider", back_populates="venue"
     )
 
-    managingOffererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=False, index=True)
+    managingOffererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=False, index=True
+    )
 
     managingOfferer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
         "Offerer", foreign_keys=[managingOffererId], back_populates="managedVenues"
     )
 
-    bookingEmail = sa.Column(sa.String(120), nullable=True)
+    bookingEmail = sa_orm.mapped_column(sa.String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    _address = sa.Column("address", sa.String(200), nullable=True)
+    _address = sa_orm.mapped_column("address", sa.String(200), nullable=True)
 
-    _street = sa.Column("street", sa.Text(), nullable=True)
+    _street = sa_orm.mapped_column("street", sa.Text(), nullable=True)
 
-    postalCode = sa.Column(sa.String(6), nullable=True)
+    postalCode = sa_orm.mapped_column(sa.String(6), nullable=True)
 
-    city = sa.Column(sa.String(50), nullable=True)
+    city = sa_orm.mapped_column(sa.String(50), nullable=True)
 
     # banId is a unique interoperability key for French addresses registered in the
     # Base Adresse Nationale. See "cle_interop" here:
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    banId = sa.Column(sa.Text(), nullable=True)
+    banId = sa_orm.mapped_column(sa.Text(), nullable=True)
 
-    timezone: str = sa.Column(
+    timezone: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
-    publicName = sa.Column(sa.String(255), nullable=True)
-    sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+    publicName = sa_orm.mapped_column(sa.String(255), nullable=True)
 
-    isVirtual: bool = sa.Column(
+    isVirtual: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean,
         nullable=False,
         default=False,
         server_default=expression.false(),
     )
 
-    isPermanent: sa_orm.Mapped[bool] = sa.Column(sa.Boolean, nullable=False, default=False)
+    isPermanent: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
 
-    isOpenToPublic = sa.Column(sa.Boolean, nullable=False, default=False)
+    isOpenToPublic = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
 
-    comment = sa.Column(
+    comment = sa_orm.mapped_column(
         sa.TEXT,
         sa.CheckConstraint(
             CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL, name="check_has_siret_xor_comment_xor_isVirtual"
@@ -263,19 +261,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "CollectiveOfferTemplate", back_populates="venue"
     )
 
-    venueTypeCode: VenueTypeCode = sa.Column(
+    venueTypeCode: sa_orm.Mapped[VenueTypeCode] = sa_orm.mapped_column(
         sa.Enum(VenueTypeCode, create_constraint=False), nullable=False, default=VenueTypeCode.OTHER
     )
 
-    venueLabelId = sa.Column(sa.Integer, sa.ForeignKey("venue_label.id"), nullable=True)
+    venueLabelId = sa_orm.mapped_column(sa.Integer, sa.ForeignKey("venue_label.id"), nullable=True)
 
     venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    withdrawalDetails = sa.Column(sa.Text, nullable=True)
+    withdrawalDetails = sa_orm.mapped_column(sa.Text, nullable=True)
 
-    description = sa.Column(sa.Text, nullable=True)
+    description = sa_orm.mapped_column(sa.Text, nullable=True)
 
     contact: sa_orm.Mapped["VenueContact | None"] = sa_orm.relationship(
         "VenueContact", back_populates="venue", uselist=False
@@ -284,15 +282,17 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     # _bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
-    _bannerUrl = sa.Column(sa.Text, nullable=True, name="bannerUrl")
+    _bannerUrl = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
     googlePlacesInfo: sa_orm.Mapped["GooglePlacesInfo | None"] = sa_orm.relationship(
         "GooglePlacesInfo", back_populates="venue", uselist=False
     )
 
-    _bannerMeta: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True, name="bannerMeta")
+    _bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
+        MutableDict.as_mutable(JSONB), nullable=True, name="bannerMeta"
+    )
 
-    adageId = sa.Column(sa.Text, nullable=True)
-    adageInscriptionDate = sa.Column(sa.DateTime, nullable=True)
+    adageId = sa_orm.mapped_column(sa.Text, nullable=True)
+    adageInscriptionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     thumb_path_component = "venues"
 
@@ -300,9 +300,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "Criterion", backref=sa_orm.backref("venue_criteria", lazy="dynamic"), secondary=VenueCriterion.__table__
     )
 
-    dmsToken: str = sa.Column(sa.Text, nullable=False, unique=True)
+    dmsToken: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
-    venueEducationalStatusId = sa.Column(sa.BigInteger, sa.ForeignKey("venue_educational_status.id"), nullable=True)
+    venueEducationalStatusId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue_educational_status.id"), nullable=True
+    )
     venueEducationalStatus: sa_orm.Mapped["VenueEducationalStatus"] = sa_orm.relationship(
         "VenueEducationalStatus", back_populates="venues", foreign_keys=[venueEducationalStatusId]
     )
@@ -314,13 +316,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         uselist=True,
     )
 
-    collectiveDescription = sa.Column(sa.Text, nullable=True)
-    collectiveStudents: list[educational_models.StudentLevels] | None = sa.Column(
+    collectiveDescription = sa_orm.mapped_column(sa.Text, nullable=True)
+    collectiveStudents: sa_orm.Mapped[list[educational_models.StudentLevels] | None] = sa_orm.mapped_column(
         MutableList.as_mutable(sa.dialects.postgresql.ARRAY(sa.Enum(educational_models.StudentLevels))),
         nullable=True,
         server_default="{}",
     )
-    collectiveWebsite = sa.Column(sa.Text, nullable=True)
+    collectiveWebsite = sa_orm.mapped_column(sa.Text, nullable=True)
     collectiveDomains: sa_orm.Mapped[list[educational_models.EducationalDomain]] = sa_orm.relationship(
         educational_models.EducationalDomain,
         back_populates="venues",
@@ -333,15 +335,15 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
         uselist=True,
     )
-    collectiveInterventionArea: list[str] | None = sa.Column(
+    collectiveInterventionArea: sa_orm.Mapped[list[str] | None] = sa_orm.mapped_column(
         MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
     )
-    collectiveNetwork: list[str] | None = sa.Column(
+    collectiveNetwork: sa_orm.Mapped[list[str] | None] = sa_orm.mapped_column(
         MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
     )
-    collectiveAccessInformation = sa.Column(sa.Text, nullable=True)
-    collectivePhone = sa.Column(sa.Text, nullable=True)
-    collectiveEmail = sa.Column(sa.Text, nullable=True)
+    collectiveAccessInformation = sa_orm.mapped_column(sa.Text, nullable=True)
+    collectivePhone = sa_orm.mapped_column(sa.Text, nullable=True)
+    collectiveEmail = sa_orm.mapped_column(sa.Text, nullable=True)
 
     collective_playlists: sa_orm.Mapped[list[educational_models.CollectivePlaylist]] = sa_orm.relationship(
         "CollectivePlaylist", back_populates="venue"
@@ -367,7 +369,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
+    )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
@@ -716,6 +720,22 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
             '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
             name="check_physical_venue_has_offerer_address",
         ),
+        sa.Index(
+            "ix_venue_trgm_unaccent_public_name",
+            sa.func.immutable_unaccent("publicName"),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
+        ),
+        sa.Index(
+            "ix_venue_trgm_unaccent_name",
+            sa.func.immutable_unaccent("name"),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
+        ),
     )
 
     @property
@@ -782,9 +802,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         )
 
 
-class GooglePlacesInfo(PcObject, Base, Model):
+class GooglePlacesInfo(PcObject, Model):
     __tablename__ = "google_places_info"
-    venueId: int = sa.Column(
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
@@ -792,41 +812,55 @@ class GooglePlacesInfo(PcObject, Base, Model):
     )
     # Some venues are duplicated in our database. They are all linked to the same item on
     # Google Places, so this column cannot be unique.
-    placeId: str | None = sa.Column(sa.Text, nullable=True, unique=False)
-    bannerUrl: str | None = sa.Column(sa.Text, nullable=True, name="bannerUrl")
-    bannerMeta: dict | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
-    updateDate: datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now())
+    placeId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
+    bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
+    bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(MutableDict.as_mutable(JSONB), nullable=True)
+    updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
+    )
 
 
-class AccessibilityProvider(PcObject, Base, Model):
+class AccessibilityProvider(PcObject, Model):
     __tablename__ = "accessibility_provider"
-    venueId: int = sa.Column(
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="accessibilityProvider"
     )
-    externalAccessibilityId: str = sa.Column(sa.Text, nullable=False)
-    externalAccessibilityUrl: str = sa.Column(sa.Text, nullable=False)
-    externalAccessibilityData: AccessibilityInfo | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
-    lastUpdateAtProvider: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    externalAccessibilityId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    externalAccessibilityUrl: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    externalAccessibilityData: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
+        MutableDict.as_mutable(JSONB), nullable=True
+    )
+    lastUpdateAtProvider: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.utcnow
+    )
 
 
-class OpeningHours(PcObject, Base, Model):
+class OpeningHours(PcObject, Model):
     __tablename__ = "opening_hours"
 
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True, index=True)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="openingHours"
     )
 
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     offer: sa_orm.Mapped["offers_models.Offer | None"] = sa_orm.relationship(
         "Offer", foreign_keys=[offerId], back_populates="openingHours"
     )
 
-    weekday: Weekday = sa.Column(db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY)
-    timespan: list[psycopg2.extras.NumericRange] = sa.Column(sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True)
+    weekday: sa_orm.Mapped[Weekday] = sa_orm.mapped_column(
+        db_utils.MagicEnum(Weekday), nullable=False, default=Weekday.MONDAY
+    )
+    timespan: sa_orm.Mapped[list[psycopg2.extras.NumericRange] | None] = sa_orm.mapped_column(
+        sa_psql.ARRAY(sa_psql.ranges.NUMRANGE), nullable=True
+    )
 
     __table_args__ = (
         (sa.CheckConstraint(sa.func.cardinality(timespan) <= 2, name="max_timespan_is_2")),
@@ -845,28 +879,30 @@ class OpeningHours(PcObject, Base, Model):
         return getattr(self, field) != value
 
 
-class VenueLabel(PcObject, Base, Model):
+class VenueLabel(PcObject, Model):
     __tablename__ = "venue_label"
-    id: sa_orm.Mapped[int] = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    label: str = sa.Column(sa.String(100), nullable=False)
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(100), nullable=False)
 
 
-class VenueContact(PcObject, Base, Model):
+class VenueContact(PcObject, Model):
     __tablename__ = "venue_contact"
 
-    venueId: int = sa.Column(
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
 
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="contact")
 
-    email = sa.Column(sa.String(256), nullable=True)
+    email = sa_orm.mapped_column(sa.String(256), nullable=True)
 
-    website = sa.Column(sa.String(256), nullable=True)
+    website = sa_orm.mapped_column(sa.String(256), nullable=True)
 
-    phone_number = sa.Column(sa.String(64), nullable=True)
+    phone_number = sa_orm.mapped_column(sa.String(64), nullable=True)
 
-    social_medias: dict = sa.Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
+    social_medias: sa_orm.Mapped[dict] = sa_orm.mapped_column(
+        MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}"
+    )
 
     def __repr__(self) -> str:
         return (
@@ -896,12 +932,12 @@ def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None
 def _fill_departement_code_and_timezone(venue: Venue) -> None:
     if not venue.isVirtual:
         if not venue.postalCode:
-            raise IntegrityError(None, None, None)
+            raise IntegrityError(None, None, Exception())
         venue.store_departement_code()
     venue.store_timezone()
 
 
-class VenuePricingPointLink(Base, Model):
+class VenuePricingPointLink(Model):
     """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
     There should only ever be one pricing point for each venue, but
@@ -910,19 +946,23 @@ class VenuePricingPointLink(Base, Model):
     """
 
     __tablename__ = "venue_pricing_point_link"
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
+    )
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
         Venue, foreign_keys=[venueId], back_populates="pricing_point_links"
     )
-    pricingPointId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPointId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
+    )
     pricingPoint: sa_orm.Mapped[Venue] = sa_orm.relationship(Venue, foreign_keys=[pricingPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the pricing point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
-    timespan: psycopg2.extras.DateTimeRange = sa.Column(sa_psql.TSRANGE, nullable=False)
+    timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # A venue cannot be linked to multiple pricing points at the
@@ -935,26 +975,28 @@ class VenuePricingPointLink(Base, Model):
         super().__init__(**kwargs)
 
 
-class VenueBankAccountLink(PcObject, Base, Model):
+class VenueBankAccountLink(PcObject, Model):
     """
     Professional users can link as many venues as they want to a given bank account.
     However, we want to keep tracks of the history, hence that table.
     """
 
     __tablename__ = "venue_bank_account_link"
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
+    )
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="bankAccountLinks"
     )
 
-    bankAccountId: int = sa.Column(
+    bankAccountId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=False
     )
     bankAccount: sa_orm.Mapped[finance_models.BankAccount] = sa_orm.relationship(
         "BankAccount", foreign_keys=[bankAccountId], back_populates="venueLinks"
     )
 
-    timespan: psycopg2.extras.DateTimeRange = sa.Column(sa_psql.TSRANGE, nullable=False)
+    timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # For a given venue, there can only be one bank account at a time.
@@ -966,38 +1008,38 @@ class VenueBankAccountLink(PcObject, Base, Model):
         super().__init__(**kwargs)
 
 
-class VenueEducationalStatus(Base, Model):
+class VenueEducationalStatus(Model):
     __tablename__ = "venue_educational_status"
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=False, nullable=False)
-    name: str = sa.Column(sa.String(256), nullable=False)
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=False, nullable=False)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(256), nullable=False)
     venues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship(
         Venue, back_populates="venueEducationalStatus", uselist=True
     )
 
 
-class VenueRegistration(PcObject, Base, Model):
+class VenueRegistration(PcObject, Model):
     __tablename__ = "venue_registration"
 
-    id: int = sa.Column("id", sa.BigInteger, sa.Identity(), primary_key=True)
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column("id", sa.BigInteger, sa.Identity(), primary_key=True)
 
-    venueId: int = sa.Column(
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
     )
 
     venue: sa_orm.Mapped[Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId], back_populates="registration")
 
-    target: Target = sa.Column(db_utils.MagicEnum(Target), nullable=False)
+    target: sa_orm.Mapped[Target] = sa_orm.mapped_column(db_utils.MagicEnum(Target), nullable=False)
 
-    webPresence: str | None = sa.Column(sa.Text, nullable=True)
+    webPresence: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
 
-class OffererTagMapping(PcObject, Base, Model):
+class OffererTagMapping(PcObject, Model):
     __tablename__ = "offerer_tag_mapping"
 
-    offererId: int = sa.Column(
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    tagId: int = sa.Column(
+    tagId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
@@ -1006,27 +1048,23 @@ class OffererTagMapping(PcObject, Base, Model):
 
 class Offerer(
     PcObject,
-    Base,
     Model,
     HasAddressMixin,
     ValidationStatusMixin,
     DeactivableMixin,
 ):
     __tablename__ = "offerer"
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    name: str = sa.Column(sa.String(140), nullable=False)
-    sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
-
-    sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin")
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
     UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship(
         "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
     )
 
-    siren: str = sa.Column(sa.String(9), nullable=False, unique=True)
+    siren: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(9), nullable=False, unique=True)
 
-    dateValidated = sa.Column(sa.DateTime, nullable=True, default=None)
+    dateValidated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=None)
 
     tags: sa_orm.Mapped[list["OffererTag"]] = sa_orm.relationship("OffererTag", secondary=OffererTagMapping.__table__)
 
@@ -1063,11 +1101,16 @@ class Offerer(
         "IndividualOffererSubscription", back_populates="offerer", uselist=False
     )
 
-    allowedOnAdage: bool = sa.Column(
+    allowedOnAdage: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, default=False, server_default=sa.sql.expression.false()
     )
 
-    _street = sa.Column("street", sa.Text(), nullable=True)
+    _street = sa_orm.mapped_column("street", sa.Text(), nullable=True)
+
+    __table_args__ = (
+        sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin"),
+        sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin"),
+    )
 
     managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship("Venue", back_populates="managingOfferer")
 
@@ -1145,13 +1188,15 @@ class Offerer(
         return self.confidenceRule.confidenceLevel
 
 
-class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
+class UserOfferer(PcObject, Model, ValidationStatusMixin):
     __tablename__ = "user_offerer"
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), primary_key=True)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), primary_key=True)
     user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], back_populates="UserOfferers"
     )
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False
+    )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
         Offerer, foreign_keys=[offererId], back_populates="UserOfferers"
     )
@@ -1165,22 +1210,26 @@ class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     )
 
     # dateCreated will remain null for all rows already in this table before this field was added
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
 
-class ApiKey(PcObject, Base, Model):
+class ApiKey(PcObject, Model):
     __tablename__ = "api_key"
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
+    )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId], backref="apiKeys")
-    providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id", ondelete="CASCADE"), index=True)
+    providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id", ondelete="CASCADE"), index=True, nullable=True
+    )
     provider: sa_orm.Mapped["providers_models.Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
     )
-    dateCreated: datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
-    prefix = sa.Column(sa.Text, nullable=True, unique=True)
-    secret: bytes = sa.Column(LargeBinary, nullable=True)
+    prefix = sa_orm.mapped_column(sa.Text, nullable=True, unique=True)
+    secret: sa_orm.Mapped[bytes] = sa_orm.mapped_column(LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
         if settings.USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM and crypto.check_password(clear_text, self.secret):
@@ -1195,20 +1244,20 @@ class ApiKey(PcObject, Base, Model):
         return False
 
 
-class OffererTagCategoryMapping(PcObject, Base, Model):
+class OffererTagCategoryMapping(PcObject, Model):
     __tablename__ = "offerer_tag_category_mapping"
 
-    tagId: int = sa.Column(
+    tagId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    categoryId: int = sa.Column(
+    categoryId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_tag_category.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
     __table_args__ = (sa.UniqueConstraint("tagId", "categoryId", name="unique_offerer_tag_category"),)
 
 
-class OffererTag(PcObject, Base, Model):
+class OffererTag(PcObject, Model):
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
     There is currently no display or impact in mobile and web apps.
@@ -1216,9 +1265,9 @@ class OffererTag(PcObject, Base, Model):
 
     __tablename__ = "offerer_tag"
 
-    name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    label: str = sa.Column(sa.String(140))
-    description: str = sa.Column(sa.Text)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False, unique=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=True)
+    description: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     categories: sa_orm.Mapped[list["OffererTagCategory"]] = sa_orm.relationship(
         "OffererTagCategory", secondary=OffererTagCategoryMapping.__table__
@@ -1228,7 +1277,7 @@ class OffererTag(PcObject, Base, Model):
         return self.label or self.name
 
 
-class OffererTagCategory(PcObject, Base, Model):
+class OffererTagCategory(PcObject, Model):
     """
     Tag categories can be considered as "tags on tags", which aims at filtering tags depending on the project:
     tags used for partners counting, tags used for offerer validation, etc.
@@ -1237,20 +1286,24 @@ class OffererTagCategory(PcObject, Base, Model):
 
     __tablename__ = "offerer_tag_category"
 
-    name: str = sa.Column(sa.String(140), nullable=False, unique=True)
-    label: str = sa.Column(sa.String(140))
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False, unique=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=True)
 
     def __str__(self) -> str:
         return self.label or self.name
 
 
-class OffererProvider(PcObject, Base, Model):
+class OffererProvider(PcObject, Model):
     __tablename__ = "offerer_provider"
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
+    )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], back_populates="offererProviders"
     )
-    providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), index=True, nullable=False)
+    providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id"), index=True, nullable=False
+    )
     provider: sa_orm.Mapped["providers_models.Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], back_populates="offererProvider"
     )
@@ -1258,57 +1311,61 @@ class OffererProvider(PcObject, Base, Model):
     __table_args__ = (sa.UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)
 
 
-class OffererInvitation(PcObject, Base, Model):
+class OffererInvitation(PcObject, Model):
     __tablename__ = "offerer_invitation"
-    offererId: int = sa.Column(
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    email: str = sa.Column(sa.Text, nullable=False)
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False, index=True)
+    email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), nullable=False, index=True
+    )
     user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
         "User", foreign_keys=[userId], backref="OffererInvitations"
     )
-    status: InvitationStatus = sa.Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
+    status: sa_orm.Mapped[InvitationStatus] = sa_orm.mapped_column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (sa.UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
 
 
-class IndividualOffererSubscription(PcObject, Base, Model):
+class IndividualOffererSubscription(PcObject, Model):
     __tablename__ = "individual_offerer_subscription"
 
-    offererId: int = sa.Column(
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), unique=True, nullable=False
     )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], back_populates="individualSubscription", uselist=False
     )
 
-    isEmailSent: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
-    dateEmailSent: date | None = sa.Column(sa.Date, nullable=True)
-    dateReminderEmailSent: date | None = sa.Column(sa.Date, nullable=True)
+    isEmailSent: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    dateEmailSent: sa_orm.Mapped[date | None] = sa_orm.mapped_column(sa.Date, nullable=True)
+    dateReminderEmailSent: sa_orm.Mapped[date | None] = sa_orm.mapped_column(sa.Date, nullable=True)
 
-    isCriminalRecordReceived: bool = sa.Column(
+    isCriminalRecordReceived: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    dateCriminalRecordReceived: date | None = sa.Column(sa.Date, nullable=True)
+    dateCriminalRecordReceived: sa_orm.Mapped[date | None] = sa_orm.mapped_column(sa.Date, nullable=True)
 
-    isCertificateReceived: bool = sa.Column(
+    isCertificateReceived: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    certificateDetails: str | None = sa.Column(sa.Text, nullable=True)
-    isExperienceReceived: bool = sa.Column(
+    certificateDetails: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    isExperienceReceived: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    experienceDetails: str | None = sa.Column(sa.Text, nullable=True)
-    has1yrExperience: bool = sa.Column(
+    experienceDetails: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    has1yrExperience: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    has5yrExperience: bool = sa.Column(
+    has5yrExperience: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
-    isCertificateValid: bool = sa.Column(
+    isCertificateValid: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
 
@@ -1327,16 +1384,18 @@ class OffererStatsData(typing.TypedDict, total=False):
     total_views_last_30_days: int
 
 
-class OffererStats(PcObject, Base, Model):
+class OffererStats(PcObject, Model):
     __tablename__ = "offerer_stats"
 
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), nullable=False
+    )
     sa.Index("ix_offerer_stats_offererId", offererId)
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
 
-    syncDate: datetime = sa.Column(sa.DateTime, nullable=False)
-    table: str = sa.Column(sa.String(120), nullable=False)
-    jsonData: dict = sa.Column(  # serialized from `OffererStatsData`
+    syncDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
+    table: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False)
+    jsonData: sa_orm.Mapped[dict] = sa_orm.mapped_column(  # serialized from `OffererStatsData`
         "jsonData",
         sa_mutable.MutableDict.as_mutable(sa_psql.JSONB),
         default={},
@@ -1345,12 +1404,14 @@ class OffererStats(PcObject, Base, Model):
     )
 
 
-class OffererAddress(PcObject, Base, Model):
+class OffererAddress(PcObject, Model):
     __tablename__ = "offerer_address"
-    label: str | None = sa.Column(sa.Text(), nullable=True)
-    addressId: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True, nullable=False)
+    label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    addressId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("address.id"), index=True, nullable=False
+    )
     address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
-    offererId: sa_orm.Mapped[int] = sa.Column(
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
@@ -1378,24 +1439,26 @@ class OffererConfidenceLevel(enum.Enum):
     WHITELIST = "WHITELIST"
 
 
-class OffererConfidenceRule(PcObject, Base, Model):
+class OffererConfidenceRule(PcObject, Model):
     __tablename__ = "offerer_confidence_rule"
 
-    offererId = sa.Column(
+    offererId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
     offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 
-    venueId = sa.Column(
+    venueId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 
-    confidenceLevel: OffererConfidenceLevel = sa.Column(db_utils.MagicEnum(OffererConfidenceLevel), nullable=False)
+    confidenceLevel: sa_orm.Mapped[OffererConfidenceLevel] = sa_orm.mapped_column(
+        db_utils.MagicEnum(OffererConfidenceLevel), nullable=False
+    )
 
     __table_args__ = (sa.CheckConstraint('num_nonnulls("offererId", "venueId") = 1'),)
 
@@ -1423,28 +1486,34 @@ class NoticeStatusMotivation(enum.Enum):
     NO_LINKED_BANK_ACCOUNT = "NO_LINKED_BANK_ACCOUNT"
 
 
-class NonPaymentNotice(PcObject, Base, Model):
+class NonPaymentNotice(PcObject, Model):
     __tablename__ = "non_payment_notice"
 
-    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
-    batchId = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True)
+    amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
+    batchId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True)
     batch: sa_orm.Mapped["finance_models.CashflowBatch"] = sa_orm.relationship("CashflowBatch", foreign_keys=[batchId])
-    dateReceived: sa_orm.Mapped[date] = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
-    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    emitterName = sa.Column(sa.Text(), nullable=False)
-    emitterEmail = sa.Column(sa.Text(), nullable=False)
-    reference: str = sa.Column(sa.Text(), nullable=False)
-    noticeType: NoticeType = sa.Column(db_utils.MagicEnum(NoticeType), nullable=False)
-    status: NoticeStatus = sa.Column(
+    dateReceived = sa_orm.mapped_column(sa.Date, nullable=False, server_default=sa.func.current_date())
+    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    emitterName = sa_orm.mapped_column(sa.Text(), nullable=False)
+    emitterEmail = sa_orm.mapped_column(sa.Text(), nullable=False)
+    reference: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    noticeType: sa_orm.Mapped[NoticeType] = sa_orm.mapped_column(db_utils.MagicEnum(NoticeType), nullable=False)
+    status: sa_orm.Mapped[NoticeStatus] = sa_orm.mapped_column(
         db_utils.MagicEnum(NoticeStatus),
         nullable=False,
         server_default=NoticeStatus.CREATED.value,
         default=NoticeStatus.CREATED,
     )
-    motivation: NoticeStatusMotivation = sa.Column(db_utils.MagicEnum(NoticeStatusMotivation), nullable=True)
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True, index=True)
+    motivation: sa_orm.Mapped[NoticeStatusMotivation] = sa_orm.mapped_column(
+        db_utils.MagicEnum(NoticeStatusMotivation), nullable=True
+    )
+    venueId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True)
+    offererId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
 
 

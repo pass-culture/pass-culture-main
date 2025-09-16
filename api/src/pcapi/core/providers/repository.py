@@ -45,7 +45,7 @@ def get_active_provider_by_id(provider_id: int) -> models.Provider | None:
     return db.session.query(models.Provider).filter_by(id=provider_id, isActive=True).one_or_none()
 
 
-def get_provider_by_local_class(local_class: str) -> models.Provider:
+def get_provider_by_local_class(local_class: str) -> models.Provider | None:
     return db.session.query(models.Provider).filter_by(localClass=local_class).one_or_none()
 
 
@@ -156,7 +156,10 @@ def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) 
         .with_entities(models.EMSCinemaDetails.id)
         .all()
     )
-    db.session.bulk_update_mappings(models.EMSCinemaDetails, [{"id": id, "lastVersion": version} for (id,) in ids])
+    db.session.bulk_update_mappings(
+        models.EMSCinemaDetails,  # type: ignore [arg-type]
+        [{"id": id, "lastVersion": version} for (id,) in ids],
+    )
 
 
 def get_ems_oldest_sync_version() -> int:
@@ -224,7 +227,7 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
 
     # Events linked to the provider & requiring a ticketing system
     events_query = events_query.filter(
-        offers_models.Offer.lastProvider == provider,
+        offers_models.Offer.lastProviderId == provider.id,
         offers_models.Offer.isEvent,
         offers_models.Offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP,
     )
@@ -249,7 +252,7 @@ def get_future_events_requiring_ticketing_system(
     if venue:
         # Events linked to the provider and venue, requiring a ticketing system
         final_query = future_provider_events_with_ticketing_query.filter(
-            offers_models.Offer.venue == venue,
+            offers_models.Offer.venueId == venue.id,
         )
     else:
         # Events not linked to a Venue specific ticketing system

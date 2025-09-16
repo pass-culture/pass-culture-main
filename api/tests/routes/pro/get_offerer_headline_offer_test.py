@@ -69,6 +69,7 @@ class Return400Test:
     num_queries += 1  # check user_offerer
     num_queries += 1  # get headline offer
     num_queries += 1  # rollback (atomic)
+    num_queries += 1  # rollback (atomic)
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro = users_factories.ProFactory()

@@ -43,7 +43,7 @@ def fill_adage_playlists() -> None:
             }
             for offer in classroom_offers[:10]
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
 
         playlist_items_to_add = [
             {
@@ -54,7 +54,7 @@ def fill_adage_playlists() -> None:
             }
             for venue in venues
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
 
         playlist_items_to_add = [
             {
@@ -65,7 +65,7 @@ def fill_adage_playlists() -> None:
             }
             for offer in collective_offer_templates[:10]
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
 
         playlist_items_to_add = [
             {
@@ -76,7 +76,7 @@ def fill_adage_playlists() -> None:
             }
             for venue in venues
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)
+        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
 
     db.session.commit()
 

@@ -42,6 +42,7 @@ def save_allocine_sandbox() -> None:
     )
 
     provider = get_provider_by_local_class("AllocineStocks")
+    assert provider  # helps mypy
 
     venue_provider = providers_factories.VenueProviderFactory.create(venue=venue, provider=provider)
 

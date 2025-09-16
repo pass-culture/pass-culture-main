@@ -2,6 +2,7 @@ import logging
 import unicodedata
 
 import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.functions import Function
 
@@ -56,11 +57,11 @@ def validate_city(city: str) -> None:
         raise ValueError("Le champ city doit contenir des caractères latins")
 
 
-def matching(column: str, search_value: str) -> ColumnElement[sa.Boolean]:
+def matching(column: str | sa_orm.Mapped[str], search_value: str) -> ColumnElement[bool]:
     return _sanitized_string(column) == _sanitized_string(search_value)
 
 
-def _sanitized_string(value: str) -> Function:
+def _sanitized_string(value: str | sa_orm.Mapped[str]) -> Function:
     sanitized = sa.func.replace(value, "-", "")
     sanitized = sa.func.replace(sanitized, " ", "")
     sanitized = sa.func.unaccent(sanitized)

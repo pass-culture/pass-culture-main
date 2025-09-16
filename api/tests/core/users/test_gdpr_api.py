@@ -134,7 +134,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.dateOfBirth.month == 1
         assert user_to_anonymize.address is None
         assert user_to_anonymize.city is None
-        assert user_to_anonymize.externalIds == []
+        assert user_to_anonymize.externalIds == {}
         assert user_to_anonymize.idPieceNumber is None
         assert user_to_anonymize.login_device_history == []
         assert user_to_anonymize.user_email_history == []
@@ -424,7 +424,7 @@ def _assert_user_is_anonymized(user, prefix="anonymous"):
     assert user.phoneNumber is None
     assert user.address is None
     assert user.city is None
-    assert user.externalIds == []
+    assert user.externalIds == {}
     assert user.idPieceNumber is None
     assert user.login_device_history == []
     assert user.email_history == []

@@ -24,6 +24,7 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
 
     expected_num_queries_400 = 1  # 1. Select API key
     expected_num_queries_400 += 1  # rollback atomic
+    expected_num_queries_400 += 1  # rollback atomic
 
     @pytest.mark.parametrize(
         "eans,expected_response_json",

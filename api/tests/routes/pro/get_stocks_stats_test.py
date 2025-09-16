@@ -17,6 +17,7 @@ class Returns403Test:
     num_queries += 1  # select venue
     num_queries += 1  # check user has rights on venue
     num_queries += 1  # rollback
+    num_queries += 1  # rollback
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()

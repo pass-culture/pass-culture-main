@@ -36,7 +36,7 @@ class CGRContext(PivotContext):
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditCGRForm:
         pivot = db.session.query(providers_models.CGRCinemaDetails).filter_by(id=pivot_id).one_or_none()
-        if not pivot:
+        if not (pivot and pivot.cinemaProviderPivot and pivot.cinemaProviderPivot.venue):
             raise NotFound()
 
         form = forms.EditCGRForm(

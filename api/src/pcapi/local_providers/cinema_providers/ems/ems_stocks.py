@@ -53,7 +53,7 @@ class EMSStocks:
         self.created_offers: set[offers_models.Offer] = set()
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
             .all()
         )
 
@@ -209,7 +209,7 @@ class EMSStocks:
         # sort features list to have always same order for all providers VO/VF then 3D
         stock.features = sorted(
             [
-                ACCEPTED_FEATURES_MAPPING.get(feature)
+                ACCEPTED_FEATURES_MAPPING[feature]
                 for feature in session.features
                 if feature in ACCEPTED_FEATURES_MAPPING
             ],

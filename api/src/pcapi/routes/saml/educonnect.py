@@ -44,7 +44,7 @@ def _log_for_educonnect_supervision(log_message: str, user_id: int) -> None:
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_and_active_user_required
 def login_educonnect(user: users_models.User) -> Response:
-    should_redirect = request.args.get("redirect", default=True, type=lambda v: v.lower() == "true")
+    should_redirect = str(request.args.get("redirect", "true")).lower() == "true"
     redirect_url = educonnect_connector.get_login_redirect_url(user)
     response = Response()
 
@@ -126,6 +126,12 @@ def on_educonnect_authentication_response() -> Response:
         return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
     user = db.session.get(users_models.User, user_id)
+
+    if user is None:
+        logger.error(
+            "No user corresponding to educonnect request_id", extra={"request_id": educonnect_user.saml_request_id}
+        )
+        return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
     logger.info(
         "Received educonnect authentication response",

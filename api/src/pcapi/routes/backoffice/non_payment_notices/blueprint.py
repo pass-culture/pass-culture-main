@@ -19,6 +19,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
+from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms.empty import EmptyForm
@@ -276,14 +277,11 @@ def get_set_pending_form(notice_id: int) -> utils.BackofficeResponse:
 
 
 def _get_notice(notice_id: int) -> offerers_models.NonPaymentNotice:
-    return (
-        db.session.query(offerers_models.NonPaymentNotice)
-        .options(
-            sa_orm.joinedload(offerers_models.NonPaymentNotice.offerer).load_only(offerers_models.Offerer.name),
-            sa_orm.joinedload(offerers_models.NonPaymentNotice.batch).load_only(finance_models.CashflowBatch.label),
-        )
-        .get_or_404(notice_id)
+    query = db.session.query(offerers_models.NonPaymentNotice).options(
+        sa_orm.joinedload(offerers_models.NonPaymentNotice.offerer).load_only(offerers_models.Offerer.name),
+        sa_orm.joinedload(offerers_models.NonPaymentNotice.batch).load_only(finance_models.CashflowBatch.label),
     )
+    return get_or_404_from_query(query, notice_id)
 
 
 @non_payment_notices_blueprint.route("/<int:notice_id>/pending", methods=["POST"])
@@ -358,6 +356,8 @@ def close(notice_id: int) -> utils.BackofficeResponse:
     notice.motivation = offerers_models.NoticeStatusMotivation[form.motivation.data]
     notice.batchId = str(form.batch.data[0]) if form.batch.data else None
     db.session.add(notice)
+    db.session.flush()
+    db.session.refresh(notice)
 
     recipient_type = offerers_models.NoticeRecipientType[form.recipient.data]
     non_payment_notice_notification.send_closed_non_payment_notice_email(notice, recipient_type)

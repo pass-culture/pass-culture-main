@@ -18,6 +18,7 @@ def create_offerer() -> offerers_models.Offerer:
             offerers_models.Offerer.siren.notlike("NC%")
         )
     ).scalar()
+    assert max_siren
     new_siren = str(max_siren + 1)
     offerer = offerers_factories.OffererFactory.build(siren=new_siren)
     db.session.add(offerer)

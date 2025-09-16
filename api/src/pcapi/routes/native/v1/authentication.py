@@ -148,6 +148,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     token.expire()
     user = db.session.get(User, token.user_id)
+    assert user  # helps mypy
 
     user.isEmailValidated = True
     repository.save(user)

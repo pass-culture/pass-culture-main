@@ -53,7 +53,7 @@ class CGRStocks(LocalProvider):
         self.last_offer: offers_models.Offer | None = None
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
             .all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
@@ -110,6 +110,7 @@ class CGRStocks(LocalProvider):
         offer.product = self.product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        assert self.provider  # helps mypy
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
@@ -228,7 +229,7 @@ class CGRStocks(LocalProvider):
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
                 db.session.query(offers_models.PriceCategory)
-                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .filter(offers_models.PriceCategory.offerId == self.last_offer.id)
                 .all()
                 if self.last_offer.id
                 else []
@@ -257,6 +258,7 @@ class CGRStocks(LocalProvider):
         return price_category_label
 
     def get_or_create_movie_product(self, movie: cgr_serializers.Film) -> offers_models.Product | None:
+        assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid_for_offer(movie.IDFilmAlloCine, self.venue)
         product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)

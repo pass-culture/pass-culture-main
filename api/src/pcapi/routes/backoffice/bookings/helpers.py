@@ -25,8 +25,8 @@ def get_bookings(
     booking_class: type[educational_models.CollectiveBooking | bookings_models.Booking],
     offer_class: type[educational_models.CollectiveOffer | offers_models.Offer],
     search_by_email: bool = False,
-    id_filters: typing.Iterable[sa.sql.elements.ColumnElement] = (),
-    name_filters: typing.Iterable[sa.sql.elements.ColumnElement] = (),
+    id_filters: typing.Iterable[sa_orm.InstrumentedAttribute] = (),
+    name_filters: typing.Iterable[sa_orm.InstrumentedAttribute] = (),
     or_filters: list | None = None,
 ) -> list[bookings_models.Booking] | list[educational_models.CollectiveBooking]:
     start_column = (
@@ -84,7 +84,7 @@ def get_bookings(
             for status in form.status.data:
                 if status == BookingStatus.CONFIRMED.name:
                     status_filters.append(
-                        sa.and_(  # type: ignore[type-var]
+                        sa.and_(
                             booking_class.isConfirmed,
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
@@ -100,7 +100,7 @@ def get_bookings(
                     status_in.append(status)
 
             if status_in:
-                status_filters.append(booking_class.status.in_(status_in))  # type: ignore[arg-type]
+                status_filters.append(booking_class.status.in_(status_in))
 
             if len(status_filters) > 1:
                 base_query = base_query.filter(sa.or_(*status_filters))

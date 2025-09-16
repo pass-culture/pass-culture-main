@@ -113,7 +113,7 @@ def get_relative_venues_by_name(name: str) -> list[offerers_models.Venue]:
     return query.all()
 
 
-def _get_common_joinedload_options() -> tuple[sa_orm.Load, ...]:
+def _get_common_joinedload_options() -> tuple[sa_orm.interfaces.LoaderOption, ...]:
     return (
         sa_orm.joinedload(offerers_models.Venue.contact),
         sa_orm.joinedload(offerers_models.Venue.venueLabel),

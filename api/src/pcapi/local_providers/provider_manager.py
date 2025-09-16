@@ -76,7 +76,9 @@ def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, li
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
     connector = ems_connectors.EMSScheduleConnector()
     last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
-    ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
+    ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+    assert ems_provider  # helps mypy
+    ems_provider_id = ems_provider.id
     venues_provider_to_sync: set[int] = set()
     venue_provider_by_site_id: dict[str, provider_models.VenueProvider] = {}
 

@@ -169,8 +169,11 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
             unlinked_offers = unlinked_offers_query.all()
         # The allocineId data exists only for products. We need to find offers that have the visa of this product.
         elif (
-            identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
+            identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID
+            and product.extraData
+            and product.extraData.get("visa")
         ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+            assert product.extraData  # helps mypy
             unlinked_offers_query = unlinked_offers_query.filter(
                 offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
             )
@@ -399,7 +402,10 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_link_offers_to_product(product_id: int) -> utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
-    product = db.session.query(offers_models.Product).get(product_id)
+    product = db.session.query(offers_models.Product).filter(offers_models.Product.id == product_id).one_or_none()
+    if not product:
+        raise NotFound()
+
     db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(form.object_ids_list)).update(
         {
             "productId": product.id,

@@ -67,6 +67,7 @@ from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
+from pcapi.models import validation_status_mixin
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import offerers_serialize
@@ -571,11 +572,9 @@ def delete_venue(venue_id: int) -> None:
             db.session.query(providers_models.EMSCinemaDetails).filter(
                 providers_models.EMSCinemaDetails.cinemaProviderPivotId == pivot.id
             ).delete(synchronize_session=False)
-        pivot = (
-            db.session.query(providers_models.CinemaProviderPivot)
-            .filter(providers_models.CinemaProviderPivot.venueId == venue_id)
-            .delete(synchronize_session=False)
-        )
+        db.session.query(providers_models.CinemaProviderPivot).filter(
+            providers_models.CinemaProviderPivot.venueId == venue_id
+        ).delete(synchronize_session=False)
 
     db.session.query(providers_models.AllocinePivot).filter(
         providers_models.CinemaProviderPivot.venueId == venue_id
@@ -827,7 +826,7 @@ def link_venue_to_pricing_point(
             "venue": venue.id,
             "new_pricing_point": pricing_point_id,
             "previous_pricing_point": current_link.pricingPointId if current_link else None,
-            "updated_finance_events": ppoint_update_result.rowcount,
+            "updated_finance_events": typing.cast(sa.engine.cursor.CursorResult, ppoint_update_result).rowcount,
         },
     )
 
@@ -1106,7 +1105,7 @@ def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
         db.session.query(models.UserOfferer)
         .join(models.UserOfferer.offerer)
         .filter(
-            models.UserOfferer.user == user,
+            models.UserOfferer.userId == user.id,
             models.Offerer.siren == siren,
             models.UserOfferer.validationStatus.not_in((ValidationStatus.REJECTED, ValidationStatus.DELETED)),
         )
@@ -1499,14 +1498,14 @@ def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> lis
     )
 
     # Do not cancel bookings which will become USED in auto_mark_as_used_after_event()
-    return [
-        booking
-        for booking in ongoing_bookings
-        if not (
-            booking.stock.offer.subcategoryId in event_subcategory_ids
-            and (now - USED_EVENT_DELAY <= booking.stock.beginningDatetime <= now)
-        )
-    ]
+    bookings = []
+    for booking in ongoing_bookings:
+        if booking.stock.offer.subcategoryId in event_subcategory_ids:
+            if booking.stock.beginningDatetime and (now - USED_EVENT_DELAY) <= booking.stock.beginningDatetime <= now:
+                continue
+
+        bookings.append(booking)
+    return bookings
 
 
 def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: int | None) -> None:
@@ -1831,7 +1830,7 @@ def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalSt
     return offerers_repository.get_venues_educational_statuses()
 
 
-def get_venue_by_id(venue_id: int) -> offerers_models.Venue:
+def get_venue_by_id(venue_id: int) -> offerers_models.Venue | None:
     return offerers_repository.get_venue_by_id(venue_id)
 
 
@@ -1840,7 +1839,7 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
 
     search_query = search_query.strip()
     if not search_query:
-        return offerers.filter(False)
+        return offerers.filter(sa.false())
 
     if departments:
         offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore[attr-defined]
@@ -1877,7 +1876,7 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> s
 
     search_query = search_query.strip()
     if not search_query:
-        return venues.filter(False)
+        return venues.filter(sa.false())
 
     if departments:
         venues = (
@@ -1948,7 +1947,7 @@ def search_bank_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
 
     search_query = search_query.strip()
     if not search_query:
-        return bank_accounts_query.filter(False)
+        return bank_accounts_query.filter(sa.false())
 
     filters = []
 
@@ -1974,7 +1973,7 @@ def search_bank_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
         filters.append(finance_models.Invoice.reference == search_query)
 
     if not filters:
-        return bank_accounts_query.filter(False)
+        return bank_accounts_query.filter(sa.false())
 
     return bank_accounts_query.filter(sa.or_(*filters) if len(filters) > 0 else filters[0])
 
@@ -2038,7 +2037,7 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore[type-var]
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -2079,7 +2078,8 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         )
 
     def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
-        if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
+        total_offer_count = db.session.execute(_max_count_query(offer_class)).scalar() or 0
+        if max_offer_count and total_offer_count >= max_offer_count:
             return {
                 "active": -1,
                 "inactive": -1,
@@ -2102,7 +2102,7 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),  # type: ignore[type-var]
+                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -2143,7 +2143,8 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
         )
 
     def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
-        if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
+        total_offer_count = db.session.execute(_max_count_query(offer_class)).scalar() or 0
+        if max_offer_count and total_offer_count >= max_offer_count:
             return {
                 "active": -1,
                 "inactive": -1,
@@ -2162,9 +2163,8 @@ def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
 
 
 def count_offerers_by_validation_status() -> dict[str, int]:
-    stats = dict(
-        db.session.query(offerers_models.Offerer)
-        .with_entities(
+    stats: dict[validation_status_mixin.ValidationStatus, int] = dict(
+        db.session.query(  # type: ignore [arg-type]
             offerers_models.Offerer.validationStatus,
             sa.func.count(offerers_models.Offerer.validationStatus).label("count"),
         )
@@ -2626,7 +2626,7 @@ def get_providers_offerer_and_venues(
         .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
         .join(providers_models.Provider, providers_models.VenueProvider.provider)
-        .filter(providers_models.VenueProvider.provider == provider)
+        .filter(providers_models.VenueProvider.providerId == provider.id)
         .filter(providers_models.VenueProvider.isActive)
         .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
     )
@@ -2710,6 +2710,8 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         venue.accessibilityProvider.externalAccessibilityData = (
             accessibility_data.dict() if accessibility_data else None
         )
+        # FIXME handle the case when last_update is None
+        assert last_update, "the accessibility provider did not respond"  # lie to mypy
         venue.accessibilityProvider.lastUpdateAtProvider = last_update
         db.session.add(venue.accessibilityProvider)
 
@@ -3276,6 +3278,7 @@ def send_reminder_email_to_individual_offerers() -> None:
     )
 
     for offerer in offerers:
+        assert offerer.individualSubscription  # helps mypy
         offerer.individualSubscription.dateReminderEmailSent = date.today()
         transactional_mails.send_offerer_individual_subscription_reminder(offerer.UserOfferers[0].user.email)
 

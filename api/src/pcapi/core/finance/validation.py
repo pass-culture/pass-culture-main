@@ -101,9 +101,9 @@ def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule) ->
 
     if rule.id:
         overlapping = overlapping.filter(models.CustomReimbursementRule.id != rule.id)
-    overlapping = {str(rule_id) for (rule_id,) in overlapping.with_entities(models.CustomReimbursementRule.id)}
-    if overlapping:
+    conflicts = {str(rule_id) for (rule_id,) in overlapping.with_entities(models.CustomReimbursementRule.id)}
+    if conflicts:
         raise exceptions.ConflictingReimbursementRule(
             "Cette règle est en conflit avec au moins une autre règle de remboursement.",
-            conflicts=overlapping,
+            conflicts=conflicts,
         )
