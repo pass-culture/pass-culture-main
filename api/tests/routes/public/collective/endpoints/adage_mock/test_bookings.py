@@ -237,7 +237,8 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 6. does pricing exists for collective booking?
             expected_queries_count += 1  # 7. get finance events for booking
             expected_queries_count += 1  # 8. rollback
-            expected_queries_count += 1  # 9. rollback (second one because of with atomic in cancel_collective_booking)
+            expected_queries_count += 1  # 9. rollback
+            expected_queries_count += 1  # 10. rollback (second one because of with atomic in cancel_collective_booking)
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(
@@ -264,6 +265,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 4. get collective stock (lock for update)
             expected_queries_count += 1  # 5. get collective booking (refresh)
             expected_queries_count += 1  # 6. rollback
+            expected_queries_count += 1  # 6. rollback
             expected_queries_count += 1  # 7. rollback (second one because of with atomic in cancel_collective_booking)
 
             with assert_num_queries(expected_queries_count):
@@ -280,6 +282,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
 
         expected_queries_count = 1  # 1. get api key
         expected_queries_count += 1  # 3. get collective booking
+        expected_queries_count += 1  # 4. rollback
         expected_queries_count += 1  # 4. rollback
 
         with assert_num_queries(expected_queries_count):
@@ -306,6 +309,7 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 4. get collective stock (lock for update)
             expected_queries_count += 1  # 5. get collective booking (refresh)
             expected_queries_count += 1  # 6. does pricing exists for collective booking?
+            expected_queries_count += 1  # 7. rollback
             expected_queries_count += 1  # 7. rollback
             expected_queries_count += 1  # 8. rollback (second one because of with atomic in cancel_collective_booking)
 
@@ -461,6 +465,7 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
             expected_num_queries = 1  # 1. get api key
             expected_num_queries += 1  # 3. get collective booking
             expected_num_queries += 1  # 4. rollback
+            expected_num_queries += 1  # 4. rollback
 
             booking_id = booking.id
             with assert_num_queries(expected_num_queries):
@@ -521,6 +526,7 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
 
             expected_num_queries = 1  # 1. get api key
             expected_num_queries += 1  # 2. get collective booking
+            expected_num_queries += 1  # 3. rollback
             expected_num_queries += 1  # 3. rollback
 
             with assert_num_queries(expected_num_queries):

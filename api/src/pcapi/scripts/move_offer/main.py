@@ -1,5 +1,7 @@
 import argparse
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.app import app
 from pcapi.models import db
@@ -21,9 +23,9 @@ if __name__ == "__main__":
     destination = args.destination
 
     try:
-        db.session.execute("SET SESSION statement_timeout = '1200s'")  # 20 minutes
+        db.session.execute(sa.text("SET SESSION statement_timeout = '1200s'"))  # 20 minutes
         _move_all_venue_offers(dry_run=dry_run, origin=origin, destination=destination)
-        db.session.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+        db.session.execute(sa.text(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}"))
     except:
         db.session.rollback()
         raise

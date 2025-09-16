@@ -256,7 +256,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
@@ -284,7 +283,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
@@ -320,7 +318,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
@@ -353,7 +350,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
@@ -379,7 +375,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         with testing.assert_num_queries(num_queries):
@@ -408,7 +403,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -451,7 +445,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -485,7 +478,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -523,7 +515,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -553,7 +544,6 @@ class Returns200Test:
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -585,7 +575,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -613,7 +602,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -638,7 +626,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -667,7 +654,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -694,7 +680,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -750,7 +735,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -799,7 +783,6 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select opening_hours
         num_queries += 1  # select offer
         num_queries += 1  # select stock (from hasActiveIndividualOffers)
         venue_id = venue.id
@@ -828,7 +811,6 @@ class Returns403Test:
         auth_request = client.with_session_auth(email=pro.email)
         num_queries = testing.AUTHENTICATION_QUERIES
         num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue's opening hours
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
         venue_id = venue.id

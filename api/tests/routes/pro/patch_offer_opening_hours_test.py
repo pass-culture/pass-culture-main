@@ -95,7 +95,7 @@ class Returns400Test:
         response = auth_client.patch(url, json=None)
 
         assert response.status_code == 400
-        assert not response.json
+        assert response.json == {"openingHours": ["Ce champ est obligatoire"]}
 
     def test_too_many_opening_hours_for_one_day_returns_an_error(self, client):
         auth_client, offer = setup_auth_client_and_offer(client)

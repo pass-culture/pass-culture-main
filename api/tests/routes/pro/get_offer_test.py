@@ -21,7 +21,8 @@ class Returns403Test:
     # get offer
     # check user_offerer exists
     # rollback
-    num_queries = 5
+    # rollback
+    num_queries = 6
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()

@@ -33,7 +33,7 @@ def check_offer_already_booked(user: User, offer: Offer) -> None:
     if db.session.query(
         db.session.query(Booking)
         .filter(
-            Booking.user == user,
+            Booking.userId == user.id,
             Booking.status != BookingStatus.CANCELLED,
         )
         .join(Stock)

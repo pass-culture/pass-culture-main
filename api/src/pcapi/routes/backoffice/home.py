@@ -1,3 +1,5 @@
+import typing
+
 import sqlalchemy as sa
 from flask import redirect
 from flask import render_template
@@ -128,7 +130,7 @@ def home() -> utils.BackofficeResponse:
             response.delete_cookie(REDIRECT_AFTER_LOGIN_COOKIE_NAME)
             return response
 
-    data = {}
+    data: dict[str, typing.Any] = {}
     subqueries = []
 
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):

@@ -223,7 +223,7 @@ def create_collective_offer_template(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
-        domains=educational_domains,  # type: ignore[arg-type]
+        domains=educational_domains,
         nationalProgramId=offer_data.nationalProgramId,
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
@@ -239,8 +239,8 @@ def create_collective_offer_template(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
-        bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
-        formats=offer_data.formats,  # type: ignore[arg-type]
+        bookingEmails=offer_data.booking_emails,
+        formats=offer_data.formats,
         author=user,
         locationType=offer_data.location.locationType if offer_data.location else None,
         locationComment=offer_data.location.locationComment if offer_data.location else None,
@@ -294,7 +294,7 @@ def create_collective_offer(
         venueId=venue.id,
         name=offer_data.name,
         description=offer_data.description,
-        domains=educational_domains,  # type: ignore[arg-type]
+        domains=educational_domains,
         nationalProgramId=national_program_id,
         durationMinutes=offer_data.duration_minutes,
         students=offer_data.students,
@@ -308,8 +308,8 @@ def create_collective_offer(
         visualDisabilityCompliant=offer_data.visual_disability_compliant,
         interventionArea=offer_data.intervention_area or [],
         templateId=offer_data.template_id,
-        bookingEmails=offer_data.booking_emails,  # type: ignore[arg-type]
-        formats=offer_data.formats,  # type: ignore[arg-type]
+        bookingEmails=offer_data.booking_emails,
+        formats=offer_data.formats,
         author=user,
         locationType=offer_data.location.locationType if offer_data.location else None,
         locationComment=offer_data.location.locationComment if offer_data.location else None,
@@ -478,7 +478,7 @@ def create_collective_offer_public(
         description=body.description,
         contactEmail=body.contact_email,
         contactPhone=body.contact_phone,
-        domains=educational_domains,  # type: ignore[arg-type]
+        domains=educational_domains,
         durationMinutes=body.duration_minutes,
         students=typing.cast(  # type transformation done by the validator (and not detected by mypy)
             list[models.StudentLevels], body.students
@@ -798,8 +798,8 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
         contactPhone=original_offer.contactPhone,
         offerVenue=original_offer.offerVenue,
         interventionArea=original_offer.interventionArea,
-        domains=original_offer.domains,  # type: ignore[arg-type]
-        template=original_offer.template,  # type: ignore[arg-type]
+        domains=original_offer.domains,
+        template=original_offer.template,
         lastValidationDate=None,
         lastValidationType=None,
         lastValidationAuthorUserId=None,
@@ -855,7 +855,7 @@ def create_offer_request(
     redactor: models.EducationalRedactor,
 ) -> models.CollectiveOfferRequest:
     request = models.CollectiveOfferRequest(
-        phoneNumber=body.phone_number,  # type: ignore[call-arg]
+        phoneNumber=body.phone_number,
         requestedDate=body.requested_date,
         totalStudents=body.total_students,
         totalTeachers=body.total_teachers,
@@ -1142,7 +1142,7 @@ def move_collective_offer_venue(
 def update_collective_offer(offer_id: int, body: "collective_offers_serialize.PatchCollectiveOfferBodyModel") -> None:
     new_values = body.dict(exclude_unset=True)
 
-    offer_to_update = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer_id).first()
+    offer_to_update = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer_id).one()
 
     validation.check_collective_offer_action_is_allowed(
         offer_to_update, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS

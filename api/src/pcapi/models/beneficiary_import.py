@@ -7,7 +7,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -25,7 +24,7 @@ class BeneficiaryImportSources(Enum):
     ubble = "ubble"
 
 
-class BeneficiaryImport(PcObject, Base, Model):
+class BeneficiaryImport(PcObject, Model):
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 
@@ -34,17 +33,17 @@ class BeneficiaryImport(PcObject, Base, Model):
     """
 
     __tablename__ = "beneficiary_import"
-    applicationId = sa.Column(sa.BigInteger, nullable=True)
+    applicationId = sa_orm.mapped_column(sa.BigInteger, nullable=True)
 
-    beneficiaryId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    beneficiaryId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
 
-    sourceId = sa.Column(sa.Integer, nullable=True)
+    sourceId = sa_orm.mapped_column(sa.Integer, nullable=True)
 
-    source: str = sa.Column(sa.String(255), nullable=False)
+    source: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
 
-    thirdPartyId = sa.Column(sa.TEXT, nullable=True, index=True)
+    thirdPartyId = sa_orm.mapped_column(sa.TEXT, nullable=True, index=True)
 
-    eligibilityType: EligibilityType = sa.Column(
+    eligibilityType: sa_orm.Mapped[EligibilityType] = sa_orm.mapped_column(
         sa.Enum(EligibilityType, create_constraint=False),
         nullable=False,
         default=EligibilityType.AGE18,  # TODO (viconnex) remove default values

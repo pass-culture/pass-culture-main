@@ -110,14 +110,16 @@ class LocalProvider(Iterator):
         self.createdThumbs += 1
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
+        assert self.provider  # helps mypy
         pc_object = providable_info.type()
         pc_object.idAtProviders = providable_info.id_at_providers
         pc_object.idAtProvider = providable_info.new_id_at_provider
-        pc_object.lastProviderId = self.provider.id  # type: ignore[assignment]
+        pc_object.lastProviderId = self.provider.id  # type: ignore [assignment]
 
         self.fill_object_attributes(pc_object)
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
+        db.session.add(pc_object)
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
@@ -130,6 +132,7 @@ class LocalProvider(Iterator):
     def _handle_update(self, pc_object: Model, providable_info: ProvidableInfo) -> None:
         self.fill_object_attributes(pc_object)
 
+        assert self.provider  # helps mypy
         pc_object.lastProviderId = self.provider.id
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
@@ -147,6 +150,7 @@ class LocalProvider(Iterator):
     def log_provider_event(
         self, event_type: providers_models.LocalProviderEventType, event_payload: str | int | None = None
     ) -> None:
+        assert self.provider  # helps mypy
         local_provider_event = providers_models.LocalProviderEvent()
         local_provider_event.type = event_type
         local_provider_event.payload = str(event_payload)
@@ -187,7 +191,7 @@ class LocalProvider(Iterator):
         if model_type == offers_models.Stock:
             query = query.with_for_update()
 
-        return query.one_or_none()
+        return typing.cast(offers_models.Offer | offers_models.Stock | None, query.one_or_none())
 
     def get_existing_pc_obj(
         self, providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
@@ -203,6 +207,7 @@ class LocalProvider(Iterator):
             logger.info("Venue provider %s is inactive", self.venue_provider)
             return
 
+        assert self.provider  # helps mypy
         if not self.provider.isActive:
             provider_name = self.__class__.__name__
             logger.info("Provider %s is inactive", provider_name)

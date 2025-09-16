@@ -2195,7 +2195,7 @@ def get_public_account_activity(user_id: int) -> utils.BackofficeResponse:
         activity.append(serialization.SpecialEventActivity(special_event_response))
 
     chronicles = (
-        db.session.query(
+        db.session.query(  # type: ignore [call-overload]
             chronicles_models.Chronicle.id,
             chronicles_models.Chronicle.dateCreated,
             chronicles_models.Chronicle.productIdentifier,

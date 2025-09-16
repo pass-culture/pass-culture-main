@@ -16,6 +16,6 @@ from pcapi.utils.transaction_manager import atomic
 @adage_jwt_required
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
     features = db.session.query(Feature).all()
-    # Pydantic manages to convert a list of Feature to a list of FeatureResponseModel, with orm_mode=True
-    # This apparently confuses mypy
-    return features_serialize.ListFeatureResponseModel(__root__=features)
+    return features_serialize.ListFeatureResponseModel(
+        __root__=[features_serialize.FeatureResponseModel.from_orm(feature) for feature in features],
+    )

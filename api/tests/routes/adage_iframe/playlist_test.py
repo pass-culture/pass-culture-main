@@ -48,26 +48,32 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
 
         offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
         for offer in offers[:-1]:
-            educational_models.CollectivePlaylist(
-                type=educational_models.PlaylistType.CLASSROOM,
-                distanceInKm=expected_distance_prior_rounding,
-                institution=institution,
-                collective_offer_template=offer,
+            db.session.add(
+                educational_models.CollectivePlaylist(
+                    type=educational_models.PlaylistType.CLASSROOM,
+                    distanceInKm=expected_distance_prior_rounding,
+                    institution=institution,
+                    collective_offer_template=offer,
+                ),
             )
         # This item is to make sure that we issue an extended search if we have less than
         # 10 offers in the default search radius
-        educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.CLASSROOM,
-            distanceInKm=150,
-            institution=institution,
-            collective_offer_template=offers[-1],
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.CLASSROOM,
+                distanceInKm=150,
+                institution=institution,
+                collective_offer_template=offers[-1],
+            ),
         )
         # this should not appear in the playlist because it is for a different institution
-        educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.CLASSROOM,
-            distanceInKm=expected_distance_prior_rounding,
-            institution=institution2,
-            collective_offer_template=offers[0],
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.CLASSROOM,
+                distanceInKm=expected_distance_prior_rounding,
+                institution=institution2,
+                collective_offer_template=offers[0],
+            ),
         )
 
         iframe_client = _get_iframe_client(client, uai=institution.institutionId)
@@ -111,11 +117,13 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
 
         offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(15)
         for offer in offers:
-            educational_models.CollectivePlaylist(
-                type=educational_models.PlaylistType.CLASSROOM,
-                distanceInKm=expected_distance,
-                institution=institution,
-                collective_offer_template=offer,
+            db.session.add(
+                educational_models.CollectivePlaylist(
+                    type=educational_models.PlaylistType.CLASSROOM,
+                    distanceInKm=expected_distance,
+                    institution=institution,
+                    collective_offer_template=offer,
+                ),
             )
 
         iframe_client = _get_iframe_client(client, uai=institution.institutionId)
@@ -145,11 +153,13 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
             offererAddressId=venue.offererAddressId,
             interventionArea=None,
         )
-        educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.CLASSROOM,
-            distanceInKm=10.0,
-            institution=institution,
-            collective_offer_template=offer,
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.CLASSROOM,
+                distanceInKm=10.0,
+                institution=institution,
+                collective_offer_template=offer,
+            ),
         )
 
         ban_id = venue.offererAddress.address.banId
@@ -184,11 +194,13 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
                 "otherAddress": "",
                 "venueId": offer.venueId,
             }
-            educational_models.CollectivePlaylist(
-                type=educational_models.PlaylistType.NEW_OFFER,
-                distanceInKm=expected_distance,
-                institution=institution,
-                collective_offer_template=offer,
+            db.session.add(
+                educational_models.CollectivePlaylist(
+                    type=educational_models.PlaylistType.NEW_OFFER,
+                    distanceInKm=expected_distance,
+                    institution=institution,
+                    collective_offer_template=offer,
+                ),
             )
 
         # This item is to make sure that we issue an extended search if we have less than
@@ -198,11 +210,13 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
             "otherAddress": "",
             "venueId": playlist_offers[-1].venueId,
         }
-        educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.NEW_OFFER,
-            distanceInKm=150,
-            institution=institution,
-            collective_offer_template=playlist_offers[-1],
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.NEW_OFFER,
+                distanceInKm=150,
+                institution=institution,
+                collective_offer_template=playlist_offers[-1],
+            ),
         )
 
         redactor = educational_factories.EducationalRedactorFactory(
@@ -246,11 +260,13 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
             offererAddressId=venue.offererAddressId,
             interventionArea=None,
         )
-        educational_models.CollectivePlaylist(
-            type=educational_models.PlaylistType.NEW_OFFER,
-            distanceInKm=10.0,
-            institution=institution,
-            collective_offer_template=offer,
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=educational_models.PlaylistType.NEW_OFFER,
+                distanceInKm=10.0,
+                institution=institution,
+                collective_offer_template=offer,
+            ),
         )
 
         iframe_client = _get_iframe_client(client, uai=institution.institutionId)
@@ -342,21 +358,25 @@ class SharedOfferersPlaylistTests:
         expected_distance = 2.5
 
         for venue in playlist_venues[:2]:
-            educational_models.CollectivePlaylist(
-                type=self.playlist_type,
-                distanceInKm=expected_distance,
-                institution=institution,
-                venue=venue,
+            db.session.add(
+                educational_models.CollectivePlaylist(
+                    type=self.playlist_type,
+                    distanceInKm=expected_distance,
+                    institution=institution,
+                    venue=venue,
+                ),
             )
 
         # This one should be part of the playlist: there is not enough
         # items at first and a second query requesting more distant
         # ones should be triggered
-        educational_models.CollectivePlaylist(
-            type=self.playlist_type,
-            distanceInKm=150,
-            institution=institution,
-            venue=playlist_venues[-1],
+        db.session.add(
+            educational_models.CollectivePlaylist(
+                type=self.playlist_type,
+                distanceInKm=150,
+                institution=institution,
+                venue=playlist_venues[-1],
+            ),
         )
 
         redactor = educational_factories.EducationalRedactorFactory()
@@ -404,11 +424,13 @@ class SharedOfferersPlaylistTests:
         )
 
         for venue in playlist_venues:
-            educational_models.CollectivePlaylist(
-                type=self.playlist_type,
-                distanceInKm=2.5,
-                institution=institution,
-                venue=venue,
+            db.session.add(
+                educational_models.CollectivePlaylist(
+                    type=self.playlist_type,
+                    distanceInKm=2.5,
+                    institution=institution,
+                    venue=venue,
+                ),
             )
 
         redactor = educational_factories.EducationalRedactorFactory()

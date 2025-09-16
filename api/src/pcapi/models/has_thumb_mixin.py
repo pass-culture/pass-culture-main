@@ -1,20 +1,18 @@
 import sqlalchemy.orm as sa_orm
-from sqlalchemy import Column
 from sqlalchemy import Integer
-from sqlalchemy.orm import declarative_mixin
 
 from pcapi import settings
 from pcapi.utils.human_ids import humanize
 
 
-@declarative_mixin
+@sa_orm.declarative_mixin
 class HasThumbMixin:
     # Let mypy know that classes that use this mixin have an id
     # (possibly through another mixin), and that this mixin can use it
     # in its own functions.
     id: sa_orm.Mapped[int]
 
-    thumbCount: sa_orm.Mapped[int] = Column(Integer(), nullable=False, default=0)
+    thumbCount: sa_orm.Mapped[int] = sa_orm.mapped_column(Integer(), nullable=False, default=0)
 
     @property
     def thumb_path_component(self) -> str:

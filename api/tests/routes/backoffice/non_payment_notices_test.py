@@ -792,7 +792,6 @@ class CloseTest(PostEndpointHelper):
         notice = offerers_factories.NonPaymentNoticeFactory(
             amount=Decimal(1234.5), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
         )
-
         response = self.post_to_endpoint(
             authenticated_client,
             notice_id=notice.id,

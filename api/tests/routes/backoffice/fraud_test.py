@@ -94,7 +94,7 @@ class BlacklistDomainNameTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names", _external=True)
+        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
         assert response.location == expected_url
 
         db.session.refresh(user)
@@ -141,7 +141,7 @@ class RemoveBlacklistedDomainNameTest(PostEndpointHelper):
 
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names", _external=True)
+        expected_url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
         assert response.location == expected_url
 
         # domain is not blacklisted anymore

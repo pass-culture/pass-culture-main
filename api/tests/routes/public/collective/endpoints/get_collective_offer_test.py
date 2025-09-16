@@ -18,7 +18,7 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select collective_offer and collective_stock
-    num_queries_error = num_queries + 1  # rollback
+    num_queries_error = num_queries + 2  # double rollback
 
     def test_get_offer(self):
         plain_api_key, provider = self.setup_provider()

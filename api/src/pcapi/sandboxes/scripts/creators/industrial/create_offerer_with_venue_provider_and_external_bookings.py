@@ -113,6 +113,7 @@ def create_offerers_with_cinema_venue_providers_and_external_bookings() -> None:
         ("EMSStocks", providers_factories.EMSCinemaDetailsFactory),
     ):
         cinema_provider = get_provider_by_local_class(local_class)
+        assert cinema_provider  # helps mypy
         venue = _create_offers(cinema_provider)
         cinema_id_at_provider = f"{local_class}Provider"
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory.create(
@@ -129,6 +130,7 @@ def create_offerers_with_cinema_venue_providers_and_external_bookings() -> None:
 def create_offerer_with_allocine_venue_provider_and_external_bookings() -> None:
     logger.info("create_offerer_with_allocine_venue_provider")
     allocine_provider = get_provider_by_local_class("AllocineStocks")
+    assert allocine_provider  # helps mypy
     venue = _create_offers(allocine_provider)
     allocine_venue_provider = providers_factories.AllocineVenueProviderFactory.create(
         venue=venue, provider=allocine_provider

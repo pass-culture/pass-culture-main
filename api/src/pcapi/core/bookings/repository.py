@@ -240,7 +240,7 @@ def get_expired_individual_bookings_for_user(user: User, expired_on: date | None
     return (
         db.session.query(models.Booking)
         .filter(
-            models.Booking.user == user,
+            models.Booking.userId == user.id,
             models.Booking.status == models.BookingStatus.CANCELLED,
             models.Booking.cancellationDate >= expired_on,
             models.Booking.cancellationDate < (expired_on + timedelta(days=1)),
@@ -428,7 +428,7 @@ def get_pro_user_timezones(user: User) -> set[str]:
 
 def field_to_venue_timezone(
     field: sa_orm.InstrumentedAttribute, column: sa_orm.Mapped[typing.Any] | sa.sql.functions.Function
-) -> sa.cast:
+) -> sa.Cast[date]:
     return sa.cast(sa.func.timezone(column, sa.func.timezone("UTC", field)), sa.Date)
 
 
@@ -474,7 +474,7 @@ def _get_filtered_bookings_query(
             bookings_query = bookings_query.join(join_key, isouter=True)
 
     if not pro_user.has_admin_role:
-        bookings_query = bookings_query.filter(offerers_models.UserOfferer.user == pro_user)
+        bookings_query = bookings_query.filter(offerers_models.UserOfferer.userId == pro_user.id)
 
     bookings_query = bookings_query.filter(offerers_models.UserOfferer.isValidated)
 

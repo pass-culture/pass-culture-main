@@ -17,6 +17,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
 
     num_queries_400 = 1  # select api_key, offerer and provider
     num_queries_400 += 1  # rollback atomic (at the end)
+    num_queries_400 += 1  # rollback atomic (at the end)
     num_queries_404 = num_queries_400 + 1  # check venue_provider exists
 
     num_queries_success = 1  # select api_key, offerer and provider
@@ -280,7 +281,7 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
         )
 
-        with testing.assert_num_queries(self.num_queries_404):  # + fetch offer - rollback atomic
+        with testing.assert_num_queries(self.num_queries_404 - 1):  # + fetch offer - rollback atomic - rollback atomic
             response = self.make_request(plain_api_key, query_params={"eans": "1234567890123", "venueId": venue_id})
             assert response.status_code == 200
 

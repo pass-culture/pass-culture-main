@@ -227,6 +227,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
 
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key, query_params={"siren": invalid_siren})
             assert response == 400

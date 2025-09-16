@@ -269,7 +269,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.multiple_offers.search_multiple_offers", ean="9783161484100", _external=True
+            "backoffice_web.multiple_offers.search_multiple_offers", ean="9783161484100"
         )
         assert set(offer1.criteria) == {criterion1, criterion2}
         assert set(offer2.criteria) == {criterion1, criterion2}
@@ -335,7 +335,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890", _external=True
+            "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890"
         )
 
         product = db.session.query(offers_models.Product).one()
@@ -422,7 +422,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert response.location == url_for(
-            "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890", _external=True
+            "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890"
         )
 
         # ensure that we check that everything is committed, when using @atomic, transaction and with atomic (PC-31934)

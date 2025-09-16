@@ -5,6 +5,7 @@ from typing import Iterable
 from typing import Type
 
 import click
+import sqlalchemy as sa
 from sqlalchemy import exc as sa_exc
 from sqlalchemy import orm as sa_orm
 
@@ -53,17 +54,17 @@ Model = typing.TypeVar("Model", artist_models.Artist, artist_models.ArtistProduc
 
 def truncate_artist_tables() -> None:
     with transaction():
-        db.session.execute("TRUNCATE TABLE artist_product_link")
+        db.session.execute(sa.text("TRUNCATE TABLE artist_product_link"))
     logger.info("ArtistProductLink table truncated")
 
     with transaction():
-        db.session.execute("TRUNCATE TABLE artist_alias")
+        db.session.execute(sa.text("TRUNCATE TABLE artist_alias"))
     logger.info("ArtistAlias table truncated")
 
     with transaction():
         # Here we use `DELETE` instead of `TRUNCATE` because we are less likely to get
         # an Access Exclusive Lock on table `artist`, on which there is more traffic.
-        db.session.execute("DELETE FROM artist")
+        db.session.execute(sa.text("DELETE FROM artist"))
     logger.info("Artist table truncated")
 
 

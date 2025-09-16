@@ -73,7 +73,7 @@ collective_offer_status_choices = [
     if status != educational_models.CollectiveOfferDisplayedStatus.HIDDEN
 ]
 
-SEARCH_FIELD_TO_PYTHON = {
+SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "FORMATS": {
         "field": "formats",
         "column": educational_models.CollectiveOffer.formats,

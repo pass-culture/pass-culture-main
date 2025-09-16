@@ -101,7 +101,7 @@ def create_tag() -> utils.BackofficeResponse:
             description=form.description.data,
             startDateTime=form.start_date.data,
             endDateTime=form.end_date.data,
-            categories=[cat for cat in get_tags_categories() if cat.id in form.categories.data],  # type: ignore[arg-type]
+            categories=[cat for cat in get_tags_categories() if cat.id in form.categories.data],
         )
 
         db.session.add(tag)

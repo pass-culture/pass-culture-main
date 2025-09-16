@@ -54,6 +54,7 @@ class EditBoostForm(EditPivotForm):
             return super().validate(extra_validators)
 
         boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+        assert boost_provider  # helps mypy
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=boost_provider.id
         )
@@ -81,6 +82,7 @@ class EditCGRForm(EditPivotForm):
             return super().validate(extra_validators)
 
         cgr_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+        assert cgr_provider  # helps mypy
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=cgr_provider.id
         )
@@ -110,6 +112,7 @@ class EditCineOfficeForm(EditPivotForm):
             return super().validate(extra_validators)
 
         cds_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+        assert cds_provider  # helps mypy
         pivot = providers_repository.get_pivot_for_id_at_provider(
             id_at_provider=self.cinema_id.data, provider_id=cds_provider.id
         )

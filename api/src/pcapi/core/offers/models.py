@@ -29,7 +29,6 @@ from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
 from pcapi.core.providers.models import Provider
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -47,6 +46,8 @@ from pcapi.utils import db as db_utils
 logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
+    import flask_sqlalchemy
+
     from pcapi.core.bookings.models import Booking
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
@@ -133,17 +134,17 @@ class ImageType(enum.Enum):
     VERSO = "verso"
 
 
-class ProductMediation(PcObject, Base, Model):
+class ProductMediation(PcObject, Model):
     __tablename__ = "product_mediation"
 
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType: sa_orm.Mapped[ImageType] = sa.Column(sa.Enum(ImageType), nullable=False)
-    lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    imageType: sa_orm.Mapped[ImageType] = sa_orm.mapped_column(db_utils.MagicEnum(ImageType), nullable=False)
+    lastProviderId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
-    productId: int = sa.Column(
+    productId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    uuid: str = sa.Column(sa.Text, nullable=False, unique=True)
+    uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
     @property
     def url(self) -> str:
@@ -162,24 +163,28 @@ class ProductIdentifierType(enum.Enum):
     VISA = "VISA"
 
 
-class Product(PcObject, Base, Model, HasThumbMixin):
+class Product(PcObject, Model, HasThumbMixin):
     __tablename__ = "product"
 
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    description: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
-    extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
-    gcuCompatibilityType = sa.Column(
+    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    durationMinutes = sa_orm.mapped_column(sa.Integer, nullable=True)
+    extraData: sa_orm.Mapped[OfferExtraData | None] = sa_orm.mapped_column(
+        "jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB)
+    )
+    gcuCompatibilityType = sa_orm.mapped_column(
         db_utils.MagicEnum(GcuCompatibilityType),
         nullable=False,
         default=GcuCompatibilityType.COMPATIBLE,
         server_default=GcuCompatibilityType.COMPATIBLE.value,
     )
-    last_30_days_booking = sa.Column(sa.Integer, nullable=True)
-    lastProviderId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    last_30_days_booking = sa_orm.mapped_column(sa.Integer, nullable=True)
+    lastProviderId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True
+    )
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
-    name: str = sa.Column(sa.String(140), nullable=False)
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
+    subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
     productMediations: sa_orm.Mapped[list[ProductMediation]] = sa_orm.relationship(
@@ -188,31 +193,40 @@ class Product(PcObject, Base, Model, HasThumbMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    ean = sa.Column(sa.Text, sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"), nullable=True)
+    ean = sa_orm.mapped_column(
+        sa.Text, sa.CheckConstraint("ean ~ '^\\d{13}$'", name="check_ean_validity"), nullable=True
+    )
 
-    chroniclesCount: int | None = sa.Column(
+    chroniclesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.CheckConstraint('"chroniclesCount" >= 0', name="check_chronicles_count_is_positive"),
         nullable=False,
         server_default=sa.text("0"),
     )
-    headlinesCount: int | None = sa.Column(
+    headlinesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.CheckConstraint('"headlinesCount" >= 0', name="check_headlines_count_is_positive"),
         nullable=False,
         server_default=sa.text("0"),
     )
-    likesCount: int | None = sa.Column(
+    likesCount: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.CheckConstraint('"likesCount" >= 0', name="check_likes_count_is_positive"),
         nullable=False,
         server_default=sa.text("0"),
     )
 
-    sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
-    sa.Index("product_visa_idx", extraData["visa"].astext)
-    sa.Index("unique_ix_product_ean", ean, unique=True)
-    sa.Index("idx_product_trgm_name", name, postgresql_using="gin")
+    __table_args__ = (
+        sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Text), unique=True),
+        sa.Index(
+            "ix_product_visa",
+            extraData["visa"].astext,
+            postgresql_where=sa.text("""(("jsonData" ->> 'visa'::text) IS NOT NULL)"""),
+            unique=True,
+        ),
+        sa.Index("unique_ix_product_ean", ean, unique=True),
+        sa.Index("idx_product_trgm_name", name, postgresql_using="gin"),
+    )
 
     @property
     def subcategory(self) -> subcategories.Subcategory:
@@ -252,22 +266,28 @@ class Product(PcObject, Base, Model, HasThumbMixin):
             raise ValueError()
 
 
-class Mediation(PcObject, Base, Model, HasThumbMixin, DeactivableMixin):
+class Mediation(PcObject, Model, HasThumbMixin, DeactivableMixin):
     __tablename__ = "mediation"
 
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", backref="mediations")
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
-    credit = sa.Column(sa.String(255), nullable=True)
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    lastProviderId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    credit = sa_orm.mapped_column(sa.String(255), nullable=True)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    lastProviderId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True
+    )
     lastProvider: sa_orm.Mapped["Provider | None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", backref="mediations")
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
+    )
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Base, Model, SoftDeletableMixin):
+class Stock(PcObject, Model, SoftDeletableMixin):
     __tablename__ = "stock"
 
     MAX_STOCK_QUANTITY = 1_000_000
@@ -275,37 +295,42 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     activationCodes: sa_orm.Mapped[list["ActivationCode"]] = sa_orm.relationship(
         "ActivationCode", back_populates="stock"
     )
-    beginningDatetime: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
-    bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)
-    dateCreated: datetime.datetime = sa.Column(
+    beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    bookingLimitDatetime = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
-    dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    dnBookedQuantity: int = sa.Column(sa.BigInteger, nullable=False, server_default=sa.text("0"))
+    dateModified: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+    dnBookedQuantity: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, nullable=False, server_default=sa.text("0")
+    )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", backref="stocks")
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
-    price: decimal.Decimal = sa.Column(
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
+    )
+    price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2),
         sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"),
         index=True,
         nullable=False,
     )
-    priceCategoryId: int | None = sa.Column(
+    priceCategoryId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("price_category.id"), index=True, nullable=True
     )
     priceCategory: sa_orm.Mapped["PriceCategory | None"] = sa_orm.relationship("PriceCategory", back_populates="stocks")
-    quantity: int | None = sa.Column(sa.Integer, nullable=True)
-    features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
+    quantity: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
+    features: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
+        postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]")
+    )
 
-    @declared_attr
-    def lastProviderId(cls) -> sa_orm.Mapped[int | None]:
-        return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProviderId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True
+    )
+    lastProvider: sa_orm.Mapped["Provider | None"] = relationship("Provider", foreign_keys=[lastProviderId])
 
-    @declared_attr
-    def lastProvider(cls) -> sa_orm.Mapped["Provider | None"]:
-        return relationship("Provider", foreign_keys=[cls.lastProviderId])
-
-    idAtProviders = sa.Column(
+    idAtProviders = sa_orm.mapped_column(
         sa.String(70),
         sa.CheckConstraint(
             '"lastProviderId" IS NULL OR "idAtProviders" IS NOT NULL',
@@ -314,16 +339,11 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
         nullable=True,
     )
 
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
 
-    fieldsUpdated: sa_orm.Mapped[list[str]] = sa.Column(
+    fieldsUpdated: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
-
-    # First step : Create a unique index on offerId/idAtProviders
-    # Next step : Create a unicity constraint based on this index and to drop the unicity constraint on idAtProviders
-    sa.Index("unique_ix_offer_id_id_at_providers", offerId, idAtProviders, unique=True)
-    sa.Index("ix_stock_idAtProviders", idAtProviders)
 
     __table_args__ = (
         sa.Index(
@@ -334,6 +354,10 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
             bookingLimitDatetime,
             postgresql_where=bookingLimitDatetime.is_not(None),
         ),
+        # First step : Create a unique index on offerId/idAtProviders
+        # Next step : Create a unicity constraint based on this index and to drop the unicity constraint on idAtProviders
+        sa.Index("unique_ix_offer_id_id_at_providers", offerId, idAtProviders, unique=True),
+        sa.Index("ix_stock_idAtProviders", idAtProviders),
     )
 
     @property
@@ -548,17 +572,19 @@ class Weekday(enum.Enum):
     SUNDAY = "SUNDAY"
 
 
-class HeadlineOffer(PcObject, Base, Model):
+class HeadlineOffer(PcObject, Model):
     __tablename__ = "headline_offer"
 
-    offerId: int = sa.Column(
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True, unique=False
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="headlineOffers")
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True, unique=False
+    )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", back_populates="headlineOffers")
 
-    timespan: psycopg2.extras.DateTimeRange = sa.Column(postgresql.TSRANGE, nullable=False)
+    timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # One Offer can have only one active Headline Offer at a time
@@ -612,7 +638,7 @@ def on_set_timespan(
     target: HeadlineOffer,
     value: psycopg2.extras.DateTimeRange,
     old_value: psycopg2.extras.DateTimeRange,
-    _initiator: sa_orm.AttributeEvent,
+    _initiator: sa_orm.AttributeEvents,
 ) -> None:
     # During object creation, old_value is not a DateTimeRange (it's the NO_VALUE symbol).
     # The after_insert event handles the count for new objects, so we can return early.
@@ -650,44 +676,50 @@ def after_delete_headline_offer(
         _increment_product_headlines_count(connection, target.offer.productId, -1)
 
 
-def _increment_product_headlines_count(connection: sa.engine.Connection, product_id: int, increment: int) -> None:
+def _increment_product_headlines_count(
+    connection: sa.engine.Connection | sa_orm.scoped_session["flask_sqlalchemy.session.Session"],
+    product_id: int,
+    increment: int,
+) -> None:
     connection.execute(
         sa.update(Product).where(Product.id == product_id).values(headlinesCount=Product.headlinesCount + increment)
     )
 
 
-class ValidationRuleOfferLink(PcObject, Base, Model):
+class ValidationRuleOfferLink(PcObject, Model):
     __tablename__ = "validation_rule_offer_link"
-    ruleId: int = sa.Column(
+    ruleId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
     )
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
 
 
-class OfferMetaData(PcObject, Base, Model):
+class OfferMetaData(PcObject, Model):
     __tablename__ = "offer_meta_data"
-    offerId: int = sa.Column(
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="metaData")
-    videoDuration = sa.Column(sa.BIGINT(), nullable=True)
-    videoExternalId = sa.Column(sa.Text(), nullable=True)
-    videoThumbnailUrl = sa.Column(sa.Text(), nullable=True)
-    videoTitle = sa.Column(sa.Text(), nullable=True)
-    videoUrl: sa_orm.Mapped[str | None] = sa.Column(sa.Text, nullable=True)
+    videoDuration = sa_orm.mapped_column(sa.BIGINT(), nullable=True)
+    videoExternalId = sa_orm.mapped_column(sa.Text(), nullable=True)
+    videoThumbnailUrl = sa_orm.mapped_column(sa.Text(), nullable=True)
+    videoTitle = sa_orm.mapped_column(sa.Text(), nullable=True)
+    videoUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
 
-class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
+class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
-    @declared_attr
-    def __table_args__(self):
-        parent_args = []
+    @declared_attr.directive
+    def __table_args__(cls) -> tuple:
+        parent_args: list = []
 
         # Retrieves indexes from parent mixins defined in __table_args__
-        for base_class in self.__mro__:
+        for base_class in cls.__mro__:
             try:
-                parent_args += super(base_class, self).__table_args__
+                parent_args += super(base_class, cls).__table_args__
             except (AttributeError, TypeError):
                 pass
 
@@ -701,45 +733,51 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
     MAX_STOCKS_PER_OFFER = 2_500
     MAX_PRICE_CATEGORIES_PER_OFFER = 50
 
-    _isActive: bool = sa.Column("isActive", sa.Boolean, server_default=sa.true(), default=True, nullable=False)
+    _isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        "isActive", sa.Boolean, server_default=sa.true(), default=True, nullable=False
+    )
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     author: sa_orm.Mapped["User | None"] = relationship(
         "User", backref="offers", foreign_keys=[authorId], uselist=False
     )
-    bookingContact = sa.Column(sa.String(120), nullable=True)
-    bookingEmail = sa.Column(sa.String(120), nullable=True)
+    bookingContact = sa_orm.mapped_column(sa.String(120), nullable=True)
+    bookingEmail = sa_orm.mapped_column(sa.String(120), nullable=True)
     compliance: sa_orm.Mapped["OfferCompliance | None"] = sa_orm.relationship(
         "OfferCompliance", back_populates="offer", uselist=False
     )
     criteria: sa_orm.Mapped[list["Criterion"]] = sa_orm.relationship(
         "Criterion", backref=sa_orm.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    dateUpdated: datetime.datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
 
-    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
-    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
-    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa.Column(sa.DateTime, nullable=True)
+    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    _description = sa.Column("description", sa.Text, nullable=True)
-    _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
-    ean = sa.Column(sa.Text, nullable=True, index=True)
-    externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
-    _extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
-    fieldsUpdated: list[str] = sa.Column(
+    _description = sa_orm.mapped_column("description", sa.Text, nullable=True)
+    _durationMinutes = sa_orm.mapped_column("durationMinutes", sa.Integer, nullable=True)
+    ean = sa_orm.mapped_column(sa.Text, nullable=True, index=True)
+    externalTicketOfficeUrl = sa_orm.mapped_column(sa.String, nullable=True)
+    _extraData: sa_orm.Mapped[OfferExtraData | None] = sa_orm.mapped_column(
+        "jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB)
+    )
+    fieldsUpdated: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
     flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
         "OfferValidationRule", secondary=ValidationRuleOfferLink.__table__, back_populates="offers"
     )
 
-    lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProviderId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
-    idAtProvider = sa.Column(
+    idAtProvider = sa_orm.mapped_column(
         sa.Text,
         sa.CheckConstraint(
             '"lastProviderId" IS NULL OR "idAtProvider" IS NOT NULL',
@@ -747,27 +785,35 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         ),
         nullable=True,
     )
-    isDuo: bool = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
-    isNational: bool = sa.Column(sa.Boolean, default=False, nullable=False)
-    lastValidationPrice: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=True)
+    isDuo: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, server_default=sa.false(), default=False, nullable=False
+    )
+    isNational: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, default=False, nullable=False)
+    lastValidationPrice: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
     metaData: sa_orm.Mapped["OfferMetaData | None"] = sa_orm.relationship(
         "OfferMetaData", back_populates="offer", uselist=False
     )
-    name: str = sa.Column(sa.String(140), nullable=False)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship("PriceCategory", back_populates="offer")
     product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
         Product, backref=sa_orm.backref("offers", order_by="Offer.id")
     )
-    productId: int = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True)
-    rankingWeight = sa.Column(sa.Integer, nullable=True)
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, index=True)
-    url = sa.Column(sa.String(255), nullable=True)
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
+    productId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True
+    )
+    rankingWeight = sa_orm.mapped_column(sa.Integer, nullable=True)
+    subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
+    url = sa_orm.mapped_column(sa.String(255), nullable=True)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
+    )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
-    withdrawalDelay = sa.Column(sa.BigInteger, nullable=True)
-    withdrawalDetails = sa.Column(sa.Text, nullable=True)
-    withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
+    withdrawalDelay = sa_orm.mapped_column(sa.BigInteger, nullable=True)
+    withdrawalDetails = sa_orm.mapped_column(sa.Text, nullable=True)
+    withdrawalType = sa_orm.mapped_column(sa.Enum(WithdrawalTypeEnum), nullable=True)
+    offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True
+    )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
@@ -806,7 +852,7 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         return self._extraData
 
     @extraData.setter
-    def extraData(self, value: dict) -> None:
+    def extraData(self, value: OfferExtraData) -> None:
         if not value:
             self._extraData = value
             return
@@ -1095,11 +1141,12 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         if not product_images:
             return None
 
-        images = {
-            image_type.value: OfferImage(product_images[image_type.value], credit=None)
-            for image_type in ImageType
-            if product_images.get(image_type.value)
-        }
+        images: dict[str, OfferImage] = {}
+
+        for image_type in ImageType:
+            if image := product_images.get(image_type.value):
+                images[image_type.value] = OfferImage(image, credit=None)
+
         return images or None
 
     @property
@@ -1244,15 +1291,17 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         )
 
 
-class ActivationCode(PcObject, Base, Model):
+class ActivationCode(PcObject, Model):
     __tablename__ = "activation_code"
 
     booking: sa_orm.Mapped["Booking | None"] = sa_orm.relationship("Booking", back_populates="activationCode")
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
-    code: str = sa.Column(sa.Text, nullable=False)
-    expirationDate = sa.Column(sa.DateTime, nullable=True, default=None)
+    bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    code: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    expirationDate = sa_orm.mapped_column(sa.DateTime, nullable=True, default=None)
     stock: sa_orm.Mapped["Stock"] = sa_orm.relationship("Stock", back_populates="activationCodes")
-    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
+    stockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False
+    )
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1395,27 +1444,35 @@ class OfferValidationSubRuleField(enum.Enum):
     }
 
 
-class OfferValidationSubRule(PcObject, Base, Model):
+class OfferValidationSubRule(PcObject, Model):
     __tablename__ = "offer_validation_sub_rule"
     validationRule: sa_orm.Mapped["OfferValidationRule"] = sa_orm.relationship(
         "OfferValidationRule", backref="subRules", order_by="OfferValidationSubRule.id.asc()"
     )
-    validationRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False)
-    model: OfferValidationModel = sa.Column(sa.Enum(OfferValidationModel), nullable=True)
+    validationRuleId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id"), index=True, nullable=False
+    )
+    model: sa_orm.Mapped[OfferValidationModel] = sa_orm.mapped_column(sa.Enum(OfferValidationModel), nullable=True)
     __table_args__ = (
         sa.CheckConstraint(
             "(model IS NULL AND attribute = 'CLASS_NAME') OR (model IS NOT NULL AND attribute != 'CLASS_NAME')",
             name="check_not_model_and_attribute_class_or_vice_versa",
         ),
     )
-    attribute: OfferValidationAttribute = sa.Column(sa.Enum(OfferValidationAttribute), nullable=False)
-    operator: OfferValidationRuleOperator = sa.Column(sa.Enum(OfferValidationRuleOperator), nullable=False)
-    comparated: dict = sa.Column("comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
+    attribute: sa_orm.Mapped[OfferValidationAttribute] = sa_orm.mapped_column(
+        sa.Enum(OfferValidationAttribute), nullable=False
+    )
+    operator: sa_orm.Mapped[OfferValidationRuleOperator] = sa_orm.mapped_column(
+        sa.Enum(OfferValidationRuleOperator), nullable=False
+    )
+    comparated: sa_orm.Mapped[dict] = sa_orm.mapped_column(
+        "comparated", MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
+    )
 
 
-class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
+class OfferValidationRule(PcObject, Model, DeactivableMixin):
     __tablename__ = "offer_validation_rule"
-    name: str = sa.Column(sa.Text, nullable=False)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", secondary=ValidationRuleOfferLink.__table__, back_populates="flaggingValidationRules"
     )
@@ -1431,10 +1488,10 @@ class OfferValidationRule(PcObject, Base, Model, DeactivableMixin):
     )
 
 
-class OfferPriceLimitationRule(PcObject, Base, Model):
+class OfferPriceLimitationRule(PcObject, Model):
     __tablename__ = "offer_price_limitation_rule"
-    subcategoryId: str = sa.Column(sa.Text, nullable=False, unique=True)
-    rate: decimal.Decimal = sa.Column(sa.Numeric(5, 4), nullable=False)
+    subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    rate: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(5, 4), nullable=False)
 
 
 @dataclass
@@ -1488,7 +1545,7 @@ OR (
 """
 
 
-class OfferReport(PcObject, Base, Model):
+class OfferReport(PcObject, Model):
     __tablename__ = "offer_report"
 
     __table_args__ = (
@@ -1504,34 +1561,44 @@ class OfferReport(PcObject, Base, Model):
     )
 
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", backref="reported_offers")
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", backref="reports")
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
-    reason: Reason = sa.Column(sa.Enum(Reason, create_constraint=False), nullable=False, index=True)
-    reportedAt: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
+    )
+    reason: sa_orm.Mapped[Reason] = sa_orm.mapped_column(
+        sa.Enum(Reason, create_constraint=False), nullable=False, index=True
+    )
+    reportedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
     # If the reason code is OTHER, save the user's custom reason
-    customReasonContent = sa.Column(sa.Text, nullable=True)
+    customReasonContent = sa_orm.mapped_column(sa.Text, nullable=True)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"
 
 
-class BookMacroSection(PcObject, Base, Model):
+class BookMacroSection(PcObject, Model):
     __tablename__ = "book_macro_section"
 
-    macroSection: str = sa.Column(sa.Text, nullable=False)
-    section: str = sa.Column(sa.Text, nullable=False)
+    macroSection: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    section: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
     __table_args__ = (sa.Index("book_macro_section_section_idx", sa.func.lower(section), unique=True),)
 
 
-class PriceCategoryLabel(PcObject, Base, Model):
+class PriceCategoryLabel(PcObject, Model):
     __tablename__ = "price_category_label"
-    label: str = sa.Column(sa.Text(), nullable=False)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
         "PriceCategory", back_populates="priceCategoryLabel"
     )
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
+    )
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", back_populates="priceCategoriesLabel")
 
     __table_args__ = (
@@ -1543,21 +1610,23 @@ class PriceCategoryLabel(PcObject, Base, Model):
     )
 
 
-class PriceCategory(PcObject, Base, Model):
+class PriceCategory(PcObject, Model):
     __tablename__ = "price_category"
-    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="priceCategories")
-    price: decimal.Decimal = sa.Column(
+    price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
-    priceCategoryLabelId: int = sa.Column(
+    priceCategoryLabelId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("price_category_label.id"), index=True, nullable=False
     )
     priceCategoryLabel: sa_orm.Mapped["PriceCategoryLabel"] = sa_orm.relationship(
         "PriceCategoryLabel", foreign_keys=[priceCategoryLabelId], back_populates="priceCategories"
     )
     stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory", cascade="all")
-    idAtProvider = sa.Column(sa.Text, nullable=True)
+    idAtProvider = sa_orm.mapped_column(sa.Text, nullable=True)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1577,15 +1646,15 @@ class TiteliveGtlType(enum.Enum):
     MUSIC = "music"
 
 
-class TiteliveGtlMapping(PcObject, Base, Model):
+class TiteliveGtlMapping(PcObject, Model):
     __tablename__ = "titelive_gtl_mapping"
 
-    gtlType: TiteliveGtlType = sa.Column(sa.Enum(TiteliveGtlType), nullable=False)
-    gtlId: str = sa.Column(sa.Text, nullable=True, unique=False, index=True)
-    gtlLabelLevel1: str = sa.Column(sa.Text, nullable=True, unique=False)
-    gtlLabelLevel2: str = sa.Column(sa.Text, nullable=True, unique=False)
-    gtlLabelLevel3: str = sa.Column(sa.Text, nullable=True, unique=False)
-    gtlLabelLevel4: str = sa.Column(sa.Text, nullable=True, unique=False)
+    gtlType: sa_orm.Mapped[TiteliveGtlType] = sa_orm.mapped_column(sa.Enum(TiteliveGtlType), nullable=False)
+    gtlId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False, index=True)
+    gtlLabelLevel1: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel2: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel3: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
+    gtlLabelLevel4: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, unique=False)
 
     sa.Index("gtl_type_idx", gtlType, postgresql_using="hash")
 
@@ -1606,18 +1675,18 @@ class ComplianceValidationStatusPrediction(enum.Enum):
     REJECTED = "rejected"
 
 
-class OfferCompliance(PcObject, Base, Model):
+class OfferCompliance(PcObject, Model):
     __tablename__ = "offer_compliance"
-    offerId: int = sa.Column(
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="compliance")
     # Compliance_score is a score between 0 and 100. Keep it small with a smallint
-    compliance_score: int = sa.Column(sa.SmallInteger, nullable=False)
-    compliance_reasons: sa_orm.Mapped[list[str]] = sa.Column(
+    compliance_score: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.SmallInteger, nullable=False)
+    compliance_reasons: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.ARRAY(sa.String)), nullable=False
     )
-    validation_status_prediction: ComplianceValidationStatusPrediction = sa.Column(
+    validation_status_prediction: sa_orm.Mapped[ComplianceValidationStatusPrediction] = sa_orm.mapped_column(
         db_utils.MagicEnum(ComplianceValidationStatusPrediction), nullable=True
     )
-    validation_status_prediction_reason: str | None = sa.Column(sa.Text, nullable=True)
+    validation_status_prediction_reason: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)

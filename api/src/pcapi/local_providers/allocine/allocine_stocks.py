@@ -104,6 +104,7 @@ class AllocineStocks(LocalProvider):
             offer._extraData = {}
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        assert self.provider  # helps mypy
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
@@ -148,7 +149,7 @@ class AllocineStocks(LocalProvider):
         self.last_offer = offer
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
-        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)  # type: ignore[arg-type]
+        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
         showtime = _find_showtime_by_showtime_uuid(self.showtimes, showtime_uuid)
         if not showtime:
             self.log_provider_event(
@@ -164,7 +165,7 @@ class AllocineStocks(LocalProvider):
 
         allocine_stock.offer = self.last_offer
         if showtime.diffusionVersion in ACCEPTED_FEATURES_MAPPING:
-            allocine_stock.features = [ACCEPTED_FEATURES_MAPPING.get(showtime.diffusionVersion)]
+            allocine_stock.features = [ACCEPTED_FEATURES_MAPPING[showtime.diffusionVersion]]
 
         local_tz = get_department_timezone(self.venue.departementCode)
         date_in_utc = local_datetime_to_default_timezone(showtime.startsAt, local_tz)
@@ -228,6 +229,7 @@ class AllocineStocks(LocalProvider):
         return price_category
 
     def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
+        assert self.provider  # helps mypy
         id_at_providers = build_movie_id_at_providers(self.provider.id, movie.internalId)
         generic_movie = create_generic_movie(movie)
         product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
