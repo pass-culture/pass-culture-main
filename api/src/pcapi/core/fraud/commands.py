@@ -6,10 +6,8 @@ import click
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.core.subscription.dms import api as dms_api
-from pcapi.core.subscription.dms import repository as dms_repository
 from pcapi.core.subscription.ubble.api import update_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
-from pcapi.scripts.subscription import dms as dms_script
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -29,7 +27,7 @@ def archive_already_processed_dms_applications() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_repository.archive_applications(procedure_id, dry_run=False)
+        dms_api.archive_applications(procedure_id, dry_run=False)
 
 
 @blueprint.cli.command("import_all_updated_dms_applications")
@@ -54,11 +52,11 @@ def import_all_updated_dms_applications(since: str | None = None) -> None:
 @blueprint.cli.command("handle_inactive_dms_applications_cron")
 @cron_decorators.log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
-    dms_script.handle_inactive_dms_applications(
+    dms_api.handle_inactive_dms_applications(
         settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
         with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
-    dms_script.handle_inactive_dms_applications(
+    dms_api.handle_inactive_dms_applications(
         settings.DMS_ENROLLMENT_PROCEDURE_ID_ET,
         with_never_eligible_applicant_rule=settings.DMS_NEVER_ELIGIBLE_APPLICANT,
     )
@@ -73,7 +71,7 @@ def handle_deleted_dms_applications_cron() -> None:
     ]
     for procedure_id in procedures:
         try:
-            dms_repository.handle_deleted_dms_applications(procedure_id)
+            dms_api.handle_deleted_dms_applications(procedure_id)
         except Exception:
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
 
