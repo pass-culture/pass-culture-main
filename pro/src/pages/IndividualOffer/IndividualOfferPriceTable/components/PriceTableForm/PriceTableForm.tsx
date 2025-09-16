@@ -28,7 +28,10 @@ import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
-import { PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH } from '../../commons/constants'
+import {
+  DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
+  PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH,
+} from '../../commons/constants'
 import {
   PriceTableEntryValidationSchema,
   type PriceTableFormValues,
@@ -63,7 +66,7 @@ export const PriceTableForm = ({
     setValue,
     formState: { errors },
   } = useFormContext<PriceTableFormValues>()
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'entries',
   })
@@ -75,10 +78,10 @@ export const PriceTableForm = ({
   const [entryIndexToConfirmAndRemove, setEntryIndexToConfirmAndRemove] =
     useState<number | null>(null)
 
-  const areAllFieldsReadonly =
+  const areAllFieldsDisabled =
     isOfferDisabled(offer) || hasPublishedOfferWithSameEan
-  const areAllFieldsReadonlyButQuantity =
-    !areAllFieldsReadonly &&
+  const areAllFieldsDisabledButQuantity =
+    !areAllFieldsDisabled &&
     isOfferSynchronized(offer) &&
     !isOfferSynchronizedViaAllocine(offer)
 
@@ -93,12 +96,12 @@ export const PriceTableForm = ({
     : null
 
   const addEntry = () => {
-    const newRow = PriceTableEntryValidationSchema.cast(
+    const newEntry = PriceTableEntryValidationSchema.cast(
       { offerId: offer.id },
       { assert: false, context: schemaValidationContext }
     )
 
-    append(newRow, { shouldFocus: true })
+    append(newEntry, { shouldFocus: true })
   }
 
   const removeEntry = (indexToRemove: number) => {
@@ -110,17 +113,34 @@ export const PriceTableForm = ({
     if (fields.length === 2) {
       const indexToKeep = indexToRemove === 0 ? 1 : 0
 
-      setValue(`entries.${indexToKeep}.label`, 'Tarif unique')
+      setValue(
+        `entries.${indexToKeep}.label`,
+        DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE
+      )
     }
 
     remove(indexToRemove)
   }
 
+  const resetEntry = (indexToReset: number) => {
+    const initialEntry = {
+      ...PriceTableEntryValidationSchema.cast(
+        { offerId: offer.id },
+        { assert: false, context: schemaValidationContext }
+      ),
+      label: DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
+    }
+
+    update(indexToReset, initialEntry)
+  }
+
   const askForRemovalConfirmationOrRemove = (indexToRemove: number) => {
-    assertOrFrontendError(
-      fields.length > 1,
-      '`askForRemovalConfirmationOrRemove` should not be called when there is only one entry.'
-    )
+    // If there is only one entry left, we reset it instead of removing it
+    if (fields.length === 1) {
+      resetEntry(indexToRemove)
+
+      return
+    }
 
     const entryToRemove = getValues(`entries.${indexToRemove}`)
 
@@ -203,8 +223,8 @@ export const PriceTableForm = ({
                 className={styles['input-label']}
                 disabled={
                   fields.length <= 1 ||
-                  areAllFieldsReadonly ||
-                  areAllFieldsReadonlyButQuantity
+                  areAllFieldsDisabled ||
+                  areAllFieldsDisabledButQuantity
                 }
                 error={errors.entries?.[index]?.label?.message}
                 label="Intitulé du tarif"
@@ -218,7 +238,7 @@ export const PriceTableForm = ({
               name="price"
               value={watch(`entries.${index}.price`)}
               className={styles['input-price']}
-              disabled={areAllFieldsReadonly || areAllFieldsReadonlyButQuantity}
+              disabled={areAllFieldsDisabled || areAllFieldsDisabledButQuantity}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
               currency={isCaledonian ? 'XPF' : 'EUR'}
@@ -235,7 +255,7 @@ export const PriceTableForm = ({
                 {...register(`entries.${index}.bookingLimitDatetime`)}
                 className={styles['input-booking-limit-datetime']}
                 disabled={
-                  areAllFieldsReadonly || areAllFieldsReadonlyButQuantity
+                  areAllFieldsDisabled || areAllFieldsDisabledButQuantity
                 }
                 error={errors.entries?.[index]?.bookingLimitDatetime?.message}
                 label="Date limite de réservation"
@@ -262,7 +282,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <QuantityInput
                 className={styles['input-stock']}
-                disabled={areAllFieldsReadonly || hasActivationCodes}
+                disabled={areAllFieldsDisabled || hasActivationCodes}
                 error={errors.entries?.[index]?.quantity?.message}
                 label="Stock"
                 minimum={computeEntryConstraints(entry).quantityMin}
@@ -309,23 +329,27 @@ export const PriceTableForm = ({
               </>
             )}
 
-            {!offer.isEvent && offer.isDigital && (
-              <ListIconButton
-                icon={fullCodeIcon}
-                onClick={() => setActivationCodeEntryIndexToUpload(index)}
-                readOnly={
-                  areAllFieldsReadonly || areAllFieldsReadonlyButQuantity
-                }
-                ref={activationCodeButtonRef}
-                tooltipContent="Ajouter des codes d'activation"
-              />
-            )}
-            {fields.length > 1 && (
+            {!offer.isEvent &&
+              offer.isDigital &&
+              !areAllFieldsDisabled &&
+              !areAllFieldsDisabledButQuantity && (
+                <ListIconButton
+                  icon={fullCodeIcon}
+                  onClick={() => setActivationCodeEntryIndexToUpload(index)}
+                  ref={activationCodeButtonRef}
+                  tooltipContent="Ajouter des codes d'activation"
+                />
+              )}
+            {!areAllFieldsDisabled && !areAllFieldsDisabledButQuantity && (
               <div className={styles['trash-button']}>
                 <ListIconButton
                   icon={fullTrashIcon}
                   onClick={() => askForRemovalConfirmationOrRemove(index)}
-                  tooltipContent="Supprimer ce tarif"
+                  tooltipContent={
+                    fields.length > 1
+                      ? 'Supprimer ce tarif'
+                      : 'Réinitialiser les valeurs de ce tarif'
+                  }
                 />
               </div>
             )}
@@ -333,19 +357,20 @@ export const PriceTableForm = ({
         )
       })}
 
-      {offer.isEvent && (
-        <div className={styles['row']}>
-          <Button
-            disabled={areAllFieldsReadonly || areAllFieldsReadonlyButQuantity}
-            icon={fulleMoreIcon}
-            onClick={addEntry}
-            type="button"
-            variant={ButtonVariant.TERNARY}
-          >
-            Ajouter un tarif
-          </Button>
-        </div>
-      )}
+      {offer.isEvent &&
+        !areAllFieldsDisabled &&
+        !areAllFieldsDisabledButQuantity && (
+          <div className={styles['row']}>
+            <Button
+              icon={fulleMoreIcon}
+              onClick={addEntry}
+              type="button"
+              variant={ButtonVariant.TERNARY}
+            >
+              Ajouter un tarif
+            </Button>
+          </div>
+        )}
     </>
   )
 }

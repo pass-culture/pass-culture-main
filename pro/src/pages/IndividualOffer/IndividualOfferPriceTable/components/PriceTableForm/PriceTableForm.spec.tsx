@@ -4,8 +4,16 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { vi } from 'vitest'
 
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import { OfferStatus } from '@/apiClient/v1'
+import {
+  IndividualOfferContext,
+  type IndividualOfferContextValues,
+} from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  individualOfferContextValuesFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderComponentFunction,
   renderWithProviders,
@@ -31,6 +39,7 @@ const renderPriceTableForm: RenderComponentFunction<
   PriceTableFormContext,
   {
     offer: GetIndividualOfferWithAddressResponseModel
+    defaultValues?: PriceTableFormValues
   }
 > = (params) => {
   const offer = params.offer ?? getIndividualOfferFactory({ id: 1 })
@@ -40,6 +49,23 @@ const renderPriceTableForm: RenderComponentFunction<
     mode: params.contextValues?.mode ?? OFFER_WIZARD_MODE.CREATION,
     offer,
     ...params.contextValues,
+  }
+  const defaultValues: PriceTableFormValues = params.defaultValues ?? {
+    entries: [
+      {
+        activationCodes: [],
+        activationCodesExpirationDatetime: null,
+        bookingLimitDatetime: null,
+        bookingsQuantity: undefined,
+        id: undefined,
+        label: offer.isEvent ? 'Normal' : null,
+        price: 10,
+        quantity: offer.isEvent ? null : 5,
+        offerId: offer.id,
+        remainingQuantity: null,
+      },
+    ],
+    isDuo: offer.isEvent ? true : null,
   }
   const props: PriceTableFormProps = {
     isCaledonian: contextValues.isCaledonian,
@@ -53,23 +79,7 @@ const renderPriceTableForm: RenderComponentFunction<
 
   const Wrapper = () => {
     const form = useForm<PriceTableFormValues>({
-      defaultValues: {
-        entries: [
-          {
-            activationCodes: [],
-            activationCodesExpirationDatetime: '',
-            bookingLimitDatetime: '',
-            bookingsQuantity: undefined,
-            id: undefined,
-            label: offer.isEvent ? 'Normal' : undefined,
-            price: 10,
-            quantity: offer.isEvent ? null : 5,
-            offerId: offer.id,
-            remainingQuantity: null,
-          },
-        ],
-        isDuo: offer.isEvent ? true : null,
-      },
+      defaultValues,
       context: contextValues,
     })
 
@@ -91,18 +101,37 @@ const LABELS = {
     closeModal: 'Fermer la fenêtre modale',
     confirmEntryRemoval: 'Supprimer',
     removeEntry: 'Supprimer ce tarif',
+    resetEntry: 'Réinitialiser les valeurs de ce tarif',
     submitActivationCodes: 'Valider',
   },
   fields: {
-    price: 'Prix',
+    price: 'Prix *',
     label: 'Intitulé du tarif',
     stock: 'Stock',
   },
 }
 
 describe('PriceTableForm', () => {
-  const eventOffer = getIndividualOfferFactory({ isEvent: true })
-  const nonEventOffer = getIndividualOfferFactory({ isEvent: false })
+  const eventOffer = getIndividualOfferFactory({
+    id: 1,
+    isEvent: true,
+  })
+  const nonEventOffer = getIndividualOfferFactory({
+    id: 1,
+    isEvent: false,
+  })
+  const entryBase: PriceTableFormValues['entries'][0] = {
+    activationCodes: null,
+    activationCodesExpirationDatetime: null,
+    bookingLimitDatetime: null,
+    bookingsQuantity: undefined,
+    id: undefined,
+    label: null,
+    price: 0,
+    quantity: null,
+    offerId: 1,
+    remainingQuantity: null,
+  }
 
   it('should display first entry fields for event offer', () => {
     renderPriceTableForm({ offer: eventOffer })
@@ -185,48 +214,28 @@ describe('PriceTableForm', () => {
 
   it('should display remaining stock and bookings fields in EDITION mode for non-event offer', () => {
     const offer = { ...nonEventOffer, isEvent: false }
-    const Wrapper = () => {
-      const form = useForm<PriceTableFormValues>({
-        defaultValues: {
-          entries: [
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: 2,
-              id: 10,
-              label: undefined,
-              price: 15,
-              quantity: 8,
-              offerId: offer.id,
-              remainingQuantity: 6,
-            },
-          ],
-          isDuo: null,
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          bookingsQuantity: 2,
+          id: 10,
+          price: 15,
+          quantity: 8,
+          remainingQuantity: 6,
         },
-        context: {
-          isCaledonian: false,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          offer,
-        },
-      })
-      return (
-        <FormProvider {...form}>
-          <PriceTableForm
-            isCaledonian={false}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            offer={offer as GetIndividualOfferWithAddressResponseModel}
-            offerStocks={[]}
-            schemaValidationContext={{
-              isCaledonian: false,
-              mode: OFFER_WIZARD_MODE.EDITION,
-              offer,
-            }}
-          />
-        </FormProvider>
-      )
+      ],
+      isDuo: null,
     }
-    renderWithProviders(<Wrapper />)
+
+    renderPriceTableForm({
+      offer,
+      contextValues,
+      props,
+      defaultValues,
+    })
 
     expect(screen.getByText('Stock restant')).toBeInTheDocument()
     expect(screen.getByText('Réservations')).toBeInTheDocument()
@@ -234,61 +243,35 @@ describe('PriceTableForm', () => {
 
   it('should open confirmation dialog before deleting existing stock with bookings in EDITION mode and then remove it', async () => {
     const offer = { ...nonEventOffer, isEvent: false }
-    const Wrapper = () => {
-      const form = useForm<PriceTableFormValues>({
-        defaultValues: {
-          entries: [
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: 3,
-              id: 42,
-              label: undefined,
-              price: 20,
-              quantity: 10,
-              offerId: offer.id,
-              remainingQuantity: 7,
-            },
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: 0,
-              id: 43,
-              label: undefined,
-              price: 25,
-              quantity: 5,
-              offerId: offer.id,
-              remainingQuantity: 5,
-            },
-          ],
-          isDuo: null,
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          bookingsQuantity: 3,
+          id: 42,
+          price: 20,
+          quantity: 10,
+          remainingQuantity: 7,
         },
-        context: {
-          isCaledonian: false,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          offer,
+        {
+          ...entryBase,
+          id: 43,
+          price: 25,
+          quantity: 5,
+          remainingQuantity: 5,
         },
-      })
-
-      return (
-        <FormProvider {...form}>
-          <PriceTableForm
-            isCaledonian={false}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            offer={offer as GetIndividualOfferWithAddressResponseModel}
-            offerStocks={[]}
-            schemaValidationContext={{
-              isCaledonian: false,
-              mode: OFFER_WIZARD_MODE.EDITION,
-              offer,
-            }}
-          />
-        </FormProvider>
-      )
+      ],
+      isDuo: null,
     }
-    renderWithProviders(<Wrapper />)
+
+    renderPriceTableForm({
+      offer,
+      contextValues,
+      props,
+      defaultValues,
+    })
 
     const deleteButtons = screen.getAllByRole('button', {
       name: LABELS.buttons.removeEntry,
@@ -310,48 +293,25 @@ describe('PriceTableForm', () => {
 
   it('should upload activation codes and set quantity accordingly', async () => {
     const offer = { ...nonEventOffer, isDigital: true }
-    const Wrapper = () => {
-      const form = useForm<PriceTableFormValues>({
-        defaultValues: {
-          entries: [
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: undefined,
-              id: 55,
-              label: undefined,
-              price: 12,
-              quantity: null,
-              offerId: offer.id,
-              remainingQuantity: null,
-            },
-          ],
-          isDuo: null,
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          id: 55,
+          price: 12,
         },
-        context: {
-          isCaledonian: false,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          offer,
-        },
-      })
-      return (
-        <FormProvider {...form}>
-          <PriceTableForm
-            isCaledonian={false}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            offerStocks={[]}
-            offer={offer as GetIndividualOfferWithAddressResponseModel}
-            schemaValidationContext={{
-              isCaledonian: false,
-              mode: OFFER_WIZARD_MODE.EDITION,
-              offer,
-            }}
-          />
-        </FormProvider>
-      )
+      ],
+      isDuo: null,
     }
-    renderWithProviders(<Wrapper />)
+
+    renderPriceTableForm({
+      offer,
+      contextValues,
+      props,
+      defaultValues,
+    })
 
     await userEvent.click(
       screen.getByRole('button', { name: LABELS.buttons.activationTooltip })
@@ -385,60 +345,35 @@ describe('PriceTableForm', () => {
 
   it('should cancel deletion when user clicks Annuler in confirmation dialog', async () => {
     const offer = { ...nonEventOffer, isEvent: false }
-    const Wrapper = () => {
-      const form = useForm<PriceTableFormValues>({
-        defaultValues: {
-          entries: [
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: 3,
-              id: 101,
-              label: undefined,
-              price: 10,
-              quantity: 5,
-              offerId: offer.id,
-              remainingQuantity: 5,
-            },
-            {
-              activationCodes: [],
-              activationCodesExpirationDatetime: '',
-              bookingLimitDatetime: '',
-              bookingsQuantity: 0,
-              id: 102,
-              label: undefined,
-              price: 12,
-              quantity: 6,
-              offerId: offer.id,
-              remainingQuantity: 6,
-            },
-          ],
-          isDuo: null,
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          bookingsQuantity: 3,
+          id: 101,
+          price: 10,
+          quantity: 5,
+          remainingQuantity: 5,
         },
-        context: {
-          isCaledonian: false,
-          mode: OFFER_WIZARD_MODE.EDITION,
-          offer,
+        {
+          ...entryBase,
+          id: 102,
+          price: 12,
+          quantity: 6,
+          remainingQuantity: 6,
         },
-      })
-      return (
-        <FormProvider {...form}>
-          <PriceTableForm
-            isCaledonian={false}
-            mode={OFFER_WIZARD_MODE.EDITION}
-            offerStocks={[]}
-            offer={offer as GetIndividualOfferWithAddressResponseModel}
-            schemaValidationContext={{
-              isCaledonian: false,
-              mode: OFFER_WIZARD_MODE.EDITION,
-              offer,
-            }}
-          />
-        </FormProvider>
-      )
+      ],
+      isDuo: null,
     }
-    renderWithProviders(<Wrapper />)
+
+    renderPriceTableForm({
+      offer,
+      contextValues,
+      props,
+      defaultValues,
+    })
 
     const deleteButtons = screen.getAllByRole('button', {
       name: LABELS.buttons.removeEntry,
@@ -457,10 +392,13 @@ describe('PriceTableForm', () => {
 
   it('should cancel activation code dialog without modifying quantity', async () => {
     const offer = { ...nonEventOffer, isDigital: true }
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+
     renderPriceTableForm({
       offer,
-      contextValues: { mode: OFFER_WIZARD_MODE.EDITION },
-      props: { mode: OFFER_WIZARD_MODE.EDITION },
+      contextValues,
+      props,
     })
 
     await userEvent.click(
@@ -500,5 +438,289 @@ describe('PriceTableForm', () => {
     await userEvent.clear(quantityInput)
     await userEvent.type(quantityInput, '11')
     expect(quantityInput.value).toBe('11')
+  })
+
+  it('should disable all inputs and actions when offer is pending (event offer)', () => {
+    const offer = {
+      ...eventOffer,
+      status: OfferStatus.PENDING,
+    }
+
+    renderPriceTableForm({ offer })
+
+    const labelInput = screen.getByLabelText(LABELS.fields.label)
+    expect(labelInput).toBeDisabled()
+
+    expect(
+      screen.getByRole<HTMLInputElement>('spinbutton', {
+        name: LABELS.fields.price,
+      })
+    ).toBeDisabled()
+
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.addEntry,
+      })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should allow editing quantity but not price when offer is synchronized (non Allociné, non-event)', async () => {
+    const offer = {
+      ...nonEventOffer,
+      status: OfferStatus.ACTIVE,
+      lastProvider: { name: 'SomeOtherProvider' },
+    }
+
+    renderPriceTableForm({ offer })
+
+    const priceInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: LABELS.fields.price,
+    })
+    expect(priceInput).toBeDisabled()
+
+    const quantityInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: /Stock/,
+    })
+    expect(quantityInput).not.toBeDisabled()
+
+    await userEvent.clear(quantityInput)
+    await userEvent.type(quantityInput, '9')
+    expect(quantityInput.value).toBe('9')
+  })
+
+  it('should disable all fields when another published offer shares the same EAN', () => {
+    const offer = {
+      ...eventOffer,
+      status: OfferStatus.ACTIVE,
+    }
+
+    const context: IndividualOfferContextValues = {
+      ...individualOfferContextValuesFactory({ offer }),
+      hasPublishedOfferWithSameEan: true,
+    }
+
+    const Wrapper = () => {
+      const form = useForm<PriceTableFormValues>({
+        defaultValues: {
+          entries: [
+            {
+              activationCodes: null,
+              activationCodesExpirationDatetime: null,
+              bookingLimitDatetime: '',
+              bookingsQuantity: undefined,
+              id: undefined,
+              label: 'Normal',
+              price: 10,
+              quantity: null,
+              offerId: offer.id,
+              remainingQuantity: null,
+            },
+          ],
+          isDuo: true,
+        },
+        context: {
+          isCaledonian: false,
+          mode: OFFER_WIZARD_MODE.CREATION,
+          offer,
+        },
+      })
+
+      return (
+        <IndividualOfferContext.Provider value={context}>
+          <FormProvider {...form}>
+            <PriceTableForm
+              isCaledonian={false}
+              mode={OFFER_WIZARD_MODE.CREATION}
+              offer={offer as GetIndividualOfferWithAddressResponseModel}
+              offerStocks={[]}
+              schemaValidationContext={{
+                isCaledonian: false,
+                mode: OFFER_WIZARD_MODE.CREATION,
+                offer,
+              }}
+            />
+          </FormProvider>
+        </IndividualOfferContext.Provider>
+      )
+    }
+
+    renderWithProviders(<Wrapper />)
+
+    const labelInput = screen.getByLabelText(LABELS.fields.label)
+    expect(labelInput).toBeDisabled()
+
+    const priceInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: LABELS.fields.price,
+    })
+    expect(priceInput).toBeDisabled()
+
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.addEntry,
+      })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should keep fields editable when synchronized via Allociné (non-event)', async () => {
+    const offer = {
+      ...nonEventOffer,
+      status: OfferStatus.ACTIVE,
+      lastProvider: { name: 'Allociné' },
+    }
+
+    renderPriceTableForm({ offer })
+
+    const priceInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: LABELS.fields.price,
+    })
+    expect(priceInput).not.toBeDisabled()
+    await userEvent.clear(priceInput)
+    await userEvent.type(priceInput, '33')
+    expect(priceInput.value).toBe('33')
+
+    const quantityInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: /Stock/,
+    })
+    expect(quantityInput).not.toBeDisabled()
+    await userEvent.clear(quantityInput)
+    await userEvent.type(quantityInput, '12')
+    expect(quantityInput.value).toBe('12')
+  })
+
+  it('should enable label editing once a second event entry is added', async () => {
+    const offer = { ...eventOffer, status: OfferStatus.ACTIVE }
+    renderPriceTableForm({ offer })
+
+    const initialLabelInput = screen.getByLabelText(LABELS.fields.label)
+    expect(initialLabelInput).toBeDisabled() // disabled when only one entry
+
+    await userEvent.click(
+      screen.getByRole('button', { name: LABELS.buttons.addEntry })
+    )
+
+    const labelInputs = screen.getAllByLabelText(LABELS.fields.label)
+    expect(labelInputs.length).toBe(2)
+    expect(labelInputs[0]).not.toBeDisabled()
+    expect(labelInputs[1]).not.toBeDisabled()
+  })
+
+  it('should keep event labels disabled when synchronized via non-Allociné provider even with multiple entries', () => {
+    const offer = {
+      ...eventOffer,
+      status: OfferStatus.ACTIVE,
+      lastProvider: { name: 'SomeOtherProvider' },
+    }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          label: 'Cat 1',
+          price: 10,
+        },
+        {
+          ...entryBase,
+          label: 'Cat 2',
+          price: 12,
+        },
+      ],
+      isDuo: true,
+    }
+
+    renderPriceTableForm({ offer, defaultValues })
+
+    const labelInputs = screen.getAllByLabelText(LABELS.fields.label)
+    expect(labelInputs.length).toBe(2)
+    expect(labelInputs[0]).toBeDisabled()
+    expect(labelInputs[1]).toBeDisabled()
+
+    const priceInputs = screen.getAllByRole<HTMLInputElement>('spinbutton', {
+      // TODO (igabriele, 2025-09-17): Investigate this label (accessibility).
+      name: 'Prix * Prix *',
+    })
+    expect(priceInputs[0]).toBeDisabled()
+  })
+
+  it('should disable expiration date when entry has activationCodesExpirationDatetime', () => {
+    const offer = {
+      ...nonEventOffer,
+      isDigital: true,
+    }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          activationCodes: ['A', 'B'],
+          activationCodesExpirationDatetime: '2025-12-31',
+          price: 10,
+          quantity: 2,
+        },
+      ],
+      isDuo: null,
+    }
+
+    renderPriceTableForm({ offer, defaultValues })
+
+    const expirationInput = screen.getByLabelText(
+      /Date d'expiration/
+    ) as HTMLInputElement
+    expect(expirationInput).toBeDisabled()
+    expect(expirationInput.value).toBe('2025-12-31')
+  })
+
+  it('should disable stock input when activation codes are present (non-event)', () => {
+    const offer = { ...nonEventOffer, isDigital: true }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          activationCodes: ['CODE1', 'CODE2'],
+          price: 10,
+          quantity: 2,
+        },
+      ],
+      isDuo: null,
+    }
+
+    renderPriceTableForm({
+      offer,
+      defaultValues,
+    })
+
+    const quantityInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: /Stock/,
+    })
+    expect(quantityInput).toBeDisabled()
+  })
+
+  it('should reset single event entry instead of removing it (label becomes "Tarif unique")', async () => {
+    const offer = { ...eventOffer }
+    renderPriceTableForm({ offer })
+
+    const deleteButton = screen.getByRole('button', {
+      name: LABELS.buttons.resetEntry,
+    })
+    await userEvent.click(deleteButton)
+
+    const labelInput = screen.getByLabelText(
+      LABELS.fields.label
+    ) as HTMLInputElement
+    expect(labelInput.value).toBe('Tarif unique')
+  })
+
+  it('should render activation button as disabled attribute when synchronized via non-Allociné (digital non-event)', () => {
+    const offer = {
+      ...nonEventOffer,
+      isDigital: true,
+      status: OfferStatus.ACTIVE,
+      lastProvider: { name: 'SomeOtherProvider' },
+    }
+
+    renderPriceTableForm({ offer })
+
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.activationTooltip,
+      })
+    ).not.toBeInTheDocument()
   })
 })

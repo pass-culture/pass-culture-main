@@ -10,6 +10,7 @@ import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 
+import { DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE } from '../constants'
 import {
   PriceTableEntryValidationSchema,
   type PriceTableFormValues,
@@ -86,7 +87,9 @@ export function toFormValues(
           : [
               PriceTableEntryValidationSchema.cast(
                 {
-                  label: context.offer.isEvent ? 'Tarif unique' : null,
+                  label: context.offer.isEvent
+                    ? DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE
+                    : null,
                   offerId: context.offer.id,
                 },
                 castOptions

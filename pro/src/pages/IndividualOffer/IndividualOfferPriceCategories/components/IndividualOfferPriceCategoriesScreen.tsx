@@ -34,13 +34,13 @@ import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
+import { DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE } from '../../IndividualOfferPriceTable/commons/constants'
 import { arePriceCategoriesChanged } from '../commons/arePriceCategoriesChanged'
 import { computeInitialValues } from '../commons/computeInitialValues'
 import {
   INITIAL_PRICE_CATEGORY,
   PRICE_CATEGORY_LABEL_MAX_LENGTH,
   PRICE_CATEGORY_MAX_LENGTH,
-  UNIQUE_PRICE,
 } from '../commons/constants'
 import { submitToApi } from '../commons/submitToApi'
 import type {
@@ -229,9 +229,13 @@ export const IndividualOfferPriceCategoriesScreen = ({
     }
 
     if (hasOnlyTwo) {
-      setValue(`priceCategories.0.label`, UNIQUE_PRICE, {
-        shouldValidate: true,
-      })
+      setValue(
+        `priceCategories.0.label`,
+        DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
+        {
+          shouldValidate: true,
+        }
+      )
 
       const remaining = priceCategories.filter(
         (pC) => pC.id !== priceCategoryId
@@ -241,7 +245,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
         const requestBody = {
           priceCategories: [
             {
-              label: UNIQUE_PRICE,
+              label: DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
               id: remaining[0]?.id,
             },
           ],
@@ -367,7 +371,10 @@ export const IndividualOfferPriceCategoriesScreen = ({
               icon={fullMoreIcon}
               onClick={() => {
                 append(INITIAL_PRICE_CATEGORY)
-                if (priceCategories[0].label === UNIQUE_PRICE) {
+                if (
+                  priceCategories[0].label ===
+                  DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE
+                ) {
                   setValue(`priceCategories.0.label`, '', {
                     shouldValidate: true,
                   })
