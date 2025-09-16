@@ -6,6 +6,7 @@ from typing import Type
 
 import click
 from sqlalchemy import exc as sa_exc
+from sqlalchemy import orm as sa_orm
 
 import pcapi.core.artist.models as artist_models
 from pcapi.connectors.big_query import queries as big_query_queries
@@ -18,10 +19,12 @@ from pcapi.connectors.big_query.queries.artist import DeltaAction
 from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
+from pcapi.core.artist import api as artist_api
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.chunks import get_chunks
 from pcapi.utils.repository import transaction
 
 
@@ -62,6 +65,23 @@ def truncate_artist_tables() -> None:
         # an Access Exclusive Lock on table `artist`, on which there is more traffic.
         db.session.execute("DELETE FROM artist")
     logger.info("Artist table truncated")
+
+
+@blueprint.cli.command("compute_artists_most_relevant_image")
+def _compute_artists_most_relevant_image() -> None:
+    compute_artists_most_relevant_image()
+
+
+def compute_artists_most_relevant_image() -> None:
+    artists_query: sa_orm.Query[artist_models.Artist] = (
+        db.session.query(artist_models.Artist).filter(artist_models.Artist.image.is_(None)).yield_per(BATCH_SIZE)
+    )
+    for artists_batch in get_chunks(artists_query, chunk_size=BATCH_SIZE):
+        for artist in artists_batch:
+            most_relevant_image = artist_api.get_artist_image_url(artist)
+            artist.computed_image = most_relevant_image
+
+        db.session.commit()
 
 
 @blueprint.cli.command("import_all_artists_data")
