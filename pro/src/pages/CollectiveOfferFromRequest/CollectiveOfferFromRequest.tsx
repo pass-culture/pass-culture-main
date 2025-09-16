@@ -30,9 +30,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const { offerId, requestId } = useParams<{
     offerId: string
@@ -65,7 +62,6 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       navigate,
       notify,
       Number(offerId),
-      isCollectiveOaActive,
       requestId,
       isMarseilleActive
     )

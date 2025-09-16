@@ -108,10 +108,7 @@ export const OfferEducational = ({
     try {
       if (isTemplate) {
         if (offer === undefined) {
-          const payload = createCollectiveOfferTemplatePayload(
-            offerValues,
-            isCollectiveOaActive
-          )
+          const payload = createCollectiveOfferTemplatePayload(offerValues)
 
           response = await api.createCollectiveOfferTemplate(payload)
         } else {
@@ -124,10 +121,7 @@ export const OfferEducational = ({
         }
       } else {
         if (offer === undefined) {
-          const payload = createCollectiveOfferPayload(
-            offerValues,
-            isCollectiveOaActive
-          )
+          const payload = createCollectiveOfferPayload(offerValues)
 
           response = await api.createCollectiveOffer(payload)
         } else {

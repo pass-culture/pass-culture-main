@@ -111,9 +111,6 @@ export const CollectiveActionsCells = ({
   const { mutate } = useSWRConfig()
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const eventDateFormated = isDateValid(offer.stocks[0].startDatetime)
     ? formatBrowserTimezonedDateAsUTC(
@@ -138,7 +135,6 @@ export const CollectiveActionsCells = ({
       navigate,
       notify,
       offer.id,
-      isCollectiveOaActive,
       undefined,
       isMarseilleActive
     )
@@ -158,7 +154,6 @@ export const CollectiveActionsCells = ({
           navigate,
           notify,
           offer.id,
-          isCollectiveOaActive,
           undefined,
           isMarseilleActive
         )

@@ -1,7 +1,6 @@
 import {
   CollectiveLocationType,
   type DateRangeOnCreateModel,
-  OfferAddressType,
   OfferContactFormEnum,
   type PostCollectiveOfferBodyModel,
   type PostCollectiveOfferTemplateBodyModel,
@@ -53,22 +52,12 @@ export const serializeDates = (
 }
 
 const getCommonOfferPayload = (
-  offer: OfferEducationalFormValues,
-  isCollectiveOaActive: boolean
+  offer: OfferEducationalFormValues
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
   // remove id_oa key from location object as it useful only on a form matter
   delete offer.location?.address?.id_oa
 
   const getLocationPayload = () => {
-    if (!isCollectiveOaActive) {
-      return {
-        offerVenue: {
-          ...offer.eventAddress,
-          venueId: Number(offer.eventAddress.venueId),
-        },
-      }
-    }
-
     if (offer.location?.locationType === CollectiveLocationType.ADDRESS) {
       return {
         location: {
@@ -102,12 +91,6 @@ const getCommonOfferPayload = (
   }
 
   const getInterventionArea = () => {
-    if (!isCollectiveOaActive) {
-      return offer.eventAddress.addressType === OfferAddressType.OFFERER_VENUE
-        ? []
-        : offer.interventionArea
-    }
-
     return offer.location?.locationType !== CollectiveLocationType.ADDRESS
       ? offer.interventionArea
       : []
@@ -136,11 +119,10 @@ const getCommonOfferPayload = (
 }
 
 export const createCollectiveOfferTemplatePayload = (
-  offer: OfferEducationalFormValues,
-  isCollectiveOaActive: boolean
+  offer: OfferEducationalFormValues
 ): PostCollectiveOfferTemplateBodyModel => {
   return {
-    ...getCommonOfferPayload(offer, isCollectiveOaActive),
+    ...getCommonOfferPayload(offer),
     dates:
       offer.datesType === 'specific_dates' &&
       offer.beginningDate &&
@@ -163,11 +145,10 @@ export const createCollectiveOfferTemplatePayload = (
 
 export const createCollectiveOfferPayload = (
   offer: OfferEducationalFormValues,
-  isCollectiveOaActive: boolean,
   offerTemplateId?: number
 ): PostCollectiveOfferBodyModel => {
   return {
-    ...getCommonOfferPayload(offer, isCollectiveOaActive),
+    ...getCommonOfferPayload(offer),
     templateId: offerTemplateId,
     contactEmail: offer.email,
     contactPhone: offer.phone,

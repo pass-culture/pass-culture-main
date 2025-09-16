@@ -46,9 +46,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const navigate = useNavigate()
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const searchFilterForm = useForm<SearchFormValues>({
     defaultValues: { searchFilter: '' },
@@ -123,7 +120,6 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
       navigate,
       notify,
       Number(templateOfferId),
-      isCollectiveOaActive,
       undefined,
       isMarseilleActive,
       setIsCreatingNewOffer
