@@ -1,3 +1,6 @@
+import { useSelector } from 'react-redux'
+
+import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -28,20 +31,26 @@ export const ErrorLayout = ({
   mainHeading,
   paragraph,
   errorIcon,
-  redirect = '/accueil',
+  redirect = '/',
 }: ErrorLayoutProps) => {
+  const currentUser = useSelector(selectCurrentUser)
+  const isConnected = !!currentUser
+
   return (
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
         <h1 className={styles['title']}>{mainHeading}</h1>
         <p className={styles.description}>{paragraph}</p>
+        {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
+          rendered once per page, so there cannot be id duplications.> */}
         <ButtonLink
+          id="error-return-link"
           className={styles['nm-redirection-link']}
           variant={ButtonVariant.SECONDARY}
           to={redirect}
         >
-          Retour à la page d’accueil
+          {isConnected ? 'Retour à la page d’accueil' : 'Retour'}
         </ButtonLink>
       </div>
     </main>
