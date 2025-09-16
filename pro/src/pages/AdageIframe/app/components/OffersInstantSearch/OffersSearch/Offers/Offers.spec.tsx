@@ -661,7 +661,7 @@ describe('offers', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {
-      name: 'Sortie Un autre titre Un autre lieu',
+      name: 'Un autre titre Un autre lieu',
     })
 
     link.addEventListener('click', (e) => {
