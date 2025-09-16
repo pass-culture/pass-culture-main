@@ -6,7 +6,6 @@ import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
 } from '@/commons/core/OfferEducational/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   isCollectiveInstitutionEditable,
   isCollectiveOfferDetailsEditable,
@@ -30,7 +29,6 @@ import { CollectiveOfferStockSection } from './components/CollectiveOfferStockSe
 import { CollectiveOfferTypeSection } from './components/CollectiveOfferTypeSection'
 import { CollectiveOfferVenueSection } from './components/CollectiveOfferVenueSection'
 import { CollectiveOfferVisibilitySection } from './components/CollectiveOfferVisibilitySection'
-import { OldCollectiveOfferLocationSection } from './components/OldCollectiveOfferLocationSection'
 
 export interface CollectiveOfferSummaryProps {
   offer:
@@ -47,10 +45,6 @@ export const CollectiveOfferSummary = ({
   stockEditLink,
   visibilityEditLink,
 }: CollectiveOfferSummaryProps) => {
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
-
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   const canEditDetails = isCollectiveOfferDetailsEditable(offer)
@@ -79,11 +73,7 @@ export const CollectiveOfferSummary = ({
           {isCollectiveOfferTemplate(offer) && (
             <CollectiveOfferDateSection offer={offer} />
           )}
-          {isCollectiveOaActive ? (
-            <CollectiveOfferLocationSection offer={offer} />
-          ) : (
-            <OldCollectiveOfferLocationSection offer={offer} />
-          )}
+          <CollectiveOfferLocationSection offer={offer} />
 
           {isCollectiveOfferTemplate(offer) && (
             <CollectiveOfferPriceSection offer={offer} />

@@ -178,9 +178,7 @@ describe('BookableOfferSummary', () => {
         },
       }),
     }
-    renderBookableOfferSummary(testProps, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-    })
+    renderBookableOfferSummary(testProps)
     expect(
       screen.getByText('Dans l’établissement scolaire')
     ).toBeInTheDocument()
@@ -194,9 +192,7 @@ describe('BookableOfferSummary', () => {
         },
       }),
     }
-    renderBookableOfferSummary(testProps, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-    })
+    renderBookableOfferSummary(testProps)
     expect(
       screen.getByText('À déterminer avec l’enseignant')
     ).toBeInTheDocument()

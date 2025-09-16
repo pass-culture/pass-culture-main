@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
 
 import {
@@ -37,57 +37,43 @@ const renderCollectiveOfferSummary = (
 }
 
 describe('CollectiveOfferSummary', () => {
-  let props: CollectiveOfferSummaryProps
-  beforeEach(() => {
-    const offer = getCollectiveOfferFactory()
-    props = {
-      offer,
-    }
-  })
-  it('should show banner if generate from publicApi', async () => {
-    const offer = getCollectiveOfferFactory({
-      isPublicApi: true,
-      provider: { name: 'Mollat' },
-    })
+  const offer = getCollectiveOfferFactory()
+  const props: CollectiveOfferSummaryProps = {
+    offer,
+  }
 
+  it('should show banner if generate from publicApi', () => {
     renderCollectiveOfferSummary({
-      ...props,
-      offer,
+      offer: getCollectiveOfferFactory({
+        isPublicApi: true,
+        provider: { name: 'Mollat' },
+      }),
     })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
       screen.getByText('Offre synchronisée avec Mollat')
     ).toBeInTheDocument()
   })
 
-  it('should not see edit button if offer from publicApi', async () => {
-    const offer = getCollectiveOfferFactory({ isPublicApi: true })
-
+  it('should not see edit button if offer from publicApi', () => {
     renderCollectiveOfferSummary({
-      ...props,
-      offer,
+      offer: getCollectiveOfferFactory({ isPublicApi: true }),
     })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
   })
 
-  it('should display national program', async () => {
+  it('should display national program', () => {
     renderCollectiveOfferSummary(props)
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Dispositif national :')).toBeInTheDocument()
     expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
   })
 
-  it('should display format', async () => {
+  it('should display format', () => {
     renderCollectiveOfferSummary({
-      ...props,
-      offer: {
-        ...props.offer,
+      offer: getCollectiveOfferFactory({
         formats: [EacFormat.PROJECTION_AUDIOVISUELLE, EacFormat.CONCERT],
-      },
+      }),
     })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('Format :')).toBeInTheDocument()
     expect(
@@ -95,13 +81,12 @@ describe('CollectiveOfferSummary', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the date and time of the offer', async () => {
-    const offer = getCollectiveOfferTemplateFactory({
-      dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
+  it('should display the date and time of the offer', () => {
+    renderCollectiveOfferSummary({
+      offer: getCollectiveOfferTemplateFactory({
+        dates: { start: '2023-10-24T09:14:00', end: '2023-10-24T09:16:00' },
+      }),
     })
-    renderCollectiveOfferSummary({ ...props, offer })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const title = screen.getByRole('heading', {
       name: 'Date et heure',
@@ -110,15 +95,14 @@ describe('CollectiveOfferSummary', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('should display the custom contact details', async () => {
-    const offer = getCollectiveOfferTemplateFactory({
-      contactEmail: 'email@test.co',
-      contactPhone: '00000000',
-      contactForm: OfferContactFormEnum.FORM,
+  it('should display the custom contact details', () => {
+    renderCollectiveOfferSummary({
+      offer: getCollectiveOfferTemplateFactory({
+        contactEmail: 'email@test.co',
+        contactPhone: '00000000',
+        contactForm: OfferContactFormEnum.FORM,
+      }),
     })
-    renderCollectiveOfferSummary({ ...props, offer })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('email@test.co')).toBeInTheDocument()
     expect(screen.getByText('00000000')).toBeInTheDocument()
@@ -127,90 +111,74 @@ describe('CollectiveOfferSummary', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display the custom contact custom url', async () => {
-    const offer = getCollectiveOfferTemplateFactory({
-      contactUrl: 'http://www.form.com',
+  it('should display the custom contact custom url', () => {
+    renderCollectiveOfferSummary({
+      offer: getCollectiveOfferTemplateFactory({
+        contactUrl: 'http://www.form.com',
+      }),
     })
-    renderCollectiveOfferSummary({ ...props, offer })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText('http://www.form.com')).toBeInTheDocument()
   })
 
-  it('should not display the edition button when there is no edition link', async () => {
+  it('should not display the edition button when there is no edition link', () => {
     renderCollectiveOfferSummary({ ...props, offerEditLink: undefined })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.queryByRole('link', { name: 'Modifier' })
     ).not.toBeInTheDocument()
   })
 
-  it('should display the edition buttons when the template offer can be edited', async () => {
+  it('should display the edition buttons when the template offer can be edited', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferTemplateFactory({
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS],
       }),
       offerEditLink: '123',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument()
   })
 
-  it('should not display the edition buttons when the template offer cannot be edited', async () => {
+  it('should not display the edition buttons when the template offer cannot be edited', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferTemplateFactory({
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
       }),
       offerEditLink: '123',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(
       screen.queryByRole('link', { name: 'Modifier' })
     ).not.toBeInTheDocument()
   })
 
-  it('should not display the edition buttons when the bookable offer cannot be edited', async () => {
+  it('should not display the edition buttons when the bookable offer cannot be edited', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
       }),
       offerEditLink: '123',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(
       screen.queryByRole('link', { name: 'Modifier' })
     ).not.toBeInTheDocument()
   })
 
-  it('should display one edition button when the offer description is editable', async () => {
+  it('should display one edition button when the offer description is editable', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_DETAILS],
       }),
       offerEditLink: '123',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.queryByRole('link', { name: 'Modifier' })).toBeInTheDocument()
   })
 
-  it('should display two edition buttons when the offer description and price are editable', async () => {
+  it('should display two edition buttons when the offer description and price are editable', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -221,14 +189,11 @@ describe('CollectiveOfferSummary', () => {
       stockEditLink: '234',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
   })
 
-  it('should display two edition buttons when the offer description and dates are editable', async () => {
+  it('should display two edition buttons when the offer description and dates are editable', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -239,14 +204,11 @@ describe('CollectiveOfferSummary', () => {
       stockEditLink: '234',
     })
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(2)
   })
 
-  it('should display three edition buttons when the offer description, dates and institution are editable', async () => {
+  it('should display three edition buttons when the offer description, dates and institution are editable', () => {
     renderCollectiveOfferSummary({
-      ...props,
       offer: getCollectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -258,8 +220,6 @@ describe('CollectiveOfferSummary', () => {
       stockEditLink: '234',
       visibilityEditLink: '345',
     })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)
   })
