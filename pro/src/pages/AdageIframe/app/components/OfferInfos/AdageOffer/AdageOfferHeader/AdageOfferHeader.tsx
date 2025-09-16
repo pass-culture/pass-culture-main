@@ -3,9 +3,7 @@ import {
   type AuthenticatedResponse,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-  OfferAddressType,
 } from '@/apiClient/adage'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import strokeCalendarIcon from '@/icons/stroke-calendar.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
 import strokeLocationIcon from '@/icons/stroke-location.svg'
@@ -17,10 +15,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { OfferFavoriteButton } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { OfferShareLink } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferShareLink/OfferShareLink'
 import { getOfferVenueAndOffererName } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferVenueAndOffererName'
-import {
-  getLocation,
-  getLocationForOfferVenue,
-} from '../AdageOfferDetailsSection/AdageOfferInfoSection'
+import { getLocation } from '../AdageOfferDetailsSection/AdageOfferInfoSection'
 import {
   getFormattedDatesForBookableOffer,
   getFormattedDatesForTemplateOffer,
@@ -49,22 +44,9 @@ export function AdageOfferHeader({
   const studentLevels =
     offer.students.length > 1 ? 'Multiniveaux' : offer.students[0]
 
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
-
-  const location = isCollectiveOaActive
-    ? offer.location
-      ? getLocation(offer.location, true)
-      : 'Localisation à définir'
-    : getLocationForOfferVenue(offer.offerVenue)
-
-  let offerVenueLabel = `${offer.venue.postalCode}, ${offer.venue.city}`
-  if (offer.offerVenue.addressType === OfferAddressType.OTHER) {
-    offerVenueLabel = offer.offerVenue.otherAddress
-  } else if (offer.offerVenue.addressType === OfferAddressType.SCHOOL) {
-    offerVenueLabel = 'Dans l’établissement scolaire'
-  }
+  const location = offer.location
+    ? getLocation(offer.location, true)
+    : 'Localisation à définir'
 
   return (
     <>
@@ -121,7 +103,7 @@ export function AdageOfferHeader({
         <ul className={styles['offer-header-details-infos']}>
           <li className={styles['offer-header-details-info']}>
             <SvgIcon src={strokeLocationIcon} alt="" width="16" />
-            <span>{isCollectiveOaActive ? location : offerVenueLabel}</span>
+            <span>{location}</span>
           </li>
 
           <li className={styles['offer-header-details-info']}>

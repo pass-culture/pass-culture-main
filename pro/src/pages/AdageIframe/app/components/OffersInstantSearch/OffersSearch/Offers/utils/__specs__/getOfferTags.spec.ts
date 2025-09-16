@@ -2,7 +2,6 @@ import {
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-  OfferAddressType,
   StudentLevels,
 } from '@/apiClient/adage'
 import {
@@ -22,44 +21,6 @@ describe('getOfferTags', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...templateOffer,
       dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
-      offerVenue: {
-        ...templateOffer.offerVenue,
-        addressType: OfferAddressType.SCHOOL,
-      },
-      venue: {
-        ...templateOffer.venue,
-        coordinates: {
-          latitude: 1,
-          longitude: 1,
-        },
-      },
-      students: [StudentLevels.COLL_GE_3E],
-    }
-    const tags = getOfferTags(offer, { ...adageUser, lat: 0, lon: 0 }).map(
-      (tag) => tag.text
-    )
-    const tagsReduced = getOfferTags(
-      offer,
-      { ...adageUser, lat: 0, lon: 0 },
-      false
-    ).map((tag) => tag.text)
-
-    expect(tags).toEqual(
-      expect.arrayContaining([
-        'Dans l’établissement scolaire',
-        'Du 23 octobre au 24 octobre 2023 à 22h',
-        'Collège - 3e',
-        'Partenaire situé à 157 km',
-      ])
-    )
-
-    expect(tagsReduced).toEqual(['Dans l’établissement scolaire'])
-  })
-
-  it('should return the list of tags when the offer happens at school when ff oa is enabled', () => {
-    const offer: CollectiveOfferTemplateResponseModel = {
-      ...templateOffer,
-      dates: { start: '2023-10-23T22:00:00Z', end: '2023-10-24T21:59:00Z' },
       location: {
         locationType: CollectiveLocationType.SCHOOL,
       },
@@ -75,14 +36,12 @@ describe('getOfferTags', () => {
     const tags = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      true,
       true
     ).map((tag) => tag.text)
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      false,
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
@@ -97,33 +56,7 @@ describe('getOfferTags', () => {
     expect(tagsReduced).toEqual(['Dans l’établissement scolaire'])
   })
 
-  it('should return the list of tags when the offer happens at the offerers location', () => {
-    const offer: CollectiveOfferTemplateResponseModel = {
-      ...templateOffer,
-      offerVenue: {
-        ...templateOffer.offerVenue,
-        addressType: OfferAddressType.OFFERER_VENUE,
-        distance: 100,
-      },
-      dates: undefined,
-    }
-    const tags = getOfferTags(offer, { ...adageUser, lat: 0, lon: 0 }).map(
-      (tag) => tag.text
-    )
-    const tagsReduced = getOfferTags(
-      offer,
-      { ...adageUser, lat: 0, lon: 0 },
-      false
-    ).map((tag) => tag.text)
-
-    expect(tags).toEqual(
-      expect.arrayContaining(['Sortie', 'À 100 km', 'Disponible toute l’année'])
-    )
-
-    expect(tagsReduced).toEqual(['Sortie', 'À 100 km'])
-  })
-
-  it('should return the list of tags when the offer happens at the offerers location when ff oa is enabled', () => {
+  it('should return the list of tags when the offer happens at a specific address', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...templateOffer,
       location: {
@@ -144,14 +77,12 @@ describe('getOfferTags', () => {
     const tags = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      true,
       true
     ).map((tag) => tag.text)
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 0, lon: 0 },
-      false,
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
@@ -165,37 +96,7 @@ describe('getOfferTags', () => {
     expect(tagsReduced).toEqual(['Sortie à 157 km'])
   })
 
-  it('should return the list of tags when the offer happens at another location', () => {
-    const offer: CollectiveOfferTemplateResponseModel = {
-      ...templateOffer,
-      offerVenue: {
-        ...templateOffer.offerVenue,
-        addressType: OfferAddressType.OTHER,
-      },
-      dates: undefined,
-    }
-    const tags = getOfferTags(offer, { ...adageUser, lat: 10, lon: 10 }).map(
-      (tag) => tag.text
-    )
-    const tagsReduced = getOfferTags(
-      offer,
-      { ...adageUser, lat: 20, lon: 20 },
-      false
-    ).map((tag) => tag.text)
-
-    expect(tags).toEqual(
-      expect.arrayContaining([
-        'Sortie',
-        'Lieu à définir',
-        'Disponible toute l’année',
-        'Partenaire situé à 900+ km',
-      ])
-    )
-
-    expect(tagsReduced).toEqual(['Sortie', 'Lieu à définir'])
-  })
-
-  it('should return the list of tags when the offer happens at another location when ff os is enabled', () => {
+  it('should return the list of tags when the offer has no location defined yet', () => {
     const offer: CollectiveOfferTemplateResponseModel = {
       ...templateOffer,
       location: {
@@ -207,14 +108,12 @@ describe('getOfferTags', () => {
     const tags = getOfferTags(
       offer,
       { ...adageUser, lat: 10, lon: 10 },
-      true,
       true
     ).map((tag) => tag.text)
     const tagsReduced = getOfferTags(
       offer,
       { ...adageUser, lat: 20, lon: 20 },
-      false,
-      true
+      false
     ).map((tag) => tag.text)
 
     expect(tags).toEqual(
