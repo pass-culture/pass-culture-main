@@ -15,6 +15,7 @@ from werkzeug.exceptions import NotFound
 import pcapi.core.finance.exceptions as finance_exceptions
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core import core_exception
+from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -43,6 +44,12 @@ def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlEr
         return "", 404
 
     return app.generate_error_response({}, backoffice_template_name="errors/not_found.html"), 404
+
+
+@app.errorhandler(OfferNotFound)
+def restize_offer_not_found_error(error: OfferNotFound) -> ApiErrorResponse:
+    error_details = {"offer": error.offer_id} if error.offer_id is not None else {}
+    return app.generate_error_response(error_details), 404
 
 
 @app.errorhandler(ApiErrors)
