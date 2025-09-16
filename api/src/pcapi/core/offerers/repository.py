@@ -151,15 +151,6 @@ def get_filtered_venues(
     return query.order_by(models.Venue.name).all()
 
 
-def get_api_key_prefixes(offerer_id: int) -> list[str]:
-    return [
-        prefix
-        for (prefix,) in db.session.query(models.ApiKey)
-        .filter_by(offererId=offerer_id)
-        .with_entities(models.ApiKey.prefix)
-    ]
-
-
 def find_offerer_by_siren(siren: str) -> models.Offerer | None:
     return db.session.query(models.Offerer).filter_by(siren=siren).one_or_none()
 

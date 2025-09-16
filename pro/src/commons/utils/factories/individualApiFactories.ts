@@ -363,12 +363,6 @@ export function getOffererNameFactory(
 }
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
-  apiKey: {
-    maxAllowed: 10,
-    prefixes: [],
-  },
-  city: 'Fake City',
-  dateCreated: '2022-01-01T00:00:00Z',
   hasAvailablePricingPoints: false,
   hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: true,
@@ -384,8 +378,6 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   siren: '123456789',
   name: 'Ma super structure',
   id: 1,
-  postalCode: '00000',
-  street: 'Fake Address',
   allowedOnAdage: true,
   isOnboarded: true,
   hasPartnerPage: false,

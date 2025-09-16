@@ -3,12 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GetOffererVenueResponseModel } from './GetOffererVenueResponseModel';
-import type { OffererApiKey } from './OffererApiKey';
 export type GetOffererResponseModel = {
   allowedOnAdage: boolean;
-  apiKey: OffererApiKey;
-  city: string;
-  dateCreated: string;
   hasActiveOffer: boolean;
   hasAvailablePricingPoints: boolean;
   hasBankAccountWithPendingCorrections: boolean;
@@ -25,9 +21,7 @@ export type GetOffererResponseModel = {
   isValidated: boolean;
   managedVenues?: Array<GetOffererVenueResponseModel>;
   name: string;
-  postalCode: string;
   siren: string;
-  street?: string | null;
   venuesWithNonFreeOffersWithoutBankAccounts: Array<number>;
 };
 
