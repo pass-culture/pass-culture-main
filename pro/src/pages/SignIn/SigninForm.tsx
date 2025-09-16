@@ -5,7 +5,6 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
-import { UNAVAILABLE_ERROR_PAGE } from '@/commons/utils/routes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -31,7 +30,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription/compte/creation'
-    : UNAVAILABLE_ERROR_PAGE
+    : '/erreur/indisponible'
 
   const { formState, register } = useFormContext<SigninFormValues>()
   const { errors } = formState
