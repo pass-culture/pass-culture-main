@@ -38,24 +38,7 @@ describe('OfferStatusCell', () => {
     vi.useRealTimers()
   })
 
-  it('should show the date of publication if the FF WIP_REFACTO_FUTURE_OFFER is enabled', () => {
-    renderOfferStatusCell(
-      {
-        ...defaultProps,
-        offer: listOffersOfferFactory({
-          publicationDatetime: dayInTheFuture,
-          status: OfferStatus.SCHEDULED,
-        }),
-      },
-      { features: ['WIP_REFACTO_FUTURE_OFFER'] }
-    )
-
-    expect(
-      screen.getByText(new RegExp(format(dayInTheFuture, FORMAT_DD_MM_YYYY)))
-    ).toBeInTheDocument()
-  })
-
-  it('should show the status if the FF WIP_REFACTO_FUTURE_OFFER is disabled', () => {
+  it('should show the date of publication', () => {
     renderOfferStatusCell({
       ...defaultProps,
       offer: listOffersOfferFactory({
@@ -64,35 +47,31 @@ describe('OfferStatusCell', () => {
       }),
     })
 
-    expect(screen.getByText('programmée')).toBeInTheDocument()
+    expect(
+      screen.getByText(new RegExp(format(dayInTheFuture, FORMAT_DD_MM_YYYY)))
+    ).toBeInTheDocument()
   })
 
-  it('should show the status if the FF WIP_REFACTO_FUTURE_OFFER is enabled and the status is published', () => {
-    renderOfferStatusCell(
-      {
-        ...defaultProps,
-        offer: listOffersOfferFactory({
-          publicationDatetime: dayInTheFuture,
-          status: OfferStatus.PUBLISHED,
-        }),
-      },
-      { features: ['WIP_REFACTO_FUTURE_OFFER'] }
-    )
+  it('should show the status if the status is published', () => {
+    renderOfferStatusCell({
+      ...defaultProps,
+      offer: listOffersOfferFactory({
+        publicationDatetime: dayInTheFuture,
+        status: OfferStatus.PUBLISHED,
+      }),
+    })
 
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
-  it('should show the status if the FF WIP_REFACTO_FUTURE_OFFER is enabled and the offer was published in the past', () => {
-    renderOfferStatusCell(
-      {
-        ...defaultProps,
-        offer: listOffersOfferFactory({
-          publicationDatetime: dayInThePast,
-          status: OfferStatus.PUBLISHED,
-        }),
-      },
-      { features: ['WIP_REFACTO_FUTURE_OFFER'] }
-    )
+  it('should show the status if the offer was published in the past', () => {
+    renderOfferStatusCell({
+      ...defaultProps,
+      offer: listOffersOfferFactory({
+        publicationDatetime: dayInThePast,
+        status: OfferStatus.PUBLISHED,
+      }),
+    })
 
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })

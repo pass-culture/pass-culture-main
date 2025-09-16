@@ -49,7 +49,7 @@ describe('OfferBookingCell', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show the bookings count if the FF WIP_REFACTO_FUTURE_OFFER is enabled and the offer is already bookable', () => {
+  it('should show the bookings count if the offer is already bookable', () => {
     renderOfferBookingCell({
       ...defaultProps,
       offer: listOffersOfferFactory({
@@ -61,7 +61,7 @@ describe('OfferBookingCell', () => {
     expect(screen.getByText('111')).toBeInTheDocument()
   })
 
-  it('should show a placeholder if the FF WIP_REFACTO_FUTURE_OFFER is enabled and the offer is already bookable but with no bookings yet', () => {
+  it('should show a placeholder if the offer is already bookable but with no bookings yet', () => {
     renderOfferBookingCell({
       ...defaultProps,
       offer: listOffersOfferFactory({

@@ -8,20 +8,16 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import fullWaitIcon from '@/icons/full-wait.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferLayout.module.scss'
 import { IndividualOfferNavigation } from './IndividualOfferNavigation/IndividualOfferNavigation'
@@ -47,10 +43,6 @@ export const IndividualOfferLayout = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
-  const isRefactoFutureOfferEnabled = useActiveFeature(
-    'WIP_REFACTO_FUTURE_OFFER'
-  )
-
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
   // - offers synchronized with a provider
@@ -59,7 +51,6 @@ export const IndividualOfferLayout = ({
 
   const displayUpdatePublicationAndBookingDates =
     offer &&
-    isRefactoFutureOfferEnabled &&
     canEditPublicationDates &&
     [
       OfferStatus.ACTIVE,
@@ -71,9 +62,6 @@ export const IndividualOfferLayout = ({
   const shouldDisplayActionOnStatus =
     withStepper && !displayUpdatePublicationAndBookingDates
 
-  const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
-    offer?.publicationDate
-  )
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -128,22 +116,6 @@ export const IndividualOfferLayout = ({
           )}
         </p>
       )}
-
-      {!isRefactoFutureOfferEnabled &&
-        mode !== OFFER_WIZARD_MODE.CREATION &&
-        offer?.status !== OfferStatus.ACTIVE &&
-        isDateValid(offer?.publicationDate) &&
-        new Date(offer.publicationDate) > new Date() && (
-          <div className={styles['publication-date']}>
-            <SvgIcon
-              src={fullWaitIcon}
-              alt=""
-              className={styles['publication-icon']}
-              width="24"
-            />
-            Publication prévue le {publicationDate} à {publicationTime}
-          </div>
-        )}
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
 

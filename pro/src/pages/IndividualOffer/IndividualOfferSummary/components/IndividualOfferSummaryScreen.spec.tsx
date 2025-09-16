@@ -426,7 +426,7 @@ describe('IndividualOfferSummaryScreen', () => {
       vi.useRealTimers()
     })
 
-    it('should allow to maker offer bookable later if the FF WIP_REFACTO_FUTURE_OFFER is enabled', async () => {
+    it('should allow to maker offer bookable later', async () => {
       // Mock current date to avoid DST issues
       vi.setSystemTime(new Date('2024-01-15T12:00:00.000Z'))
 
@@ -437,11 +437,8 @@ describe('IndividualOfferSummaryScreen', () => {
       const contextValues = {
         offer: draftOfferBase,
       }
-      const options = {
-        features: ['WIP_REFACTO_FUTURE_OFFER'],
-      }
 
-      renderIndividualOfferSummaryScreen({ contextValues, options, path })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       await userEvent.click(
         screen.getByLabelText(/Rendre réservable plus tard/)

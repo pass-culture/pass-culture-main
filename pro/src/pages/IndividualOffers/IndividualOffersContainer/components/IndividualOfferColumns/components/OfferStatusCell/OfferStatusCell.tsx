@@ -1,7 +1,6 @@
 import { isAfter } from 'date-fns'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
@@ -22,14 +21,9 @@ export const OfferStatusCell = ({
   offer,
   isHeadline,
 }: OfferStatusCellProps) => {
-  const isRefactoFutureOfferEnabled = useActiveFeature(
-    'WIP_REFACTO_FUTURE_OFFER'
-  )
-
   const departmentCode = getDepartmentCode(offer)
 
   const publicationDate =
-    isRefactoFutureOfferEnabled &&
     offer.status === OfferStatus.SCHEDULED &&
     offer.publicationDatetime &&
     isAfter(offer.publicationDatetime, new Date())

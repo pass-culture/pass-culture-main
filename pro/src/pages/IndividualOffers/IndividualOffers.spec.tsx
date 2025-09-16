@@ -227,22 +227,12 @@ describe('IndividualOffers', () => {
         expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
       })
 
-      it('should show the "Programmée" status filter option when the FF WIP_REFACTO_FUTURE_OFFER is enabled', async () => {
-        await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, [
-          'WIP_REFACTO_FUTURE_OFFER',
-        ])
+      it('should show the "Programmée" status filter option', async () => {
+        await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
 
         expect(
           screen.getByRole('option', { name: 'Programmée' })
         ).toBeInTheDocument()
-      })
-
-      it('should not show the "Programmée" status filter option when the FF WIP_REFACTO_FUTURE_OFFER is disabled', async () => {
-        await renderIndividualOffers()
-
-        expect(
-          screen.queryByRole('option', { name: 'Programmée' })
-        ).not.toBeInTheDocument()
       })
     })
 

@@ -63,14 +63,10 @@ describe('getIndividualOfferColumns', () => {
     offer = baseOffer,
     options: RenderOptions = {}
   ) => {
-    const {
-      isRefactoFutureOfferEnabled = false,
-      headlineOffer = null,
-      isHeadlineOfferAllowedForOfferer = false,
-    } = options
+    const { headlineOffer = null, isHeadlineOfferAllowedForOfferer = false } =
+      options
 
     const columns = getIndividualOfferColumns(
-      isRefactoFutureOfferEnabled,
       headlineOffer,
       isHeadlineOfferAllowedForOfferer
     )
