@@ -47,10 +47,9 @@ export const OffererAuthentication = (): JSX.Element => {
   }
 
   const handlePreviousStep = useCallback(() => {
-    setOfferer(null)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/recherche')
-  }, [setOfferer, navigate])
+  }, [navigate])
 
   const onSubmit = (formValues: OffererAuthenticationFormValues) => {
     // Should never happen, so we use assertOrFrontendError to
