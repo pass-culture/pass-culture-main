@@ -14,7 +14,6 @@ export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   templateOfferId: number,
-  isCollectiveOaActive: boolean,
   requestId?: string,
   isMarseilleActive?: boolean,
   setIsCreatingNewOffer?: (isCreating: boolean) => void
@@ -45,11 +44,7 @@ export const createOfferFromTemplate = async (
       isMarseilleActive
     )
 
-    const payload = createCollectiveOfferPayload(
-      initialValues,
-      isCollectiveOaActive,
-      templateOfferId
-    )
+    const payload = createCollectiveOfferPayload(initialValues, templateOfferId)
 
     try {
       const response = await api.createCollectiveOffer(payload)

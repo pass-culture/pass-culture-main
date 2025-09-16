@@ -65,9 +65,6 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
   const isNewCollectiveOfferDetailPageActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
   )
@@ -245,7 +242,6 @@ export const CollectiveEditionOfferNavigation = ({
                   navigate,
                   notify,
                   offerId,
-                  isCollectiveOaActive,
                   undefined,
                   isMarseilleActive
                 )
