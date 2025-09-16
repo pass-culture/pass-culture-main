@@ -10,11 +10,7 @@
 }
 
 .title {
-  @include fonts.title1;
+  @include fonts.title2;
 
   margin: rem.torem(24px) 0;
-}
-
-.subtitle {
-  @include fonts.title2;
 }
