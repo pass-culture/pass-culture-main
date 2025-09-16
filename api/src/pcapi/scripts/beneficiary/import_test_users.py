@@ -181,7 +181,6 @@ def _create_pro_user(row: dict) -> User:
             label=f"Compte {i} de {user.firstName} - {status.value}",
             offerer=offerer,
             iban=schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{siret[:9]}{i:02}").compact,
-            bic="BDFEFRPP",
             dsApplicationId=int(siret) * 100 + i,
             status=status,
         )

@@ -1,155 +1,12 @@
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 
 
-def get_bank_info_response_procedure_v4(
-    dms_token: str = "1234567890abcdef",
-    etablissement: dict | None = None,
-    state: str = GraphQLApplicationStates.accepted.value,
-    annotations: list | None = None,
-    dossier_id: str = "Q2zzbXAtNzgyODAw",
-    application_id: int = 9,
-    last_pending_correction_date: str | None = None,
-) -> dict:
-    etablissement = etablissement or {
-        "etablissement": {
-            "entreprise": None,
-            "siret": None,
-        },
-        "id": "Q2hhbXAtNzgyODAw",
-        "label": "SIRET",
-        "stringValue": None,
-    }
-    annotations = annotations or [
-        {"label": "Nouvelle annotation Texte", "id": "OTHERID"},
-        {
-            "id": "Q2hhbXAtOTE1NDg5",
-            "label": "Erreur traitement pass Culture",
-            "stringValue": "",
-            "value": None,
-        },
-    ]
-    result = {
-        "id": dossier_id,
-        "number": application_id,
-        "champs": [
-            {
-                "id": "Q2hhbXAtMjY3NDMyMQ==",
-                "label": "N° d'identifiant du lieu",
-                "stringValue": dms_token,
-                "value": dms_token,
-            },
-            etablissement,
-            {"id": "Q2hhbXAtNzAwNTA5", "label": "Vos coordonnées bancaires", "stringValue": "", "value": None},
-            {
-                "id": "Q2hhbXAtMzUyNzIy",
-                "label": "IBAN",
-                "stringValue": "FR7630007000111234567890144",
-                "value": "FR7630007000111234567890144",
-            },
-            {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
-            {
-                "id": "Q2hhbXAtNDA3ODk1",
-                "label": "N° d'identifiant du lieu",
-                "stringValue": "60a7536a21c8",
-                "value": "60a7536a21c8",
-            },
-        ],
-        "dateDerniereModification": "2020-01-03T01:00:00+01:00",
-        "dateDerniereCorrectionEnAttente": last_pending_correction_date,
-        "state": state,
-        "annotations": annotations,
-    }
-    return result
-
-
-def get_bank_info_response_procedure_v4_as_batch(
-    dms_token: str = "1234567890abcdef",
-    etablissement: dict | None = None,
-    state: str = GraphQLApplicationStates.accepted.value,
-    annotations: list | None = None,
-    dossier_id: str = "Q2zzbXAtNzgyODAw",
-    application_id: int = 9,
-    last_modification_date: str = "2020-01-03T01:00:00+01:00",
-    last_pending_correction_date: str | None = None,
-) -> dict:
-    etablissement = etablissement or {
-        "etablissement": {
-            "entreprise": None,
-            "siret": None,
-        },
-        "id": "Q2hhbXAtNzgyODAw",
-        "label": "SIRET",
-        "stringValue": None,
-    }
-    if annotations is None:
-        annotations = [
-            {
-                "id": "Q2hhbXAtOTE1NDg5",
-                "label": "Erreur traitement pass Culture",
-                "stringValue": "",
-                "value": None,
-            },
-            {"id": "Q2hhbXAtMjc1NzMyOQ==", "label": "URL du lieu", "stringValue": "", "value": None},
-        ]
-    result = {
-        "demarche": {
-            "dossiers": {
-                "pageInfo": {
-                    "hasPreviousPage": False,
-                    "hasNextPage": False,
-                    "endCursor": "MjAyMy0xMC0yNlQxMjoxODowMC4xNjA2OTUwMDBaOzE0NzQyNjU0",
-                },
-                "nodes": [
-                    {
-                        "id": dossier_id,
-                        "number": application_id,
-                        "champs": [
-                            {
-                                "id": "Q2hhbXAtMjY3NDMyMQ==",
-                                "label": "N° d'identifiant du lieu",
-                                "stringValue": dms_token,
-                                "value": dms_token,
-                            },
-                            etablissement,
-                            {
-                                "id": "Q2hhbXAtNzAwNTA5",
-                                "label": "Vos coordonnées bancaires",
-                                "stringValue": "",
-                                "value": None,
-                            },
-                            {
-                                "id": "Q2hhbXAtMzUyNzIy",
-                                "label": "IBAN",
-                                "stringValue": "FR7630007000111234567890144",
-                                "value": "FR7630007000111234567890144",
-                            },
-                            {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
-                            {
-                                "id": "Q2hhbXAtNDA3ODk1",
-                                "label": "N° d'identifiant du lieu",
-                                "stringValue": "60a7536a21c8",
-                                "value": "60a7536a21c8",
-                            },
-                        ],
-                        "dateDerniereModification": last_modification_date,
-                        "dateDerniereCorrectionEnAttente": last_pending_correction_date,
-                        "state": state,
-                        "annotations": annotations,
-                    }
-                ],
-            }
-        }
-    }
-    return result
-
-
 def get_bank_info_response_procedure_v5(
     state: str = GraphQLApplicationStates.accepted.value,
     annotations: list[dict] | None = None,
     messages: list[dict] | None = None,
     b64_encoded_application_id: str = "RG9zc2llci0xNDc0MjY1NA==",
     application_id: int = 14742654,
-    bic: str = "BICAGRIFRPP",
     iban: str = "FR76 3000 6000 0112 3456 7890 189",
     last_modification_date: str = "2023-10-26T14:51:09+02:00",
     last_fields_modification: str = "2023-10-26T14:51:09+02:00",
@@ -189,12 +46,6 @@ def get_bank_info_response_procedure_v5(
                                 "label": "Intitulé du compte bancaire",
                                 "stringValue": "Intitulé du compte bancaire",
                                 "value": label,
-                            },
-                            {
-                                "id": "Q2hhbXAtMzUyNzI3",
-                                "label": "BIC",
-                                "stringValue": bic,
-                                "value": bic,
                             },
                             {
                                 "id": "Q2hhbXAtMzUyNzIy",

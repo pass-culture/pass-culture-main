@@ -69,9 +69,9 @@ def test_fr_currency_opposite_filter():
     assert utils.fr_currency_opposite_filter(500000) == "-5 000,00"
 
 
-def test_format_raw_iban_and_bic():
-    assert utils.format_raw_iban_and_bic(" Space and Mixed Case  ") == "SPACEANDMIXEDCASE"
-    assert utils.format_raw_iban_and_bic("1234 5678") == "12345678"
+def test_format_raw_iban():
+    assert utils.format_raw_iban(" Space and Mixed Case  ") == "SPACEANDMIXEDCASE"
+    assert utils.format_raw_iban("1234 5678") == "12345678"
 
 
 @pytest.mark.parametrize(

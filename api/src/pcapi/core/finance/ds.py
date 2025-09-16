@@ -41,7 +41,6 @@ FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
     ("Nom", "nom"): "lastname",
     ("Mon numéro de téléphone",): "phone_number",
     ("IBAN",): "iban",
-    ("BIC",): "bic",
     ("Intitulé du compte bancaire",): "label",
 }
 DMS_TOKEN_ID = "Q2hhbXAtMjY3NDMyMQ=="
@@ -185,29 +184,19 @@ class ImportBankAccountMixin:
             return False
         return True
 
-    def is_bic_valid(self) -> bool:
-        try:
-            schwifty.BIC(self.application_details.bic)
-        except schwifty.exceptions.SchwiftyException:
-            return False
-        return True
-
-    def validate_bic_and_iban(self) -> bool:
+    def validate_iban(self) -> bool:
         """
         We can't do this checks inside a pydantic validator
         because some business logic is tied to whether or not
-        the IBAN/BIC are valid.
+        the IBAN is valid.
         If not, we need to annotate the application
         for the compliance.
         """
-        if not self.is_bic_valid():
-            self.annotate_application("Le BIC n'est pas valide")
-            return False
-
-        if not self.is_iban_valid():
+        try:
+            schwifty.IBAN(self.application_details.iban)
+        except schwifty.exceptions.SchwiftyException:
             self.annotate_application("L'IBAN n'est pas valide")
             return False
-
         return True
 
     def create_or_update_bank_account(
@@ -261,7 +250,6 @@ class ImportBankAccountMixin:
             label = shorten(label, width=100, placeholder="...")
         bank_account.label = label
         bank_account.iban = self.application_details.iban
-        bank_account.bic = self.application_details.bic
         bank_account.status = self.application_details.status
         db.session.add(bank_account)
         db.session.flush()
@@ -461,7 +449,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         else:
             offerer = venue.managingOfferer
 
-        if not self.validate_bic_and_iban():
+        if not self.validate_iban():
             return
 
         bank_account, created = self.create_or_update_bank_account(offerer, venue)
