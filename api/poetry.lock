@@ -6750,14 +6750,14 @@ propcache = ">=0.2.0"
 
 [[package]]
 name = "zeep"
-version = "4.3.1"
+version = "4.3.2"
 description = "A Python SOAP client"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "zeep-4.3.1-py3-none-any.whl", hash = "sha256:a637aa7eedb6330bb27e8c94c5233ddf23553904323adf9398f8cf5025acb216"},
-    {file = "zeep-4.3.1.tar.gz", hash = "sha256:f45385e9e1b09d5550e0f51ab9fa7c6842713cab7194139372fd82a99c56a06e"},
+    {file = "zeep-4.3.2-py3-none-any.whl", hash = "sha256:ed08c3179709172bfaaa9b76a6a545f8a57043ec6218e64e9deb81ff1e0ff79b"},
+    {file = "zeep-4.3.2.tar.gz", hash = "sha256:1a23a667ce9d73a0dbfdf15745bfa2b7ab0b6402135c0cd5067574838398e0e6"},
 ]
 
 [package.dependencies]
@@ -6771,9 +6771,9 @@ requests-file = ">=1.5.1"
 requests-toolbelt = ">=0.7.1"
 
 [package.extras]
-async = ["httpx (>=0.15.0)"]
+async = ["httpx (>=0.15.0)", "packaging"]
 docs = ["sphinx (>=1.4.0)"]
-test = ["coverage[toml] (==7.6.2)", "flake8 (==7.1.1)", "flake8-blind-except (==0.2.1)", "flake8-debugger (==4.1.2)", "flake8-imports (==0.1.1)", "freezegun (==1.5.1)", "isort (==5.13.2)", "pretend (==1.0.9)", "pytest (==8.3.3)", "pytest-asyncio", "pytest-cov (==5.0.0)", "pytest-httpx", "requests-mock (==1.12.1)"]
+test = ["coverage[toml] (==7.6.2)", "flake8 (==7.1.1)", "flake8-blind-except (==0.2.1)", "flake8-debugger (==4.1.2)", "flake8-imports (==0.1.1)", "freezegun (==1.5.1)", "isort (==5.13.2)", "pretend (==1.0.9)", "pytest (==8.3.3)", "pytest-asyncio", "pytest-cov (==5.0.0)", "pytest-httpx", "requests_mock (==1.12.1)"]
 xmlsec = ["xmlsec (>=0.6.1)"]
 
 [[package]]
@@ -6960,4 +6960,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "542bf3cc78c9e5172ed03983cfd971ee0afa088064eed7b166381f61841787ee"
+content-hash = "aa72c2c656096e75b0746811e27dd0811d39debd57f614845a069ff98f322564"
