@@ -12,7 +12,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
 import pcapi.utils.date as date_utils
-from pcapi import settings
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.models import Target
 from pcapi.models import db
@@ -80,11 +79,6 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         getter_dict = GetOffererVenueResponseModelGetterDict
 
 
-class OffererApiKey(BaseModel):
-    maxAllowed: int
-    prefixes: list[str]
-
-
 class PostOffererResponseModel(BaseModel):
     name: str
     id: int
@@ -97,9 +91,6 @@ class PostOffererResponseModel(BaseModel):
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
-    apiKey: OffererApiKey
-    city: str
-    dateCreated: datetime
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
     isValidated: bool
@@ -108,9 +99,7 @@ class GetOffererResponseModel(BaseModel):
     managedVenues: list[GetOffererVenueResponseModel] = []
     name: str
     id: int
-    postalCode: str
     siren: str
-    street: str | None
     hasValidBankAccount: bool
     hasPendingBankAccount: bool
     hasNonFreeOffer: bool
@@ -126,11 +115,6 @@ class GetOffererResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
         offerer: offerers_models.Offerer = row.Offerer
-
-        offerer.apiKey = {
-            "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
-            "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
-        }
         venues = (
             db.session.query(offerers_models.Venue)
             .filter_by(managingOffererId=offerer.id)
