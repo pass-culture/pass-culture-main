@@ -20,7 +20,6 @@ import {
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
   selectCurrentOfferer,
@@ -50,10 +49,7 @@ import strokeLocationIcon from '@/icons/stroke-location.svg'
 import strokeOfferIcon from '@/icons/stroke-offer.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import strokeUserIcon from '@/icons/stroke-user.svg'
-import {
-  getLocation,
-  getLocationForOfferVenue,
-} from '@/pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
+import { getLocation } from '@/pages/AdageIframe/app/components/OfferInfos/AdageOffer/AdageOfferDetailsSection/AdageOfferInfoSection'
 import { BookableOfferTimeline } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
 import { DEFAULT_RECAP_VALUE } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
@@ -190,15 +186,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${offer.id}/creation`
 
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
-
-  const location = isCollectiveOaActive
-    ? offer.location
-      ? getLocation(offer.location, true)
-      : 'Localisation à déterminer avec l’enseignant'
-    : getLocationForOfferVenue(offer.offerVenue)
+  const location = offer.location
+    ? getLocation(offer.location, true)
+    : 'Localisation à déterminer avec l’enseignant'
 
   return (
     <BasicLayout mainHeading={offer.name} isStickyActionBarInChild>
