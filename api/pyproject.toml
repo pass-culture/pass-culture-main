@@ -91,7 +91,7 @@ weasyprint = "66.0"
 werkzeug = "2.0.3"
 wtforms = "3.2.1"
 wtforms-sqlalchemy = "0.4.2"
-xlsxwriter = "3.2.8"
+xlsxwriter = "3.2.9"
 zeep = "4.3.1"
 
 
