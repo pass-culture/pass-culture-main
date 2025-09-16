@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 import pcapi.core.artist.models as artist_models
+import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
@@ -253,3 +254,16 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistAlias).filter_by(id=alias_to_keep.id).first() is not None
         assert db.session.query(ArtistAlias).filter_by(id=alias_to_delete_id).first() is None
         assert db.session.query(ArtistAlias).count() == 2
+
+
+def test_compute_artists_most_relevant_image():
+    artist_with_image = ArtistFactory(image="http://example.com/image.jpg", computed_image=None)
+    artist_without_image = ArtistFactory(image=None, computed_image=None)
+    product_mediation = offers_factories.ProductMediationFactory()
+    ArtistProductLinkFactory(artist_id=artist_without_image.id, product_id=product_mediation.product.id)
+
+    commands.compute_artists_most_relevant_image()
+
+    assert artist_with_image.image == "http://example.com/image.jpg"
+    assert artist_with_image.computed_image is None
+    assert artist_without_image.computed_image == product_mediation.url

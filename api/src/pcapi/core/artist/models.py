@@ -39,6 +39,7 @@ class Artist(PcObject, Base, Model):
     __tablename__ = "artist"
     id = sa.Column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
     name = sa.Column(sa.Text, nullable=False, index=True)
+    computed_image = sa.Column(sa.Text)
     description = sa.Column(sa.Text)
     image = sa.Column(sa.Text)
     image_author = sa.Column(sa.Text)
@@ -54,6 +55,10 @@ class Artist(PcObject, Base, Model):
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", backref="artist")
 
     sa.Index("ix_artist_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+
+    @property
+    def thumbUrl(self) -> str | None:
+        return self.image or self.computed_image
 
 
 class ArtistAlias(PcObject, Base, Model):

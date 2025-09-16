@@ -145,7 +145,7 @@ class AlgoliaSerializationMixin:
             [
                 {
                     "id": artist.id,
-                    "image": artist.image or offer.thumbUrl,
+                    "image": artist.thumbUrl,
                     "name": artist.name,
                 }
                 for artist in offer.product.artists
