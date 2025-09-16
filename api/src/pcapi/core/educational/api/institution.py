@@ -22,7 +22,7 @@ from pcapi.utils import postal_code as postal_code_utils
 logger = logging.getLogger(__name__)
 
 
-def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tuple, int]:
+def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[list, int]:
     offset = (per_page_limit * (page - 1)) if page > 0 else 0
     return repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
 
@@ -41,7 +41,7 @@ def search_educational_institution(
     postal_code: str | None,
     limit: int,
     uai: str | None,
-) -> models.EducationalInstitution:
+) -> list[models.EducationalInstitution]:
     return repository.search_educational_institution(
         educational_institution_id=educational_institution_id,
         name=name,
@@ -169,8 +169,8 @@ def import_deposit_institution_data(
             deposit = (
                 db.session.query(models.EducationalDeposit)
                 .filter(
-                    models.EducationalDeposit.educationalYear == educational_year,
-                    models.EducationalDeposit.educationalInstitution == db_institution,
+                    models.EducationalDeposit.educationalYearId == educational_year.adageId,
+                    models.EducationalDeposit.educationalInstitutionId == db_institution.id,
                 )
                 .one_or_none()
             )

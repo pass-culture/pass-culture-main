@@ -8,10 +8,11 @@ is limited to 14 days after creation.
 """
 
 import logging
+import typing
 from datetime import datetime
-from typing import Iterable
 
 from markupsafe import Markup
+from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.external.attributes import api as attributes_api
@@ -37,11 +38,11 @@ ZENDESK_TAG_ID_CHECK_COMPLETED = "id_check_terminé"
 ZENDESK_TAG_SUSPENDED = "suspendu"
 
 
-def _get_backoffice_venues_links(venues_ids: Iterable[int]) -> list[str]:
+def _get_backoffice_venues_links(venues_ids: typing.Iterable[int]) -> list[str]:
     return [urls.build_backoffice_venue_link(venue_id) for venue_id in venues_ids]
 
 
-def _format_list(raw_list: Iterable[str] | None) -> str | None:
+def _format_list(raw_list: typing.Iterable[str] | None) -> str | None:
     return ", ".join(raw_list) if raw_list else None
 
 
@@ -54,7 +55,11 @@ def update_contact_attributes(
     # Then search by phone number, which is NOT unique in user database
     # TODO(prouzet) Should we search by phone number in venues?
     if not user and phone_number:
-        user = db.session.query(users_models.User).filter(users_models.User.phoneNumber == phone_number).first()
+        user = (
+            db.session.query(users_models.User)
+            .filter(typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number)
+            .first()
+        )
 
     if user and not email:
         email = user.email

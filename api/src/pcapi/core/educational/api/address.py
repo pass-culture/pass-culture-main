@@ -57,7 +57,7 @@ def upsert_venues_addresses(adage_ids_venues: typing.Mapping[str, int]) -> None:
 
     query = db.session.query(models.AdageVenueAddress).filter(models.AdageVenueAddress.adageId.in_(existing_ids))
     for ava in query:
-        ava.venueId = adage_ids_venues[ava.adageId]
+        ava.venueId = adage_ids_venues[typing.cast(str, ava.adageId)]
         db.session.add(ava)
 
     now = datetime.utcnow()

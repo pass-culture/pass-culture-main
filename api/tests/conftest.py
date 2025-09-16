@@ -14,6 +14,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import ecdsa
+import flask_sqlalchemy
 import pytest
 import requests_mock
 import sqlalchemy as sa
@@ -93,6 +94,10 @@ def build_backoffice_app():
         app.test_client_class = FlaskLoginClient
         app.config["TESTING"] = True
 
+        @app.teardown_request
+        def clean_g_between_requests(exc: BaseException | None = None) -> None:
+            g.pop("_login_user", default=None)
+
         @app.route("/signin/<int:user_id>", methods=["POST"])
         @csrf.exempt
         def signin(user_id: int):
@@ -124,8 +129,11 @@ def build_main_app():
     # pytest_flask_sqlalchemy.
     app.teardown_request_funcs[None].remove(remove_db_session)
 
-    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
+    @app.teardown_request
+    def clean_g_between_requests(exc: BaseException | None = None) -> None:
+        g.pop("_login_user", default=None)
 
+    celery_config = {**CELERY_BASE_SETTINGS, "task_always_eager": True}
     app.config.from_mapping(
         CELERY=celery_config,
     )
@@ -204,7 +212,9 @@ def clear_tests_invoices_bucket(settings):
 
 @pytest.fixture(scope="function")
 def clean_database():
+    db.session.close()
     yield
+    db.session.close()
     clean_all_database()
 
 
@@ -214,15 +224,12 @@ def _db(app):
     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
     database connection.
     """
-    mock_db = db
-
-    mock_db.init_app(app)
     install_database_extensions()
     run_migrations()
 
     clean_all_database()
 
-    return mock_db
+    return db
 
 
 pcapi.core.testing.register_event_for_query_logger()
@@ -462,13 +469,14 @@ class TestClient:
         files: dict = None,
         headers: dict = None,
         follow_redirects: bool = False,
+        content_type: str | None = "application/json",
     ):
         headers = headers or {}
         if raw_json:
             result = self.client.post(
                 route,
                 data=raw_json,
-                content_type="application/json",
+                content_type=content_type,
                 headers={**self.auth_header, **headers},
                 follow_redirects=follow_redirects,
             )
@@ -481,7 +489,11 @@ class TestClient:
             )
         else:
             result = self.client.post(
-                route, json=json, headers={**self.auth_header, **headers}, follow_redirects=follow_redirects
+                route,
+                json=json,
+                content_type=content_type,
+                headers={**self.auth_header, **headers},
+                follow_redirects=follow_redirects,
             )
 
         self._print_spec("POST", route, json, result)
@@ -496,6 +508,7 @@ class TestClient:
         follow_redirects: bool = False,
     ):
         headers = headers or {}
+        json = json or {}
 
         if form:
             result = self.client.patch(
@@ -508,6 +521,7 @@ class TestClient:
             result = self.client.patch(
                 route,
                 json=json,
+                content_type="application/json",
                 headers={**self.auth_header, **headers},
                 follow_redirects=follow_redirects,
             )
@@ -524,7 +538,11 @@ class TestClient:
     ):
         headers = headers or {}
         result = self.client.put(
-            route, json=json, headers={**self.auth_header, **headers}, follow_redirects=follow_redirects
+            route,
+            json=json,
+            content_type="application/json",
+            headers={**self.auth_header, **headers},
+            follow_redirects=follow_redirects,
         )
         self._print_spec("PUT", route, json, result)
         return result
@@ -685,8 +703,20 @@ def generate_rsa_keys():
     return private_key_pem_file, public_key_pem_file
 
 
+class TestSession(sa.orm.Session):
+    """
+    dummy adapter to emulate scoped session in tests
+    """
+
+    def remove(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @pytest.fixture(scope="function")
-def db_session(_db, mocker, request):
+def db_session(_db, mocker, request, app):
     """
     Make sure all the different ways that we access the database in the code
     are scoped to a transactional context, and return a Session object that
@@ -698,42 +728,33 @@ def db_session(_db, mocker, request):
     Mock out Session objects (a common way of interacting with the database using
     the SQLAlchemy ORM) using a transactional context.
     """
-
     # No need for the fixture, `clean_database` will do the job
     if "clean_database" in request.fixturenames:
         yield None
     else:
-        # from: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
-        # TODO RPA: after migration to sqlalchemy 2.0 migrate to https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+        # derivied from sqlalchemy documentation with tweaks to handle flask-sqlalchemy and the scoped_sessions
+        # https://docs.sqlalchemy.org/en/20/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
+        old_session = db.session
         engine = db.engine
         connection = engine.connect()
         transaction = connection.begin()
-        # Bind a session to the transaction. The empty `binds` dict is necessary
-        # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
-        # the connection properly
-        session = _db.create_scoped_session(options={"bind": connection, "binds": {}})
-        nested = connection.begin_nested()
-        session_data = SessionStructre(
-            engine=engine,
-            connection=connection,
-            transaction=transaction,
-            nested=nested,
-        )
-        # Whenever the code tries to access a Flask session, use the Session object
-        # instead
-        mocker.patch("pcapi.models.db.session", new=session)
 
-        @sa.event.listens_for(session, "after_transaction_end")
-        def end_savepoint(session, transaction):
-            if not session_data.nested.is_active:
-                session_data.nested = connection.begin_nested()
+        # build a non-scoped session to inject our connection (if we try to use the scoped session
+        # it will reuse the old session and not use our custom connexion)
+        factory = sa.orm.sessionmaker(
+            class_=TestSession,
+            query_cls=flask_sqlalchemy.query.Query,
+        )
+        session = factory(
+            bind=connection,
+            join_transaction_mode="create_savepoint",
+        )
+        db.session = session
 
         yield session
 
-        try:
-            session.remove()
-        except Exception:
-            # some tests do not open a session
-            pass
-        session_data.transaction.rollback()
-        session_data.connection.close()
+        transaction.rollback()
+        connection.close()
+        session.remove()
+        # resore old session
+        db.session = old_session

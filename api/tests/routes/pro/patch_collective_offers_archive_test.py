@@ -18,6 +18,7 @@ class Returns204Test:
     num_queries_error = num_queries - 1  # "ensure there is no existing archived offer" is not run
     num_queries_error = num_queries_error - 1  # "update dateArchive on collective_offer" is not run
     num_queries_error = num_queries_error + 1  # rollback due to atomic
+    num_queries_error = num_queries_error + 1  # rollback due to atomic
 
     def when_archiving_existing_offers_from_other_offerer(self, client):
         offer = factories.CollectiveOfferFactory()

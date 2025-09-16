@@ -18,6 +18,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.utils import get_or_404
 from pcapi.routes.serialization import bookings as serialization_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
@@ -98,7 +99,7 @@ def get_user_has_bookings() -> UserHasBookingResponse:
 )
 def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
-    offer = db.session.get(Offer, int(offer_id))
+    offer = get_or_404(Offer, offer_id)
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
@@ -131,7 +132,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
 )
 def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQueryModel) -> bytes:
     user = current_user._get_current_object()
-    offer = db.session.get(Offer, int(offer_id))
+    offer = get_or_404(Offer, offer_id)
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})
@@ -187,7 +188,7 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
 @spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
 def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDatesInfos:
     user = current_user._get_current_object()
-    offer = db.session.get(Offer, offer_id)
+    offer = get_or_404(Offer, offer_id)
 
     if not users_repository.has_access(user, offer.venue.managingOffererId):
         raise api_errors.ForbiddenError({"global": "You are not allowed to access this offer"})

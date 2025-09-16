@@ -130,8 +130,8 @@ def sync_user_account_update_requests(
     logger.info("[DS] Started processing User Update Account procedure %s", procedure_number)
 
     # Fetch instructors' User IDs only once
-    user_id_by_email = dict(
-        db.session.query(users_models.User.email, users_models.User.id)
+    user_id_by_email: dict[str, int] = dict(
+        db.session.query(users_models.User.email, users_models.User.id)  # type: ignore [arg-type]
         .join(users_models.User.backoffice_profile)
         .filter(perm_models.BackOfficeUserProfile.dsInstructorId.is_not(None))
         .all()
@@ -529,6 +529,7 @@ def update_state(
 
     for key, value in _get_updated_data(node).items():
         setattr(user_request, key, value)
+    assert instructor  # helps mypy
     user_request.lastInstructor = instructor
     db.session.add(user_request)
     db.session.flush()
@@ -568,9 +569,11 @@ def send_user_message_with_correction(
     )
     update_request.lastInstructor = instructor
     update_request.status = dms_models.GraphQLApplicationStates.draft
-    update_request.flags = [
+    flags: list[users_models.UserAccountUpdateFlag] = [
         flag for flag in update_request.flags if flag != users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED
-    ] + [users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION]
+    ]
+    flags.append(users_models.UserAccountUpdateFlag.WAITING_FOR_CORRECTION)
+    update_request.flags = flags
     update_request.dateLastStatusUpdate = _from_ds_date(node["dossierEnvoyerMessage"]["message"]["createdAt"])
     update_request.dateLastInstructorMessage = _from_ds_date(node["dossierEnvoyerMessage"]["message"]["createdAt"])
 

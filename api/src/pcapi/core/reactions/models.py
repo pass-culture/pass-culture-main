@@ -1,12 +1,12 @@
 import enum
 
+import flask_sqlalchemy
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.users.models import User
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.pc_object import PcObject
@@ -19,14 +19,20 @@ class ReactionTypeEnum(enum.Enum):
     NO_REACTION = "NO_REACTION"
 
 
-class Reaction(PcObject, Base, Model):
+class Reaction(PcObject, Model):
     __tablename__ = "reaction"
-    reactionType = sa.Column(MagicEnum(ReactionTypeEnum), nullable=False)
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
+    reactionType = sa_orm.mapped_column(MagicEnum(ReactionTypeEnum), nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="reactions")
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True)
+    offerId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="reactions")
-    productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True, index=True)
+    productId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="reactions")
 
     __table_args__ = (
@@ -63,7 +69,7 @@ def on_set_product_reaction(
     target: Reaction,
     value: ReactionTypeEnum,
     old_value: ReactionTypeEnum,
-    _initiator: sa_orm.AttributeEvent,
+    _initiator: sa_orm.AttributeEventToken,
 ) -> None:
     if target.productId is None:
         return
@@ -82,7 +88,11 @@ def after_delete_product_reaction(_mapper: sa_orm.Mapper, connection: sa.engine.
         _increment_product_counts(connection, target.productId, -1)
 
 
-def _increment_product_counts(connection: sa.engine.Connection, product_id: int, increment: int) -> None:
+def _increment_product_counts(
+    connection: sa_orm.scoped_session[flask_sqlalchemy.session.Session] | sa.engine.Connection,
+    product_id: int,
+    increment: int,
+) -> None:
     connection.execute(
         sa.update(Product).where(Product.id == product_id).values(likesCount=Product.likesCount + increment)
     )

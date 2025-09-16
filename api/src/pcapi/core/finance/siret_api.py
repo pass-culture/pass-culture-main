@@ -27,7 +27,7 @@ class CheckError(Exception):
     pass
 
 
-def get_yearly_revenue(venue_id: int) -> Decimal:
+def get_yearly_revenue(venue_id: int) -> Decimal | None:
     # Calculate yearly revenue of a venue
     query = """
       select sum(booking.amount * booking.quantity) as "chiffre d'affaires"
@@ -38,7 +38,7 @@ def get_yearly_revenue(venue_id: int) -> Decimal:
         -- Add 1 hour for UTC -> CET conversion
         and date_part('year', "dateUsed" + interval '1 hour') = date_part('year', now() + interval '1 hour');
     """
-    rows = db.session.execute(sa.text(query), {"venue_id": venue_id}).fetchone()
+    rows = db.session.execute(sa.text(query), {"venue_id": venue_id}).one()
     return rows[0]
 
 
@@ -248,7 +248,7 @@ def remove_siret(
 
     new_siret: str | None = None
     if new_pricing_point_id:
-        new_pricing_point_venue: offerers_models.Venue = (
+        new_pricing_point_venue: offerers_models.Venue | None = (
             db.session.query(offerers_models.Venue)
             .filter(
                 offerers_models.Venue.id == new_pricing_point_id,
