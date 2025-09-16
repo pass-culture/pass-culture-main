@@ -2,10 +2,14 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
+import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 export const useFocus = (): void => {
   const location = useLocation()
+
+  const currentRoute = findCurrentRoute(location)
+  const isErrorPage = currentRoute?.isErrorPage
 
   const currentUser = useSelector(selectCurrentUser)
   const isConnected = !!currentUser
@@ -13,6 +17,14 @@ export const useFocus = (): void => {
   useEffect(() => {
     /* istanbul ignore next : E2E tested */
     document.getElementById('content-wrapper')?.scrollTo(0, 0)
+
+    if (isErrorPage) {
+      const errorReturnLink = document.getElementById('error-return-link')
+      if (errorReturnLink) {
+        errorReturnLink.focus()
+      }
+      return
+    }
 
     const backToNav = document.getElementById('back-to-nav-link')
     const goToContent = document.getElementById('go-to-content')
