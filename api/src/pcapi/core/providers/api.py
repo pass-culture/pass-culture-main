@@ -69,7 +69,7 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
     stocks = db.session.query(offers_models.Stock).filter(
         offers_models.Stock.offerId == offers_models.Offer.id,
-        offers_models.Offer.venue == venue,
+        offers_models.Offer.venueId == venue.id,
         offers_models.Offer.idAtProvider.is_not(None),
     )
     stocks.update({"quantity": offers_models.Stock.dnBookedQuantity}, synchronize_session=False)
@@ -174,6 +174,7 @@ def update_allocine_venue_provider(
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     assert venue_provider_payload.isDuo is not None  # helps mypy, see PostVenueProviderBody
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
+    assert venue_provider_payload.price is not None  # helps mypy
     allocine_venue_provider.price = venue_provider_payload.price
 
     repository.save(allocine_venue_provider)

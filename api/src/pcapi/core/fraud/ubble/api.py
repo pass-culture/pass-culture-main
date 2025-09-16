@@ -200,7 +200,7 @@ def get_restartable_identity_checks(user: users_models.User) -> fraud_models.Ben
     started_fraud_check = (
         db.session.query(fraud_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.userId == user.id,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.STARTED,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
             fraud_models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,

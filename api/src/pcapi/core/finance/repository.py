@@ -563,15 +563,21 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
 
 
 def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
-    query = db.session.query(models.BankAccount).filter(
-        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED
+    query = db.session.query(
+        models.BankAccount.id,
+        models.BankAccount.label,
+    ).filter(
+        models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
     )
 
     if not user.has_admin_role:
         query = query.join(
-            offerers_models.UserOfferer, models.BankAccount.offererId == offerers_models.UserOfferer.offererId
-        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
-    query = query.with_entities(models.BankAccount.id, models.BankAccount.label)
+            offerers_models.UserOfferer,
+            models.BankAccount.offererId == offerers_models.UserOfferer.offererId,
+        ).filter(
+            offerers_models.UserOfferer.userId == user.id,
+            offerers_models.UserOfferer.isValidated,
+        )
     return query
 
 
@@ -597,12 +603,15 @@ def get_invoices_query(
         bank_account_subquery = bank_account_subquery.join(
             offerers_models.UserOfferer,
             offerers_models.UserOfferer.offererId == models.BankAccount.offererId,
-        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+        ).filter(
+            offerers_models.UserOfferer.userId == user.id,
+            offerers_models.UserOfferer.isValidated,
+        )
     elif user.has_admin_role and not offerer_id and not bank_account_id:
         # The following intentionally returns nothing for admin users,
         # so that we do NOT return all invoices of all bank accounts
         # for them. Admin users must select a bank account, or at least an offererId must be provided.
-        bank_account_subquery = bank_account_subquery.filter(False)
+        bank_account_subquery = bank_account_subquery.filter(sa.false())
 
     if bank_account_id:
         bank_account_subquery = bank_account_subquery.filter(models.BankAccount.id == bank_account_id)

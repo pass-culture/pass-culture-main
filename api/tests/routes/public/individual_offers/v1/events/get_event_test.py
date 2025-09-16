@@ -24,6 +24,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     num_queries_with_error = 1  # retrieve API key
     num_queries_with_error += 1  # retrieve offer
     num_queries_with_error += 1  # rollback atomic
+    num_queries_with_error += 1  # rollback atomic
 
     num_queries = 1  # retrieve API key
     num_queries += 1  # # retrieve offer

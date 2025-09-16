@@ -14,10 +14,10 @@ from sqlalchemy.dialects import postgresql
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.db import MagicEnum
 
 from .common import models as common_models
 
@@ -580,36 +580,42 @@ class FraudCheckStatus(enum.Enum):
     SUSPICIOUS = "suspiscious"
 
 
-class BeneficiaryFraudCheck(PcObject, Base, Model):
+class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
-    dateCreated: datetime.datetime = sa.Column(
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
     )
     # The eligibility is null when the user is not eligible
-    eligibilityType = sa.Column(
-        sa.Enum(users_models.EligibilityType, create_constraint=False),
+    eligibilityType = sa_orm.mapped_column(
+        MagicEnum(users_models.EligibilityType, use_values=False),
         nullable=True,
     )
-    idPicturesStored = sa.Column(
+    idPicturesStored = sa_orm.mapped_column(
         sa.Boolean(),
         nullable=True,
     )
-    reason = sa.Column(sa.Text, nullable=True)
-    reasonCodes: list[FraudReasonCode] = sa.Column(
+    reason = sa_orm.mapped_column(sa.Text, nullable=True)
+    reasonCodes: sa_orm.Mapped[list[FraudReasonCode]] = sa_orm.mapped_column(
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )
-    resultContent: sa_orm.Mapped[dict | None] = sa.Column(
+    resultContent: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         sa.ext.mutable.MutableDict.as_mutable(sa.dialects.postgresql.JSONB(none_as_null=True))
     )
-    status: FraudCheckStatus = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
-    thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
-    type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
-    updatedAt: datetime.datetime = sa.Column(
+    status: sa_orm.Mapped[FraudCheckStatus] = sa_orm.mapped_column(
+        MagicEnum(FraudCheckStatus, use_values=False), nullable=True
+    )
+    thirdPartyId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.TEXT(), index=True, nullable=False)
+    type: sa_orm.Mapped[FraudCheckType] = sa_orm.mapped_column(
+        MagicEnum(FraudCheckType, use_values=False), nullable=False
+    )
+    updatedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
     )
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
     user: sa_orm.Mapped[users_models.User] = sa_orm.relationship("User", back_populates="beneficiaryFraudChecks")
 
     def get_detailed_source(self) -> str:
@@ -672,34 +678,42 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         )
 
 
-class OrphanDmsApplication(PcObject, Base, Model):
+class OrphanDmsApplication(PcObject, Model):
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
     __tablename__ = "orphan_dms_application"
-    application_id: int = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
-    dateCreated = sa.Column(
+    application_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, primary_key=True
+    )  # refers to DMS application "number"
+    dateCreated = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow
     )  # no sql default because the column was added after table creation
-    email = sa.Column(sa.Text, nullable=True, index=True)
-    latest_modification_datetime = sa.Column(
+    email = sa_orm.mapped_column(sa.Text, nullable=True, index=True)
+    latest_modification_datetime = sa_orm.mapped_column(
         sa.DateTime, nullable=True
     )  # This field copies the value provided in the DMS application
-    process_id = sa.Column(sa.BigInteger)
+    process_id = sa_orm.mapped_column(sa.BigInteger)
 
 
-class BeneficiaryFraudReview(PcObject, Base, Model):
+class BeneficiaryFraudReview(PcObject, Model):
     __tablename__ = "beneficiary_fraud_review"
-    authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    authorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
     author: sa_orm.Mapped[users_models.User] = sa_orm.relationship(
         "User", foreign_keys=[authorId], backref="adminFraudReviews"
     )
-    dateReviewed: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    eligibilityType: users_models.EligibilityType | None = sa.Column(
+    dateReviewed: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    eligibilityType: sa_orm.Mapped[users_models.EligibilityType | None] = sa_orm.mapped_column(
         sa.Enum(users_models.EligibilityType, create_constraint=False), nullable=True
     )
-    reason = sa.Column(sa.Text)
-    review = sa.Column(sa.Enum(FraudReviewStatus, create_constraint=False))
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    reason = sa_orm.mapped_column(sa.Text)
+    review = sa_orm.mapped_column(sa.Enum(FraudReviewStatus, create_constraint=False))
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
     user: sa_orm.Mapped[users_models.User] = sa_orm.relationship(
         "User", foreign_keys=[userId], backref=sa_orm.backref("beneficiaryFraudReviews")
     )
@@ -719,7 +733,7 @@ class FraudItem:
         return self.extra_data.get("duplicate_id")
 
 
-class BlacklistedDomainName(PcObject, Base, Model):
+class BlacklistedDomainName(PcObject, Model):
     """
     Track all blacklisted domain names. Any account creation or update
     using an email from one of those domain names should be blocked.
@@ -729,23 +743,23 @@ class BlacklistedDomainName(PcObject, Base, Model):
     """
 
     __tablename__ = "blacklisted_domain_name"
-    domain: str = sa.Column(sa.Text, nullable=False, unique=True)
-    dateCreated: datetime.datetime = sa.Column(
+    domain: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
 
 
-class ProductWhitelist(PcObject, Base, Model):
+class ProductWhitelist(PcObject, Model):
     """
     Contains the whitelisted EAN
     """
 
     __tablename__ = "product_whitelist"
-    title: str = sa.Column(sa.Text, nullable=False)
-    ean: str = sa.Column(sa.String(length=13), nullable=False, unique=True, index=True)
-    dateCreated: datetime.datetime = sa.Column(
+    title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    ean: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(length=13), nullable=False, unique=True, index=True)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
-    comment: str = sa.Column(sa.Text, nullable=False)
-    authorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    comment: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    authorId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     author: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[authorId])

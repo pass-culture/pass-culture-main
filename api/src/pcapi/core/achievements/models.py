@@ -6,7 +6,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 import pcapi.utils.db as db_utils
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -28,20 +27,24 @@ class AchievementEnum(enum.Enum):
     FIRST_ART_LESSON_BOOKING = "FIRST_ART_LESSON_BOOKING"
 
 
-class Achievement(PcObject, Base, Model):
+class Achievement(PcObject, Model):
     __tablename__ = "achievement"
 
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
     user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="achievements")
 
-    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False, index=True)
+    bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False, index=True
+    )
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
 
-    name: AchievementEnum = sa.Column(db_utils.MagicEnum(AchievementEnum), nullable=False)
-    unlockedDate: datetime = sa.Column(
+    name: sa_orm.Mapped[AchievementEnum] = sa_orm.mapped_column(db_utils.MagicEnum(AchievementEnum), nullable=False)
+    unlockedDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
     # For when the user has seen the achievement success modal in the native app:
-    seenDate: datetime = sa.Column(sa.DateTime, nullable=True)
+    seenDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     __table_args__ = (sa.UniqueConstraint("userId", "name", name="user_achievement_unique"),)

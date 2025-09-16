@@ -91,18 +91,20 @@ def has_access(user: models.User, offerer_id: int) -> bool:
 
 def has_access_to_venues(user: models.User, venue_ids: list[int]) -> bool:
     """Return whether the user has access to all the requested venues' data."""
-    return db.session.execute(
-        sa.select(
-            sa.cast(postgresql.array(venue_ids), postgresql.ARRAY(postgresql.BIGINT)).contained_by(
-                sa.func.array_agg(offerers_models.Venue.id)
+    return bool(
+        db.session.execute(
+            sa.select(
+                sa.cast(postgresql.array(venue_ids), postgresql.ARRAY(postgresql.BIGINT)).contained_by(
+                    sa.func.array_agg(offerers_models.Venue.id)
+                )
             )
-        )
-        .select_from(offerers_models.Venue)
-        .join(offerers_models.Offerer)
-        .join(offerers_models.UserOfferer)
-        .where(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
-        .group_by(offerers_models.UserOfferer.userId)
-    ).scalar()
+            .select_from(offerers_models.Venue)
+            .join(offerers_models.Offerer)
+            .join(offerers_models.UserOfferer)
+            .where(offerers_models.UserOfferer.userId == user.id, offerers_models.UserOfferer.isValidated)
+            .group_by(offerers_models.UserOfferer.userId)
+        ).scalar()
+    )
 
 
 def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User]:
@@ -120,14 +122,15 @@ def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User
     """
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
+    birth_date_typed_column = typing.cast(sa_orm.Mapped[date | None], models.User.birth_date)
     eligible_users = (
         db.session.query(models.User)
         .outerjoin(offerers_models.UserOfferer)
         .filter(
             sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
-            (models.User.birth_date <= today - relativedelta(years=age)),  # type: ignore[operator]
-            (models.User.birth_date > since - relativedelta(years=age)),  # type: ignore[operator]
+            birth_date_typed_column <= today - relativedelta(years=age),
+            birth_date_typed_column > since - relativedelta(years=age),
             models.User.dateCreated < today,
         )
         .all()
@@ -157,7 +160,7 @@ def get_users_with_validated_attachment(offerer: offerers_models.Offerer) -> lis
     )
 
 
-def get_and_lock_user(userId: int) -> models.User:
+def get_and_lock_user(userId: int) -> models.User | None:
     user = (
         db.session.query(models.User)
         .filter(models.User.id == userId)
@@ -185,10 +188,11 @@ def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str
 
 
 def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_number: str) -> None:
+    phone_number_typed_column = typing.cast(sa_orm.Mapped[str | None], models.User.phoneNumber)
     users_without_phone_number = (
         sa.select(models.User.id)
         .select_from(models.User)
-        .where(sa.or_(models.User.phoneNumber == None, models.User.phoneNumber == ""))
+        .where(sa.or_(phone_number_typed_column == None, phone_number_typed_column == ""))
         .join(
             offerers_models.UserOfferer,
             sa.and_(

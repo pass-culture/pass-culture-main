@@ -8,7 +8,6 @@ from sqlalchemy import orm as sa_orm
 
 from pcapi.core.geography.constants import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.core.geography.utils import format_coordinate
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -20,26 +19,28 @@ class Coordinates:
     longitude: Decimal
 
 
-class IrisFrance(PcObject, Base, Model):
+class IrisFrance(PcObject, Model):
     __tablename__ = "iris_france"
-    code = sa.Column(sa.String(9), nullable=False, unique=True)
-    shape: str | Geometry = sa.Column("shape", Geometry(srid=WGS_SPATIAL_REFERENCE_IDENTIFIER), nullable=False)
+    code = sa_orm.mapped_column(sa.String(9), nullable=False, unique=True)
+    shape: sa_orm.Mapped[str | Geometry] = sa_orm.mapped_column(
+        "shape", Geometry(srid=WGS_SPATIAL_REFERENCE_IDENTIFIER), nullable=False
+    )
 
 
-class Address(PcObject, Base, Model):
+class Address(PcObject, Model):
     __tablename__ = "address"
-    banId: str | None = sa.Column(sa.Text(), nullable=True)
-    inseeCode: str | None = sa.Column(sa.Text(), nullable=True)
-    street: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
-    postalCode: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
-    city: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False)
-    latitude: sa_orm.Mapped[Decimal] = sa.Column(sa.Numeric(8, 5), nullable=False)
-    longitude: sa_orm.Mapped[Decimal] = sa.Column(sa.Numeric(8, 5), nullable=False)
-    departmentCode: sa_orm.Mapped[str] = sa.Column(sa.Text(), nullable=False, index=True)
-    timezone: sa_orm.Mapped[str] = sa.Column(
+    banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    inseeCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    street: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    postalCode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    city: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    latitude: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=False)
+    longitude: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=False)
+    departmentCode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False, index=True)
+    timezone: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text(), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
-    isManualEdition: sa_orm.Mapped[bool] = sa.Column(
+    isManualEdition: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
 
@@ -61,10 +62,6 @@ class Address(PcObject, Base, Model):
 
     __table_args__ = (
         sa.Index(
-            # FIXME (dramelet, 14-10-2024)
-            # Our current version of sqlalchemy (1.4) doesn't handle
-            # the option `nulls_not_distinct` from postgresql dialect
-            # Hence this declaration and the raw query in the suitable migration
             "ix_unique_complete_address_with_nulls_not_distinct",
             "banId",
             "inseeCode",
@@ -73,6 +70,7 @@ class Address(PcObject, Base, Model):
             "city",
             "latitude",
             "longitude",
+            postgresql_nulls_not_distinct=True,
             unique=True,
         ),
         sa.CheckConstraint('length("postalCode") = 5'),

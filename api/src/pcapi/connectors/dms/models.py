@@ -4,19 +4,21 @@ import enum
 import pydantic.v1 as pydantic_v1
 import pytz
 import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
 
-class LatestDmsImport(PcObject, Base, Model):
+class LatestDmsImport(PcObject, Model):
     __tablename__ = "latest_dms_import"
-    procedureId = sa.Column(sa.Integer, nullable=False)
-    latestImportDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
-    isProcessing = sa.Column(sa.Boolean, nullable=False)
-    processedApplications: list[int] = sa.Column(postgresql.ARRAY(sa.Integer), nullable=False, default=[])
+    procedureId = sa_orm.mapped_column(sa.Integer, nullable=False)
+    latestImportDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
+    isProcessing = sa_orm.mapped_column(sa.Boolean, nullable=False)
+    processedApplications: sa_orm.Mapped[list[int]] = sa_orm.mapped_column(
+        postgresql.ARRAY(sa.Integer), nullable=False, default=[]
+    )
 
 
 def parse_dms_datetime(value: datetime.datetime | None) -> datetime.datetime | None:

@@ -681,7 +681,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
     rows = (
         db.session.query(
-            users_models.User.id,
+            users_models.User.id,  # type: ignore [call-overload]
             users_models.User.firstName,
             users_models.User.lastName,
             users_models.User.full_name,
@@ -929,7 +929,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
             .joinedload(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-            sa.orm.selectinload(offerers_models.Venue.venueProviders)
+            sa_orm.selectinload(offerers_models.Venue.venueProviders)
             .load_only(providers_models.VenueProvider.isActive)
             .joinedload(providers_models.VenueProvider.provider)
             .load_only(
@@ -1003,6 +1003,8 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         return _render_get_create_venue_without_siret_form(form, offerer_id), 400
 
     attachment_venue = offerers_api.get_venue_by_id(form.attachement_venue.data)
+    if not attachment_venue:
+        raise NotFound()
     assert attachment_venue.offererAddress
 
     address_body_model = offerers_schemas.AddressBodyModel(
@@ -1316,20 +1318,19 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _self_redirect(offerer_id, active_tab="subscription")
 
-    data = {
-        "isCriminalRecordReceived": form.is_criminal_record_received.data,
-        "dateCriminalRecordReceived": form.date_criminal_record_received.data,
-        "isCertificateReceived": form.is_certificate_received.data,
-        "certificateDetails": form.certificate_details.data or None,
-        "isExperienceReceived": form.is_experience_received.data,
-        "experienceDetails": form.experience_details.data or None,
-        "has1yrExperience": form.has_1yr_experience.data,
-        "has5yrExperience": form.has_4yr_experience.data,
-        "isCertificateValid": form.is_certificate_valid.data,
-    }
-
     db.session.query(offerers_models.IndividualOffererSubscription).filter_by(offererId=offerer_id).update(
-        data, synchronize_session=False
+        {
+            "isCriminalRecordReceived": form.is_criminal_record_received.data,
+            "dateCriminalRecordReceived": form.date_criminal_record_received.data,
+            "isCertificateReceived": form.is_certificate_received.data,
+            "certificateDetails": form.certificate_details.data or None,
+            "isExperienceReceived": form.is_experience_received.data,
+            "experienceDetails": form.experience_details.data or None,
+            "has1yrExperience": form.has_1yr_experience.data,
+            "has5yrExperience": form.has_4yr_experience.data,
+            "isCertificateValid": form.is_certificate_valid.data,
+        },
+        synchronize_session=False,
     )
     db.session.flush()
 

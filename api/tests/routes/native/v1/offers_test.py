@@ -371,7 +371,8 @@ class OffersTest:
     def test_get_offer_not_found(self, client):
         # select offer
         # rollback
-        with assert_num_queries(2):
+        # rollback
+        with assert_num_queries(3):
             response = client.get("/native/v1/offer/1")
 
         assert response.status_code == 404
@@ -385,7 +386,8 @@ class OffersTest:
         offer_id = offer.id
         # select offer
         # rollback
-        with assert_num_queries(2):
+        # rollback
+        with assert_num_queries(3):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 404
 
@@ -834,7 +836,8 @@ class OffersV2Test:
     def test_get_offer_not_found(self, client):
         # 1. select offer
         # 2. rollback
-        with assert_num_queries(2):
+        # 3. rollback
+        with assert_num_queries(3):
             response = client.get("/native/v2/offer/1")
 
         assert response.status_code == 404
@@ -848,7 +851,8 @@ class OffersV2Test:
         offer_id = offer.id
         # 1. select offer
         # 2. rollback
-        with assert_num_queries(2):
+        # 3. rollback
+        with assert_num_queries(3):
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 404
 

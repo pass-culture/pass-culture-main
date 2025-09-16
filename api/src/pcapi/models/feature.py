@@ -11,13 +11,13 @@ import logging
 
 import flask
 from alembic import op
-from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 from sqlalchemy.sql import text
 
 from pcapi import settings
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -181,10 +181,10 @@ class FeatureToggle(enum.Enum):
         return self.is_active()
 
 
-class Feature(PcObject, Base, Model, DeactivableMixin):
+class Feature(PcObject, Model, DeactivableMixin):
     __tablename__ = "feature"
-    name: str = Column(Text, unique=True, nullable=False)
-    description: str = Column(String(300), nullable=False)
+    name: Mapped[str] = mapped_column(Text, unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String(300), nullable=False)
 
     @property
     def nameKey(self) -> str:

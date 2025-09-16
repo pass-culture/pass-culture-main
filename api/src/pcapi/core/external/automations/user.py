@@ -33,7 +33,7 @@ def get_young_users_emails_query() -> sa_orm.Query:
     )
 
 
-def get_users_ex_beneficiary() -> list[User]:
+def get_users_ex_beneficiary() -> sa_orm.query.RowReturningQuery[tuple[str]]:
     return (
         db.session.query(User.email)
         .join(User.deposits)

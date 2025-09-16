@@ -1,6 +1,8 @@
 import re
 from urllib.parse import urlencode
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveOffer
@@ -37,7 +39,7 @@ def venue_app_link(venue_id: int, utm: str | None = None) -> str:
     return base
 
 
-def booking_app_link(booking: Booking) -> str:
+def booking_app_link(booking: Booking | sa.Row[tuple[int, int]]) -> str:
     return f"{settings.WEBAPP_V2_URL}/reservation/{booking.id}/details"
 
 

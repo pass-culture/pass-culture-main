@@ -85,10 +85,15 @@ def list_events() -> utils.BackofficeResponse:
     query = db.session.query(operations_models.SpecialEvent)
     if form.q.data:
         search_query = f"%{clean_accents(form.q.data.replace(' ', '%').replace('-', '%'))}%"
-        query_filter = sa.func.immutable_unaccent(operations_models.SpecialEvent.title).ilike(search_query)
+        query_filter: sa.sql.elements.ColumnElement[bool] = sa.func.immutable_unaccent(
+            operations_models.SpecialEvent.title
+        ).ilike(search_query)
 
         if re.match(operations_forms.RE_TYPEFORM_ID, form.q.data):
-            query_filter = sa.or_(query_filter, operations_models.SpecialEvent.externalId == form.q.data)
+            query_filter = sa.or_(
+                query_filter,
+                operations_models.SpecialEvent.externalId == form.q.data,
+            )
 
         query = query.filter(query_filter)
 
@@ -195,7 +200,7 @@ def _get_special_event_stats(special_event_id: int) -> tuple[int]:
     ).one()
 
 
-def _get_response_rows_query() -> sa.orm.Query:
+def _get_response_rows_query() -> sa_orm.Query:
     full_answers_subquery = (
         db.session.query(
             sa.func.jsonb_object_agg(

@@ -19,4 +19,4 @@ def assert_url_equals(actual: str, expected: str) -> None:
 
 def assert_response_location(response, endpoint: str, **kwargs) -> None:
     assert response.location
-    assert_url_equals(response.location, url_for(endpoint, _external=True, **kwargs))
+    assert_url_equals(response.location, url_for(endpoint, **kwargs))

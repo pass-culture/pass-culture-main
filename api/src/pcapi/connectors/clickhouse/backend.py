@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from sqlalchemy import create_engine
+import sqlalchemy as sa
 from sqlalchemy import engine
 
 from pcapi import settings
@@ -31,9 +31,10 @@ class BaseBackend:
             self._engine = self._get_engine()
         return self._engine
 
-    def run_query(self, query: str, params: typing.Tuple) -> list:
+    def run_query(self, query: str, params: typing.Tuple) -> typing.Sequence:
         try:
-            results = self.engine.execute(query, params).fetchall()
+            with self.engine.connect() as connection:
+                results = connection.execute(sa.text(query), params).fetchall()
         except requests.exceptions.ConnectionError as e:
             logger.error("%s when querying Clickhouse: %s", type(e), str(e))
             raise ApiErrors(errors={"clickhouse": "Can not connect to clickhouse server"}, status_code=422)
@@ -49,4 +50,4 @@ class ClickhouseBackend(BaseBackend):
         user = settings.CLICKHOUSE_USER
         password = settings.CLICKHOUSE_PASSWORD
         uri = f"clickhouse://{user}:{password}@{ip}:8123/default?protocol=http"
-        return create_engine(uri, pool_pre_ping=True)
+        return sa.create_engine(uri, pool_pre_ping=True)

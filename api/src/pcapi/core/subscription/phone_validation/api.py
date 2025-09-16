@@ -1,9 +1,11 @@
 import logging
 import re
 import time
+import typing
 
 from flask import current_app as app
 from redis import Redis
+from sqlalchemy import orm as sa_orm
 from sqlalchemy.orm import exc as sa_exc
 
 from pcapi import settings
@@ -69,8 +71,13 @@ def _ensure_phone_number_unicity(
     """
     try:
         user_with_same_validated_number = (
-            db.session.query(users_models.User)
-            .filter(users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated)
+            db.session.query(
+                users_models.User,
+            )
+            .filter(
+                typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number,
+                users_models.User.is_phone_validated,
+            )
             .one_or_none()
         )
     except sa_exc.MultipleResultsFound:

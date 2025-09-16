@@ -11,7 +11,6 @@ import sqlalchemy.sql as sa_sql
 
 import pcapi.core.providers.constants as provider_constants
 from pcapi.core.offerers.models import Venue
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
@@ -22,25 +21,29 @@ if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import CollectiveOffer
 
 
-class Provider(PcObject, Base, Model, DeactivableMixin):
+class Provider(PcObject, Model, DeactivableMixin):
     __tablename__ = "provider"
-    name: str = sa.Column(sa.String(90), index=True, nullable=False)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(90), index=True, nullable=False)
 
-    localClass = sa.Column(sa.String(60), nullable=True, unique=True)
+    localClass = sa_orm.mapped_column(sa.String(60), nullable=True, unique=True)
 
     # bool meant for hiding custom provider (for instance, FNAC provider) in the pro Interface (if set to False)
-    enabledForPro: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
-
-    enableParallelSynchronization: bool = sa.Column(
+    enabledForPro: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false()
     )
 
-    logoUrl: str = sa.Column(sa.Text(), nullable=True)
-    bookingExternalUrl: str = sa.Column(sa.Text(), nullable=True)
-    cancelExternalUrl: str = sa.Column(sa.Text(), nullable=True)
-    notificationExternalUrl: str = sa.Column(sa.VARCHAR(length=255), nullable=True)
-    hmacKey: str = sa.Column(sa.Text(), nullable=True)
-    pricesInCents: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
+    enableParallelSynchronization: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false()
+    )
+
+    logoUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    bookingExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    cancelExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    notificationExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.VARCHAR(length=255), nullable=True)
+    hmacKey: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    pricesInCents: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false()
+    )
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="provider"
@@ -72,13 +75,13 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return bool(self.offererProvider)
 
 
-class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
+class VenueProviderExternalUrls(PcObject, Model, DeactivableMixin):
     """
     Stores external Urls specific for a Venue. It will be set by providers via API.
     """
 
     __tablename__ = "venue_provider_external_urls"
-    venueProviderId: int = sa.Column(
+    venueProviderId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue_provider.id", ondelete="CASCADE"), nullable=False, unique=True
     )
     venueProvider: sa_orm.Mapped["VenueProvider"] = sa_orm.relationship(
@@ -86,10 +89,10 @@ class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
     )
 
     # Ticketing urls
-    bookingExternalUrl: str = sa.Column(sa.Text(), nullable=True)
-    cancelExternalUrl: str = sa.Column(sa.Text(), nullable=True)
+    bookingExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    cancelExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     # Notification url
-    notificationExternalUrl: str = sa.Column(sa.Text(), nullable=True)
+    notificationExternalUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
@@ -103,21 +106,23 @@ class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
     )
 
 
-class VenueProvider(PcObject, Base, Model, DeactivableMixin):
+class VenueProvider(PcObject, Model, DeactivableMixin):
     """Stores specific sync settings for a Venue, and whether it is active"""
 
     __tablename__ = "venue_provider"
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False)
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
-    providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), index=True, nullable=False)
+    providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("provider.id"), index=True, nullable=False
+    )
 
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], backref="venueProviders"
     )
 
-    venueIdAtOfferProvider: str = sa.Column(sa.String(70), nullable=True)
+    venueIdAtOfferProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(70), nullable=True)
 
     # external URLs
     externalUrls: sa_orm.Mapped["VenueProviderExternalUrls"] = sa_orm.relationship(
@@ -125,14 +130,16 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     )
 
     # This column is unused by our code but by the data team
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
 
-    lastSyncDate = sa.Column(sa.DateTime, nullable=True)
+    lastSyncDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     # describe if synchronised offers are available for duo booking or not
-    isDuoOffers = sa.Column(sa.Boolean, nullable=True)
+    isDuoOffers = sa_orm.mapped_column(sa.Boolean, nullable=True)
 
-    isFromAllocineProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromAllocineProvider = sa_orm.column_property(
         sa.exists(
             sa.select(Provider.id)
             .where(sa.and_(Provider.id == providerId, Provider.localClass == "AllocineStocks"))
@@ -140,7 +147,7 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
         )
     )
 
-    isFromCinemaProvider = sa_orm.column_property(  # type: ignore[misc]
+    isFromCinemaProvider = sa_orm.column_property(
         sa.exists(sa.select(Provider.id))
         .where(
             sa.and_(
@@ -188,23 +195,23 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
         return bool(self.externalUrls and self.externalUrls.bookingExternalUrl and self.externalUrls.cancelExternalUrl)
 
 
-class CinemaProviderPivot(PcObject, Base, Model):
+class CinemaProviderPivot(PcObject, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""
 
     __tablename__ = "cinema_provider_pivot"
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
+    venueId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
         Venue, foreign_keys=[venueId], backref="cinemaProviderPivot", uselist=False
     )
 
-    providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
+    providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
 
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], backref="cinemaProviderPivots"
     )
 
-    idAtProvider: str = sa.Column(sa.Text, nullable=False)
+    idAtProvider: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -220,11 +227,11 @@ class CinemaProviderPivot(PcObject, Base, Model):
     )
 
 
-class CDSCinemaDetails(PcObject, Base, Model):
+class CDSCinemaDetails(PcObject, Model):
     """Stores info on the specific login details of a cinema synced with CDS"""
 
     __tablename__ = "cds_cinema_details"
-    cinemaProviderPivotId = sa.Column(
+    cinemaProviderPivotId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
 
@@ -232,20 +239,22 @@ class CDSCinemaDetails(PcObject, Base, Model):
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="CDSCinemaDetails", uselist=False
     )
 
-    cinemaApiToken: str = sa.Column(sa.Text, nullable=False)
+    cinemaApiToken: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
-    accountId: str = sa.Column(sa.Text, nullable=False)
+    accountId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
 
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = "allocine_venue_provider"
     __mapper_args__ = {"polymorphic_identity": "allocine_venue_provider"}
 
-    id: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue_provider.id"), primary_key=True)
-    isDuo: bool = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
-    quantity = sa.Column(sa.Integer, nullable=True)
-    internalId: str = sa.Column(sa.Text, nullable=False, unique=True)
-    price: decimal.Decimal = sa.Column(
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue_provider.id"), primary_key=True)
+    isDuo: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, default=True, server_default=sa.true(), nullable=False
+    )
+    quantity = sa_orm.mapped_column(sa.Integer, nullable=True)
+    internalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
     )
 
@@ -258,24 +267,26 @@ class VenueProviderCreationPayload:
     venueIdAtOfferProvider: str | None = None
 
 
-class AllocinePivot(PcObject, Base, Model):
+class AllocinePivot(PcObject, Model):
     __tablename__ = "allocine_pivot"
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=False, nullable=False, unique=True
+    )
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(Venue, foreign_keys=[venueId], backref="allocinePivot")
 
-    theaterId: str = sa.Column(sa.String(20), nullable=False, unique=True)
+    theaterId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(20), nullable=False, unique=True)
 
-    internalId: str = sa.Column(sa.Text, nullable=False, unique=True)
+    internalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
 
-class AllocineTheater(PcObject, Base, Model):
+class AllocineTheater(PcObject, Model):
     __tablename__ = "allocine_theater"
-    siret = sa.Column(sa.String(14), nullable=True, unique=True)
+    siret = sa_orm.mapped_column(sa.String(14), nullable=True, unique=True)
 
-    theaterId: str = sa.Column(sa.String(20), nullable=False, unique=True)
+    theaterId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(20), nullable=False, unique=True)
 
-    internalId: str = sa.Column(sa.Text, nullable=False, unique=True)
+    internalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
 
 class LocalProviderEventType(enum.Enum):
@@ -288,56 +299,60 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject, Base, Model):
+class LocalProviderEvent(PcObject, Model):
     __tablename__ = "local_provider_event"
-    providerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
+    providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship("Provider", foreign_keys=[providerId])
-    date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    type: LocalProviderEventType = sa.Column(sa.Enum(LocalProviderEventType), nullable=False)
-    payload = sa.Column(sa.String(50), nullable=True)
+    date: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+    type: sa_orm.Mapped[LocalProviderEventType] = sa_orm.mapped_column(sa.Enum(LocalProviderEventType), nullable=False)
+    payload = sa_orm.mapped_column(sa.String(50), nullable=True)
 
 
-class BoostCinemaDetails(PcObject, Base, Model):
+class BoostCinemaDetails(PcObject, Model):
     """Stores info on the specific login details of a cinema synced with Boost"""
 
     __tablename__ = "boost_cinema_details"
-    cinemaProviderPivotId = sa.Column(
+    cinemaProviderPivotId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = sa_orm.relationship(
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="BoostCinemaDetails", uselist=False
     )
-    cinemaUrl: str = sa.Column(sa.Text, nullable=False)  # including http:// or https:// and trailing /
-    token: str | None = sa.Column(sa.Text, nullable=True)
-    tokenExpirationDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
+    cinemaUrl: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, nullable=False
+    )  # including http:// or https:// and trailing /
+    token: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    tokenExpirationDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
 
-class CGRCinemaDetails(PcObject, Base, Model):
+class CGRCinemaDetails(PcObject, Model):
     """Stores info on the specific login details of a cinema synced with CGR"""
 
     __tablename__ = "cgr_cinema_details"
-    cinemaProviderPivotId = sa.Column(
+    cinemaProviderPivotId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = sa_orm.relationship(
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="CGRCinemaDetails", uselist=False
     )
-    cinemaUrl: str = sa.Column(sa.Text, nullable=False)
-    numCinema: int = sa.Column(sa.Integer, nullable=True)
-    password: str = sa.Column(sa.Text, nullable=False)
+    cinemaUrl: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    numCinema: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=True)
+    password: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
 
 
-class EMSCinemaDetails(PcObject, Base, Model):
+class EMSCinemaDetails(PcObject, Model):
     """Stores info on the specific login details of a cinema synced with EMS"""
 
     __tablename__ = "ems_cinema_details"
-    cinemaProviderPivotId = sa.Column(
+    cinemaProviderPivotId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
     cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = sa_orm.relationship(
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId], backref="EMSCinemaDetails", uselist=False
     )
-    lastVersion: int = sa.Column(sa.BigInteger, default=0, nullable=False)
+    lastVersion: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, default=0, nullable=False)
 
     @property
     def last_version_as_isoformat(self) -> str:

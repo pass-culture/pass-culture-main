@@ -95,7 +95,7 @@ def discord_success() -> Response | str:
 
 
 @blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
-def discord_call_back() -> str | Response | None:
+def discord_call_back() -> Response | str:
     code = request.args.get("code")
     user_id = request.args.get("state")
 
@@ -125,7 +125,8 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     if already_linked_user and already_linked_user.userId != int(user_id):
         raise users_exceptions.DiscordUserAlreadyLinked()
 
-    user: user_models.User = db.session.get(user_models.User, user_id)
+    user: user_models.User | None = db.session.get(user_models.User, user_id)
+    assert user  # helps mypy
     discord_user = user.discordUser
 
     if discord_user is None:
@@ -149,7 +150,7 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
 
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
-def discord_signin_post() -> str | Response | None:
+def discord_signin_post() -> Response | str:
     if not FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
         return render_template("discord_signin_disabled.html")
 

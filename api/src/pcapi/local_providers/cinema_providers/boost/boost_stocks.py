@@ -57,7 +57,7 @@ class BoostStocks(LocalProvider):
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._boost_api_client.get_showtimes())
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
             .all()
         )
 
@@ -117,6 +117,7 @@ class BoostStocks(LocalProvider):
         offer.product = self.product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        assert self.provider  # helps mypy
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
@@ -177,19 +178,17 @@ class BoostStocks(LocalProvider):
             stock.quantity = self.showtime_details.numberSeatsRemaining + booked_quantity
 
         features = (
-            [ACCEPTED_VERSIONS_MAPPING.get(self.showtime_details.version["code"])]
+            [ACCEPTED_VERSIONS_MAPPING[self.showtime_details.version["code"]]]
             if self.showtime_details.version["code"] in ACCEPTED_VERSIONS_MAPPING
             else []
         )
         if self.showtime_details.format["title"] in ACCEPTED_FORMATS_MAPPING:
-            features.append(ACCEPTED_FORMATS_MAPPING.get(self.showtime_details.format["title"]))
+            features.append(ACCEPTED_FORMATS_MAPPING[self.showtime_details.format["title"]])
 
         showtime_attributs = []
         for attribut in self.attributs:
-            if (
-                accepted_attribut := ACCEPTED_ATTRIBUT_MAPPING.get(attribut.title)
-            ) and attribut.id in self.showtime_details.attributs:
-                showtime_attributs.append(accepted_attribut)
+            if attribut.title in ACCEPTED_ATTRIBUT_MAPPING and attribut.id in self.showtime_details.attributs:
+                showtime_attributs.append(ACCEPTED_ATTRIBUT_MAPPING[attribut.title])
 
         features.extend(showtime_attributs)
 
@@ -211,6 +210,7 @@ class BoostStocks(LocalProvider):
             stock.priceCategory = price_category
 
     def get_or_create_movie_product(self, movie: boost_serializers.Film2) -> offers_models.Product | None:
+        assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid(movie.id, self.venue)
         product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
@@ -221,7 +221,7 @@ class BoostStocks(LocalProvider):
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
                 db.session.query(offers_models.PriceCategory)
-                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .filter(offers_models.PriceCategory.offerId == self.last_offer.id)
                 .all()
                 if self.last_offer.id
                 else []

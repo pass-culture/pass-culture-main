@@ -37,7 +37,7 @@ def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
         return None
 
 
-@app.login_manager.user_loader  # type: ignore[attr-defined]
+@app.login_manager.user_loader
 def get_user_with_id(user_id: str) -> users_models.User | None:
     if flask.request.path.startswith("/static/"):
         # No DB request to serve static files
@@ -77,7 +77,7 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     return manage_pro_session(user)
 
 
-@app.login_manager.unauthorized_handler  # type: ignore[attr-defined]
+@app.login_manager.unauthorized_handler
 def send_401() -> tuple[flask.Response, int]:
     e = ApiErrors()
     e.add_error("global", "Authentification nécessaire")

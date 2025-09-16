@@ -205,13 +205,11 @@ def add_event(
     assert value_date is not None
 
     event = models.FinanceEvent(
-        booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,  # type: ignore[arg-type]
+        booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,
         collectiveBooking=(
-            booking  # type: ignore[arg-type]
-            if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident
-            else None
+            booking if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident else None
         ),
-        bookingFinanceIncident=booking_incident,  # type: ignore[arg-type]
+        bookingFinanceIncident=booking_incident,
         status=status,
         motive=motive,
         valueDate=value_date,
@@ -233,9 +231,9 @@ def cancel_latest_event(
         db.session.query(models.FinanceEvent)
         .filter(
             (
-                (models.FinanceEvent.booking == booking)
+                (models.FinanceEvent.bookingId == booking.id)
                 if isinstance(booking, bookings_models.Booking)
-                else (models.FinanceEvent.collectiveBooking == booking)
+                else (models.FinanceEvent.collectiveBookingId == booking.id)
             ),
             models.FinanceEvent.motive.in_(
                 (
@@ -487,7 +485,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
         pricing = (
             db.session.query(models.Pricing)
             .filter(
-                models.Pricing.event == event,
+                models.Pricing.eventId == event.id,
                 models.Pricing.status != models.PricingStatus.CANCELLED,
             )
             .one_or_none()
@@ -654,7 +652,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         standardRule=rule.description if not isinstance(rule, models.CustomReimbursementRule) else "",
         customRuleId=rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
         revenue=new_revenue,
-        lines=lines,  # type: ignore[arg-type]
+        lines=lines,
         bookingId=pricing_booking_id,
         collectiveBookingId=pricing_collective_booking_id,
         eventId=event.id,
@@ -700,7 +698,7 @@ def _cancel_event_pricing(
         pricing = (
             db.session.query(models.Pricing)
             .filter(
-                models.Pricing.event == event,
+                models.Pricing.eventId == event.id,
                 models.Pricing.status != models.PricingStatus.CANCELLED,
             )
             .one_or_none()
@@ -775,9 +773,9 @@ def _delete_dependent_pricings(
             sa.func.ROW(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
             > sa.func.ROW(event.pricingOrderingDate, event.id),
         )
+        .all()
     )
 
-    pricings = pricings.all()
     if not pricings:
         return
     pricing_ids = {pricing.id for pricing in pricings}
@@ -823,8 +821,8 @@ def _delete_dependent_pricings(
     lines.delete(synchronize_session=False)
     logs = db.session.query(models.PricingLog).filter(models.PricingLog.pricingId.in_(pricing_ids))
     logs.delete(synchronize_session=False)
-    pricings = db.session.query(models.Pricing).filter(models.Pricing.id.in_(pricing_ids))
-    pricings.delete(synchronize_session=False)
+    pricings_to_delete = db.session.query(models.Pricing).filter(models.Pricing.id.in_(pricing_ids))
+    pricings_to_delete.delete(synchronize_session=False)
 
     db.session.query(models.FinanceEvent).filter(
         models.FinanceEvent.id.in_(events_already_priced),
@@ -869,8 +867,9 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     )
 
     if finance_events_from_stock:
-        oldest_pricing_ordering_date = finance_events_from_stock[0].pricingOrderingDate
+        oldest_pricing_ordering_date = typing.cast(datetime.datetime, finance_events_from_stock[0].pricingOrderingDate)
         for finance_event in finance_events_from_stock:
+            assert finance_event.booking  # helps mypy
             finance_event.pricingOrderingDate = get_pricing_ordering_date(finance_event.booking)
             oldest_pricing_ordering_date = min(oldest_pricing_ordering_date, finance_event.pricingOrderingDate)
             db.session.add(finance_event)
@@ -882,7 +881,8 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
                 models.FinanceEvent.status.in_([models.FinanceEventStatus.READY, models.FinanceEventStatus.PRICED]),
             )
             .order_by(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
-            .first()
+            .limit(1)
+            .one()
         )
         force_event_repricing(first_event, models.PricingLogReason.CHANGE_DATE)
 
@@ -984,8 +984,11 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             },
         )
 
-    bank_account_infos = (
-        db.session.query(models.Pricing)
+    bank_account_infos: list[sa.Row[tuple[int, typing.Sequence]]] = (
+        db.session.query(
+            models.BankAccount.id,
+            sa_func.array_agg(models.Pricing.venueId.distinct()),
+        )
         .filter(*filters)
         .outerjoin(models.Pricing.booking)
         .outerjoin(bookings_models.Booking.stock)
@@ -999,13 +1002,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         .filter(offerers_models.VenueBankAccountLink.timespan.contains(batch.cutoff))
         .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
         .outerjoin(models.CashflowPricing)
-        .with_entities(
-            models.BankAccount.id,
-            sa_func.array_agg(models.Pricing.venueId.distinct()),
-        )
         .group_by(
             models.BankAccount.id,
         )
+        .all()
     )
 
     for bank_account_id, venue_ids in bank_account_infos:
@@ -1061,7 +1061,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
 
                 # Check integrity by looking for bookings whose amount
                 # has been changed after they have been priced.
-                diff = (
+                diff_query = (
                     pricings.join(models.Pricing.lines)
                     .filter(
                         models.PricingLine.category == models.PricingLineCategory.OFFERER_REVENUE,
@@ -1077,7 +1077,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     )
                     .with_entities(models.Pricing.id)
                 )
-                diff = {_pricing_id for (_pricing_id,) in diff.all()}
+                diff = {_pricing_id for (_pricing_id,) in diff_query.all()}
                 if diff:
                     logger.error(
                         "Found integrity error on booking prices vs. pricing lines",
@@ -1546,6 +1546,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     ]
 
     def get_individual_data(query: sa_orm.Query) -> sa_orm.Query:
+        typed_is_caledonian = typing.cast(sa_orm.Mapped[bool], offerers_models.Offerer.is_caledonian)
         individual_data_query = (
             query.filter(bookings_models.Booking.amount != 0)
             .join(bookings_models.Booking.deposit)
@@ -1566,11 +1567,11 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 sa.case(
-                    (offerers_models.Offerer.is_caledonian == True, offerers_models.Offerer.rid7),
+                    (typed_is_caledonian == True, offerers_models.Offerer.rid7),
                     else_=offerers_models.Offerer.siren,
                 ).label("offerer_siren"),
                 ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
-                sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
+                sa.case((typed_is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
                 sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
@@ -1641,7 +1642,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
         .join(models.BookingFinanceIncident.booking)
     )
 
-    indiv_data = (
+    indiv_data: list = (
         indiv_query.union_all(indiv_incident_query)
         .group_by(
             sa.column("bank_account_id"),
@@ -1677,7 +1678,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
         .join(models.BookingFinanceIncident.collectiveBooking)
     )
 
-    collective_data = (
+    collective_data: list = (
         collective_query.union_all(collective_incident_query)
         .group_by(
             sa.column("bank_account_id"),
@@ -1734,7 +1735,9 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
             if rule_reference == regular_rule.description:
                 return regular_rule
     # CustomReimbursementRule.id
-    return db.session.get(models.CustomReimbursementRule, rule_reference)
+    rule = db.session.get(models.CustomReimbursementRule, rule_reference)
+    assert rule  # helps mypy
+    return rule
 
 
 def _make_invoice_lines(
@@ -2043,7 +2046,10 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
                 ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
-                sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("ministry"),
+                sa.case(
+                    (typing.cast(sa_orm.Mapped[bool], offerers_models.Offerer.is_caledonian) == True, "NC"),
+                    else_=None,
+                ).label("ministry"),
                 sa_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
@@ -2111,8 +2117,8 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
         .filter(models.Cashflow.batchId == batch.id)
     )
     bank_accounts = [i.bankAccountId for i in bank_accounts_query]
-    indiv_data = []
-    collective_data = []
+    indiv_data: list = []
+    collective_data: list = []
     chunk_size = 100
     for i in range(0, len(bank_accounts), chunk_size):
         bank_accounts_chunk = bank_accounts[i : i + chunk_size]
@@ -3256,7 +3262,7 @@ def update_bank_account_venues_links(
                 }
             )
         db.session.bulk_update_mappings(
-            offerers_models.VenueBankAccountLink,
+            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
             link_bulk_update_mapping,
         )
 
@@ -3289,10 +3295,13 @@ def update_bank_account_venues_links(
                 }
             )
 
-        db.session.bulk_insert_mappings(offerers_models.VenueBankAccountLink, new_links)
+        db.session.bulk_insert_mappings(
+            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
+            new_links,
+        )
 
         db.session.bulk_insert_mappings(
-            history_models.ActionHistory,
+            history_models.ActionHistory,  # type: ignore [arg-type]
             action_history_bulk_insert_mapping,
         )
 

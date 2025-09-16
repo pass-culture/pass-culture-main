@@ -12,7 +12,7 @@ def get_fraud_check(user: users_models.User, application_number: int) -> fraud_m
     return (
         db.session.query(fraud_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.userId == user.id,
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
             fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
         )

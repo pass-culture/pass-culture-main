@@ -43,7 +43,7 @@ class BigQueryProductSync:
         last_sync_event = (
             db.session.query(providers_models.LocalProviderEvent)
             .filter(
-                providers_models.LocalProviderEvent.provider == provider,
+                providers_models.LocalProviderEvent.providerId == provider.id,
                 providers_models.LocalProviderEvent.type == LocalProviderEventType.SyncEnd,
                 providers_models.LocalProviderEvent.payload == self.titelive_base.value,
             )
@@ -186,8 +186,11 @@ class BigQueryProductSync:
         if not is_update:
             product = offers_models.Product(ean=bq_product.gencod)
 
+        assert product  # helps mypy
         product.name = textwrap.shorten(
-            bq_product.titre, width=constants.TITELIVE_PRODUCT_NAME_MAX_LENGTH, placeholder="…"
+            bq_product.titre,
+            width=constants.TITELIVE_PRODUCT_NAME_MAX_LENGTH,
+            placeholder="…",
         )
         product.description = bq_product.resume
         product.lastProvider = providers_repository.get_provider_by_name(

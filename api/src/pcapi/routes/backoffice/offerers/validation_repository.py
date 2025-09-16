@@ -3,6 +3,7 @@
 """
 
 import re
+import typing
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -109,7 +110,9 @@ def _apply_query_filters(
             elif num_digits == 5:
                 query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
             elif num_digits in (2, 3):
-                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
+                query = query.filter(
+                    typing.cast(sa_orm.Mapped[str], offerers_models.Offerer.departementCode) == sanitized_q,
+                )
             else:
                 raise ApiErrors(
                     {
@@ -265,7 +268,7 @@ def list_offerers_to_be_validated(
         .scalar_subquery()
     )
 
-    query = (
+    base_query = (
         db.session.query(
             offerers_models.Offerer,
             _get_tags_subquery().label("tags"),
@@ -280,7 +283,7 @@ def list_offerers_to_be_validated(
     )
 
     query = _apply_query_filters(
-        query,
+        base_query,
         q=q,
         regions=regions,
         tags=tags,

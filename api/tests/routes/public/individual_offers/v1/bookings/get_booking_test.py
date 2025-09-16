@@ -51,6 +51,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": token})
             assert response.status_code == 404
@@ -61,6 +62,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         token = booking.token
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": token})
@@ -175,6 +177,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 403
@@ -200,6 +203,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
             assert response.status_code == 403
@@ -222,6 +226,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
@@ -246,6 +251,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         num_queries = 1  # select api_key
         num_queries += 1  # select booking
         num_queries += 1  # check pricing exists
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})

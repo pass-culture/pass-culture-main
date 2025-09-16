@@ -45,11 +45,11 @@ class OfferValidationType(enum.Enum):
 
 @sa_orm.declarative_mixin
 class ValidationMixin:
-    lastValidationDate = sa.Column(sa.DateTime, nullable=True)
+    lastValidationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    lastValidationType = sa.Column(sa.Enum(OfferValidationType, name="validation_type"), nullable=True)
+    lastValidationType = sa_orm.mapped_column(sa.Enum(OfferValidationType, name="validation_type"), nullable=True)
 
-    validation: sa_orm.Mapped[OfferValidationStatus] = sa.Column(
+    validation: sa_orm.Mapped[OfferValidationStatus] = sa_orm.mapped_column(
         sa.Enum(OfferValidationStatus, name="validation_status"),
         nullable=False,
         default=OfferValidationStatus.APPROVED,
@@ -62,19 +62,20 @@ class ValidationMixin:
         return self.validation == OfferValidationStatus.APPROVED
 
     @declared_attr
-    def lastValidationAuthorUserId(self) -> sa_orm.Mapped[int | None]:
-        return sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
+    def lastValidationAuthorUserId(cls) -> sa_orm.Mapped[int | None]:
+        return sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
 
     @declared_attr
-    def lastValidationAuthor(self) -> sa_orm.Mapped["User | None"]:
-        return sa_orm.relationship("User", foreign_keys=[self.lastValidationAuthorUserId])
+    def lastValidationAuthor(cls) -> sa_orm.Mapped["User | None"]:
+        return sa_orm.relationship("User", foreign_keys=[cls.lastValidationAuthorUserId])  # type: ignore [list-item]
 
-    @declared_attr
-    def __table_args__(self):
+    @declared_attr.directive
+    def __table_args__(cls) -> tuple:
+        table_name = getattr(cls, "__tablename__", "")  # to help mypy
         return (
             sa.Index(
-                f"idx_{self.__tablename__}_lastValidationAuthorUserId",
-                self.lastValidationAuthorUserId,
-                postgresql_where=self.lastValidationAuthorUserId.is_not(None),
+                f"idx_{table_name}_lastValidationAuthorUserId",
+                "lastValidationAuthorUserId",
+                postgresql_where='"lastValidationAuthorUserId IS NOT NULL"',
             ),
         )

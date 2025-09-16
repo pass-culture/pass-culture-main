@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import brevo_python
 from brevo_python.rest import ApiException
@@ -75,7 +76,11 @@ class ToDevSendinblueBackend(SendinblueBackend):
         )
 
         try:
-            user = db.session.query(users_models.User).filter(users_models.User.phoneNumber == recipient).one_or_none()
+            user = (
+                db.session.query(users_models.User)
+                .filter(typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == recipient)
+                .one_or_none()
+            )
         except sa_orm.exc.MultipleResultsFound:
             logger.error("Several user accounts with the same phone number", extra={"phone_number": recipient})
         else:
