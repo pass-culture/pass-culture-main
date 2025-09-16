@@ -256,7 +256,6 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         "Offerer", foreign_keys=[offererId], back_populates="bankAccounts"
     )
     iban: str = sa.Column(sa.String(27), nullable=False)
-    bic: str = sa.Column(sa.String(11), nullable=False)
     dsApplicationId: int | None = sa.Column(sa.BigInteger, nullable=True, unique=True)
     status: sa_orm.Mapped[BankAccountApplicationStatus] = sa.Column(
         sa.Enum(BankAccountApplicationStatus), nullable=False

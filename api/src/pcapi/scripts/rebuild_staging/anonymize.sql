@@ -91,7 +91,6 @@ COMMIT;
 
 -- Set fake IBAN and BIC in `bank_account` and `payment` table.
 UPDATE bank_account SET iban = pg_temp.fake_iban_from_id(id);
-UPDATE bank_account SET bic = pg_temp.fake_bic_from_id(id);
 UPDATE payment
 SET iban = pg_temp.fake_iban_from_id(id), bic = pg_temp.fake_bic_from_id(id)
 WHERE payment.iban IS NOT NULL

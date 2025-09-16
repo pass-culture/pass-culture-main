@@ -15,7 +15,7 @@ from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.api import mark_bank_account_without_continuation
-from pcapi.core.finance.utils import format_raw_iban_and_bic
+from pcapi.core.finance.utils import format_raw_iban
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import models as users_models
@@ -207,7 +207,6 @@ class ApplicationDetail(BaseModel):
     siren: str | None = None
     iban: str
     obfuscatedIban: str
-    bic: str
     siret: str | None = None
     dms_token: str | None = None
     error_annotation_id: str
@@ -236,9 +235,8 @@ class ApplicationDetail(BaseModel):
         to_representation["application_id"] = obj["application_id"]
         to_representation["dossier_id"] = obj["dossier_id"]
         to_representation["siren"] = obj.get("siren")
-        to_representation["iban"] = format_raw_iban_and_bic(obj["iban"])
+        to_representation["iban"] = format_raw_iban(obj["iban"])
         to_representation["obfuscatedIban"] = f"""XXXX XXXX XXXX {to_representation["iban"][-4:]}"""
-        to_representation["bic"] = format_raw_iban_and_bic(obj["bic"])
         to_representation["dms_token"] = obj.get("dms_token") if obj.get("application_type") == 4 else None
         to_representation["modification_date"] = (
             datetime.fromisoformat(obj["updated_at"]).astimezone().replace(tzinfo=None)

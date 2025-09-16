@@ -88,7 +88,7 @@ def format_currency_for_backoffice(amount: float | decimal.Decimal, use_xpf: boo
     return f"{amount:,.2f} €".replace(",", "\u202f").replace(".", ",")
 
 
-def format_raw_iban_and_bic(raw_data: str) -> str:
+def format_raw_iban(raw_data: str) -> str:
     formatted_data = raw_data.upper()
     formatted_data = formatted_data.replace(" ", "").replace("\xa0", "")
     return formatted_data

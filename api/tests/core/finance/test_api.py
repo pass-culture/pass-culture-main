@@ -4600,7 +4600,6 @@ class CleanDuplicateBankAccountsTest:
         duplicate = factories.BankAccountFactory(
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago_created),
             iban=bank_account.iban,
-            bic=bank_account.bic,
             offerer=bank_account.offerer,
         )
         factories.BankAccountStatusHistoryFactory(
@@ -4645,7 +4644,7 @@ class CleanDuplicateBankAccountsTest:
 
     def test_keep_duplicate_on_different_offerer(self):
         ba = self._create_bank_account_linked_to_venue()
-        duplicate = factories.BankAccountFactory(iban=ba.iban, bic=ba.bic, offerer=offerers_factories.OffererFactory())
+        duplicate = factories.BankAccountFactory(iban=ba.iban, offerer=offerers_factories.OffererFactory())
 
         api.clean_duplicate_bank_accounts()
 

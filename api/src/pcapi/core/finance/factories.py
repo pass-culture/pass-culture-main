@@ -35,7 +35,6 @@ class BankAccountFactory(BaseFactory):
 
     offerer = factory.SubFactory(offerers_factories.OffererFactory)
     label = factory.Sequence(lambda n: f"Libellé des coordonnées bancaires n°{n}")
-    bic = "BDFEFRPP"
     iban = factory.LazyAttributeSequence(
         lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
     )
@@ -46,7 +45,6 @@ class BankAccountFactory(BaseFactory):
 class CaledonianBankAccountFactory(BankAccountFactory):
     offerer = factory.SubFactory(offerers_factories.CaledonianOffererFactory)
     label = factory.Sequence(lambda n: f"Coordonnées bancaires calédoniennes n°{n}")
-    bic = "CEPANCNM"
     iban = factory.LazyAttributeSequence(
         lambda o, n: schwifty.IBAN.generate("NC", bank_code="14889", account_code=f"988{n:07}").compact
     )

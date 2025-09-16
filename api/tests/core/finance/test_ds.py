@@ -103,7 +103,7 @@ class ImportDSBankAccountApplicationsTest:
         # Mock a faulty application
         mock_graphql_client.return_value = ds_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.draft.value,
-            bic="APOEBPOE:4AUIE APEAÉPSTEOBSTP4B34OBEPAÉDJT",
+            iban="APOEBPOE:4AUIE APEAÉPSTEOBSTP4B34OBEPAÉDJT",
             application_id=2,
             siret=siret_2,
         )
@@ -575,7 +575,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == offerer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -625,7 +624,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -657,7 +655,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.DRAFT
@@ -687,7 +684,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -714,7 +710,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -739,7 +734,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -777,19 +771,17 @@ class BankAccountJourneyTest:
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
 
-        first_bic = "SOGEFRPP"
         first_iban = "FR7630007000111234567890144"
         first_label = "Oupsie"
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
-            state=GraphQLApplicationStates.on_going.value, bic=first_bic, iban=first_iban, label=first_label
+            state=GraphQLApplicationStates.on_going.value, iban=first_iban, label=first_label
         )
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.label == first_label
-        assert bank_account.bic == first_bic
         assert bank_account.iban == first_iban
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -813,7 +805,6 @@ class BankAccountJourneyTest:
 
         bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.label == "Intitulé du compte bancaire"
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -832,19 +823,17 @@ class BankAccountJourneyTest:
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
 
-        first_bic = "SOGEFRPP"
         first_iban = "FR7630007000111234567890144"
         first_label = "Oupsie"
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
-            state=GraphQLApplicationStates.on_going.value, bic=first_bic, iban=first_iban, label=first_label
+            state=GraphQLApplicationStates.on_going.value, iban=first_iban, label=first_label
         )
 
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.label == first_label
-        assert bank_account.bic == first_bic
         assert bank_account.iban == first_iban
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -869,7 +858,6 @@ class BankAccountJourneyTest:
 
         bank_account = db.session.query(finance_models.BankAccount).one()
         assert bank_account.label == "Intitulé du compte bancaire"
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -913,7 +901,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
@@ -942,7 +929,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -992,7 +978,6 @@ class BankAccountJourneyTest:
         # Legacy bankInformation turned into a bankAccount
         finance_factories.BankAccountFactory(
             iban="FR7630006000011234567890189",
-            bic="BICAGRIFRPP",
             offerer=venue.managingOfferer,
             status=finance_models.BankAccountApplicationStatus.DRAFT,
             label="Intitulé du compte bancaire",
@@ -1006,7 +991,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ON_GOING
@@ -1029,7 +1013,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -1042,28 +1025,24 @@ class BankAccountJourneyTest:
         assert not db.session.query(history_models.ActionHistory).count()
         assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
-        fake_bic = str(schwifty.BIC.from_bank_code("FR", bank_code="30004"))
         fake_iban = str(schwifty.IBAN.generate("FR", bank_code="30004", account_code="12345"))
 
         mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value,
             b64_encoded_application_id=b64encode("Champ-123".encode()),
             application_id=123,
-            bic=fake_bic,
             iban=fake_iban,
         )
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_accounts = db.session.query(finance_models.BankAccount).order_by(finance_models.BankAccount.id).all()
         assert len(bank_accounts) == 2
-        assert bank_accounts[0].bic == "BICAGRIFRPP"
         assert bank_accounts[0].iban == "FR7630006000011234567890189"
         assert bank_accounts[0].offerer == venue.managingOfferer
         assert bank_accounts[0].status == finance_models.BankAccountApplicationStatus.ACCEPTED
         assert bank_accounts[0].label == "Intitulé du compte bancaire"
         assert bank_accounts[0].dsApplicationId == self.dsv5_application_id
 
-        assert bank_accounts[1].bic == fake_bic
         assert bank_accounts[1].iban == fake_iban
         assert bank_accounts[1].offerer == venue.managingOfferer
         assert bank_accounts[1].status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -1089,7 +1068,6 @@ class BankAccountJourneyTest:
         update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         bank_account = db.session.query(finance_models.BankAccount).one()
-        assert bank_account.bic == "BICAGRIFRPP"
         assert bank_account.iban == "FR7630006000011234567890189"
         assert bank_account.offerer == venue.managingOfferer
         assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
@@ -1103,38 +1081,21 @@ class BankAccountJourneyTest:
         assert db.session.query(history_models.ActionHistory).count() == 1
         assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
 
-    @pytest.mark.parametrize(
-        "fake_iban,fake_bic",
-        [
-            ("XR7630006000011234567890189", None),
-            (None, "FAKEBICIFRPX"),
-        ],
-    )
-    def test_validation_on_iban_and_bic(
-        self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client, fake_iban, fake_bic
-    ):
+    def test_validation_on_iban(self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client):
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
         offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
 
-        if fake_iban:
-            mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
-                state=GraphQLApplicationStates.draft.value, iban=fake_iban
-            )
-        elif fake_bic:
-            mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
-                state=GraphQLApplicationStates.draft.value, bic=fake_bic
-            )
+        mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
+            state=GraphQLApplicationStates.draft.value, iban="XR7630006000011234567890189"
+        )
 
         update_ds_applications_for_procedure(procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID, since=None)
 
         assert not db.session.query(finance_models.BankAccount).all()
-        message = ""
-        if fake_iban:
-            message = "L'IBAN n'est pas valide"
-        elif fake_bic:
-            message = "Le BIC n'est pas valide"
         mock_update_text_annotation.assert_any_call(
-            dossier_id=self.b64_encoded_application_id, annotation_id=self.error_annotation_id, message=message
+            dossier_id=self.b64_encoded_application_id,
+            annotation_id=self.error_annotation_id,
+            message="L'IBAN n'est pas valide",
         )

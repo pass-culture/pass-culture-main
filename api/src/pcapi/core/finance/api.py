@@ -3774,7 +3774,7 @@ def mark_bank_account_without_continuation(ds_application_id: int) -> None:
 
 def clean_duplicate_bank_accounts() -> None:
     """
-    Delete bank accounts never linked to a venue and which have same IBAN, BIC and offerer as another bank account which
+    Delete bank accounts never linked to a venue and which have same IBAN and offerer as another bank account which
     is currently linked to a venue. This helps cleaning the list of bank account for an offerer.
     """
     other_bank_account = sa_orm.aliased(models.BankAccount)
@@ -3790,7 +3790,6 @@ def clean_duplicate_bank_accounts() -> None:
             other_bank_account,
             sa.and_(
                 other_bank_account.iban == models.BankAccount.iban,
-                other_bank_account.bic == models.BankAccount.bic,
                 other_bank_account.offererId == models.BankAccount.offererId,
             ),
         )
