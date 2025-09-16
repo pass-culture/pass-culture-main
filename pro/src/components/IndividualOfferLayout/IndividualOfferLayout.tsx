@@ -123,7 +123,9 @@ export const IndividualOfferLayout = ({
       {offer && (
         <p className={styles['offer-title']}>
           {offer.name}
-          <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
+          {offer.isHeadlineOffer && (
+            <Tag label="Offre à la une" variant={TagVariant.HEADLINE} />
+          )}
         </p>
       )}
 
