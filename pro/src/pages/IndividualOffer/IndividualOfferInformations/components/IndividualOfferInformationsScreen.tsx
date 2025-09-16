@@ -280,7 +280,7 @@ export const IndividualOfferInformationsScreen = ({
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
             isDisabled={
               form.formState.isSubmitting ||
-              isOfferDisabled(offer.status) ||
+              isOfferDisabled(offer) ||
               hasPublishedOfferWithSameEan
             }
             dirtyForm={form.formState.isDirty}

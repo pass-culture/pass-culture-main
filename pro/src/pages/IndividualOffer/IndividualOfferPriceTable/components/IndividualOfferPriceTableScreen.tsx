@@ -13,7 +13,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled as getIsOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
@@ -58,8 +58,6 @@ export const IndividualOfferPriceTableScreen = ({
   )
 
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const isOfferDisabled =
-    getIsOfferDisabled(offer.status) || hasPublishedOfferWithSameEan
   const schemaValidationContext: PriceTableFormContext = {
     isCaledonian,
     mode,
@@ -125,7 +123,6 @@ export const IndividualOfferPriceTableScreen = ({
 
               <PriceTableForm
                 isCaledonian={isCaledonian}
-                isReadOnly={isOfferDisabled}
                 mode={mode}
                 offer={offer}
                 schemaValidationContext={schemaValidationContext}
@@ -139,7 +136,9 @@ export const IndividualOfferPriceTableScreen = ({
                 <DuoCheckbox
                   {...form.register('isDuo')}
                   checked={Boolean(form.watch('isDuo'))}
-                  disabled={isOfferDisabled}
+                  disabled={
+                    isOfferDisabled(offer) || hasPublishedOfferWithSameEan
+                  }
                 />
               </FormLayout.Section>
             </FormLayout>
@@ -148,9 +147,9 @@ export const IndividualOfferPriceTableScreen = ({
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
             isDisabled={
-              form.formState.isSubmitting ||
-              isOfferDisabled ||
-              !!hasPublishedOfferWithSameEan
+              isOfferDisabled(offer) ||
+              hasPublishedOfferWithSameEan ||
+              form.formState.isSubmitting
             }
             dirtyForm={form.formState.isDirty}
             isEvent={false}

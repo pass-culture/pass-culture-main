@@ -175,9 +175,7 @@ export const IndividualOfferPracticalInfosScreen = ({
           <ActionBar
             onClickPrevious={handlePreviousStep}
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS}
-            isDisabled={
-              form.formState.isSubmitting || isOfferDisabled(offer.status)
-            }
+            isDisabled={form.formState.isSubmitting || isOfferDisabled(offer)}
             saveEditionChangesButtonRef={saveEditionChangesButtonRef}
           />
           <RouteLeavingGuardIndividualOffer

@@ -191,7 +191,7 @@ export function StocksCalendar({
       {isLoading && offer.hasStocks && (
         <Spinner className={styles['spinner']} />
       )}
-      {!isOfferDisabled(offer.status) && (
+      {!isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
         </div>

@@ -184,12 +184,12 @@ export function StocksCalendarTable({
 
             const canDeleteStock =
               mode !== OFFER_WIZARD_MODE.READ_ONLY &&
-              !isOfferDisabled(offer.status) &&
+              !isOfferDisabled(offer) &&
               stock.isEventDeletable
 
             const canEditStock =
               mode === OFFER_WIZARD_MODE.EDITION &&
-              !isOfferDisabled(offer.status) &&
+              !isOfferDisabled(offer) &&
               stock.beginningDatetime &&
               !isBefore(stock.beginningDatetime, new Date()) &&
               (!isOfferSynchronized(offer) ||

@@ -1,11 +1,11 @@
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
-import { isAllocineOffer } from '../localProvider'
+import { isOfferSynchronizedViaAllocine } from '../isOfferSynchronizedViaAllocine'
 
-describe('isAllocineOffer', () => {
+describe('isOfferSynchronizedViaAllocine', () => {
   it('should return true if last provider name is Allociné', () => {
     expect(
-      isAllocineOffer(
+      isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
           lastProvider: {
             name: 'Allociné',
@@ -17,7 +17,7 @@ describe('isAllocineOffer', () => {
 
   it('should return false if last provider name does not contain Allociné', () => {
     expect(
-      isAllocineOffer(
+      isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
           lastProvider: {
             name: 'Anyotherprovider',
@@ -29,7 +29,7 @@ describe('isAllocineOffer', () => {
 
   it('should return false if last provider is null', () => {
     expect(
-      isAllocineOffer(
+      isOfferSynchronizedViaAllocine(
         getIndividualOfferFactory({
           lastProvider: null,
         })
@@ -39,7 +39,9 @@ describe('isAllocineOffer', () => {
 
   it('should return false if last provider is undefined', () => {
     expect(
-      isAllocineOffer(getIndividualOfferFactory({ lastProvider: undefined }))
+      isOfferSynchronizedViaAllocine(
+        getIndividualOfferFactory({ lastProvider: undefined })
+      )
     ).toBe(false)
   })
 })

@@ -346,7 +346,7 @@ export const IndividualOfferDetailsScreen = ({
             step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
             isDisabled={
               form.formState.isSubmitting ||
-              Boolean(offer && isOfferDisabled(offer.status)) ||
+              Boolean(offer && isOfferDisabled(offer)) ||
               hasPublishedOfferWithSameEan
             }
             dirtyForm={form.formState.isDirty || offer === null}
