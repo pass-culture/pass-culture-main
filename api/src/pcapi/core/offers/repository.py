@@ -974,7 +974,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
 
         return query.one()
     except sa_orm.exc.NoResultFound:
-        raise exceptions.OfferNotFound()
+        raise exceptions.OfferNotFound(offer_id=offer_id)
 
 
 def get_offer_and_extradata(offer_id: int) -> models.Offer | None:

@@ -1,15 +1,18 @@
 import pytest
+import sqlalchemy as sa
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers import factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.utils.date import timespan_str_to_numrange
 
 
-def setup_auth_client_and_offer(client):
+def setup_auth_client_and_offer(client, ignore_offer=False):
     venue = offerers_factories.VenueFactory()
-    offer = factories.ThingOfferFactory(venue=venue)
+    offer = None if ignore_offer else factories.ThingOfferFactory(venue=venue)
     user = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com").user
     auth_client = client.with_session_auth(user.email)
     return auth_client, offer
@@ -38,9 +41,11 @@ class Returns403Test:
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
     def test_unknown_offer_returns_an_error(self, client):
-        auth_client, _ = setup_auth_client_and_offer(client)
+        auth_client, _ = setup_auth_client_and_offer(client, ignore_offer=True)
+        max_offer_id = db.session.query(sa.func.max(offers_models.Offer.id)).scalar()
+        unknown_offer_id = max_offer_id + 1 if max_offer_id is not None else 1
 
-        url = "/offers/-1/opening-hours"
+        url = f"/offers/{unknown_offer_id}/opening-hours"
         response = auth_client.get(url)
         assert response.status_code == 404
 

@@ -119,7 +119,9 @@ class BookingLimitDatetimeTooLate(OfferException):  # (tcoudray-pass, 14/05/2025
 
 
 class OfferNotFound(Exception):
-    pass
+    def __init__(self, offer_id: int | None = None) -> None:
+        self.offer_id = offer_id
+        super().__init__()
 
 
 class ProductNotFound(Exception):
