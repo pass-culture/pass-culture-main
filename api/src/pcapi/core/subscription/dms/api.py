@@ -3,6 +3,8 @@ import enum
 import hashlib
 import logging
 
+import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.mails.transactional as transactional_mails
@@ -25,10 +27,12 @@ from pcapi.core.subscription.dms import messages
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
+from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import repository
+from pcapi.utils.postal_code import PostalCode
 
 from . import repository as dms_repository
 
@@ -44,6 +48,17 @@ FIELD_ERROR_LABELS = {
 }
 
 UPDATE_STATE_TIMEOUT = 30
+
+PRE_GENERALISATION_DEPARTMENTS = ["08", "22", "25", "29", "34", "35", "56", "58", "67", "71", "84", "93", "94", "973"]
+
+INACTIVITY_MESSAGE = """Aucune activité n’a eu lieu sur ton dossier depuis plus de {delay} jours.
+
+Conformément à nos CGUs, en cas d’absence de réponse ou de justification insuffisante, nous nous réservons le droit de refuser ta création de compte. Aussi nous avons classé sans suite ton dossier n°{application_number}.
+
+Sous réserve d’être encore éligible, tu peux si tu le souhaites refaire une demande d’inscription. Nous t'invitons à soumettre un nouveau dossier en suivant ce lien : https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={procedure_id}
+
+Tu trouveras toutes les informations dans notre FAQ pour t'accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
+"""
 
 
 class ApplicationLabel(enum.Enum):
@@ -674,7 +689,7 @@ def _process_instructor_annotation(application_content: fraud_models.DMSContent,
 
 
 def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
-    already_processed_applications_ids = dms_repository._get_already_processed_applications_ids(procedure_id)
+    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
     processed_applications: list = []
     new_import_datetime = None
@@ -774,3 +789,223 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
         procedure_number,
         len(processed_applications),
     )
+
+
+def archive_applications(procedure_number: int, dry_run: bool = True) -> None:
+    total_applications = 0
+    archived_applications = 0
+
+    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_number)
+    client = dms_connector_api.DMSGraphQLClient()
+
+    for application_details in client.get_applications_with_details(
+        procedure_number, dms_models.GraphQLApplicationStates.accepted
+    ):
+        total_applications += 1
+
+        application_techid = application_details.id
+        application_number = application_details.number
+
+        if application_number not in already_processed_applications_ids:
+            continue
+
+        if not dry_run:
+            try:
+                client.archive_application(application_techid, settings.DMS_ENROLLMENT_INSTRUCTOR)
+            except Exception:
+                logger.exception("error while archiving application %d", application_number)
+        logger.info("Archiving application %d on procedure %d", application_number, procedure_number)
+        archived_applications += 1
+
+    logger.info(
+        "script ran : total applications : %d to archive applications : %d", total_applications, archived_applications
+    )
+
+
+def _get_latest_deleted_application_datetime(procedure_number: int) -> datetime.datetime | None:
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,
+            fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(sa.Integer)
+            == procedure_number,
+            fraud_models.BeneficiaryFraudCheck.resultContent.has_key("deletion_datetime"),
+        )
+        .order_by(fraud_models.BeneficiaryFraudCheck.resultContent["deletion_datetime"].desc())
+        .first()
+    )
+    if fraud_check:
+        content = fraud_check.source_data()
+        if isinstance(content, fraud_models.DMSContent):
+            return content.deletion_datetime
+
+        raise ValueError(f"fraud_check.source_data() is not a DMSContent. Fraud check: {fraud_check.id}")
+    return None
+
+
+def handle_deleted_dms_applications(procedure_number: int) -> None:
+    latest_deleted_application_datetime = _get_latest_deleted_application_datetime(procedure_number)
+
+    logger.info(
+        "Looking for deleted applications for procedure %d since %s",
+        procedure_number,
+        latest_deleted_application_datetime,
+    )
+
+    dms_graphql_client = dms_connector_api.DMSGraphQLClient()
+    applications_to_mark_as_deleted = {}
+
+    for deleted_application in dms_graphql_client.get_deleted_applications(
+        procedure_number, deletedSince=latest_deleted_application_datetime
+    ):
+        applications_to_mark_as_deleted[str(deleted_application.number)] = deleted_application
+
+    fraud_checks_to_mark_as_deleted = (
+        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        .filter(
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId.in_(applications_to_mark_as_deleted),
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.CANCELED,
+            fraud_models.BeneficiaryFraudCheck.status != fraud_models.FraudCheckStatus.OK,
+        )
+        .yield_per(100)
+    )
+    updated_fraud_checks_count = 0
+
+    for fraud_check in fraud_checks_to_mark_as_deleted:
+        dms_information: dms_models.DmsDeletedApplication = applications_to_mark_as_deleted[fraud_check.thirdPartyId]
+        try:
+            fraud_check_data: fraud_models.DMSContent = fraud_check.source_data()
+            fraud_check_data.deletion_datetime = dms_information.deletion_datetime
+            fraud_check.resultContent = fraud_check_data.dict()
+        except ValueError:
+            logger.warning(
+                "Could not write 'deletion_datetime' in fraud check resultContent: resultContent is empty",
+                extra={"fraud_check": fraud_check.id, "deletion_datetime": dms_information.deletion_datetime},
+            )
+
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.reason = f"Dossier supprimé sur démarches-simplifiées. Motif: {dms_information.reason}"
+
+        db.session.add(fraud_check)
+        updated_fraud_checks_count += 1
+    db.session.commit()
+
+    logger.info(
+        "Marked %d fraud checks as deleted for procedure %d since %s",
+        updated_fraud_checks_count,
+        procedure_number,
+        latest_deleted_application_datetime,
+    )
+
+
+def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_applicant_rule: bool = False) -> None:
+    logger.info("[DMS] Handling inactive application for procedure %d", procedure_number)
+    marked_applications_count = 0
+    draft_applications = dms_connector_api.DMSGraphQLClient().get_applications_with_details(
+        procedure_number, dms_models.GraphQLApplicationStates.draft
+    )
+
+    for draft_application in draft_applications:
+        with lock_ds_application(draft_application.number):
+            try:
+                if not _has_inactivity_delay_expired(draft_application):
+                    continue
+                if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
+                    continue
+                _mark_without_continuation_a_draft_application(draft_application)
+                _mark_cancel_dms_fraud_check(
+                    draft_application.number, draft_application.applicant.email or draft_application.profile.email
+                )
+                marked_applications_count += 1
+            except (DmsGraphQLApiException, Exception):
+                logger.exception(
+                    "[DMS] Could not mark application %s without continuation",
+                    draft_application.number,
+                    extra={"procedure_number": procedure_number},
+                )
+                continue
+
+    logger.info("[DMS] Marked %d inactive applications for procedure %d", marked_applications_count, procedure_number)
+
+
+def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResponse) -> bool:
+    date_with_delay = datetime.datetime.utcnow() - relativedelta(days=settings.DMS_INACTIVITY_TOLERANCE_DELAY)
+
+    if dms_application.latest_modification_datetime >= date_with_delay:
+        return False
+
+    # Do not close application if no message has been sent by either an instructor or the automation
+    if not dms_application.messages:
+        return False
+
+    most_recent_message = max(dms_application.messages, key=lambda message: message.created_at)
+
+    return most_recent_message.created_at <= date_with_delay and not _is_message_from_applicant(
+        dms_application, most_recent_message
+    )
+
+
+def _is_message_from_applicant(
+    dms_application: dms_models.DmsApplicationResponse, message: dms_models.DMSMessage
+) -> bool:
+    return message.email == (dms_application.applicant.email or dms_application.profile.email)
+
+
+def _mark_without_continuation_a_draft_application(dms_application: dms_models.DmsApplicationResponse) -> None:
+    """Mark a draft application as without continuation.
+
+    First make it on_going - disable notification to only notify the user of the without_continuation change
+    Then mark it without_continuation
+    """
+    dms_connector_api.DMSGraphQLClient().mark_without_continuation(
+        dms_application.id,
+        settings.DMS_ENROLLMENT_INSTRUCTOR,
+        motivation=INACTIVITY_MESSAGE.format(
+            delay=settings.DMS_INACTIVITY_TOLERANCE_DELAY,
+            procedure_id=dms_application.procedure.number,
+            application_number=dms_application.number,
+        ),
+        from_draft=True,
+    )
+
+    logger.info("[DMS] Marked application %s without continuation", dms_application.number)
+
+
+def _mark_cancel_dms_fraud_check(application_number: int, email: str) -> None:
+    try:
+        fraud_check = (
+            db.session.query(fraud_models.BeneficiaryFraudCheck)
+            .filter(
+                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
+                fraud_models.BeneficiaryFraudCheck.thirdPartyId == str(application_number),
+                fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
+                fraud_models.BeneficiaryFraudCheck.resultContent.contains({"email": email}),
+            )
+            .one_or_none()
+        )
+    except sa_exc.MultipleResultsFound:
+        logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
+        return
+
+    if fraud_check:
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.reason = f"Automatiquement classé sans_suite car aucune activité n'a eu lieu depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours"
+        repository.save(fraud_check)
+
+
+def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse) -> bool:
+    application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application)
+    if application_content.field_errors:
+        return True
+    applicant_birth_date = application_content.get_birth_date()
+    applicant_postal_code = application_content.get_postal_code()
+    applicant_department = PostalCode(applicant_postal_code).get_departement_code() if applicant_postal_code else None
+    if applicant_birth_date is None or applicant_department is None:
+        return True
+
+    age_at_generalisation = users_utils.get_age_at_date(applicant_birth_date, datetime.datetime(2021, 5, 21))
+
+    return age_at_generalisation >= 19 and applicant_department not in PRE_GENERALISATION_DEPARTMENTS

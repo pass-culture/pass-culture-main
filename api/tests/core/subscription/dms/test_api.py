@@ -31,6 +31,7 @@ from pcapi.models import db
 from pcapi.utils import repository
 
 from tests.scripts.beneficiary import fixture
+from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
 
@@ -2053,3 +2054,363 @@ class DmsImportTest:
         dms_subscription_api.import_all_updated_dms_applications(1, forced_since=datetime.datetime(2025, 1, 1))
 
         mock_get_applications_with_details.assert_called_with(1, since=datetime.datetime(2025, 1, 1))
+
+
+@pytest.mark.usefixtures("db_session")
+class ArchiveDMSApplicationsTest:
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    def test_archive_applications(self, dms_archive, dms_applications):
+        to_archive_applications_id = 123
+        pending_applications_id = 456
+        procedure_number = 1
+
+        content = fraud_factories.DMSContentFactory(procedure_number=procedure_number)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            resultContent=content,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(to_archive_applications_id),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            resultContent=content,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(pending_applications_id),
+        )
+        dms_applications.return_value = [
+            make_parsed_graphql_application(
+                to_archive_applications_id, "accepte", application_techid="TO_ARCHIVE_TECHID"
+            ),
+            make_parsed_graphql_application(pending_applications_id, "accepte", application_techid="PENDING_ID"),
+        ]
+
+        dms_subscription_api.archive_applications(procedure_number, dry_run=False)
+
+        dms_archive.assert_called_once()
+        assert dms_archive.call_args[0] == ("TO_ARCHIVE_TECHID", "SomeInstructorId")
+
+
+class HandleDeletedDmsApplicationsTest:
+    @pytest.mark.usefixtures("db_session")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_handle_deleted_dms_applications(self, execute_query):
+        fraud_check_not_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="1", type=fraud_models.FraudCheckType.DMS
+        )
+        fraud_check_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="2", type=fraud_models.FraudCheckType.DMS
+        )
+        fraud_check_already_marked_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="3",
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            reason="Custom reason",
+            type=fraud_models.FraudCheckType.DMS,
+        )
+        fraud_check_to_delete_with_empty_result_content = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="4", type=fraud_models.FraudCheckType.DMS, resultContent=None
+        )
+        ok_fraud_check_not_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="5", type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        procedure_number = 1
+        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [2, 3, 4])
+
+        dms_subscription_api.handle_deleted_dms_applications(procedure_number)
+
+        assert fraud_check_not_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.CANCELED
+        assert fraud_check_already_marked_as_deleted.status == fraud_models.FraudCheckStatus.CANCELED
+        assert fraud_check_to_delete_with_empty_result_content.status == fraud_models.FraudCheckStatus.CANCELED
+        assert ok_fraud_check_not_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.OK
+
+        assert (
+            fraud_check_to_delete_with_empty_result_content.reason
+            == "Dossier supprimé sur démarches-simplifiées. Motif: user_request"
+        )
+        assert (
+            fraud_check_to_mark_as_deleted.reason == "Dossier supprimé sur démarches-simplifiées. Motif: user_request"
+        )
+        assert fraud_check_already_marked_as_deleted.reason == "Custom reason"
+
+        assert fraud_check_not_to_mark_as_deleted.resultContent.get("deletion_datetime") is None
+        assert fraud_check_to_mark_as_deleted.resultContent.get("deletion_datetime") == "2021-10-01T22:00:00"
+        assert fraud_check_to_delete_with_empty_result_content.resultContent is None
+
+    @pytest.mark.usefixtures("db_session")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_get_latest_deleted_application_datetime(self, execute_query):
+        procedure_number = 1
+        latest_deletion_date = datetime.datetime(2020, 1, 1)
+
+        dms_content_with_deletion_date = fraud_factories.DMSContentFactory(
+            deletion_datetime=latest_deletion_date, procedure_number=procedure_number
+        )
+        dms_content_before_deletion_date = fraud_factories.DMSContentFactory(
+            deletion_datetime=latest_deletion_date - datetime.timedelta(days=1), procedure_number=procedure_number
+        )
+
+        # fraud_check_deleted_last
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="8888",
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=dms_content_with_deletion_date,
+        )
+        # fraud_check_deleted_before_last
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="8889",
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=dms_content_before_deletion_date,
+        )
+        # fraud_check_with_empty_result_content
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            thirdPartyId="8890",
+            status=fraud_models.FraudCheckStatus.CANCELED,
+            type=fraud_models.FraudCheckType.DMS,
+            resultContent=None,
+        )
+
+        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [8888, 8889, 8890])
+
+        assert dms_subscription_api._get_latest_deleted_application_datetime(procedure_number) == latest_deletion_date
+
+
+@pytest.mark.usefixtures("db_session")
+class HandleInactiveApplicationTest:
+    @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    def test_mark_without_continuation(self, dms_applications_mock, mark_without_continuation_mock):
+        active_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date=datetime.datetime.today() - datetime.timedelta(days=25),
+        )
+        inactive_application = make_parsed_graphql_application(
+            application_number=2,
+            state="en_construction",
+            last_modification_date=datetime.datetime.today() - datetime.timedelta(days=190),
+        )
+        active_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(active_application.number),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.DMSContentFactory(email=active_application.profile.email),
+        )
+        inactive_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(inactive_application.number),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.DMSContentFactory(email=inactive_application.profile.email),
+        )
+
+        dms_applications_mock.return_value = [active_application, inactive_application]
+
+        dms_subscription_api.handle_inactive_dms_applications(1)
+
+        mark_without_continuation_mock.assert_called_once_with(
+            inactive_application.id,
+            "SomeInstructorId",
+            motivation=(
+                "Aucune activité n’a eu lieu sur ton dossier depuis plus de 30 jours.\n"
+                "\n"
+                "Conformément à nos CGUs, en cas d’absence de réponse ou de "
+                "justification insuffisante, nous nous réservons le droit de "
+                "refuser ta création de compte. Aussi nous avons classé sans "
+                f"suite ton dossier n°{inactive_application.number}.\n"
+                "\n"
+                "Sous réserve d’être encore éligible, tu peux si tu le "
+                "souhaites refaire une demande d’inscription. Nous t'"
+                "invitons à soumettre un nouveau dossier en suivant ce lien : "
+                f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
+                "\n"
+                "Tu trouveras toutes les informations dans notre FAQ pour "
+                "t'accompagner dans cette démarche : "
+                "https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées\n"
+            ),
+            from_draft=True,
+        )
+        assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
+
+    @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
+    @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @time_machine.travel("2022-04-27")
+    def test_mark_without_continuation_skip_never_eligible(
+        self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
+    ):
+        inactive_application = make_parsed_graphql_application(
+            application_number=2,
+            state="en_construction",
+            last_modification_date="2021-11-11T00:00:00+02:00",
+            birth_date=datetime.datetime(2002, 1, 1),
+            postal_code="12400",
+        )
+
+        inactive_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(inactive_application.number),
+            status=fraud_models.FraudCheckStatus.STARTED,
+        )
+
+        dms_applications_mock.return_value = [inactive_application]
+
+        dms_subscription_api.handle_inactive_dms_applications(1, with_never_eligible_applicant_rule=True)
+
+        make_on_going_mock.assert_not_called()
+        mark_without_continuation_mock.assert_not_called()
+
+        assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+
+    @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
+    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
+    @time_machine.travel("2022-04-27")
+    @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
+    def test_duplicated_application_can_be_cancelled(self, dms_applications_mock, mark_without_continuation_mock):
+        old_email = "lucille.ellingson@example.com"
+        new_email = "lucy.ellingson@example.com"
+        inactive_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2021-11-11T00:00:00+02:00",
+            email=new_email,
+        )
+
+        active_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(inactive_application.number),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.DMSContentFactory(email=old_email),
+        )
+        inactive_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(inactive_application.number),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            resultContent=fraud_factories.DMSContentFactory(email=new_email),
+        )
+
+        dms_applications_mock.return_value = [inactive_application]
+
+        # When
+        dms_subscription_api.handle_inactive_dms_applications(1)
+
+        # Then
+        mark_without_continuation_mock.assert_called_once_with(
+            inactive_application.id,
+            "SomeInstructorId",
+            motivation=(
+                "Aucune activité n’a eu lieu sur ton dossier depuis plus de 30 jours.\n"
+                "\n"
+                "Conformément à nos CGUs, en cas d’absence de réponse ou de "
+                "justification insuffisante, nous nous réservons le droit de "
+                "refuser ta création de compte. Aussi nous avons classé sans "
+                f"suite ton dossier n°{inactive_application.number}.\n"
+                "\n"
+                "Sous réserve d’être encore éligible, tu peux si tu le "
+                "souhaites refaire une demande d’inscription. Nous t'"
+                "invitons à soumettre un nouveau dossier en suivant ce lien : "
+                f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
+                "\n"
+                "Tu trouveras toutes les informations dans notre FAQ pour "
+                "t'accompagner dans cette démarche : "
+                "https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées\n"
+            ),
+            from_draft=True,
+        )
+        assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
+
+
+@pytest.mark.usefixtures("db_session")
+class IsNeverEligibleTest:
+    @time_machine.travel("2022-04-27")
+    def test_19_yo_at_generalisation_from_not_test_department(self):
+        inactive_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            birth_date=datetime.datetime(2002, 1, 1),
+            postal_code="12400",
+        )
+        assert dms_subscription_api._is_never_eligible_applicant(inactive_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_19_yo_at_generalisation_from_test_department(self):
+        inactive_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            birth_date=datetime.datetime(2002, 1, 1),
+            postal_code="56510",
+        )
+        assert not dms_subscription_api._is_never_eligible_applicant(inactive_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_still_18_yo_after_generalisation(self):
+        inactive_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            birth_date=datetime.datetime(2002, 6, 1),
+            postal_code="12400",
+        )
+        assert not dms_subscription_api._is_never_eligible_applicant(inactive_application)
+
+
+class HasInactivityDelayExpiredTest:
+    def test_has_inactivity_delay_expired_without_message(self):
+        no_message_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            messages=[],
+        )
+
+        assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_has_inactivity_delay_expired_with_recent_message(self):
+        no_message_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            messages=[
+                {"createdAt": "2022-04-06T00:00:00+02:00", "email": "instrouctor@example.com"},
+                {"createdAt": "2020-04-06T00:00:00+02:00", "email": "instrouctor@example.com"},
+            ],
+        )
+
+        assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_has_inactivity_delay_expired_with_old_message(self):
+        no_message_application = make_parsed_graphql_application(
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            messages=[
+                {"createdAt": "2022-01-01T00:00:00+02:00", "email": "instrouctor@example.com"},
+                {"createdAt": "2020-04-06T00:00:00+02:00", "email": "instrouctor@example.com"},
+            ],
+        )
+
+        assert dms_subscription_api._has_inactivity_delay_expired(no_message_application)
+
+    @time_machine.travel("2022-04-27")
+    def test_has_inactivity_delay_expired_with_old_message_sent_by_user(self):
+        applicant_email = "applikant@example.com"
+
+        no_message_application = make_parsed_graphql_application(
+            application_number=1,
+            email=applicant_email,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            messages=[
+                {"createdAt": "2021-01-01T00:00:00+02:00", "email": applicant_email},
+                {"createdAt": "2020-04-06T00:00:00+02:00", "email": "instrouctor@example.com"},
+            ],
+        )
+
+        assert not dms_subscription_api._has_inactivity_delay_expired(no_message_application)
