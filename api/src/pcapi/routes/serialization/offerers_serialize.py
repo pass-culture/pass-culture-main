@@ -38,13 +38,10 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    adageInscriptionDate: datetime | None
+class GetOffererVenueResponseModel(BaseModel):
     street: str | None
     bookingEmail: str | None
     city: str | None
-    comment: str | None
-    departementCode: str | None
     hasCreatedOffer: bool
     hasAdageId: bool
     isVirtual: bool

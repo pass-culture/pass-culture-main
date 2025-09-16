@@ -23,7 +23,6 @@ class GetOffererTest:
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # check user_offerer exists
     num_queries += 1  # select offerer
-    num_queries += 1  # select api_key
     num_queries += 1  # select venue
     num_queries += 1  # check offerer has non free offers
     num_queries += 1  # select venue_id
@@ -59,9 +58,6 @@ class GetOffererTest:
 
         expected_serialized_offerer = {
             "allowedOnAdage": offerer.allowedOnAdage,
-            "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
-            "city": offerer.city,
-            "dateCreated": format_into_utc_date(offerer.dateCreated),
             "hasActiveOffer": False,
             "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
@@ -77,11 +73,7 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
-                    "adageInscriptionDate": (
-                        format_into_utc_date(venue.adageInscriptionDate) if venue.adageInscriptionDate else None
-                    ),
                     "street": venue.street,
-                    "audioDisabilityCompliant": False,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,
@@ -104,8 +96,6 @@ class GetOffererTest:
                         }
                         for a in venue.collectiveDmsApplications
                     ],
-                    "comment": venue.comment,
-                    "departementCode": venue.departementCode,
                     "id": venue.id,
                     "isPermanent": venue.isPermanent,
                     "isVirtual": venue.isVirtual,
@@ -113,22 +103,17 @@ class GetOffererTest:
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "hasPartnerPage": False,
                     "hasVenueProviders": False,
-                    "mentalDisabilityCompliant": False,
-                    "motorDisabilityCompliant": False,
                     "name": venue.name,
                     "postalCode": venue.postalCode,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
                     "venueTypeCode": venue.venueTypeCode.name,
-                    "visualDisabilityCompliant": False,
                     "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
             ],
             "name": offerer.name,
-            "postalCode": offerer.postalCode,
             "siren": offerer.siren,
-            "street": offerer.street,
             "venuesWithNonFreeOffersWithoutBankAccounts": [],
             "isCaledonian": False,
         }
