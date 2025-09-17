@@ -204,19 +204,3 @@ jobs:
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
-  deploy-pro-on-firebase-testing:
-    name: "[PRO] Deploy PR version for validation with testing backend"
-    needs: [pcapi-init-job, test-pro]
-    if: |
-      always() && 
-      needs.pcapi-init-job.outputs.api-changed == 'false' && needs.pcapi-init-job.outputs.pro-changed == 'true'
-    uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
-    secrets:
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-    with:
-      ENV: "testing"
-      CHANNEL: ""
-      REF: "${{ github.ref }}"
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
