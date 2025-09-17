@@ -207,9 +207,7 @@ export const PriceTableForm = ({
 
       {fields.map((field, index) => {
         const entry = watch(`entries.${index}`)
-
-        const hasActivationCodes =
-          (watch(`entries.${index}.activationCodes`) || []).length > 0
+        const hasActivationCodes = (entry.activationCodes || []).length > 0
 
         return (
           <div
