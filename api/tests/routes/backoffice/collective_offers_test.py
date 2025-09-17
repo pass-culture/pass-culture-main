@@ -907,7 +907,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         assert (
             html_parser.extract_alert(response.data)
-            == "L'opérateur « est égal à » n'est pas supporté par le filtre Région."
+            == "L'opérateur « est égal à » n'est pas supporté par le filtre Région de l'offre."
         )
 
     @pytest.mark.parametrize(
