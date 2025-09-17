@@ -287,79 +287,6 @@ class Returns200Test:
             assert offer.name == "New name"
             assert offer.description == "Ma super description"
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_offer_venue_offerer_venue(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-        assert len(offer_ctx.offer.interventionArea) > 0
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offer_ctx.venue.managingOfferer)
-
-        payload = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 200
-        offer = (
-            db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
-        )
-        assert offer.offerVenue == payload["offerVenue"]
-        assert offer.interventionArea == []
-
-        # OA fields are not updated
-        assert offer.offererAddressId == None
-        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
-        assert offer.locationComment == None
-
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_offer_venue_school(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-        initial_intervention_area = offer_ctx.offer.interventionArea
-        assert len(initial_intervention_area) > 0
-
-        payload = {"offerVenue": {"addressType": "school", "otherAddress": "", "venueId": None}}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 200
-        offer = (
-            db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
-        )
-        assert offer.offerVenue == payload["offerVenue"]
-        assert offer.interventionArea == initial_intervention_area
-
-        # OA fields are not updated
-        assert offer.offererAddressId == None
-        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
-        assert offer.locationComment == None
-
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_offer_venue_other(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-        initial_intervention_area = offer_ctx.offer.interventionArea
-        assert len(initial_intervention_area) > 0
-
-        payload = {"offerVenue": {"addressType": "other", "otherAddress": "In Paris", "venueId": None}}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 200
-        offer = (
-            db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
-        )
-        assert offer.offerVenue == payload["offerVenue"]
-        assert offer.interventionArea == initial_intervention_area
-
-        # OA fields are not updated
-        assert offer.offererAddressId == None
-        assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
-        assert offer.locationComment == None
-
     def test_location_address_venue(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
@@ -837,25 +764,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_cannot_receive_location(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        payload = {
-            "location": {
-                "locationType": models.CollectiveLocationType.SCHOOL.value,
-                "locationComment": None,
-                "address": None,
-            },
-        }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"location": ["Cannot receive location, use offerVenue instead"]}
-
     def test_patch_collective_offer_template_with_location_type_school_must_not_receive_location_comment(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
@@ -1146,23 +1054,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"Partner": "User not in Adage can't edit the offer"}
 
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_offerer_address_venue_not_allowed(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        venue = offerers_factories.VenueFactory()
-
-        payload = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}}
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 403
-        assert response.json == {
-            "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
-        }
-
 
 class Returns404Test:
     def test_offer_does_not_exist(self, client):
@@ -1193,21 +1084,6 @@ class Returns404Test:
         offer_id = offer_ctx.offer.id
 
         data = {"venueId": 0}
-
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
-
-        assert response.status_code == 404
-        assert response.json == {"venueId": "The venue does not exist."}
-
-    @pytest.mark.features(WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE=False)
-    def test_replacing_by_unknown_venue_in_offer_venue(self, client):
-        offer_ctx = build_offer_context()
-
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        data = {"offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": 0}}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)

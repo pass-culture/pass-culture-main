@@ -19,7 +19,6 @@ from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
-from pcapi.models import feature
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
@@ -537,25 +536,8 @@ class CollectiveOfferVenueBodyModel(BaseModel):
         extra = "forbid"
 
 
-def is_intervention_area_valid(
-    intervention_area: list[str] | None,
-    offer_venue: CollectiveOfferVenueBodyModel | None,
-) -> bool:
-    if intervention_area is None:
-        return False
-
-    if offer_venue is not None and offer_venue.addressType == educational_models.OfferAddressType.OFFERER_VENUE:
-        return True
-
-    if len(intervention_area) == 0:
-        return False
-
-    return True
-
-
 def validate_intervention_area_with_location(
-    intervention_area: list[str] | None,
-    location: CollectiveOfferLocationModel,
+    intervention_area: list[str] | None, location: CollectiveOfferLocationModel
 ) -> None:
     # handle the case where it is None and []
     if intervention_area:
@@ -616,7 +598,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     students: list[educational_models.StudentLevels]
     # offerVenue will be replaced with location, for now we accept one or the other (but not both)
     offer_venue: CollectiveOfferVenueBodyModel | None
-    location: CollectiveOfferLocationModel | None
+    location: CollectiveOfferLocationModel
     contact_email: EmailStr | None
     contact_phone: str | None
     intervention_area: list[str] | None
@@ -651,21 +633,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
         return formats
 
     @validator("intervention_area")
-    def validate_intervention_area(
-        cls,
-        intervention_area: list[str] | None,
-        values: dict,
-    ) -> list[str] | None:
-        offer_venue = values.get("offer_venue", None)
-
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-            location = values.get("location", None)
-            if location is not None:
-                validate_intervention_area_with_location(intervention_area, location)
-
-        else:
-            if not is_intervention_area_valid(intervention_area, offer_venue):
-                raise ValueError("intervention_area must have at least one value")
+    def validate_intervention_area(cls, intervention_area: list[str] | None, values: dict) -> list[str] | None:
+        location = values.get("location")
+        if location is not None:
+            validate_intervention_area_with_location(intervention_area, location)
 
         return intervention_area
 
@@ -679,23 +650,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def validate_offer_venue(
         cls, offer_venue: CollectiveOfferVenueBodyModel | None
     ) -> CollectiveOfferVenueBodyModel | None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-            if offer_venue is not None:
-                raise ValueError("Cannot receive offerVenue, use location instead")
-        elif offer_venue is None:
-            raise ValueError("offerVenue must be provided")
+        if offer_venue is not None:
+            raise ValueError("Cannot receive offerVenue, use location instead")
 
         return offer_venue
-
-    @validator("location")
-    def validate_location(cls, location: CollectiveOfferLocationModel | None) -> CollectiveOfferLocationModel | None:
-        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-            if location is not None:
-                raise ValueError("Cannot receive location, use offerVenue instead")
-        elif location is None:
-            raise ValueError("location must be provided")
-
-        return location
 
     class Config:
         alias_generator = to_camel
@@ -762,20 +720,10 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
         return domains
 
     @validator("interventionArea")
-    def validate_intervention_area(
-        cls,
-        intervention_area: list[str] | None,
-        values: dict,
-    ) -> list[str] | None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-            location = values.get("location", None)
-            if location is not None:
-                validate_intervention_area_with_location(intervention_area, location)
-
-        else:
-            offer_venue = values.get("offerVenue", None)
-            if not is_intervention_area_valid(intervention_area, offer_venue):
-                raise ValueError("must have at least one value")
+    def validate_intervention_area(cls, intervention_area: list[str] | None, values: dict) -> list[str] | None:
+        location = values.get("location")
+        if location is not None:
+            validate_intervention_area_with_location(intervention_area, location)
 
         return intervention_area
 
@@ -795,17 +743,10 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     def validate_offer_venue(
         cls, offer_venue: CollectiveOfferVenueBodyModel | None
     ) -> CollectiveOfferVenueBodyModel | None:
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active() and offer_venue is not None:
+        if offer_venue is not None:
             raise ValueError("Cannot receive offerVenue, use location instead")
 
         return offer_venue
-
-    @validator("location")
-    def validate_location(cls, location: CollectiveOfferLocationModel | None) -> CollectiveOfferLocationModel | None:
-        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active() and location is not None:
-            raise ValueError("Cannot receive location, use offerVenue instead")
-
-        return location
 
     class Config:
         alias_generator = to_camel
