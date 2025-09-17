@@ -49,10 +49,8 @@ class Returns200Test:
     num_queries += 1  # 8 offerer_confidence
     num_queries += 1  # 9 offerer_confidence
     num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 11 select feature
     num_queries += 1  # 12 update offer
 
-    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
@@ -139,7 +137,6 @@ class Returns200Test:
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
-    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
@@ -193,7 +190,6 @@ class Returns200Test:
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
-    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)

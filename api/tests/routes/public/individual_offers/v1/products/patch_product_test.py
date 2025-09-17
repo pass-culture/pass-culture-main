@@ -521,7 +521,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         expected_num_queries += 1  # update offer
 
         expected_num_queries += 1  # check venue offerer address
-        expected_num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
         with assert_num_queries(expected_num_queries):
             response = self.make_request(
                 plain_api_key,
