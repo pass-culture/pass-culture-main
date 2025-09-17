@@ -60,7 +60,7 @@ py7zr = "^1.0.0"
 pycountry = "24.6.1"
 pydantic = { version = "2.11.9", extras = ["email"] }
 pyjwt = { version = "2.10.1", extras = ["crypto"] }
-pyopenssl = "25.2.0"
+pyopenssl = "25.3.0"
 pypdf = "6.0.0"
 pyproj = "3.7.2"
 pysaml2 = "^7.5.0"
