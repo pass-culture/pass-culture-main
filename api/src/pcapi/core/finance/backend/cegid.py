@@ -33,14 +33,19 @@ INVENTORY_IDS = {
     "ORINDGRANT_FREE": "ORFREE000000",
     "OCINDGRANT_FREE": "CTFREE000000",
     "ORCOLEDUC_NAT": "ORCOLEDU0000",
+    "OCCOLEDUC_NAT": "CTCOLEDU0000",
     "CGCOLEDUC_NAT": "CGCOLEDU0000",
     "ORCOLAGRI": "ORCOLAGR0000",
+    "OCCOLAGRI": "CTCOLAGR0000",
     "CGCOLAGRI": "CGCOLAGR0000",
     "ORCOLARMEES": "ORCOLARM0000",
+    "OCCOLARMEES": "CTCOLARM0000",
     "CGCOLARMEES": "CGCOLARM0000",
     "ORCOLMER": "ORCOLMER0000",
+    "OCCOLMER": "CTCOLMER0000",
     "CGCOLMER": "CGCOLMER0000",
     "ORCOLMEG": "ORCOLMEG0000",
+    "OCCOLMEG": "CTCOLMEG0000",
     "CGCOLMEG": "CGCOLMEG0000",
 }
 
@@ -217,7 +222,8 @@ class CegidFinanceBackend(BaseFinanceBackend):
         ]
 
         total_amount_str = self._format_amount(sum(e["amount"] for e in invoice_lines), is_debit_note)
-        invoice_date_range = self._get_formatted_invoice_description(invoice.date)
+        invoice_description = self._get_formatted_invoice_description(invoice)
+
         body = {
             "Amount": {"value": total_amount_str},
             "ApprovedForPayment": {"value": False},
@@ -225,7 +231,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "BranchID": {"value": "PASSCULT"},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": self.format_datetime(invoice.date)},
-            "Description": {"value": f"{invoice.reference} - {invoice_date_range}"},  # F25xxxx - <01/12-15/12>
+            "Description": {"value": invoice_description},  # F25xxxx - VIRXXX - <01/12-15/12>
             "Details": lines,
             "Hold": {"value": False},
             "LocationID": {"value": "PRINCIPAL"},
@@ -262,7 +268,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             set_open_url = f"{self.base_url}/{self._interface}/Bill/ReleaseBill"
             set_open_response = self._request("POST", set_open_url, json={"Entity": {"id": response_json["id"]}})
 
-            if set_open_response.status_code != 200:
+            if set_open_response.status_code // 100 != 2:
                 raise exceptions.FinanceBackendBadRequest(set_open_response, "Error in setting invoice to Open")
 
         return response_json
@@ -274,9 +280,11 @@ class CegidFinanceBackend(BaseFinanceBackend):
         formatted_offset = date_utils.format_offset(utc_source_datetime.utcoffset())
         return f"{formatted_datetime}{formatted_offset}"
 
-    def _get_formatted_invoice_description(self, invoice_date: datetime.datetime) -> str:
-        start_date, end_date = self._get_invoice_daterange(invoice_date)
-        return f"{start_date:%d/%m}-{end_date:%d/%m}"
+    def _get_formatted_invoice_description(self, invoice: finance_models.Invoice) -> str:
+        invoice_batch = invoice.cashflows[0].batch
+        start_date, end_date = self._get_invoice_daterange(invoice_batch.cutoff)
+
+        return f"{invoice.reference} - {invoice_batch.label} - {start_date:%d/%m}-{end_date:%d/%m}"
 
     def get_invoice(self, reference: str) -> dict:
         url = f"{self.base_url}/{self._interface}/Bill"
