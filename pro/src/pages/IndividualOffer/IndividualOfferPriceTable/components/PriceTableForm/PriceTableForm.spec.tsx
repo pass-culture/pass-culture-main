@@ -712,6 +712,31 @@ describe('PriceTableForm', () => {
     expect(quantityInput).toBeDisabled()
   })
 
+  it('should disable stock input when activation codes are present', () => {
+    const offer = { ...nonEventOffer, isDigital: true }
+    const defaultValues = {
+      entries: [
+        {
+          ...entryBase,
+          activationCodes: ['A1', 'A2', 'A3'],
+          price: 8,
+          quantity: 3,
+        },
+      ],
+      isDuo: null,
+    }
+
+    renderPriceTableForm({
+      offer,
+      defaultValues,
+    })
+
+    const quantityInput = screen.getByRole<HTMLInputElement>('spinbutton', {
+      name: /Stock/,
+    })
+    expect(quantityInput).toBeDisabled()
+  })
+
   it('should reset single event entry instead of removing it (label becomes "Tarif unique")', async () => {
     const offer = { ...eventOffer }
     renderPriceTableForm({ offer })
