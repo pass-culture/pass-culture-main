@@ -7,18 +7,10 @@ from pcapi.utils import requests
 
 
 class ResourceCDS(enum.Enum):
-    CINEMAS = "cinemas"
     TARIFFS = "tariffs"
-    SHOWS = "shows"
-    MEDIA = "media"
-    PAYMENT_TYPE = "paiementtype"
-    VOUCHER_TYPE = "vouchertype"
-    SCREENS = "screens"
-    SEATMAP = "shows/:show_id/seatmap"
     CREATE_TRANSACTION = "transaction/create"
     CANCEL_BOOKING = "transaction/cancel"
     RATING = "rating"
-    MEDIA_OPTIONS = "mediaoptions"
 
 
 def _extract_reason_from_response(response: requests.Response) -> str:
