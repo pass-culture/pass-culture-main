@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import typing
 
 from pydantic.v1 import parse_obj_as
 
@@ -55,7 +54,7 @@ def _log_external_call(
     client: external_bookings_models.ExternalBookingsClientAPI,
     method: str,
     response: dict | list[dict] | list,
-    method_params: dict | None = None,
+    query_params: dict | None = None,
 ) -> None:
     client_name = client.__class__.__name__
     cinema_id = client.cinema_id
@@ -66,17 +65,52 @@ def _log_external_call(
         "response": response,
     }
 
-    if method_params:
-        extra["method_params"] = method_params
+    if query_params:
+        extra["query_params"] = query_params
 
     logger.debug("[CINEMA] Call to external API", extra=extra)
+
+
+def _raise_for_status(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
+    if response.status_code >= 400:
+        reason = _extract_reason_from_response(response)
+        message = _extract_message_from_response(response)
+        if cinema_api_token:
+            error_message = reason.replace(cinema_api_token, "")
+        if response.status_code == 401:
+            raise boost_exceptions.BoostInvalidTokenException(f"Boost: {message}")
+
+        raise boost_exceptions.BoostAPIException(
+            f"Error on Boost API on {request_detail} : {error_message} - {message}"
+        )
+
+
+def _extract_reason_from_response(response: requests.Response) -> str:
+    # from requests.Response.raise_for_status()
+    reason = response.reason
+
+    if isinstance(response.reason, bytes):
+        try:
+            reason = reason.decode("utf-8")
+        except UnicodeDecodeError:
+            reason = reason.decode("iso-8859-1")
+
+    return reason
+
+
+def _extract_message_from_response(response: requests.Response) -> str:
+    try:
+        content = response.json()
+        message = content.get("message", "")
+    except requests.exceptions.JSONDecodeError:
+        message = response.content
+    return message
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str, request_timeout: None | int = None):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.cinema_details = providers_repository.get_boost_cinema_details(cinema_id)
-        self.base_url = self.cinema_details.cinemaUrl
 
     def _generate_jwt_token(self) -> tuple[str, datetime.datetime]:
         """
@@ -88,7 +122,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         :raise: BoostLoginException
         """
         jwt_expiration_datetime = get_naive_utc_now() + datetime.timedelta(hours=24)
-        url = f"{self.base_url}api/vendors/login"
+        url = f"{self.cinema_details.cinemaUrl}api/vendors/login"
 
         try:
             response = requests.post(
@@ -104,11 +138,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             raise boost_exceptions.BoostLoginException(f"Network error on Boost API: {url}") from exc
 
         if response.status_code != 200:
-            try:
-                content = response.json()
-                message = content.get("message", "")
-            except requests.exceptions.JSONDecodeError:
-                message = response.content
+            message = _extract_message_from_response(response)
             raise boost_exceptions.BoostLoginException(
                 f"Unexpected {response.status_code} response from Boost login API on {response.request.url}: {message}"
             )
@@ -127,14 +157,31 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self.cinema_details.tokenExpirationDate = jwt_expiration_datetime
         repository.save()
 
+    def _unset_cinema_details_token(self) -> None:
+        self.cinema_details.token = None
+        self.cinema_details.tokenExpirationDate = None
+        repository.save()
+
     def _get_authentication_header(self) -> dict:
         """
         Return headers dict to authenticate request
         """
-        if not self.cinema_details.tokenExpirationDate or self.cinema_details.tokenExpirationDate < get_naive_utc_now():
+        if (
+            not self.cinema_details.token
+            or not self.cinema_details.tokenExpirationDate
+            or self.cinema_details.tokenExpirationDate < get_naive_utc_now()
+        ):
             self._refresh_cinema_details_token()
 
         return {"Authorization": f"Bearer {self.cinema_details.token}"}
+
+    def _authenticated_get(self, url: str, params: dict | None = None) -> dict:
+        auth_headers = self._get_authentication_header()
+        response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
+        _raise_for_status(response, self.cinema_details.token, f"GET {url}")
+        data = response.json()
+        _log_external_call(self, f"GET {url}", data, query_params=params)
+        return data
 
     # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
@@ -222,44 +269,36 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return tickets
 
-    def get_collection_items(
+    def get_showtimes(
         self,
         *,
-        resource: boost.ResourceBoost,
-        collection_class: type[boost_serializers.Collection],
-        per_page: int = 30,
-        pattern_values: dict[str, typing.Any] | None = None,
-        params: dict[str, typing.Any] | None = None,
+        start_date: datetime.date = datetime.date.today(),
+        interval_days: int = constants.BOOST_SHOWS_INTERVAL_DAYS,
+        per_page: int = 30,  # `per_page` max value seems to be 200
+        film: int | None = None,
     ) -> list:
-        # XXX: per_page max value seems to be 200
+        start_str = start_date.strftime("%Y-%m-%d")
+        end_str = (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d")
+        url = f"{self.cinema_details.cinemaUrl}api/showtimes/between/{start_str}/{end_str}"
+        params = {
+            "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
+            "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
+            "film": film,
+            "per_page": per_page,
+        }
         items = []
-        params = params or {}
         current_page = next_page = 1
 
         while current_page <= next_page:
             params["page"] = current_page
-            params["per_page"] = per_page
+            try:
+                data = self._authenticated_get(url, params=params)
+            except boost_exceptions.BoostInvalidTokenException:
+                # if the token is invalid, we unset current token to force re-authentication
+                self._unset_cinema_details_token()
+                data = self._authenticated_get(url, params=params)
 
-            json_data = boost.get_resource(
-                self.cinema_id,
-                resource,
-                params=params,
-                pattern_values=pattern_values,
-                request_timeout=self.request_timeout,
-            )
-
-            _log_external_call(
-                self,
-                "get_collection_items",
-                json_data,
-                method_params={
-                    "page": current_page,
-                    "per_page": per_page,
-                    "resource": resource,
-                },
-            )
-
-            collection = parse_obj_as(collection_class, json_data)
+            collection = parse_obj_as(boost_serializers.ShowTimeCollection, data)
             items.extend(collection.data)
             total_pages = collection.totalPages
             next_page = collection.nextPage
@@ -269,62 +308,33 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return items
 
-    def get_showtimes(
-        self,
-        per_page: int = 30,
-        start_date: datetime.date = datetime.date.today(),
-        interval_days: int = constants.BOOST_SHOWS_INTERVAL_DAYS,
-        film: int | None = None,
-    ) -> list[boost_serializers.ShowTime4]:
-        pattern_values = {
-            "dateStart": start_date.strftime("%Y-%m-%d"),
-            "dateEnd": (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d"),
-        }
-        params: dict[str, str | int | None] | None = {
-            "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
-            "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
-            "film": film,
-        }
-        return self.get_collection_items(
-            resource=boost.ResourceBoost.SHOWTIMES,
-            collection_class=boost_serializers.ShowTimeCollection,
-            per_page=per_page,
-            pattern_values=pattern_values,
-            params=params,
-        )
-
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
-        json_data = boost.get_resource(
-            self.cinema_id,
-            boost.ResourceBoost.SHOWTIME,
-            pattern_values={"id": showtime_id},
-            request_timeout=self.request_timeout,
-        )
+        try:
+            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
+        except exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            self._unset_cinema_details_token()
+            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
 
-        _log_external_call(self, "get_showtime", json_data)
-
-        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
+        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, data)
         return showtime_details.data
 
     def get_movie_poster(self, image_url: str) -> bytes:
-        try:
-            return boost.get_movie_poster_from_api(image_url)
-        except exceptions.BoostAPIException:
-            logger.info(
-                "Could not fetch movie poster",
-                extra={
-                    "provider": "boost",
-                    "url": image_url,
-                },
-            )
+        api_response = requests.get(image_url)
+
+        if api_response.status_code != 200:
+            logger.info("Could not fetch movie poster", extra={"provider": "boost", "url": image_url})
             return bytes()
 
-    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
-        json_data = boost.get_resource(
-            self.cinema_id,
-            boost.ResourceBoost.CINEMAS_ATTRIBUTS,
-        )
+        return api_response.content
 
-        _log_external_call(self, "get_cinemas_attributs", json_data)
-        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
+    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
+        try:
+            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
+        except exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            self._unset_cinema_details_token()
+            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
+
+        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, data)
         return attributs.data

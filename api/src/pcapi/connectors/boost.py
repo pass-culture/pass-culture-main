@@ -40,12 +40,8 @@ class ResourceBoost(enum.Enum):
     if settings.IS_RUNNING_TESTS:
         EXAMPLE = "example"
         EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
-    FILMS = "api/films"
-    SHOWTIMES = "api/showtimes/between/{dateStart}/{dateEnd}"
-    SHOWTIME = "api/showtimes/{id}"
     COMPLETE_SALE = "api/sale/complete"
     CANCEL_ORDER_SALE = "api/sale/orderCancel"
-    CINEMAS_ATTRIBUTS = "api/cinemas/attributs"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"
@@ -232,15 +228,6 @@ def _perform_post_resource(
     if response_headers and "application/json" in response_headers:
         content = response.json()
     return content
-
-
-def get_movie_poster_from_api(image_url: str) -> bytes:
-    api_response = requests.get(image_url)
-    if api_response.status_code != 200:
-        raise BoostAPIException(
-            f"Error getting Boost API movie poster {image_url} with code {api_response.status_code}"
-        )
-    return api_response.content
 
 
 def _check_response_is_ok(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
