@@ -21,7 +21,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   durationMinutes?: number | null;
   formats: Array<EacFormat>;
   interventionArea?: Array<string> | null;
-  location?: CollectiveOfferLocationModel | null;
+  location: CollectiveOfferLocationModel;
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
   name: string;

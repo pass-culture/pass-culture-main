@@ -18,7 +18,6 @@ from pcapi.core.categories.genres.music import TITELIVE_MUSIC_TYPES
 from pcapi.core.categories.models import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.academies import get_academy_from_department
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import api as offerers_api
@@ -29,7 +28,6 @@ from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.utils import date as date_utils
 from pcapi.utils.stopwords import STOPWORDS
 
@@ -404,10 +402,7 @@ class AlgoliaSerializationMixin:
             # TODO(OA): remove this when the virtual venues are migrated
             department_code = None
 
-        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-            coordinates = _get_collective_offer_template_coordinates_from_address(collective_offer_template)
-        else:
-            coordinates = _get_collective_offer_template_coordinates_from_offer_venue(collective_offer_template)
+        coordinates = _get_collective_offer_template_coordinates(collective_offer_template)
 
         latitude, longitude = (coordinates.latitude, coordinates.longitude) if coordinates is not None else (None, None)
 
@@ -465,15 +460,7 @@ def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = N
     return format_coordinates(latitude, longitude)
 
 
-def _get_collective_offer_template_coordinates_from_offer_venue(
-    offer: educational_models.CollectiveOfferTemplate,
-) -> geography_models.Coordinates | None:
-    # use the specified venue if any or use the offer's billing address as the default
-    venue = educational_api_offer.get_offer_event_venue(offer)
-    return geography_api.get_coordinates(venue)
-
-
-def _get_collective_offer_template_coordinates_from_address(
+def _get_collective_offer_template_coordinates(
     offer: educational_models.CollectiveOfferTemplate,
 ) -> geography_models.Coordinates | None:
     match offer.locationType:
