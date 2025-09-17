@@ -78,7 +78,6 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
-import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { OfferVideo } from '../models/OfferVideo';
@@ -1556,27 +1555,6 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_offerer_stats_dashboard_url <GET>
-   * @param offererId
-   * @returns OffererStatsResponseModel OK
-   * @throws ApiError
-   */
-  public getOffererStatsDashboardUrl(
-    offererId: number,
-  ): CancelablePromise<OffererStatsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/offerers/{offerer_id}/dashboard',
-      path: {
-        'offerer_id': offererId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -3251,27 +3229,6 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_venue_stats_dashboard_url <GET>
-   * @param venueId
-   * @returns OffererStatsResponseModel OK
-   * @throws ApiError
-   */
-  public getVenueStatsDashboardUrl(
-    venueId: number,
-  ): CancelablePromise<OffererStatsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venues/{venue_id}/dashboard',
-      path: {
-        'venue_id': venueId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

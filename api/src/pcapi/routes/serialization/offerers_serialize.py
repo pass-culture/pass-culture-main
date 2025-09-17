@@ -292,10 +292,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
         anystr_strip_whitespace = True
 
 
-class OffererStatsResponseModel(BaseModel):
-    dashboardUrl: str
-
-
 class InviteMemberQueryModel(BaseModel):
     email: str
 

@@ -170,21 +170,6 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
-@private_api.route("/offerers/<int:offerer_id>/dashboard", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=offerers_serialize.OffererStatsResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def get_offerer_stats_dashboard_url(
-    offerer_id: int,
-) -> offerers_serialize.OffererStatsResponseModel:
-    offerer = get_or_404(offerers_models.Offerer, offerer_id)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-    url = api.get_metabase_stats_iframe_url(offerer, venues=offerer.managedVenues)
-    return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)
-
-
 @private_api.route("/offerers/new", methods=["POST"])
 @atomic()
 @login_required

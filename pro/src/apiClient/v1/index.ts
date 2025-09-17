@@ -193,7 +193,6 @@ export type { OfferDomain } from './models/OfferDomain';
 export type { OffererEligibilityResponseModel } from './models/OffererEligibilityResponseModel';
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
-export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';

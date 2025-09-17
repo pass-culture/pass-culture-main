@@ -4,10 +4,8 @@ import decimal
 import logging
 import os
 import pathlib
-import time
 from unittest.mock import patch
 
-import jwt
 import pytest
 import time_machine
 
@@ -2548,22 +2546,6 @@ class HasVenueAtLeastOneBookableOfferTest:
         offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
 
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
-
-
-@pytest.mark.settings(METABASE_SECRET_KEY="metabase secret key")
-def test_get_offerer_stats_dashboard_url():
-    venue = offerers_factories.VenueFactory()
-    offerer = venue.managingOfferer
-
-    url = offerers_api.get_metabase_stats_iframe_url(offerer, venues=[venue])
-
-    token = url.split("/")[3].split("#")[0]
-    payload = jwt.decode(token, "metabase secret key", algorithms="HS256")
-    assert payload == {
-        "resource": {"dashboard": 438},
-        "params": {"siren": [offerer.siren], "venueid": [str(venue.id)]},
-        "exp": round(time.time()) + 600,
-    }
 
 
 class GetOffererTotalRevenueTest:
