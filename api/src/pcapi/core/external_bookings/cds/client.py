@@ -17,13 +17,13 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
-from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.models import Ticket
+from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
@@ -46,6 +46,27 @@ def _log_external_call(
     )
 
 
+def _extract_reason_from_response(response: requests.Response) -> str:
+    # from requests.Response.raise_for_status()
+    reason = response.reason
+
+    if isinstance(reason, bytes):
+        try:
+            reason = reason.decode("utf-8")
+        except UnicodeDecodeError:
+            reason = reason.decode("iso-8859-1")
+
+    return reason
+
+
+def _check_response_is_ok(response: requests.Response, cinema_api_token: str | None, request_detail: str) -> None:
+    if response.status_code >= 400:
+        reason = _extract_reason_from_response(response)
+        if cinema_api_token:
+            reason = reason.replace(cinema_api_token, "")  # filter out token
+        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
+
+
 class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(
         self,
@@ -59,11 +80,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
+        # (tcoudray-pass, 17/09/2025) TODO: Remove `self.api_url` & `self.account_id` when cine_digital_service connector is removed
         self.api_url = settings.CDS_API_URL
         if not self.api_url:
             raise ValueError("`CDS_API_URL` not configured in this env")
         self.account_id = account_id
-        super()
+
+        self.base_url = f"https://{account_id}.{settings.CDS_API_URL}"
 
     def get_film_showtimes_stocks(self, film_id: str) -> dict:
         return {}
@@ -74,13 +97,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         lru_cache is a feature in Python that can significantly improve the performance of functions
         by caching their results based on their input arguments, thus avoiding costly recomputations.
         """
-        data = get_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.CINEMAS,
-            request_timeout=self.request_timeout,
+        response = requests.get(
+            f"{self.base_url}cinemas", params={"api_token": self.token}, timeout=self.request_timeout
         )
+        _check_response_is_ok(response, self.token, "GET shows")
+        data = response.json()
 
         _log_external_call(self, method="get_internet_sale_gauge_active", response=data)
 
@@ -97,13 +118,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         key_template=constants.CDS_SHOWTIMES_STOCKS_CACHE_KEY, expire=cds_constants.CDS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_shows_remaining_places(self, show_ids: list[int]) -> str:
-        data = get_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.SHOWS,
-            request_timeout=self.request_timeout,
-        )
+        response = requests.get(f"{self.base_url}shows", params={"api_token": self.token}, timeout=self.request_timeout)
+        _check_response_is_ok(response, self.token, "GET shows")
+        data = response.json()
 
         _log_external_call(self, method="get_shows_remaining_places", response=data)
 
@@ -113,7 +130,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         return json.dumps({show.id: show.remaining_place for show in shows if show.id in show_ids})
 
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
+        response = requests.get(f"{self.base_url}shows", params={"api_token": self.token}, timeout=self.request_timeout)
+        _check_response_is_ok(response, self.token, "GET shows")
+        data = response.json()
 
         _log_external_call(self, method="get_shows", response=data)
 
@@ -126,9 +145,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
-        data = get_resource(
-            self.api_url, self.account_id, self.token, ResourceCDS.SHOWS, request_timeout=self.request_timeout
-        )
+        response = requests.get(f"{self.base_url}shows", params={"api_token": self.token}, timeout=self.request_timeout)
+        _check_response_is_ok(response, self.token, "GET shows")
+        data = response.json()
 
         _log_external_call(self, method="get_show", response=data)
 
@@ -141,7 +160,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
     def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
+        response = requests.get(f"{self.base_url}media", params={"api_token": self.token}, timeout=self.request_timeout)
+        _check_response_is_ok(response, self.token, "GET media")
+        data = response.json()
 
         _log_external_call(self, method="get_venue_movies", response=data)
 
@@ -161,13 +182,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             return bytes()
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
-        data = get_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.PAYMENT_TYPE,
-            request_timeout=self.request_timeout,
+        response = requests.get(
+            f"{self.base_url}paiementtype", params={"api_token": self.token}, timeout=self.request_timeout
         )
+        _check_response_is_ok(response, self.token, "GET paiementtype")
+        data = response.json()
 
         _log_external_call(self, method="get_voucher_payment_type", response=data)
 
@@ -183,13 +202,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     @lru_cache
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
-        data = get_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.VOUCHER_TYPE,
-            request_timeout=self.request_timeout,
+        response = requests.get(
+            f"{self.base_url}vouchertype", params={"api_token": self.token}, timeout=self.request_timeout
         )
+        _check_response_is_ok(response, self.token, "GET vouchertype")
+        data = response.json()
 
         _log_external_call(self, method="get_pc_voucher_types", response=data)
 
@@ -201,13 +218,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         ]
 
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
-        data = get_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.SCREENS,
-            request_timeout=self.request_timeout,
+        response = requests.get(
+            f"{self.base_url}screens", params={"api_token": self.token}, timeout=self.request_timeout
         )
+        _check_response_is_ok(response, self.token, "GET screens")
+        data = response.json()
 
         _log_external_call(self, method="get_screen", response=data)
 
@@ -285,7 +300,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         ]
 
     def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
+        response = requests.get(
+            f"{self.base_url}shows/{show_id}/seatmap", params={"api_token": self.token}, timeout=self.request_timeout
+        )
+        _check_response_is_ok(response, self.token, "GET shows seatmap")
+        data = response.json()
 
         _log_external_call(self, method="get_seatmap", response=data)
 
@@ -459,7 +478,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         return min_price_voucher
 
     def get_cinema_infos(self) -> cds_serializers.CinemaCDS:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.CINEMAS)
+        response = requests.get(
+            f"{self.base_url}cinemas", params={"api_token": self.token}, timeout=self.request_timeout
+        )
+        _check_response_is_ok(response, self.token, "GET cinemas")
+        data = response.json()
 
         _log_external_call(self, method="get_cinema_infos", response=data)
 
@@ -473,7 +496,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     @lru_cache
     def get_media_options(self) -> dict[int, str]:
-        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA_OPTIONS)
+        response = requests.get(
+            f"{self.base_url}mediaoptions", params={"api_token": self.token}, timeout=self.request_timeout
+        )
+        _check_response_is_ok(response, self.token, "GET mediaoptions")
+        data = response.json()
 
         _log_external_call(self, method="get_media_options", response=data)
 
