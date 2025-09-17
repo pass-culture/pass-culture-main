@@ -237,12 +237,14 @@ export const PriceTableForm = ({
             <PriceInput
               name="price"
               value={watch(`entries.${index}.price`)}
-              className={styles['input-price']}
+              className={
+                styles[offer.isDigital ? 'input-price--digital' : 'input-price']
+              }
               disabled={areAllFieldsDisabled || areAllFieldsDisabledButQuantity}
               error={errors.entries?.[index]?.price?.message}
               label="Prix"
               currency={isCaledonian ? 'XPF' : 'EUR'}
-              showFreeCheckbox
+              showFreeCheckbox={!offer.isDigital}
               onChange={(event) =>
                 setValue(`entries.${index}.price`, Number(event.target.value), {
                   shouldDirty: true,
@@ -334,25 +336,31 @@ export const PriceTableForm = ({
               !areAllFieldsDisabled &&
               !areAllFieldsDisabledButQuantity && (
                 <ListIconButton
+                  className={styles['button-action']}
                   icon={fullCodeIcon}
                   onClick={() => setActivationCodeEntryIndexToUpload(index)}
                   ref={activationCodeButtonRef}
                   tooltipContent="Ajouter des codes d'activation"
                 />
               )}
-            {!areAllFieldsDisabled && !areAllFieldsDisabledButQuantity && (
-              <div className={styles['trash-button']}>
-                <ListIconButton
-                  icon={fullTrashIcon}
-                  onClick={() => askForRemovalConfirmationOrRemove(index)}
-                  tooltipContent={
-                    fields.length > 1
-                      ? 'Supprimer ce tarif'
-                      : 'Réinitialiser les valeurs de ce tarif'
-                  }
-                />
-              </div>
-            )}
+            {
+              // We don't allow removing/resetting in EDITION mode unless it's a physical offer
+              !(offer.isEvent && mode === OFFER_WIZARD_MODE.EDITION) &&
+                !areAllFieldsDisabled &&
+                !areAllFieldsDisabledButQuantity && (
+                  <div className={styles['button-action']}>
+                    <ListIconButton
+                      icon={fullTrashIcon}
+                      onClick={() => askForRemovalConfirmationOrRemove(index)}
+                      tooltipContent={
+                        fields.length > 1
+                          ? 'Supprimer ce tarif'
+                          : 'Réinitialiser les valeurs de ce tarif'
+                      }
+                    />
+                  </div>
+                )
+            }
           </div>
         )
       })}

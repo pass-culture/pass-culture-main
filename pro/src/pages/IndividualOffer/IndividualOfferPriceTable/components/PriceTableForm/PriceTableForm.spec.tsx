@@ -723,4 +723,22 @@ describe('PriceTableForm', () => {
       })
     ).not.toBeInTheDocument()
   })
+
+  it('should not display remove/reset button for event offer in EDITION mode', () => {
+    const offer = { ...eventOffer, status: OfferStatus.ACTIVE }
+    const contextValues = { mode: OFFER_WIZARD_MODE.EDITION }
+    const props = { mode: OFFER_WIZARD_MODE.EDITION }
+
+    renderPriceTableForm({
+      offer,
+      contextValues,
+      props,
+    })
+
+    expect(
+      screen.queryByRole('button', {
+        name: LABELS.buttons.resetEntry,
+      })
+    ).not.toBeInTheDocument()
+  })
 })
