@@ -245,6 +245,7 @@ def _get_response_rows_query() -> sa.orm.Query:
         sa_orm.contains_eager(operations_models.SpecialEventResponse.user)
         .load_only(
             users_models.User.id,
+            users_models.User.email,
             users_models.User.firstName,
             users_models.User.lastName,
             users_models.User.roles,

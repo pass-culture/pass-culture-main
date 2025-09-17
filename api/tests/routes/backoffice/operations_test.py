@@ -290,6 +290,7 @@ class GetEventDetailsTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(no_user_incomplete_response.id)
         assert rows[0]["Candidat"] == no_user_incomplete_response.email
+        assert rows[0]["Email"] == "-"
         assert rows[0]["Dép."] == ""
         assert rows[0]["État de la candidature"] == "Nouvelle"
         assert rows[0]["Candidatures totales"] == "-"
@@ -299,6 +300,7 @@ class GetEventDetailsTest(GetEndpointHelper):
 
         assert rows[1]["ID"] == str(full_response.id)
         assert rows[1]["Candidat"] == f"{full_response.user.full_name} ({full_response.user.id})"
+        assert rows[1]["Email"] == full_response.user.email
         assert rows[1]["Dép."] == str(full_response.user.departementCode)
         assert rows[1]["État de la candidature"] == "À contacter"
         assert rows[1]["Candidatures totales"] == "1"
