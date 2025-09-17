@@ -528,15 +528,6 @@ class DeleteVenueTest:
             .one_or_none()
         )
 
-    def test_delete_cascade_venue_should_remove_adage_addresses(self):
-        venue = offerers_factories.CollectiveVenueFactory()
-        assert venue.adage_addresses
-
-        offerers_api.delete_venue(venue.id)
-
-        assert db.session.query(offerers_models.Venue).count() == 0
-        assert db.session.query(educational_models.AdageVenueAddress).count() == 0
-
     def test_delete_cascade_venue_should_remove_playlist(self):
         venue = offerers_factories.CollectiveVenueFactory()
         template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)

@@ -17,7 +17,6 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import factories as geography_factories
@@ -814,7 +813,6 @@ class DeleteVenueTest(PostEndpointHelper):
         assert (
             db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_to_delete_id).count() == 0
         )
-        assert db.session.query(educational_models.AdageVenueAddress).filter_by(venueId=venue_to_delete_id).count() == 0
 
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url

@@ -107,50 +107,30 @@ def test_synchronize_adage_ids_on_venues(db_session):
 
     # venue1 had not adageId and obtained two after synchronization
     # (venues merged)
-    # -> two new AdageVenueAddress must have been created
     # -> the last adageId received is saved inside the Venue
     assert venue1.adageId == str(adage_id5)
     assert venue1.adageInscriptionDate is not None
-    assert {ava.adageId for ava in venue1.adage_addresses} == {str(adage_id1), str(adage_id5)}
-    assert {ava.adageInscriptionDate.date() for ava in venue1.adage_addresses} == {venue1.adageInscriptionDate.date()}
 
     # venue2 had not adageId and obtained one after synchronization
-    # -> a new AdageVenueAddress must have been created
     assert venue2.adageId == str(adage_id2)
     assert venue2.adageInscriptionDate is not None
-    assert {ava.adageId for ava in venue2.adage_addresses} == {str(adage_id2)}
-    assert {ava.adageInscriptionDate.date() for ava in venue2.adage_addresses} == {venue2.adageInscriptionDate.date()}
 
     # venue3 had no known adageId, synchronization could have added one
     # but the synchroPass flag was false
-    # -> no new AdageVenueAddress could have been created
     assert venue3.adageId is None
     assert venue3.adageInscriptionDate is None
-    assert not venue3.adage_addresses
 
-    # venue4 had no known adageId and did not obtain one from the
-    # synchronization
-    # -> no new AdageVenueAddress could have been created
+    # venue4 had no known adageId and did not obtain one from the synchronization
     assert venue4.adageId is None
     assert venue4.adageInscriptionDate is None
-    assert not venue4.adage_addresses
 
-    # venue5 had a adageId and was marked as inactive by the
-    # synchronization
-    # -> it has a AdageVenueAddress that should have been updated
-    #    (adageId and adageInscriptionDate)
+    # venue5 had a adageId and was marked as inactive by the synchronization
     assert venue5.adageId is None
     assert venue5.adageInscriptionDate is None
-    assert {ava.adageId for ava in venue5.adage_addresses} == {None}
-    assert {ava.adageInscriptionDate for ava in venue5.adage_addresses} == {None}
 
     # venue6 had a adageId and the synchroPass was false
-    # -> it has a AdageVenueAddress that should have been updated
-    #    (adageId and adageInscriptionDate)
     assert venue6.adageId is None
     assert venue6.adageInscriptionDate is None
-    assert {ava.adageId for ava in venue6.adage_addresses} == {None}
-    assert {ava.adageInscriptionDate for ava in venue6.adage_addresses} == {None}
 
     # venue7 had a adageId which is unchanged
     # -> nothing should have been updated
@@ -207,10 +187,8 @@ def test_synchronize_adage_ids_on_venues_with_unknown_venue(db_session):
 
     # venue had no adageId and obtained two after synchronization
     # (venues merged)
-    # -> two new AdageVenueAddress must have been created
     # -> the last adageId received is saved inside the Venue
     assert venue.adageId == str(adage_id3)
-    assert {ava.adageId for ava in venue.adage_addresses} == {str(adage_id1), str(adage_id3)}
 
     action = db.session.query(history_models.ActionHistory).one()
     assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -460,17 +438,13 @@ def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, d
     db.session.refresh(venue2)
 
     # venue1 had not adageId and obtained one after synchronization
-    # -> a new AdageVenueAddress must have been created
     assert venue1.adageId == str(adage_id1)
     assert venue1.adageInscriptionDate is not None
-    assert {ava.adageId for ava in venue1.adage_addresses} == {str(adage_id1)}
-    assert {ava.adageInscriptionDate.date() for ava in venue1.adage_addresses} == {venue1.adageInscriptionDate.date()}
 
     # venue2 had not adageId and obtained none after synchronization
     # -> it has been (arbitrarily) ignored because of its `dateModification`
     assert venue2.adageId == "11"
     assert venue2.adageInscriptionDate is not None
-    assert len(venue2.adage_addresses) == 1
 
 
 def test_synchronize_adage_ids_on_venues_with_since_date():

@@ -363,10 +363,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "AccessibilityProvider", back_populates="venue", uselist=False
     )
 
-    adage_addresses: sa_orm.Mapped[list[educational_models.AdageVenueAddress]] = sa_orm.relationship(
-        "AdageVenueAddress", back_populates="venue"
-    )
-
     openingHours: sa_orm.Mapped[list["OpeningHours"]] = sa_orm.relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )

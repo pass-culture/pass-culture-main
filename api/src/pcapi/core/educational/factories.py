@@ -413,15 +413,6 @@ class PlaylistFactory(BaseFactory[models.CollectivePlaylist]):
     venue = factory.SubFactory(offerers_factories.VenueFactory)
 
 
-class AdageVenueAddressFactory(BaseFactory[models.AdageVenueAddress]):
-    class Meta:
-        model = models.AdageVenueAddress
-
-    venue = factory.SubFactory(offerers_factories.CollectiveVenueFactory)
-    adageId = factory.LazyAttribute(lambda ava: ava.venue.adageId)
-    adageInscriptionDate = factory.LazyAttribute(lambda ava: ava.venue.adageInscriptionDate)
-
-
 class CollectiveOfferBaseFactory(CollectiveOfferFactory):
     institution = factory.SubFactory(EducationalInstitutionFactory)
 
