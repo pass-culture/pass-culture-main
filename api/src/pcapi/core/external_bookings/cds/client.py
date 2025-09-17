@@ -14,6 +14,7 @@ import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
 from pcapi.connectors.cine_digital_service import get_resource
@@ -50,7 +51,6 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         self,
         cinema_id: str,
         account_id: str,
-        api_url: str,
         cinema_api_token: str | None,
         *,
         request_timeout: int | None = None,
@@ -59,7 +59,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
-        self.api_url = api_url
+        self.api_url = settings.CDS_API_URL
+        if not self.api_url:
+            raise ValueError("`CDS_API_URL` not configured in this env")
         self.account_id = account_id
         super()
 
