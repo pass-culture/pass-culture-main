@@ -30,6 +30,21 @@ INVOICE_LINE_INDIV_DICT = {
         finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
         finance_models.DepositType.GRANT_15_17.name,
     ): "CGINDGRANT_15_17",
+    # If the origin of credit is GRANT_17_18, it means that booking.usedRecreditType is None.
+    # Thus, we are in the case of the GRANT_15_17 booking that turned in a GRANT_17_18 one
+    # due to the user's birthday happening after the booking was used but before it was reimbursed.
+    (
+        finance_models.PricingLineCategory.OFFERER_REVENUE,
+        finance_models.DepositType.GRANT_17_18.name,
+    ): "ORINDGRANT_15_17",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        finance_models.DepositType.GRANT_17_18.name,
+    ): "OCINDGRANT_15_17",
+    (
+        finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+        finance_models.DepositType.GRANT_17_18.name,
+    ): "CGINDGRANT_15_17",
     (
         finance_models.PricingLineCategory.OFFERER_REVENUE,
         finance_models.DepositType.GRANT_FREE.name,
@@ -70,16 +85,30 @@ INVOICE_LINE_COLLECTIVE_DICT = {
         educational_models.Ministry.EDUCATION_NATIONALE.name,
     ): "ORCOLEDUC_NAT",
     (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        educational_models.Ministry.EDUCATION_NATIONALE.name,
+    ): "OCCOLEDUC_NAT",
+    (
         finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
         educational_models.Ministry.EDUCATION_NATIONALE.name,
     ): "CGCOLEDUC_NAT",
     (finance_models.PricingLineCategory.OFFERER_REVENUE, educational_models.Ministry.AGRICULTURE.name): "ORCOLAGRI",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        educational_models.Ministry.AGRICULTURE.name,
+    ): "OCCOLAGRI",
     (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, educational_models.Ministry.AGRICULTURE.name): "CGCOLAGRI",
     (finance_models.PricingLineCategory.OFFERER_REVENUE, educational_models.Ministry.MER.name): "ORCOLMER",
+    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, educational_models.Ministry.MER.name): "OCCOLMER",
     (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, educational_models.Ministry.MER.name): "CGCOLMER",
     (finance_models.PricingLineCategory.OFFERER_REVENUE, educational_models.Ministry.ARMEES.name): "ORCOLARMEES",
+    (finance_models.PricingLineCategory.OFFERER_CONTRIBUTION, educational_models.Ministry.ARMEES.name): "OCCOLARMEES",
     (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, educational_models.Ministry.ARMEES.name): "CGCOLARMEES",
     (finance_models.PricingLineCategory.OFFERER_REVENUE, educational_models.PROGRAM_MARSEILLE_EN_GRAND): "ORCOLMEG",
+    (
+        finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+        educational_models.PROGRAM_MARSEILLE_EN_GRAND,
+    ): "OCCOLMEG",
     (finance_models.PricingLineCategory.COMMERCIAL_GESTURE, educational_models.PROGRAM_MARSEILLE_EN_GRAND): "CGCOLMEG",
 }
 
@@ -99,25 +128,30 @@ TITLES = {
     "ORINDGRANT_FREE": "Réservations",
     "OCINDGRANT_FREE": "Réservations",
     "ORCOLEDUC_NAT": "Réservations",
+    "OCCOLEDUC_NAT": "Réservations",
     "CGCOLEDUC_NAT": "Gestes commerciaux",
     "ORCOLAGRI": "Réservations",
+    "OCCOLAGRI": "Réservations",
     "CGCOLAGRI": "Gestes commerciaux",
     "ORCOLARMEES": "Réservations",
+    "OCCOLARMEES": "Réservations",
     "CGCOLARMEES": "Gestes commerciaux",
     "ORCOLMER": "Réservations",
+    "OCCOLMER": "Réservations",
     "CGCOLMER": "Gestes commerciaux",
     "ORCOLMEG": "Réservations",
+    "OCCOLMEG": "Réservations",
     "CGCOLMEG": "Gestes commerciaux",
 }
 
 
 class BaseFinanceBackend:
     @staticmethod
-    def _get_invoice_daterange(invoice_date: datetime.datetime) -> tuple[datetime.date, datetime.date]:
-        if invoice_date.day < 15:
-            return invoice_date.replace(day=1).date(), invoice_date.replace(day=15).date()
-        last_day_of_the_month = calendar.monthrange(invoice_date.year, invoice_date.month)[1]
-        return invoice_date.replace(day=16).date(), invoice_date.replace(day=last_day_of_the_month)
+    def _get_invoice_daterange(cutoff_date: datetime.datetime) -> tuple[datetime.date, datetime.date]:
+        if cutoff_date.day < 16:
+            return cutoff_date.replace(day=1).date(), cutoff_date.replace(day=15).date()
+        last_day_of_the_month = calendar.monthrange(cutoff_date.year, cutoff_date.month)[1]
+        return cutoff_date.replace(day=16).date(), cutoff_date.replace(day=last_day_of_the_month).date()
 
     def get_invoice_lines(self, invoice: finance_models.Invoice) -> list[dict]:
         invoice_id = invoice.id
@@ -153,7 +187,13 @@ class BaseFinanceBackend:
             .join(finance_models.BookingFinanceIncident.collectiveBooking),
         )
 
-        return indiv_data + indiv_incident_data + collective_data + collective_incident_data
+        invoice_lines = [
+            line
+            for line in (indiv_data + indiv_incident_data + collective_data + collective_incident_data)
+            if line["amount"] != 0
+        ]
+
+        return invoice_lines
 
     def _get_indiv_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
         res = []
