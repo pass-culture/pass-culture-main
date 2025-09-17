@@ -1748,7 +1748,7 @@ def format_ministry(ministry: str | None) -> str:
 def format_notice_type(notice_type: offerers_models.NoticeType) -> str:
     match notice_type:
         case offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE:
-            return "Avis d'impayé"
+            return "Avis de sommes à payer"
         case offerers_models.NoticeType.REMINDER_LETTER:
             return "Lettre de relance"
         case offerers_models.NoticeType.BAILIFF:
