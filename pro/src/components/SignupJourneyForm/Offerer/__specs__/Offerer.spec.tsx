@@ -41,6 +41,15 @@ vi.mock('@/apiClient/adresse/apiAdresse', () => ({
     ]),
 }))
 
+// Disable memoization because getSiretData value needs to change
+vi.mock('@/commons/utils/memoize', () => ({
+  memoize: <T extends (...args: any[]) => any>(func: T): T => {
+    return ((...args: Parameters<T>): ReturnType<T> => {
+      return func(...args)
+    }) as T
+  },
+}))
+
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   return renderWithProviders(
     <>
@@ -427,6 +436,12 @@ describe('Offerer', () => {
       ).toBeInTheDocument()
     })
 
+    expect(
+      screen.getByText(
+        /Tu essayes de t’inscrire sur l’espace pass Culture Pro dédié aux professionnels de la culture./
+      )
+    ).toBeInTheDocument()
+
     await userEvent.click(
       screen.getByRole('button', {
         name: 'Continuer vers le pass Culture Pro',
@@ -438,6 +453,33 @@ describe('Offerer', () => {
         screen.queryByText('Il semblerait que tu ne sois pas')
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should display MaybeAppUserDialog for higher edication', async () => {
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '8542Z' })
+    )
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText('Numéro de SIRET à 14 chiffres *'),
+      '12345678933335'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    expect(api.getStructureData).toHaveBeenCalled()
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Il semblerait que tu ne sois pas')
+      ).toBeInTheDocument()
+    })
+
+    expect(
+      screen.getByText(
+        /Vous vous apprêtez à rejoindre l’espace pass Culture pro d’un établissement d’enseignement supérieur./
+      )
+    ).toBeInTheDocument()
   })
 
   it("should render error message when siret doesn't exist", async () => {

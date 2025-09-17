@@ -20,7 +20,10 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
-import { MAYBE_APP_USER_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
+import {
+  MAYBE_APP_USER_APE_CODE,
+  MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE,
+} from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
@@ -41,6 +44,7 @@ export const Offerer = (): JSX.Element => {
   const navigate = useNavigate()
   const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
+  const [isHigherEducation, setIsHigherEducation] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
   const initialValues: OffererFormValues = offerer
@@ -79,12 +83,21 @@ export const Offerer = (): JSX.Element => {
       if (
         !showIsAppUserDialog &&
         offererSiretData?.apeCode &&
-        MAYBE_APP_USER_APE_CODE.includes(offererSiretData.apeCode)
+        (MAYBE_APP_USER_APE_CODE.includes(offererSiretData.apeCode) ||
+          MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE.includes(
+            offererSiretData.apeCode
+          ))
       ) {
+        setIsHigherEducation(
+          MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE.includes(
+            offererSiretData.apeCode
+          )
+        )
         setShowIsAppUserDialog(true)
         return
       }
       if (showIsAppUserDialog) {
+        setIsHigherEducation(false)
         setShowIsAppUserDialog(false)
       }
       if (!offererSiretData) {
@@ -172,6 +185,7 @@ export const Offerer = (): JSX.Element => {
       <MaybeAppUserDialog
         onCancel={handleSubmit(onSubmit)}
         isDialogOpen={showIsAppUserDialog}
+        isHigherEducation={isHigherEducation}
       />
       <FormLayout className={styles['offerer-layout']}>
         <form
