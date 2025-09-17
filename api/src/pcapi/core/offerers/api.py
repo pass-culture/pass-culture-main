@@ -13,7 +13,6 @@ from datetime import timedelta
 from math import ceil
 from typing import Optional
 
-import jwt
 import pytz
 import schwifty
 import sqlalchemy as sa
@@ -2201,27 +2200,6 @@ def update_offerer_tag(
 
     db.session.add(offerer_tag)
     db.session.flush()
-
-
-def get_metabase_stats_iframe_url(
-    offerer: models.Offerer,
-    venues: typing.Sequence[models.Venue],
-) -> str:
-    """Generate a JWT-secured URL to a Metabase dashboard that shows
-    statistics about one or more venues.
-    """
-    if not {venue.managingOffererId for venue in venues}.issubset({offerer.id}):
-        raise ValueError("Cannot specify venue of another offerer")
-    payload = {
-        "resource": {"dashboard": settings.METABASE_DASHBOARD_ID},
-        "params": {"siren": [offerer.siren], "venueid": [str(venue.id) for venue in venues]},
-        # The dashboard token expires after 10 min. After that delay,
-        # the user has to refresh their page to interact with the
-        # dashboard (e.g. to export content).
-        "exp": round(time.time()) + (60 * 10),
-    }
-    token = jwt.encode(payload, settings.METABASE_SECRET_KEY, algorithm="HS256")
-    return f"{settings.METABASE_SITE_URL}/embed/dashboard/{token}#bordered=false&titled=false"
 
 
 def create_venue_registration(venue_id: int, target: offerers_models.Target, web_presence: str | None) -> None:

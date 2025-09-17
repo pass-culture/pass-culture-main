@@ -23,7 +23,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -244,18 +243,6 @@ def delete_venue_banner(venue_id: int) -> None:
 def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
     statuses = offerers_api.get_venues_educational_statuses()
     return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=statuses)  # type: ignore[arg-type]
-
-
-@private_api.route("/venues/<int:venue_id>/dashboard", methods=["GET"])
-@login_required
-@spectree_serialize(
-    on_success_status=200, response_model=offerers_serialize.OffererStatsResponseModel, api=blueprint.pro_private_schema
-)
-def get_venue_stats_dashboard_url(venue_id: str) -> offerers_serialize.OffererStatsResponseModel:
-    venue: Venue = get_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    url = offerers_api.get_metabase_stats_iframe_url(venue.managingOfferer, venues=[venue])
-    return offerers_serialize.OffererStatsResponseModel(dashboardUrl=url)
 
 
 @private_api.route("/venues/siret/<siret>", methods=["GET"])
