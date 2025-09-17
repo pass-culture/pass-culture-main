@@ -142,20 +142,15 @@ ONE_SHOW_RESPONSE_JSON = [
 
 
 class CineDigitalServiceGetShowTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_show_corresponding_to_show_id(self, mocked_get_resource, caplog):
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        account_id = "accountid_test"
-        resource = ResourceCDS.SHOWS
-
         mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="apiUrl_test/",
             request_timeout=14,
         )
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
@@ -170,10 +165,13 @@ class CineDigitalServiceGetShowTest:
             "response": MANY_SHOWS_RESPONSE_JSON,
         }
 
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
+        mocked_get_resource.assert_called_once_with(
+            "apiUrl_test/", "accountid_test", "token_test", ResourceCDS.SHOWS, request_timeout=14
+        )
 
         assert show.id == 2
 
+    @pytest.mark.settings(CDS_API_URL="test_url")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_raise_exception_if_show_not_found(self, mocked_get_resource, caplog):
         mocked_get_resource.return_value = ONE_SHOW_RESPONSE_JSON
@@ -181,7 +179,6 @@ class CineDigitalServiceGetShowTest:
             cinema_id="test_id",
             account_id="account_test",
             cinema_api_token="token_test",
-            api_url="test_url",
         )
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
@@ -202,6 +199,7 @@ class CineDigitalServiceGetShowTest:
             == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
         )
 
+    @pytest.mark.settings(CDS_API_URL="test_url")
     @pytest.mark.parametrize(
         "seatmap, expected_result",
         [("[[]]", True), ("[[1,1,1,1],[2,2,2,2]]", False)],
@@ -213,7 +211,7 @@ class CineDigitalServiceGetShowTest:
         mocked_get_resource.return_value = [show]
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="account_test", cinema_api_token="token_test"
         )
 
         show = cine_digital_service.get_show(1)
@@ -221,6 +219,7 @@ class CineDigitalServiceGetShowTest:
 
 
 class CineDigitalServiceGetShowsRemainingPlacesTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch(
         "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
@@ -232,19 +231,10 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         mocked_get_resource,
         caplog,
     ):
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        account_id = "accountid_test"
-        resource = ResourceCDS.SHOWS
-
         mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test",
-            account_id="accountid_test",
-            cinema_api_token="token_test",
-            api_url="apiUrl_test/",
-            request_timeout=14,
+            cinema_id="cinemaid_test", account_id="accountid_test", cinema_api_token="token_test", request_timeout=14
         )
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
@@ -259,10 +249,13 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             "response": MANY_SHOWS_RESPONSE_JSON,
         }
 
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
+        mocked_get_resource.assert_called_once_with(
+            "apiUrl_test/", "accountid_test", "token_test", ResourceCDS.SHOWS, request_timeout=14
+        )
 
         assert shows_remaining_places == {"2": 30, "3": 100}
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch(
         "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
@@ -271,28 +264,25 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
     def test_should_return_shows_id_with_corresponding_remaining_places(
         self, mocked_internet_sale_gauge_active, mocked_get_resource
     ):
-        account_id = "accountid_test"
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        resource = ResourceCDS.SHOWS
-
         mocked_get_resource.return_value = MANY_SHOWS_RESPONSE_JSON
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="apiUrl_test/",
             request_timeout=14,
         )
         shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
 
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource, request_timeout=14)
+        mocked_get_resource.assert_called_once_with(
+            "apiUrl_test/", "accountid_test", "token_test", ResourceCDS.SHOWS, request_timeout=14
+        )
 
         assert shows_remaining_places == {"2": 88, "3": 88}
 
 
 class CineDigitalServiceGetPaymentTypeTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_voucher_payment_type(self, mocked_get_resource, caplog):
         json_payment_types = [
@@ -313,7 +303,6 @@ class CineDigitalServiceGetPaymentTypeTest:
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="apiUrl_test",
         )
 
         payment_type = cine_digital_service.get_voucher_payment_type()
@@ -344,6 +333,7 @@ class CineDigitalServiceGetPaymentTypeTest:
         assert payment_type.id == 21
         assert payment_type.internal_code == "VCH"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_raise_exception_if_payment_type_not_found(self, mocked_get_resource):
         json_payment_types = [
@@ -360,17 +350,18 @@ class CineDigitalServiceGetPaymentTypeTest:
         ]
         mocked_get_resource.return_value = json_payment_types
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_voucher_payment_type()
         assert (
             str(cds_exception.value)
-            == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
+            == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=apiUrl_test/"
         )
 
 
 class CineDigitalServiceGetPCVoucherTypesTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_only_voucher_types_with_pass_culture_code_and_tariff(self, mocked_get_resource, caplog):
         json_voucher_types = [
@@ -386,7 +377,6 @@ class CineDigitalServiceGetPCVoucherTypesTest:
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="apiUrl_test",
         )
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
@@ -429,6 +419,7 @@ class CineDigitalServiceGetPCVoucherTypesTest:
 
 
 class CineDigitalServiceGetScreenTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_screen_corresponding_to_screen_id(self, mocked_get_resource):
         json_screens = [
@@ -453,12 +444,13 @@ class CineDigitalServiceGetScreenTest:
         ]
         mocked_get_resource.return_value = json_screens
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         show = cine_digital_service.get_screen(2)
 
         assert show.id == 2
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_raise_exception_if_screen_not_found(self, mocked_get_resource):
         json_screens = [
@@ -483,17 +475,18 @@ class CineDigitalServiceGetScreenTest:
         ]
         mocked_get_resource.return_value = json_screens
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_screen(4)
         assert (
             str(cds_exception.value)
-            == "Screen #4 not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
+            == "Screen #4 not found in Cine Digital Service API for cinemaId=test_id & url=apiUrl_test/"
         )
 
 
 class CineDigitalServiceGetAvailableSingleSeatTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_seat_available(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
@@ -520,7 +513,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         best_seat = cine_digital_service.get_available_seat(show, screen)
@@ -529,6 +522,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatCol == 5
         assert best_seat[0].seatNumber == "E_6"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap")
     def test_should_return_seat_available_when_seatmap_is_hardcoded(
@@ -558,7 +552,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         best_seat = cine_digital_service.get_available_seat(show, screen)
@@ -567,6 +561,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatCol == 4
         assert best_seat[0].seatNumber == "M_9"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_not_return_prm_seat(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
@@ -591,7 +586,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         show = create_show_cds(id_=1, screen_id=1)
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
@@ -599,6 +594,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatCol == 5
         assert best_seat[0].seatNumber == "D_6"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_seat_infos_according_to_screen(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
@@ -622,7 +618,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert len(best_seat) == 1
@@ -630,6 +626,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatCol == 3
         assert best_seat[0].seatNumber == "B_3"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_None_if_no_seat_available(self, mocked_get_resource):
         seatmap_json = [
@@ -650,11 +647,12 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert not best_seat
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_correct_seat_number(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
@@ -687,7 +685,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         best_seat = cine_digital_service.get_available_seat(show, screen)
         assert best_seat[0].seatRow == 5
@@ -696,6 +694,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
 
 
 class CineDigitalServiceGetAvailableDuoSeatTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_cinema_infos")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_seatmap")
     def test_should_return_duo_seat_if_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
@@ -721,13 +720,14 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         mocked_get_seatmap.return_value = seatmap
         mocked_get_cinema_infos.return_value = cinema
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "B_2"
         assert duo_seats[1].seatNumber == "B_3"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_seatmap")
     def test_should_return_duo_seat_if_available_when_seatmap_is_hardcoded(
@@ -754,13 +754,14 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         mocked_get_seatmap.return_value = seatmap
         mocked_get_hardcoded_seatmap.return_value = mocked_hardcoded_seatmap
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "P_13"
         assert duo_seats[1].seatNumber == "P_11"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_empty_if_less_than_two_seats_available(self, mocked_get_resource):
         seatmap_json = [
@@ -781,11 +782,12 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
 
         mocked_get_resource.return_value = seatmap_json
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 0
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_cinema_infos")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_seatmap")
     def test_should_return_two_separate_seats_if_no_duo_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
@@ -811,7 +813,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         mocked_get_seatmap.return_value = seatmap
         mocked_get_cinema_infos.return_value = cinema
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
         duo_seats = cine_digital_service.get_available_duo_seat(show, screen)
         assert len(duo_seats) == 2
@@ -820,10 +822,10 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
 
 
 class CineDigitalServiceCancelBookingTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
     def test_should_cancel_booking_with_success(self, mocked_get_voucher_payment_type, mocked_put_resource):
-        # Given
         json_response = {}
         mocked_put_resource.return_value = json_response
         mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
@@ -833,15 +835,12 @@ class CineDigitalServiceCancelBookingTest:
             cinema_id="test_id",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="test_url",
             request_timeout=12,
         )
 
-        # When
-
         cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
         mocked_put_resource.assert_called_with(
-            "test_url",
+            "apiUrl_test/",
             "accountid_test",
             "token_test",
             ResourceCDS.CANCEL_BOOKING,
@@ -849,12 +848,12 @@ class CineDigitalServiceCancelBookingTest:
             request_timeout=12,
         )
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
     def test_should_cancel_booking_with_errors_for_each_barcode(
         self, mocked_get_voucher_payment_type, mocked_put_resource
     ):
-        # Given
         json_response = {
             "111111111111": "BARCODE_NOT_FOUND",
             "222222222222": "TICKET_ALREADY_CANCELED",
@@ -867,10 +866,9 @@ class CineDigitalServiceCancelBookingTest:
             id=12, internal_code="VCH", is_active=True
         )
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
-        # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
             cine_digital_service.cancel_booking(
                 ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"]
@@ -881,12 +879,12 @@ class CineDigitalServiceCancelBookingTest:
             == f"""Error while canceling bookings :{sep}111111111111 : BARCODE_NOT_FOUND{sep}222222222222 : TICKET_ALREADY_CANCELED{sep}333333333333 : AFTER_END_OF_DAY{sep}444444444444 : AFTER_END_OF_SHOW{sep}555555555555 : DAY_CLOSED"""
         )
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
     def test_should_not_raise_error_when_cancel_bookings_already_cancelled(
         self, mocked_get_voucher_payment_type, mocked_put_resource
     ):
-        # Given
         json_response = {
             "111111111111": "TICKET_ALREADY_CANCELED",
             "222222222222": "TICKET_ALREADY_CANCELED",
@@ -897,10 +895,9 @@ class CineDigitalServiceCancelBookingTest:
             id=12, internal_code="VCH", is_active=True
         )
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
-        # When
         try:
             cine_digital_service.cancel_booking(["111111111111", "222222222222", "333333333333"])
         except cds_exceptions.CineDigitalServiceAPIException:
@@ -908,6 +905,7 @@ class CineDigitalServiceCancelBookingTest:
 
 
 class CineDigitalServiceGetVoucherForShowTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_none_when_show_does_not_have_pass_culture_tariff(self, mocked_get_resource):
         show = cds_serializers.ShowCDS(
@@ -934,13 +932,14 @@ class CineDigitalServiceGetVoucherForShowTest:
         mocked_get_resource.return_value = json_voucher_types
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
 
         assert not voucher_type
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_psculture_voucher_with_the_lower_price(self, mocked_get_resource):
         show = cds_serializers.ShowCDS(
@@ -970,7 +969,7 @@ class CineDigitalServiceGetVoucherForShowTest:
         mocked_get_resource.return_value = json_voucher_types
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
@@ -981,6 +980,7 @@ class CineDigitalServiceGetVoucherForShowTest:
 
 @pytest.mark.usefixtures("db_session")
 class CineDigitalServiceBookTicketTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
@@ -1047,7 +1047,6 @@ class CineDigitalServiceBookTicketTest:
             cinema_id="test_id",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="test_url",
             request_timeout=12,
         )
 
@@ -1066,6 +1065,7 @@ class CineDigitalServiceBookTicketTest:
         assert tickets[0].barcode == "141414141414"
         assert tickets[0].seat_number == "A_1"
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
@@ -1136,7 +1136,7 @@ class CineDigitalServiceBookTicketTest:
         mocked_post_resource.return_value = json_create_transaction
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
@@ -1176,6 +1176,7 @@ class CineDigitalServiceBookTicketTest:
         assert first_external_booking_info["venue_id"] == venue_id
         assert first_external_booking_info["timestamp"]
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
@@ -1223,7 +1224,7 @@ class CineDigitalServiceBookTicketTest:
         mocked_post_resource.return_value = json_create_transaction
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
@@ -1243,15 +1244,10 @@ class CineDigitalServiceBookTicketTest:
 
 
 class CineDigitalServiceGetMoviesTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_movies_information(self, mocked_get_resource):
-        # Given
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        account_id = "accountid_test"
-        resource = ResourceCDS.MEDIA
-
-        json_movies = [
+        mocked_get_resource.return_value = [
             {
                 "id": 1,
                 "title": "Test movie #1",
@@ -1275,29 +1271,21 @@ class CineDigitalServiceGetMoviesTest:
             },
         ]
 
-        mocked_get_resource.return_value = json_movies
-
-        # when
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test",
             account_id="accountid_test",
             cinema_api_token="token_test",
-            api_url="apiUrl_test/",
         )
         movies = cine_digital_service.get_venue_movies()
 
-        # then
-        mocked_get_resource.assert_called_once_with(api_url, account_id, token, resource)
+        mocked_get_resource.assert_called_once_with("apiUrl_test/", "accountid_test", "token_test", ResourceCDS.MEDIA)
         assert len(movies) == 3
 
 
 class CineDigitalServiceGetHardcodedSeatmapTest:
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_hardcoded_seatmap_when_exists(self, mocked_get_resource):
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        account_id = "accountid_test"
-        cinema_id = "cinemaid_test"
         show = create_show_cds(screen_id=30)
 
         expected_hardcoded_seatmap = [
@@ -1308,10 +1296,10 @@ class CineDigitalServiceGetHardcodedSeatmapTest:
         json_cinema_parameters = [
             {
                 "internetsalegaugeactive": True,
-                "id": cinema_id,
+                "id": "cinemaid_test",
                 "cinemaParameters": [
                     {
-                        "cinemaid": cinema_id,
+                        "cinemaid": "cinemaid_test",
                         "key": "SEATMAP_HARDCODED_LABELS_SCREENID_30",
                         "id": 1,
                         "value": json.dumps(expected_hardcoded_seatmap),
@@ -1322,21 +1310,18 @@ class CineDigitalServiceGetHardcodedSeatmapTest:
         mocked_get_resource.return_value = json_cinema_parameters
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id=cinema_id,
-            account_id=account_id,
-            api_url=api_url,
-            cinema_api_token=token,
+            cinema_id="cinemaid_test",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
         )
 
         hardcoded_seatmap = cine_digital_service.get_hardcoded_seatmap(show=show)
 
         assert hardcoded_seatmap == expected_hardcoded_seatmap
 
+    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
     def test_should_return_none_when_hardcoded_seatmap_does_not_exist(self, mocked_get_resource):
-        token = "token_test"
-        api_url = "apiUrl_test/"
-        account_id = "accountid_test"
         cinema_id = "cinemaid_test"
         show = create_show_cds(screen_id=30)
 
@@ -1344,10 +1329,9 @@ class CineDigitalServiceGetHardcodedSeatmapTest:
         mocked_get_resource.return_value = json_cinema_parameters
 
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id=cinema_id,
-            account_id=account_id,
-            api_url=api_url,
-            cinema_api_token=token,
+            cinema_id="cinemaid_test",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
         )
 
         hardcoded_seatmap = cine_digital_service.get_hardcoded_seatmap(show=show)

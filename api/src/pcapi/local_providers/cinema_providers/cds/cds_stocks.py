@@ -45,9 +45,6 @@ class CDSStocks(LocalProvider):
 
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
-        self.apiUrl = settings.CDS_API_URL
-        if not self.apiUrl:
-            raise ValueError("CDS API URL not configured in this env")
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
@@ -57,7 +54,6 @@ class CDSStocks(LocalProvider):
         self.client_cds = CineDigitalServiceAPI(
             cinema_id=venue_provider.venueIdAtOfferProvider,
             account_id=self.accountId,
-            api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
