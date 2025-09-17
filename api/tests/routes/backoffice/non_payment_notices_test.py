@@ -64,7 +64,7 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
         assert rows[0]["Date de création"] == created_notice.dateCreated.strftime("%d/%m/%Y")
         assert rows[0]["Date de réception"] == created_notice.dateReceived.strftime("%d/%m/%Y")
         assert rows[0]["État"] == "Nouveau"
-        assert rows[0]["Type d'avis"] == "Avis d'impayé"
+        assert rows[0]["Type d'avis"] == "Avis de sommes à payer"
         assert rows[0]["Référence"] == "ABC123"
         assert rows[0]["Nom de l'émetteur"] == "Guy Ssier de Justice"
         assert rows[0]["Email de l'émetteur"] == "plus.dargent@example.com"
@@ -472,7 +472,7 @@ class GetEditFormTest(GetEndpointHelper):
 
         assert html_parser.extract_input_value(response.data, "date_received") == notice.dateReceived.isoformat()
         assert html_parser.extract_select_options(response.data, "notice_type", True) == {
-            offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE.name: "Avis d'impayé"
+            offerers_models.NoticeType.UNPAID_AMOUNT_NOTICE.name: "Avis de sommes à payer"
         }
         assert html_parser.extract_input_value(response.data, "amount") == str(notice.amount)
         assert html_parser.extract_input_value(response.data, "reference") == notice.reference
