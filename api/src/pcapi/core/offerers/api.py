@@ -22,7 +22,6 @@ from sqlalchemy.dialects.postgresql import INTERVAL
 import pcapi.connectors.acceslibre as accessibility_provider
 import pcapi.connectors.thumb_storage as storage
 import pcapi.core.educational.api.adage as adage_api
-import pcapi.core.educational.api.address as educational_address_api
 import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
@@ -471,11 +470,9 @@ def create_venue(
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = datetime.utcnow()
 
-    adage_venue_address = educational_address_api.new_venue_address(venue)
-
+    db.session.add(venue)
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
-    db.session.add_all([venue, adage_venue_address])
     db.session.flush()
 
     if venue.siret:

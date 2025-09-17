@@ -6,7 +6,6 @@ import factory
 
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core.factories import BaseFactory
 from pcapi.models import db
@@ -20,7 +19,6 @@ from . import models
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.educational.models import AdageVenueAddress
     from pcapi.core.finance.models import BankAccount
 
 
@@ -186,25 +184,6 @@ class VenueFactory(BaseFactory):
                     OpeningHoursFactory.create(venue=self, offer=None, weekday=weekday, timespan=timespan)
                 )
         return opening_hours
-
-    @factory.post_generation
-    def adage_venue_addresses(
-        self,
-        create: bool,
-        extracted: typing.Any,
-        **kwargs: typing.Any,
-    ) -> typing.Sequence["AdageVenueAddress"]:
-        from pcapi.core.educational.factories import AdageVenueAddressFactory
-
-        if not create or not self.adageId:
-            return []
-        return [AdageVenueAddressFactory.create(venue=self)]
-
-
-def _get_department_code(postal_code: str | None) -> str | None:
-    if not postal_code:
-        return None
-    return postal_code_utils.PostalCode(postal_code).get_departement_code()
 
 
 class CaledonianVenueFactory(VenueFactory):

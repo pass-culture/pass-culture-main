@@ -2182,15 +2182,3 @@ class CollectivePlaylist(PcObject, models.Base, models.Model):
     )
 
     sa.Index("ix_collective_playlist_type_institutionId", type, institutionId)
-
-
-class AdageVenueAddress(PcObject, models.Base, models.Model):
-    __tablename__ = "adage_venue_address"
-    adageId: str | None = sa.Column(sa.Text, nullable=True, unique=True)
-    adageInscriptionDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
-    venueId: int | None = sa.Column(
-        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=True
-    )
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
-        "Venue", foreign_keys=[venueId], back_populates="adage_addresses"
-    )
