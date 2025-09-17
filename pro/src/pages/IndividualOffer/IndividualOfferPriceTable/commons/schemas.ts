@@ -35,21 +35,11 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .defined(),
   activationCodesExpirationDatetime: nonEmptyStringOrNull()
     .test((v) => (v ? isValid(new Date(v)) : true))
-    .transform((curr, orig) => (orig === '' ? undefined : curr))
     .optional(),
 
-  bookingLimitDatetime: nonEmptyStringOrNull()
-    .test((v) => (v ? isValid(new Date(v)) : true))
-    .when(['$mode', 'id'], (vals, schema) => {
-      const [mode, id] = vals as [
-        PriceTableFormContext['mode'],
-        PriceTableEntryModel['id'],
-      ]
-
-      return mode === OFFER_WIZARD_MODE.CREATION || id !== undefined
-        ? schema.transform((curr, orig) => (orig === '' ? undefined : curr))
-        : schema.optional()
-    }),
+  bookingLimitDatetime: nonEmptyStringOrNull().test((v) =>
+    v ? isValid(new Date(v)) : true
+  ),
 
   label: nonEmptyStringOrNull().when(['$offer'], (vals, schema) => {
     const [offer] = vals as [PriceTableFormContext['offer']]
@@ -70,34 +60,26 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .number()
     .default(null)
     .defined()
-    .when(['$isCaledonian', '$mode', 'id'], (vals, schema) => {
-      const [isCaledonian, mode, id] = vals as [
-        PriceTableFormContext['isCaledonian'],
-        PriceTableFormContext['mode'],
-        PriceTableEntryModel['id'],
-      ]
+    .when(['$isCaledonian'], (vals, schema) => {
+      const [isCaledonian] = vals as [PriceTableFormContext['isCaledonian']]
 
-      if (mode === OFFER_WIZARD_MODE.CREATION || id !== undefined) {
-        return schema
-          .typeError('Veuillez renseigner un prix')
-          .min(
-            0,
-            isCaledonian
-              ? 'Le prix ne peut pas être inférieur à 0F'
-              : 'Le prix ne peut pas être inferieur à 0€'
-          )
-          .max(
-            isCaledonian
-              ? PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
-              : PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
-            isCaledonian
-              ? `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
-              : `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`
-          )
-          .required('Veuillez renseigner un prix')
-      }
-
-      return schema.optional()
+      return schema
+        .typeError('Veuillez renseigner un prix')
+        .min(
+          0,
+          isCaledonian
+            ? 'Le prix ne peut pas être inférieur à 0F'
+            : 'Le prix ne peut pas être inferieur à 0€'
+        )
+        .max(
+          isCaledonian
+            ? PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
+            : PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
+          isCaledonian
+            ? `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
+            : `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`
+        )
+        .required('Veuillez renseigner un prix')
     }),
 
   quantity: yup
@@ -105,38 +87,30 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .nullable()
     .default(null)
     .defined()
-    .when(['$mode', 'id', 'bookingsQuantity'], (vals, schema) => {
-      const [mode, id, bookingsQuantity] = vals as [
+    .when(['$mode', 'bookingsQuantity'], (vals, schema) => {
+      const [mode, bookingsQuantity] = vals as [
         PriceTableFormContext['mode'],
-        PriceTableEntryModel['id'],
         PriceTableEntryModel['bookingsQuantity'],
       ]
 
-      if (mode === OFFER_WIZARD_MODE.CREATION || id !== undefined) {
-        let min =
-          bookingsQuantity && bookingsQuantity > 0 ? bookingsQuantity : 0
-        let minText =
-          bookingsQuantity && bookingsQuantity > 0
-            ? 'Veuillez indiquer un nombre supérieur ou égal au nombre de réservations'
-            : 'Doit être positif'
-        if (mode === OFFER_WIZARD_MODE.CREATION) {
-          min = 1
-          minText = 'Veuillez indiquer un nombre supérieur à 0'
-        }
-
-        return schema
-          .optional()
-          .nullable()
-          .typeError('Doit être un nombre')
-          .transform((_, val) => (val || val === 0 ? Number(val) : null))
-          .min(min, minText)
-          .max(
-            PRICE_TABLE_ENTRY_MAX_QUANTITY,
-            'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
-          )
+      let min = bookingsQuantity && bookingsQuantity > 0 ? bookingsQuantity : 0
+      let minText =
+        bookingsQuantity && bookingsQuantity > 0
+          ? 'Veuillez indiquer un nombre supérieur ou égal au nombre de réservations'
+          : 'Doit être positif'
+      if (mode === OFFER_WIZARD_MODE.CREATION) {
+        min = 1
+        minText = 'Veuillez indiquer un nombre supérieur à 0'
       }
 
-      return schema.optional()
+      return schema
+        .optional()
+        .typeError('Doit être un nombre')
+        .min(min, minText)
+        .max(
+          PRICE_TABLE_ENTRY_MAX_QUANTITY,
+          'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+        )
     }),
 })
 
