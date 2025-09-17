@@ -27,10 +27,6 @@ interface BasicLayoutProps {
    */
   mainSubHeading?: string
   /**
-   * Any content to display above the main heading.
-   */
-  mainTopElement?: React.ReactNode
-  /**
    * When StickyActionBar is rendered within the children,
    * Footer needs to have a special margin-bottom to be visible
    * above it.
@@ -42,7 +38,6 @@ export const BasicLayout = ({
   children,
   mainHeading,
   mainSubHeading,
-  mainTopElement,
   isStickyActionBarInChild = false,
 }: BasicLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
@@ -93,7 +88,6 @@ export const BasicLayout = ({
           <div className={styles['content-container']}>
             <main id="content">
               <div id="orejimeElement" />
-              {mainTopElement}
               <div className={styles.content}>
                 {mainHeadingWrapper}
                 {children}
