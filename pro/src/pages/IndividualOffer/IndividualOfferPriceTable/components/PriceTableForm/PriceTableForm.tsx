@@ -84,6 +84,8 @@ export const PriceTableForm = ({
     !areAllFieldsDisabled &&
     isOfferSynchronized(offer) &&
     !isOfferSynchronizedViaAllocine(offer)
+  const isEventOfferInEditionMode =
+    offer.isEvent && mode === OFFER_WIZARD_MODE.EDITION
 
   const { computeEntryConstraints, nowAsDate } = makeFieldConstraints({
     offer,
@@ -344,8 +346,8 @@ export const PriceTableForm = ({
                 />
               )}
             {
-              // We don't allow removing/resetting in EDITION mode unless it's a physical offer
-              !(offer.isEvent && mode === OFFER_WIZARD_MODE.EDITION) &&
+              // In EDITION mode, we don't allow removing/resetting prices for event offers
+              !isEventOfferInEditionMode &&
                 !areAllFieldsDisabled &&
                 !areAllFieldsDisabledButQuantity && (
                   <div className={styles['button-action']}>
