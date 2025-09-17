@@ -34,15 +34,10 @@ export const OfferType = (): JSX.Element => {
       {children}
     </OnboardingLayout>
   ) : (
-    <BasicLayout
-      mainHeading={mainHeading}
-      mainTopElement={
-        allowedOnAdage && (
-          <CollectiveBudgetCallout pageName="offer-creation-hub" />
-        )
-      }
-      isStickyActionBarInChild
-    >
+    <BasicLayout mainHeading={mainHeading} isStickyActionBarInChild>
+      {allowedOnAdage && (
+        <CollectiveBudgetCallout pageName="offer-creation-hub" />
+      )}
       {children}
     </BasicLayout>
   )
