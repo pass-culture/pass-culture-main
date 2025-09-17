@@ -162,7 +162,7 @@ class CineDigitalServiceGetShowTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "CineDigitalServiceAPI",
-            "method": "get_show",
+            "method": "GET https://accountid_test.apiUrl_test/shows",
             "cinema_id": "cinemaid_test",
             "response": MANY_SHOWS_RESPONSE_JSON,
         }
@@ -171,12 +171,12 @@ class CineDigitalServiceGetShowTest:
 
     def test_should_raise_exception_if_show_not_found(self, caplog, requests_mock):
         requests_mock.get(
-            "https://account_test.apiUrl_test/shows?api_token=token_test",
+            "https://accountid_test.apiUrl_test/shows?api_token=token_test",
             json=ONE_SHOW_RESPONSE_JSON,
         )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id",
-            account_id="account_test",
+            account_id="accountid_test",
             cinema_api_token="token_test",
         )
 
@@ -188,7 +188,7 @@ class CineDigitalServiceGetShowTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "CineDigitalServiceAPI",
-            "method": "get_show",
+            "method": "GET https://accountid_test.apiUrl_test/shows",
             "cinema_id": "test_id",
             "response": ONE_SHOW_RESPONSE_JSON,
         }
@@ -243,7 +243,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "CineDigitalServiceAPI",
-            "method": "get_shows_remaining_places",
+            "method": "GET https://accountid_test.apiUrl_test/shows",
             "cinema_id": "cinemaid_test",
             "response": MANY_SHOWS_RESPONSE_JSON,
         }
@@ -299,7 +299,7 @@ class CineDigitalServiceGetPaymentTypeTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "CineDigitalServiceAPI",
-            "method": "get_voucher_payment_type",
+            "method": "GET https://accountid_test.apiUrl_test/paiementtype",
             "cinema_id": "cinemaid_test",
             "response": [
                 {"id": 21, "active": True, "internalcode": "VCH"},
@@ -356,7 +356,7 @@ class CineDigitalServiceGetPCVoucherTypesTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "CineDigitalServiceAPI",
-            "method": "get_pc_voucher_types",
+            "method": "GET https://accountid_test.apiUrl_test/vouchertype",
             "cinema_id": "cinemaid_test",
             "response": [
                 {
