@@ -7,11 +7,17 @@ from pydantic.v1 import parse_obj_as
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
+from pcapi.utils import repository
+from pcapi.utils import requests
+from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
@@ -67,6 +73,69 @@ def _log_external_call(
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+        super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
+        self.cinema_details = providers_repository.get_boost_cinema_details(cinema_id)
+        self.base_url = self.cinema_details.cinemaUrl
+
+    def _generate_jwt_token(self) -> tuple[str, datetime.datetime]:
+        """
+        Make POST request to generate JWT token
+
+        The generated token is valid for 24H.
+
+        :return: jwt token, token expiration datetime
+        :raise: BoostLoginException
+        """
+        jwt_expiration_datetime = get_naive_utc_now() + datetime.timedelta(hours=24)
+        url = f"{self.base_url}api/vendors/login"
+
+        try:
+            response = requests.post(
+                url,
+                json={
+                    "username": settings.BOOST_API_USERNAME,
+                    "password": settings.BOOST_API_PASSWORD,
+                    "stationName": f"pcapi - {settings.ENV}",
+                },
+                params={"ignore_device": True},
+            )
+        except requests.exceptions.RequestException as exc:
+            raise boost_exceptions.BoostLoginException(f"Network error on Boost API: {url}") from exc
+
+        if response.status_code != 200:
+            try:
+                content = response.json()
+                message = content.get("message", "")
+            except requests.exceptions.JSONDecodeError:
+                message = response.content
+            raise boost_exceptions.BoostLoginException(
+                f"Unexpected {response.status_code} response from Boost login API on {response.request.url}: {message}"
+            )
+
+        content = response.json()
+        login_info = parse_obj_as(boost_serializers.LoginBoost, content)
+        token = login_info.token
+        if not token:
+            raise boost_exceptions.BoostLoginException("No token received from Boost API")
+
+        return token, jwt_expiration_datetime
+
+    def _refresh_cinema_details_token(self) -> None:
+        jwt_token, jwt_expiration_datetime = self._generate_jwt_token()
+        self.cinema_details.token = jwt_token
+        self.cinema_details.tokenExpirationDate = jwt_expiration_datetime
+        repository.save()
+
+    def _get_authentication_header(self) -> dict:
+        """
+        Return headers dict to authenticate request
+        """
+        if not self.cinema_details.tokenExpirationDate or self.cinema_details.tokenExpirationDate < get_naive_utc_now():
+            self._refresh_cinema_details_token()
+
+        return {"Authorization": f"Bearer {self.cinema_details.token}"}
+
     # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
