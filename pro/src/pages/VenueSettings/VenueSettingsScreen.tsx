@@ -18,11 +18,15 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import fullBackIcon from '@/icons/full-back.svg'
 import { generateSiretValidationSchema } from '@/pages/VenueSettings/SiretOrCommentFields/validationSchema'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
 import type { VenueSettingsFormValues } from './types'
 import { VenueSettingsForm } from './VenueSettingsForm'
+import styles from './VenueSettingsScreen.module.scss'
 import { getValidationSchema } from './validationSchema'
 
 interface VenueSettingsScreenProps {
@@ -117,6 +121,14 @@ export const VenueSettingsScreen = ({
 
   return (
     <>
+      <Button
+        className={styles.backButton}
+        variant={ButtonVariant.TERNARYBRAND}
+        icon={fullBackIcon}
+        onClick={() => navigate(-1)}
+      >
+        Retour vers la page précédente
+      </Button>
       <MandatoryInfo />
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
