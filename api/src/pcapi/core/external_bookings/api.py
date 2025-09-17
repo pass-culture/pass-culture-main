@@ -128,12 +128,11 @@ def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.Ex
 
     match local_class:
         case "CDSStocks":
-            api_url = settings.CDS_API_URL
             cds_cinema_details = providers_repository.get_cds_cinema_details(cinema_id)
             cinema_api_token = cds_cinema_details.cinemaApiToken
             account_id = cds_cinema_details.accountId
             return CineDigitalServiceAPI(
-                cinema_id, account_id, api_url, cinema_api_token, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
+                cinema_id, account_id, cinema_api_token, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
             )
         case "BoostStocks":
             return BoostClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)

@@ -28,21 +28,17 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 @pytest.mark.usefixtures("db_session")
 class GetCinemaVenueProviderTest:
     def test_should_return_cinema_venue_provider_according_to_venue_id(self) -> None:
-        # Given
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
         providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
 
         venue_id = venue_provider.venueId
 
-        # When
         assert get_active_cinema_venue_provider(venue_id) == venue_provider
 
     def test_should_raise_exception_if_no_cinema_venue_provider(self) -> None:
-        # Given
         venue_id = 0
 
-        # When
         with pytest.raises(providers_exceptions.InactiveProvider):
             get_active_cinema_venue_provider(venue_id)
 
@@ -59,7 +55,6 @@ class GetCinemaVenueProviderTest:
 @pytest.mark.usefixtures("db_session")
 class InstantiateCinemaApiClientTest:
     def test_should_return_client_api_according_to_name(self) -> None:
-        # Given
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(
             provider=cds_provider, venueIdAtOfferProvider="test_id"
@@ -71,11 +66,9 @@ class InstantiateCinemaApiClientTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token", accountId="test_account"
         )
 
-        # When
         venue_id = venue_provider.venueId
         client_api = _instantiate_cinema_api_client(venue_id)
 
-        # Then
         assert isinstance(client_api, CineDigitalServiceAPI)
         assert client_api.cinema_id == "test_id"
         assert client_api.token == "test_token"
@@ -83,7 +76,6 @@ class InstantiateCinemaApiClientTest:
         assert client_api.api_url == "test_cds_url/vad/"
 
     def test_should_raise_an_exception_if_no_cds_details_provided_when_required(self) -> None:
-        # Given
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(
             provider=cds_provider, venueIdAtOfferProvider="test_id"
@@ -92,12 +84,10 @@ class InstantiateCinemaApiClientTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
 
-        # When
         venue_id = venue_provider.venueId
         with pytest.raises(Exception) as e:
             _instantiate_cinema_api_client(venue_id)
 
-        # Then
         assert str(e.value) == "No row was found when one was required"
 
 
