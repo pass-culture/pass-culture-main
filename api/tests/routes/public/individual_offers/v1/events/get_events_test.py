@@ -26,7 +26,6 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     num_queries += 1  # fetch stocks (1 query)
     num_queries += 1  # fetch mediations (1 query)
     num_queries += 1  # fetch price categories (1 query)
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()

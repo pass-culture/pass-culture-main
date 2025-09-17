@@ -28,7 +28,6 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     num_queries += 1  # select price categories
     num_queries += 1  # select mediations
     num_queries += 1  # select stocks
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()

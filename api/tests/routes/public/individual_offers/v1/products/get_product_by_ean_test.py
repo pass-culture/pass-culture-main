@@ -25,7 +25,6 @@ class GetProductByEanTest(PublicAPIVenueEndpointHelper):
     num_queries_success += 1  # fetch stocks
     num_queries_success += 1  # fetch mediations
     num_queries_success += 1  # fetch price categories
-    num_queries_success += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()

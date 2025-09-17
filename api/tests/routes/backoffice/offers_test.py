@@ -130,8 +130,7 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch WIP_REFACTO_FUTURE_OFFER FF
-    expected_num_queries = 4
+    expected_num_queries = 3
     # - fetch providers (selectinload: 1 query)
     expected_num_queries_with_provider = expected_num_queries + 1
 
@@ -1674,8 +1673,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch WIP_REFACTO_FUTURE_OFFER FF
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers

@@ -170,55 +170,7 @@ class OfferValidationTest:
         assert offer.validation == models.OfferValidationStatus.APPROVED
 
 
-# TODO: (tcoudray-pass, 18/06/2025) Remove when `WIP_REFACTO_FUTURE_OFFER` FF is removed
 class OfferStatusTest:
-    def test_rejected(self):
-        rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED, isActive=False)
-
-        assert rejected_offer.status == offer_mixin.OfferStatus.REJECTED
-
-    def test_pending(self):
-        pending_offer = factories.OfferFactory(validation=models.OfferValidationStatus.PENDING)
-
-        assert pending_offer.status == offer_mixin.OfferStatus.PENDING
-
-    def test_active(self):
-        stock = factories.StockFactory()
-        active_offer = stock.offer
-
-        assert active_offer.status == offer_mixin.OfferStatus.ACTIVE
-
-    def test_inactive(self):
-        inactive_offer = factories.OfferFactory(
-            validation=models.OfferValidationStatus.APPROVED, isActive=False, stocks=[factories.StockFactory()]
-        )
-
-        assert inactive_offer.status == offer_mixin.OfferStatus.INACTIVE
-
-    def test_expired(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        expired_stock = factories.StockFactory(bookingLimitDatetime=past)
-        expired_offer = factories.OfferFactory(
-            validation=models.OfferValidationStatus.APPROVED,
-            isActive=True,
-            stocks=[
-                expired_stock,
-            ],
-        )
-
-        assert expired_offer.status == offer_mixin.OfferStatus.EXPIRED
-
-    def test_sold_out(self):
-        sold_out_offer = factories.OfferFactory(
-            validation=models.OfferValidationStatus.APPROVED,
-            isActive=True,
-        )
-
-        assert sold_out_offer.status == offer_mixin.OfferStatus.SOLD_OUT
-
-
-@pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
-class NewOfferStatusTest:
     def test_rejected(self):
         rejected_offer = factories.OfferFactory(validation=models.OfferValidationStatus.REJECTED, isActive=False)
 

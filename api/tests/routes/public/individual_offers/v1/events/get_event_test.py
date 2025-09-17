@@ -30,7 +30,6 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     num_queries += 1  # fetch stocks
     num_queries += 1  # fetch mediations
     num_queries += 1  # fetch price categories
-    num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
 
     num_queries_full = num_queries + 1  # fetch product
 
