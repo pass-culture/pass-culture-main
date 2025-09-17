@@ -71,13 +71,6 @@ class Returns200Test:
         assert created_venue.adageId is None
         assert created_venue.adageInscriptionDate is None
 
-        assert len(created_venue.adage_addresses) == 1
-        adage_addr = created_venue.adage_addresses[0]
-
-        assert adage_addr.venueId == created_venue.id
-        assert adage_addr.adageId == created_venue.adageId
-        assert adage_addr.adageInscriptionDate == created_venue.adageInscriptionDate
-
         assert len(created_offerer.action_history) == 1
         assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW
         assert created_offerer.action_history[0].authorUser == user
@@ -142,13 +135,6 @@ class Returns200Test:
         assert created_venue.withdrawalDetails is None
         assert created_venue.adageId is None
         assert created_venue.adageInscriptionDate is None
-
-        assert len(created_venue.adage_addresses) == 1
-        adage_addr = created_venue.adage_addresses[0]
-
-        assert adage_addr.venueId == created_venue.id
-        assert adage_addr.adageId == created_venue.adageId
-        assert adage_addr.adageInscriptionDate == created_venue.adageInscriptionDate
 
         assert len(created_offerer.action_history) == 1
         assert created_offerer.action_history[0].actionType == history_models.ActionType.OFFERER_NEW

@@ -11,7 +11,6 @@ from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.api import address as address_api
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
 from pcapi.core.educational.schemas import AdageCulturalPartner
 from pcapi.core.educational.schemas import AdageCulturalPartners
@@ -200,7 +199,6 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                 offerers_models.Venue.id.in_(searched_ids),
             )
         )
-        .options(sa_orm.joinedload(offerers_models.Venue.adage_addresses))
         .all()
     )
 
@@ -253,22 +251,8 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                     extra={"venue.id": venue.id, "adageId": venue.adageId},
                 )
 
-        # filter adage_cps rows that are linked to an unexisting
-        # venue. This can happen since the base data comes from an
-        # external source (`adage_cultural_partners`). Also, ignore
-        # deactivated venues.
-        venue_ids = {venue.id for venue in venues}
-        adage_venues_ids = {cp.adage_id: cp.venue_id for cp in adage_cps if cp.venue_id in venue_ids}
-        address_api.upsert_venues_addresses(adage_venues_ids)
-
-        # No need to filter non-existing venue ids:
-        deactivated_adage_venues_ids: dict[str, int] = {cp.adage_id: cp.venue_id for cp in deactivated if cp.venue_id}
-        unlink_count = address_api.unlink_deactivated_venue_addresses(deactivated_adage_venues_ids)
-
     if debug:
         logger.info("%d adage ids updates", len(adage_id_updates), extra=adage_id_updates)  # type: ignore
-        logger.info("%d adage venue addresses updates", len(adage_venues_ids), extra=adage_venues_ids)
-        logger.info("%d unknown adage venue addresses unlinked", unlink_count)
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
