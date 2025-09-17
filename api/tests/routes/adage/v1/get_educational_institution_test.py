@@ -184,7 +184,6 @@ class Returns200Test:
         num_queries = 1  # fetch the institution
         num_queries += 1  # fetch the prebookings
         num_queries += 1  # fetch the deposit
-        num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
         with assert_num_queries(num_queries):
             client.with_eac_token().get(dst)
 

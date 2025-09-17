@@ -4,7 +4,6 @@ from datetime import datetime
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas as educational_schemas
-from pcapi.models import feature
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
@@ -90,7 +89,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
     )
 
 
-def _get_collective_offer_address_with_oa(offer: models.CollectiveOffer) -> str:
+def get_collective_offer_address(offer: models.CollectiveOffer) -> str:
     match offer.locationType:
         case models.CollectiveLocationType.SCHOOL:
             return "Dans l'établissement scolaire"
@@ -106,29 +105,6 @@ def _get_collective_offer_address_with_oa(offer: models.CollectiveOffer) -> str:
 
         case _:
             return ""
-
-
-def get_collective_offer_address(offer: models.CollectiveOffer) -> str:
-    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE.is_active():
-        return _get_collective_offer_address_with_oa(offer)
-
-    default_address = f"{offer.venue.street}, {offer.venue.postalCode} {offer.venue.city}"
-
-    if offer.offerVenue is None:
-        return default_address
-
-    address_type = offer.offerVenue["addressType"]
-
-    if address_type == "offererVenue":
-        return default_address
-
-    if address_type == "other":
-        return offer.offerVenue["otherAddress"]
-
-    if address_type == "school":
-        return "Dans l’établissement scolaire"
-
-    return default_address
 
 
 class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):

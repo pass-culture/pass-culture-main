@@ -298,7 +298,7 @@ def edit_collective_offer(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        api_offer.update_collective_offer(offer_id=offer_id, body=body, user=current_user)
+        api_offer.update_collective_offer(offer_id=offer_id, body=body)
 
     # venue change errors
     except offers_exceptions.ForbiddenDestinationVenue:
@@ -370,7 +370,7 @@ def edit_collective_offer_template(
         raise ApiErrors({"Partner": "User not in Adage can't edit the offer"}, status_code=403)
 
     try:
-        api_offer.update_collective_offer_template(offer_id=offer_id, body=body, user=current_user)
+        api_offer.update_collective_offer_template(offer_id=offer_id, body=body)
 
     # venue / offerer errors
     except exceptions.VenueIdDontExist:

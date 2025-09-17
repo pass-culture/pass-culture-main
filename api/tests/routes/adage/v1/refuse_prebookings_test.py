@@ -42,7 +42,6 @@ class Returns200Test:
 
         num_queries = 1  # re-fetch collective booking with related data
         num_queries += 1  # update booking
-        num_queries += 1  # fetch FF (WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE)
         with assert_num_queries(num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/refuse")
 
