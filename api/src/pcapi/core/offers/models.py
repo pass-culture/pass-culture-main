@@ -34,7 +34,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -1161,20 +1160,16 @@ class Offer(PcObject, Base, Model, ValidationMixin, AccessibilityMixin):
         if self.validation == OfferValidationStatus.DRAFT:
             return OfferStatus.DRAFT
 
-        if FeatureToggle.WIP_REFACTO_FUTURE_OFFER.is_active():
-            now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
-            if not self.publicationDatetime:
-                return OfferStatus.INACTIVE
+        if not self.publicationDatetime:
+            return OfferStatus.INACTIVE
 
-            if now_utc < self.publicationDatetime:
-                return OfferStatus.SCHEDULED
+        if now_utc < self.publicationDatetime:
+            return OfferStatus.SCHEDULED
 
-            if self.bookingAllowedDatetime and now_utc < self.bookingAllowedDatetime:
-                return OfferStatus.PUBLISHED
-        else:
-            if not self.isActive:
-                return OfferStatus.INACTIVE
+        if self.bookingAllowedDatetime and now_utc < self.bookingAllowedDatetime:
+            return OfferStatus.PUBLISHED
 
         if self.validation == OfferValidationStatus.APPROVED:
             if self.hasBookingLimitDatetimesPassed:

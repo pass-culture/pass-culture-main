@@ -56,8 +56,6 @@ class GetProductDetailsTest(GetEndpointHelper):
     # 11) Whitelisted Product
     expected_num_queries = 11
 
-    expected_num_queries += 1  # FF WIP_REFACTO_FUTURE_OFFER
-
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
         article = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
@@ -163,8 +161,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         # 2) No Stock associated with the linked Offer
         # 3) No Criteria associated with the Unlinked Offer
         # 4) No Stock associated with Unlinked Offer
-        # 5) No FF WIP_REFACTO_FUTURE_OFFER
-        with assert_num_queries(self.expected_num_queries - 5):
+        with assert_num_queries(self.expected_num_queries - 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -189,8 +186,7 @@ class GetProductDetailsTest(GetEndpointHelper):
         # 4) No Stock associated with Unlinked Offer
         # 5) No Criteria associated with the Unlinked Offer
         # 6) No Whitelisted Product (missing EAN)
-        # 7) No FF WIP_REFACTO_FUTURE_OFFER
-        with assert_num_queries(self.expected_num_queries - 7):
+        with assert_num_queries(self.expected_num_queries - 6):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

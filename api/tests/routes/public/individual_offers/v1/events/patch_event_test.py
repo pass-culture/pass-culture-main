@@ -78,7 +78,6 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.json["status"] == "INACTIVE"
         assert offer.isActive is False
 
-    @pytest.mark.features(WIP_REFACTO_FUTURE_OFFER=True)
     def test_activate_offer_default_publication_datetime(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
         offer = offers_factories.EventOfferFactory(
