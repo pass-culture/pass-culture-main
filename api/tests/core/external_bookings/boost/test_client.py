@@ -10,7 +10,6 @@ import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.connectors import boost as boost_connector
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
@@ -83,23 +82,27 @@ class GetShowtimesTest:
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
             "api_client": "BoostClientAPI",
-            "method": "get_collection_items",
-            "cinema_id": "test_id",
-            "method_params": {
-                "page": 1,
+            "method": "GET https://cinema-0.example.com/api/showtimes/between/2025-09-17/2025-09-27",
+            "query_params": {
+                "paymentMethod": "external:credit:passculture",
+                "hideFullReservation": 1,
+                "film": None,
                 "per_page": 2,
-                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+                "page": 2,
             },
+            "cinema_id": "test_id",
             "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
         }
         assert caplog.records[1].message == "[CINEMA] Call to external API"
         assert caplog.records[1].extra == {
             "api_client": "BoostClientAPI",
-            "method": "get_collection_items",
-            "method_params": {
-                "page": 2,
+            "method": "GET https://cinema-0.example.com/api/showtimes/between/2025-09-17/2025-09-27",
+            "query_params": {
+                "paymentMethod": "external:credit:passculture",
+                "hideFullReservation": 1,
+                "film": None,
                 "per_page": 2,
-                "resource": boost_connector.ResourceBoost.SHOWTIMES,
+                "page": 2,
             },
             "cinema_id": "test_id",
             "response": fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
