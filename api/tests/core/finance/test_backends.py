@@ -181,6 +181,27 @@ class BaseBackendTest:
             ),
             (
                 None,
+                finance_models.DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_REVENUE,
+                "ORINDGRANT_15_17",
+                "Réservations",
+            ),
+            (
+                None,
+                finance_models.DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCINDGRANT_15_17",
+                "Réservations",
+            ),
+            (
+                None,
+                finance_models.DepositType.GRANT_17_18,
+                finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
+                "CGINDGRANT_15_17",
+                "Gestes commerciaux",
+            ),
+            (
+                None,
                 finance_models.DepositType.GRANT_FREE,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORINDGRANT_FREE",
@@ -225,6 +246,44 @@ class BaseBackendTest:
         assert invoice_line["amount"] == -42_66
         assert invoice_line["product_id"] == product_id
         assert invoice_line["title"] == title
+
+    def test_get_invoice_line_ignores_0_euro_lines(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            pricing_point="self",
+            bank_account=bank_account,
+        )
+        booking = bookings_factories.UsedBookingFactory(
+            user__deposit__type=finance_models.DepositType.GRANT_17_18,
+            stock__offer__venue=venue,
+            usedRecreditType=BookingRecreditType.RECREDIT_18,
+        )
+        pricing = finance_factories.PricingFactory(
+            booking=booking, pricingPoint=venue, status=finance_models.PricingStatus.PROCESSED, amount=-42_66
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=finance_models.PricingLineCategory.OFFERER_REVENUE,
+            amount=-42_66,
+        )
+        finance_factories.PricingLineFactory(
+            pricing=pricing,
+            category=finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+            amount=0,
+        )
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account)
+
+        backend = finance_backend.BaseFinanceBackend()
+        invoice_lines = backend.get_invoice_lines(invoice)
+        assert len(invoice_lines) == 1
+        invoice_line = invoice_lines[0]
+        assert len(invoice_line) == 3
+        assert invoice_line["amount"] == -42_66
+        assert invoice_line["product_id"] == "ORINDGRANT_18_V3"
+        assert invoice_line["title"] == "Réservations"
 
     def test_get_invoice_line_identical_pricing_lines(self):
         offerer = offerers_factories.OffererFactory(name="Association de chanteurs", siren="853318459")
@@ -297,6 +356,12 @@ class BaseBackendTest:
             ),
             (
                 educational_models.Ministry.EDUCATION_NATIONALE.name,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCCOLEDUC_NAT",
+                "Réservations",
+            ),
+            (
+                educational_models.Ministry.EDUCATION_NATIONALE.name,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGCOLEDUC_NAT",
                 "Gestes commerciaux",
@@ -305,6 +370,12 @@ class BaseBackendTest:
                 educational_models.Ministry.AGRICULTURE.name,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORCOLAGRI",
+                "Réservations",
+            ),
+            (
+                educational_models.Ministry.AGRICULTURE.name,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCCOLAGRI",
                 "Réservations",
             ),
             (
@@ -321,6 +392,12 @@ class BaseBackendTest:
             ),
             (
                 educational_models.Ministry.ARMEES.name,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCCOLARMEES",
+                "Réservations",
+            ),
+            (
+                educational_models.Ministry.ARMEES.name,
                 finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
                 "CGCOLARMEES",
                 "Gestes commerciaux",
@@ -329,6 +406,12 @@ class BaseBackendTest:
                 educational_models.Ministry.MER.name,
                 finance_models.PricingLineCategory.OFFERER_REVENUE,
                 "ORCOLMER",
+                "Réservations",
+            ),
+            (
+                educational_models.Ministry.MER.name,
+                finance_models.PricingLineCategory.OFFERER_CONTRIBUTION,
+                "OCCOLMER",
                 "Réservations",
             ),
             (
@@ -576,6 +659,23 @@ class BaseBackendTest:
         assert invoice_line["product_id"] == "ORINDGRANT_18"
         assert invoice_line["title"] == "Réservations"
 
+    @pytest.mark.parametrize(
+        "cutoff_date, expected_start_date, expected_end_date",
+        [
+            (datetime.datetime(2025, 8, 31), datetime.date(2025, 8, 16), datetime.date(2025, 8, 31)),
+            (datetime.datetime(2025, 9, 1), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
+            (datetime.datetime(2025, 9, 15), datetime.date(2025, 9, 1), datetime.date(2025, 9, 15)),
+            (datetime.datetime(2025, 9, 16), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
+            (datetime.datetime(2025, 9, 30), datetime.date(2025, 9, 16), datetime.date(2025, 9, 30)),
+        ],
+    )
+    def test_get_invoice_daterange(self, cutoff_date, expected_start_date, expected_end_date):
+        backend = finance_backend.BaseFinanceBackend()
+        start_date, end_date = backend._get_invoice_daterange(cutoff_date)
+
+        assert start_date == expected_start_date
+        assert end_date == expected_end_date
+
 
 @pytest.mark.settings(
     CEGID_URL="",
@@ -647,7 +747,7 @@ class CegidFinanceBackendTest:
             category=finance_models.PricingLineCategory.COMMERCIAL_GESTURE,
             amount=-23_20,
         )
-        cashflow = finance_factories.CashflowFactory(pricings=[pricing1, pricing2])
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing1, pricing2], batch__cutoff=now)
         invoice = finance_factories.InvoiceFactory(cashflows=[cashflow], bankAccount=bank_account, date=now)
 
         #########################################
@@ -661,7 +761,7 @@ class CegidFinanceBackendTest:
             "CashAccount": {},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": "2024-12-18T00:00:00+00:00"},
-            "Description": {"value": f"{invoice.reference} - 15/01-31/01"},
+            "Description": {"value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 15/01-31/01"},
             "Details": [
                 {
                     "Account": {"value": "604000"},
@@ -755,7 +855,7 @@ class CegidFinanceBackendTest:
             "POST",
             f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
             json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
-            status_code=200,
+            status_code=202,
             headers={"content-type": "application/json"},
         )
         with time_machine.travel("2025-01-25", tick=False):
@@ -771,7 +871,9 @@ class CegidFinanceBackendTest:
         assert request_json["BranchID"] == {"value": "PASSCULT"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
-        assert request_json["Description"] == {"value": f"{invoice.reference} - 16/01-31/01"}
+        assert request_json["Description"] == {
+            "value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 16/01-31/01"
+        }
         assert "Details" in request_json
         details = request_json["Details"]
         assert len(details) == 3
@@ -891,7 +993,7 @@ class CegidFinanceBackendTest:
             category=finance_models.PricingLineCategory.OFFERER_REVENUE,
             amount=99_60,
         )
-        cashflow = finance_factories.CashflowFactory(pricings=[pricing])
+        cashflow = finance_factories.CashflowFactory(pricings=[pricing], batch__cutoff=test_date)
         invoice = finance_factories.InvoiceFactory(
             cashflows=[cashflow], bankAccount=bank_account, date=now, reference="A250000014"
         )
@@ -907,7 +1009,7 @@ class CegidFinanceBackendTest:
             "CashAccount": {},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": "2024-12-18T00:00:00+00:00"},
-            "Description": {"value": f"{invoice.reference} - 15/01-31/01"},
+            "Description": {"value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 15/01-31/01"},
             "Details": [
                 {
                     "Account": {"value": "604000"},
@@ -972,7 +1074,7 @@ class CegidFinanceBackendTest:
             "POST",
             f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/Bill/ReleaseBill",
             json={"Entity": {"id": "7b89c293-62bd-ef11-a82c-000d3ae74153"}},
-            status_code=200,
+            status_code=202,
             headers={"content-type": "application/json"},
         )
         with time_machine.travel(test_date, tick=False):
@@ -988,7 +1090,9 @@ class CegidFinanceBackendTest:
         assert request_json["BranchID"] == {"value": "PASSCULT"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
-        assert request_json["Description"] == {"value": f"{invoice.reference} - 16/01-31/01"}
+        assert request_json["Description"] == {
+            "value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 16/01-31/01"
+        }
         assert "Details" in request_json
         details = request_json["Details"]
         assert len(details) == 1
