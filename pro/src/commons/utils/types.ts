@@ -3,6 +3,10 @@ export type AnyObject = {
   [key: string]: any
 }
 
+export type Defined<T extends AnyObject> = {
+  [K in keyof T]-?: T[K] extends undefined ? never : T[K]
+}
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T
@@ -21,6 +25,6 @@ export const hasProperties = <T extends string>(
 ): element is Record<T, unknown> =>
   properties.every((property) => hasProperty(element, property))
 
-export const isNumber = (value: any) => {
+export const isNumber = (value: unknown) => {
   return typeof value === 'number' && Number.isFinite(value)
 }
