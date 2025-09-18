@@ -19,7 +19,6 @@ import {
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -45,7 +44,6 @@ import { FormLocation } from './FormLocation/FormLocation'
 import { FormNotifications } from './FormNotifications/FormNotifications'
 import { FormOfferType } from './FormOfferType/FormOfferType'
 import { FormParticipants } from './FormParticipants/FormParticipants'
-import { FormPracticalInformation } from './FormPracticalInformation/FormPracticalInformation'
 import { FormVenue } from './FormVenue/FormVenue'
 import styles from './OfferEducationalForm.module.scss'
 
@@ -81,9 +79,6 @@ export const OfferEducationalForm = ({
   const { logEvent } = useAnalytics()
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const { setValue, formState, watch } =
     useFormContext<OfferEducationalFormValues>()
@@ -199,18 +194,10 @@ export const OfferEducationalForm = ({
                   />
                 )}
 
-                {isCollectiveOaActive ? (
-                  <FormLocation
-                    venues={venues ?? []}
-                    disableForm={!canEditDetails}
-                  />
-                ) : (
-                  <FormPracticalInformation
-                    currentOfferer={userOfferer}
-                    venuesOptions={venuesOptions}
-                    disableForm={!canEditDetails}
-                  />
-                )}
+                <FormLocation
+                  venues={venues ?? []}
+                  disableForm={!canEditDetails}
+                />
 
                 <FormParticipants disableForm={!canEditDetails} />
                 <FormAccessibility disableForm={!canEditDetails} />

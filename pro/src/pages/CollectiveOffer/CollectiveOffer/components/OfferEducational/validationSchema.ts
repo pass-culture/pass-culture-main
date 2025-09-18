@@ -2,11 +2,7 @@ import { addYears, isBefore } from 'date-fns'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import {
-  CollectiveLocationType,
-  OfferAddressType,
-  type StudentLevels,
-} from '@/apiClient/v1'
+import { CollectiveLocationType, type StudentLevels } from '@/apiClient/v1'
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_PRICE_DETAILS_LENGTH,
@@ -38,9 +34,7 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema(
-  isCollectiveOaActive: boolean
-) {
+export function getOfferEducationalValidationSchema() {
   return yup.object<OfferEducationalFormValues>().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
@@ -62,64 +56,35 @@ export function getOfferEducationalValidationSchema(
       .string()
       .required('Veuillez sélectionner une entité juridique'),
     venueId: yup.string().required('Veuillez sélectionner une structure'),
-    location: isCollectiveOaActive
-      ? yup.object().shape({
-          locationType: yup
-            .string()
-            .oneOf([
-              CollectiveLocationType.ADDRESS,
-              CollectiveLocationType.SCHOOL,
-              CollectiveLocationType.TO_BE_DEFINED,
-            ]),
-        })
-      : yup.mixed(),
-    addressAutocomplete: isCollectiveOaActive
-      ? yup
-          .string()
-          .trim()
-          .when(
-            [
-              'location.locationType',
-              'location.address.id_oa',
-              'location.address.isManualEdition',
-            ],
-            {
-              is: (
-                locationType: string,
-                id_oa: string,
-                isManualEdition: boolean
-              ) =>
-                locationType === CollectiveLocationType.ADDRESS &&
-                id_oa === 'SPECIFIC_ADDRESS' &&
-                !isManualEdition,
-              then: (schema) =>
-                schema.required(
-                  'Veuillez sélectionner une adresse parmi les suggestions'
-                ),
-            }
-          )
-      : yup.mixed(),
-    eventAddress: isCollectiveOaActive
-      ? yup.mixed().required()
-      : yup
-          .object()
-          .required()
-          .shape({
-            addressType: yup.string<OfferAddressType>().required(),
-            otherAddress: yup.string().when('addressType', {
-              is: OfferAddressType.OTHER,
-              then: (schema) =>
-                schema.required('Veuillez renseigner une adresse'),
-            }),
-            venueId: yup
-              .number()
-              .nullable()
-              .when('addressType', {
-                is: OfferAddressType.OFFERER_VENUE,
-                then: (schema) =>
-                  schema.required('Veuillez sélectionner un lieu'),
-              }),
-          }),
+    location: yup.object().shape({
+      locationType: yup
+        .string()
+        .oneOf([
+          CollectiveLocationType.ADDRESS,
+          CollectiveLocationType.SCHOOL,
+          CollectiveLocationType.TO_BE_DEFINED,
+        ]),
+    }),
+    addressAutocomplete: yup
+      .string()
+      .trim()
+      .when(
+        [
+          'location.locationType',
+          'location.address.id_oa',
+          'location.address.isManualEdition',
+        ],
+        {
+          is: (locationType: string, id_oa: string, isManualEdition: boolean) =>
+            locationType === CollectiveLocationType.ADDRESS &&
+            id_oa === 'SPECIFIC_ADDRESS' &&
+            !isManualEdition,
+          then: (schema) =>
+            schema.required(
+              'Veuillez sélectionner une adresse parmi les suggestions'
+            ),
+        }
+      ),
     participants: yup.object<{ [key in StudentLevels]: boolean }>().test({
       name: 'is-one-true',
       message: 'Veuillez sélectionner au moins un niveau scolaire',
@@ -239,33 +204,13 @@ export function getOfferEducationalValidationSchema(
         test: () => format.length > 0,
       })
     ),
-    interventionArea: isCollectiveOaActive
-      ? yup.array().when('location.locationType', {
-          is: (locationType: CollectiveLocationType) =>
-            locationType !== CollectiveLocationType.ADDRESS,
-          then: (schema) =>
-            schema.min(1, 'Veuillez renseigner au moins un département'),
-        })
-      : yup.array().when('eventAddress', {
-          is: (eventAddress: { addressType: OfferAddressType }) =>
-            eventAddress.addressType !== OfferAddressType.OFFERER_VENUE,
-          then: (schema) =>
-            schema.min(1, 'Veuillez renseigner une zone de mobilité'),
-        }),
-    'search-interventionArea': isCollectiveOaActive
-      ? yup.mixed()
-      : yup.string().when(['interventionArea', 'eventAddress'], {
-          is: (
-            interventionArea: string[],
-            eventAddress: { addressType: OfferAddressType }
-          ) => {
-            return (
-              eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
-              interventionArea.length === 0
-            )
-          },
-          then: (schema) => schema.required(),
-        }),
+    interventionArea: yup.array().when('location.locationType', {
+      is: (locationType: CollectiveLocationType) =>
+        locationType !== CollectiveLocationType.ADDRESS,
+      then: (schema) =>
+        schema.min(1, 'Veuillez renseigner au moins un département'),
+    }),
+    'search-interventionArea': yup.mixed(),
     priceDetail: yup.string().max(MAX_PRICE_DETAILS_LENGTH),
     beginningDate: yup.string().when(['isTemplate', 'datesType'], {
       is: (isTemplate: boolean, datesType: OfferDatesType) =>

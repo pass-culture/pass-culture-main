@@ -72,10 +72,6 @@ export const applyVenueDefaultsToFormValues = (
     interventionArea:
       venue.collectiveInterventionArea ??
       getDefaultEducationalValues().interventionArea,
-    eventAddress: {
-      ...values.eventAddress,
-      venueId: Number(values.venueId),
-    },
     location: locationFromSelectedVenue,
     ...selectedVenueAddress,
   }

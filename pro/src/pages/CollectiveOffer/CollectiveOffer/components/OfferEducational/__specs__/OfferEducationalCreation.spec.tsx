@@ -29,10 +29,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.mock('repository/pcapi/pcapi', () => ({
-  postCollectiveOfferImage: vi.fn(),
-}))
-
 vi.mock('react-router', async () => ({
   ...(await vi.importActual('react-router')),
   useNavigate: vi.fn(),
@@ -58,7 +54,6 @@ function renderComponent(props: OfferEducationalProps, route?: string) {
   })
 }
 
-// TODO (ahello - 17/03/25) this test should really test offer creation (should not have an offer in its props)
 describe('screens | OfferEducational : creation', () => {
   let props: OfferEducationalProps
   let offer: GetCollectiveOfferResponseModel
@@ -90,7 +85,7 @@ describe('screens | OfferEducational : creation', () => {
   it('should redirect to stock on submit', async () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
     renderComponent(props)
-    const buttonNextStep = screen.getByText('Enregistrer et continuer')
+    const buttonNextStep = await screen.findByText('Enregistrer et continuer')
 
     await userEvent.click(buttonNextStep)
 

@@ -194,13 +194,6 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render FormPracticalInformation when OA FF is inactive', async () => {
-    renderOfferEducationalForm(defaultProps)
-    expect(
-      await screen.findByRole('radio', { name: 'Dans votre structure' })
-    ).toBeInTheDocument()
-  })
-
   it('should log an event when an image is uploaded (drag or selected)', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,

@@ -74,13 +74,11 @@ describe('screens | OfferEducational: edition', () => {
         exact: false,
       }),
       screen.getByLabelText(`${STRUCTURE_LABEL} *`),
-      screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),
       screen.getByLabelText(`${EMAIL_LABEL} *`),
       screen.getByLabelText(`${NOTIFICATIONS_EMAIL_LABEL} *`),
-      screen.getByLabelText(`Département(s)`),
     ]
     const submitButton = screen.getByRole('button', {
       name: 'Enregistrer et continuer',

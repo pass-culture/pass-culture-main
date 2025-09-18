@@ -1,7 +1,6 @@
 import {
   CollectiveLocationType,
   EacFormat,
-  OfferAddressType,
   StudentLevels,
 } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -30,11 +29,6 @@ const defaultValues: OfferEducationalFormValues = {
   offererId: '123',
   venueId: '1234',
   duration: '10:10',
-  eventAddress: {
-    addressType: OfferAddressType.OTHER,
-    otherAddress: '123 address',
-    venueId: 1234,
-  },
   location: {
     locationType: CollectiveLocationType.ADDRESS,
     address: {
@@ -61,7 +55,6 @@ describe('validationSchema OfferEducational', () => {
       description: string
       formValues: Partial<OfferEducationalFormValues>
       expectedErrors: string[]
-      isCollectiveOaActive?: boolean
     }[] = [
       {
         description: 'valid form',
@@ -149,7 +142,7 @@ describe('validationSchema OfferEducational', () => {
       },
       {
         description:
-          'invalid form with specific address without address selection when OA FF is active',
+          'invalid form with specific address without address selectio',
         formValues: {
           ...defaultValues,
           location: {
@@ -166,11 +159,10 @@ describe('validationSchema OfferEducational', () => {
         expectedErrors: [
           'Veuillez sélectionner une adresse parmi les suggestions',
         ],
-        isCollectiveOaActive: true,
       },
       {
         description:
-          'invalid form with specific address without manual address fields when OA FF is active',
+          'invalid form with specific address without manual address fields',
         formValues: {
           ...defaultValues,
           location: {
@@ -189,11 +181,10 @@ describe('validationSchema OfferEducational', () => {
           'Veuillez renseigner une ville',
           'Veuillez renseigner les coordonnées GPS',
         ],
-        isCollectiveOaActive: true,
       },
       {
         description:
-          'invalid form with wrong gps coordinates in manual address when OA FF is active',
+          'invalid form with wrong gps coordinates in manual address',
         formValues: {
           ...defaultValues,
           location: {
@@ -211,11 +202,10 @@ describe('validationSchema OfferEducational', () => {
           coords: 'blabla',
         },
         expectedErrors: ['Veuillez respecter le format attendu'],
-        isCollectiveOaActive: true,
       },
       {
         description:
-          'invalid form when school location is selected without departments when OA FF is active',
+          'invalid form when school location is selected without departments',
         formValues: {
           ...defaultValues,
           location: {
@@ -224,11 +214,10 @@ describe('validationSchema OfferEducational', () => {
           interventionArea: [],
         },
         expectedErrors: ['Veuillez renseigner au moins un département'],
-        isCollectiveOaActive: true,
       },
       {
         description:
-          'invalid form when to_be_defined location is selected without departments when OA FF is active',
+          'invalid form when to_be_defined location is selected without departments',
         formValues: {
           ...defaultValues,
           location: {
@@ -237,7 +226,6 @@ describe('validationSchema OfferEducational', () => {
           interventionArea: [],
         },
         expectedErrors: ['Veuillez renseigner au moins un département'],
-        isCollectiveOaActive: true,
       },
       {
         description: 'valid when duration is greater than 23:59',
@@ -262,8 +250,6 @@ describe('validationSchema OfferEducational', () => {
           interventionArea: ['45'],
         },
         expectedErrors: [],
-
-        isCollectiveOaActive: true,
       },
       {
         description:
@@ -283,25 +269,17 @@ describe('validationSchema OfferEducational', () => {
           coords: '48.853320, 2.348979',
         },
         expectedErrors: ['Veuillez renseigner un code postal valide'],
-        isCollectiveOaActive: true,
       },
     ]
 
-    cases.forEach(
-      ({
-        description,
-        formValues,
-        expectedErrors,
-        isCollectiveOaActive = false,
-      }) => {
-        it(`should validate the form for case: ${description}`, async () => {
-          const errors = await getYupValidationSchemaErrors(
-            getOfferEducationalValidationSchema(isCollectiveOaActive),
-            formValues
-          )
-          expect(errors).toEqual(expectedErrors)
-        })
-      }
-    )
+    cases.forEach(({ description, formValues, expectedErrors }) => {
+      it(`should validate the form for case: ${description}`, async () => {
+        const errors = await getYupValidationSchemaErrors(
+          getOfferEducationalValidationSchema(),
+          formValues
+        )
+        expect(errors).toEqual(expectedErrors)
+      })
+    })
   })
 })
