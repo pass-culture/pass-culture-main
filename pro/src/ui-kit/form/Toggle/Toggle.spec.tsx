@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { Toggle, type ToggleProps } from '../Toggle'
+import { Toggle, type ToggleProps } from './Toggle'
 
 const renderToggle = (props: ToggleProps) => {
   return render(<Toggle {...props} />)
