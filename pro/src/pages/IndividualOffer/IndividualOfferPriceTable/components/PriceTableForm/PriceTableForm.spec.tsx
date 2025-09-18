@@ -56,8 +56,9 @@ const renderPriceTableForm: RenderComponentFunction<
         activationCodes: [],
         activationCodesExpirationDatetime: null,
         bookingLimitDatetime: null,
-        bookingsQuantity: undefined,
-        id: undefined,
+        bookingsQuantity: null,
+        hasActivationCode: false,
+        id: null,
         label: offer.isEvent ? 'Normal' : null,
         price: 10,
         quantity: offer.isEvent ? null : 5,
@@ -124,8 +125,9 @@ describe('PriceTableForm', () => {
     activationCodes: null,
     activationCodesExpirationDatetime: null,
     bookingLimitDatetime: null,
-    bookingsQuantity: undefined,
-    id: undefined,
+    bookingsQuantity: null,
+    hasActivationCode: false,
+    id: null,
     label: null,
     price: 0,
     quantity: null,
@@ -303,7 +305,6 @@ describe('PriceTableForm', () => {
       entries: [
         {
           ...entryBase,
-          id: 55,
           price: 12,
         },
       ],
@@ -687,38 +688,14 @@ describe('PriceTableForm', () => {
     expect(expirationInput.value).toBe('2025-12-31')
   })
 
-  it('should disable stock input when activation codes are present (non-event)', () => {
-    const offer = { ...nonEventOffer, isDigital: true }
-    const defaultValues = {
-      entries: [
-        {
-          ...entryBase,
-          activationCodes: ['CODE1', 'CODE2'],
-          price: 10,
-          quantity: 2,
-        },
-      ],
-      isDuo: null,
-    }
-
-    renderPriceTableForm({
-      offer,
-      defaultValues,
-    })
-
-    const quantityInput = screen.getByRole<HTMLInputElement>('spinbutton', {
-      name: /Stock/,
-    })
-    expect(quantityInput).toBeDisabled()
-  })
-
-  it('should disable stock input when activation codes are present', () => {
+  it('should disable quantity input when activation codes are present', () => {
     const offer = { ...nonEventOffer, isDigital: true }
     const defaultValues = {
       entries: [
         {
           ...entryBase,
           activationCodes: ['A1', 'A2', 'A3'],
+          hasActivationCode: true,
           price: 8,
           quantity: 3,
         },

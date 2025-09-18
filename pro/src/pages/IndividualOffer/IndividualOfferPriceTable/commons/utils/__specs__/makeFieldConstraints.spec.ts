@@ -32,7 +32,8 @@ describe('makeFieldConstraints', () => {
     | 'bookingsQuantity'
   > = {
     activationCodes: [],
-    id: undefined,
+    id: null,
+    hasActivationCode: false,
     label: 'Tarif',
     price: 10,
     quantity: 5,
@@ -50,7 +51,7 @@ describe('makeFieldConstraints', () => {
         entry: {
           activationCodesExpirationDatetime: '',
           bookingLimitDatetime: '',
-          bookingsQuantity: undefined,
+          bookingsQuantity: null,
         },
         expected: {
           activationCodesExpirationDatetimeMin: null,
@@ -78,7 +79,7 @@ describe('makeFieldConstraints', () => {
         entry: {
           activationCodesExpirationDatetime: '',
           bookingLimitDatetime: '2031-01-15',
-          bookingsQuantity: undefined,
+          bookingsQuantity: null,
         },
         expected: {
           activationCodesExpirationDatetimeMin: new Date('2031-01-15'),
@@ -119,7 +120,7 @@ describe('makeFieldConstraints', () => {
         entry: {
           activationCodesExpirationDatetime: '',
           bookingLimitDatetime: '2025-12-24',
-          bookingsQuantity: undefined,
+          bookingsQuantity: null,
         },
         expected: {
           activationCodesExpirationDatetimeMin: new Date('2025-12-24'),
