@@ -6,18 +6,18 @@
     value="{{ field.data | empty_string_if_null }}"
     data-toggle="postal-address-autocomplete"
     data-limit="{{ field.limit }}"
-    {% if field.required %}required{% endif %}
-    {% if field.has_reset %}data-has-reset="true"{% endif %}
-    {% if field.has_manual_editing %}data-has-manual-editing="true"{% endif %}
+    {%+ if field.required %}required{% endif %}
+    {%+ if field.has_reset %}data-has-reset="true"{% endif %}
+    {%+ if field.has_manual_editing %}data-has-manual-editing="true"{% endif %}
     {# Bellow data are necessary to tell add on PcPostalAddressAutocomplete which field in the form to set on selection #}
-    {% if field.street %}data-street-input-name="{{ field.street }}"{% endif %}
-    {% if field.city %}data-city-input-name="{{ field.city }}"{% endif %}
-    {% if field.postal_code %}data-postal-code-input-name="{{ field.postal_code }}"{% endif %}
-    {% if field.latitude %}data-latitude-input-name="{{ field.latitude }}"{% endif %}
-    {% if field.longitude %}data-longitude-input-name="{{ field.longitude }}"{% endif %}
-    {% if field.ban_id %}data-ban-id-input-name="{{ field.ban_id }}"{% endif %}
-    {% if field.insee_code %}data-insee-code-input-name="{{ field.insee_code }}"{% endif %}
-    {% if field.is_manual_address %}data-is-manual-address-input-name="{{ field.is_manual_address }}"{% endif %}
+    {%+ if field.street %}data-street-input-name="{{ field.street }}"{% endif %}
+    {%+ if field.city %}data-city-input-name="{{ field.city }}"{% endif %}
+    {%+ if field.postal_code %}data-postal-code-input-name="{{ field.postal_code }}"{% endif %}
+    {%+ if field.latitude %}data-latitude-input-name="{{ field.latitude }}"{% endif %}
+    {%+ if field.longitude %}data-longitude-input-name="{{ field.longitude }}"{% endif %}
+    {%+ if field.ban_id %}data-ban-id-input-name="{{ field.ban_id }}"{% endif %}
+    {%+ if field.insee_code %}data-insee-code-input-name="{{ field.insee_code }}"{% endif %}
+    {%+ if field.is_manual_address %}data-is-manual-address-input-name="{{ field.is_manual_address }}"{% endif %}
     />
     <label for="{{ field.name }}">{{ field.label.text }}</label>
     {% if field.has_reset %}
