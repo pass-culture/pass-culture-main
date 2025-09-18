@@ -39,17 +39,20 @@ Le repo `main` contient les 4 projets suivants :
   - `npm install --global yarn` (NPM)
   - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
 - GPG (outil de (dé)chiffrement)
-
   - [GPG Suite](https://gpgtools.org/) (MacOS)
   - `sudo apt install gpg` (Linux)
-
 - [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
-
   - `pip install -U commitizen` ou `brew install commitizen`
 
-- Pour MacOS spécifiquement
+Pour les devs **qui n'utilisent PAS VSCode** et qui ouvrent le projet à partir du dossier racine `pass-culture-main` dans leur IDE :
+- [Biome](https://biomejs.dev/guides/getting-started/) (Linter JS/JSON/CSS/HTML pour le Frontend)
+  - `npm i -g @biomejs/biome` ou `brew install biome`
+  - Installer l'[extension correspondant à ton IDE si dispo](https://biomejs.dev/guides/editors/first-party-extensions/)
+  - Prendre garde à ce que ta version Biome globale soit la même que celle déclarée dans les dev-deps `pro/package.json`.
+
+- Pour MacOS spécifiquement :
   - CoreUtils: `brew install coreutils libxmlsec1`
-- Pour Linux spécifiquement
+- Pour Linux spécifiquement :
   - L'API a besoin des paquets suivants, à installer avec `sudo apt install python3-dev libpq-dev xmlsec1 libpango-1.0-0 libpangoft2-1.0-0` pour les distributions Ubuntu
 
 #### Installer les CLI

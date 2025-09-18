@@ -1,14 +1,25 @@
 {
+  "editor.defaultFormatter": null,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "biomejs.biome",
-  "biome.enabled": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit",
-    "source.addMissingImports": "always"
+    "source.addMissingImports": "always",
+    "source.fixAll.biome": "explicit"
   },
   "stylelint.validate": ["css", "scss"],
+  "[html]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
