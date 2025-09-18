@@ -1,18 +1,18 @@
 import { useDebounce } from 'use-debounce'
 
-import styles from './TextInputCharactersCount.module.scss'
+import styles from './FiledCharactersCount.module.scss'
 
-type TextInputCharactersCountProps = {
+type FiledCharactersCountProps = {
   current: number
   max: number
   describeById: string
 }
 
-export function TextInputCharactersCount({
+export function FiledCharactersCount({
   current,
   max,
   describeById,
-}: TextInputCharactersCountProps) {
+}: FiledCharactersCountProps) {
   //  The real counter would be announced by assistive technologies after each character typed.
   //  Therefore, we need a debounced counter that only changes when the user stops typing.
   const [debouncedCount] = useDebounce(current, 1000)

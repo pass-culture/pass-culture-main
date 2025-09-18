@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import fullErrorIcon from 'icons/full-error.svg'
 import {
   type ChangeEventHandler,
   type FocusEventHandler,
@@ -11,12 +10,13 @@ import {
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { FieldFooter } from '../common/FieldFooter/FieldFooter'
+import { FieldHeader } from '../common/FieldHeader/FieldHeader'
 import styles from './TextInput.module.scss'
 import {
   TextInputButton,
   type TextInputButtonProps,
 } from './TextInputButton/TextInputButton'
-import { TextInputCharactersCount } from './TextInputCharactersCount/TextInputCharactersCount'
 
 export type TextInputProps = {
   label: string
@@ -86,23 +86,19 @@ export const TextInput = forwardRef(
           [styles['is-disabled']]: disabled,
           [styles['has-error']]: Boolean(error),
           [styles['has-description']]: Boolean(description),
-          [styles['has-footer']]: Boolean(error) || Boolean(charactersCount),
           [styles['has-icon']]: Boolean(icon),
           [styles['has-button']]: Boolean(iconButton),
         })}
       >
         <div className={styles['header']}>
-          <label htmlFor={inputId} className={styles['label']}>
-            {label}
-            {required && asterisk && (
-              <span className={styles['label-mandatory-asterisk']}>*</span>
-            )}
-          </label>
-          {description && (
-            <p id={descriptionId} className={styles['description']}>
-              {description}
-            </p>
-          )}
+          <FieldHeader
+            description={description}
+            descriptionId={descriptionId}
+            inputId={inputId}
+            label={label}
+            required={required}
+            asterisk={asterisk}
+          />
         </div>
         <div className={styles['input-container']}>
           {icon && (
@@ -135,24 +131,12 @@ export const TextInput = forwardRef(
           )}
         </div>
         <div className={styles['footer']}>
-          <div role="alert" className={styles['footer-error']}>
-            {error && (
-              <p id={errorId} className={styles['footer-error-content']}>
-                <SvgIcon
-                  src={fullErrorIcon}
-                  alt=""
-                  className={styles['footer-error-content-icon']}
-                />
-                {error}
-              </p>
-            )}
-          </div>
-          {charactersCount && (
-            <TextInputCharactersCount
-              {...charactersCount}
-              describeById={charactersCountId}
-            />
-          )}
+          <FieldFooter
+            charactersCount={charactersCount}
+            charactersCountId={charactersCountId}
+            error={error}
+            errorId={errorId}
+          />
         </div>
         {extension && <div className={styles['extension']}>{extension}</div>}
       </div>
