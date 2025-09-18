@@ -36,7 +36,7 @@ def create_collective_stock(
     body: collective_stock_serialize.CollectiveStockCreationBodyModel,
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
-        offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
+        offerer = offerers_repository.get_by_collective_offer_id(body.offerId)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ResourceNotFoundError({"offerer": ["Aucune structure trouvée à partir de cette offre"]})
     check_user_has_access_to_offerer(current_user, offerer.id)

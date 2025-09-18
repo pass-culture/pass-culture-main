@@ -9,9 +9,7 @@ from pydantic.v1 import validator
 from pydantic.v1.fields import ModelField
 
 from pcapi import settings
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
+from pcapi.routes.serialization import ConfiguredBaseModel
 
 
 logger = logging.getLogger(__name__)
@@ -38,21 +36,21 @@ def validate_price(price: float | None) -> float:
 
 
 def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
-    if booking_limit_datetime and values.get("start_datetime") and booking_limit_datetime > values["start_datetime"]:
+    if booking_limit_datetime and values.get("startDatetime") and booking_limit_datetime > values["startDatetime"]:
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
     return booking_limit_datetime
 
 
 def validate_start_datetime(start_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
-    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
+    # we need a datetime with timezone information
     if start_datetime and start_datetime < datetime.now(timezone.utc):
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return start_datetime
 
 
 def validate_end_datetime(end_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
-    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
-    start_datetime = values.get("start_datetime")
+    # we need a datetime with timezone information
+    start_datetime = values.get("startDatetime")
     if end_datetime and end_datetime < datetime.now(timezone.utc):
         raise ValueError("L'évènement ne peut se terminer dans le passé.")
     if start_datetime and end_datetime < start_datetime:
@@ -90,28 +88,27 @@ def price_detail_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_price_detail)
 
 
-class CollectiveStockCreationBodyModel(BaseModel):
-    offer_id: int
-    start_datetime: datetime
-    end_datetime: datetime | None
-    booking_limit_datetime: datetime | None
-    total_price: decimal.Decimal
-    number_of_tickets: int
-    educational_price_detail: str | None
+class CollectiveStockCreationBodyModel(ConfiguredBaseModel):
+    offerId: int
+    startDatetime: datetime
+    endDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
+    totalPrice: decimal.Decimal
+    numberOfTickets: int
+    educationalPriceDetail: str | None
 
-    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
-    _validate_total_price = price_validator("total_price")
-    _validate_start_datetime = start_datetime_validator("start_datetime")
-    _validate_end_datetime = end_datetime_validator("end_datetime")
-    _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
-    _validate_educational_price_detail = price_detail_validator("educational_price_detail")
+    _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
+    _validate_total_price = price_validator("totalPrice")
+    _validate_start_datetime = start_datetime_validator("startDatetime")
+    _validate_end_datetime = end_datetime_validator("endDatetime")
+    _validate_booking_limit_datetime = booking_limit_datetime_validator("bookingLimitDatetime")
+    _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
 
     class Config:
-        alias_generator = to_camel
         extra = "forbid"
 
 
-class CollectiveStockEditionBodyModel(BaseModel):
+class CollectiveStockEditionBodyModel(ConfiguredBaseModel):
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -122,48 +119,33 @@ class CollectiveStockEditionBodyModel(BaseModel):
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
-    _validate_start_datetime = start_datetime_validator("startDatetime")
-    _validate_end_datetime = end_datetime_validator("endDatetime")
+    _validate_booking_limit_datetime = booking_limit_datetime_validator("bookingLimitDatetime")
 
-    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
-    # we can use the same interface as for creation and thus reuse the validator defined above.
-    @validator("bookingLimitDatetime")
-    def validate_booking_limit_datetime(
-        cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
-    ) -> datetime | None:
-        if (
-            booking_limit_datetime
-            and values.get("startDatetime") is not None
-            and booking_limit_datetime > values["startDatetime"]
-        ):
-            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
-        return booking_limit_datetime
-
-    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
-    # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("endDatetime")
-    def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
-        startDatetime = values.get("startDatetime")
-        if endDatetime is None:
+    def validate_end_datetime(
+        cls, end_datetime: datetime | None, values: dict[str, Any], field: ModelField
+    ) -> datetime | None:
+        if end_datetime is None:
             raise ValueError("La date de fin de l'évènement ne peut pas être nulle.")
-        if startDatetime and endDatetime < startDatetime:
-            raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
-        return endDatetime
 
-    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
-    # we can use the same interface as for creation and thus reuse the validator defined above.
-    @validator("startDatetime", pre=True)
-    def validate_start_limit_datetime(cls, startDatetime: datetime | None) -> datetime | None:
-        if startDatetime is None:
+        validate_end_datetime(end_datetime, values, field)
+        return end_datetime
+
+    @validator("startDatetime")
+    def validate_start_datetime(
+        cls, start_datetime: datetime | None, values: dict[str, Any], field: ModelField
+    ) -> datetime | None:
+        if start_datetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
-        return startDatetime
+
+        validate_start_datetime(start_datetime, values, field)
+        return start_datetime
 
     class Config:
-        alias_generator = to_camel
         extra = "forbid"
 
 
-class CollectiveStockResponseModel(BaseModel):
+class CollectiveStockResponseModel(ConfiguredBaseModel):
     id: int
     startDatetime: datetime | None
     endDatetime: datetime | None
@@ -171,9 +153,3 @@ class CollectiveStockResponseModel(BaseModel):
     price: float
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
-
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {datetime: format_into_utc_date}
-        orm_mode = True
