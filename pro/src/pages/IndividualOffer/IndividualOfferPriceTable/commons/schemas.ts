@@ -58,6 +58,7 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
 
   price: yup
     .number()
+    .nullable()
     .default(null)
     .defined()
     .when(['$isCaledonian'], (vals, schema) => {

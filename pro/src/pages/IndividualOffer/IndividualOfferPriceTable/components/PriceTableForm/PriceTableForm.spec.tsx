@@ -432,6 +432,30 @@ describe('PriceTableForm', () => {
     await userEvent.type(priceInput, '23')
     expect(priceInput.value).toBe('23')
 
+    await userEvent.clear(priceInput)
+    await userEvent.type(priceInput, '23.2')
+    expect(priceInput.value).toBe('23.2')
+
+    const quantityInput = screen.getByRole('spinbutton', {
+      name: /Stock/,
+    }) as HTMLInputElement
+    await userEvent.clear(quantityInput)
+    await userEvent.type(quantityInput, '11')
+    expect(quantityInput.value).toBe('11')
+  })
+
+  it('should update price and quantity fields on user input for Caledonian with correct currency', async () => {
+    const offer = { ...nonEventOffer, isEvent: false }
+    renderPriceTableForm({ offer, contextValues: { isCaledonian: true } })
+
+    const priceInput = screen.getByRole('spinbutton', {
+      name: 'Prix *',
+    }) as HTMLInputElement
+
+    await userEvent.clear(priceInput)
+    await userEvent.type(priceInput, '23.2')
+    expect(priceInput.value).toBe('232')
+
     const quantityInput = screen.getByRole('spinbutton', {
       name: /Stock/,
     }) as HTMLInputElement

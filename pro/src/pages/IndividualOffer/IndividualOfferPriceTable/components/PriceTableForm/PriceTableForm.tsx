@@ -238,7 +238,7 @@ export const PriceTableForm = ({
 
             <PriceInput
               name="price"
-              value={watch(`entries.${index}.price`)}
+              value={watch(`entries.${index}.price`) ?? ''}
               className={
                 styles[offer.isDigital ? 'input-price--digital' : 'input-price']
               }
@@ -247,11 +247,11 @@ export const PriceTableForm = ({
               label="Prix"
               currency={isCaledonian ? 'XPF' : 'EUR'}
               showFreeCheckbox={!offer.isDigital}
-              onChange={(event) =>
-                setValue(`entries.${index}.price`, Number(event.target.value), {
+              onChange={(event) => {
+                setValue(`entries.${index}.price`, event.target.valueAsNumber, {
                   shouldDirty: true,
                 })
-              }
+              }}
             />
 
             {!offer.isEvent && (
