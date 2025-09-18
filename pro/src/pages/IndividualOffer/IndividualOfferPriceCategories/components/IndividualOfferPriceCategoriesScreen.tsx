@@ -331,12 +331,9 @@ export const IndividualOfferPriceCategoriesScreen = ({
                     hideAsterisk={true}
                     smallLabel
                     onChange={(event) => {
-                      const newPriceAmount: string = event.target.value
                       setValue(
                         `priceCategories.${index}.price`,
-                        newPriceAmount !== '' && newPriceAmount !== undefined
-                          ? Number(newPriceAmount)
-                          : '',
+                        event.target.valueAsNumber,
                         { shouldValidate: true, shouldDirty: true }
                       )
                     }}

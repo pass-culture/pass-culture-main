@@ -16,7 +16,7 @@ export const toPriceCategoryBody = (
       return {
         ...(entry.id === undefined ? {} : { id: entry.id }),
         label: entry.label,
-        price: entry.price,
+        price: entry.price ?? 0,
       } satisfies CreatePriceCategoryModel
     }),
   }

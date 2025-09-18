@@ -52,7 +52,7 @@ export type PriceInputProps = Pick<
    */
   error?: string
   /**
-   * Currency to use to display price amount
+   * Currency to use to display currency icon
    * @default EUR
    */
   currency?: Currency
@@ -119,8 +119,16 @@ export const PriceInput = React.forwardRef(
     }, [isFree])
 
     const onTextInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newPriceAmount: string = event.target.value
+
+      let cleanedPriceAmount =
+        newPriceAmount !== '' ? Number(newPriceAmount) : undefined
+      if (showFreeCheckbox && isFree) {
+        cleanedPriceAmount = 0
+      }
+
       onChange?.({
-        target: { value: event.target.value },
+        target: { valueAsNumber: cleanedPriceAmount },
       } as React.ChangeEvent<HTMLInputElement>)
 
       showFreeCheckbox && setIsFree(event.target.value === '0')
@@ -139,7 +147,7 @@ export const PriceInput = React.forwardRef(
       }
 
       onChange?.({
-        target: { value: nextFieldValue },
+        target: { valueAsNumber: Number(nextFieldValue) },
       } as React.ChangeEvent<HTMLInputElement>)
     }
 

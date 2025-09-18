@@ -257,14 +257,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const onPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newPriceAmount: string = event.target.value
-    setValue(
-      'price',
-      newPriceAmount !== '' ? Number(newPriceAmount) : undefined,
-      {
-        shouldDirty: true,
-      }
-    )
+    setValue('price', event.target.valueAsNumber, {
+      shouldDirty: true,
+    })
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {

@@ -3,20 +3,24 @@ import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
 import { axe } from 'vitest-axe'
 
+import type { Currency } from '@/commons/core/shared/types'
+
 import { PriceInput, type PriceInputProps } from './PriceInput'
 
 const renderPriceInput = (props: Partial<PriceInputProps>) => {
   const Wrapper = () => {
-    const [value, setValue] = useState<number | undefined>(undefined)
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-      setValue(Number(event.target.value))
+    const [value, setValue] = useState<number | null>(null)
+
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.valueAsNumber)
+    }
 
     return (
       <PriceInput
         {...props}
         name="price"
         label="Prix"
-        value={value}
+        value={value ?? ''}
         onChange={onChange}
       />
     )
@@ -128,6 +132,25 @@ describe('PriceInput', () => {
         await userEvent.type(input, value)
         await userEvent.tab()
         expect(input).toHaveValue(expectedNumber)
+      }
+    )
+  })
+
+  describe('Currency', () => {
+    const setCurrencyValue: Array<{ currency: Currency; icon: string }> = [
+      { currency: 'EUR', icon: 'stroke-euro.svg' },
+      { currency: 'XPF', icon: 'stroke-franc.svg' },
+    ]
+    it.each(setCurrencyValue)(
+      `should display the correct currency icon`,
+      ({ currency, icon }) => {
+        const { container } = renderPriceInput({
+          showFreeCheckbox: false,
+          currency: currency,
+        })
+
+        const svg = container.querySelector('svg')
+        expect(svg?.innerHTML).toEqual(expect.stringContaining(icon))
       }
     )
   })
