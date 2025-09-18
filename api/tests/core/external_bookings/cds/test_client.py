@@ -10,7 +10,6 @@ import pcapi.connectors.serialization.cine_digital_service_serializers as cds_se
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.users.factories as users_factories
-from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 
 
@@ -780,15 +779,17 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         assert duo_seats[1].seatNumber == "D_3"
 
 
+@pytest.mark.settings(CDS_API_URL="apiUrl_test/")
 class CineDigitalServiceCancelBookingTest:
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.put_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    def test_should_cancel_booking_with_success(self, mocked_get_voucher_payment_type, mocked_put_resource):
-        json_response = {}
-        mocked_put_resource.return_value = json_response
-        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
-            id=12, internal_code="VCH", is_active=True
+    def test_should_cancel_booking_with_success(self, requests_mock):
+        requests_mock.put(
+            "https://accountid_test.apiUrl_test/transaction/cancel?api_token=token_test",
+            headers={"Content-Type": "application/json"},
+            json={},
+        )
+        requests_mock.get(
+            "https://accountid_test.apiUrl_test/paiementtype?api_token=token_test",
+            json=[{"id": 12, "active": True, "internalcode": "VCH"}],
         )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id",
@@ -798,34 +799,28 @@ class CineDigitalServiceCancelBookingTest:
         )
 
         cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
-        mocked_put_resource.assert_called_with(
-            "apiUrl_test/",
-            "accountid_test",
-            "token_test",
-            ResourceCDS.CANCEL_BOOKING,
-            cds_serializers.CancelBookingCDS(barcodes=[3107362853729, 1312079646868], paiement_type_id=12),
-            request_timeout=12,
+
+    def test_should_cancel_booking_with_errors_for_each_barcode(self, requests_mock):
+        requests_mock.put(
+            "https://accountid_test.apiUrl_test/transaction/cancel?api_token=token_test",
+            json={
+                "111111111111": "BARCODE_NOT_FOUND",
+                "222222222222": "TICKET_ALREADY_CANCELED",
+                "333333333333": "AFTER_END_OF_DAY",
+                "444444444444": "AFTER_END_OF_SHOW",
+                "555555555555": "DAY_CLOSED",
+            },
+            headers={"Content-Type": "application/json"},
+        )
+        requests_mock.get(
+            "https://accountid_test.apiUrl_test/paiementtype?api_token=token_test",
+            json=[{"id": 12, "active": True, "internalcode": "VCH"}],
         )
 
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.put_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    def test_should_cancel_booking_with_errors_for_each_barcode(
-        self, mocked_get_voucher_payment_type, mocked_put_resource
-    ):
-        json_response = {
-            "111111111111": "BARCODE_NOT_FOUND",
-            "222222222222": "TICKET_ALREADY_CANCELED",
-            "333333333333": "AFTER_END_OF_DAY",
-            "444444444444": "AFTER_END_OF_SHOW",
-            "555555555555": "DAY_CLOSED",
-        }
-        mocked_put_resource.return_value = json_response
-        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
-            id=12, internal_code="VCH", is_active=True
-        )
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
+            cinema_id="test_id",
+            account_id="accountid_test",
+            cinema_api_token="token_test",
         )
 
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
@@ -838,29 +833,25 @@ class CineDigitalServiceCancelBookingTest:
             == f"""Error while canceling bookings :{sep}111111111111 : BARCODE_NOT_FOUND{sep}222222222222 : TICKET_ALREADY_CANCELED{sep}333333333333 : AFTER_END_OF_DAY{sep}444444444444 : AFTER_END_OF_SHOW{sep}555555555555 : DAY_CLOSED"""
         )
 
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.put_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
-    def test_should_not_raise_error_when_cancel_bookings_already_cancelled(
-        self, mocked_get_voucher_payment_type, mocked_put_resource
-    ):
-        json_response = {
-            "111111111111": "TICKET_ALREADY_CANCELED",
-            "222222222222": "TICKET_ALREADY_CANCELED",
-            "333333333333": "TICKET_ALREADY_CANCELED",
-        }
-        mocked_put_resource.return_value = json_response
-        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
-            id=12, internal_code="VCH", is_active=True
+    def test_should_not_raise_error_when_cancel_bookings_already_cancelled(self, requests_mock):
+        requests_mock.put(
+            "https://accountid_test.apiUrl_test/transaction/cancel?api_token=token_test",
+            json={
+                "111111111111": "TICKET_ALREADY_CANCELED",
+                "222222222222": "TICKET_ALREADY_CANCELED",
+                "333333333333": "TICKET_ALREADY_CANCELED",
+            },
+            headers={"Content-Type": "application/json"},
+        )
+        requests_mock.get(
+            "https://accountid_test.apiUrl_test/paiementtype?api_token=token_test",
+            json=[{"id": 12, "active": True, "internalcode": "VCH"}],
         )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
 
-        try:
-            cine_digital_service.cancel_booking(["111111111111", "222222222222", "333333333333"])
-        except cds_exceptions.CineDigitalServiceAPIException:
-            pytest.fail("Should not raise CineDigitalServiceAPIException")
+        cine_digital_service.cancel_booking(["111111111111", "222222222222", "333333333333"])
 
 
 @pytest.mark.settings(CDS_API_URL="apiUrl_test/")

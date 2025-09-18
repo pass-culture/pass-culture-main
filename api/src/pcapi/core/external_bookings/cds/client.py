@@ -18,7 +18,6 @@ from pcapi import settings
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
 from pcapi.connectors.cine_digital_service import post_resource
-from pcapi.connectors.cine_digital_service import put_resource
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
@@ -106,6 +105,31 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         _log_external_call(self, method=f"GET {url}", response=data)
 
         return data
+
+    def _authenticated_put(self, url: str, payload: dict) -> dict | list[dict] | list | None:
+        """
+        Make an authenticated PUT by adding an `api_token` in query params.
+
+        If an error occurred, it returns the JSON body explaining the error.
+
+        :raise: CineDigitalServiceAPIException
+        """
+        response = requests.put(
+            url,
+            params={"api_token": self.token},
+            headers={"Content-Type": "application/json"},
+            data=payload,
+            timeout=self.request_timeout,
+        )
+
+        _raise_for_status(response, self.token, f"PUT {url}")
+
+        response_headers = response.headers.get("Content-Type")
+
+        if response_headers and "application/json" in response_headers:
+            return response.json()
+
+        return None
 
     def get_film_showtimes_stocks(self, film_id: str) -> dict:
         return {}
@@ -289,20 +313,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         paiement_type_id = self.get_voucher_payment_type().id
-        barcodes_int: list[int] = []
+        barcodes_cast_to_int: list[int] = []
         for barcode in barcodes:
-            if not barcode.isdigit():
-                raise ValueError(f"Barcode {barcode} contains one or more invalid char (only digit allowed)")
-            barcodes_int.append(int(barcode))
+            barcodes_cast_to_int.append(int(barcode))
 
-        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiement_type_id=paiement_type_id)  # type: ignore[call-arg]
-        api_response = put_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.CANCEL_BOOKING,
-            cancel_body,
-            request_timeout=self.request_timeout,
+        api_response = self._authenticated_put(
+            f"{self.base_url}transaction/cancel",
+            payload={"paiementtypeid": paiement_type_id, "barcodes": barcodes_cast_to_int},
         )
 
         if api_response:
