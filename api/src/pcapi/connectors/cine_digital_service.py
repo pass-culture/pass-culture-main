@@ -9,7 +9,6 @@ from pcapi.utils import requests
 class ResourceCDS(enum.Enum):
     TARIFFS = "tariffs"
     CREATE_TRANSACTION = "transaction/create"
-    CANCEL_BOOKING = "transaction/cancel"
     RATING = "rating"
 
 
@@ -47,27 +46,6 @@ def get_resource(
     _check_response_is_ok(response, cinema_api_token, f"GET {resource}")
 
     return response.json()
-
-
-def put_resource(
-    api_url: str,
-    account_id: str,
-    cinema_api_token: str | None,
-    resource: ResourceCDS,
-    body: BaseModel,
-    *,
-    request_timeout: int | None = None,
-) -> dict | list[dict] | list | None:
-    url = _build_url(api_url, account_id, cinema_api_token, resource)
-    headers = {"Content-Type": "application/json"}
-    response = requests.put(url, headers=headers, data=body.json(by_alias=True), timeout=request_timeout)
-
-    _check_response_is_ok(response, cinema_api_token, f"PUT {resource}")
-
-    response_headers = response.headers.get("Content-Type")
-    if response_headers and "application/json" in response_headers:
-        return response.json()
-    return None
 
 
 def post_resource(

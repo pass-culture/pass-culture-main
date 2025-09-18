@@ -6,8 +6,6 @@ import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import _build_url
 from pcapi.connectors.cine_digital_service import get_resource
-from pcapi.connectors.cine_digital_service import put_resource
-from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
 
 
 class CineDigitalServiceBuildUrlTest:
@@ -77,50 +75,3 @@ class CineDigitalServiceGetResourceTest:
         assert isinstance(exc_info.value, cds_exceptions.CineDigitalServiceAPIException)
         assert token not in str(exc_info.value)
         assert "Error on CDS API on GET ResourceCDS.TARIFFS" in str(exc_info.value)
-
-
-class CineDigitalServicePutResourceTest:
-    @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
-    def test_should_call_put_request_with_the_right_arguments(self, request_put):
-        # Given
-        cinema_id = "test_id"
-        api_url = "test_url/"
-        token = "test_token"
-        resource = ResourceCDS.CANCEL_BOOKING
-        body = CancelBookingCDS(barcodes=[111111111111], paiementtypeid=5)
-
-        response_json = {"111111111111": "BARCODE_NOT_FOUND"}
-
-        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
-        response_return_value.json = mock.MagicMock(return_value=response_json)
-        request_put.return_value = response_return_value
-
-        # When
-        json_data = put_resource(api_url, cinema_id, token, resource, body, request_timeout=14)
-
-        # Then
-        request_put.assert_called_once_with(
-            "https://test_id.test_url/transaction/cancel?api_token=test_token",
-            headers={"Content-Type": "application/json"},
-            data='{"barcodes": [111111111111], "paiementtypeid": 5}',
-            timeout=14,
-        )
-        assert json_data == response_json
-
-    @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
-    def test_should_raise_if_error(self, request_get):
-        # Given
-        cinema_id = "test_id"
-        api_url = "test_url/"
-        token = "test_token"
-        resource = ResourceCDS.TARIFFS
-        body = CancelBookingCDS(barcodes=[111111111111], paiementtypeid=5)
-
-        request_get.return_value = mock.MagicMock(status_code=400, reason="the test token test_token is wrong")
-
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exc_info:
-            put_resource(api_url, cinema_id, token, resource, body)
-
-        assert isinstance(exc_info.value, cds_exceptions.CineDigitalServiceAPIException)
-        assert token not in str(exc_info.value)
-        assert "Error on CDS API on PUT ResourceCDS.TARIFFS" in str(exc_info.value)
