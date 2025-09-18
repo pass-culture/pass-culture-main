@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { type ChangeEvent, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
@@ -100,16 +100,24 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     formState: { errors, isSubmitting, isDirty, defaultValues },
   } = hookForm
 
-  const { data: stocksResp, mutate: revalidateStocks } = useSWR(
+  const { data: stocksResp } = useSWR(
     offer?.id ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
     ([, offerId]) => api.getStocks(offerId),
-    {
-      revalidateOnFocus: false,
-      onSuccess: (resp) => {
-        reset(buildInitialValues(offer, resp.stocks, isCaledonian))
-      },
-    }
+    { revalidateOnFocus: false }
   )
+
+  useEffect(() => {
+    if (!offer || !stocksResp) {
+      return
+    }
+    // buildInitialValues doit renvoyer exactement les types attendus par tes inputs
+    const nextValues = buildInitialValues(
+      offer,
+      stocksResp.stocks,
+      isCaledonian
+    )
+    reset(nextValues) // éventuellement: reset(nextValues, { keepDirty: false, keepTouched: false })
+  }, [offer, stocksResp, isCaledonian, reset])
 
   const stocks: GetOfferStockResponseModel[] = stocksResp?.stocks ?? []
 
@@ -180,7 +188,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       reset(
         buildInitialValues(offerResponse, stockResponse.stocks, isCaledonian)
       )
-      await revalidateStocks()
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -228,7 +235,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     try {
       await api.deleteStock(stockId)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
-      await revalidateStocks()
       reset(STOCK_THING_FORM_DEFAULT_VALUES)
       notify.success('Le stock a été supprimé.')
     } catch {
@@ -258,6 +264,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const onPriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue('price', event.target.valueAsNumber, {
       shouldDirty: true,
+      shouldValidate: true,
     })
   }
 

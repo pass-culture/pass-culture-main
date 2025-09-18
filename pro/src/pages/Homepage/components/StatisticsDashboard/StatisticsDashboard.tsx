@@ -21,7 +21,7 @@ interface StatisticsDashboardProps {
 
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   const { data: stats, isLoading } = useSWR(
-    offerer?.id ? [GET_OFFERER_STATISTICS_QUERY_KEY, offerer.id] : null,
+    [GET_OFFERER_STATISTICS_QUERY_KEY, offerer.id],
     ([, offererId]) => api.getOffererStats(offererId)
   )
 
