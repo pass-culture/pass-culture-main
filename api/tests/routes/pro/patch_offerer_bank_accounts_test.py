@@ -635,7 +635,7 @@ class OffererPatchBankAccountsTest:
         assert len(response.json["bankAccounts"]) == 1
         bank_account_response = response.json["bankAccounts"].pop()
         assert bank_account_response["linkedVenues"] == [
-            {"commonName": venue_with_pp.commonName, "id": venue_with_pp_id}
+            {"commonName": venue_with_pp.common_name, "id": venue_with_pp_id}
         ]
 
     def test_user_cannot_link_venue_to_bank_account_if_not_right_status(self, db_session, client):
