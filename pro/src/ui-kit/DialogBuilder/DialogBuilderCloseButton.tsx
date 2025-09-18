@@ -50,6 +50,7 @@ export const DialogBuilderCloseButton = ({
       )}
       onClick={onCloseClick}
       type="button"
+      data-testid="dialog-builder-close-button"
     >
       <SvgIcon
         src={strokeCloseIcon}

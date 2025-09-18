@@ -13,6 +13,7 @@ import styles from './Dialog.module.scss'
 
 export interface DialogProps {
   onCancel: () => void
+  onClose?: () => void
   title: string
   secondTitle?: string
   explanation?: React.ReactNode | React.ReactNode[]
@@ -28,6 +29,7 @@ export interface DialogProps {
 
 export const Dialog = ({
   onCancel,
+  onClose,
   title,
   secondTitle,
   explanation,
@@ -44,7 +46,7 @@ export const Dialog = ({
   return (
     <DialogBuilder
       open={open}
-      onOpenChange={(open) => !open && onCancel()}
+      onOpenChange={(open) => !open && (onClose ? onClose() : onCancel())}
       trigger={trigger}
       refToFocusOnClose={refToFocusOnClose}
     >

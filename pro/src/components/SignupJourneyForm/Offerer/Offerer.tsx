@@ -184,6 +184,10 @@ export const Offerer = (): JSX.Element => {
     <>
       <MaybeAppUserDialog
         onCancel={handleSubmit(onSubmit)}
+        onClose={() => {
+          setIsHigherEducation(false)
+          setShowIsAppUserDialog(false)
+        }}
         isDialogOpen={showIsAppUserDialog}
         isHigherEducation={isHigherEducation}
       />
