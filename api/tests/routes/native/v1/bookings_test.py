@@ -43,6 +43,8 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
 
+from tests.connectors.cgr import soap_definitions
+
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
@@ -436,9 +438,9 @@ class PostBookingTest:
         assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
-    def test_book_sold_out_cinema_stock_does_not_book_anything(self, client):
+    def test_book_sold_out_cinema_stock_does_not_book_anything(self, client, requests_mock):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
-
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         id_at_provider = "test_id_at_provider"
 
         provider = db.session.query(providers_models.Provider).filter_by(localClass="CGRStocks").first()
@@ -448,7 +450,10 @@ class PostBookingTest:
         pivot = providers_factories.CinemaProviderPivotFactory(
             venue=venue_provider.venue, provider=provider, idAtProvider=id_at_provider
         )
-        providers_factories.CGRCinemaDetailsFactory(cinemaProviderPivot=pivot)
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=pivot,
+            cinemaUrl="http://example.com/web_service",
+        )
 
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(

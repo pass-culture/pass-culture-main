@@ -3,17 +3,24 @@ import json
 import logging
 
 import pydantic.v1 as pydantic_v1
+from zeep import Client
+from zeep.cache import InMemoryCache
+from zeep.proxy import ServiceProxy
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.connectors.cgr.cgr import annulation_pass_culture
-from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
+from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
+from pcapi.utils import requests
+from pcapi.utils.crypto import decrypt
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
@@ -21,54 +28,94 @@ from . import constants
 
 logger = logging.getLogger(__name__)
 
+CGR_TIMEOUT = 10
+
 
 def _log_external_call(
-    client: external_bookings_models.ExternalBookingsClientAPI, method: str, response: pydantic_v1.BaseModel
+    client: external_bookings_models.ExternalBookingsClientAPI,
+    method: str,
+    response: pydantic_v1.BaseModel | dict,
 ) -> None:
+    if isinstance(response, pydantic_v1.BaseModel):
+        response = response.dict(exclude_unset=True)
+
     logger.debug(
         "[CINEMA] Call to external API",
         extra={
             "api_client": client.__class__.__name__,
             "cinema_id": client.cinema_id,
             "method": method,
-            "response": response.dict(exclude_unset=True),
+            "response": response,
         },
     )
 
 
+def _check_response_is_ok(response: dict, resource: str) -> None:
+    if response["CodeErreur"] != 0:
+        error_message = response["IntituleErreur"]
+        raise CGRAPIException(f"Error on CGR API on {resource} : {error_message}")
+
+
+def _get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) -> ServiceProxy:
+    # https://docs.python-zeep.org/en/master/transport.html#caching
+    timeout = request_timeout or CGR_TIMEOUT
+    cache = InMemoryCache()
+    transport = requests.CustomZeepTransport(cache=cache, timeout=timeout, operation_timeout=timeout)
+    client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
+    service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
+    return service
+
+
 class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+    def __init__(
+        self,
+        cinema_id: str,
+        request_timeout: None | int = None,
+        cinema_details: None | CGRCinemaDetails = None,
+    ):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
-        self.cgr_cinema_details = get_cgr_cinema_details(cinema_id)
+        self.cinema_details = cinema_details or get_cgr_cinema_details(cinema_id)
+        self.service_proxy = _get_cgr_service_proxy(self.cinema_details.cinemaUrl, request_timeout=self.request_timeout)
+        self.user = settings.CGR_API_USER
+
+    def _get_seances_pass_culture(
+        self, allocine_film_id: str | None = None
+    ) -> cgr_serializers.GetSancesPassCultureResponse:
+        response = self.service_proxy.GetSeancesPassCulture(
+            User=self.user,
+            mdp=decrypt(self.cinema_details.password),
+            IDFilmAllocine=allocine_film_id or "0",
+        )
+        data = json.loads(response)
+        _check_response_is_ok(data, "GetSeancesPassCulture")
+        _log_external_call(self, "GetSeancesPassCulture", data)
+        data = pydantic_v1.parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, data)
+        return data
+
+    def get_num_cine(self) -> int:
+        data = self._get_seances_pass_culture()
+        return data.ObjetRetour.NumCine
 
     def get_films(self) -> list[cgr_serializers.Film]:
         logger.info("Fetching CGR movies", extra={"cinema_id": self.cinema_id})
-        response = get_seances_pass_culture(self.cgr_cinema_details)
-
-        _log_external_call(self, "get_films", response)
-
-        return response.ObjetRetour.Films
+        data = self._get_seances_pass_culture()
+        return data.ObjetRetour.Films
 
     @external_bookings_models.cache_external_call(
         key_template=constants.CGR_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         logger.info("Fetching CGR showtimes", extra={"cinema_id": self.cinema_id})
-        response = get_seances_pass_culture(
-            self.cgr_cinema_details,
-            allocine_film_id=int(film_id),
-            request_timeout=self.request_timeout,
-        )
+        data = self._get_seances_pass_culture(film_id)
+        films = data.ObjetRetour.Films
 
-        _log_external_call(self, "get_film_showtimes_stocks", response)
+        if films:
+            film = films[0]
+            return json.dumps({show.IDSeance: show.NbPlacesRestantes for show in film.Seances})
 
-        try:
-            film = response.ObjetRetour.Films[0]
-        except IndexError:
-            # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
-            # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
-            return json.dumps({})
-        return json.dumps({show.IDSeance: show.NbPlacesRestantes for show in film.Seances})
+        # Showtimes stocks are sold out, Stock.quantity will be updated to dnBookedQuantity
+        # in `update_stock_quantity_to_match_cinema_venue_provider_remaining_places`
+        return json.dumps({})
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
@@ -80,7 +127,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         assert booking.cancellationLimitDate  # for typing; a movie screening is always an event
         book_show_body = cgr_serializers.ReservationPassCultureBody(
             pIDSeances=show_id,
-            pNumCinema=self.cgr_cinema_details.numCinema,
+            pNumCinema=self.cinema_details.numCinema,
             pPUTTC=booking.amount,
             pNBPlaces=booking.quantity,
             pNom=beneficiary.lastName if beneficiary.lastName else "",
@@ -90,7 +137,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
         )
         response = reservation_pass_culture(
-            self.cgr_cinema_details,
+            self.cinema_details,
             book_show_body,
             request_timeout=self.request_timeout,
         )
@@ -135,7 +182,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
             logger.info("Cancelling CGR external booking", extra={"barcode": barcode, "cinema_id": self.cinema_id})
-            annulation_pass_culture(self.cgr_cinema_details, barcode, request_timeout=self.request_timeout)
+            annulation_pass_culture(self.cinema_details, barcode, request_timeout=self.request_timeout)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:

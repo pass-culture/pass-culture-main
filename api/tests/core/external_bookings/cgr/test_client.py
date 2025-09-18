@@ -8,9 +8,135 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
+
+
+def _get_seances_pass_culture_xml_response_template(body_response: str) -> str:
+    return f"""
+       <?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+                <ns1:GetSeancesPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
+                    <GetSeancesPassCultureResult>
+                        {body_response}
+                    </GetSeancesPassCultureResult>
+                </ns1:GetSeancesPassCultureResponse>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        """.strip()
+
+
+class GetCGRServiceProxyTest:
+    def test_should_return_service_proxy(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        service = cgr_client._get_cgr_service_proxy(cinema_url="http://example.com/web_service")
+
+        assert service._binding_options["address"] == "http://example.com/web_service"
+        assert service._operations["GetSeancesPassCulture"]
+        assert service._operations["ReservationPassCulture"]
+        assert service._operations["AnnulationPassCulture"]
+
+
+class GetSeancesPassCulture:
+    @pytest.mark.settings(CGR_API_USER="pass_user")
+    def test_should_raise_if_error(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        json_response = {"CodeErreur": -1, "IntituleErreur": "Expectation failed", "ObjetRetour": None}
+        response = _get_seances_pass_culture_xml_response_template(json.dumps(json_response))
+        requests_mock.post("http://example.com/web_service", text=response)
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
+        cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        with pytest.raises(CGRAPIException) as exc:
+            cgr._get_seances_pass_culture()
+
+        assert str(exc.value) == "Error on CGR API on GetSeancesPassCulture : Expectation failed"
+
+    @pytest.mark.settings(CGR_API_USER="pass_user")
+    def test_should_call_with_the_right_password(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        get_seances_adapter = requests_mock.post(
+            "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://example.com/web_service",
+            password=encrypt("theRealPassword"),
+        )
+        cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        cgr._get_seances_pass_culture()
+
+        assert "<mdp>theRealPassword</mdp>" in get_seances_adapter.last_request.text
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFilmsTest:
+    @pytest.mark.settings(CGR_API_USER="pass_user")
+    def test_should_return_films(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
+        cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        films = cgr.get_films()
+
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
+
+        assert len(films) == 1
+        assert films[0].IDFilm == 138473
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFilmShowtimesStocksTest:
+    @pytest.mark.settings(CGR_API_USER="pass_user")
+    @pytest.mark.parametrize("response_body,expected_output", [([fixtures.FILM_138473], {"177182": 99}), ([], {})])
+    def test_should_return_film_stocks_by_showtime(self, response_body, expected_output, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post("http://example.com/web_service", text=fixtures.cgr_response_template(response_body))
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
+        cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        data = cgr.get_film_showtimes_stocks(138473)
+
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
+
+        assert data == expected_output
+
+
+@pytest.mark.usefixtures("db_session")
+class GetNumCineTest:
+    @pytest.mark.settings(CGR_API_USER="pass_user")
+    def test_should_return_num_cine(self, requests_mock):
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "http://example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+        cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
+        cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        num_cine = cgr.get_num_cine()
+
+        assert requests_mock.request_history[-1].method == "POST"
+        assert requests_mock.request_history[-1].timeout == 12
+
+        assert num_cine == 999
 
 
 @pytest.mark.usefixtures("db_session")
