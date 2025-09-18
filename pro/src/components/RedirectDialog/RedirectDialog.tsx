@@ -30,12 +30,14 @@ export const RedirectDialog = ({
   onRedirect,
   cancelText,
   onCancel,
+  onClose,
   withRedirectLinkIcon = true,
   open,
 }: RedirectDialogProps): JSX.Element => {
   return (
     <Dialog
       onCancel={onCancel}
+      onClose={onClose}
       title={title}
       secondTitle={secondTitle}
       icon={icon}

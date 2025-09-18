@@ -3,10 +3,12 @@ import strokeFraudIcon from '@/icons/stroke-fraud.svg'
 
 export const MaybeAppUserDialog = ({
   onCancel,
+  onClose,
   isDialogOpen,
   isHigherEducation,
 }: {
   onCancel: () => void
+  onClose: () => void
   isDialogOpen: boolean
   isHigherEducation: boolean
 }) => {
@@ -22,6 +24,7 @@ export const MaybeAppUserDialog = ({
       title="Il semblerait que tu ne sois pas"
       secondTitle={` un professionnel de la culture`}
       onCancel={onCancel}
+      onClose={onClose}
       open={isDialogOpen}
     >
       {isHigherEducation ? (

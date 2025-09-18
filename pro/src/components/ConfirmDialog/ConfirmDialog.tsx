@@ -20,6 +20,7 @@ type ConfirmDialogProps = DialogProps & {
 export const ConfirmDialog = ({
   onConfirm,
   onCancel,
+  onClose,
   isLoading,
   title,
   secondTitle,
@@ -59,6 +60,7 @@ export const ConfirmDialog = ({
   return (
     <Dialog
       onCancel={onCancel}
+      onClose={onClose}
       title={title}
       secondTitle={secondTitle}
       icon={icon ?? strokeErrorIcon}
