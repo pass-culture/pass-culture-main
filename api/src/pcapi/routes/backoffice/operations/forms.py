@@ -98,10 +98,31 @@ class CreateSpecialEventForm(FlaskForm):
         return end_import_date
 
 
+class ResponseContainsFormField(utils.PCForm):
+    class Meta:
+        csrf = False
+
+    question = fields.PCSelectField(
+        "Question", choices=[], validate_choice=False, validators=(wtforms.validators.Optional(),)
+    )
+    response = fields.PCStringField("La réponse contient", validators=(wtforms.validators.Optional(),))
+
+
 class OperationResponseForm(utils.PCForm):
     class Meta:
         csrf = False
 
+    def __init__(self, *args: list, questions: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+        for question in questions:
+            title = question.title
+            if len(title) > 74:
+                title = f"{title[:74]}…"
+            self.response.form.question.choices.append((question.id, title))
+        if question_id := kwargs.get("formdata", {}).get("response-question"):
+            self.response.question.data = int(question_id)
+
+    response = fields.PCFormField(ResponseContainsFormField)
     response_status = fields.PCSelectMultipleField(
         "État de la candidature",
         choices=utils.choices_from_enum(
