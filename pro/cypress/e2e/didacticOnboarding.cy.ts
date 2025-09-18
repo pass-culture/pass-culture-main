@@ -68,7 +68,6 @@ describe('Didactic Onboarding feature', () => {
           { method: 'GET', url: '/offerers/*/eligibility' },
           (req) => {
             // Get offerer ID from the URL
-            // biome-ignore lint/style/noNonNullAssertion: we prefer to have an error if the regex doesn't match
             const offererId = req.url.match(/\/offerers\/(\d+)\//)![1]
             // Mock response with an onboarded status to True
             req.reply({

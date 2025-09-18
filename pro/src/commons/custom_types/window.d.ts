@@ -11,7 +11,7 @@ declare global {
     beamer_config: Record<string, unknown>
     Beamer?: {
       init: () => void
-      update: (config: any) => void
+      update: (config) => void
       destroy: () => void
       hide: () => void
       show: () => void

@@ -6,7 +6,7 @@ import { hasProperty } from './types'
 
 export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
   validationSchema: yup.ObjectSchema<T>,
-  testInput: any
+  testInput: unknown
 ): Promise<string[]> => {
   try {
     await validationSchema.validate(testInput, { abortEarly: false })

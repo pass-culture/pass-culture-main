@@ -21,6 +21,6 @@ export const hasProperties = <T extends string>(
 ): element is Record<T, unknown> =>
   properties.every((property) => hasProperty(element, property))
 
-export const isNumber = (value: any) => {
+export const isNumber = (value: unknown) => {
   return typeof value === 'number' && Number.isFinite(value)
 }
