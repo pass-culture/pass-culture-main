@@ -2617,12 +2617,21 @@ def extract_youtube_video_id(url: str) -> str | None:
 
 
 def create_highlight_requests(
-    highlights: list[highlights_models.Highlight], offer: offers_models.Offer
+    highlight_ids: list[int], offer: offers_models.Offer
 ) -> list[highlights_models.HighlightRequest]:
+    highlights_query = db.session.query(highlights_models.Highlight).filter(
+        highlights_models.Highlight.id.in_(highlight_ids)
+    )
+    if len(highlights_query.all()) == 0:
+        raise exceptions.HighlightNotFoundException()
+    highlights_query = highlights_query.filter(
+        highlights_models.Highlight.availability_timespan.contains(datetime.datetime.now())
+    )
+    if len(highlights_query.all()) == 0:
+        raise exceptions.UnavailableHighlightException()
     highlight_requests = []
-    for highlight in highlights:
-        if highlight.availaibility_timespan.contains(datetime.datetime.now()):
-            raise exceptions.UnavailableHighlightException()
-        request = highlights_models.HighlightRequest.create(offerId=offer.id, highlightId=highlight.id)
+    for highlight in highlights_query.all():
+        request = highlights_models.HighlightRequest(offerId=offer.id, highlight=highlight)
         highlight_requests.append(request)
+    db.session.add_all(highlight_requests)
     return highlight_requests

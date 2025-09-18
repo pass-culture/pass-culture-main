@@ -15,14 +15,14 @@ class HighlightFactory(BaseFactory):
     description = factory.Sequence(lambda n: f"Ceci est le temps fort {n}")
     highlight_timespan = factory.LazyFunction(
         lambda: db_utils.make_timerange(
-            start=datetime.datetime.utcnow() - datetime.timedelta(days=10),
-            end=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+            start=datetime.datetime.utcnow() + datetime.timedelta(days=11),
+            end=datetime.datetime.utcnow() + datetime.timedelta(days=12),
         )
     )
     availability_timespan = factory.LazyFunction(
         lambda: db_utils.make_timerange(
-            start=datetime.datetime.utcnow() + datetime.timedelta(days=11),
-            end=datetime.datetime.utcnow() + datetime.timedelta(days=12),
+            start=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            end=datetime.datetime.utcnow() + datetime.timedelta(days=10),
         )
     )
     mediation_uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))

@@ -14,11 +14,13 @@ from pcapi.utils import db as db_utils
 class Returns200Test:
     def test_create_one_highlight_request_for_one_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        offer = offers_factories.OfferFactory()
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
         highlight = highlights_factories.HighlightFactory()
 
-        client = client.with_session_auth(user_offerer.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlights": [highlight.id]})
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
 
         assert response.status_code == 201
 
@@ -29,13 +31,15 @@ class Returns200Test:
 
     def test_create_multiple_highlight_request_for_one_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        offer = offers_factories.OfferFactory()
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
         highlight = highlights_factories.HighlightFactory()
         highlight2 = highlights_factories.HighlightFactory()
 
-        client = client.with_session_auth(user_offerer.email)
+        client = client.with_session_auth(user_offerer.user.email)
         response = client.post(
-            f"/offers/{offer.id}/highlight-requests", json={"highlights": [highlight.id, highlight2.id]}
+            f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id, highlight2.id]}
         )
 
         assert response.status_code == 201
@@ -52,7 +56,9 @@ class Returns200Test:
 class Returns400Test:
     def test_highlight_request_fail_if_highlight_is_not_available(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        offer = offers_factories.OfferFactory()
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
         now = datetime.datetime.now()
         highlight = highlights_factories.HighlightFactory(
             availability_timespan=db_utils.make_timerange(
@@ -60,7 +66,7 @@ class Returns400Test:
             )
         )
 
-        client = client.with_session_auth(user_offerer.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlights": [highlight.id]})
+        client = client.with_session_auth(user_offerer.user.email)
+        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
 
         assert response.status_code == 400

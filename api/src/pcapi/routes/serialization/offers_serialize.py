@@ -667,16 +667,20 @@ class OfferVideo(ConfiguredBaseModel):
     duration: int | None
 
 
-class HighlightResponseModel(ConfiguredBaseModel):
-    id: int
+class HighlightResponseModel(BaseModel):
     name: str
 
+    class Config:
+        orm_mode = True
 
-class HighlightResquestResponseModel(ConfiguredBaseModel):
-    id: int
+
+class HighlightResquestResponseModel(BaseModel):
     highlight: HighlightResponseModel
-    offer_id: int
+    offerId: int
+
+    class Config:
+        orm_mode = True
 
 
 class OfferHighlightResquestsResponseModel(BaseModel):
-    highlight_requests: list[HighlightResquestResponseModel]
+    __root__: list[HighlightResquestResponseModel]

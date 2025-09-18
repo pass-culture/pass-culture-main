@@ -244,6 +244,15 @@ class CannotRemoveHeadlineOffer(Exception):
         super().__init__("headlineOffer", "Error during removal of this headline offer")
 
 
-class UnavailableHighlightException(Exception):
+class HighlightException(Exception):
+    pass
+
+
+class HighlightNotFoundException(HighlightException):
+    def __init__(self) -> None:
+        super().__init__("highlight", "Highlight not found")
+
+
+class UnavailableHighlightException(HighlightException):
     def __init__(self) -> None:
         super().__init__("highlight", "Highlight is unavailable")

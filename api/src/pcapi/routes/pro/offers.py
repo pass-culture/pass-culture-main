@@ -12,7 +12,6 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
-from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -783,7 +782,7 @@ def get_offer_video_metadata(
     )
 
 
-@private_api.route("/offers/<int:offer_id>/highlight-request", methods=["POST"])
+@private_api.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.OfferHighlightResquestsResponseModel,
@@ -804,13 +803,15 @@ def post_highlight_request_offer(
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    highlights: list[highlights_models.Highlight] = db.session.query(highlights_models.Highlight).filter(
-        highlights_models.Highlight.id.in_(body.highlight_ids)
-    )
-
     try:
-        highlight_requests = offers_api.create_highlight_requests(highlights, offer)
+        highlight_requests = offers_api.create_highlight_requests(body.highlight_ids, offer)
+    except exceptions.UnavailableHighlightException:
+        raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'existe pas"]}, status_code=400)
     except exceptions.UnavailableHighlightException:
         raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'est plus disponible"]}, status_code=400)
-
-    return offers_serialize.OfferHighlightResquestsResponseModel.from_orm(highlight_requests)
+    return offers_serialize.OfferHighlightResquestsResponseModel(
+        __root__=[
+            offers_serialize.HighlightResquestResponseModel.from_orm(highlight_request)
+            for highlight_request in highlight_requests
+        ]
+    )
