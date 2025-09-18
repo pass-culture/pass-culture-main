@@ -35,8 +35,13 @@ jobs:
     steps:
       - name: "Check image resizing ${{ inputs.environment }} deployed version"
         id: "curl_version"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_seconds: 10
+          max_attempts: 3
         # add prefix v to version if contains dot (otherwise it is sha)
-        run: echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
+        command: |
+          echo "version=$(curl -Ss ${{ inputs.image_resizing_url }}/version | sed 's/.*\./v&/')" | tee -a $GITHUB_OUTPUT
 
   check-image-resizing-folder-changes:
     name: "Check if folder changed"
