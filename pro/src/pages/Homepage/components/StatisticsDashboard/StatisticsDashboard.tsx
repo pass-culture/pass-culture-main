@@ -1,12 +1,10 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetOffererResponseModel,
-  GetOffererStatsResponseModel,
-} from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
+import { GET_OFFERER_STATISTICS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -22,20 +20,10 @@ interface StatisticsDashboardProps {
 }
 
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
-  const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    const loadStats = async () => {
-      setIsLoading(true)
-      const response = await api.getOffererStats(offerer.id)
-      setStats(response)
-      setIsLoading(false)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStats()
-  }, [offerer.id])
+  const { data: stats, isLoading } = useSWR(
+    offerer?.id ? [GET_OFFERER_STATISTICS_QUERY_KEY, offerer.id] : null,
+    ([, offererId]) => api.getOffererStats(offererId)
+  )
 
   return (
     <>
