@@ -108,7 +108,7 @@ export const App = (): JSX.Element | null => {
       (isAwaitingRattachment ||
         (isOffererOnboarded && !searchParams.get('userHasJustOnBoarded')))
     ) {
-      //return <Navigate to="/accueil" replace />
+      return <Navigate to="/accueil" replace />
     }
   }
 
