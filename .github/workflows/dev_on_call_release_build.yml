@@ -123,15 +123,13 @@ jobs:
       - name: "Slack output"
         id: "slack-text"
         run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer> :rocket:" | tee -a $GITHUB_OUTPUT
-          elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
             echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           else
             echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
           fi
-      - name: "Post on #shérif"
-        if: always()
+      - name: "Post failure on #shérif"
+        if: always() && env.WORKFLOW_CONCLUSION != 'success'
         uses: slackapi/slack-github-action@v2.1.1
         with:
           method: chat.postMessage
