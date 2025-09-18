@@ -27,7 +27,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
-import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
@@ -36,7 +35,6 @@ import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.models as providers_models
 import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
-import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi import settings
 from pcapi.connectors import youtube
 from pcapi.connectors.serialization import acceslibre_serializers
@@ -1561,36 +1559,6 @@ def report_offer(
         raise
 
     transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
-
-
-def get_shows_remaining_places_from_provider(provider_class: str | None, offer: models.Offer) -> dict[str, int]:
-    match provider_class:
-        case "CDSStocks":
-            show_ids = [
-                cinema_providers_utils.get_cds_show_id_from_uuid(stock.idAtProviders)
-                for stock in offer.bookableStocks
-                if stock.idAtProviders
-            ]
-            cleaned_show_ids = [s for s in show_ids if s is not None]
-            if not cleaned_show_ids:
-                return {}
-            return external_bookings_api.get_shows_stock(offer.venueId, cleaned_show_ids)
-        case "BoostStocks":
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return {}
-            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-        case "CGRStocks":
-            cgr_allocine_film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not cgr_allocine_film_id:
-                return {}
-            return external_bookings_api.get_movie_stocks(offer.venueId, cgr_allocine_film_id)
-        case "EMSStocks":
-            film_id = cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer.idAtProvider)
-            if not film_id:
-                return {}
-            return external_bookings_api.get_movie_stocks(offer.venueId, film_id)
-    raise ValueError(f"Unknown Provider: {provider_class}")
 
 
 def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
