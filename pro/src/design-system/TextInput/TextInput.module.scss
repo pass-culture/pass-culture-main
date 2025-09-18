@@ -1,5 +1,4 @@
 @use 'styles/mixins/_rem.scss' as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
 @use 'styles/mixins/_outline.scss' as outline;
 
 $icon-dimension: rem.torem(20px);
@@ -12,15 +11,6 @@ $icon-dimension: rem.torem(20px);
 
 .header {
     grid-area: 1 / 1;
-}
-
-.label {
-    margin-bottom: var(--size-spacing-xs);
-    display: block;
-
-    &-mandatory-asterisk {
-        margin-left: var(--size-spacing-s);
-    }
 }
 
 .input {
@@ -80,45 +70,7 @@ $icon-dimension: rem.torem(20px);
 
 //  FOOTER
 .footer {
-    display: flex;
     grid-area: 3 / 1;
-
-    &-error {
-        flex-grow: 1;
-        color: var(--color-text-error);
-
-        &-content {
-            @include fonts.body-accent-s;
-
-            display: flex;
-            align-items: center;
-
-            &-icon {
-                width: var(--typography-body-font-size);
-                height: var(--typography-body-font-size);
-                margin-right: var(--size-spacing-xs);
-                flex-shrink: 0;
-            }
-        }
-    }
-}
-
-.has-footer .footer {
-    margin-top: var(--size-spacing-xs);
-}
-
-//  DESCRIPTION
-.container.has-description {
-    .label {
-        margin-bottom: var(--size-spacing-xxs);
-    }
-}
-
-.description {
-    @include fonts.body-accent-xs;
-
-    color: var(--color-text-subtle);
-    margin-bottom: var(--size-spacing-xs);
 }
 
 //  ERROR
