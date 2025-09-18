@@ -4,12 +4,14 @@ import logging
 from decimal import Decimal
 
 import pytest
+import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi import settings
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
@@ -57,7 +59,147 @@ class GetPcuPricingIfExistsTest:
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
 
 
+class GenerateJWTTokenTest:
+    @time_machine.travel("2022-10-12 17:09:25", tick=False)
+    def test_should_return_jwt_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema.example.com/")
+        response_json = {"message": "Login successful", "token": "new-token"}
+        requests_mock.post("https://cinema.example.com/api/vendors/login", json=response_json)
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        token, token_expiration_datetime = boost_api_client._generate_jwt_token()
+
+        assert requests_mock.last_request.json() == {
+            "password": "fake_password",
+            "username": "fake_user",
+            "stationName": f"pcapi - {settings.ENV}",
+        }
+        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"
+        assert token == "new-token"
+        assert token_expiration_datetime == datetime.datetime(2022, 10, 13, 17, 9, 25)
+
+    @pytest.mark.settings(BOOST_API_PASSWORD="wrong_password")
+    def test_wrong_credentials(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+            tokenExpirationDate=datetime.datetime(2022, 10, 1),
+        )
+        response_json = {"code": 400, "message": "Vendor login failed. Wrong password!"}
+        requests_mock.post("https://cinema.example.com/api/vendors/login", status_code=400, json=response_json)
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+
+        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+            boost_api_client._generate_jwt_token()
+
+        assert requests_mock.last_request.json() == {
+            "password": "wrong_password",
+            "username": "fake_user",
+            "stationName": f"pcapi - {settings.ENV}",
+        }
+        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"
+        assert (
+            str(exc.value) == "Unexpected 400 response from Boost login API on "
+            "https://cinema.example.com/api/vendors/login?ignore_device=True: Vendor login failed. Wrong password!"
+        )
+
+
+class AuthenticatedGetTest:
+    def test_with_valid_non_expired_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="dG90bw==",
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        get_adapter = requests_mock.get("https://cinema.example.com/example?page=1", json={"key": "value"})
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login")
+
+        json_data = boost_api_client._authenticated_get("https://cinema.example.com/example", params={"page": 1})
+
+        assert login_adapter.call_count == 0
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer dG90bw=="
+        assert json_data == {"key": "value"}
+
+    def test_with_expired_stored_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+            tokenExpirationDate=datetime.datetime(2022, 10, 1),
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        response_data = {"key": "value"}
+        get_adapter = requests_mock.get("https://cinema.example.com/example", json=response_data)
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        json_data = boost_api_client._authenticated_get("https://cinema.example.com/example")
+
+        assert login_adapter.call_count == 1
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert json_data == response_data
+
+    @time_machine.travel("2025-09-18", tick=False)
+    def test_with_non_expired_invalid_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="invalid-token",
+            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+
+        get_adapter = requests_mock.get(
+            "https://cinema.example.com/example",
+            [
+                {"json": {"code": 401, "message": "Invalid JWT Token"}, "status_code": 401},
+                {"json": {"key": "value"}, "status_code": 200},
+            ],
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        json_data = boost_api_client._authenticated_get("https://cinema.example.com/example")
+
+        assert login_adapter.call_count == 1
+        assert get_adapter.call_count == 2
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert json_data == {"key": "value"}
+        assert cinema_details.token == "new-token"
+        assert cinema_details.tokenExpirationDate == datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+
+    def test_should_raise_if_error(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="token",
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+
+        requests_mock.get(
+            "https://cinema.example.com/example",
+            status_code=417,
+            reason="Expectation failed",
+            json={"message": "Why must you fail me so often ?"},
+        )
+
+        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+            boost_api_client._authenticated_get("https://cinema.example.com/example")
+
+        assert requests_mock.last_request.url == "https://cinema.example.com/example"
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer token"
+        assert isinstance(exc.value, boost_exceptions.BoostAPIException)
+        assert "token" not in str(exc.value)
+        assert (
+            "Error on Boost API on GET https://cinema.example.com/example : Expectation failed - Why must you fail me so often ?"
+            == str(exc.value)
+        )
+
+
 class GetShowtimesTest:
+    @time_machine.travel("2025-09-17", tick=False)
     def test_should_return_showtimes(self, caplog, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema-0.example.com/", cinemaProviderPivot__idAtProvider="test_id"
