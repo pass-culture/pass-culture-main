@@ -57,17 +57,6 @@ class OfferCommandsTest:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.usefixtures("clean_database")
-    def test_deprecated_future_offer_command(self, mock_reindex_offers, app):
-        offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
-        user = users_factories.BeneficiaryFactory()
-        reminders_factories.OfferReminderFactory(user=user, offer=offer)
-
-        run_command(app, "activate_future_offers")
-
-        mock_reindex_offers.assert_called_once()
-
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    @pytest.mark.usefixtures("clean_database")
     def test_reindex_recently_published_offers_command(self, mock_reindex_offers, app):
         offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
         user = users_factories.BeneficiaryFactory()
