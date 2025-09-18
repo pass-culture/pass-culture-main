@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
@@ -11,7 +12,127 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+def offer_minimal_shared_data(name, subcategory_id, venue):
+    return {
+        "name": name,
+        "subcategoryId": subcategory_id,
+        "venueId": venue.id,
+        "audioDisabilityCompliant": False,
+        "mentalDisabilityCompliant": False,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+    }
+
+
+def offer_optional_shared_data(**kwargs):
+    return {
+        "bookingContact": "booking.contact@test.fr",
+        "bookingEmail": "booking.email@test.fr",
+        "description": "some description",
+        **kwargs,
+    }
+
+
+@pytest.fixture(name="venue")
+def venue_fixture():
+    return offerers_factories.VenueFactory()
+
+
+@pytest.fixture(name="user")
+def user_fixture(venue):
+    return offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com").user
+
+
+@pytest.fixture(name="auth_client")
+def auth_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+class ThingOfferPayloadBuilder:
+    SUBCATEGORIES_SAMPLE = [
+        subcategories.ABO_BIBLIOTHEQUE.id,
+        subcategories.ABO_MEDIATHEQUE.id,
+        subcategories.ACHAT_INSTRUMENT.id,
+        subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+        subcategories.LIVRE_PAPIER.id,
+        subcategories.MATERIEL_ART_CREATIF.id,
+        subcategories.PARTITION.id,
+        subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+    ]
+
+    @classmethod
+    def minimal(cls, venue, subcategory_id):
+        return offer_minimal_shared_data("some thing", subcategory_id, venue)
+
+    @classmethod
+    def full(cls, venue, subcategory_id):
+        if subcategory_id in offers_factories.THINGS_PRODUCT_SUBCATEGORIES_IDS:
+            product = offers_factories.ProductFactory(subcategoryId=subcategory_id)
+        else:
+            product = None
+
+        return {
+            **offer_minimal_shared_data("some thing", subcategory_id, venue),
+            **offer_optional_shared_data(),
+            "productId": product.id if product else None,
+            "extraData": {"ean": product.ean} if product else None,
+        }
+
+
+# missing: url
+ONLINE_SUBCATEGORIES_SAMPLE = [
+    subcategories.ABO_LIVRE_NUMERIQUE.id,
+    subcategories.ABO_PRESSE_EN_LIGNE.id,
+    # digital
+    subcategories.LIVRE_NUMERIQUE.id,
+    subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+    subcategories.TELECHARGEMENT_MUSIQUE.id,
+]
+
+
+class CreateOfferSuccessTest:
+    endpoint = "/v2/offers"
+
+    @pytest.mark.parametrize("subcategory_id", ThingOfferPayloadBuilder.SUBCATEGORIES_SAMPLE)
+    def test_create_minimal_thing_offer(self, auth_client, venue, subcategory_id):
+        payload = ThingOfferPayloadBuilder.minimal(venue, subcategory_id)
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        assert offer.subcategoryId == payload["subcategoryId"]
+        assert offer.name == payload["name"]
+        assert offer.venueId == payload["venueId"]
+
+        assert not offer.isActive
+        assert not offer.isEvent
+
+    @pytest.mark.parametrize("subcategory_id", ThingOfferPayloadBuilder.SUBCATEGORIES_SAMPLE)
+    def test_create_full_thing_offer(self, auth_client, venue, subcategory_id):
+        payload = ThingOfferPayloadBuilder.full(venue, subcategory_id)
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        assert offer.bookingContact == payload["bookingContact"]
+        assert offer.bookingEmail == payload["bookingEmail"]
+        assert offer.productId == payload["productId"]
+        assert offer.description == payload["description"] if payload["productId"] is None else None
+
+        assert not offer.isActive
+        assert not offer.isEvent
+
+    def send_request(self, client, data):
+        return client.post(self.endpoint, json=data)
+
+
 class Returns200Test:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()

@@ -290,6 +290,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     )
 
     offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
+    breakpoint()
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 

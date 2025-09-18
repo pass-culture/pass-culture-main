@@ -445,7 +445,7 @@ def create_offer(
                 "audioDisabilityCompliant",
                 "mentalDisabilityCompliant",
                 "motorDisabilityCompliant",
-                "visualDisabilityCompliant"
+                "visualDisabilityCompliant",
             }
             if not any(field for field in disability_fields if field in fields):
                 fields.update(_get_accessibility_compliance_fields(venue))
@@ -470,6 +470,7 @@ def create_offer(
     offer = models.Offer(
         **fields,
         venue=venue,
+        product=product,
         offererAddress=offerer_address,
         lastProvider=provider,
         validation=models.OfferValidationStatus.DRAFT,
