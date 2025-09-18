@@ -114,4 +114,6 @@ jobs:
             [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-$id || echo "namespace pcapi-pr-$id does not exist"
             # Delete DNS entry
             gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
+            gcloud dns record-sets delete backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
+            gcloud dns record-sets delete backoffice-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
           done
