@@ -4,6 +4,10 @@ title: Pass Culture API change logs
 
 # Change logs
 
+:::warning
+As of mid-december 2025, `eventDuration` parameter for creating and updating offers will be capped at 24 hours. To create or update events longer than 24 hours, you will need to leave this field empty.
+::: 
+
 :::info
 Soon, a `bookingAllowedDatetime` param will be available at offer creation and update. Thanks to this new param, you will be able to precise when your offer becomes bookable. 
 
