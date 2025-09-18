@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import TYPE_CHECKING
+from typing import Any
 
 import pydantic.v1 as pydantic_v1
 
@@ -10,10 +10,6 @@ from pcapi.routes.serialization import BaseModel
 
 
 logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:
-    import pcapi.core.offerers.models as offerers_models
 
 
 class FinanceBankAccountResponseModel(BaseModel):
@@ -72,6 +68,14 @@ class InvoiceListV2ResponseModel(BaseModel):
     __root__: list[InvoiceResponseV2Model]
 
 
+class LinnkedVenuesGetterDict(pydantic_v1.utils.GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        venue = self._obj
+        if key == "commonName":
+            return venue.common_name
+        return super().get(key, default)
+
+
 class LinkedVenues(BaseModel):
     """A venue that is already linked to a bank account."""
 
@@ -80,11 +84,23 @@ class LinkedVenues(BaseModel):
 
     class Config:
         orm_mode = True
+        getter_dict = LinnkedVenuesGetterDict
 
-    @classmethod
-    def from_orm(cls, venue: "offerers_models.Venue") -> "LinkedVenues":
-        venue.commonName = venue.common_name
-        return super().from_orm(venue)
+
+class ManagedVenuesGetterDict(pydantic_v1.utils.GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        venue = self._obj
+        if key == "commonName":
+            return venue.common_name
+        if key == "hasPricingPoint":
+            return bool(venue.pricing_point_links)
+        if key == "bankAccountId":
+            if len(venue.bankAccountLinks) > 1:
+                logger.error("There should be one or no current bank account.", extra={"venue_id": venue.id})
+            if venue.bankAccountLinks:
+                return venue.bankAccountLinks[0].bankAccountId
+            return None
+        return super().get(key, default)
 
 
 class ManagedVenues(BaseModel):
@@ -97,22 +113,7 @@ class ManagedVenues(BaseModel):
 
     class Config:
         orm_mode = True
-
-    @classmethod
-    def from_orm(cls, venue: "offerers_models.Venue") -> "ManagedVenues":
-        """
-        For each managed venue, we only want to display the current bank account
-        that is linked to it, if any.
-        """
-        if len(venue.bankAccountLinks) > 1:
-            logger.error("There should be one or no current bank account.", extra={"venue_id": venue.id})
-
-        if venue.bankAccountLinks:
-            venue.bankAccountId = venue.bankAccountLinks[0].bankAccountId
-        venue.commonName = venue.common_name
-        venue.hasPricingPoint = bool(venue.pricing_point_links)
-
-        return super().from_orm(venue)
+        getter_dict = ManagedVenuesGetterDict
 
 
 class BankAccountResponseModel(BaseModel):
