@@ -54,6 +54,48 @@ jobs:
           fi
           commit_hash=$(git rev-list -n 1 "$rc_tag")
           echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
+            - name: Checkout RC commit
+        # Checkout on tag to have a nice deployment reference 
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ steps.rc_commit.outputs.commitHash }}
+
+  beginning-slack-notification:
+    name: "Send workflow beginning notification"
+    needs: "get-version-and-trigger-release"
+    steps:
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Post outcome on #alertes-deploiement"
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.postMessage
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
+            attachments:
+              - color: "#008080"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et déploiement> de la version `v${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}` est lancée"
 
   create-staging-release:
     needs: get-version-and-trigger-release
