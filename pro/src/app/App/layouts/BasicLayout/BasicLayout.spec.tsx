@@ -15,6 +15,13 @@ describe('BasicLayout', () => {
     window.removeEventListener = vi.fn()
   })
 
+  it('should always render a main landmark and a heading level 1', () => {
+    renderBasicLayout()
+
+    expect(screen.getByRole('main')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
   describe('lateral panel / side navigation', () => {
     describe('on smaller screen sizes', () => {
       beforeEach(() => {
