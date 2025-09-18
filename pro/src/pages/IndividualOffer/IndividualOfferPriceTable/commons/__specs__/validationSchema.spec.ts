@@ -26,25 +26,26 @@ const buildContext = (
   }
 }
 
-const baseContext = buildContext()
-const baseEntry = {
-  activationCodes: [],
-  activationCodesExpirationDatetime: '',
-  bookingLimitDatetime: '',
-  bookingsQuantity: undefined,
-  id: undefined,
-  label: 'Normal',
-  price: 10,
-  quantity: 5,
-  offerId: baseContext.offer.id,
-  remainingQuantity: null,
-}
-const baseFormValues: PriceTableFormValues = {
-  entries: [baseEntry],
-  isDuo: true,
-} as unknown as PriceTableFormValues
+describe('PriceTableValidationSchema', () => {
+  const baseContext = buildContext()
+  const baseEntry = {
+    activationCodes: [],
+    activationCodesExpirationDatetime: '',
+    bookingLimitDatetime: '',
+    bookingsQuantity: null,
+    hasActivationCode: false,
+    id: null,
+    label: 'Normal',
+    price: 10,
+    quantity: 5,
+    offerId: baseContext.offer.id,
+    remainingQuantity: null,
+  }
+  const baseFormValues: PriceTableFormValues = {
+    entries: [baseEntry],
+    isDuo: true,
+  } as unknown as PriceTableFormValues
 
-describe('PriceTableValidationSchema validation error', () => {
   interface Case {
     description: string
     formValues: PriceTableFormValues
@@ -157,10 +158,9 @@ describe('PriceTableValidationSchema validation error', () => {
 
   cases.forEach(({ description, formValues, context, expectedErrors }) => {
     it(`should validate that ${description}`, async () => {
-      const schema = PriceTableValidationSchema
       const collected: string[] = []
       try {
-        await schema.validate(formValues, {
+        await PriceTableValidationSchema.validate(formValues, {
           abortEarly: false,
           context: {
             ...context,
@@ -181,10 +181,8 @@ describe('PriceTableValidationSchema validation error', () => {
       expect(collected).toEqual(expectedErrors)
     })
   })
-})
 
-describe('PriceTableValidationSchema validation success', () => {
-  it(`should validate and keep price in EUR when not isCaledonian`, async () => {
+  it(`should keep price in EUR when not isCaledonian`, async () => {
     const formValues = {
       ...baseFormValues,
       entries: [{ ...baseEntry, price: 200 }],
@@ -193,20 +191,19 @@ describe('PriceTableValidationSchema validation success', () => {
       ...baseContext,
       isCaledonian: false,
     }
-    const schema = PriceTableValidationSchema
-    const validatedFormValues = await schema.validate(formValues, {
-      abortEarly: false,
-      context: {
-        ...context,
-        isCaledonian: context.isCaledonian,
-        mode: context.mode,
-        offer: context.offer,
-      },
-    })
+
+    const validatedFormValues = await PriceTableValidationSchema.validate(
+      formValues,
+      {
+        abortEarly: false,
+        context,
+      }
+    )
+
     expect(validatedFormValues.entries[0].price).toBe(200)
   })
 
-  it(`should validate and convert price from XPF to EUR when isCaledonian`, async () => {
+  it(`should convert price from XPF to EUR when isCaledonian`, async () => {
     const formValues = {
       ...baseFormValues,
       entries: [{ ...baseEntry, price: 2000 }],
@@ -215,16 +212,15 @@ describe('PriceTableValidationSchema validation success', () => {
       ...baseContext,
       isCaledonian: true,
     }
-    const schema = PriceTableValidationSchema
-    const validatedFormValues = await schema.validate(formValues, {
-      abortEarly: false,
-      context: {
-        ...context,
-        isCaledonian: context.isCaledonian,
-        mode: context.mode,
-        offer: context.offer,
-      },
-    })
+
+    const validatedFormValues = await PriceTableValidationSchema.validate(
+      formValues,
+      {
+        abortEarly: false,
+        context,
+      }
+    )
+
     expect(validatedFormValues.entries[0].price).toBe(16.76)
   })
 })

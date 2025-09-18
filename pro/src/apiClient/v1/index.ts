@@ -237,7 +237,9 @@ export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel
 export { Target } from './models/Target';
 export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { ThingStockCreateBodyModel } from './models/ThingStockCreateBodyModel';
+export type { ThingStocksBulkUpsertBodyModel } from './models/ThingStocksBulkUpsertBodyModel';
 export type { ThingStockUpdateBodyModel } from './models/ThingStockUpdateBodyModel';
+export type { ThingStockUpsertBodyModel } from './models/ThingStockUpsertBodyModel';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';

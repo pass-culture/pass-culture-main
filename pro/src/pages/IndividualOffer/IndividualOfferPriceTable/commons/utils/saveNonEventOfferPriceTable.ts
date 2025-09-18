@@ -6,8 +6,7 @@ import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 
 import type { PriceTableFormValues } from '../schemas'
-import { toThingStockCreateBodyModel } from './toThingStockCreateBodyModel'
-import { toThingStockUpdateBodyModel } from './toThingStockUpdateBodyModel'
+import { toThingStocksBulkUpsertBodyModel } from './toThingStocksBulkUpsertBodyModel'
 
 export const saveNonEventOfferPriceTable = async (
   formValues: PriceTableFormValues,
@@ -17,20 +16,13 @@ export const saveNonEventOfferPriceTable = async (
     offer: GetIndividualOfferWithAddressResponseModel
   }
 ) => {
-  const firstEntry = formValues.entries[0]
   await api.patchOffer(offer.id, { isDuo: formValues.isDuo })
   await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
   const departementCode = getDepartmentCode(offer)
 
-  if (firstEntry.id) {
-    await api.updateThingStock(
-      firstEntry.id,
-      toThingStockUpdateBodyModel(formValues, { departementCode })
-    )
-  } else {
-    await api.createThingStock(
-      toThingStockCreateBodyModel(formValues, { departementCode })
-    )
-  }
+  await api.upsertOfferStocks(
+    offer.id,
+    toThingStocksBulkUpsertBodyModel(formValues, { departementCode })
+  )
 }

@@ -27,6 +27,7 @@ from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
+from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -143,6 +144,42 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         stocks = []
         stocks_count = 0
     return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
+
+
+@private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def upsert_offer_stocks(
+    offer_id: int,
+    body: stock_serialize.ThingStocksBulkUpsertBodyModel,
+) -> None:
+    """
+    Upsert all price categories stocks of a non-event offer.
+
+    - If a stock exists in the DB but not in `stocks`, it is soft-deleted.
+    - Otherwise, stocks are updated or created as needed.
+    """
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": "No offer found for this id",
+            },
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
+    for stock in body.stocks:
+        data = stock.dict(by_alias=False, exclude={"offer_id"})
+        stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
+
+    offers_api.upsert_offer_thing_stocks(offer, stock_inputs)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])

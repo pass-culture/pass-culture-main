@@ -112,6 +112,7 @@ import type { StockStatsResponseModel } from '../models/StockStatsResponseModel'
 import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
+import type { ThingStocksBulkUpsertBodyModel } from '../models/ThingStocksBulkUpsertBodyModel';
 import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
@@ -2281,6 +2282,32 @@ export class DefaultService {
         'page': page,
         'stocks_limit_per_page': stocksLimitPerPage,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * Upsert all price categories stocks of a non-event offer.
+   * - If a stock exists in the DB but not in `stocks`, it is soft-deleted. - Otherwise, stocks are updated or created as needed.
+   * @param offerId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public upsertOfferStocks(
+    offerId: number,
+    requestBody: ThingStocksBulkUpsertBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/{offer_id}/stocks/',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

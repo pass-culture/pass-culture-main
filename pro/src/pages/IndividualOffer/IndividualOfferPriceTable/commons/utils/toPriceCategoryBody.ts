@@ -14,7 +14,7 @@ export const toPriceCategoryBody = (
       assertOrFrontendError(entry.label, '`entry.label` is undefined.')
 
       return {
-        ...(entry.id === undefined ? {} : { id: entry.id }),
+        ...(entry.id === null ? {} : { id: entry.id }),
         label: entry.label,
         price: entry.price ?? 0,
       } satisfies CreatePriceCategoryModel

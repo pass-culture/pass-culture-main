@@ -1091,6 +1091,192 @@ class DeleteStockTest:
         assert not stock.isSoftDeleted
 
 
+@pytest.mark.usefixtures("db_session")
+class UpsertOfferThingStocksTest:
+    def test_error_on_event_offer(self):
+        offer = factories.EventOfferFactory()
+
+        with pytest.raises(exceptions.OfferException) as exception:
+            api.upsert_offer_thing_stocks(offer, [])
+
+        assert exception.value.errors == {"global": "Offer is an event."}
+
+    def test_create_stock(self):
+        offer = factories.ThingOfferFactory()
+
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": None,
+                        "activation_codes": None,
+                        "activation_codes_expiration_datetime": None,
+                        "booking_limit_datetime": None,
+                        "price": decimal.Decimal("12.50"),
+                        "quantity": 5,
+                    }
+                )
+            ],
+        )
+        db.session.refresh(offer)
+
+        assert len(offer.activeStocks) == 1
+        stock = offer.activeStocks[0]
+        assert stock.price == decimal.Decimal("12.50")
+        assert stock.quantity == 5
+
+    def test_error_trying_to_update_non_existing_stock(self):
+        offer = factories.ThingOfferFactory()
+
+        with pytest.raises(exceptions.OfferException) as exception:
+            api.upsert_offer_thing_stocks(
+                offer,
+                [
+                    offers_schemas.ThingStockUpsertInput(
+                        {
+                            "id": 999999,
+                            "activation_codes": None,
+                            "activation_codes_expiration_datetime": None,
+                            "booking_limit_datetime": None,
+                            "price": decimal.Decimal("1"),
+                            "quantity": 1,
+                        }
+                    )
+                ],
+            )
+
+        assert exception.value.errors == {"global": "Trying to update a non-existing stock."}
+
+    def test_soft_delete_only(self):
+        offer = factories.ThingOfferFactory()
+        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal("5"))
+
+        api.upsert_offer_thing_stocks(offer, [])
+
+        deleted_stock = db.session.get(models.Stock, stock.id)
+        assert deleted_stock.isSoftDeleted
+
+    def test_update_booking_limit_with_timezone_conversion(self):
+        offer = factories.ThingOfferFactory()
+        stock = factories.ThingStockFactory(offer=offer, quantity=10, price=decimal.Decimal("5"))
+
+        booking_limit_datetime = datetime.now(timezone.utc).replace(microsecond=0) + timedelta(days=1)
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": stock.id,
+                        "activation_codes": None,
+                        "activation_codes_expiration_datetime": None,
+                        "booking_limit_datetime": booking_limit_datetime,
+                        "price": stock.price,
+                        "quantity": stock.quantity,
+                    }
+                )
+            ],
+        )
+
+        updated_stock = db.session.get(models.Stock, stock.id)
+        assert updated_stock.bookingLimitDatetime is not None
+        assert updated_stock.bookingLimitDatetime.tzinfo is None  # naive
+        assert updated_stock.bookingLimitDatetime == booking_limit_datetime.replace(tzinfo=None)
+
+    def test_create_with_activation_codes_sets_quantity(self):
+        offer = factories.DigitalOfferFactory()
+
+        activation_codes = ["CODE_1", "CODE_2"]
+        booking_limit_datetime = datetime.now() + timedelta(days=7)
+        activation_codes_expiration_datetime = booking_limit_datetime + timedelta(days=14)
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": None,
+                        "activation_codes": activation_codes,
+                        "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
+                        "booking_limit_datetime": booking_limit_datetime,
+                        "price": decimal.Decimal("0"),
+                        "quantity": None,
+                    }
+                )
+            ],
+        )
+        db.session.refresh(offer)
+
+        assert len(offer.activeStocks) == 1
+        stock = offer.activeStocks[0]
+        assert stock.quantity == 2
+        assert {ac.code for ac in stock.activationCodes} == set(activation_codes)
+
+    def test_create_with_none_quantity_and_no_activation_codes(self):
+        offer = factories.ThingOfferFactory()
+
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": None,
+                        "activation_codes": None,
+                        "activation_codes_expiration_datetime": None,
+                        "booking_limit_datetime": None,
+                        "price": decimal.Decimal("0"),
+                        "quantity": None,
+                    }
+                )
+            ],
+        )
+        db.session.refresh(offer)
+
+        assert offer.activeStocks[0].quantity is None  # unlimited
+
+    def test_add_update_and_delete_stock_with_activations_codes(self):
+        offer = factories.DigitalOfferFactory()
+        stock_to_be_updated = factories.ThingStockFactory(offer=offer, quantity=5, price=decimal.Decimal("1"))
+        stock_to_be_deleted = factories.ThingStockFactory(offer=offer, quantity=2, price=decimal.Decimal("2"))
+
+        activation_codes = ["CODE_1", "CODE_2"]
+        booking_limit_datetime = datetime.now() + timedelta(days=7)
+        activation_codes_expiration_datetime = booking_limit_datetime + timedelta(days=14)
+        api.upsert_offer_thing_stocks(
+            offer,
+            [
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": stock_to_be_updated.id,
+                        "activation_codes": None,
+                        "activation_codes_expiration_datetime": None,
+                        "booking_limit_datetime": None,
+                        "price": decimal.Decimal("9"),
+                        "quantity": 10,
+                    }
+                ),
+                offers_schemas.ThingStockUpsertInput(
+                    {
+                        "id": None,
+                        "activation_codes": activation_codes,
+                        "activation_codes_expiration_datetime": activation_codes_expiration_datetime,
+                        "booking_limit_datetime": booking_limit_datetime,
+                        "price": decimal.Decimal("0"),
+                        "quantity": None,
+                    }
+                ),
+            ],
+        )
+        db.session.refresh(offer)
+
+        deleted_stock = db.session.get(models.Stock, stock_to_be_deleted.id)
+        assert deleted_stock.isSoftDeleted
+        udpated_stock = db.session.get(models.Stock, stock_to_be_updated.id)
+        assert udpated_stock.price == decimal.Decimal("9") and udpated_stock.quantity == 10
+        created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_be_updated.id, stock_to_be_deleted.id)]
+        assert len(created_stocks) == 1
+        assert {ac.code for ac in created_stocks[0].activationCodes} == set(activation_codes)
+
+
 class CreateMediationV2Test:
     BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
     THUMBS_DIR = BASE_THUMBS_DIR / "thumbs" / "mediations"
