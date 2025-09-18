@@ -16,8 +16,8 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.api import mark_bank_account_without_continuation
 from pcapi.core.finance.utils import format_raw_iban
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import fraud_check_api
+from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import without_timezone
@@ -55,7 +55,7 @@ def _sanitize_id_piece_number(id_piece_number: str) -> str:
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse,
-) -> fraud_models.DMSContent:
+) -> dms_schemas.DMSContent:
     application_number = application_detail.number
     civility = application_detail.applicant.civility
     email = application_detail.applicant.email or application_detail.profile.email
@@ -77,16 +77,16 @@ def parse_beneficiary_information_graphql(
     annotation = None
     instructor_annotation = None
 
-    field_errors: list[fraud_models.DmsFieldErrorDetails] = []
+    field_errors: list[dms_schemas.DmsFieldErrorDetails] = []
 
-    if not fraud_api.is_subscription_name_valid(first_name):
+    if not fraud_check_api.is_subscription_name_valid(first_name):
         field_errors.append(
-            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.first_name, value=first_name)
+            dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.first_name, value=first_name)
         )
 
-    if not fraud_api.is_subscription_name_valid(last_name):
+    if not fraud_check_api.is_subscription_name_valid(last_name):
         field_errors.append(
-            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.last_name, value=last_name)
+            dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.last_name, value=last_name)
         )
 
     for field in application_detail.fields:
@@ -106,7 +106,7 @@ def parse_beneficiary_information_graphql(
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except date_parser.ParserError:
                 field_errors.append(
-                    fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.birth_date, value=value)
+                    dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.birth_date, value=value)
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
@@ -115,11 +115,11 @@ def parse_beneficiary_information_graphql(
 
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
             value = _sanitize_id_piece_number(value.strip())
-            if not fraud_api.validate_id_piece_number_format_fraud_item(value, application_detail.procedure.number):
+            if not fraud_check_api.validate_id_piece_number_format_fraud_item(
+                value, application_detail.procedure.number
+            ):
                 field_errors.append(
-                    fraud_models.DmsFieldErrorDetails(
-                        key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value=value
-                    )
+                    dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.id_piece_number, value=value)
                 )
             else:
                 id_piece_number = value
@@ -135,7 +135,7 @@ def parse_beneficiary_information_graphql(
             match = re.search("^[0-9]{5}", space_free_value)
             if match is None:
                 field_errors.append(
-                    fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.postal_code, value=value)
+                    dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.postal_code, value=value)
                 )
                 continue
             postal_code = match.group(0)
@@ -145,14 +145,14 @@ def parse_beneficiary_information_graphql(
 
     for remote_annotation in application_detail.annotations:
         if DMS_BACKEND_ANNOTATION_SLUG in remote_annotation.label:
-            annotation = fraud_models.DmsAnnotation(
+            annotation = dms_schemas.DmsAnnotation(
                 id=remote_annotation.id, label=remote_annotation.label, text=remote_annotation.value
             )
         elif remote_annotation.label.startswith(DMS_INSTRUCTOR_ANNOTATION_SLUG):
             if remote_annotation_value := remote_annotation.value.strip() if remote_annotation.value else None:
                 try:
-                    instructor_annotation = fraud_models.DmsInstructorAnnotation(
-                        value=fraud_models.DmsInstructorAnnotationEnum(remote_annotation_value),
+                    instructor_annotation = dms_schemas.DmsInstructorAnnotation(
+                        value=dms_schemas.DmsInstructorAnnotationEnum(remote_annotation_value),
                         updated_datetime=remote_annotation.updated_datetime,
                     )
                 except ValueError:
@@ -164,7 +164,7 @@ def parse_beneficiary_information_graphql(
                         extra={"procedure_id": application_detail.procedure.number},
                     )
 
-    return fraud_models.DMSContent(  # type: ignore[call-arg]
+    return dms_schemas.DMSContent(  # type: ignore[call-arg]
         activity=activity,
         address=address,
         annotation=annotation,

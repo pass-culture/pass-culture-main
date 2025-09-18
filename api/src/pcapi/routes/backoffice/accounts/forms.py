@@ -7,7 +7,7 @@ from flask import flash
 from flask_wtf import FlaskForm
 
 from pcapi.connectors.dms import models as dms_models
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import filters
@@ -83,7 +83,9 @@ class EditAccountForm(utils.PCForm):
 class ManualReviewForm(FlaskForm):
     status = fields.PCSelectWithPlaceholderValueField(
         "Statut",
-        choices=utils.choices_from_enum(fraud_models.FraudReviewStatus, formatter=filters.format_fraud_review_status),
+        choices=utils.choices_from_enum(
+            subscription_models.FraudReviewStatus, formatter=filters.format_fraud_review_status
+        ),
     )
     eligibility = fields.PCSelectWithPlaceholderValueField(
         "Éligibilité",

@@ -123,8 +123,8 @@ def recredit_users_by_id(user_ids: list[int]) -> None:
 
 
 def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
+    from pcapi.core.subscription import schemas as subscription_schemas
     from pcapi.core.subscription.api import get_user_subscription_state
-    from pcapi.core.subscription.models import SubscriptionItemStatus
 
     if not user.eligibility:
         raise exceptions.UserCannotBeRecredited("User is not eligible for deposit")
@@ -133,7 +133,10 @@ def _recredit_user_if_no_missing_step(user: users_models.User) -> None:
         raise exceptions.UserCannotBeRecredited("User deposit was not created")
 
     subscription_state = get_user_subscription_state(user)
-    if not (subscription_state.next_step is None and subscription_state.fraud_status == SubscriptionItemStatus.OK):
+    if not (
+        subscription_state.next_step is None
+        and subscription_state.fraud_status == subscription_schemas.SubscriptionItemStatus.OK
+    ):
         raise exceptions.UserHasNotFinishedSubscription()
 
     recredit = _recredit_user(user)

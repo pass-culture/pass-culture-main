@@ -4,8 +4,8 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import models as users_models
@@ -96,8 +96,10 @@ class BannerTest:
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
 
         client.with_token(email=user.email)
@@ -113,11 +115,13 @@ class BannerTest:
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.PROFILE_COMPLETION, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.UBBLE, status=subscription_models.FraudCheckStatus.OK
         )
 
         client.with_token(email=user.email)
@@ -157,8 +161,8 @@ class BannerTest:
         user = users_factories.EligibleGrant18Factory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.UbbleRetryFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.UbbleRetryFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
         with assert_num_queries(self.expected_num_queries_with_subscription_check + 1):  # action_history

@@ -11,9 +11,10 @@ from pydantic.v1.utils import GetterDict
 from pcapi import settings
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import models as history_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -23,7 +24,7 @@ from pcapi.routes.serialization import BaseModel
 
 
 def get_fraud_check_eligibility_type(
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
 ) -> users_models.EligibilityType | None:
     if fraud_check.eligibilityType:
         return fraud_check.eligibilityType
@@ -61,8 +62,8 @@ class SubscriptionItemModel(BaseModel):
         orm_mode = True
         use_enum_values = True
 
-    type: subscription_models.SubscriptionStep
-    status: subscription_models.SubscriptionItemStatus
+    type: subscription_schemas.SubscriptionStep
+    status: subscription_schemas.SubscriptionItemStatus
 
 
 class IdCheckItemGetterDict(GetterDict):
@@ -83,25 +84,25 @@ class IdCheckItemModel(BaseModel):
         getter_dict = IdCheckItemGetterDict
 
     @classmethod
-    def from_orm(cls, fraud_check: fraud_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
+    def from_orm(cls, fraud_check: subscription_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
         if fraud_check.resultContent:
             fraud_check.technicalDetails = fraud_check.source_data()
         else:
             fraud_check.technicalDetails = None
 
-        if fraud_check.type == fraud_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
-            dms_content = fraud_models.DMSContent(**fraud_check.resultContent)
+        if fraud_check.type == subscription_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
+            dms_content = dms_schemas.DMSContent(**fraud_check.resultContent)
             fraud_check.sourceId = str(dms_content.procedure_number)
 
         return super().from_orm(fraud_check)
 
     id: int
-    type: fraud_models.FraudCheckType
+    type: subscription_models.FraudCheckType
     dateCreated: datetime.datetime
     thirdPartyId: str
-    status: fraud_models.FraudCheckStatus | None
+    status: subscription_models.FraudCheckStatus | None
     reason: str | None
-    reasonCodes: list[fraud_models.FraudReasonCode] | None
+    reasonCodes: list[subscription_models.FraudReasonCode] | None
     technicalDetails: dict | None
     sourceId: str | None = None  # DMS only
     eligibilityType: users_models.EligibilityType | None
@@ -181,7 +182,7 @@ class EmailChangeAction(AccountAction):
 
 
 class FraudCheckAction(AccountAction):
-    def __init__(self, fraud_check: fraud_models.BeneficiaryFraudCheck):
+    def __init__(self, fraud_check: subscription_models.BeneficiaryFraudCheck):
         self._fraud_check = fraud_check
 
     @property
@@ -202,7 +203,7 @@ class FraudCheckAction(AccountAction):
 
 
 class ReviewAction(AccountAction):
-    def __init__(self, review: fraud_models.BeneficiaryFraudReview):
+    def __init__(self, review: subscription_models.BeneficiaryFraudReview):
         self._review = review
 
     @property

@@ -6,11 +6,20 @@ from collections import defaultdict
 from enum import Enum
 
 import factory
+import pytest
 import pytz
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.subscription.dms.schemas as dms_schemas
+import pcapi.core.subscription.educonnect.schemas as educonnect_schemas
+import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.ubble.schemas as ubble_schemas
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class IdentificationState(Enum):
@@ -24,13 +33,13 @@ class IdentificationState(Enum):
 
 
 STATE_STATUS_MAPPING = {
-    IdentificationState.NEW: ubble_serializers.UbbleIdentificationStatus.UNINITIATED,
-    IdentificationState.INITIATED: ubble_serializers.UbbleIdentificationStatus.INITIATED,
-    IdentificationState.ABORTED: ubble_serializers.UbbleIdentificationStatus.ABORTED,
-    IdentificationState.PROCESSING: ubble_serializers.UbbleIdentificationStatus.PROCESSING,
-    IdentificationState.VALID: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.INVALID: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.UNPROCESSABLE: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.NEW: ubble_schemas.UbbleIdentificationStatus.UNINITIATED,
+    IdentificationState.INITIATED: ubble_schemas.UbbleIdentificationStatus.INITIATED,
+    IdentificationState.ABORTED: ubble_schemas.UbbleIdentificationStatus.ABORTED,
+    IdentificationState.PROCESSING: ubble_schemas.UbbleIdentificationStatus.PROCESSING,
+    IdentificationState.VALID: ubble_schemas.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.INVALID: ubble_schemas.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.UNPROCESSABLE: ubble_schemas.UbbleIdentificationStatus.PROCESSED,
 }
 
 
@@ -441,3 +450,32 @@ class UbbleIdentificationResponseFactory(factory.Factory):
 
         included_data = [sf(identification_state=self.identification_state) for sf in included_data]
         return included_data
+
+
+class FactoriesTest:
+    @pytest.mark.parametrize(
+        "check_type,model_class",
+        [
+            (subscription_models.FraudCheckType.DMS, dms_schemas.DMSContent),
+            (subscription_models.FraudCheckType.UBBLE, ubble_schemas.UbbleContent),
+            (subscription_models.FraudCheckType.EDUCONNECT, educonnect_schemas.EduconnectContent),
+        ],
+    )
+    def test_database_serialization(self, check_type, model_class):
+        instance = subscription_factories.BeneficiaryFraudCheckFactory(type=check_type)
+        model_class(**instance.resultContent)
+
+    @pytest.mark.parametrize(
+        "check_type,factory_class",
+        [
+            (subscription_models.FraudCheckType.DMS, subscription_factories.DMSContentFactory),
+            (subscription_models.FraudCheckType.UBBLE, subscription_factories.UbbleContentFactory),
+            (subscription_models.FraudCheckType.EDUCONNECT, subscription_factories.EduconnectContentFactory),
+        ],
+    )
+    def test_database_overwrite(self, check_type, factory_class):
+        content = factory_class()
+        instance = subscription_factories.BeneficiaryFraudCheckFactory(type=check_type, resultContent=content)
+        serialized_data = factory_class._meta.model(**instance.resultContent)
+
+        assert content == serialized_data

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import selectinload
 
 import pcapi.core.banner.api as banner_api
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.native import blueprint
@@ -20,17 +20,17 @@ def get_banner(user: users_models.User, query: serializers.BannerQueryParams) ->
         .filter_by(id=user.id)
         .options(
             selectinload(users_models.User.beneficiaryFraudChecks).load_only(
-                fraud_models.BeneficiaryFraudCheck.dateCreated,
-                fraud_models.BeneficiaryFraudCheck.eligibilityType,
-                fraud_models.BeneficiaryFraudCheck.type,
-                fraud_models.BeneficiaryFraudCheck.status,
-                fraud_models.BeneficiaryFraudCheck.userId,
-                fraud_models.BeneficiaryFraudCheck.reasonCodes,
-                fraud_models.BeneficiaryFraudCheck.updatedAt,
+                subscription_models.BeneficiaryFraudCheck.dateCreated,
+                subscription_models.BeneficiaryFraudCheck.eligibilityType,
+                subscription_models.BeneficiaryFraudCheck.type,
+                subscription_models.BeneficiaryFraudCheck.status,
+                subscription_models.BeneficiaryFraudCheck.userId,
+                subscription_models.BeneficiaryFraudCheck.reasonCodes,
+                subscription_models.BeneficiaryFraudCheck.updatedAt,
             ),
             selectinload(users_models.User.beneficiaryFraudReviews).load_only(
-                fraud_models.BeneficiaryFraudReview.dateReviewed,
-                fraud_models.BeneficiaryFraudReview.review,
+                subscription_models.BeneficiaryFraudReview.dateReviewed,
+                subscription_models.BeneficiaryFraudReview.review,
             ),
             selectinload(users_models.User.deposits),
         )

@@ -11,12 +11,12 @@ from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
 from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
-from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.subscription.phone_validation import sending_limit
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api

@@ -30,7 +30,6 @@ from pcapi.core.educational.utils import format_collective_offer_displayed_statu
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import constants as offerers_constants
@@ -38,6 +37,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -791,13 +791,13 @@ def format_collective_offer_rejection_reason(reason: educational_models.Collecti
             return reason.value
 
 
-def format_fraud_review_status(status: fraud_models.FraudReviewStatus) -> str:
+def format_fraud_review_status(status: subscription_models.FraudReviewStatus) -> str:
     match status:
-        case fraud_models.FraudReviewStatus.OK:
+        case subscription_models.FraudReviewStatus.OK:
             return "OK"
-        case fraud_models.FraudReviewStatus.KO:
+        case subscription_models.FraudReviewStatus.KO:
             return "KO"
-        case fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS:
+        case subscription_models.FraudReviewStatus.REDIRECTED_TO_DMS:
             return "Redirigé vers DMS"
         case _:
             return status.value
@@ -1112,21 +1112,24 @@ def format_confidence_level_badge_for_venue(venue: offerers_models.Venue) -> str
 
 
 def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemModel) -> str:
-    if id_check_item.type == fraud_models.FraudCheckType.UBBLE.value:
+    if id_check_item.type == subscription_models.FraudCheckType.UBBLE.value:
         if ubble_api.is_v2_identification(id_check_item.thirdPartyId):
             return f"https://dashboard.ubble.ai/identity-verifications/{id_check_item.thirdPartyId}"
         return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
-    if id_check_item.type == fraud_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
+    if id_check_item.type == subscription_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
         return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
     return ""
 
 
 def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
-    if fraud_action_dict["type"] == fraud_models.FraudCheckType.UBBLE.value:
+    if fraud_action_dict["type"] == subscription_models.FraudCheckType.UBBLE.value:
         if ubble_api.is_v2_identification(fraud_action_dict["techId"]):
             return f"https://dashboard.ubble.ai/identity-verifications/{fraud_action_dict['techId']}"
         return f"https://dashboard.ubble.ai/identifications/{fraud_action_dict['techId']}"
-    if fraud_action_dict["type"] == fraud_models.FraudCheckType.DMS.value and fraud_action_dict["technicalDetails"]:
+    if (
+        fraud_action_dict["type"] == subscription_models.FraudCheckType.DMS.value
+        and fraud_action_dict["technicalDetails"]
+    ):
         return f"https://www.demarches-simplifiees.fr/procedures/{fraud_action_dict['technicalDetails']['procedure_number']}/dossiers/{fraud_action_dict['techId']}"
     return ""
 

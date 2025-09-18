@@ -8,8 +8,8 @@ from dateutil.relativedelta import relativedelta
 from pcapi import settings
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -96,12 +96,12 @@ class EligibilityActivationRaceConditionTest:
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=finance_models.DepositType.GRANT_15_17)
         # Finish missing steps at 18 years old
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        fraud_factories.ProfileCompletionFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user, eligibilityType=users_models.EligibilityType.AGE18, dateCreated=before_decree
         )
-        fraud_factories.PhoneValidationFraudCheckFactory(user=user)
+        subscription_factories.PhoneValidationFraudCheckFactory(user=user)
         user.phoneNumber = "+33600000000"
-        fraud_factories.HonorStatementFraudCheckFactory(user=user)
+        subscription_factories.HonorStatementFraudCheckFactory(user=user)
 
         barrier = threading.Barrier(2)
         eighteen_years_old_activation_event = threading.Event()

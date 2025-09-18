@@ -7,10 +7,10 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import factories as users_factories
@@ -55,9 +55,9 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         date_when_user_was_eighteen = birth_date + relativedelta(years=18, months=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE17_18,
             dateCreated=date_when_user_was_eighteen,
         )
@@ -83,9 +83,9 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         date_when_user_was_fourteen = birth_date + relativedelta(years=14, months=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE17_18,
             dateCreated=date_when_user_was_fourteen,
         )
@@ -110,9 +110,9 @@ class DecideEligibilityTest:
     def test_user_underage_eligibility_when_registered_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
         )
@@ -127,9 +127,9 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         day_before_decree = datetime.utcnow() - relativedelta(days=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=day_before_decree,
         )
@@ -153,9 +153,9 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         year_when_user_was_eighteen = datetime.utcnow() - relativedelta(years=user.age - 18)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
             dateCreated=year_when_user_was_eighteen,
         )
@@ -178,18 +178,18 @@ class DecideEligibilityTest:
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
             dateCreated=today - relativedelta(years=1),
         )
 
-        dms_content = fraud_factories.DMSContentFactory(
+        dms_content = subscription_factories.DMSContentFactory(
             registration_datetime=datetime.combine(today, datetime.min.time()), birth_date=birth_date
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
         result = eligibility_api.decide_eligibility(
@@ -200,9 +200,9 @@ class DecideEligibilityTest:
     def test_19yo_not_eligible(self):
         birth_date = date.today() - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-        dms_content = fraud_factories.DMSContentFactory(birth_date=birth_date)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
+        dms_content = subscription_factories.DMSContentFactory(birth_date=birth_date)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
         result = eligibility_api.decide_eligibility(
@@ -214,17 +214,17 @@ class DecideEligibilityTest:
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             dateCreated=today - relativedelta(years=3, days=1),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        dms_content = fraud_factories.DMSContentFactory(
+        dms_content = subscription_factories.DMSContentFactory(
             registration_datetime=datetime.combine(today, datetime.min.time()), birth_date=birth_date
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
         result = eligibility_api.decide_eligibility(
@@ -236,18 +236,18 @@ class DecideEligibilityTest:
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.AGE18,
             dateCreated=today - relativedelta(years=1),
         )
-        dms_content = fraud_factories.DMSContentFactory(
+        dms_content = subscription_factories.DMSContentFactory(
             registration_datetime=datetime.combine(today - relativedelta(years=1, days=-1), datetime.min.time()),
             birth_date=birth_date,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
         result = eligibility_api.decide_eligibility(
@@ -260,12 +260,12 @@ class DecideEligibilityTest:
         today = date.today()
         birth_date = today - relativedelta(years=18, days=1)
         user = users_factories.UserFactory()
-        dms_content = fraud_factories.DMSContentFactory(
+        dms_content = subscription_factories.DMSContentFactory(
             registration_datetime=datetime.combine(today - relativedelta(years=1, days=-1), datetime.min.time()),
             birth_date=birth_date,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
         result = eligibility_api.decide_eligibility(
@@ -304,10 +304,10 @@ class DecideEligibilityTest:
         user = users_factories.UserFactory()
 
         if first_registration_datetime:
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
-                type=fraud_models.FraudCheckType.DMS,
-                resultContent=fraud_factories.DMSContentFactory(
+                type=subscription_models.FraudCheckType.DMS,
+                resultContent=subscription_factories.DMSContentFactory(
                     registration_datetime=first_registration_datetime, birth_date=birth_date
                 ),
             )
@@ -318,10 +318,10 @@ class DecideEligibilityTest:
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
-            resultContent=fraud_factories.DMSContentFactory(
+            type=subscription_models.FraudCheckType.DMS,
+            resultContent=subscription_factories.DMSContentFactory(
                 registration_datetime=None,
                 birth_date=birth_date,
             ),
@@ -338,9 +338,9 @@ class EligibilityForNextRecreditActivationStepsTest:
     def test_user_underage_activation_when_registered_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1),
         )
@@ -440,24 +440,24 @@ class GetFirstRegistrationDateTest:
         d1 = datetime(2018, 1, 1)
         d2 = datetime(2018, 2, 1)
         d3 = datetime(2018, 3, 1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
             dateCreated=d2,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             dateCreated=d2,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=d3,
-            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
+            resultContent=subscription_factories.DMSContentFactory(registration_datetime=d1),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
         assert (
@@ -470,9 +470,9 @@ class GetFirstRegistrationDateTest:
     def test_get_first_registration_date_underage_with_timezone(self):
         user = users_factories.UserFactory(age=17)
         today_in_utc = date.today() - relativedelta(minutes=15)  # 23:45 in UTC, so 00:45 today in Europe/Paris
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             dateCreated=today_in_utc,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
@@ -490,9 +490,9 @@ class GetFirstRegistrationDateTest:
         user = users_factories.UserFactory(dateOfBirth=birth_date)
         # 23:45 in UTC, so 00:45 today in Europe/Paris, meaning the user is now 19
         after_19th_birthday = birth_date + relativedelta(years=19) - relativedelta(minutes=15)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             dateCreated=after_19th_birthday,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.AGE18,
@@ -508,18 +508,18 @@ class GetFirstRegistrationDateTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
         d1 = datetime(2018, 1, 1)
         d2 = datetime(2020, 2, 1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=d1,
-            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
+            resultContent=subscription_factories.DMSContentFactory(registration_datetime=d1),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=d2,
-            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            resultContent=subscription_factories.DMSContentFactory(registration_datetime=d2),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         assert (
@@ -533,18 +533,18 @@ class GetFirstRegistrationDateTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
         d1 = datetime(2020, 1, 1)
         d2 = datetime(2020, 2, 1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             dateCreated=d1,
-            status=fraud_models.FraudCheckStatus.KO,
+            status=subscription_models.FraudCheckStatus.KO,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             dateCreated=d2,
-            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            resultContent=subscription_factories.DMSContentFactory(registration_datetime=d2),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -559,18 +559,18 @@ class GetFirstRegistrationDateTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
         d1 = datetime(2020, 1, 1)
         d2 = datetime(2020, 2, 1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.INTERNAL_REVIEW,  # this happened with jouve results saying when the age is <18
+            type=subscription_models.FraudCheckType.INTERNAL_REVIEW,  # this happened with jouve results saying when the age is <18
             dateCreated=d1,
-            status=fraud_models.FraudCheckStatus.KO,
+            status=subscription_models.FraudCheckStatus.KO,
             eligibilityType=None,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
             dateCreated=d2,
-            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+            resultContent=subscription_factories.DMSContentFactory(registration_datetime=d2),
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -584,11 +584,11 @@ class GetFirstRegistrationDateTest:
     def test_without_eligible_try(self):
         user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
         d1 = datetime(2020, 1, 1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             dateCreated=d1,
-            status=fraud_models.FraudCheckStatus.KO,
+            status=subscription_models.FraudCheckStatus.KO,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -632,9 +632,9 @@ class GetKnownBirthdateAtDateTest:
 
         # identity provider check that should be ignored
         tomorrow = datetime.utcnow() + relativedelta(days=1)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             user=user,
             dateCreated=tomorrow,
         )

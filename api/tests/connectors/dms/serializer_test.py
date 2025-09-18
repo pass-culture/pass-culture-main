@@ -7,7 +7,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import models as users_models
 
 from tests.scripts.beneficiary import fixture
@@ -193,7 +193,7 @@ class FieldErrorsTest:
         application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert len(application_content.field_errors) == 1
-        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.postal_code
+        assert application_content.field_errors[0].key == dms_schemas.DmsFieldErrorKeyEnum.postal_code
         assert application_content.field_errors[0].value == "Strasbourg"
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
@@ -203,5 +203,5 @@ class FieldErrorsTest:
         application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert len(application_content.field_errors) == 1
-        assert application_content.field_errors[0].key == fraud_models.DmsFieldErrorKeyEnum.id_piece_number
+        assert application_content.field_errors[0].key == dms_schemas.DmsFieldErrorKeyEnum.id_piece_number
         assert application_content.field_errors[0].value == possible_value

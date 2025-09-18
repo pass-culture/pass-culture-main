@@ -1,6 +1,6 @@
 import dataclasses
 
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.utils.string import u_nbsp
 
 
@@ -17,17 +17,17 @@ class UbbleError:
 UBBLE_DEFAULT = UbbleError()
 
 UBBLE_CODE_ERROR_MAPPING = {
-    fraud_models.FraudReasonCode.AGE_TOO_OLD: UbbleError(
+    subscription_models.FraudReasonCode.AGE_TOO_OLD: UbbleError(
         detail_message="L'utilisateur a dépassé l'âge maximum ({age} ans)",
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
         priority=50,
     ),
-    fraud_models.FraudReasonCode.AGE_TOO_YOUNG: UbbleError(
+    subscription_models.FraudReasonCode.AGE_TOO_YOUNG: UbbleError(
         detail_message="L'utilisateur n'a pas encore l'âge requis ({age} ans)",
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
         priority=50,
     ),
-    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO: UbbleError(
+    subscription_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO: UbbleError(
         detail_message="La vidéo est floue",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
@@ -35,7 +35,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Réessaie la vérification d’identité en t’assurant de la netteté lors de l’envoi.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED: UbbleError(
+    subscription_models.FraudReasonCode.DOCUMENT_DAMAGED: UbbleError(
         detail_message="Le document est endommagé",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie en t’assurant d’avoir un document original en bon état",
@@ -43,15 +43,15 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie la vérification d’identité en t’assurant d’utiliser un document en bon état.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.DUPLICATE_USER: UbbleError(
+    subscription_models.FraudReasonCode.DUPLICATE_USER: UbbleError(
         not_retryable_user_message="",
         priority=60,
     ),
-    fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER: UbbleError(
+    subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER: UbbleError(
         not_retryable_user_message="",
         priority=60,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER: UbbleError(
         detail_message="Ubble n'a pas réussi à lire le document",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
@@ -59,12 +59,12 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
         priority=10,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_DATA_MATCH: UbbleError(
         detail_message="Les informations de la pièce d'identité ne correspondent pas",
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur.",
         priority=40,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_EXPIRED: UbbleError(
         detail_message="Le document d'identité est expiré",
         not_retryable_user_message="Ton document d'identité est expiré. Rends-toi sur le site demarches-simplifiees.fr avec un document en cours de validité pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec un autre document d’identité valide",
@@ -72,7 +72,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Ton document d'identité est expiré. Réessaie avec un passeport ou une carte d'identité française en cours de validité.",
         priority=70,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC: UbbleError(
         detail_message="Le document d'identité n'est pas authentique",
         not_retryable_user_message="Ton dossier a été refusé car le document que tu as présenté n’est pas authentique. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta carte d’identité ou ton passeport",
@@ -80,7 +80,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Le document que tu as présenté n’est pas accepté car il s’agit d’une photo ou d’une copie de l’original. Réessaie avec un document original en cours de validité.",
         priority=90,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED: UbbleError(
         detail_message="Le document d'identité n'est pas supporté",
         not_retryable_user_message="Le document d'identité que tu as présenté n'est pas accepté. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta carte d’identité ou ton passeport",
@@ -88,7 +88,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Le document d'identité que tu as présenté n'est pas accepté. S’il s’agit d’une pièce d’identité étrangère ou d’un titre de séjour français, tu dois passer par le site demarches-simplifiees.fr. Si non, tu peux réessayer avec un passeport ou une carte d’identité française en cours de validité.",
         priority=80,
     ),
-    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE: UbbleError(
+    subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE: UbbleError(
         detail_message="Ubble n'a pas réussi à lire le document",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
@@ -96,7 +96,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
         priority=100,
     ),
-    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY: UbbleError(
+    subscription_models.FraudReasonCode.LACK_OF_LUMINOSITY: UbbleError(
         detail_message="Luminosité insuffisante",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie en t’assurant d’avoir une bonne luminosité",
@@ -104,7 +104,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie la vérification d’identité en t’assurant de filmer ton document avec une bonne luminosité.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA: UbbleError(
+    subscription_models.FraudReasonCode.MISSING_REQUIRED_DATA: UbbleError(
         detail_message="Ubble n'a pas réussi à lire le document",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
@@ -112,7 +112,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE: UbbleError(
+    subscription_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE: UbbleError(
         detail_message="Problème de connexion réseau",
         not_retryable_user_message="Nous n’avons pas vu valider ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie en t’assurant d’avoir une bonne connexion Internet",
@@ -120,21 +120,21 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n’avons pas vu valider ton document. Réessaie en t’assurant d’avoir une bonne connexion à Internet.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.NOT_DOCUMENT_OWNER: UbbleError(
+    subscription_models.FraudReasonCode.NOT_DOCUMENT_OWNER: UbbleError(
         detail_message="Pas le propriétaire du document d'identité",
         retryable_action_hint="Réessaie en réalisant toutes les étapes de la vérification toi-même",
         retryable_message_summary="Ce n’est pas le propriétaire de la pièce d’identité qui a effectué la vérification.",
         retryable_user_message="Nous n’avons pas pu valider ton identité, car ce n’est pas le propriétaire de la pièce d’identité qui a effectué la vérification. Réessaie la vérification d’identité en réalisant toutes les étapes toi-même.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.UBBLE_INTERNAL_ERROR: UbbleError(
+    subscription_models.FraudReasonCode.UBBLE_INTERNAL_ERROR: UbbleError(
         detail_message="Ubble a eu une erreur technique",
         retryable_action_hint="Tu peux réessayer de vérifier ton identité",
         retryable_message_summary="Une erreur technique a eu lieu.",
         retryable_user_message="Nous n’avons pas pu valider ton identité en raison d’une erreur technique. Tu peux réessayer la vérification.",
         priority=30,
     ),
-    fraud_models.FraudReasonCode.NOT_ELIGIBLE: UbbleError(
+    subscription_models.FraudReasonCode.NOT_ELIGIBLE: UbbleError(
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
         priority=50,
     ),

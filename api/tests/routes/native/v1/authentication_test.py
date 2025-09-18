@@ -18,10 +18,10 @@ from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import token as token_utils
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import repository as fraud_repository
 from pcapi.core.history import factories as history_factories
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import repository as subscription_repository
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -1157,7 +1157,7 @@ class EmailValidationTest:
 
         assert not user.isEmailValidated
 
-        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
+        subscription_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
 
         execute_query.return_value = make_single_application(
             application_number,
@@ -1170,5 +1170,5 @@ class EmailValidationTest:
         assert user.isEmailValidated
         assert response.status_code == 200
 
-        fraud_check = fraud_repository.get_relevant_identity_fraud_check(user, user.eligibility)
+        fraud_check = subscription_repository.get_relevant_identity_fraud_check(user, user.eligibility)
         assert fraud_check is not None

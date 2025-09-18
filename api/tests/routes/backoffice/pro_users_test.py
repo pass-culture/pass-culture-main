@@ -5,7 +5,6 @@ import pytest
 from flask import url_for
 
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -13,6 +12,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -676,8 +676,8 @@ class DeleteProUserTest(PostEndpointHelper):
         assert db.session.query(users_models.User).filter(users_models.User.id == user_id).count() == 0
         assert db.session.query(finance_models.Deposit).filter(finance_models.Deposit.id == deposit_id).count() == 0
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter(fraud_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.id == beneficiary_fraud_check_id)
             .count()
             == 0
         )

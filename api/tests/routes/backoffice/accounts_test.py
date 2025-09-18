@@ -19,8 +19,6 @@ from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -30,8 +28,9 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import factories as operations_factories
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.subscription.models import SubscriptionItemStatus
-from pcapi.core.subscription.models import SubscriptionStep
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -944,10 +943,10 @@ class GetPublicAccountTest(GetEndpointHelper):
         "reasonCodes,reason",
         (
             (
-                [fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
+                [subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
                 "La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {original_user_id}",
             ),
-            ([fraud_models.FraudReasonCode.DUPLICATE_USER], "Duplicat de l'utilisateur {original_user_id}"),
+            ([subscription_models.FraudReasonCode.DUPLICATE_USER], "Duplicat de l'utilisateur {original_user_id}"),
         ),
     )
     def test_get_public_account_with_resolved_duplicate(self, authenticated_client, reasonCodes, reason):
@@ -976,19 +975,19 @@ class GetPublicAccountTest(GetEndpointHelper):
             lastName=last_name,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=reasonCodes,
             reason=reason,
-            resultContent=fraud_factories.UbbleContentFactory(
+            resultContent=subscription_factories.UbbleContentFactory(
                 first_name=first_name,
                 last_name=last_name,
                 birth_date=birth_date.date().isoformat(),
@@ -996,16 +995,16 @@ class GetPublicAccountTest(GetEndpointHelper):
             ),
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=duplicate_user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -1174,9 +1173,9 @@ class GetPublicAccountTest(GetEndpointHelper):
     def test_fraud_check_link(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
         # modifiy the date for clearer tests
-        old_dms = fraud_factories.BeneficiaryFraudCheckFactory(
+        old_dms = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=2),
         )
 
@@ -1195,9 +1194,9 @@ class GetPublicAccountTest(GetEndpointHelper):
             in main_dossier_card
         )
 
-        new_dms = fraud_factories.BeneficiaryFraudCheckFactory(
+        new_dms = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=3),
         )
 
@@ -1846,7 +1845,7 @@ class SendValidationCodeTest(PostEndpointHelper):
     def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
         user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
 
-        with patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
+        with patch("pcapi.core.subscription.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
             limit_mock.return_value = False
             response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
@@ -1891,7 +1890,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.UserFactory()
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.KO.name,
+            "status": subscription_models.FraudReviewStatus.KO.name,
             "eligibility": users_models.EligibilityType.AGE18.name,
             "reason": "test",
         }
@@ -1907,7 +1906,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
         assert fraud_review.author == legit_user
-        assert fraud_review.review == fraud_models.FraudReviewStatus.KO
+        assert fraud_review.review == subscription_models.FraudReviewStatus.KO
         assert fraud_review.reason == "test"
 
         assert user.has_beneficiary_role is False
@@ -1917,7 +1916,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE18.name,
             "reason": "test",
         }
@@ -1933,7 +1932,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert len(user.beneficiaryFraudReviews) == 1
         fraud_review = user.beneficiaryFraudReviews[0]
         assert fraud_review.author == legit_user
-        assert fraud_review.review == fraud_models.FraudReviewStatus.OK
+        assert fraud_review.review == subscription_models.FraudReviewStatus.OK
         assert fraud_review.reason == "test"
 
         assert user.has_beneficiary_role is True
@@ -1970,7 +1969,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.KO.name,
+            "status": subscription_models.FraudReviewStatus.KO.name,
             "eligibility": users_models.EligibilityType.AGE18.name,
         }
 
@@ -1994,7 +1993,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user_id = users_factories.UserFactory().id
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE18.name,
             "reason": "test",
         }
@@ -2009,7 +2008,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.UNDERAGE.name,
             "reason": "test",
         }
@@ -2033,7 +2032,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.IdentityValidatedUserFactory(age=18)
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.UNDERAGE.name,
             "reason": "test",
         }
@@ -2057,7 +2056,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory()
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE18.name,
             "reason": "test",
         }
@@ -2077,7 +2076,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user.validatedBirthDate = eighteen_years_ago
 
         base_form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE17_18.name,
             "reason": "test",
         }
@@ -2094,7 +2093,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         user = users_factories.BeneficiaryFactory()
 
         form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE17_18.name,
             "reason": "test",
         }
@@ -2111,22 +2110,24 @@ class ReviewPublicAccountTest(PostEndpointHelper):
     def test_uses_most_recent_id_number(self, authenticated_client):
         first_beneficiary = users_factories.BeneficiaryFactory()
         would_be_beneficiary = users_factories.ProfileCompletedUserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=would_be_beneficiary,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.KO,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[
-                fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
-                fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
+                subscription_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
+                subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER,
             ],
-            resultContent=fraud_factories.UbbleContentFactory(id_document_number=first_beneficiary.idPieceNumber),
+            resultContent=subscription_factories.UbbleContentFactory(
+                id_document_number=first_beneficiary.idPieceNumber
+            ),
         )
         admin_user = users_factories.AdminFactory()
         new_id_piece_number = "123456789012"
         users_api.update_user_info(would_be_beneficiary, author=admin_user, id_piece_number=new_id_piece_number)
 
         form = {
-            "status": fraud_models.FraudReviewStatus.OK.name,
+            "status": subscription_models.FraudReviewStatus.OK.name,
             "eligibility": users_models.EligibilityType.AGE17_18.name,
             "reason": "test",
         }
@@ -2201,19 +2202,19 @@ class GetPublicAccountHistoryTest:
 
     def test_history_contains_fraud_checks(self):
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
-        dms = fraud_factories.BeneficiaryFraudCheckFactory(
+        dms = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
         )
-        phone = fraud_factories.BeneficiaryFraudCheckFactory(
+        phone = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
         )
-        honor = fraud_factories.BeneficiaryFraudCheckFactory(
+        honor = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
             status=None,
         )
@@ -2246,18 +2247,18 @@ class GetPublicAccountHistoryTest:
     def test_history_contains_reviews(self):
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
         author_user = users_factories.UserFactory()
-        ko = fraud_factories.BeneficiaryFraudReviewFactory(
+        ko = subscription_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
             dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
-            review=fraud_models.FraudReviewStatus.KO,
+            review=subscription_models.FraudReviewStatus.KO,
             reason="pas glop",
         )
-        dms = fraud_factories.BeneficiaryFraudReviewFactory(
+        dms = subscription_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
             dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
-            review=fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
+            review=subscription_models.FraudReviewStatus.REDIRECTED_TO_DMS,
             reason="",
         )
 
@@ -2428,18 +2429,18 @@ class GetPublicAccountHistoryTest:
                 ),
             ],
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
             dateCreated=now - datetime.timedelta(minutes=35),
         )
         users_factories.EmailUpdateEntryFactory(user=user, creationDate=now - datetime.timedelta(minutes=30))
         users_factories.EmailValidationEntryFactory(user=user, creationDate=now - datetime.timedelta(minutes=15))
-        fraud_factories.BeneficiaryFraudReviewFactory(
+        subscription_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=author_user,
             dateReviewed=now - datetime.timedelta(minutes=5),
-            review=fraud_models.FraudReviewStatus.OK,
+            review=subscription_models.FraudReviewStatus.OK,
         )
 
         history = get_public_account_history(user)
@@ -2485,22 +2486,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_15_17",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -2518,19 +2519,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
     @pytest.mark.parametrize("signup_age", [15, 16])
@@ -2577,42 +2578,42 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_17_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -2630,37 +2631,37 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 11
         assert len(text_views) == 11
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "Pass 17"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Validation N° téléphone"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "Profil Complet"
 
-        assert step_icon_titles[8] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "ID Check"
 
-        assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[9].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[10] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[10] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[10].text == "Pass 18"
 
     def test_registration_at_age16_and_becoming_17_before_decree_current_age17(self, authenticated_client, settings):
@@ -2701,31 +2702,31 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_17_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=signup_date,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.CANCELED,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.CANCELED,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=signup_date,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
             dateCreated=settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=3),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
             dateCreated=settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=3),
         )
@@ -2744,28 +2745,28 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 8
         assert len(text_views) == 8
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "ID Check"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "Pass 17"
 
     def test_registration_at_age15_and_becoming_16_before_decree_current_age17(self, authenticated_client, settings):
@@ -2799,22 +2800,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_17_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -2832,28 +2833,28 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 8
         assert len(text_views) == 8
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "ID Check"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "Pass 17"
 
     def test_registration_at_age15_before_decree(self, authenticated_client, settings):
@@ -2884,22 +2885,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_15_17",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -2917,19 +2918,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
     def test_registration_at_age15_after_decree(self, authenticated_client, settings):
@@ -2966,10 +2967,10 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 2
         assert len(text_views) == 2
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
 
     def test_registration_at_age_17_on_birthdate_after_decree(self, authenticated_client, settings):
@@ -2995,22 +2996,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             validatedBirthDate=birth_date,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -3028,19 +3029,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[4].text == "Pass 17"
 
     def test_registration_at_age17_before_decree(self, authenticated_client, settings):
@@ -3071,22 +3072,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_15_17",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
@@ -3104,19 +3105,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
     def test_registration_at_age16_after_decree(self, authenticated_client, settings):
@@ -3151,10 +3152,10 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 2
         assert len(text_views) == 2
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
 
     def test_registration_age_17_after_decree(self, authenticated_client, settings):
@@ -3184,22 +3185,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_17_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3217,19 +3218,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Pass 17"
 
     def test_registration_age_16_after_decree_current_age_17(self, authenticated_client, settings):
@@ -3254,22 +3255,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             validatedBirthDate=birthdate,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3287,19 +3288,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 5
         assert len(text_views) == 5
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.SUSPICIOUS.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[4].text == "Pass 17"
 
     def test_registration_age_15_before_decree_current_age_18(self, authenticated_client, settings):
@@ -3339,45 +3340,45 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         )
         users_factories.DepositGrantFactory(user=user, amount=151_15, type="GRANT_17_18")
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             dateCreated=user.dateCreated,
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             dateCreated=user.dateCreated,
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             dateCreated=user.dateCreated,
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3395,34 +3396,34 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 10
         assert len(text_views) == 10
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[5].text == "Validation N° téléphone"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Profil Complet"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "ID Check"
 
-        assert step_icon_titles[8] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[9].text == "Pass 18"
 
     def test_registration_age_17_after_decree_current_age_18(self, authenticated_client, settings):
@@ -3454,42 +3455,42 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         )
         users_factories.DepositGrantFactory(user=user, amount=150_00, type="GRANT_17_18")
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE17_18,
-        )
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.AGE17_18,
+        )
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3507,34 +3508,34 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 10
         assert len(text_views) == 10
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Pass 17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "Validation N° téléphone"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Profil Complet"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "ID Check"
 
-        assert step_icon_titles[8] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[9].text == "Pass 18"
 
     def test_registration_age_17_decree_age_17_current_age_18(self, authenticated_client, settings):
@@ -3565,18 +3566,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             validatedBirthDate=birth_date,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             dateCreated=user.dateCreated,
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             dateCreated=user.dateCreated,
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3594,34 +3595,34 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 10
         assert len(text_views) == 10
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.TODO.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.TODO.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[4].text == "Pass 17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.TODO.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[5].text == "Validation N° téléphone"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.TODO.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[6].text == "Profil Complet"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "ID Check"
 
-        assert step_icon_titles[8] == SubscriptionItemStatus.TODO.value
+        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[8].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[9] == SubscriptionItemStatus.VOID.value
+        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.VOID.value
         assert text_views[9].text == "Pass 18"
 
     def test_registration_age_18_after_decree(self, authenticated_client, settings):
@@ -3652,28 +3653,28 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_17_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Phone check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Phone check
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -3691,22 +3692,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 6
         assert len(text_views) == 6
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Validation N° téléphone"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "Profil Complet"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "ID Check"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "Pass 18"
 
     def test_registration_age_18_before_decree(self, authenticated_client, settings):
@@ -3737,28 +3738,28 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Phone check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Phone check
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -3776,22 +3777,22 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 6
         assert len(text_views) == 6
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Validation N° téléphone"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "Profil Complet"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "ID Check"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "Ancien Pass 18"
 
     def test_registration_age_15_long_before_decree_start(self, settings, authenticated_client):
@@ -3835,42 +3836,42 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -3888,34 +3889,34 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 10
         assert len(text_views) == 10
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Profil Complet"
 
-        assert step_icon_titles[2] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[2].text == "ID Check"
 
-        assert step_icon_titles[3] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[4] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Ancien Pass 15-17"
 
-        assert step_icon_titles[5] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[5].text == "Validation N° téléphone"
 
-        assert step_icon_titles[6] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Profil Complet"
 
-        assert step_icon_titles[7] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[7].text == "ID Check"
 
-        assert step_icon_titles[8] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
 
-        assert step_icon_titles[9] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[9].text == "Ancien Pass 18"
 
     def test_registration_wrong_birthdate(self, settings, authenticated_client):
@@ -3951,42 +3952,42 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             type="GRANT_18",
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Complete profile
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Complete profile
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # ID check
+        subscription_factories.BeneficiaryFraudCheckFactory(  # ID check
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(  # Honor statement
+        subscription_factories.BeneficiaryFraudCheckFactory(  # Honor statement
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -4004,10 +4005,10 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(step_icon_titles) == 2
         assert len(text_views) == 2
 
-        assert step_icon_titles[0] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[0].text == "Validation Email"
 
-        assert step_icon_titles[1] == SubscriptionItemStatus.OK.value
+        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
 
 
@@ -4021,14 +4022,14 @@ class RegistrationStepTest:
                     RegistrationStep(
                         step_id=1,
                         description="Test 1",
-                        subscription_item_status=SubscriptionItemStatus.SUSPICIOUS.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value,
                         icon="bi-test",
                         is_active=True,
                     ),
                     RegistrationStep(
                         step_id=2,
                         description="Test 2",
-                        subscription_item_status=SubscriptionItemStatus.VOID.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.VOID.value,
                         icon="bi-test",
                     ),
                 ],
@@ -4039,13 +4040,13 @@ class RegistrationStepTest:
                     RegistrationStep(
                         step_id=1,
                         description="Test 1",
-                        subscription_item_status=SubscriptionItemStatus.OK.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.OK.value,
                         icon="bi-test",
                     ),
                     RegistrationStep(
                         step_id=2,
                         description="Test 2",
-                        subscription_item_status=SubscriptionItemStatus.TODO.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.TODO.value,
                         icon="bi-test",
                         is_active=True,
                     ),
@@ -4057,20 +4058,20 @@ class RegistrationStepTest:
                     RegistrationStep(
                         step_id=1,
                         description="Test 1",
-                        subscription_item_status=SubscriptionItemStatus.OK.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.OK.value,
                         icon="bi-test",
                     ),
                     RegistrationStep(
                         step_id=2,
                         description="Test 2",
-                        subscription_item_status=SubscriptionItemStatus.TODO.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.TODO.value,
                         icon="bi-test",
                         is_active=True,
                     ),
                     RegistrationStep(
                         step_id=3,
                         description="Test 3",
-                        subscription_item_status=SubscriptionItemStatus.VOID.value,
+                        subscription_item_status=subscription_schemas.SubscriptionItemStatus.VOID.value,
                         icon="bi-test",
                     ),
                 ],
@@ -4086,15 +4087,15 @@ class RegistrationStepTest:
     @pytest.mark.parametrize(
         "subscription_item_status,registration_step_status",
         [
-            (SubscriptionItemStatus.OK, RegistrationStepStatus.SUCCESS),
-            (SubscriptionItemStatus.NOT_APPLICABLE, RegistrationStepStatus.SUCCESS),
-            (SubscriptionItemStatus.NOT_ENABLED, RegistrationStepStatus.SUCCESS),
-            (SubscriptionItemStatus.SKIPPED, RegistrationStepStatus.SUCCESS),
-            (SubscriptionItemStatus.KO, RegistrationStepStatus.ERROR),
-            (SubscriptionItemStatus.PENDING, RegistrationStepStatus.WARNING),
-            (SubscriptionItemStatus.SUSPICIOUS, RegistrationStepStatus.WARNING),
-            (SubscriptionItemStatus.TODO, None),
-            (SubscriptionItemStatus.VOID, None),
+            (subscription_schemas.SubscriptionItemStatus.OK, RegistrationStepStatus.SUCCESS),
+            (subscription_schemas.SubscriptionItemStatus.NOT_APPLICABLE, RegistrationStepStatus.SUCCESS),
+            (subscription_schemas.SubscriptionItemStatus.NOT_ENABLED, RegistrationStepStatus.SUCCESS),
+            (subscription_schemas.SubscriptionItemStatus.SKIPPED, RegistrationStepStatus.SUCCESS),
+            (subscription_schemas.SubscriptionItemStatus.KO, RegistrationStepStatus.ERROR),
+            (subscription_schemas.SubscriptionItemStatus.PENDING, RegistrationStepStatus.WARNING),
+            (subscription_schemas.SubscriptionItemStatus.SUSPICIOUS, RegistrationStepStatus.WARNING),
+            (subscription_schemas.SubscriptionItemStatus.TODO, None),
+            (subscription_schemas.SubscriptionItemStatus.VOID, None),
         ],
     )
     def test_get_status(self, subscription_item_status, registration_step_status):
@@ -4161,8 +4162,10 @@ class RegistrationStepTest:
         assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) == 0
         assert len(subscription_item_status[EligibilityType.AGE18.value]) > 0
         assert (
-            subscription_item_status[EligibilityType.AGE18.value][SubscriptionStep.EMAIL_VALIDATION.value]
-            == SubscriptionItemStatus.OK.value
+            subscription_item_status[EligibilityType.AGE18.value][
+                subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
+            ]
+            == subscription_schemas.SubscriptionItemStatus.OK.value
         )
 
     @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
@@ -4177,8 +4180,10 @@ class RegistrationStepTest:
         assert len(subscription_item_status[EligibilityType.AGE18.value]) == 0
         assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) > 0
         assert (
-            subscription_item_status[EligibilityType.UNDERAGE.value][SubscriptionStep.EMAIL_VALIDATION.value]
-            == SubscriptionItemStatus.OK.value
+            subscription_item_status[EligibilityType.UNDERAGE.value][
+                subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
+            ]
+            == subscription_schemas.SubscriptionItemStatus.OK.value
         )
 
     @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.datetime.utcnow() + datetime.timedelta(days=3000))
@@ -4196,46 +4201,68 @@ class RegistrationStepTest:
         assert len(subscription_item_status[EligibilityType.UNDERAGE.value]) > 0
         assert len(subscription_item_status[EligibilityType.AGE18.value]) > 0
         assert (
-            subscription_item_status[EligibilityType.AGE18.value][SubscriptionStep.EMAIL_VALIDATION.value]
-            == SubscriptionItemStatus.OK.value
+            subscription_item_status[EligibilityType.AGE18.value][
+                subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
+            ]
+            == subscription_schemas.SubscriptionItemStatus.OK.value
         )
         assert (
-            subscription_item_status[EligibilityType.UNDERAGE.value][SubscriptionStep.EMAIL_VALIDATION.value]
-            == SubscriptionItemStatus.OK.value
+            subscription_item_status[EligibilityType.UNDERAGE.value][
+                subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
+            ]
+            == subscription_schemas.SubscriptionItemStatus.OK.value
         )
 
     @pytest.mark.parametrize(
         "item_status_15_17,item_status_18,item_status_17_18",
         [
             (
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
                 {},
                 {},
             ),
             (
                 {},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
                 {},
             ),
             (
                 {},
                 {},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
             ),
             (
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
                 {},
             ),
             (
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
                 {},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
             ),
             (
                 {},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
-                {SubscriptionStep.EMAIL_VALIDATION.value: SubscriptionItemStatus.OK.value},
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
+                {
+                    subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value: subscription_schemas.SubscriptionItemStatus.OK.value
+                },
             ),
         ],
     )
@@ -4244,47 +4271,47 @@ class RegistrationStepTest:
         assert len(steps) == 2
 
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
         assert steps[0].icon == "bi-envelope-fill"
-        assert steps[0].subscription_item_status == SubscriptionItemStatus.OK.value
+        assert steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
 
         assert steps[1].step_id == 2
         assert steps[1].description == TunnelType.NOT_ELIGIBLE.value
         assert steps[1].icon == "bi-question-circle-fill"
-        assert steps[1].subscription_item_status == SubscriptionItemStatus.OK.value
+        assert steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
 
     def test_get_steps_tunnel_unspecified_pending_email_validation(self):
         steps = _get_steps_tunnel_unspecified({}, {}, {})
         assert len(steps) == 2
 
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
         assert steps[0].icon == "bi-envelope-fill"
-        assert steps[0].subscription_item_status == SubscriptionItemStatus.PENDING.value
+        assert steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value
 
         assert steps[1].step_id == 2
         assert steps[1].description == TunnelType.NOT_ELIGIBLE.value
         assert steps[1].icon == "bi-question-circle-fill"
-        assert steps[1].subscription_item_status == SubscriptionItemStatus.PENDING.value
+        assert steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value
 
     def test_get_id_check_histories_desc(self):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
@@ -4303,8 +4330,8 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
@@ -4315,20 +4342,20 @@ class RegistrationStepTest:
         assert len(steps) == 6
 
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
 
         assert steps[1].step_id == 2
-        assert steps[1].description == SubscriptionStep.PHONE_VALIDATION.value
+        assert steps[1].description == subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value
 
         assert steps[2].step_id == 3
-        assert steps[2].description == SubscriptionStep.PROFILE_COMPLETION.value
+        assert steps[2].description == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value
 
         assert steps[3].step_id == 4
-        assert steps[3].description == SubscriptionStep.IDENTITY_CHECK.value
+        assert steps[3].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
         assert len(steps[3].fraud_actions_history) == 2
 
         assert steps[4].step_id == 5
-        assert steps[4].description == SubscriptionStep.HONOR_STATEMENT.value
+        assert steps[4].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
 
         assert steps[5].step_id == 6
         assert steps[5].description == "Ancien Pass 18"
@@ -4345,19 +4372,19 @@ class RegistrationStepTest:
         steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_17_18, fraud_reviews_desc)
         assert len(steps) == 6
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
 
         assert steps[1].step_id == 2
-        assert steps[1].description == SubscriptionStep.PHONE_VALIDATION.value
+        assert steps[1].description == subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value
 
         assert steps[2].step_id == 3
-        assert steps[2].description == SubscriptionStep.PROFILE_COMPLETION.value
+        assert steps[2].description == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value
 
         assert steps[3].step_id == 4
-        assert steps[3].description == SubscriptionStep.IDENTITY_CHECK.value
+        assert steps[3].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
 
         assert steps[4].step_id == 5
-        assert steps[4].description == SubscriptionStep.HONOR_STATEMENT.value
+        assert steps[4].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
 
         assert steps[5].step_id == 6
         assert steps[5].description == "Pass 18"
@@ -4367,7 +4394,7 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=None, dateCreated=dateOfBirth + relativedelta(years=15)
         )
         eligibility_history = get_eligibility_history(user)
@@ -4380,17 +4407,17 @@ class RegistrationStepTest:
         assert len(steps) == 5
 
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
 
         assert steps[1].step_id == 2
-        assert steps[1].description == SubscriptionStep.PROFILE_COMPLETION.value
+        assert steps[1].description == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value
 
         assert steps[2].step_id == 3
-        assert steps[2].description == SubscriptionStep.IDENTITY_CHECK.value
+        assert steps[2].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
         assert len(steps[2].fraud_actions_history) == 1
 
         assert steps[3].step_id == 4
-        assert steps[3].description == SubscriptionStep.HONOR_STATEMENT.value
+        assert steps[3].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
 
         assert steps[4].step_id == 5
         assert steps[4].description == "Ancien Pass 15-17"
@@ -4404,10 +4431,10 @@ class RegistrationStepTest:
         )
         user.add_beneficiary_role()
         users_factories.DepositGrantFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=None, dateCreated=dateOfBirth + relativedelta(years=15)
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
         eligibility_history = get_eligibility_history(user)
         id_check_histories = _get_id_check_histories_desc(eligibility_history)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
@@ -4421,32 +4448,32 @@ class RegistrationStepTest:
         assert len(steps) == 10
 
         assert steps[0].step_id == 1
-        assert steps[0].description == SubscriptionStep.EMAIL_VALIDATION.value
+        assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
 
         assert steps[1].step_id == 2
-        assert steps[1].description == SubscriptionStep.PROFILE_COMPLETION.value
+        assert steps[1].description == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value
 
         assert steps[2].step_id == 3
-        assert steps[2].description == SubscriptionStep.IDENTITY_CHECK.value
+        assert steps[2].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
         assert len(steps[2].fraud_actions_history) == 1
 
         assert steps[3].step_id == 4
-        assert steps[3].description == SubscriptionStep.HONOR_STATEMENT.value
+        assert steps[3].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
 
         assert steps[4].step_id == 5
         assert steps[4].description == EligibilityType.UNDERAGE.value
 
         assert steps[5].step_id == 6
-        assert steps[5].description == SubscriptionStep.PHONE_VALIDATION.value
+        assert steps[5].description == subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value
 
         assert steps[6].step_id == 7
-        assert steps[6].description == SubscriptionStep.PROFILE_COMPLETION.value
+        assert steps[6].description == subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value
 
         assert steps[7].step_id == 8
-        assert steps[7].description == SubscriptionStep.IDENTITY_CHECK.value
+        assert steps[7].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
 
         assert steps[8].step_id == 9
-        assert steps[8].description == SubscriptionStep.HONOR_STATEMENT.value
+        assert steps[8].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
 
         assert steps[9].step_id == 10
         assert steps[9].description == EligibilityType.AGE18.value
@@ -4456,7 +4483,7 @@ class RegistrationStepTest:
         birth_date = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18 + 1, days=1)
         now = datetime.datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=now)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
@@ -4479,35 +4506,35 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=creation_date
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4530,21 +4557,21 @@ class RegistrationStepTest:
         now = datetime.datetime.utcnow()
         birth_date = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=now)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4564,20 +4591,20 @@ class RegistrationStepTest:
         now = datetime.datetime.utcnow()
         birth_date = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=now)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4596,21 +4623,21 @@ class RegistrationStepTest:
     def test_fraud_reviews_in_tunnel_steps(self, legit_user):
         dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
 
-        fraud_factories.BeneficiaryFraudReviewFactory(
+        subscription_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=legit_user,
-            review=fraud_models.FraudReviewStatus.OK,
+            review=subscription_models.FraudReviewStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -4625,7 +4652,7 @@ class RegistrationStepTest:
 
         pass18_status_item = next((step for step in steps if step.description == "Ancien Pass 18"))
         assert len(pass18_status_item.fraud_actions_history) == 1
-        assert pass18_status_item.fraud_actions_history[0]["status"] == fraud_models.FraudReviewStatus.OK.value
+        assert pass18_status_item.fraud_actions_history[0]["status"] == subscription_models.FraudReviewStatus.OK.value
 
     def test_set_steps_with_active_and_disabled_underage_age18(self):
         creation_date = datetime.datetime.utcnow() - relativedelta(
@@ -4635,35 +4662,35 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=creation_date
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4687,21 +4714,21 @@ class RegistrationStepTest:
         now = datetime.datetime.utcnow()
         birth_date = datetime.date.today() - relativedelta(years=users_constants.ACCOUNT_CREATION_MINIMUM_AGE, days=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=now)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4722,21 +4749,21 @@ class RegistrationStepTest:
         now = datetime.datetime.utcnow()
         birth_date = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date, validatedBirthDate=birth_date, dateCreated=now)
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=fraud_factories.UbbleContentFactory(),
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
+            resultContent=subscription_factories.UbbleContentFactory(),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -4759,18 +4786,18 @@ class RegistrationStepTest:
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth, isEmailValidated=True
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.EDUCONNECT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
         fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)

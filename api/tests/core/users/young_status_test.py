@@ -4,8 +4,8 @@ import datetime
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import young_status
@@ -29,11 +29,11 @@ class YoungStatusTest:
 
         def should_be_eligible_when_at_19yo_with_pending_dms_application_started_at_18yo(self):
             user = users_factories.UserFactory(dateOfBirth=_with_age(19))
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                resultContent=fraud_factories.DMSContentFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                resultContent=subscription_factories.DMSContentFactory(
                     registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
                 ),
-                type=fraud_models.FraudCheckType.DMS,
+                type=subscription_models.FraudCheckType.DMS,
                 eligibilityType=users_models.EligibilityType.AGE18,
                 user=user,
             )
@@ -43,19 +43,19 @@ class YoungStatusTest:
             user = users_factories.UserFactory(
                 dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.PENDING,
-                type=fraud_models.FraudCheckType.DMS,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.PENDING,
+                type=subscription_models.FraudCheckType.DMS,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
             )
 
@@ -67,21 +67,21 @@ class YoungStatusTest:
             user = users_factories.UserFactory(
                 dateOfBirth=_with_age(17), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
                 user=user,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.STARTED,
-                type=fraud_models.FraudCheckType.DMS,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.STARTED,
+                type=subscription_models.FraudCheckType.DMS,
                 user=user,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
@@ -94,19 +94,19 @@ class YoungStatusTest:
             user = users_factories.UserFactory(
                 dateOfBirth=_with_age(18), phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.STARTED,
-                type=fraud_models.FraudCheckType.DMS,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.STARTED,
+                type=subscription_models.FraudCheckType.DMS,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
             )
 
@@ -116,22 +116,22 @@ class YoungStatusTest:
 
         def should_be_eligible_when_subscription_is_pending_for_an_underage_user(self):
             user = users_factories.UserFactory(dateOfBirth=_with_age(17))
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
-                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-                status=fraud_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
-                status=fraud_models.FraudCheckStatus.PENDING,
-                type=fraud_models.FraudCheckType.DMS,
+                status=subscription_models.FraudCheckStatus.PENDING,
+                type=subscription_models.FraudCheckType.DMS,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
             )
 
@@ -144,20 +144,20 @@ class YoungStatusTest:
                 dateOfBirth=_with_age(18),
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-                status=fraud_models.FraudCheckStatus.OK,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+                status=subscription_models.FraudCheckStatus.OK,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.KO,
-                reasonCodes=[fraud_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
-                type=fraud_models.FraudCheckType.UBBLE,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.KO,
+                reasonCodes=[subscription_models.FraudReasonCode.INVALID_ID_PIECE_NUMBER],
+                type=subscription_models.FraudCheckType.UBBLE,
                 user=user,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            subscription_factories.BeneficiaryFraudCheckFactory(
+                status=subscription_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.HONOR_STATEMENT,
                 user=user,
             )
 
@@ -200,13 +200,13 @@ class YoungStatusTest:
     @pytest.mark.parametrize(
         "review_status",
         [
-            fraud_models.FraudReviewStatus.OK,
-            fraud_models.FraudReviewStatus.KO,
-            fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
+            subscription_models.FraudReviewStatus.OK,
+            subscription_models.FraudReviewStatus.KO,
+            subscription_models.FraudReviewStatus.REDIRECTED_TO_DMS,
         ],
     )
     def should_be_beneficiary_when_beneficiary_with_any_admin_review(self, review_status):
         user = users_factories.BeneficiaryGrant18Factory()
-        fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
+        subscription_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
 
         assert young_status.young_status(user) == young_status.Beneficiary()

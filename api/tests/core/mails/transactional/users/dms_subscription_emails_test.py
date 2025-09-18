@@ -1,11 +1,11 @@
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.dms_subscription_emails import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,
 )
+from pcapi.core.subscription.dms import schemas as dms_schemas
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -19,9 +19,9 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
         id_card_number = "1122"
 
         field_errors = [
-            fraud_models.DmsFieldErrorDetails(key=fraud_models.DmsFieldErrorKeyEnum.postal_code, value=postal_code),
-            fraud_models.DmsFieldErrorDetails(
-                key=fraud_models.DmsFieldErrorKeyEnum.id_piece_number, value=id_card_number
+            dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.postal_code, value=postal_code),
+            dms_schemas.DmsFieldErrorDetails(
+                key=dms_schemas.DmsFieldErrorKeyEnum.id_piece_number, value=id_card_number
             ),
         ]
         # When

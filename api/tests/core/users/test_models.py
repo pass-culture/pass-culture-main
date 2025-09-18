@@ -16,9 +16,9 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance import deposit_api
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repository
@@ -251,11 +251,11 @@ class UserTest:
 
         def test_eligible_when_19_with_subscription_attempt_at_18(self):
             user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.utcnow() - relativedelta(years=1),
                 user=user,
-                type=fraud_models.FraudCheckType.DMS,
-                status=fraud_models.FraudCheckStatus.KO,
+                type=subscription_models.FraudCheckType.DMS,
+                status=subscription_models.FraudCheckStatus.KO,
                 eligibilityType=user_models.EligibilityType.AGE18,
             )
             assert user.eligibility is user_models.EligibilityType.AGE18
@@ -266,15 +266,15 @@ class UserTest:
             user_account_creation_date_by_19_yo = datetime.utcnow()
 
             user = users_factories.UserFactory(dateOfBirth=user_19_yo_birth_date)
-            dms_content_before_account_creation = fraud_factories.DMSContentFactory(
+            dms_content_before_account_creation = subscription_factories.DMSContentFactory(
                 user=user,
                 registration_datetime=dms_registration_date_by_18_yo,
             )
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=user_account_creation_date_by_19_yo,  # the fraud_check was created when user validated its email
                 user=user,
-                type=fraud_models.FraudCheckType.DMS,
-                status=fraud_models.FraudCheckStatus.OK,
+                type=subscription_models.FraudCheckType.DMS,
+                status=subscription_models.FraudCheckStatus.OK,
                 eligibilityType=user_models.EligibilityType.AGE17_18,
                 resultContent=dms_content_before_account_creation,
             )

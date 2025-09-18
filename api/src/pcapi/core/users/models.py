@@ -42,11 +42,11 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
-    from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
+    from pcapi.core.subscription.models import BeneficiaryFraudCheck
 
 
 VOID_FIRST_NAME = ""

@@ -1,9 +1,9 @@
 import decimal
 
 import pcapi.core.finance.conf as finance_conf
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
+import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.models as users_models
 import pcapi.routes.native.v1.serialization.banner as serializers
 from pcapi.core.users import eligibility_api
@@ -11,10 +11,10 @@ from pcapi.utils.string import u_nbsp
 
 
 ACTIVATION_BANNER_NEXT_STEPS = [
-    subscription_models.SubscriptionStep.PHONE_VALIDATION,
-    subscription_models.SubscriptionStep.PROFILE_COMPLETION,
-    subscription_models.SubscriptionStep.IDENTITY_CHECK,
-    subscription_models.SubscriptionStep.HONOR_STATEMENT,
+    subscription_schemas.SubscriptionStep.PHONE_VALIDATION,
+    subscription_schemas.SubscriptionStep.PROFILE_COMPLETION,
+    subscription_schemas.SubscriptionStep.IDENTITY_CHECK,
+    subscription_schemas.SubscriptionStep.HONOR_STATEMENT,
 ]
 
 GEOLOCATION_BANNER = serializers.Banner(
@@ -25,7 +25,7 @@ GEOLOCATION_BANNER = serializers.Banner(
 
 
 def get_banner(
-    user_subscription_state: subscription_models.UserSubscriptionState,
+    user_subscription_state: subscription_schemas.UserSubscriptionState,
     user: users_models.User,
     is_geolocated: bool,
 ) -> serializers.Banner | None:
@@ -52,9 +52,9 @@ def _has_completed_id_check(user: users_models.User) -> bool:
     return any(
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in (fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.UBBLE)
+        if fraud_check.type in (subscription_models.FraudCheckType.DMS, subscription_models.FraudCheckType.UBBLE)
         and user.eligibility in fraud_check.applicable_eligibilities
-        and fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.status == subscription_models.FraudCheckStatus.OK
     )
 
 
@@ -80,7 +80,7 @@ def _get_17_18_transition_banner_information(
 
 
 def _get_activation_banner(
-    user: users_models.User, user_subscription_state: subscription_models.UserSubscriptionState
+    user: users_models.User, user_subscription_state: subscription_schemas.UserSubscriptionState
 ) -> serializers.Banner | None:
     """
     Return the activation banner

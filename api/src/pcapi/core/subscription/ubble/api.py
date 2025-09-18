@@ -14,21 +14,21 @@ import sqlalchemy.orm as sa_orm
 from pydantic.v1.networks import HttpUrl
 
 import pcapi.core.external.batch as batch_notification
-import pcapi.core.fraud.models as fraud_models
-import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
 import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
 import pcapi.utils.repository as pcapi_repository
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
-from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.tasks import ubble_tasks
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 PAGE_SIZE = 20_000
 
 
-def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
+def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     content = _get_content(fraud_check.thirdPartyId)
     _fill_missing_content_test_fields(content, fraud_check)
 
@@ -52,17 +52,17 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
     user = fraud_check.user
     status = content.status
     if status in (
-        ubble_serializers.UbbleIdentificationStatus.PROCESSING,
-        ubble_serializers.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+        ubble_schemas.UbbleIdentificationStatus.PROCESSING,
+        ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
     ):
-        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
+        fraud_check.status = subscription_models.FraudCheckStatus.PENDING
         pcapi_repository.save(user, fraud_check)
 
     elif status in [
-        ubble_serializers.UbbleIdentificationStatus.APPROVED,
-        ubble_serializers.UbbleIdentificationStatus.RETRY_REQUIRED,
-        ubble_serializers.UbbleIdentificationStatus.DECLINED,
-        ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+        ubble_schemas.UbbleIdentificationStatus.APPROVED,
+        ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
+        ubble_schemas.UbbleIdentificationStatus.DECLINED,
+        ubble_schemas.UbbleIdentificationStatus.PROCESSED,
     ]:
         fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
             user, fraud_check, content
@@ -75,7 +75,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
         subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
 
-        if fraud_check.status != fraud_models.FraudCheckStatus.OK:
+        if fraud_check.status != subscription_models.FraudCheckStatus.OK:
             handle_validation_errors(user, fraud_check)
             return
 
@@ -92,28 +92,26 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             external_attributes_api.update_external_user(user)
 
     elif status in (
-        ubble_serializers.UbbleIdentificationStatus.INCONCLUSIVE,
-        ubble_serializers.UbbleIdentificationStatus.REFUSED,
-        ubble_serializers.UbbleIdentificationStatus.ABORTED,
-        ubble_serializers.UbbleIdentificationStatus.EXPIRED,
+        ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
+        ubble_schemas.UbbleIdentificationStatus.REFUSED,
+        ubble_schemas.UbbleIdentificationStatus.ABORTED,
+        ubble_schemas.UbbleIdentificationStatus.EXPIRED,
     ):
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         pcapi_repository.save(fraud_check)
 
 
 def _fill_missing_content_test_fields(
-    content: fraud_models.UbbleContent, fraud_check: fraud_models.BeneficiaryFraudCheck
+    content: ubble_schemas.UbbleContent, fraud_check: subscription_models.BeneficiaryFraudCheck
 ) -> None:
     previous_ubble_content = fraud_check.source_data()
-    assert isinstance(previous_ubble_content, fraud_models.UbbleContent)
+    assert isinstance(previous_ubble_content, ubble_schemas.UbbleContent)
 
     user = fraud_check.user
     is_test_identification = (
         ubble_fraud_api.does_match_ubble_test_names(content) or previous_ubble_content.external_applicant_id is not None
     )
-    should_fill_content = (
-        is_test_identification and content.status == ubble_serializers.UbbleIdentificationStatus.APPROVED
-    )
+    should_fill_content = is_test_identification and content.status == ubble_schemas.UbbleIdentificationStatus.APPROVED
     if should_fill_content:
         content.birth_date = previous_ubble_content.birth_date
         content.id_document_number = previous_ubble_content.id_document_number
@@ -148,7 +146,7 @@ def start_ubble_workflow(
         content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
         subscription_api.initialize_identity_fraud_check(
             eligibility_type=user.eligibility,
-            fraud_check_type=fraud_models.FraudCheckType.UBBLE,
+            fraud_check_type=subscription_models.FraudCheckType.UBBLE,
             identity_content=content,
             third_party_id=str(content.identification_id),
             user=user,
@@ -157,33 +155,33 @@ def start_ubble_workflow(
     return content.identification_url
 
 
-def _get_last_ubble_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
+def _get_last_ubble_fraud_check(user: users_models.User) -> subscription_models.BeneficiaryFraudCheck | None:
     ubble_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        if fraud_check.type == subscription_models.FraudCheckType.UBBLE
     ]
     last_ubble_fraud_check = next((fraud_check for fraud_check in reversed(ubble_fraud_checks)), None)
     return last_ubble_fraud_check
 
 
-def _should_reattempt_identity_verification(fraud_check: fraud_models.BeneficiaryFraudCheck) -> bool:
+def _should_reattempt_identity_verification(fraud_check: subscription_models.BeneficiaryFraudCheck) -> bool:
     return is_v2_identification(fraud_check.thirdPartyId) and fraud_check.status in [
-        fraud_models.FraudCheckStatus.STARTED,
-        fraud_models.FraudCheckStatus.PENDING,
-        fraud_models.FraudCheckStatus.SUSPICIOUS,
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+        subscription_models.FraudCheckStatus.SUSPICIOUS,
     ]
 
 
 def _reattempt_identity_verification(
-    ubble_fraud_check: fraud_models.BeneficiaryFraudCheck,
+    ubble_fraud_check: subscription_models.BeneficiaryFraudCheck,
     first_name: str,
     last_name: str,
     redirect_url: str,
     webhook_url: str,
-) -> fraud_models.UbbleContent:
+) -> ubble_schemas.UbbleContent:
     ubble_content = ubble_fraud_check.source_data()
-    assert isinstance(ubble_content, fraud_models.UbbleContent)
+    assert isinstance(ubble_content, ubble_schemas.UbbleContent)
 
     identification_id = ubble_content.identification_id
     if not identification_id:
@@ -214,13 +212,13 @@ def _reattempt_identity_verification(
 
 def _create_ubble_identification(
     *,
-    ubble_content: fraud_models.UbbleContent,
+    ubble_content: ubble_schemas.UbbleContent,
     email: str,
     first_name: str,
     last_name: str,
     redirect_url: str,
     webhook_url: str,
-) -> fraud_models.UbbleContent:
+) -> ubble_schemas.UbbleContent:
     applicant_id = ubble_content.applicant_id
     if not applicant_id:
         external_applicant_id = ubble_content.external_applicant_id
@@ -238,7 +236,7 @@ def _create_ubble_identification(
 
 
 def _update_identity_fraud_check(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, content: fraud_models.UbbleContent
+    fraud_check: subscription_models.BeneficiaryFraudCheck, content: ubble_schemas.UbbleContent
 ) -> None:
     fraud_check.thirdPartyId = content.identification_id
 
@@ -253,8 +251,8 @@ def _update_identity_fraud_check(
 
 
 def get_most_relevant_ubble_error(
-    reason_codes: list[fraud_models.FraudReasonCode],
-) -> fraud_models.FraudReasonCode | None:
+    reason_codes: list[subscription_models.FraudReasonCode],
+) -> subscription_models.FraudReasonCode | None:
     return next(
         iter(
             sorted(
@@ -271,14 +269,14 @@ def get_most_relevant_ubble_error(
     )
 
 
-def _requires_reminder(error_code: fraud_models.FraudReasonCode | None) -> bool:
+def _requires_reminder(error_code: subscription_models.FraudReasonCode | None) -> bool:
     return (
         error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER
         or error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER
     )
 
 
-def _dispatch_reminder(user: users_models.User, error_code: fraud_models.FraudReasonCode | None) -> None:
+def _dispatch_reminder(user: users_models.User, error_code: subscription_models.FraudReasonCode | None) -> None:
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER:
         transactional_mails.send_subscription_document_error_email(user.email, error_code)
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER:
@@ -287,19 +285,23 @@ def _dispatch_reminder(user: users_models.User, error_code: fraud_models.FraudRe
 
 def handle_validation_errors(
     user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    fraud_check: subscription_models.BeneficiaryFraudCheck,
 ) -> None:
     error_codes = fraud_check.reasonCodes or []
     relevant_error_code = get_most_relevant_ubble_error(error_codes)
     if _requires_reminder(relevant_error_code):
         _dispatch_reminder(user, relevant_error_code)
-    elif fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
+    elif subscription_models.FraudReasonCode.DUPLICATE_USER in error_codes:
+        source_data = fraud_check.source_data()
+        assert isinstance(source_data, subscription_schemas.IdentityCheckContent)
         transactional_mails.send_duplicate_beneficiary_email(
-            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER
+            user, source_data, subscription_models.FraudReasonCode.DUPLICATE_USER
         )
-    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
+    elif subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
+        source_data = fraud_check.source_data()
+        assert isinstance(source_data, subscription_schemas.IdentityCheckContent)
         transactional_mails.send_duplicate_beneficiary_email(
-            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+            user, source_data, subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
         )
 
 
@@ -311,7 +313,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
             f"No validated Identity fraudCheck found with identification_id {identification_id}"
         )
 
-    if fraud_check.status is not fraud_models.FraudCheckStatus.OK:
+    if fraud_check.status is not subscription_models.FraudCheckStatus.OK:
         raise IncompatibleFraudCheckStatus(
             f"Fraud check status {fraud_check.status} is incompatible with pictures archives for identification_id {identification_id}"
         )
@@ -344,14 +346,14 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
     pcapi_repository.save(fraud_check)
 
 
-def _get_content(identification_id: str) -> fraud_models.UbbleContent:
+def _get_content(identification_id: str) -> ubble_schemas.UbbleContent:
     if is_v2_identification(identification_id):
         return ubble.get_identity_verification(identification_id)
     return ubble.get_content(identification_id)
 
 
 def _download_and_store_ubble_picture(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, http_url: HttpUrl, face_name: str
+    fraud_check: subscription_models.BeneficiaryFraudCheck, http_url: HttpUrl, face_name: str
 ) -> None:
     content_type, raw_file = ubble.download_ubble_picture(http_url)
 
@@ -374,7 +376,7 @@ def _download_and_store_ubble_picture(
 
 
 def _generate_storable_picture_filename(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, face_name: str, mime_type: str | None
+    fraud_check: subscription_models.BeneficiaryFraudCheck, face_name: str, mime_type: str | None
 ) -> str:
     if mime_type is None:
         mime_type = "image/png"  # ubble default picture type is png
@@ -383,15 +385,15 @@ def _generate_storable_picture_filename(
 
 
 def get_ubble_subscription_message(
-    ubble_fraud_check: fraud_models.BeneficiaryFraudCheck,
-) -> subscription_models.SubscriptionMessage | None:
-    if ubble_fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+    ubble_fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> subscription_schemas.SubscriptionMessage | None:
+    if ubble_fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
         return messages.get_application_pending_message(ubble_fraud_check.updatedAt)
 
     if ubble_fraud_check.status in (
-        fraud_models.FraudCheckStatus.SUSPICIOUS,
-        fraud_models.FraudCheckStatus.KO,
-        fraud_models.FraudCheckStatus.ERROR,
+        subscription_models.FraudCheckStatus.SUSPICIOUS,
+        subscription_models.FraudCheckStatus.KO,
+        subscription_models.FraudCheckStatus.ERROR,
     ):
         if subscription_api.can_retry_identity_fraud_check(ubble_fraud_check):
             return messages.get_ubble_retryable_message(
@@ -420,7 +422,7 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
                 )
                 continue
             db.session.refresh(fraud_check)
-            if fraud_check.status == fraud_models.FraudCheckStatus.PENDING:
+            if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
                 logger.error(
                     "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
                     extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
@@ -435,30 +437,30 @@ def update_pending_ubble_applications(dry_run: bool = True) -> None:
         logger.info("No pending ubble application found older than 12 hours. This is good.")
 
 
-def _get_pending_fraud_checks_pages() -> typing.Generator[list[fraud_models.BeneficiaryFraudCheck], None, None]:
+def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_models.BeneficiaryFraudCheck], None, None]:
     # Ubble guarantees an application is processed after 3 hours.
     # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
     twelve_hours_ago = datetime.date.today() - datetime.timedelta(hours=12)
     last_fraud_check_id = 0
     max_ubble_fraud_check_id = (
-        db.session.query(sa.func.max(fraud_models.BeneficiaryFraudCheck.id))
+        db.session.query(sa.func.max(subscription_models.BeneficiaryFraudCheck.id))
         .filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.dateCreated < twelve_hours_ago,
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.dateCreated < twelve_hours_ago,
         )
         .scalar()
     )
 
     pending_fraud_check_query = (
-        db.session.query(fraud_models.BeneficiaryFraudCheck)
+        db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.status.in_(
-                [fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING]
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.status.in_(
+                [subscription_models.FraudCheckStatus.STARTED, subscription_models.FraudCheckStatus.PENDING]
             ),
         )
         .options(
-            sa_orm.joinedload(fraud_models.BeneficiaryFraudCheck.user)
+            sa_orm.joinedload(subscription_models.BeneficiaryFraudCheck.user)
             .selectinload(users_models.User.deposits)
             .selectinload(finance_models.Deposit.recredits)
         )
@@ -468,8 +470,8 @@ def _get_pending_fraud_checks_pages() -> typing.Generator[list[fraud_models.Bene
     while has_next_page:
         upper_fraud_check_page_id = last_fraud_check_id + PAGE_SIZE
         pending_fraud_check_page = pending_fraud_check_query.filter(
-            fraud_models.BeneficiaryFraudCheck.id >= last_fraud_check_id,
-            fraud_models.BeneficiaryFraudCheck.id < upper_fraud_check_page_id,
+            subscription_models.BeneficiaryFraudCheck.id >= last_fraud_check_id,
+            subscription_models.BeneficiaryFraudCheck.id < upper_fraud_check_page_id,
         ).all()
 
         yield pending_fraud_check_page

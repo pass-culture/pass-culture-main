@@ -12,7 +12,8 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core import token as token_utils
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import generator as users_generator
@@ -258,13 +259,13 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     else:
         external_applicant_id = f"eaplt_{final_response_code}".ljust(32, "0")
 
-    ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
+    ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
         eligibilityType=user.eligibility,
-        type=fraud_models.FraudCheckType.UBBLE,
+        type=subscription_models.FraudCheckType.UBBLE,
         thirdPartyId="",
-        status=fraud_models.FraudCheckStatus.STARTED,
-        resultContent=fraud_models.UbbleContent(
+        status=subscription_models.FraudCheckStatus.STARTED,
+        resultContent=ubble_schemas.UbbleContent(
             birth_date=form.birth_date.data,
             external_applicant_id=external_applicant_id,
             id_document_number=form.id_document_number.data,

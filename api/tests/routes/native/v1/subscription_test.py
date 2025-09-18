@@ -7,9 +7,10 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
-from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -29,7 +30,7 @@ class GetProfileTest:
 
     def test_get_profile(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+        fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
 
@@ -38,7 +39,7 @@ class GetProfileTest:
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 200
 
-        content: fraud_models.ProfileCompletionContent = fraud_check.source_data()
+        content: subscription_schemas.ProfileCompletionContent = fraud_check.source_data()
         profile_content = response.json["profile"]
 
         assert profile_content["firstName"] == content.first_name
@@ -59,8 +60,8 @@ class GetProfileTest:
 
     def test_get_profile_with_obsolete_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        content = fraud_factories.ProfileCompletionContentFactory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+        content = subscription_factories.ProfileCompletionContentFactory()
+        fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
             resultContent=content, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
         fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
@@ -73,8 +74,8 @@ class GetProfileTest:
 
     def test_get_profile_with_former_wording_in_profile_info(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        content = fraud_factories.ProfileCompletionContentFactory()
-        fraud_check = fraud_factories.ProfileCompletionFraudCheckFactory(
+        content = subscription_factories.ProfileCompletionContentFactory()
+        fraud_check = subscription_factories.ProfileCompletionFraudCheckFactory(
             resultContent=content, user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
         fraud_check.resultContent["activity"] = "Chômeur"
@@ -90,13 +91,13 @@ class GetProfileTest:
 
     def test_get_profile_with_two_profile_completions(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        fraud_check_1 = fraud_factories.ProfileCompletionFraudCheckFactory(
+        fraud_check_1 = subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             dateCreated=datetime.datetime.utcnow() - relativedelta(months=1),
         )
         fraud_check_1.resultContent["activity"] = "NOT_AN_ACTIVITY"
-        fraud_check_2 = fraud_factories.ProfileCompletionFraudCheckFactory(
+        fraud_check_2 = subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user, eligibilityType=users_models.EligibilityType.AGE17_18
         )
         fraud_check_2.resultContent["activity"] = "Lycéen"
@@ -197,11 +198,11 @@ class UpdateProfileTest:
         profile_completion_fraud_checks = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+            if fraud_check.type == subscription_models.FraudCheckType.PROFILE_COMPLETION
         ]
         assert len(profile_completion_fraud_checks) == 1
         profile_completion_fraud_check = profile_completion_fraud_checks[0]
-        assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert profile_completion_fraud_check.reason == "Completed in application step"
 
     @pytest.mark.features(ENABLE_UBBLE=True)
@@ -352,19 +353,19 @@ class UpdateProfileTest:
             dateOfBirth=datetime.date.today() - relativedelta(years=18, months=6),
         )
 
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            status=fraud_models.FraudCheckStatus.OK,
-            type=fraud_models.FraudCheckType.DMS,
-            resultContent=fraud_factories.DMSContentFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.DMS,
+            resultContent=subscription_factories.DMSContentFactory(
                 first_name="Alexandra", last_name="Stan", postal_code="75008"
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -458,9 +459,11 @@ class IdentificationSessionTest:
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 3
 
-        check = next(check for check in user.beneficiaryFraudChecks if check.type == fraud_models.FraudCheckType.UBBLE)
-        assert check.type == fraud_models.FraudCheckType.UBBLE
-        assert check.status == fraud_models.FraudCheckStatus.STARTED
+        check = next(
+            check for check in user.beneficiaryFraudChecks if check.type == subscription_models.FraudCheckType.UBBLE
+        )
+        assert check.type == subscription_models.FraudCheckType.UBBLE
+        assert check.status == subscription_models.FraudCheckStatus.STARTED
         assert response.json["identificationUrl"] == "https://verification.ubble.example.com/"
 
     @pytest.mark.parametrize("age", [14, 19, 20])
@@ -486,8 +489,8 @@ class IdentificationSessionTest:
         assert response.status_code == 503
         assert response.json["code"] == "IDCHECK_SERVICE_UNAVAILABLE"
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.UBBLE)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.UBBLE)
             .count()
             == 0
         )
@@ -502,8 +505,8 @@ class IdentificationSessionTest:
         assert response.status_code == 500
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR"
         assert (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.UBBLE)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.UBBLE)
             .count()
             == 0
         )
@@ -511,9 +514,9 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "fraud_check_status,ubble_status",
         [
-            (fraud_models.FraudCheckStatus.PENDING, ubble_serializers.UbbleIdentificationStatus.PROCESSING),
-            (fraud_models.FraudCheckStatus.OK, ubble_serializers.UbbleIdentificationStatus.PROCESSED),
-            (fraud_models.FraudCheckStatus.KO, ubble_serializers.UbbleIdentificationStatus.PROCESSED),
+            (subscription_models.FraudCheckStatus.PENDING, ubble_schemas.UbbleIdentificationStatus.PROCESSING),
+            (subscription_models.FraudCheckStatus.OK, ubble_schemas.UbbleIdentificationStatus.PROCESSED),
+            (subscription_models.FraudCheckStatus.KO, ubble_schemas.UbbleIdentificationStatus.PROCESSED),
         ],
     )
     def test_request_ubble_second_check_blocked(self, client, fraud_check_status, ubble_status):
@@ -524,11 +527,11 @@ class IdentificationSessionTest:
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
         # Perform first id check with Ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             status=fraud_check_status,
-            resultContent=fraud_factories.UbbleContentFactory(status=ubble_status),
+            resultContent=subscription_factories.UbbleContentFactory(status=ubble_status),
         )
 
         # Initiate second id check with Ubble
@@ -547,12 +550,12 @@ class IdentificationSessionTest:
         )
 
         # Perform first id check with Ubble
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.CANCELED,
-            resultContent=fraud_factories.UbbleContentFactory(
-                status=ubble_serializers.UbbleIdentificationStatus.ABORTED
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.CANCELED,
+            resultContent=subscription_factories.UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.ABORTED
             ),
         )
 
@@ -566,7 +569,7 @@ class IdentificationSessionTest:
 
         sorted_fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda x: x.id)
         check = sorted_fraud_checks[-1]
-        assert check.type == fraud_models.FraudCheckType.UBBLE
+        assert check.type == subscription_models.FraudCheckType.UBBLE
         assert response.json["identificationUrl"] == "https://verification.ubble.example.com/"
 
     @pytest.mark.parametrize(
@@ -576,9 +579,9 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "reason",
         [
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+            subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+            subscription_models.FraudReasonCode.ID_CHECK_EXPIRED,
+            subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
         ],
     )
     def test_request_ubble_retry(self, client, requests_mock, reason, retry_number, expected_status):
@@ -590,13 +593,13 @@ class IdentificationSessionTest:
 
         # Perform previous Ubble identifications
         for _ in range(0, retry_number):
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
-                type=fraud_models.FraudCheckType.UBBLE,
-                status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+                type=subscription_models.FraudCheckType.UBBLE,
+                status=subscription_models.FraudCheckStatus.SUSPICIOUS,
                 reasonCodes=[reason],
-                resultContent=fraud_factories.UbbleContentFactory(
-                    status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
+                resultContent=subscription_factories.UbbleContentFactory(
+                    status=ubble_schemas.UbbleIdentificationStatus.PROCESSED
                 ),
             )
 
@@ -616,8 +619,8 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize(
         "reason",
         [
-            fraud_models.FraudReasonCode.DUPLICATE_USER,
-            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
+            subscription_models.FraudReasonCode.DUPLICATE_USER,
+            subscription_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
         ],
     )
     def test_request_ubble_retry_not_allowed(self, client, requests_mock, reason):
@@ -628,13 +631,13 @@ class IdentificationSessionTest:
         )
 
         # Perform previous Ubble identification
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[reason],
-            resultContent=fraud_factories.UbbleContentFactory(
-                status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
+            resultContent=subscription_factories.UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PROCESSED
             ),
         )
 
@@ -647,13 +650,13 @@ class IdentificationSessionTest:
     def test_allow_rerun_identification_from_started(self, client, requests_mock):
         user = users_factories.ProfileCompletedUserFactory(age=18)
         expected_url = "https://id.ubble.ai/ef055567-3794-4ca5-afad-dce60fe0f227"
-        ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_serializers.UbbleIdentificationStatus.INITIATED,
+        ubble_content = subscription_factories.UbbleContentFactory(
+            status=ubble_schemas.UbbleIdentificationStatus.INITIATED,
             identification_url=expected_url,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.STARTED,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.STARTED,
             user=user,
             resultContent=ubble_content,
             eligibilityType=users_models.EligibilityType.AGE17_18,
@@ -672,7 +675,7 @@ class IdentificationSessionTest:
         check = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.UBBLE
+            if fraud_check.type == subscription_models.FraudCheckType.UBBLE
         ][0]
         assert check
         assert response.json["identificationUrl"] == expected_url
@@ -680,15 +683,15 @@ class IdentificationSessionTest:
     def test_conflict_error_tries_to_resync(self, client):
         user = users_factories.ProfileCompletedUserFactory(age=18)
         ubble_identification_id = "idv_qwerty1234"
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
             user=user,
             thirdPartyId=ubble_identification_id,
-            status=fraud_models.FraudCheckStatus.STARTED,
-            resultContent=fraud_factories.UbbleContentFactory(
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.UbbleContentFactory(
                 applicant_id="aplt_01je97fqhmtk2jmn6gcgyram3s",
                 identification_id=ubble_identification_id,
-                status=ubble_serializers.UbbleIdentificationStatus.PENDING,
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
             ),
         )
         with requests_mock.Mocker() as requests_mocker:
@@ -713,7 +716,7 @@ class IdentificationSessionTest:
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR", response.json
 
         db.session.refresh(fraud_check)
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK, fraud_check.reasonCodes
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK, fraud_check.reasonCodes
 
 
 class HonorStatementTest:
@@ -728,11 +731,11 @@ class HonorStatementTest:
         assert response.status_code == 204
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter_by(user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT)
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter_by(user=user, type=subscription_models.FraudCheckType.HONOR_STATEMENT)
             .first()
         )
 
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18

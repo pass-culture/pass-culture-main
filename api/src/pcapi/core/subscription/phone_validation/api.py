@@ -8,9 +8,10 @@ from sqlalchemy.orm import exc as sa_exc
 
 from pcapi import settings
 from pcapi.core import token as token_utils
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.phone_validation import sending_limit
+from pcapi.core.subscription import fraud_check_api as fraud_api
+from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.phone_validation import sending_limit
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -89,22 +90,22 @@ def _ensure_phone_number_unicity(
 
     user_with_same_validated_number.phoneValidationStatus = users_models.PhoneValidationStatusType.UNVALIDATED
 
-    unvalidated_by_peer_check = fraud_models.BeneficiaryFraudCheck(
+    unvalidated_by_peer_check = subscription_models.BeneficiaryFraudCheck(
         user=user_with_same_validated_number,
-        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
+        type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+        reasonCodes=[subscription_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
         reason=f"Phone number {phone_number} was unvalidated by user {user_validating_phone.id}",
-        status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        status=subscription_models.FraudCheckStatus.SUSPICIOUS,
         eligibilityType=user_with_same_validated_number.eligibility,
         thirdPartyId=f"PC-{user_with_same_validated_number.id}",
     )
 
-    unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck(
+    unvalidated_for_peer_check = subscription_models.BeneficiaryFraudCheck(
         user=user_validating_phone,
-        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
+        type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+        reasonCodes=[subscription_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
         reason=f"The phone number validation had the following side effect: phone number {phone_number} was unvalidated for user {user_with_same_validated_number.id}",
-        status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        status=subscription_models.FraudCheckStatus.SUSPICIOUS,
         eligibilityType=user_validating_phone.eligibility,
         thirdPartyId=f"PC-{user_validating_phone.id}",
     )
@@ -199,12 +200,12 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
     user.phoneNumber = phone_number  # type: ignore[method-assign]
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
-    fraud_check = fraud_models.BeneficiaryFraudCheck(
+    fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-        status=fraud_models.FraudCheckStatus.OK,
+        type=subscription_models.FraudCheckType.PHONE_VALIDATION,
+        status=subscription_models.FraudCheckStatus.OK,
         eligibilityType=user.eligibility,
-        resultContent=fraud_models.PhoneValidationFraudData(phone_number=phone_number).dict(exclude_none=True),
+        resultContent=subscription_schemas.PhoneValidationFraudData(phone_number=phone_number).dict(exclude_none=True),
         thirdPartyId=f"PC-{user.id}",
     )
 

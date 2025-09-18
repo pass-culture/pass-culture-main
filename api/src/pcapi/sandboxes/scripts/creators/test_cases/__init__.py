@@ -21,8 +21,6 @@ from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.highlights import factories as highlights_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -34,6 +32,8 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.reactions.factories import ReactionFactory
 from pcapi.core.reactions.models import ReactionTypeEnum
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription.models import FraudCheckType
 from pcapi.core.users import api as users_api
 from pcapi.core.users import factories as users_factories
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_gdpr_users import create_industrial_gdpr_users
@@ -224,11 +224,13 @@ def create_users_for_credit_v3_tests() -> None:
     )
 
     # finish missing steps
-    fraud_factories.BeneficiaryFraudCheckFactory.create(user=user18_redepotapresdecret, type=FraudCheckType.UBBLE)
-    fraud_factories.PhoneValidationFraudCheckFactory.create(user=user18_redepotapresdecret)
+    subscription_factories.BeneficiaryFraudCheckFactory.create(
+        user=user18_redepotapresdecret, type=FraudCheckType.UBBLE
+    )
+    subscription_factories.PhoneValidationFraudCheckFactory.create(user=user18_redepotapresdecret)
     user18_redepotapresdecret.phoneNumber = "+33612345678"
-    fraud_factories.ProfileCompletionFraudCheckFactory.create(user=user18_redepotapresdecret)
-    fraud_factories.HonorStatementFraudCheckFactory.create(user=user18_redepotapresdecret)
+    subscription_factories.ProfileCompletionFraudCheckFactory.create(user=user18_redepotapresdecret)
+    subscription_factories.HonorStatementFraudCheckFactory.create(user=user18_redepotapresdecret)
 
     ## 17yo user, beneficiary, with birthday before decree
     first_activation_date = one_day_before_decree - relativedelta(years=2)  # User created at 15 yo

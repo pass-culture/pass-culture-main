@@ -12,9 +12,9 @@ import time_machine
 from dateutil.relativedelta import relativedelta
 from flask import current_app
 
-import pcapi.core.fraud.factories as fraud_factories
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.factories as subscription_factories
+import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
@@ -392,7 +392,7 @@ class NotifyProUsersBeforeAnonymizationTest:
             ).user
         )
         users.append(
-            fraud_factories.BeneficiaryFraudCheckFactory(
+            subscription_factories.BeneficiaryFraudCheckFactory(
                 user=offerers_factories.RejectedUserOffererFactory(
                     user__lastConnectionDate=self.last_connection_date,
                 ).user
@@ -496,7 +496,7 @@ class AnonymizeProUserTest:
                 lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
             )
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=offerers_factories.RejectedUserOffererFactory(
                 user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
             ).user
@@ -1198,11 +1198,11 @@ def generate_beneficiary():
         actionType=history_models.ActionType.USER_UNSUSPENDED,
         user=user,
     )
-    fraud_factories.BeneficiaryFraudCheckFactory(
+    subscription_factories.BeneficiaryFraudCheckFactory(
         dateCreated=now,
         eligibilityType=users_models.EligibilityType.AGE18,
-        status=fraud_models.FraudCheckStatus.OK,
-        type=fraud_models.FraudCheckType.DMS,
+        status=subscription_models.FraudCheckStatus.OK,
+        type=subscription_models.FraudCheckType.DMS,
         updatedAt=now + datetime.timedelta(days=1),
         user=user,
     )
@@ -1342,11 +1342,11 @@ def generate_minimal_beneficiary():
         {"actionDate": None},
     )
     db.session.add(
-        fraud_models.BeneficiaryFraudCheck(
+        subscription_models.BeneficiaryFraudCheck(
             user=user,
             dateCreated=now,
             thirdPartyId="third_party_id",
-            type=fraud_models.FraudCheckType.DMS,
+            type=subscription_models.FraudCheckType.DMS,
             updatedAt=now,
         )
     )

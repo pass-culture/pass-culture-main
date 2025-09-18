@@ -13,10 +13,10 @@ from werkzeug.exceptions import NotFound
 from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
@@ -236,8 +236,8 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     db.session.query(beneficiary_import_models.BeneficiaryImport).filter(
         beneficiary_import_models.BeneficiaryImport.beneficiaryId == user_id
     ).delete(synchronize_session=False)
-    db.session.query(fraud_models.BeneficiaryFraudCheck).filter(
-        fraud_models.BeneficiaryFraudCheck.userId == user_id
+    db.session.query(subscription_models.BeneficiaryFraudCheck).filter(
+        subscription_models.BeneficiaryFraudCheck.userId == user_id
     ).delete(synchronize_session=False)
 
     db.session.query(users_models.User).filter(users_models.User.id == user_id).delete(synchronize_session=False)

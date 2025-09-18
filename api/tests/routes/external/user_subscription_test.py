@@ -17,17 +17,18 @@ from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core.fraud import api as fraud_api
-from pcapi.core.fraud import factories as fraud_factories
-from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import errors as ubble_errors
+from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
+from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -79,8 +80,8 @@ class DmsWebhookApplicationTest:
     @pytest.mark.parametrize(
         "dms_status,fraud_check_status",
         [
-            (dms_models.GraphQLApplicationStates.draft, fraud_models.FraudCheckStatus.STARTED),
-            (dms_models.GraphQLApplicationStates.on_going, fraud_models.FraudCheckStatus.PENDING),
+            (dms_models.GraphQLApplicationStates.draft, subscription_models.FraudCheckStatus.STARTED),
+            (dms_models.GraphQLApplicationStates.on_going, subscription_models.FraudCheckStatus.PENDING),
         ],
     )
     def test_dms_request_with_existing_user(self, execute_query, dms_status, fraud_check_status, client):
@@ -88,10 +89,10 @@ class DmsWebhookApplicationTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta.relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         execute_query.return_value = make_single_application(6044787, state=dms_status.value, email=user.email)
         form_data = {
@@ -112,7 +113,7 @@ class DmsWebhookApplicationTest:
         fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.DMS
+            if fraud_check.type == subscription_models.FraudCheckType.DMS
         )
         assert fraud_check.userId == user.id
         assert fraud_check.status == fraud_check_status
@@ -140,10 +141,10 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).first()
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).first()
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
         assert fraud_check.userId == user.id
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.status == subscription_models.FraudCheckStatus.KO
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
@@ -164,7 +165,7 @@ class DmsWebhookApplicationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         execute_query.return_value = {
             "dossier": {
@@ -295,14 +296,14 @@ class DmsWebhookApplicationTest:
         assert execute_query.call_count == 1
 
         fraud_check = (
-            db.session.query(fraud_models.BeneficiaryFraudCheck)
-            .filter(fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS)
-            .order_by(fraud_models.BeneficiaryFraudCheck.id.desc())
+            db.session.query(subscription_models.BeneficiaryFraudCheck)
+            .filter(subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.DMS)
+            .order_by(subscription_models.BeneficiaryFraudCheck.id.desc())
             .first()
         )
 
         assert fraud_check.userId == user.id
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         content = fraud_check.source_data()
@@ -355,12 +356,12 @@ class DmsWebhookApplicationTest:
 
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert fraud_check.source_data().state == "en_construction"
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == subscription_models.PopOverIcon.FILE
+        assert message.pop_over_icon == subscription_schemas.PopOverIcon.FILE
         assert (
             message.user_message
             == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
@@ -389,12 +390,12 @@ class DmsWebhookApplicationTest:
 
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
         assert fraud_check.source_data().state == "en_instruction"
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == subscription_models.PopOverIcon.FILE
+        assert message.pop_over_icon == subscription_schemas.PopOverIcon.FILE
         assert (
             message.user_message
             == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
@@ -403,7 +404,9 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_refused_application(self, execute_query, client):
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId="12")
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=subscription_models.FraudCheckType.DMS, thirdPartyId="12"
+        )
         execute_query.return_value = make_single_application(
             12, state=dms_models.GraphQLApplicationStates.refused, email=user.email
         )
@@ -422,12 +425,12 @@ class DmsWebhookApplicationTest:
 
         assert len(user.beneficiaryFraudChecks) == 1
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert fraud_check.source_data().state == "refuse"
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
-        assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
+        assert message.pop_over_icon == subscription_schemas.PopOverIcon.ERROR
         assert (
             message.user_message
             == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé. Tu peux contacter le support pour plus d’informations."
@@ -438,7 +441,7 @@ class DmsWebhookApplicationTest:
         )
         assert message.call_to_action.title == "Contacter le support"
 
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.REFUSED_BY_OPERATOR]
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
@@ -494,8 +497,8 @@ class DmsWebhookApplicationTest:
         )
 
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert (
             fraud_check.reason
             == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (error_identity_piece_number),'postal_code' (error_postal_code)"
@@ -533,8 +536,8 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == dms_internal_mailing.DMS_ERROR_MESSAGE_USER_NOT_FOUND
 
         orphan_dms_application = (
-            db.session.query(fraud_models.OrphanDmsApplication)
-            .filter(fraud_models.OrphanDmsApplication.email == "user@example.com")
+            db.session.query(subscription_models.OrphanDmsApplication)
+            .filter(subscription_models.OrphanDmsApplication.email == "user@example.com")
             .first()
         )
         assert orphan_dms_application.application_id == 6044787
@@ -542,7 +545,7 @@ class DmsWebhookApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_dms_request_with_unexisting_user_with_ongoing_application(self, send_user_message, execute_query, client):
-        fraud_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
+        subscription_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
         execute_query.return_value = make_single_application(
             6044787, state=dms_models.GraphQLApplicationStates.on_going.value, email="user@example.com"
         )
@@ -559,14 +562,14 @@ class DmsWebhookApplicationTest:
         )
 
         # assert an OrphanApplication is not created again
-        assert db.session.query(fraud_models.OrphanDmsApplication).count() == 1
+        assert db.session.query(subscription_models.OrphanDmsApplication).count() == 1
         # assert the message is not sent again
         assert send_user_message.call_count == 0
         assert len(mails_testing.outbox) == 0
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_request_with_unexisting_user_with_accepted_application(self, execute_query, client):
-        fraud_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
+        subscription_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
         execute_query.return_value = make_single_application(
             6044787, state=dms_models.GraphQLApplicationStates.accepted.value, email="user@example.com"
         )
@@ -583,7 +586,7 @@ class DmsWebhookApplicationTest:
         )
 
         # assert an OrphanApplication is not created again
-        assert db.session.query(fraud_models.OrphanDmsApplication).count() == 1
+        assert db.session.query(subscription_models.OrphanDmsApplication).count() == 1
         # assert no email is sent to ask to create account (Already sent once when the application was created)
         assert len(mails_testing.outbox) == 0
 
@@ -628,7 +631,7 @@ class DmsWebhookApplicationTest:
             "L’équipe du pass Culture"
         )
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -672,7 +675,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -729,7 +732,7 @@ class DmsWebhookApplicationTest:
             "L’équipe du pass Culture"
         )
 
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -775,7 +778,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "L’équipe du pass Culture"
         )
-        fraud_check = db.session.query(fraud_models.BeneficiaryFraudCheck).filter_by(user=user).one()
+        fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message.pop_over_icon is None
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
@@ -823,9 +826,9 @@ class DmsWebhookApplicationTest:
         )
 
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.AGE_NOT_VALID]
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_NOT_VALID]
         assert (
             fraud_check.reason
             == f"Erreur dans les données soumises dans le dossier DMS : 'birth_date' ({birthday_date.isoformat()})"
@@ -862,11 +865,11 @@ class DmsWebhookApplicationTest:
         send_user_message.assert_not_called()
 
         fraud_check = user.beneficiaryFraudChecks[0]
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
         assert fraud_check.reasonCodes == [
-            fraud_models.FraudReasonCode.AGE_NOT_VALID,
-            fraud_models.FraudReasonCode.ERROR_IN_DATA,
+            subscription_models.FraudReasonCode.AGE_NOT_VALID,
+            subscription_models.FraudReasonCode.ERROR_IN_DATA,
         ]
         assert (
             fraud_check.reason
@@ -879,10 +882,10 @@ class DmsWebhookApplicationTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta.relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         execute_query.return_value = make_single_application(
             12, state=dms_models.GraphQLApplicationStates.on_going.value, email=user.email
@@ -905,11 +908,11 @@ class DmsWebhookApplicationTest:
         dms_fraud_check = next(
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == fraud_models.FraudCheckType.DMS
+            if fraud_check.type == subscription_models.FraudCheckType.DMS
         )
 
-        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.PENDING
-        assert dms_fraud_check.type == fraud_models.FraudCheckType.DMS
+        assert dms_fraud_check.status == subscription_models.FraudCheckStatus.PENDING
+        assert dms_fraud_check.type == subscription_models.FraudCheckType.DMS
         assert dms_fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
 
         assert fraud_api.has_user_performed_identity_check(user)
@@ -941,9 +944,9 @@ class DmsWebhookApplicationTest:
 
         assert response.status_code == 204
         assert execute_query.call_count == 2  # 1 to fetch application, 1 to send user message
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.ERROR_IN_DATA]
 
         # Second DMS webhook call: on_going with no value errors
         execute_query.reset_mock()
@@ -960,8 +963,8 @@ class DmsWebhookApplicationTest:
         )
         assert response.status_code == 204
         assert execute_query.call_count == 1
-        assert fraud_check.type == fraud_models.FraudCheckType.DMS
-        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.type == subscription_models.FraudCheckType.DMS
+        assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")
@@ -969,15 +972,15 @@ class UbbleWebhookV2Test:
     @pytest.mark.parametrize(
         "status",
         [
-            ubble_serializers.UbbleIdentificationStatus.PENDING,
-            ubble_serializers.UbbleIdentificationStatus.CAPTURE_IN_PROGRESS,
+            ubble_schemas.UbbleIdentificationStatus.PENDING,
+            ubble_schemas.UbbleIdentificationStatus.CAPTURE_IN_PROGRESS,
         ],
     )
     def test_ignore_events_before_identification_conclusion(self, ubble_client, status):
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
             thirdPartyId="idv_qwerty123",
-            status=fraud_models.FraudCheckStatus.STARTED,
+            status=subscription_models.FraudCheckStatus.STARTED,
         )
 
         with patch(
@@ -997,7 +1000,7 @@ class UbbleWebhookV2Test:
             json={
                 "data": {
                     "identity_verification_id": "idv_qwerty123",
-                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                    "status": ubble_schemas.UbbleIdentificationStatus.PENDING.value,
                 }
             },
         )
@@ -1012,7 +1015,7 @@ class UbbleWebhookV2Test:
             json={
                 "data": {
                     "identity_verification_id": "idv_qwerty123",
-                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                    "status": ubble_schemas.UbbleIdentificationStatus.PENDING.value,
                 }
             },
         )
@@ -1027,7 +1030,7 @@ class UbbleWebhookV2Test:
             json={
                 "data": {
                     "identity_verification_id": "idv_qwerty123",
-                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                    "status": ubble_schemas.UbbleIdentificationStatus.PENDING.value,
                 }
             },
         )
@@ -1042,7 +1045,7 @@ class UbbleWebhookV2Test:
             json={
                 "data": {
                     "identity_verification_id": "idv_qwerty123",
-                    "status": ubble_serializers.UbbleIdentificationStatus.PENDING.value,
+                    "status": ubble_schemas.UbbleIdentificationStatus.PENDING.value,
                 }
             },
         )
@@ -1074,17 +1077,19 @@ class UbbleWebhookTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta.relativedelta(years=18),
             activity="Lycéen",
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT, user=user, status=fraud_models.FraudCheckStatus.OK
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
+            user=user,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=subscription_factories.UbbleContentFactory(
                 status=test_factories.STATE_STATUS_MAPPING[current_identification_state].value,
             ),
             user=user,
-            status=fraud_models.FraudCheckStatus.STARTED,
+            status=subscription_models.FraudCheckStatus.STARTED,
         )
         request_data = self._get_request_body(
             fraud_check, test_factories.STATE_STATUS_MAPPING[notified_identification_state]
@@ -1179,10 +1184,10 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason is None
         assert fraud_check.reasonCodes is None
-        assert fraud_check.status is fraud_models.FraudCheckStatus.STARTED
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status is subscription_models.FraudCheckStatus.STARTED
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1212,10 +1217,10 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason is None
         assert fraud_check.reasonCodes is None
-        assert fraud_check.status is fraud_models.FraudCheckStatus.CANCELED
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status is subscription_models.FraudCheckStatus.CANCELED
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         assert content.score is None
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment is None
@@ -1245,14 +1250,14 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason is None
         assert fraud_check.reasonCodes is None
-        assert fraud_check.status is fraud_models.FraudCheckStatus.PENDING
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status is subscription_models.FraudCheckStatus.PENDING
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
         assert (
             subscription_api.get_identity_check_fraud_status(fraud_check.user, fraud_check.eligibilityType, fraud_check)
-            == subscription_models.SubscriptionItemStatus.PENDING
+            == subscription_schemas.SubscriptionItemStatus.PENDING
         )
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1285,8 +1290,8 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason == ""
         assert fraud_check.reasonCodes == []
-        assert fraud_check.status is fraud_models.FraudCheckStatus.OK
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status is subscription_models.FraudCheckStatus.OK
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
 
         assert fraud_check.user.has_beneficiary_role
@@ -1295,7 +1300,7 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == fraud_check.user.email
 
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1334,8 +1339,8 @@ class UbbleWebhookTest:
         )
         assert fraud_check.reason is not None
         assert fraud_check.reasonCodes is not None
-        assert fraud_check.status is fraud_models.FraudCheckStatus.KO
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.status is subscription_models.FraudCheckStatus.KO
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
 
         assert not fraud_check.user.has_beneficiary_role
@@ -1343,7 +1348,7 @@ class UbbleWebhookTest:
 
         assert len(mails_testing.outbox) == 1
 
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1378,9 +1383,9 @@ class UbbleWebhookTest:
             ubble_identification_response.data.attributes.identification_id
         )
         assert fraud_check.reason == "Ubble score UNDECIDABLE: None | Ubble n'a pas réussi à lire le document"
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
-        assert fraud_check.status is fraud_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
+        assert fraud_check.status is subscription_models.FraudCheckStatus.SUSPICIOUS
+        assert fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert fraud_check.thirdPartyId == ubble_identification_response.data.attributes.identification_id
 
         assert not fraud_check.user.has_beneficiary_role
@@ -1388,7 +1393,7 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(fraud_check.user, 304)
 
-        content = fraud_models.UbbleContent(**fraud_check.resultContent)
+        content = ubble_schemas.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
@@ -1419,14 +1424,14 @@ class UbbleWebhookTest:
         fraud_check = ubble_fraud_api.get_ubble_fraud_check(
             ubble_identification_response.data.attributes.identification_id
         )
-        fraud_check.status = fraud_models.FraudCheckStatus.OK
+        fraud_check.status = subscription_models.FraudCheckStatus.OK
         fraud_check.user.roles = [users_models.UserRole.BENEFICIARY]
         repository.save(fraud_check)
 
         response = self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
         assert response.status_code == 200
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
 
     @pytest.mark.parametrize("email", ["whatever+ubble_test@example.com", "Test-ywh-12345678@yeswehack.ninja"])
     def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, email):
@@ -1442,25 +1447,25 @@ class UbbleWebhookTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             activity="Lycéen",
         )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             eligibilityType=users_models.EligibilityType.AGE17_18,
-            status=fraud_models.FraudCheckStatus.OK,
+            status=subscription_models.FraudCheckStatus.OK,
         )
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=subscription_factories.UbbleContentFactory(
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=subscription_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1479,7 +1484,7 @@ class UbbleWebhookTest:
         assert fraud_check.source_data().birth_date != document_birth_date.date()
         assert fraud_check.source_data().birth_date == subscription_birth_date.date()
         assert user.has_beneficiary_role is True
-        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
 
     def test_birth_date_not_overridden_with_non_ubble_test_emails(self, client, ubble_mocker):
         email = "whatever@example.com"
@@ -1490,18 +1495,18 @@ class UbbleWebhookTest:
             datetime.date.today(), datetime.time(0, 0)
         ) - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=subscription_factories.UbbleContentFactory(
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=subscription_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1520,7 +1525,7 @@ class UbbleWebhookTest:
         assert fraud_check.source_data().birth_date == document_birth_date.date()
         assert fraud_check.source_data().birth_date != subscription_birth_date.date()
         assert user.has_beneficiary_role is False
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.status == subscription_models.FraudCheckStatus.KO
 
     @pytest.mark.settings(ENABLE_UBBLE_TEST_EMAIL=False)
     def test_ubble_test_emails_not_actives_on_production(self, client, ubble_mocker, mocker):
@@ -1532,18 +1537,18 @@ class UbbleWebhookTest:
             datetime.date.today(), datetime.time(0, 0)
         ) - relativedelta.relativedelta(years=28)
         user = users_factories.UserFactory(email=email, dateOfBirth=subscription_birth_date)
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.UBBLE,
-            resultContent=fraud_factories.UbbleContentFactory(
+        fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=subscription_factories.UbbleContentFactory(
                 status=test_factories.STATE_STATUS_MAPPING[test_factories.IdentificationState.PROCESSING].value,
             ),
             user=user,
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=subscription_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1562,17 +1567,17 @@ class UbbleWebhookTest:
         assert fraud_check.source_data().birth_date == document_birth_date.date()
         assert fraud_check.source_data().birth_date != subscription_birth_date.date()
         assert user.has_beneficiary_role is False
-        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.status == subscription_models.FraudCheckStatus.KO
 
     def _init_decision_test(
         self,
-    ) -> tuple[users_models.User, fraud_models.BeneficiaryFraudCheck, ubble_serializers.WebhookRequest]:
+    ) -> tuple[users_models.User, subscription_models.BeneficiaryFraudCheck, ubble_serializers.WebhookRequest]:
         birth_date = datetime.datetime.utcnow().date() - relativedelta.relativedelta(years=18, months=6)
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.combine(birth_date, datetime.time(0, 0)))
         identification_id = str(uuid.uuid4())
-        ubble_fraud_check = fraud_models.BeneficiaryFraudCheck(
+        ubble_fraud_check = subscription_models.BeneficiaryFraudCheck(
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
+            type=subscription_models.FraudCheckType.UBBLE,
             thirdPartyId=identification_id,
             resultContent={
                 "birth_date": None,
@@ -1586,27 +1591,27 @@ class UbbleWebhookTest:
                 "last_name": None,
                 "registration_datetime": datetime.datetime.utcnow().isoformat(),
                 "score": None,
-                "status": ubble_serializers.UbbleIdentificationStatus.PROCESSING.value,
+                "status": ubble_schemas.UbbleIdentificationStatus.PROCESSING.value,
                 "supported": None,
             },
-            status=fraud_models.FraudCheckStatus.PENDING,
+            status=subscription_models.FraudCheckStatus.PENDING,
             reason=None,
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         repository.save(ubble_fraud_check)
-        honor_fraud_check = fraud_models.BeneficiaryFraudCheck(
+        honor_fraud_check = subscription_models.BeneficiaryFraudCheck(
             user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
             thirdPartyId="internal_check_4483",
             resultContent=None,
-            status=fraud_models.FraudCheckStatus.OK,
+            status=subscription_models.FraudCheckStatus.OK,
             reason=None,
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
         repository.save(honor_fraud_check)
-        request_data = self._get_request_body(ubble_fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         return user, ubble_fraud_check, request_data
 
     def _post_webhook(self, client, ubble_mocker, request_data, ubble_identification_response):
@@ -1643,19 +1648,19 @@ class UbbleWebhookTest:
         [
             (
                 14,
-                fraud_models.FraudReasonCode.AGE_TOO_YOUNG,
+                subscription_models.FraudReasonCode.AGE_TOO_YOUNG,
                 "L'utilisateur n'a pas encore l'âge requis (14 ans)",
                 "Ton dossier a été refusé : tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
             ),
             (
                 19,
-                fraud_models.FraudReasonCode.AGE_TOO_OLD,
+                subscription_models.FraudReasonCode.AGE_TOO_OLD,
                 "L'utilisateur a dépassé l'âge maximum (19 ans)",
                 "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             ),
             (
                 28,
-                fraud_models.FraudReasonCode.AGE_TOO_OLD,
+                subscription_models.FraudReasonCode.AGE_TOO_OLD,
                 "L'utilisateur a dépassé l'âge maximum (28 ans)",
                 "Ton dossier a été refusé : tu ne peux pas bénéficier du pass Culture. Il est réservé aux jeunes de 15 à 18 ans.",
             ),
@@ -1671,7 +1676,7 @@ class UbbleWebhookTest:
         )
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
-        request_data = self._get_request_body(ubble_fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1719,13 +1724,13 @@ class UbbleWebhookTest:
 
         assert not user.has_beneficiary_role
 
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert reason_code in ubble_fraud_check.reasonCodes
         assert reason in [s.strip() for s in ubble_fraud_check.reason.split(";")]
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == in_app_message
-        assert message.pop_over_icon == subscription_models.PopOverIcon.ERROR
+        assert message.pop_over_icon == subscription_schemas.PopOverIcon.ERROR
 
         assert len(mails_testing.outbox) == 0
 
@@ -1786,8 +1791,8 @@ class UbbleWebhookTest:
         self._log_for_debug(user, ubble_fraud_check)
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_models.FraudReasonCode.DUPLICATE_USER in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
+        assert subscription_models.FraudReasonCode.DUPLICATE_USER in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == (
@@ -1799,7 +1804,7 @@ class UbbleWebhookTest:
             message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
@@ -1861,8 +1866,8 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
         self._log_for_debug(user, ubble_fraud_check)
 
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
+        assert subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == (
@@ -1874,7 +1879,7 @@ class UbbleWebhookTest:
             message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
@@ -1932,8 +1937,8 @@ class UbbleWebhookTest:
         self._log_for_debug(user, ubble_fraud_check)
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
+        assert subscription_models.FraudReasonCode.ID_CHECK_DATA_MATCH in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
@@ -1944,12 +1949,12 @@ class UbbleWebhookTest:
             message.call_to_action.link
             == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
         )
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EMAIL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
         assert message.call_to_action.title == "Contacter le support"
 
         self._assert_email_sent(user, 410)
 
-    @pytest.mark.parametrize("code_number", list(fraud_models.UBBLE_REASON_CODE_MAPPING.keys()))
+    @pytest.mark.parametrize("code_number", list(ubble_schemas.UBBLE_REASON_CODE_MAPPING.keys()))
     def test_unknown_reason_code_is_least_relevant(self, client, ubble_mocker, code_number):
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
@@ -1964,11 +1969,11 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.UBBLE_REASON_CODE_MAPPING[code_number]
+        reason_code = ubble_schemas.UBBLE_REASON_CODE_MAPPING[code_number]
 
         assert reason_code in ubble_fraud_check.reasonCodes
-        assert fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code == ubble_subscription_api.get_most_relevant_ubble_error(ubble_fraud_check.reasonCodes)
 
     def test_unknown_reason_code_is_retryable(self, client, ubble_mocker):
@@ -1985,10 +1990,10 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
         ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
@@ -2011,10 +2016,10 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
         ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
@@ -2072,10 +2077,10 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
         ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert reason_code in ubble_fraud_check.reasonCodes
 
         assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
@@ -2092,10 +2097,10 @@ class UbbleWebhookTest:
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.INVALID,  # 0
@@ -2143,16 +2148,16 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
         self._log_for_debug(user, ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 385)
@@ -2168,10 +2173,10 @@ class UbbleWebhookTest:
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
 
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
@@ -2221,19 +2226,19 @@ class UbbleWebhookTest:
         self._log_for_debug(user, ubble_fraud_check)
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in ubble_fraud_check.reasonCodes
-        assert fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
+        assert subscription_models.FraudReasonCode.ID_CHECK_EXPIRED in ubble_fraud_check.reasonCodes
+        assert subscription_models.FraudReasonCode.MISSING_REQUIRED_DATA in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
             message.user_message
             == ubble_errors.UBBLE_CODE_ERROR_MAPPING[
-                fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
+                subscription_models.FraudReasonCode.ID_CHECK_EXPIRED
             ].retryable_user_message
         )
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 384)
@@ -2242,10 +2247,10 @@ class UbbleWebhookTest:
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.INVALID,
@@ -2294,16 +2299,16 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         assert len(mails_testing.outbox) == 1
@@ -2315,10 +2320,10 @@ class UbbleWebhookTest:
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.INVALID,
@@ -2331,24 +2336,24 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
-        reason_code = fraud_models.UBBLE_REASON_CODE_MAPPING[code_number]
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
+        reason_code = ubble_schemas.UBBLE_REASON_CODE_MAPPING[code_number]
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
     def test_decision_document_not_authentic_no_retry_left(self, client, ubble_mocker):
         user, ubble_fraud_check, request_data = self._init_decision_test()
-        fraud_factories.BeneficiaryFraudCheckFactory.create_batch(
+        subscription_factories.BeneficiaryFraudCheckFactory.create_batch(
             2,
             user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
+            type=subscription_models.FraudCheckType.UBBLE,
+            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
+            reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC],
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
@@ -2399,16 +2404,16 @@ class UbbleWebhookTest:
         db.session.refresh(user)
         db.session.refresh(ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
 
         assert len(mails_testing.outbox) == 1
@@ -2475,10 +2480,10 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
         self._log_for_debug(user, ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
@@ -2515,10 +2520,10 @@ class UbbleWebhookTest:
         user, ubble_fraud_check, request_data = self._init_decision_test()
         # Perform phone validation and profile completion
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
-        fraud_factories.BeneficiaryFraudCheckFactory(
+        subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
-            status=fraud_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.PROFILE_COMPLETION,
+            status=subscription_models.FraudCheckStatus.OK,
         )
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.UNPROCESSABLE,  # -1
@@ -2566,16 +2571,16 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
         self._log_for_debug(user, ubble_fraud_check)
 
-        reason_code = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+        reason_code = subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
 
         assert not user.has_beneficiary_role
-        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert ubble_fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite"
-        assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
 
         self._assert_email_sent(user, 304)
