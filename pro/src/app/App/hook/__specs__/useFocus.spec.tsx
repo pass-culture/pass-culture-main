@@ -1,11 +1,19 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as reactRedux from 'react-redux'
 import { Link, Route, Routes } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
+import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
+import { Stepper } from '@/components/Stepper/Stepper'
 
+import { BasicLayout } from '../../layouts/BasicLayout/BasicLayout'
+import { SignUpLayout } from '../../layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useFocus } from '../useFocus'
+
+vi.mock('react-redux', { spy: true })
+// Avoid "document.getElementById(...).scrollTo is not a function" error.
+Element.prototype.scrollTo = () => {}
 
 const FocusTopPageOrBackToNavLink = (): null => {
   useFocus()
@@ -19,41 +27,62 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         path="/accueil"
         element={
           <>
-            <span>Main page</span>
-            <Link to="/page-without-back-to-nav">
-              Page Without "Back to Nav" link
-            </Link>
-            <Link to="/page-with-back-to-nav">
-              Page With "Back to Nav" link
-            </Link>
+            <FocusTopPageOrBackToNavLink />
+            <BasicLayout mainHeading="Accueil">
+              <Link to="/connection">Log Out</Link>
+            </BasicLayout>
           </>
         }
       />
       <Route
-        path="/page-without-back-to-nav"
+        path="/offre/individuelle/creation"
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <SkipLinks />
-            <span>Page Without "Back to Nav" link</span>
+            <BasicLayout mainHeading="Créer une offre individuelle">
+              <Stepper
+                activeStep="details"
+                steps={[
+                  {
+                    id: 'details',
+                    label: 'Détails',
+                    url: '/offre/individuelle/creation',
+                  },
+                  {
+                    id: 'informations-pratiques',
+                    label: 'Informations pratiques',
+                    url: '/offre/individuelle/creation/informations-pratiques',
+                  },
+                  {
+                    id: 'confirmation',
+                    label: 'Confirmation',
+                    url: '/offre/individuelle/creation/confirmation',
+                  },
+                ]}
+              />
+            </BasicLayout>
           </>
         }
       />
       <Route
-        path="/page-with-back-to-nav"
+        path="/remboursements"
         element={
           <>
             <FocusTopPageOrBackToNavLink />
-            <SkipLinks />
-            <a
-              id={'back-to-nav-link'}
-              title="Back to navigation"
-              href="#"
-              aria-label="Back to navigation"
-            >
-              Back to navigation
-            </a>
-            <span>Page With "Back to Nav" link</span>
+            <BasicLayout mainHeading="Remboursements">
+              <ReimbursementsTabs selectedOfferer={null} />
+            </BasicLayout>
+          </>
+        }
+      />
+      <Route
+        path="/connection"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <SignUpLayout mainHeading="Connexion">
+              <Link to="/accueil">Log In</Link>
+            </SignUpLayout>
           </>
         }
       />
@@ -63,25 +92,77 @@ const renderUseFocusRoutes = (url = '/accueil') => {
 }
 
 describe('useFocus', () => {
-  it('should focus on back to nav link when user navigates to another page', async () => {
-    renderUseFocusRoutes()
-    await userEvent.click(
-      screen.getByRole('link', { name: 'Page With "Back to Nav" link' })
-    )
+  beforeEach(() => {
+    vi.spyOn(reactRedux, 'useSelector').mockImplementation((ev) => {
+      switch (ev.name) {
+        case 'selectCurrentOffererId':
+          return 456
+        case 'selectOffererNames':
+          return [{ id: 456, name: 'Offerer', allowedOnAdage: false }]
+        default:
+          return { id: 123 }
+      }
+    })
+  })
 
+  it('should focus on back to nav link when user navigates to another page', async () => {
+    renderUseFocusRoutes('/connection')
+    expect(
+      screen.getByRole('heading', { name: 'Connexion' })
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Log In' }))
+
+    expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
     expect(document.activeElement?.id).toEqual('back-to-nav-link')
     await userEvent.tab()
     expect(document.activeElement?.id).not.toEqual('back-to-nav-link')
   })
 
-  it('should focus on top of the page as a fallback', async () => {
-    renderUseFocusRoutes()
+  it('should focus on stepper active link when user navigates to another page with stepper', async () => {
+    renderUseFocusRoutes('/offre/individuelle/creation')
+
+    expect(
+      screen.getByRole('heading', { name: 'Créer une offre individuelle' })
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: '1 Détails' }))
+
+    expect(
+      screen.getByRole('heading', { name: 'Créer une offre individuelle' })
+    ).toBeInTheDocument()
+    expect(document.activeElement?.closest('li')?.id).toEqual('active')
+    await userEvent.tab()
+    expect(document.activeElement?.closest('li')?.id).not.toEqual('active')
+  })
+
+  it('should focus on tab active link when user navigates to another page with tabs', async () => {
+    renderUseFocusRoutes('/remboursements')
+
+    expect(
+      screen.getByRole('heading', { name: 'Remboursements' })
+    ).toBeInTheDocument()
     await userEvent.click(
-      screen.getByRole('link', { name: 'Page Without "Back to Nav" link' })
+      screen.getByRole('link', { name: 'Lien actif Justificatifs' })
     )
 
-    expect(document.activeElement?.id).toEqual('unaccessible-top-page')
+    expect(
+      screen.getByRole('heading', { name: 'Remboursements' })
+    ).toBeInTheDocument()
+    expect(document.activeElement?.closest('li')?.id).toEqual('selected')
     await userEvent.tab()
-    expect(document.activeElement?.id).not.toEqual('unaccessible-top-page')
+    expect(document.activeElement?.closest('li')?.id).not.toEqual('selected')
+  })
+
+  it('should focus on top of the page as a fallback', async () => {
+    renderUseFocusRoutes('/accueil')
+
+    expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('link', { name: 'Log Out' }))
+
+    expect(
+      screen.getByRole('heading', { name: 'Connexion' })
+    ).toBeInTheDocument()
+    expect(document.activeElement?.id).toEqual('go-to-content')
+    await userEvent.tab()
+    expect(document.activeElement?.id).not.toEqual('go-to-content')
   })
 })

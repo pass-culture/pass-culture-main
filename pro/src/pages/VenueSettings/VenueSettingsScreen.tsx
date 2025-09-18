@@ -122,7 +122,7 @@ export const VenueSettingsScreen = ({
   return (
     <>
       <Button
-        className={styles.backButton}
+        className={styles['back-button']}
         variant={ButtonVariant.TERNARYBRAND}
         icon={fullBackIcon}
         onClick={() => navigate(-1)}

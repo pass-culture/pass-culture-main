@@ -44,6 +44,13 @@ describe('FunnelLayout', () => {
     window.removeEventListener = vi.fn()
   })
 
+  it('should always render a main landmark and a heading level 1', () => {
+    renderLayout()
+
+    expect(screen.getByRole('main')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
   describe('about main heading & back to nav link', () => {
     it('should not render a back to nav link when not connected', () => {
       renderLayout({ isConnected: false })

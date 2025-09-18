@@ -57,8 +57,9 @@ export const useFocus = (): void => {
         goToContent.focus()
       }
     } else if (goToContent) {
-      // Fallback : if this doesnt work, focus will be document.activeElement = body.
       goToContent.focus()
     }
+
+    // If none of above is called, focus will be document.activeElement = body.
   }, [location.pathname])
 }

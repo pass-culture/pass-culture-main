@@ -22,6 +22,17 @@ const renderOnboardingLayout = () => {
 }
 
 describe('OnboardingLayout', () => {
+  it('should always render a main landmark and a heading level 1', () => {
+    vi.spyOn(
+      useHasAccessToDidacticOnboarding,
+      'useHasAccessToDidacticOnboarding'
+    ).mockReturnValue(true)
+
+    renderOnboardingLayout()
+    expect(screen.getByRole('main')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
   it("should redirect to homepage if the user can't access the onboarding", async () => {
     vi.spyOn(
       useHasAccessToDidacticOnboarding,
