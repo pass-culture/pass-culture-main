@@ -105,3 +105,14 @@ class SpecialEventAnswer(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("special_event_question.id"), index=True, nullable=False
     )
     text: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+
+    __table_args__ = (
+        sa.Index(
+            "ix_special_event_answer_trgm_unaccent_text",
+            sa.func.immutable_unaccent("text"),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
+        ),
+    )

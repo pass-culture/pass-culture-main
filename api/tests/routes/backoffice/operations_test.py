@@ -404,6 +404,47 @@ class GetEventDetailsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(event_response.id)
 
+    def test_filter_event_responses_by_content(self, authenticated_client):
+        event = operations_factories.SpecialEventFactory()
+        question1 = operations_factories.SpecialEventQuestionFactory()
+        question2 = operations_factories.SpecialEventQuestionFactory()
+
+        operations_factories.SpecialEventResponseFactory(
+            event=event,
+        )
+        visible_response = operations_factories.SpecialEventResponseFactory(
+            event=event,
+        )
+        hidden_response = operations_factories.SpecialEventResponseFactory(
+            event=event,
+        )
+
+        operations_factories.SpecialEventAnswerFactory(
+            questionId=question1.id, responseId=visible_response.id, text="visible"
+        )
+        operations_factories.SpecialEventAnswerFactory(
+            questionId=question1.id, responseId=hidden_response.id, text="hidden"
+        )
+
+        operations_factories.SpecialEventAnswerFactory(
+            questionId=question2.id, responseId=visible_response.id, text="hidden"
+        )
+        operations_factories.SpecialEventAnswerFactory(
+            questionId=question2.id, responseId=hidden_response.id, text="visible"
+        )
+        filters = {
+            "response-question": str(question1.id),
+            "response-response": "visIblé",
+        }
+        url = url_for(self.endpoint, special_event_id=event.id, **filters)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(visible_response.id)
+
     def test_filter_event_responses_by_department(self, authenticated_client):
         event = operations_factories.SpecialEventFactory()
         operations_factories.SpecialEventResponseFactory(event=event, user__postalCode="75008")

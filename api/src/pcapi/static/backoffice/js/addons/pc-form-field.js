@@ -42,10 +42,12 @@ class PcFormField extends PcAddOn {
   }
 
   _retrieveConfiguration = ($formField) => {
-    const configuration = JSON.parse(
-      document.querySelector(`.${$formField.dataset.configurationClass}`).innerText
-    )
-    return configuration
+    // configuration is only used in formFieldList, standalone formFields do not require it
+    const configStr = document.querySelector(`.${$formField.dataset.configurationClass}`).innerText
+    if (!!configStr){
+      return JSON.parse(configStr)
+    }
+    return false
   }
 
   _hideUnselectedFieldsAll = () => {
@@ -56,8 +58,12 @@ class PcFormField extends PcAddOn {
 
   _hideUnselectedFields = ($formField) => {
     // hide all fields
-    const baseName = $formField.dataset.baseName
     const configuration = this._retrieveConfiguration($formField)
+    if (!configuration){
+      // configuration is only used in formFieldList, standalone formFields do not require it
+      return
+    }
+    const baseName = $formField.dataset.baseName
     configuration.all_available_fields.forEach((fieldTermination) => {
       const fieldName = `${baseName}-${fieldTermination}`
       const $field = $formField.querySelector(`.${fieldName}`)
