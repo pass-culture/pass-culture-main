@@ -8,6 +8,10 @@ import type {
   StockStatsResponseModel,
 } from '@/apiClient/v1'
 import {
+  GET_STOCK_STATISTICS_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
+import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
@@ -40,7 +44,7 @@ export const StockSection = ({
 
   // Conditional SWR queries (only one runs depending on isEvent)
   const { data: stocksResp, isLoading: isStocksLoading } = useSWR(
-    offer.isEvent ? null : ['offer-stocks', offer.id],
+    offer.isEvent ? null : [GET_STOCKS_QUERY_KEY, offer.id],
     () => api.getStocks(offer.id),
     {
       revalidateOnFocus: false,
@@ -54,7 +58,7 @@ export const StockSection = ({
 
   const { data: stocksEventsStats, isLoading: isStatsLoading } =
     useSWR<StockStatsResponseModel>(
-      offer.isEvent ? ['offer-stocks-stats', offer.id] : null,
+      offer.isEvent ? [GET_STOCK_STATISTICS_QUERY_KEY, offer.id] : null,
       () => api.getStocksStats(offer.id),
       {
         revalidateOnFocus: false,

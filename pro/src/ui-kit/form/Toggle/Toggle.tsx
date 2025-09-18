@@ -11,7 +11,7 @@ export interface ToggleProps {
    * Indicates if the toggle is active by default.
    * @default false
    */
-  isActiveByDefault?: boolean | 'mixed'
+  isActiveByDefault?: boolean
   /**
    * Indicates if the toggle is disabled.
    * @default false
