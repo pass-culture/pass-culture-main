@@ -1,4 +1,10 @@
 {
+  "biome.lsp.bin": "pro/node_modules/.bin/biome",
+  "editor.formatOnSave": true,
+   "editor.codeActionsOnSave": {
+    "source.addMissingImports": "always",
+    "source.fixAll.biome": "explicit"
+  },
   "mypy-type-checker.cwd": "${workspaceFolder}/api",
   "mypy-type-checker.importStrategy": "fromEnvironment",
   "mypy-type-checker.preferDaemon": true,
@@ -10,5 +16,23 @@
     "-s",
     "--color=yes",
     "-W ignore::DeprecationWarning"
-  ]
+  ],
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }

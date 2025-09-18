@@ -4,6 +4,8 @@
     "dbaeumer.vscode-eslint",
     "vitest.explorer",
     "stylelint.vscode-stylelint",
-    "biomejs.biome"
+    "biomejs.biome",
+    "charliermarsh.ruff",
+    "ms-python.mypy-type-checker"
   ]
 }
