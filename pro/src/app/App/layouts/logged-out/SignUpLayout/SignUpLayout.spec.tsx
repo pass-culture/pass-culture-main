@@ -9,6 +9,13 @@ const renderLayout = () => {
 }
 
 describe('SignUpLayout', () => {
+  it('should always render a main landmark and a heading level 1', () => {
+    renderLayout()
+
+    expect(screen.getByRole('main')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
   it('should render sign up banners', () => {
     renderLayout()
 
