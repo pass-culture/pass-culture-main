@@ -14,7 +14,7 @@ import type { FrontendErrorOptions } from './types'
  * ```
  */
 export function assertOrFrontendError(
-  condition: any,
+  condition: unknown,
   errorInternalMessage: string,
   errorOptions?: FrontendErrorOptions
 ): asserts condition {

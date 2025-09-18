@@ -1,1 +1,2 @@
-export const readonly = (_value: any, originalValue: any) => originalValue
+export const readonly = (_value: unknown, originalValue: unknown) =>
+  originalValue

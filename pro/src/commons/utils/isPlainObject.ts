@@ -1,4 +1,4 @@
-export const isPlainObject = (value: any) => {
+export const isPlainObject = (value: object | null | undefined) => {
   if (!value || typeof value !== 'object') {
     return false
   }

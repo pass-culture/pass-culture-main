@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -6,7 +7,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useOfferWizardMode } from '../useOfferWizardMode'
 
 const renderUseOfferWizardMode = (url: string) => {
-  const wrapper = ({ children }: { children: any }) => (
+  const wrapper = ({ children }: { children: ReactNode }) => (
     <MemoryRouter initialEntries={[url]}>{children}</MemoryRouter>
   )
 

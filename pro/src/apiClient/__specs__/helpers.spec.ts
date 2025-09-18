@@ -91,7 +91,7 @@ describe('serializeApiErrors', () => {
   })
 })
 
-const apiErrorFactory = (customBody: any = {}): ApiError => {
+const apiErrorFactory = (customBody: unknown = {}): ApiError => {
   const request: ApiRequestOptions = {
     method: 'GET',
     url: 'https://test.url',

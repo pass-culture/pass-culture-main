@@ -4,9 +4,9 @@ import { useCallback, useRef, useState } from 'react'
 
 import type { OfferStockResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { LOGS_DATA } from '@/commons/utils/config'
-import { hasErrorCode } from '@/commons/utils/error'
 import fullStockIcon from '@/icons/full-stock.svg'
 import strokeHourglass from '@/icons/stroke-hourglass.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -81,7 +81,7 @@ export const PrebookingButton = ({
     try {
       await apiAdage.bookCollectiveOffer({ stockId: stock.id })
     } catch (error) {
-      if (hasErrorCode(error)) {
+      if (isErrorAPIError(error)) {
         if (error.body.code === 'WRONG_UAI_CODE') {
           notification.error(
             'Cette offre n’est pas préréservable par votre établissement'
