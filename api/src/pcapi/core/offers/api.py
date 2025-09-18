@@ -670,7 +670,11 @@ def reindex_recently_published_offers(publication_datetime: datetime.datetime | 
     offer_query = offers_repository.get_offers_by_publication_datetime(publication_datetime=publication_datetime)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
 
-    search.async_index_offer_ids([offer.id for offer in offer_query], reason=search.IndexationReason.OFFER_PUBLICATION)
+    ids_to_reindex = []
+    for (offer_id,) in offer_query.with_entities(offers_models.Offer.id).yield_per(1000):
+        ids_to_reindex.append(offer_id)
+
+    search.async_index_offer_ids(ids_to_reindex, reason=search.IndexationReason.OFFER_PUBLICATION)
 
 
 def send_future_offer_reminders(booking_allowed_datetime: datetime.datetime | None = None) -> None:
