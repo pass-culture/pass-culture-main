@@ -5,7 +5,7 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors.cgr import cgr
+from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
@@ -114,9 +114,11 @@ class CGRContext(PivotContext):
     @classmethod
     def check_if_api_call_is_ok(cls, pivot: providers_models.CGRCinemaDetails) -> int | None:
         try:
-            response = cgr.get_seances_pass_culture(pivot)
+            assert pivot.cinemaProviderPivot  # to make mypy happy
+            client = CGRClientAPI(pivot.cinemaProviderPivot.idAtProvider, cinema_details=pivot)
+            num_cine = client.get_num_cine()
             flash("Connexion à l'API CGR OK.", "success")
-            return response.ObjetRetour.NumCine
+            return num_cine
         # it could be an unexpected XML parsing error
         except Exception as exc:
             logger.exception("Error while checking CGR API information", extra={"exc": exc})
