@@ -3,6 +3,10 @@ export type AnyObject = {
   [key: string]: any
 }
 
+export type Defined<T extends AnyObject> = {
+  [K in keyof T]-?: T[K] extends undefined ? never : T[K]
+}
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T

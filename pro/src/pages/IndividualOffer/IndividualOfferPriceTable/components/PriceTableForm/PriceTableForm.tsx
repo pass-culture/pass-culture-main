@@ -179,6 +179,10 @@ export const PriceTableForm = ({
       `entries.${activationCodeEntryIndexToUpload}.activationCodesExpirationDatetime`,
       expirationDate ?? null
     )
+    setValue(
+      `entries.${activationCodeEntryIndexToUpload}.hasActivationCode`,
+      true
+    )
 
     setActivationCodeEntryIndexToUpload(null)
   }
@@ -207,7 +211,6 @@ export const PriceTableForm = ({
 
       {fields.map((field, index) => {
         const entry = watch(`entries.${index}`)
-        const hasActivationCodes = (entry.activationCodes || []).length > 0
 
         return (
           <div
@@ -293,7 +296,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <div className={styles['input-stock']}>
                 <QuantityInput
-                  disabled={areAllFieldsDisabled || hasActivationCodes}
+                  disabled={areAllFieldsDisabled || entry.hasActivationCode}
                   error={errors.entries?.[index]?.quantity?.message}
                   label="Stock"
                   min={computeEntryConstraints(entry).quantityMin}
@@ -340,6 +343,10 @@ export const PriceTableForm = ({
 
             {!offer.isEvent &&
               offer.isDigital &&
+              // If a stock has been saved in DB with or without activation codes,
+              // the user must reset the entry in order to upload new ones
+              // (meaning both the old entry and its codes, if any, will be deleted)
+              entry.id === null &&
               !areAllFieldsDisabled &&
               !areAllFieldsDisabledButQuantity && (
                 <div className={styles['button-action']}>

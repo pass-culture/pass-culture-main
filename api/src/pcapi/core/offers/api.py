@@ -1070,6 +1070,52 @@ def edit_stock(
     return stock, "beginningDatetime" in modifications
 
 
+def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.ThingStockUpsertInput]) -> None:
+    """
+    Update all non-event stocks of an offer.
+
+    - If a stock exists in the DB but not in `stock_inputs`, it is soft-deleted.
+    - Otherwise, stocks are updated or created as needed.
+    """
+    if offer.isEvent:
+        raise exceptions.OfferException({"global": "Offer is an event."})
+
+    stock_inputs = list(inputs)
+
+    existing_stocks = {stock.id: stock for stock in offer.activeStocks if not stock.offer.isEvent}
+
+    stock_inputs_to_create = [stock_input for stock_input in stock_inputs if stock_input["id"] is None]
+    stock_inputs_to_update = [stock_input for stock_input in stock_inputs if stock_input["id"] is not None]
+    for stock_input in stock_inputs_to_update:
+        if stock_input["id"] not in existing_stocks:
+            raise exceptions.OfferException({"global": "Trying to update a non-existing stock."})
+    stock_ids_to_delete = set(existing_stocks) - {stock_input["id"] for stock_input in stock_inputs_to_update}
+
+    for stock_input in stock_inputs_to_create:
+        create_stock(
+            offer,
+            activation_codes=stock_input["activation_codes"],
+            activation_codes_expiration_datetime=stock_input["activation_codes_expiration_datetime"],
+            booking_limit_datetime=_to_naive_utc(stock_input["booking_limit_datetime"]),
+            price=stock_input["price"],
+            quantity=stock_input["quantity"],
+        )
+
+    for stock_input in stock_inputs_to_update:
+        assert stock_input["id"]
+        stock_to_edit = existing_stocks[stock_input["id"]]
+        edit_stock(
+            stock_to_edit,
+            booking_limit_datetime=_to_naive_utc(stock_input["booking_limit_datetime"]),
+            price=stock_input["price"],
+            quantity=stock_input["quantity"],
+        )
+
+    for stock_id in stock_ids_to_delete:
+        stock_to_delete = existing_stocks[stock_id]
+        delete_stock(stock_to_delete)
+
+
 def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
     for stock, is_beginning_datetime_updated in edited_stocks:
         if is_beginning_datetime_updated:
@@ -2824,3 +2870,12 @@ def upsert_highlight_requests(
 
     db.session.flush()
     return highlight_requests
+
+
+def _to_naive_utc(dt: datetime.datetime | None) -> datetime.datetime | None:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt
+
+    return dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
