@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
@@ -11,7 +11,10 @@ import {
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -73,22 +76,42 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
-  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
 
-  useEffect(() => {
-    async function loadStocks() {
-      const response = await api.getStocks(offer.id)
-      setStocks(response.stocks)
-      const newValues = buildInitialValues(offer, response.stocks, isCaledonian)
-      reset(newValues)
-    }
+  // RHF first: start with no stocks, baseline schema (bkgs: 0, stockId: undefined)
+  const hookForm = useForm<StockThingFormValues>({
+    resolver: yupResolver<StockThingFormValues, unknown, unknown>(
+      getValidationSchema(mode, 0, undefined, isCaledonian)
+    ),
+    defaultValues: buildInitialValues(offer, [], isCaledonian),
+    mode: 'onBlur',
+  })
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStocks()
-  }, [])
+  const {
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    setError,
+    reset,
+    watch,
+    formState: { errors, isSubmitting, isDirty, defaultValues },
+  } = hookForm
+
+  const { data: stocksResp, mutate: revalidateStocks } = useSWR(
+    offer?.id ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
+    ([, offerId]) => api.getStocks(offerId),
+    {
+      revalidateOnFocus: false,
+      onSuccess: (resp) => {
+        reset(buildInitialValues(offer, resp.stocks, isCaledonian))
+      },
+    }
+  )
+
+  const stocks: GetOfferStockResponseModel[] = stocksResp?.stocks ?? []
 
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
@@ -110,6 +133,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
+  // TODO: for some reasons we cant use yup to make validation
+  // happen or not - see conditions to support stock deletion.
+  // No matter what, yup.when() always returns stockId as undefined
+  // so this is a workaround to pass its value.
+  const stockId = stocks.length > 0 ? stocks[0].id : undefined
+
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     if (isCaledonian && values.price) {
       values.price = convertPacificFrancToEuro(Number(values.price))
@@ -127,7 +156,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     })
 
     if (!isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -136,7 +164,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     // Return when there is nothing to save
     const isStockAlreadySaved = stockId !== undefined
     if (isStockAlreadySaved && !isDirty) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(nextStepUrl)
       notify.success(getSuccessMessage(mode))
       return
@@ -153,6 +180,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       reset(
         buildInitialValues(offerResponse, stockResponse.stocks, isCaledonian)
       )
+      await revalidateStocks()
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -160,43 +188,16 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       return
     }
 
-    await mutate([GET_OFFER_QUERY_KEY, offer.id])
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    await mutate([GET_OFFER_QUERY_KEY, offer.id]) // refresh offer
     navigate(nextStepUrl)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
   }
 
-  // TODO: for some reasons we cant use yup to make validation
-  // happen or not - see conditions to support stock deletion.
-  // No matter what, yup.when() always returns stockId as undefined
-  // so this is a workaround to pass its value.
-  const stockId = stocks.length > 0 ? stocks[0].id : undefined
-
-  const hookForm = useForm<StockThingFormValues>({
-    resolver: yupResolver<StockThingFormValues, unknown, unknown>(
-      getValidationSchema(mode, bookingsQuantity, stockId, isCaledonian)
-    ),
-    defaultValues: buildInitialValues(offer, stocks, isCaledonian),
-    mode: 'onBlur',
-  })
-
-  const {
-    register,
-    setValue,
-    getValues,
-    handleSubmit,
-    setError,
-    reset,
-    watch,
-    formState: { errors, isSubmitting, isDirty, defaultValues },
-  } = hookForm
-
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -206,7 +207,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         })
       )
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
@@ -228,8 +228,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     try {
       await api.deleteStock(stockId)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
+      await revalidateStocks()
       reset(STOCK_THING_FORM_DEFAULT_VALUES)
-      setStocks([])
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')
@@ -241,7 +241,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     const newQuantity: string = event.target.value
 
     let remainingQuantity: string =
-      // No need to test
       /* istanbul ignore next */
       (
         Number(newQuantity || 0) - Number(getValues('bookingsQuantity') || 0)
@@ -250,8 +249,8 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     if (newQuantity === '') {
       remainingQuantity = 'unlimited'
     }
-    setValue(`remainingQuantity`, remainingQuantity)
-    setValue(`quantity`, newQuantity !== '' ? Number(newQuantity) : undefined, {
+    setValue('remainingQuantity', remainingQuantity)
+    setValue('quantity', newQuantity !== '' ? Number(newQuantity) : undefined, {
       shouldDirty: true,
     })
   }
@@ -284,7 +283,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           id: 'delete',
           callback: async () => {
             if (
-              // tested but coverage don't see it.
               /* istanbul ignore next */
               mode === OFFER_WIZARD_MODE.EDITION &&
               stockId !== undefined &&
@@ -329,16 +327,16 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       </div>
     )
 
-    let isDisabled = false
+    let disableAddCodes = false
     if (stocks.length > 0 && stocks[0].hasActivationCode) {
-      isDisabled = true
+      disableAddCodes = true
     }
 
     actions.push({
       id: 'addActivationCode',
       callback: () => setIsActivationCodeFormVisible(true),
       label: "Ajouter des codes d'activation",
-      disabled: isDisabled,
+      disabled: disableAddCodes,
       icon: fullCodeIcon,
     })
   }
@@ -440,7 +438,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     getValues('bookingLimitDatetime')
                   ) {
                     logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
-                      from: location.pathname,
+                      from: pathname,
                       bookingLimitDatetime: getValues('bookingLimitDatetime'),
                     })
                   }
