@@ -583,6 +583,16 @@ class GetVenueTest(GetEndpointHelper):
         assert ("Offres BO" in response_text) is has_offers_links
         assert ("Réservations BO" in response_text) is has_bookings_links
 
+    def test_can_reset_venue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert ' data-has-reset="true" ' in str(response.data)
+
 
 class GetVenueStatsDataTest:
     @patch(
