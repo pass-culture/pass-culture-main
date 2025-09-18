@@ -54,6 +54,24 @@ jobs:
           fi
           commit_hash=$(git rev-list -n 1 "$rc_tag")
           echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
+      - name: Checkout RC commit
+        # Checkout on tag to have a nice deployment reference 
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ steps.rc_commit.outputs.commitHash }}
+
+  beginning-slack-notification:
+    name: "Send workflow beginning notification"
+    needs: "get-version-and-trigger-release"
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars. SLACK_SHERIF_CHANNEL_ID}}
+      color: "#D4AD3B"
+      message:
+        ":rocket: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et déploiement> de la version `v${{ needs.get-version-and-trigger-release.outputs.releaseNumber }}` est lancée"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   create-staging-release:
     needs: get-version-and-trigger-release
