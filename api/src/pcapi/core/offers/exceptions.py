@@ -242,3 +242,8 @@ class OfferWithoutImageCanNotBeHeadline(Exception):
 class CannotRemoveHeadlineOffer(Exception):
     def __init__(self) -> None:
         super().__init__("headlineOffer", "Error during removal of this headline offer")
+
+
+class UnavailableHighlightException(Exception):
+    def __init__(self) -> None:
+        super().__init__("highlight", "Highlight is unavailable")

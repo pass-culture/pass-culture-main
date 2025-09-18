@@ -12,6 +12,7 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -780,3 +781,36 @@ def get_offer_video_metadata(
         thumbnailUrl=video_metadata.thumbnail_url,
         duration=video_metadata.duration,
     )
+
+
+@private_api.route("/offers/<int:offer_id>/highlight-request", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.OfferHighlightResquestsResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def post_highlight_request_offer(
+    offer_id: int,
+    body: offers_schemas.CreateOfferHighlightRequestBodyModel,
+) -> offers_serialize.OfferHighlightResquestsResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
+    highlights: list[highlights_models.Highlight] = db.session.query(highlights_models.Highlight).filter(
+        highlights_models.Highlight.id.in_(body.highlight_ids)
+    )
+
+    try:
+        highlight_requests = offers_api.create_highlight_requests(highlights, offer)
+    except exceptions.UnavailableHighlightException:
+        raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'est plus disponible"]}, status_code=400)
+
+    return offers_serialize.OfferHighlightResquestsResponseModel.from_orm(highlight_requests)

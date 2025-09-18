@@ -665,3 +665,18 @@ class OfferVideo(ConfiguredBaseModel):
     title: str | None
     thumbnailUrl: str | None
     duration: int | None
+
+
+class HighlightResponseModel(ConfiguredBaseModel):
+    id: int
+    name: str
+
+
+class HighlightResquestResponseModel(ConfiguredBaseModel):
+    id: int
+    highlight: HighlightResponseModel
+    offer_id: int
+
+
+class OfferHighlightResquestsResponseModel(BaseModel):
+    highlight_requests: list[HighlightResquestResponseModel]

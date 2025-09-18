@@ -29,6 +29,7 @@ import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
+import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
@@ -2613,3 +2614,15 @@ def extract_youtube_video_id(url: str) -> str | None:
         return match.group("video_id")
 
     return None
+
+
+def create_highlight_requests(
+    highlights: list[highlights_models.Highlight], offer: offers_models.Offer
+) -> list[highlights_models.HighlightRequest]:
+    highlight_requests = []
+    for highlight in highlights:
+        if highlight.availaibility_timespan.contains(datetime.datetime.now()):
+            raise exceptions.UnavailableHighlightException()
+        request = highlights_models.HighlightRequest.create(offerId=offer.id, highlightId=highlight.id)
+        highlight_requests.append(request)
+    return highlight_requests

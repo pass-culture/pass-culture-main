@@ -221,3 +221,7 @@ class CreateOrUpdateEANOffersRequest(BaseModel):
     provider_id: int
     address_id: int | None
     address_label: str | None
+
+
+class CreateOfferHighlightRequestBodyModel(BaseModel):
+    highlight_ids: list[int]
