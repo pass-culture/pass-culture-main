@@ -431,7 +431,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
         this.#getDropdown(event.target).classList.remove('show')
         this.#resetForm(event.target)
       }
-    }, 200)
+    }, 500)
   }
 
   #onResetForm = (event) => {
