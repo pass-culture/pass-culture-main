@@ -287,6 +287,18 @@ def _get_special_event_responses(
     if response_departments_data := response_form.department.data:
         response_rows_filters.append(users_models.User.departementCode.in_(response_departments_data))
 
+    if response_form.response.data["question"] and response_form.response.data["response"]:
+        response_rows_filters.append(
+            operations_models.SpecialEventResponse.id.in_(
+                db.session.query(operations_models.SpecialEventAnswer.responseId).filter(
+                    operations_models.SpecialEventAnswer.questionId == response_form.response.data["question"],
+                    sa.func.immutable_unaccent(operations_models.SpecialEventAnswer.text).ilike(
+                        sa.func.immutable_unaccent(f"%{response_form.response.data['response']}%"),
+                    ),
+                ),
+            )
+        )
+
     response_rows_query = response_rows_query.filter(*response_rows_filters)
     response_rows_query = search_utils.apply_filter_on_beneficiary_status(
         response_rows_query,
@@ -302,11 +314,6 @@ def _get_special_event_responses(
 
 @operations_blueprint.route("/<int:special_event_id>", methods=["GET"])
 def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
-    response_form = operations_forms.OperationResponseForm(formdata=utils.get_query_params())
-    if not response_form.validate():
-        flash(utils.build_form_error_msg(response_form), "warning")
-        return redirect(url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id), 303)
-
     special_event_query = (
         db.session.query(
             operations_models.SpecialEvent,
@@ -329,6 +336,13 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
 
     if not special_event:
         raise NotFound()
+
+    response_form = operations_forms.OperationResponseForm(
+        formdata=utils.get_query_params(), questions=special_event.questions
+    )
+    if not response_form.validate():
+        flash(utils.build_form_error_msg(response_form), "warning")
+        return redirect(url_for("backoffice_web.operations.get_event_details", special_event_id=special_event_id), 303)
 
     stats = _get_special_event_stats(special_event_id)
     paginated_responses = _get_special_event_responses(
