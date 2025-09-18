@@ -75,7 +75,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
     if response.status_code >= 400:
         reason = _extract_reason_from_response(response)
         message = _extract_message_from_response(response)
-        if cinema_api_token:
+        if reason and cinema_api_token:
             error_message = reason.replace(cinema_api_token, "")
         if response.status_code == 401:
             raise boost_exceptions.BoostInvalidTokenException(f"Boost: {message}")
@@ -152,12 +152,18 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return token, jwt_expiration_datetime
 
     def _refresh_cinema_details_token(self) -> None:
+        """
+        Make call to generate JWT token & persist it in DB
+        """
         jwt_token, jwt_expiration_datetime = self._generate_jwt_token()
         self.cinema_details.token = jwt_token
         self.cinema_details.tokenExpirationDate = jwt_expiration_datetime
         repository.save()
 
     def _unset_cinema_details_token(self) -> None:
+        """
+        Set cinema_details token information to `None` & persist it in DB
+        """
         self.cinema_details.token = None
         self.cinema_details.tokenExpirationDate = None
         repository.save()
@@ -176,9 +182,23 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return {"Authorization": f"Bearer {self.cinema_details.token}"}
 
     def _authenticated_get(self, url: str, params: dict | None = None) -> dict:
+        """
+        Make an authenticated GET request on given URL
+
+        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
+        and retries the call.
+        """
         auth_headers = self._get_authentication_header()
         response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
-        _raise_for_status(response, self.cinema_details.token, f"GET {url}")
+
+        try:
+            _raise_for_status(response, self.cinema_details.token, f"GET {url}")
+        except exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            self._unset_cinema_details_token()
+            auth_headers = self._get_authentication_header()
+            response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
+
         data = response.json()
         _log_external_call(self, f"GET {url}", data, query_params=params)
         return data
@@ -291,12 +311,8 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         while current_page <= next_page:
             params["page"] = current_page
-            try:
-                data = self._authenticated_get(url, params=params)
-            except boost_exceptions.BoostInvalidTokenException:
-                # if the token is invalid, we unset current token to force re-authentication
-                self._unset_cinema_details_token()
-                data = self._authenticated_get(url, params=params)
+
+            data = self._authenticated_get(url, params=params)
 
             collection = parse_obj_as(boost_serializers.ShowTimeCollection, data)
             items.extend(collection.data)
@@ -309,13 +325,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return items
 
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
-        try:
-            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
-        except exceptions.BoostInvalidTokenException:
-            # if the token is invalid, we unset current token to force re-authentication
-            self._unset_cinema_details_token()
-            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
-
+        data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, data)
         return showtime_details.data
 
@@ -329,12 +339,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         return api_response.content
 
     def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
-        try:
-            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
-        except exceptions.BoostInvalidTokenException:
-            # if the token is invalid, we unset current token to force re-authentication
-            self._unset_cinema_details_token()
-            data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
-
+        data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
         attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, data)
         return attributs.data
