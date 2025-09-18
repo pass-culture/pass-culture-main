@@ -118,45 +118,6 @@ def get_token(cinema_details: BoostCinemaDetails) -> str:
     return login(cinema_details)
 
 
-def get_resource(
-    cinema_str_id: str,
-    resource: ResourceBoost,
-    params: dict[str, Any] | None = None,
-    pattern_values: dict[str, Any] | None = None,
-    request_timeout: int | None = None,
-) -> dict | list[dict] | list:
-    cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
-
-    return _perform_get_resource(resource, cinema_details, pattern_values, params, request_timeout=request_timeout)
-
-
-@retry(
-    exception=BoostInvalidTokenException,
-    exception_handler=invalid_token_handler,
-    max_attempts=ATTEMPTS_LIMIT,
-    logger=logger,
-)
-def _perform_get_resource(
-    resource: ResourceBoost,
-    cinema_details: BoostCinemaDetails,
-    pattern_values: dict[str, Any] | None = None,
-    params: dict[str, Any] | None = None,
-    request_timeout: int | None = None,
-) -> dict | list[dict] | list:
-    """
-    Actually get the resource, and retrying in case the token has been invalidated too earlier
-    """
-    token = get_token(cinema_details)
-    response = requests.get(
-        url=build_url(cinema_details.cinemaUrl, resource, pattern_values),
-        headers=headers(token),
-        params=params,
-        timeout=request_timeout,
-    )
-    _check_response_is_ok(response, token, f"GET {resource}")
-    return response.json()
-
-
 def put_resource(
     cinema_str_id: str, resource: ResourceBoost, body: BaseModel, request_timeout: int | None = None
 ) -> dict | list[dict] | list | None:
