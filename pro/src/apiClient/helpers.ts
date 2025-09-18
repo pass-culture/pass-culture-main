@@ -36,6 +36,17 @@ export const serializeApiErrors = (
   return errors
 }
 
+type ErrorAdage = {
+  statusCode: number
+  body: {
+    code: string
+  }
+}
+
+// TODO remove this function because it is use at only one place
+export const hasErrorCode = (error: any): error is ErrorAdage =>
+  typeof error?.body?.code === 'string'
+
 export const getErrorCode = (error: ApiError): string => {
   return error.body.code
 }

@@ -10,7 +10,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import {
   PrebookingButton,
   type PrebookingButtonProps,
-} from '../PrebookingButton'
+} from './PrebookingButton'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
