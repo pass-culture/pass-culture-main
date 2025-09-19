@@ -26,18 +26,18 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.api import extract_youtube_video_id
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
+from pcapi.core.offers.schemas import extract_youtube_video_id
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 

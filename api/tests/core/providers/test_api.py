@@ -20,9 +20,9 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers.schemas import PostVenueProviderBody
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
 pytestmark = pytest.mark.usefixtures("db_session")

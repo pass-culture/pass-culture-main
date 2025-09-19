@@ -1,6 +1,6 @@
 from pcapi.core.offerers.schemas import AddressBodyModel
 from pcapi.routes import serialization
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class Address(serialization.BaseModel):

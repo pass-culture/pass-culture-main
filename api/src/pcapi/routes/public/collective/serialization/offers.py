@@ -7,7 +7,7 @@ from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveOffer
@@ -15,10 +15,10 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import StudentLevels
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.routes.shared.validation import phone_number_validator
-from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 
 
@@ -405,12 +405,12 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
     @validator("name")
     def validate_name(cls, name: str) -> str:
-        educational_validation.check_collective_offer_name_length_is_valid(name)
+        educational_schemas.check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("description")
     def validate_description(cls, description: str) -> str:
-        educational_validation.check_collective_offer_description_length_is_valid(description)
+        educational_schemas.check_collective_offer_description_length_is_valid(description)
         return description
 
     @validator("domains")
@@ -528,13 +528,13 @@ class PatchCollectiveOfferBodyModel(BaseModel):
         if name is None or name.strip() == "":
             raise ValueError("name cannot be empty")
 
-        educational_validation.check_collective_offer_name_length_is_valid(name)
+        educational_schemas.check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("description")
     def validate_description(cls, description: str | None) -> str | None:
         if description is not None:
-            educational_validation.check_collective_offer_description_length_is_valid(description)
+            educational_schemas.check_collective_offer_description_length_is_valid(description)
 
         return description
 

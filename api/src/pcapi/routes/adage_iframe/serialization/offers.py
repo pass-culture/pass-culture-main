@@ -10,14 +10,16 @@ from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.shared import schemas as shared_schemas
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -114,9 +116,7 @@ class CollectiveOfferOfferVenue(BaseModel):
     city: str | None
     distance: Decimal | None
 
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(
-        collective_offers_serialize.validate_venue_id
-    )
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(educational_schemas.validate_venue_id)
 
     class Config:
         alias_generator = to_camel
@@ -154,7 +154,7 @@ class EducationalRedactorResponseModel(BaseModel):
         orm_mode = True
 
 
-class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
+class CollectiveOfferBaseReponseModel(BaseModel, shared_schemas.AccessibilityComplianceMixin):
     id: int
     description: str | None
     isExpired: bool
@@ -164,7 +164,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     students: list[educational_models.StudentLevels]
     # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenue
-    location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
+    location: educational_schemas.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     durationMinutes: int | None

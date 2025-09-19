@@ -7,7 +7,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 

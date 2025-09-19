@@ -12,7 +12,7 @@ from pcapi.core.categories.genres.music import MusicType
 from pcapi.core.categories.genres.show import ShowType
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class SubcategoryResponseGetterDict(GetterDict):

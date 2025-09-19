@@ -2,7 +2,7 @@ import flask
 
 from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 from pcapi.utils.image_conversion import CropParams
 
 

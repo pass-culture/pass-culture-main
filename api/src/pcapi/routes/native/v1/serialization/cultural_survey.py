@@ -1,7 +1,7 @@
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class CulturalSurveyQuestionsResponse(BaseModel):

@@ -12,25 +12,25 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.shared.schemas import NOW_LITERAL
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
+from pcapi.core.shared.schemas import AddressResponseIsLinkedToVenueModel
+from pcapi.core.shared.schemas import validate_datetime
 from pcapi.models.offer_mixin import OfferStatus
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
-from pcapi.serialization.utils import NOW_LITERAL
-from pcapi.serialization.utils import to_camel
-from pcapi.serialization.utils import validate_datetime
 from pcapi.utils.date import format_into_utc_date
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class SubcategoryGetterDict(GetterDict):
@@ -99,7 +99,7 @@ class PostOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
+        offers_schemas.check_offer_name_length_is_valid(name)
         return name
 
     @validator("withdrawal_type")
@@ -138,7 +138,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
         if name:
-            check_offer_name_length_is_valid(name)
+            offers_schemas.check_offer_name_length_is_valid(name)
         return name
 
     class Config:
@@ -317,7 +317,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
+    collective_offer_type: educational_schemas.CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:

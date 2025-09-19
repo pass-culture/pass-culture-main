@@ -6,13 +6,12 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational import validation
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
 from pcapi.core.offers import validation as offer_validation
 from pcapi.models import db
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
-from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date
 from pcapi.utils.transaction_manager import on_commit
 
@@ -20,7 +19,9 @@ from pcapi.utils.transaction_manager import on_commit
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> educational_models.CollectiveStock | None:
+def create_collective_stock(
+    stock_data: educational_schemas.CollectiveStockCreationBodyModel,
+) -> educational_models.CollectiveStock | None:
     offer_id = stock_data.offer_id
     start = stock_data.start_datetime
     end = stock_data.end_datetime
@@ -80,9 +81,9 @@ def edit_collective_stock(
         )
 
     start_datetime = stock_data.get("startDatetime")
-    start_datetime = serialization_utils.as_utc_without_timezone(start_datetime) if start_datetime else None
+    start_datetime = date.as_utc_without_timezone(start_datetime) if start_datetime else None
     end_datetime = stock_data.get("endDatetime")
-    end_datetime = serialization_utils.as_utc_without_timezone(end_datetime) if end_datetime else None
+    end_datetime = date.as_utc_without_timezone(end_datetime) if end_datetime else None
 
     if start_datetime and not end_datetime:
         end_datetime = start_datetime
@@ -100,7 +101,7 @@ def edit_collective_stock(
         )
 
     booking_limit = stock_data.get("bookingLimitDatetime")
-    booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
+    booking_limit = date.as_utc_without_timezone(booking_limit) if booking_limit else None
 
     updatable_fields = _extract_updatable_fields_from_stock_data(
         stock,

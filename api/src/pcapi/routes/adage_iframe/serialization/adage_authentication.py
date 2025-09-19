@@ -8,7 +8,7 @@ from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 from .redactor import RedactorPreferences
 

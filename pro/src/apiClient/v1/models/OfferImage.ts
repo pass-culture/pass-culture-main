@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OfferImage = {
-  credit?: string;
+  credit?: string | null;
   url: string;
 };
 

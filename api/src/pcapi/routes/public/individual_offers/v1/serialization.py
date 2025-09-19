@@ -19,6 +19,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
+from pcapi.core.shared import schemas as shared_schemas
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
@@ -26,7 +27,6 @@ from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization import utils as serialization_utils
 
 
 logger = logging.getLogger(__name__)
@@ -233,16 +233,16 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
+    publication_datetime: datetime.datetime | shared_schemas.NOW_LITERAL | None = (
         fields.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
     )
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_publicationDatetime = serialization_utils.validate_datetime(
+    _validate_publicationDatetime = shared_schemas.validate_datetime(
         "publication_datetime",
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_bookingAllowedDatetime = shared_schemas.validate_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"
@@ -454,7 +454,7 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = fields.BOOKING_LIMIT_DATETIME
     quantity: pydantic_v1.NonNegativeInt | UNLIMITED_LITERAL | None = fields.QUANTITY
 
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+    _validate_booking_limit_datetime = shared_schemas.validate_datetime("booking_limit_datetime")
 
     @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str | None) -> int | str | None:
@@ -499,11 +499,11 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
     name: OfferName | None = fields.OFFER_NAME
     location: PhysicalLocation | DigitalLocation | AddressLocation | None = fields.OFFER_LOCATION
-    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = fields.OFFER_PUBLICATION_DATETIME
+    publication_datetime: datetime.datetime | shared_schemas.NOW_LITERAL | None = fields.OFFER_PUBLICATION_DATETIME
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_publicationDatetime = serialization_utils.validate_datetime("publication_datetime")
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_publicationDatetime = shared_schemas.validate_datetime("publication_datetime")
+    _validate_bookingAllowedDatetime = shared_schemas.validate_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"

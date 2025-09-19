@@ -1,12 +1,8 @@
-import enum
 import typing
 from datetime import date
 from datetime import datetime
 
 import flask
-from pydantic.v1 import AnyHttpUrl
-from pydantic.v1 import ConstrainedStr
-from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import utils as pydantic_utils
@@ -14,31 +10,19 @@ from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import validation as educational_validation
-from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
+from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
-from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.core.shared import schemas as shared_schemas
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_history_serialize
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
-from pcapi.routes.shared.collective.serialization import offers as shared_offers
-from pcapi.serialization import utils
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
-
-
-def validate_venue_id(venue_id: int | str | None) -> int | None:
-    # TODO(jeremieb): remove this validator once there is no empty
-    # string stored as a venueId
-    if not venue_id:
-        return None
-    return int(venue_id)  # should not be needed but it makes mypy happy
 
 
 def strip_string(s: str | None) -> str | None:
@@ -63,11 +47,6 @@ class EmptyAsNullString(str):
 EmptyStringToNone = EmptyAsNullString | None
 
 
-class CollectiveOfferType(enum.Enum):
-    offer = "offer"
-    template = "template"
-
-
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
@@ -76,7 +55,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: date | None
     period_ending_date: date | None
-    collective_offer_type: CollectiveOfferType | None
+    collective_offer_type: educational_schemas.CollectiveOfferType | None
     format: EacFormat | None
     location_type: educational_models.CollectiveLocationType | None
     offerer_address_id: int | None
@@ -142,12 +121,6 @@ class CollectiveOffersBookingResponseModel(BaseModel):
     booking_status: str
 
 
-class GetCollectiveOfferLocationModel(BaseModel):
-    locationType: educational_models.CollectiveLocationType
-    locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
-
-
 class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: int
@@ -166,7 +139,7 @@ class CollectiveOfferResponseModel(BaseModel):
     educationalInstitution: EducationalInstitutionResponseModel | None
     imageUrl: str | None
     dates: TemplateDatesModel | None
-    location: GetCollectiveOfferLocationModel | None
+    location: educational_schemas.GetCollectiveOfferLocationModel | None
 
     class Config:
         alias_generator = to_camel
@@ -320,43 +293,7 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     otherAddress: str
     venueId: int | None
 
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-
-class CollectiveOfferLocationModel(BaseModel):
-    locationType: educational_models.CollectiveLocationType
-    locationComment: str | None
-    address: offerers_schemas.AddressBodyModel | None
-
-    @validator("locationComment")
-    def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
-        location_type = values.get("locationType")
-        if location_type != educational_models.CollectiveLocationType.TO_BE_DEFINED and location_comment is not None:
-            raise ValueError("locationComment is not allowed for the provided locationType")
-        return location_comment
-
-    @validator("address")
-    def validate_address(
-        cls, address: offerers_schemas.AddressBodyModel | None, values: dict
-    ) -> offerers_schemas.AddressBodyModel | None:
-        location_type = values.get("locationType")
-        if (
-            location_type
-            in (
-                educational_models.CollectiveLocationType.SCHOOL,
-                educational_models.CollectiveLocationType.TO_BE_DEFINED,
-            )
-            and address is not None
-        ):
-            raise ValueError("address is not allowed for the provided locationType")
-
-        if location_type == educational_models.CollectiveLocationType.ADDRESS and address is None:
-            raise ValueError("address is required for the provided locationType")
-        return address
-
-
-class PriceDetail(ConstrainedStr):
-    max_length: int = 1_000
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(educational_schemas.validate_venue_id)
 
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
@@ -368,7 +305,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     bookingLimitDatetime: datetime | None
     price: float
     numberOfTickets: int | None
-    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
+    priceDetail: educational_schemas.PriceDetail | None = Field(alias="educationalPriceDetail")
 
     class Config:
         allow_population_by_field_name = True
@@ -391,20 +328,20 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> GetCollectiveOfferLocationModel | None:
+) -> educational_schemas.GetCollectiveOfferLocationModel | None:
     if offer.locationType is None:
         return None
 
     address = None
     oa = offer.offererAddress
     if oa is not None:
-        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+        address = shared_schemas.AddressResponseIsLinkedToVenueModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
             label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
             isLinkedToVenue=oa._isLinkedToVenue,
         )
 
-    return GetCollectiveOfferLocationModel(
+    return educational_schemas.GetCollectiveOfferLocationModel(
         locationType=offer.locationType, locationComment=offer.locationComment, address=address
     )
 
@@ -420,7 +357,7 @@ class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
         return super().get(key, default)
 
 
-class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
+class GetCollectiveOfferBaseResponseModel(BaseModel, shared_schemas.AccessibilityComplianceMixin):
     bookingEmails: list[str]
     dateCreated: datetime
     description: str
@@ -428,7 +365,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     students: list[educational_models.StudentLevels]
     # offerVenue will be replaced with location, for now we send both
     offerVenue: CollectiveOfferOfferVenueResponseModel
-    location: GetCollectiveOfferLocationModel | None
+    location: educational_schemas.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
@@ -455,7 +392,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
+    priceDetail: educational_schemas.PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
     isTemplate: bool = True
     contactEmail: str | None
@@ -522,267 +459,6 @@ class CollectiveOfferResponseIdModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-
-
-class CollectiveOfferVenueBodyModel(BaseModel):
-    addressType: educational_models.OfferAddressType
-    otherAddress: str
-    venueId: int | None
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-def validate_intervention_area_with_location(
-    intervention_area: list[str] | None, location: CollectiveOfferLocationModel
-) -> None:
-    # handle the case where it is None and []
-    if intervention_area:
-        if location.locationType == educational_models.CollectiveLocationType.ADDRESS:
-            raise ValueError("intervention_area must be empty")
-
-        if any(area for area in intervention_area if area not in ALL_INTERVENTION_AREA):
-            raise ValueError("intervention_area must be a valid area")
-    else:
-        if location.locationType in (
-            educational_models.CollectiveLocationType.TO_BE_DEFINED,
-            educational_models.CollectiveLocationType.SCHOOL,
-        ):
-            raise ValueError("intervention_area is required and must not be empty")
-
-
-class DateRangeModel(BaseModel):
-    start: datetime
-    end: datetime
-
-    @validator("start")
-    def validate_start(cls, start: datetime) -> datetime:
-        return utils.without_timezone(start)
-
-    @validator("end")
-    def validate_end(cls, end: datetime) -> datetime:
-        return utils.without_timezone(end)
-
-    @root_validator(skip_on_failure=True)
-    def validate_end_before_start(cls, values: dict) -> dict:
-        if values["start"] > values["end"]:
-            raise ValueError("end before start")
-
-        return values
-
-
-class DateRangeOnCreateModel(DateRangeModel):
-    @validator("start")
-    def validate_start(cls, start: datetime) -> datetime:
-        start = super().validate_start(start)
-
-        if start.date() < date.today():
-            raise ValueError("start date can't be passed")
-        return start
-
-
-class PostCollectiveOfferBodyModel(BaseModel):
-    venue_id: int
-    name: str
-    booking_emails: list[EmailStr]
-    description: str
-    domains: list[int]
-    duration_minutes: int | None
-    audio_disability_compliant: bool = False
-    mental_disability_compliant: bool = False
-    motor_disability_compliant: bool = False
-    visual_disability_compliant: bool = False
-    students: list[educational_models.StudentLevels]
-    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
-    offer_venue: CollectiveOfferVenueBodyModel | None
-    location: CollectiveOfferLocationModel
-    contact_email: EmailStr | None
-    contact_phone: str | None
-    intervention_area: list[str] | None
-    template_id: int | None
-    nationalProgramId: int | None
-    formats: typing.Sequence[EacFormat]
-
-    @validator("students")
-    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
-        return shared_offers.validate_students(students)
-
-    @validator("name")
-    def validate_name(cls, name: str) -> str:
-        educational_validation.check_collective_offer_name_length_is_valid(name)
-        return name
-
-    @validator("description")
-    def validate_description(cls, description: str) -> str:
-        educational_validation.check_collective_offer_description_length_is_valid(description)
-        return description
-
-    @validator("domains")
-    def validate_domains(cls, domains: list[str]) -> list[str]:
-        if not domains:
-            raise ValueError("domains must have at least one value")
-        return domains
-
-    @validator("formats")
-    def validate_formats(cls, formats: list[EacFormat]) -> list[EacFormat]:
-        if len(formats) == 0:
-            raise ValueError("formats must have at least one value")
-        return formats
-
-    @validator("intervention_area")
-    def validate_intervention_area(cls, intervention_area: list[str] | None, values: dict) -> list[str] | None:
-        location = values.get("location")
-        if location is not None:
-            validate_intervention_area_with_location(intervention_area, location)
-
-        return intervention_area
-
-    @validator("booking_emails")
-    def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
-        if not booking_emails:
-            raise ValueError("Un email doit etre renseigné.")
-        return booking_emails
-
-    @validator("offer_venue")
-    def validate_offer_venue(
-        cls, offer_venue: CollectiveOfferVenueBodyModel | None
-    ) -> CollectiveOfferVenueBodyModel | None:
-        if offer_venue is not None:
-            raise ValueError("Cannot receive offerVenue, use location instead")
-
-        return offer_venue
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
-    price_detail: PriceDetail | None
-    contact_url: AnyHttpUrl | None
-    contact_form: educational_models.OfferContactFormEnum | None
-    dates: DateRangeOnCreateModel | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmails: list[EmailStr] | None
-    description: str | None
-    name: str | None
-    students: list[educational_models.StudentLevels] | None
-    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
-    offerVenue: CollectiveOfferVenueBodyModel | None
-    location: CollectiveOfferLocationModel | None
-    contactEmail: EmailStr | None
-    contactPhone: str | None
-    durationMinutes: int | None
-    domains: list[int] | None
-    interventionArea: list[str] | None
-    venueId: int | None
-    nationalProgramId: int | None
-    formats: typing.Sequence[EacFormat] | None
-
-    @validator("students")
-    def validate_students(cls, students: list[str] | None) -> list[educational_models.StudentLevels] | None:
-        if not students:
-            return None
-        return shared_offers.validate_students(students)
-
-    @validator("name")
-    def validate_name(cls, name: str | None) -> str | None:
-        assert name is not None and name.strip() != ""
-        educational_validation.check_collective_offer_name_length_is_valid(name)
-        return name
-
-    @validator("description")
-    def validate_description(cls, description: str | None) -> str | None:
-        if description is None:
-            raise ValueError("Description cannot be NULL.")
-        educational_validation.check_collective_offer_description_length_is_valid(description)
-        return description
-
-    @validator("formats")
-    def validate_formats(cls, formats: list[EacFormat] | None) -> list[EacFormat]:
-        if formats is None or len(formats) == 0:
-            raise ValueError("formats must have at least one value")
-        return formats
-
-    @validator("domains")
-    def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:
-        if domains is None or len(domains) == 0:
-            raise ValueError("domains must have at least one value")
-        return domains
-
-    @validator("interventionArea")
-    def validate_intervention_area(cls, intervention_area: list[str] | None, values: dict) -> list[str] | None:
-        location = values.get("location")
-        if location is not None:
-            validate_intervention_area_with_location(intervention_area, location)
-
-        return intervention_area
-
-    @validator("bookingEmails")
-    def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
-        if not booking_emails:
-            raise ValueError("Un email doit être renseigné.")
-        return booking_emails
-
-    @validator("venueId", allow_reuse=True)
-    def validate_venue_id(cls, venue_id: int | None) -> int | None:
-        if venue_id is None:
-            raise ValueError("venue_id cannot be NULL.")
-        return venue_id
-
-    @validator("offerVenue")
-    def validate_offer_venue(
-        cls, offer_venue: CollectiveOfferVenueBodyModel | None
-    ) -> CollectiveOfferVenueBodyModel | None:
-        if offer_venue is not None:
-            raise ValueError("Cannot receive offerVenue, use location instead")
-
-        return offer_venue
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
-    priceDetail: PriceDetail | None
-    domains: list[int] | None
-    dates: DateRangeModel | None
-    contactUrl: str | None
-    contactForm: educational_models.OfferContactFormEnum | None
-
-    @validator("domains")
-    def validate_domains_collective_offer_template_edition(
-        cls,
-        domains: list[int] | None,
-    ) -> list[int] | None:
-        if domains is not None and len(domains) == 0:
-            raise ValueError("domains must have at least one value")
-
-        return domains
-
-    @root_validator
-    def validate_contact_fields(cls, values: dict) -> dict:
-        url = values.get("contactUrl")
-        form = values.get("contactForm")
-
-        if url and form:
-            raise ValueError("error: url and form are both not null")
-
-        return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
 
 class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):

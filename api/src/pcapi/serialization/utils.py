@@ -1,23 +1,9 @@
-import datetime
 import typing
 
 import flask
 import pydantic.v1 as pydantic_v1
-import pytz
 
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.date import get_naive_utc_now
-
-
-NOW_LITERAL = typing.Literal["now"]
-
-
-def to_camel(string: str) -> str:
-    # used to define root level lists, see https://docs.pydantic.dev/1.10/usage/models/#custom-root-types
-    if string == pydantic_v1.utils.ROOT_KEY:
-        return pydantic_v1.utils.ROOT_KEY
-    components = string.split("_")
-    return components[0] + "".join(x.title() for x in components[1:])
 
 
 def before_handler(
@@ -113,48 +99,3 @@ def string_to_boolean_field(field_name: str) -> classmethod:
 
 def string_length_validator(field_name: str, *, length: int) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
-
-
-def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
-    # We need this ugly workaround because
-    # the api users send us datetimes like "2020-12-03T14:00:00Z"
-    # (note the "Z" suffix). Pydantic deserializes it as a datetime
-    # *with* a timezone. However, datetimes are stored in the database
-    # as UTC datetimes *without* any timezone. We need to remove the timezone to prevent from errors like:
-    # - wrongly detection of a change for a datetime field
-    # - we compare this "timezone aware" datetime with another one that is not
-    #
-    # Warning:
-    # this function might add an offset when converting to UTC.
-    return d.astimezone(pytz.utc).replace(tzinfo=None)
-
-
-def without_timezone(d: datetime.datetime) -> datetime.datetime:
-    """Copy input without timezone information
-
-    The day, hour, etc. are copied without any translation regarding
-    the original timezone.
-    """
-    return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
-
-
-def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
-    if not value:
-        return None
-    if value == "now":
-        return get_naive_utc_now()
-
-    assert isinstance(value, datetime.datetime)  # to make mypy happy
-
-    if value.tzinfo is None:
-        raise ValueError("The datetime must be timezone-aware.")
-    no_tz_value = as_utc_without_timezone(value)
-    if no_tz_value < datetime.datetime.utcnow():
-        raise ValueError("The datetime must be in the future.")
-    return no_tz_value
-
-
-def validate_datetime(field_name: str, always: bool = False) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(
-        check_date_in_future_and_remove_timezone
-    )

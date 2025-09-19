@@ -44,8 +44,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -172,7 +170,7 @@ class CreateVenueTest:
 
     def test_basics(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        data = offerers_schemas.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -198,7 +196,7 @@ class CreateVenueTest:
 
     def test_venue_is_permanent_when_created_with_siret(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        data = venues_serialize.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
+        data = offerers_schemas.PostVenueBodyModel(**self.base_data(user_offerer.offerer))
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -211,7 +209,7 @@ class CreateVenueTest:
             "comment": "no siret",
             "isOpenToPublic": True,
         }
-        data = venues_serialize.PostVenueBodyModel(**init_data)
+        data = offerers_schemas.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -220,7 +218,7 @@ class CreateVenueTest:
     def test_venue_is_permanent_when_created_with_siret_and_open_to_public(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {"isOpenToPublic": True}
-        data = venues_serialize.PostVenueBodyModel(**init_data)
+        data = offerers_schemas.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -233,7 +231,7 @@ class CreateVenueTest:
             "comment": "no siret",
             "isOpenToPublic": False,
         }
-        data = venues_serialize.PostVenueBodyModel(**init_data)
+        data = offerers_schemas.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
@@ -242,7 +240,7 @@ class CreateVenueTest:
     def test_venue_with_no_siret_has_no_pricing_point(self):
         user_offerer = offerers_factories.UserOffererFactory()
         data = self.base_data(user_offerer.offerer) | {"siret": None, "comment": "no siret"}
-        data = venues_serialize.PostVenueBodyModel(**data)
+        data = offerers_schemas.PostVenueBodyModel(**data)
 
         offerers_api.create_venue(data, user_offerer.user)
 
@@ -676,7 +674,7 @@ class CreateOffererTest:
         # Given
         gen_offerer_tags()
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="777084112",
             street="123 rue de Paris",
@@ -714,7 +712,7 @@ class CreateOffererTest:
     def test_create_new_offerer_attachment_if_siren_is_already_registered(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -750,7 +748,7 @@ class CreateOffererTest:
         self,
     ):
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer NOT A Collectivity",
             siren="418166096",
             street="123 rue de Paris",
@@ -765,7 +763,7 @@ class CreateOffererTest:
     @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
     def test_create_new_offerer_attachment_if_already_registered_siren_is_a_collectivity(self):
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer Collectivity",
             siren="777084112",
             street="123 rue de Paris",
@@ -797,7 +795,7 @@ class CreateOffererTest:
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -822,7 +820,7 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -873,7 +871,7 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected_on_user_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -909,7 +907,7 @@ class CreateOffererTest:
     def test_create_offerer_if_siren_was_previously_rejected_on_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -951,7 +949,7 @@ class CreateOffererTest:
     def test_create_offerer_on_known_offerer_by_user_rejected(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -984,7 +982,7 @@ class CreateOffererTest:
     def test_create_offerer_on_known_offerer_twice(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -1022,7 +1020,7 @@ class CreateOffererTest:
     def test_create_new_offerer_twice(self):
         # Given
         user = users_factories.NonAttachedProFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -1053,7 +1051,7 @@ class CreateOffererTest:
     def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="418166096",
             street="123 rue de Paris",
@@ -1086,7 +1084,7 @@ class CreateOffererTest:
     def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
         # Given
         user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer",
             siren="777084112",
             street="123 rue de Paris",
@@ -1107,14 +1105,14 @@ class CreateOffererTest:
         national_partner_tag = offerers_factories.OffererTagFactory(name="partenaire-national")
         not_a_partner_user = users_factories.UserFactory(email="noël.flantier@example.com")
         partner_user = users_factories.UserFactory(email="ssap.erutluc@partner.com")
-        not_a_partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        not_a_partner_offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer Not Partner",
             siren="777084112",
             street="123 rue de Paris",
             postalCode="93100",
             city="Montreuil",
         )
-        partner_offerer_informations = offerers_serialize.CreateOffererQueryModel(
+        partner_offerer_informations = offerers_schemas.CreateOffererQueryModel(
             name="Test Offerer Partner",
             siren="777084121",
             street="123 rue de Paname",
@@ -2660,10 +2658,8 @@ class CreateFromOnboardingDataTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
 
-    def get_onboarding_data(
-        self, create_venue_without_siret: bool
-    ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
-        return offerers_serialize.SaveNewOnboardingDataQueryModel(
+    def get_onboarding_data(self, create_venue_without_siret: bool) -> offerers_schemas.SaveNewOnboardingDataQueryModel:
+        return offerers_schemas.SaveNewOnboardingDataQueryModel(
             address=offerers_schemas.AddressBodyModel(
                 label="",
                 banId="75101_9575_00003",

@@ -8,12 +8,12 @@ from pydantic.v1.utils import GetterDict
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
+from pcapi.core.shared import schemas as shared_schemas
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1 import base_serialization
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
-from pcapi.serialization import utils as serialization_utils
 
 
 EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
@@ -99,7 +99,7 @@ class EventStockEdition(v1_serialization.BaseStockEdition):
     price_category_id: pydantic_v1.PositiveInt | None = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
+    _validate_beginning_datetime = shared_schemas.validate_datetime("beginning_datetime")
 
 
 class EventStockCreation(v1_serialization.BaseStockCreation):
@@ -108,8 +108,8 @@ class EventStockCreation(v1_serialization.BaseStockCreation):
     price_category_id: int = fields.PRICE_CATEGORY_ID
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
+    _validate_beginning_datetime = shared_schemas.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = shared_schemas.validate_datetime("booking_limit_datetime")
 
 
 class EventStocksCreation(serialization.ConfiguredBaseModel):

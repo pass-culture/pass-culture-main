@@ -32,7 +32,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes import offers as offers_validation
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
@@ -759,7 +758,7 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
 def get_offer_video_metadata(
     query: offers_serialize.VideoMetatdataQueryModel,
 ) -> offers_serialize.OfferVideo:
-    video_id = offers_validation.check_video_url(query.video_url)
+    video_id = offers_schemas.check_video_url(query.video_url)
     if video_id is None:
         raise api_errors.ApiErrors(
             errors={"videoUrl": ["Veuillez renseigner une URL valide. Ex : https://exemple.com"]}

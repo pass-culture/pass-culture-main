@@ -69,9 +69,6 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.serialization import offerers_serialize
-from pcapi.routes.serialization import venues_serialize
-from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
@@ -424,7 +421,7 @@ def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.Ven
 
 
 def create_venue(
-    venue_data: venues_serialize.PostVenueBodyModel,
+    venue_data: offerers_schemas.PostVenueBodyModel,
     author: users_models.User,
     offerer_address: Optional[models.OffererAddress] = None,
 ) -> models.Venue:
@@ -974,7 +971,7 @@ def _add_new_onboarding_info_to_extra_data(new_onboarding_info: NewOnboardingInf
 
 def create_offerer(
     user: users_models.User,
-    offerer_informations: offerers_serialize.CreateOffererQueryModel,
+    offerer_informations: offerers_schemas.CreateOffererQueryModel,
     new_onboarding_info: NewOnboardingInfo | None = None,
     author: users_models.User | None = None,
     comment: str | None = None,
@@ -2211,7 +2208,7 @@ def create_venue_registration(venue_id: int, target: offerers_models.Target, web
 
 def create_from_onboarding_data(
     user: users_models.User,
-    onboarding_data: offerers_serialize.SaveNewOnboardingDataQueryModel,
+    onboarding_data: offerers_schemas.SaveNewOnboardingDataQueryModel,
 ) -> models.UserOfferer:
     # Get name (raison sociale) from Sirene API
     siret_info = find_structure_data(onboarding_data.siret)
@@ -2224,7 +2221,7 @@ def create_from_onboarding_data(
         name = siret_info.name
 
     # Create Offerer or attach user to existing Offerer
-    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+    offerer_creation_info = offerers_schemas.CreateOffererQueryModel(
         street=onboarding_data.address.street,
         city=onboarding_data.address.city,
         latitude=float(onboarding_data.address.latitude),
@@ -2284,7 +2281,7 @@ def create_from_onboarding_data(
                 siret=onboarding_data.siret,
             )
         venue_kwargs = common_kwargs | comment_and_siret
-        venue_creation_info = venues_serialize.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
+        venue_creation_info = offerers_schemas.PostVenueBodyModel(**venue_kwargs)  # type: ignore[arg-type]
         venue = create_venue(venue_creation_info, user)
         create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
@@ -2546,7 +2543,7 @@ def invite_member_again(offerer: models.Offerer, email: str) -> None:
     transactional_mails.send_offerer_attachment_invitation([email], offerer)
 
 
-def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
+def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, offerers_schemas.OffererMemberStatus]]:
     users_offerers = (
         db.session.query(models.UserOfferer)
         .filter(
@@ -2566,11 +2563,15 @@ def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMembe
     members = [
         (
             user_offerer.user.email,
-            OffererMemberStatus.VALIDATED if user_offerer.isValidated else OffererMemberStatus.PENDING,
+            offerers_schemas.OffererMemberStatus.VALIDATED
+            if user_offerer.isValidated
+            else offerers_schemas.OffererMemberStatus.PENDING,
         )
         for user_offerer in users_offerers
     ]
-    members = members + [(invited_member.email, OffererMemberStatus.PENDING) for invited_member in invited_members]
+    members = members + [
+        (invited_member.email, offerers_schemas.OffererMemberStatus.PENDING) for invited_member in invited_members
+    ]
     members.sort(key=lambda member: (member[1].value, member[0]))
     return members
 

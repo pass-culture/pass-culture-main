@@ -10,6 +10,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def _stock_already_exists(
-    stock_data: stock_serialize.EventStockCreateBodyModel | stock_serialize.EventStockUpdateBodyModel,
+    stock_data: offers_schemas.EventStockCreateBodyModel | offers_schemas.EventStockUpdateBodyModel,
     existing_stocks: list[offers_models.Stock],
 ) -> bool:
     return any(
@@ -60,7 +61,7 @@ def _find_offer_matching_event_stocks(
 
 def _get_existing_stocks_by_id(
     offer_id: int,
-    stocks_payload: list[stock_serialize.EventStockUpdateBodyModel],
+    stocks_payload: list[offers_schemas.EventStockUpdateBodyModel],
 ) -> dict[int, offers_models.Stock]:
     existing_stocks = (
         db.session.query(offers_models.Stock)
@@ -129,7 +130,7 @@ def update_thing_stock(
 )
 @atomic()
 def bulk_create_event_stocks(
-    body: stock_serialize.EventStocksBulkCreateBodyModel,
+    body: offers_schemas.EventStocksBulkCreateBodyModel,
 ) -> stock_serialize.StocksResponseModel:
     offer: offers_models.Offer = get_or_404_from_query(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),

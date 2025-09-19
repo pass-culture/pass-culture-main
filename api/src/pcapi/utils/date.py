@@ -304,3 +304,26 @@ def get_naive_utc_now() -> datetime:
 
 def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
     return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)
+
+
+def without_timezone(d: datetime) -> datetime:
+    """Copy input without timezone information
+
+    The day, hour, etc. are copied without any translation regarding
+    the original timezone.
+    """
+    return datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
+
+
+def as_utc_without_timezone(d: datetime) -> datetime:
+    # We need this ugly workaround because
+    # the api users send us datetimes like "2020-12-03T14:00:00Z"
+    # (note the "Z" suffix). Pydantic deserializes it as a datetime
+    # *with* a timezone. However, datetimes are stored in the database
+    # as UTC datetimes *without* any timezone. We need to remove the timezone to prevent from errors like:
+    # - wrongly detection of a change for a datetime field
+    # - we compare this "timezone aware" datetime with another one that is not
+    #
+    # Warning:
+    # this function might add an offset when converting to UTC.
+    return d.astimezone(pytz.utc).replace(tzinfo=None)

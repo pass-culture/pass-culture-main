@@ -14,7 +14,7 @@ from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_collective_booking_dates_utc_to_venue_timezone
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
 
 
 class BookingRecapResponseBeneficiaryModel(BaseModel):

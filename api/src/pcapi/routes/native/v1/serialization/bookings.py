@@ -14,8 +14,8 @@ from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import to_camel
 from pcapi.routes.shared.price import convert_to_cent
-from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 

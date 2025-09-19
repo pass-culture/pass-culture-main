@@ -1,4 +1,5 @@
 import datetime
+import re
 import typing
 
 from pydantic.v1 import EmailStr
@@ -12,14 +13,50 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
+from pcapi.core.shared import schemas as shared_schemas
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization import utils as serialization_utils
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_video_url
+from pcapi.routes.serialization import to_camel
 
 
 OFFER_DESCRIPTION_MAX_LENGTH = 10_000
+
+
+def check_offer_name_length_is_valid(offer_name: str) -> None:
+    max_offer_name_length = 90
+    if len(offer_name) > max_offer_name_length:
+        api_error = ApiErrors()
+        api_error.add_error("name", "Le titre de l’offre doit faire au maximum 90 caractères.")
+        raise api_error
+
+
+def extract_youtube_video_id(url: str) -> str | None:
+    if not isinstance(url, str):
+        return None
+
+    youtube_regex = (
+        r"(https?://)?"
+        r"(www\.)?"
+        r"(m\.)?"
+        r"(youtube\.com|youtu\.be)"
+        r'(/watch\?v=|/embed/|/v/|/e/|/shorts/|/)(?P<video_id>[^"&?\/\s]{11})'
+    )
+    pattern = re.compile(youtube_regex)
+    if match := pattern.match(url):
+        return match.group("video_id")
+
+    return None
+
+
+def check_video_url(video_url: HttpUrl | None) -> str | None:
+    if not video_url:
+        return None
+
+    video_id = extract_youtube_video_id(video_url)
+    if not video_id:
+        raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
+    return video_id
 
 
 class PostDraftOfferBodyModel(BaseModel):
@@ -56,7 +93,7 @@ class PostDraftOfferBodyModel(BaseModel):
         return video_url
 
     class Config:
-        alias_generator = serialization_utils.to_camel
+        alias_generator = to_camel
         extra = "forbid"
 
 
@@ -97,7 +134,7 @@ class PatchDraftOfferBodyModel(BaseModel):
         return subcategory_id
 
     class Config:
-        alias_generator = serialization_utils.to_camel
+        alias_generator = to_camel
         extra = "forbid"
 
 
@@ -148,7 +185,7 @@ class CreateOffer(BaseModel):
         return is_national
 
     class Config:
-        alias_generator = serialization_utils.to_camel
+        alias_generator = to_camel
         extra = "forbid"
 
 
@@ -196,7 +233,7 @@ class UpdateOffer(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        alias_generator = serialization_utils.to_camel
+        alias_generator = to_camel
         extra = "forbid"
 
 
@@ -221,3 +258,34 @@ class CreateOrUpdateEANOffersRequest(BaseModel):
     provider_id: int
     address_id: int | None
     address_label: str | None
+
+
+class EventStockCreateBodyModel(BaseModel):
+    beginning_datetime: datetime.datetime
+    price_category_id: int
+    quantity: int | None = Field(None, ge=0, le=offers_models.Stock.MAX_STOCK_QUANTITY)
+    booking_limit_datetime: datetime.datetime | None
+
+    _validate_beginning_datetime = shared_schemas.validate_datetime("beginning_datetime")
+    _validate_booking_limit_datetime = shared_schemas.validate_datetime("booking_limit_datetime")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EventStocksBulkCreateBodyModel(BaseModel):
+    offer_id: int
+    stocks: list[EventStockCreateBodyModel]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EventStockUpdateBodyModel(EventStockCreateBodyModel):
+    id: int
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

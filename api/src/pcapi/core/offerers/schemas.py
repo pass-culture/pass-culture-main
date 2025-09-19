@@ -7,13 +7,16 @@ from decimal import InvalidOperation
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import validator
 
+from pcapi.core.geography.constants import MAX_LATITUDE
+from pcapi.core.geography.constants import MAX_LONGITUDE
+from pcapi.core.offerers.models import Target
+from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.shared.schemas import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import to_camel
+from pcapi.routes.shared import validation
 from pcapi.utils import phone_number as phone_number_utils
 
-
-MAX_LONGITUDE = 180
-MAX_LATITUDE = 90
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
@@ -53,10 +56,6 @@ class VenueContactModel(BaseModel):
         if website is None or re.match(pattern, website, re.IGNORECASE):
             return website
         raise ValueError(f"url du site web invalide: {website}")
-
-
-class VenueImageCredit(RequiredStrippedString):
-    max_length = 255
 
 
 class VenueName(RequiredStrippedString):
@@ -162,51 +161,6 @@ class AddressBodyModel(BaseModel):
         return raw_longitude
 
 
-class BannerMetaModel(typing.TypedDict, total=False):
-    image_credit: VenueImageCredit | None
-    image_credit_url: str | None
-    is_from_google: bool
-
-
-class VenueTypeCode(enum.Enum):
-    ARTISTIC_COURSE = "Cours et pratique artistiques"
-    BOOKSTORE = "Librairie"
-    CONCERT_HALL = "Musique - Salle de concerts"
-    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
-    CULTURAL_CENTRE = "Centre culturel"
-    DIGITAL = "Offre numérique"
-    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
-    FESTIVAL = "Festival"
-    GAMES = "Jeux / Jeux vidéos"
-    LIBRARY = "Bibliothèque ou médiathèque"
-    MOVIE = "Cinéma - Salle de projections"
-    MUSEUM = "Musée"
-    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
-    OTHER = "Autre"
-    PATRIMONY_TOURISM = "Patrimoine et tourisme"
-    PERFORMING_ARTS = "Spectacle vivant"
-    RECORD_STORE = "Musique - Disquaire"
-    SCIENTIFIC_CULTURE = "Culture scientifique"
-    TRAVELING_CINEMA = "Cinéma itinérant"
-    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
-
-    # These methods are used by pydantic in order to return the enum name and validate the value
-    # instead of returning the enum directly.
-    @classmethod
-    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value: str | enum.Enum) -> str:
-        if isinstance(value, enum.Enum):
-            value = value.name
-
-        if not hasattr(cls, value):
-            raise ValueError(f"{value}: invalide")
-
-        return value
-
-
 VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
     "VenueTypeCodeKey",
     {code.name: code.name for code in VenueTypeCode},
@@ -217,3 +171,69 @@ class GetOffererAddressesWithOffersOption(enum.Enum):
     INDIVIDUAL_OFFERS_ONLY = "INDIVIDUAL_OFFERS_ONLY"
     COLLECTIVE_OFFERS_ONLY = "COLLECTIVE_OFFERS_ONLY"
     COLLECTIVE_OFFER_TEMPLATES_ONLY = "COLLECTIVE_OFFER_TEMPLATES_ONLY"
+
+
+class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    address: AddressBodyModel
+    bookingEmail: VenueBookingEmail
+    comment: VenueComment | None
+    isOpenToPublic: bool | None
+    managingOffererId: int
+    name: VenueName
+    publicName: VenuePublicName | None
+    siret: VenueSiret | None
+    venueLabelId: int | None
+    venueTypeCode: str
+    withdrawalDetails: VenueWithdrawalDetails | None
+    description: VenueDescription | None
+    contact: VenueContactModel | None
+
+    class Config:
+        extra = "forbid"
+
+    @validator("siret", always=True)
+    @classmethod
+    def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
+        """siret is defined after comment, so the validator can access the previously validated value of comment"""
+        comment = values.get("comment")
+        if (comment and siret) or (not comment and not siret):
+            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
+        return siret
+
+
+class CreateOffererQueryModel(BaseModel):
+    city: str
+    latitude: float | None
+    longitude: float | None
+    name: str
+    postalCode: str
+    inseeCode: str | None
+    siren: str
+    street: str | None
+    phoneNumber: str | None
+
+    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+
+
+class SaveNewOnboardingDataQueryModel(BaseModel):
+    address: AddressBodyModel
+    createVenueWithoutSiret: bool = False
+    isOpenToPublic: bool
+    publicName: str | None
+    siret: str
+    target: Target
+    token: str
+    venueTypeCode: str
+    webPresence: str
+    phoneNumber: str | None
+
+    _validate_phone_number = validation.phone_number_validator("phoneNumber", nullable=True)
+
+    class Config:
+        extra = "forbid"
+        anystr_strip_whitespace = True
+
+
+class OffererMemberStatus(enum.Enum):
+    VALIDATED = "validated"
+    PENDING = "pending"
