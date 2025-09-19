@@ -157,12 +157,12 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
     mark_transaction_as_invalid()
     if error.statement:
         try:
-            sql_info_extra = {"sql_query": error.statement % format_sql_statement_params(error.params)}
+            sql_info_extra = {"sql_query": error.statement % format_sql_statement_params(error.params)}  # type: ignore [arg-type]
         except Exception:
             # `format_sql_statement_params()` cannot handle `params`
             # when it's a list, which happens when `executemany()` is
             # used.
-            sql_info_extra = {"sql_query": error.statement, "sql_params": error.params}
+            sql_info_extra = {"sql_query": error.statement, "sql_params": str(error.params)}
     else:
         sql_info_extra = {}
     logger.info(

@@ -2,6 +2,9 @@ import datetime
 import itertools
 import logging
 import re
+import typing
+
+from sqlalchemy import orm as sa_orm
 
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
@@ -388,7 +391,10 @@ def _create_failed_phone_validation_fraud_check(
 def handle_phone_already_exists(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     orig_user_id = (
         db.session.query(users_models.User)
-        .filter(users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated)
+        .filter(
+            typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number,
+            users_models.User.is_phone_validated,
+        )
         .one()
         .id
     )
@@ -507,7 +513,7 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
     return db.session.query(
         db.session.query(models.BeneficiaryFraudCheck)
         .filter(
-            models.BeneficiaryFraudCheck.user == user,
+            models.BeneficiaryFraudCheck.userId == user.id,
             models.BeneficiaryFraudCheck.status == models.FraudCheckStatus.PENDING,
             models.BeneficiaryFraudCheck.type.in_(models.IDENTITY_CHECK_TYPES),
             models.BeneficiaryFraudCheck.eligibilityType == user.eligibility,

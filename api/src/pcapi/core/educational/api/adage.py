@@ -96,9 +96,12 @@ def get_venue_by_id_for_adage_iframe(
 def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPartner]) -> None:
     adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
     existing_sirens: dict[str, bool] = dict(
-        db.session.query(offerers_models.Offerer)
-        .filter(offerers_models.Offerer.siren != None)
-        .with_entities(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
+        db.session.query(  # type: ignore [arg-type]
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.allowedOnAdage,
+        ).filter(
+            offerers_models.Offerer.siren != None,
+        )
     )
     existing_adage_sirens = {k for k, v in existing_sirens.items() if v}
 
@@ -114,7 +117,10 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPar
 
     # check we don't remove offerers that do have valid venues
     existing_sirens_from_synchronized_venues: dict[str, bool] = dict(
-        db.session.query(offerers_models.Offerer)
+        db.session.query(  # type: ignore [arg-type]
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.allowedOnAdage,
+        )
         .join(offerers_models.Venue)
         .filter(
             offerers_models.Offerer.siren != None,
@@ -122,7 +128,6 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPar
         )
         # some venues with an adageId are soft-deleted, we need to include them so that the offerer keeps allowedOnAdage=True
         .execution_options(include_deleted=True)
-        .with_entities(offerers_models.Offerer.siren, offerers_models.Offerer.allowedOnAdage)
     )
     sirens_to_delete = sirens_to_delete - set(existing_sirens_from_synchronized_venues)
     sirens_to_add = sirens_to_add | {k for k, v in existing_sirens_from_synchronized_venues.items() if not v}
@@ -173,7 +178,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
     deactivated_adage_ids = {row.adage_id for row in deactivated}
     deactivated_venue_ids = {row.venue_id for row in deactivated if row.venue_id}
 
-    deactivated_venues: list[offerers_models.Venue] = db.session.query(offerers_models.Venue).filter(
+    deactivated_venues: sa_orm.Query[offerers_models.Venue] = db.session.query(offerers_models.Venue).filter(
         sa.or_(
             offerers_models.Venue.adageId.in_(deactivated_adage_ids),
             offerers_models.Venue.id.in_(deactivated_venue_ids),

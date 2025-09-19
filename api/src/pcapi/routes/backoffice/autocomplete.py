@@ -240,7 +240,7 @@ def _autocomplete_venues(only_with_siret: bool = False) -> AutocompleteResponse:
     if is_numeric_query and len(query_string) == 1:
         filters = offerers_models.Venue.id == int(query_string)
     else:
-        or_filters = [
+        or_filters: list[sa.ColumnElement[bool] | sa.BinaryExpression[bool]] = [
             sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(f"%{clean_accents(query_string)}%"),
             sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(f"%{clean_accents(query_string)}%"),
         ]

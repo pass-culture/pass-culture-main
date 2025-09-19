@@ -23,7 +23,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users import models as users_models
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
@@ -98,52 +97,62 @@ class BookingRecreditType(enum.Enum):
     RECREDIT_18 = "RECREDIT_18"
 
 
-class ExternalBooking(PcObject, Base, Model):
+class ExternalBooking(PcObject, Model):
     __tablename__ = "external_booking"
-    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False)
+    bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False
+    )
 
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="externalBookings"
     )
 
-    barcode: str = sa.Column(sa.String, nullable=False)
+    barcode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String, nullable=False)
 
-    seat = sa.Column(sa.String)
+    seat = sa_orm.mapped_column(sa.String)
 
-    additional_information: dict | None = sa.Column(postgresql.JSONB)
+    additional_information: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(postgresql.JSONB)
 
 
-class Booking(PcObject, Base, Model):
+class Booking(PcObject, Model):
     __tablename__ = "booking"
 
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
     sa.Index("ix_booking_date_created", dateCreated)
 
-    dateUsed: datetime | None = sa.Column(sa.DateTime, nullable=True, index=True)
+    dateUsed: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
-    stockId: int = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
+    stockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False
+    )
 
     stock: sa_orm.Mapped["offers_models.Stock"] = sa_orm.relationship(
         "Stock", foreign_keys=[stockId], backref="bookings"
     )
 
-    venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
+    )
 
     venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], backref="bookings"
     )
 
-    offererId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
+    )
 
     offerer: sa_orm.Mapped["offerers_models.Offerer"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref="bookings"
     )
 
-    quantity: int = sa.Column(sa.Integer, nullable=False, default=1)
+    quantity: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False, default=1)
 
-    token: str = sa.Column(sa.String(6), unique=True, nullable=False)
+    token: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(6), unique=True, nullable=False)
 
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
 
     activationCode: sa_orm.Mapped["offers_models.ActivationCode"] = sa_orm.relationship(
         "ActivationCode", uselist=False, back_populates="booking"
@@ -153,17 +162,17 @@ class Booking(PcObject, Base, Model):
         "User", foreign_keys=[userId], backref="userBookings"
     )
 
-    amount: Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
-    priceCategoryLabel: str | None = sa.Column(sa.Text, nullable=True)
+    priceCategoryLabel: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
-    cancellationDate: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    cancellationDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    displayAsEnded = sa.Column(sa.Boolean, nullable=True)
+    displayAsEnded = sa_orm.mapped_column(sa.Boolean, nullable=True)
 
-    cancellationLimitDate = sa.Column(sa.DateTime, nullable=True)
+    cancellationLimitDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    cancellationReason = sa.Column(
+    cancellationReason = sa_orm.mapped_column(
         "cancellationReason",
         sa.Enum(
             BookingCancellationReasons,
@@ -177,27 +186,35 @@ class Booking(PcObject, Base, Model):
         postgresql_where=cancellationReason.is_not(None),
     )
 
-    cancellationUserId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    cancellationUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), nullable=True
+    )
     cancellationUser: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship(
         "User", foreign_keys=[cancellationUserId]
     )
     # Index avoids timeout when any user is deleted (because of foreign key)
     sa.Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
 
-    status: BookingStatus = sa.Column(sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
+    status: sa_orm.Mapped[BookingStatus] = sa_orm.mapped_column(
+        sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED
+    )
     sa.Index("ix_booking_status", status)
 
-    validationAuthorType: BookingValidationAuthorType = sa.Column(sa.Enum(BookingValidationAuthorType), nullable=True)
+    validationAuthorType: sa_orm.Mapped[BookingValidationAuthorType] = sa_orm.mapped_column(
+        sa.Enum(BookingValidationAuthorType), nullable=True
+    )
 
-    reimbursementDate = sa.Column(sa.DateTime, nullable=True)
+    reimbursementDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True)
+    depositId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True)
 
     deposit: sa_orm.Mapped["finance_models.Deposit | None"] = sa_orm.relationship(
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
     )
 
-    usedRecreditType: BookingRecreditType = sa.Column(MagicEnum(BookingRecreditType), nullable=True)
+    usedRecreditType: sa_orm.Mapped[BookingRecreditType] = sa_orm.mapped_column(
+        MagicEnum(BookingRecreditType), nullable=True
+    )
 
     fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag"] = sa_orm.relationship(
         "FraudulentBookingTag", back_populates="booking", uselist=False
@@ -589,16 +606,18 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
 sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
 
 
-class FraudulentBookingTag(PcObject, Base, Model):
+class FraudulentBookingTag(PcObject, Model):
     __tablename__ = "fraudulent_booking_tag"
-    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    bookingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False, unique=True)
+    bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False, unique=True
+    )
 
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], back_populates="fraudulentBookingTag"
     )
 
-    authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
     author: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship("User", foreign_keys=[authorId])

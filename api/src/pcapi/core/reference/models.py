@@ -3,10 +3,10 @@ import logging
 import psycopg2.errors
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.logging import log_elapsed
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 
@@ -16,7 +16,7 @@ from . import exceptions
 logger = logging.getLogger(__name__)
 
 
-class ReferenceScheme(Base, Model):
+class ReferenceScheme(Model):
     """This table holds the next reference number (and other related
     parameters) for our invoices and possibly other entities.
 
@@ -45,15 +45,15 @@ class ReferenceScheme(Base, Model):
     """
 
     __tablename__ = "reference_scheme"
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
     # known names and prefixes are:
     #   - invoice.reference: F
     #   - debit_note.reference: A
-    name: str = sa.Column(sa.Text, nullable=False)
-    prefix: str = sa.Column(sa.Text, nullable=False)
-    year = sa.Column(sa.Integer)
-    nextNumber = sa.Column(sa.Integer, default=1)
-    numberPadding = sa.Column(sa.Integer, default=7)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    prefix: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    year = sa_orm.mapped_column(sa.Integer)
+    nextNumber = sa_orm.mapped_column(sa.Integer, default=1)
+    numberPadding = sa_orm.mapped_column(sa.Integer, default=7)
 
     __table_args__ = (
         sa.UniqueConstraint(

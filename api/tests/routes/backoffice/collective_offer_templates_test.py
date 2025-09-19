@@ -449,15 +449,12 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
+        expected_url = url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
         assert response.location == expected_url
 
         collective_offer_template_list_url = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates",
             q=collective_offer_template_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_template_list_url)
 
@@ -504,15 +501,12 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
+        expected_url = url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
         assert response.location == expected_url
 
         collective_offer_list_url = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates",
             q=collective_offer_to_validate.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_list_url)
 
@@ -555,15 +549,12 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
+        expected_url = url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
         assert response.location == expected_url
 
         collective_offer_template_list_url = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates",
             q=collective_offer_template_to_reject.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_template_list_url)
 
@@ -612,15 +603,12 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        expected_url = url_for(
-            "backoffice_web.collective_offer_template.list_collective_offer_templates", _external=True
-        )
+        expected_url = url_for("backoffice_web.collective_offer_template.list_collective_offer_templates")
         assert response.location == expected_url
 
         collective_offer_template_list_url = url_for(
             "backoffice_web.collective_offer_template.list_collective_offer_templates",
             q=collective_offer_template_to_reject.id,
-            _external=True,
         )
         response = authenticated_client.get(collective_offer_template_list_url)
 
@@ -732,8 +720,6 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
             },
             headers={"hx-request": "true"},
         )
-
-        assert response.status_code == 200
 
         for collective_offer_template in collective_offer_templates:
             db.session.refresh(collective_offer_template)

@@ -840,7 +840,7 @@ def create_stock(
         quantity=quantity,
         beginningDatetime=beginning_datetime,
         bookingLimitDatetime=booking_limit_datetime,
-        priceCategory=price_category,  # type: ignore[arg-type]
+        priceCategory=price_category,
         idAtProviders=id_at_provider,
     )
     created_activation_codes = []
@@ -1300,7 +1300,7 @@ def add_criteria_to_offers(
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
             offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
         # The allocineId data exists only for products. We need to find offers that have the visa of this product.
-        elif (allocineId and product.extraData.get("visa")) or visa:
+        elif (allocineId and product and product.extraData and product.extraData.get("visa")) or visa:
             unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
             offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
 
@@ -1485,7 +1485,7 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     offer_validation_rules = (
         db.session.query(models.OfferValidationRule)
-        .options(sa_orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules))
+        .options(sa_orm.joinedload(models.OfferValidationRule.subRules))
         .filter(models.OfferValidationRule.isActive.is_(True))
         .all()
     )
@@ -1556,9 +1556,10 @@ def report_offer(
             report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
             db.session.add(report)
     except sa_exc.IntegrityError as error:
-        if error.orig.pgcode == UNIQUE_VIOLATION:
+        pgcode = getattr(error.orig, "pgcode", None)
+        if pgcode == UNIQUE_VIOLATION:
             raise exceptions.OfferAlreadyReportedError() from error
-        if error.orig.pgcode == CHECK_VIOLATION:
+        if pgcode == CHECK_VIOLATION:
             raise exceptions.ReportMalformed() from error
         raise
 
@@ -2092,7 +2093,7 @@ def update_used_stock_price(
         raise ValueError("One of [new_price, price_percent] is mandatory")
 
     if new_price:
-        stock.price = new_price
+        stock.price = decimal.Decimal(str(new_price))
         db.session.query(bookings_models.Booking).filter(
             bookings_models.Booking.stockId == stock.id,
         ).update({bookings_models.Booking.amount: func.least(new_price, bookings_models.Booking.amount)})
@@ -2283,7 +2284,9 @@ def upsert_movie_product_from_provider(
 
 def _is_allocine(provider_id: int) -> bool:
     allocine_products_provider_id = get_allocine_products_provider().id
-    allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
+    provider = get_provider_by_local_class("AllocineStocks")
+    assert provider  # helps mypy
+    allocine_stocks_provider_id = provider.id
     return provider_id in (allocine_products_provider_id, allocine_stocks_provider_id)
 
 
@@ -2347,6 +2350,7 @@ def _fix_price_categories(offer_ids: typing.Collection[int]) -> None:
         return
 
     for stock in stocks:
+        assert stock.priceCategory  # helps mypy
         stock.priceCategory.offerId = stock.offerId
         db.session.add(stock.priceCategory)
 
@@ -2506,7 +2510,7 @@ def delete_unbookable_unbooked_old_offers(
 def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
     product_ids = set()
     start = 0
-    product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar()
+    product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar() or start
     while start < product_max_id:
         end = start + batch_size
         batch_result = fetch_inconsistent_products_on_column(_chronicles_count_query(start, end), "chroniclesCount")
@@ -2527,7 +2531,7 @@ def fetch_inconsistent_products_on_column(count_query: sa.sql.expression.Select,
         .where(getattr(models.Product, col_name) != subquery.c.total)
     )
     product_ids = db.session.execute(query).scalars().all()
-    return product_ids
+    return list(product_ids)
 
 
 def _chronicles_count_query(start: int, end: int) -> sa.sql.expression.Select:

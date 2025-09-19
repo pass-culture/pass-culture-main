@@ -50,11 +50,12 @@ class MagicEnum(sa_types.TypeDecorator):
 
     cache_ok = True
 
-    def __init__(self, enum_class: type[enum.Enum]):
+    def __init__(self, enum_class: type[enum.Enum], use_values: bool = True):
         # WARNING: The attribute MUST have the same name as the
         # argument in `__init__()` for SQLAlchemy to produce a valid
         # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok
         self.enum_class = enum_class
+        self.use_values = use_values
         first_value = list(enum_class)[0].value
         if isinstance(first_value, str):
             self.impl = sa_types.Text()
@@ -72,7 +73,7 @@ class MagicEnum(sa_types.TypeDecorator):
         return self.enum_class
 
     def copy(self, **kwargs: typing.Any) -> "MagicEnum":
-        return self.__class__(self.enum_class)
+        return self.__class__(self.enum_class, self.use_values)
 
     def process_bind_param(
         self,
@@ -81,7 +82,9 @@ class MagicEnum(sa_types.TypeDecorator):
     ) -> str | None:
         if value is None:
             return None
-        return value.value
+        if self.use_values:
+            return value.value
+        return value.name
 
     def process_result_value(
         self,
@@ -90,7 +93,9 @@ class MagicEnum(sa_types.TypeDecorator):
     ) -> enum.Enum | None:
         if value is None:
             return None
-        return self.enum_class(value)
+        if self.use_values:
+            return self.enum_class(value)
+        return self.enum_class[value]
 
 
 class TSVector(sa_types.TypeDecorator):

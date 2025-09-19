@@ -114,8 +114,9 @@ def update_providables_by_provider_id(provider_id: int, limit: int | None) -> No
 @cron_decorators.cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
-    allocine_stocks_provider_id = providers_repository.get_provider_by_local_class("AllocineStocks").id
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(allocine_stocks_provider_id)
+    allocine_stocks_provider = providers_repository.get_provider_by_local_class("AllocineStocks")
+    assert allocine_stocks_provider  # helps mypy
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(allocine_stocks_provider.id)
     provider_manager.synchronize_venue_providers(venue_providers)
 
 
@@ -125,8 +126,9 @@ def synchronize_allocine_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
 def synchronize_cine_office_stocks() -> None:
     """Launch Cine Office synchronization."""
-    cine_office_stocks_provider_id = providers_repository.get_provider_by_local_class("CDSStocks").id
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider_id)
+    cine_office_stocks_provider = providers_repository.get_provider_by_local_class("CDSStocks")
+    assert cine_office_stocks_provider  # helps mypy
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cine_office_stocks_provider.id)
     provider_manager.synchronize_venue_providers(venue_providers)
 
 
@@ -136,8 +138,9 @@ def synchronize_cine_office_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_BOOST_API_INTEGRATION)
 def synchronize_boost_stocks() -> None:
     """Launch Boost synchronization."""
-    boost_stocks_provider_id = providers_repository.get_provider_by_local_class("BoostStocks").id
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(boost_stocks_provider_id)
+    boost_stocks_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+    assert boost_stocks_provider  # helps mypy
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(boost_stocks_provider.id)
     provider_manager.synchronize_venue_providers(venue_providers)
 
 
@@ -147,8 +150,9 @@ def synchronize_boost_stocks() -> None:
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_CGR_INTEGRATION)
 def synchronize_cgr_stocks() -> None:
     """Launch CGR synchronization."""
-    cgr_stocks_provider_id = providers_repository.get_provider_by_local_class("CGRStocks").id
-    venue_providers = providers_repository.get_active_venue_providers_by_provider(cgr_stocks_provider_id)
+    cgr_stocks_provider = providers_repository.get_provider_by_local_class("CGRStocks")
+    assert cgr_stocks_provider  # helps mypy
+    venue_providers = providers_repository.get_active_venue_providers_by_provider(cgr_stocks_provider.id)
     provider_manager.synchronize_venue_providers(venue_providers)
 
 

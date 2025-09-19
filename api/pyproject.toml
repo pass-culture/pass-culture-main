@@ -3,9 +3,7 @@ name = "pcapi"
 version = "0.0.0"
 description = "The backend of the pass Culture"
 license = "MPL-2.0"
-authors = [
-  { name = "Equipe pass Culture", email = "<contact@passculture.app>" },
-]
+authors = [{ name = "Equipe pass Culture", email = "<contact@passculture.app>" }]
 requires-python = ">=3.11,<4.0"
 
 [tool.poetry.dependencies]
@@ -21,17 +19,17 @@ brevo-python = "1.2.0"
 celery = { version = "5.5.3", extras = ["redis"] }
 click = "8.3.0"
 click-option-group = "0.5.7"
-clickhouse-sqlalchemy = "0.2.9"
+clickhouse-sqlalchemy = "0.3.2"
 cryptography = "^46.0.1"
 ecdsa = "0.19.1"                     # <0.20.0
 email-validator = "2.3.0"
 factory-boy = "3.3.3"
-flask = "2.0.*"
+flask = "3.1.2"
 flask-cors = "6.0.1"
 flask-jwt-extended = "4.7.1"
-flask-login = "0.5.0"
+flask-login = "0.6.3"
 flask-shell-ipython = "^0.5.3"
-flask-sqlalchemy = "2.5.*"
+flask-sqlalchemy = "3.1.1"
 flask-wtf = "1.2.2"
 flower = "2.0.1"
 geoalchemy2 = "^0.18.0"
@@ -81,14 +79,14 @@ spectree = "1.2.1"
 # Do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = { version = "1.4.54", extras = ["mypy"] }
+sqlalchemy = { version = "2.0.41", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "2.19.0"
 # FIXME (fseguin-pass) tornado is a flower dependency. Dependabot cannot bump it to 6.5 so we bump it here manually
 tornado = "^6.5.2"
 transitions = "^0.9.3"
 weasyprint = "66.0"
-werkzeug = "2.0.3"
+werkzeug = "3.1.3"
 wtforms = "3.2.1"
 wtforms-sqlalchemy = "0.4.2"
 xlsxwriter = "3.2.9"
@@ -136,7 +134,7 @@ warn_unused_ignores = true
 show_error_codes = true
 warn_redundant_casts = true
 local_partial_types = true
-plugins = "sqlalchemy.ext.mypy.plugin, pydantic.mypy"
+plugins = "pydantic.mypy"
 exclude = """
 (?x)(
     tests/.*
@@ -240,14 +238,7 @@ ignore = [
 case-sensitive = true
 force-single-line = true
 lines-after-imports = 2
-section-order = [
-  "future",
-  "standard-library",
-  "third-party",
-  "first-party",
-  "tests",
-  "local-folder",
-]
+section-order = ["future", "standard-library", "third-party", "first-party", "tests", "local-folder"]
 
 [tool.ruff.lint.isort.sections]
 tests = ["tests"]

@@ -3,7 +3,6 @@ import enum
 import sqlalchemy as sa
 import sqlalchemy.ext.hybrid as sa_hybrid
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.orm import declarative_mixin
 from sqlalchemy.sql.elements import BinaryExpression
 
 
@@ -16,9 +15,9 @@ class ValidationStatus(enum.Enum):
     CLOSED = "CLOSED"
 
 
-@declarative_mixin
+@sa_orm.declarative_mixin
 class ValidationStatusMixin:
-    validationStatus: sa_orm.Mapped[ValidationStatus] = sa.Column(
+    validationStatus: sa_orm.Mapped[ValidationStatus] = sa_orm.mapped_column(
         sa.Enum(ValidationStatus, create_constraint=False), nullable=False
     )
 

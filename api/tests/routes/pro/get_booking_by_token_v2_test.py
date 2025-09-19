@@ -111,6 +111,7 @@ class Returns403Test:
         num_queries += 1  # select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.get(url)
             assert response.status_code == 403
@@ -131,6 +132,7 @@ class Returns403Test:
         num_queries += 1  # select booking, stock, offer, venue, address
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(num_queries):
@@ -157,6 +159,7 @@ class Returns403Test:
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(num_queries):
             response = client.get(url)
@@ -176,6 +179,7 @@ class Returns403Test:
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(num_queries):
@@ -199,6 +203,7 @@ class Returns404Test:
         num_queries += 1  # Select user
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.get("/bookings/token/UNKNOWN")
             assert response.status_code == 404
@@ -219,6 +224,7 @@ class Returns410Test:
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
         num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
         token = booking.token
         with testing.assert_num_queries(num_queries):
             response = client.get(f"/bookings/token/{token}")
@@ -237,6 +243,7 @@ class Returns410Test:
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
+        num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         client = client.with_session_auth(pro.email)
         with testing.assert_num_queries(num_queries):

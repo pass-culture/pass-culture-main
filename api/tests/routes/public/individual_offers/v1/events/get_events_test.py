@@ -19,6 +19,7 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     num_queries_with_error = 1  # select api_key, offerer and provider
     num_queries_with_error += 1  # check provider EXISTS
     num_queries_with_error += 1  # rollback atomic
+    num_queries_with_error += 1  # rollback atomic
 
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # check provider EXISTS

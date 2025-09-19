@@ -407,11 +407,12 @@ class Returns403Test:
 
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
-        expected_num_queries = 5
+        expected_num_queries = 6
         # session
         # user
         # offerer
         # user_offerer
+        # rollback
         # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
@@ -491,11 +492,12 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        expected_num_queries = 5
+        expected_num_queries = 6
         # session
         # user
         # collective_offer_request
         # user_offerer
+        # rollback
         # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(dst)
@@ -515,6 +517,6 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        with assert_num_queries(4):  #  session + user + collective_offer_request + rollback
+        with assert_num_queries(5):  #  session + user + collective_offer_request + rollback + rollback
             response = client.get(dst)
             assert response.status_code == 404

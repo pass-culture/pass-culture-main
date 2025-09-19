@@ -23,7 +23,6 @@ from sqlalchemy.sql.selectable import Exists
 
 import pcapi.utils.db as db_utils
 from pcapi import settings
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -50,27 +49,31 @@ class DepositType(enum.Enum):
     GRANT_18 = "GRANT_18"
 
 
-class Deposit(PcObject, Base, Model):
+class Deposit(PcObject, Model):
     __tablename__ = "deposit"
-    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
-    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
 
     user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="deposits")
 
     bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="deposit")
 
-    source: str = sa.Column(sa.String(300), nullable=False)
+    source: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(300), nullable=False)
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
 
-    dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    dateUpdated = sa_orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
-    expirationDate = sa.Column(sa.DateTime, nullable=True)
+    expirationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    version: int = sa.Column(sa.SmallInteger, nullable=False)
+    version: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.SmallInteger, nullable=False)
 
-    type: DepositType = sa.Column(
+    type: sa_orm.Mapped[DepositType] = sa_orm.mapped_column(
         sa.Enum(DepositType, native_enum=False, create_constraint=False),
         nullable=False,
         server_default=DepositType.GRANT_18.value,
@@ -148,24 +151,27 @@ class RecreditType(enum.Enum):
     FINANCE_INCIDENT_RECREDIT = "FinanceIncidentRecredit"
 
 
-class Recredit(PcObject, Base, Model):
+class Recredit(PcObject, Model):
     __tablename__ = "recredit"
-    depositId: int = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False, index=True)
-
+    depositId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False, index=True
+    )
     deposit: sa_orm.Mapped[Deposit] = sa_orm.relationship(
         "Deposit", foreign_keys=[depositId], back_populates="recredits"
     )
 
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
 
-    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
+    amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
-    recreditType: RecreditType = sa.Column(
+    recreditType: sa_orm.Mapped[RecreditType] = sa_orm.mapped_column(
         sa.Enum(RecreditType, native_enum=False, create_constraint=False),
         nullable=False,
     )
 
-    comment = sa.Column(sa.Text, nullable=True)
+    comment = sa_orm.mapped_column(sa.Text, nullable=True)
 
 
 class FinanceEventStatus(enum.Enum):
@@ -246,21 +252,23 @@ class BankAccountApplicationStatus(enum.Enum):
     WITH_PENDING_CORRECTIONS = "a_corriger"
 
 
-class BankAccount(PcObject, Base, Model, DeactivableMixin):
+class BankAccount(PcObject, Model, DeactivableMixin):
     __tablename__ = "bank_account"
-    label: str = sa.Column(sa.String(100), nullable=False)
-    offererId: int = sa.Column(
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(100), nullable=False)
+    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["offerers_models.Offerer"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], back_populates="bankAccounts"
     )
-    iban: str = sa.Column(sa.String(27), nullable=False)
-    dsApplicationId: int | None = sa.Column(sa.BigInteger, nullable=True, unique=True)
-    status: sa_orm.Mapped[BankAccountApplicationStatus] = sa.Column(
-        sa.Enum(BankAccountApplicationStatus), nullable=False
+    iban: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(27), nullable=False)
+    dsApplicationId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, nullable=True, unique=True)
+    status: sa_orm.Mapped[BankAccountApplicationStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(BankAccountApplicationStatus, use_values=False), nullable=False
     )
-    dateCreated: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
     venueLinks: sa_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sa_orm.relationship(
         "VenueBankAccountLink", back_populates="bankAccount", passive_deletes=True
     )
@@ -270,7 +278,7 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         foreign_keys="BankAccountStatusHistory.bankAccountId",
         uselist=True,
     )
-    lastCegidSyncDate = sa.Column(sa.DateTime, nullable=True)
+    lastCegidSyncDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
@@ -280,16 +288,18 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
         return None
 
 
-class BankAccountStatusHistory(PcObject, Base, Model):
+class BankAccountStatusHistory(PcObject, Model):
     __tablename__ = "bank_account_status_history"
-    bankAccountId: int = sa.Column(
+    bankAccountId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=False
     )
     bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship(
         BankAccount, foreign_keys=[bankAccountId], back_populates="statusHistory"
     )
-    status: BankAccountApplicationStatus = sa.Column(sa.Enum(BankAccountApplicationStatus), nullable=False)
-    timespan: psycopg2.extras.DateTimeRange = sa.Column(sa_psql.TSRANGE, nullable=False)
+    status: sa_orm.Mapped[BankAccountApplicationStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(BankAccountApplicationStatus, use_values=False), nullable=False
+    )
+    timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # One status at a time per bank account.
@@ -301,28 +311,36 @@ class BankAccountStatusHistory(PcObject, Base, Model):
         super().__init__(**kwargs)
 
 
-class FinanceEvent(PcObject, Base, Model):
+class FinanceEvent(PcObject, Model):
     __tablename__ = "finance_event"
-    creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
     # In most cases, `valueDate` is `Booking.dateUsed` but it's useful
     # to denormalize it here: many queries use this column and we thus
     # avoid a JOIN.
-    valueDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    valueDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
     # The date that is used to price events in a determined, stable order.
-    pricingOrderingDate: datetime.datetime | None = sa.Column(sa.DateTime, nullable=True)
+    pricingOrderingDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    status: FinanceEventStatus = sa.Column(db_utils.MagicEnum(FinanceEventStatus), index=True, nullable=False)
-    motive: FinanceEventMotive = sa.Column(db_utils.MagicEnum(FinanceEventMotive), nullable=False)
+    status: sa_orm.Mapped[FinanceEventStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(FinanceEventStatus), index=True, nullable=False
+    )
+    motive: sa_orm.Mapped[FinanceEventMotive] = sa_orm.mapped_column(
+        db_utils.MagicEnum(FinanceEventMotive), nullable=False
+    )
 
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="finance_events"
     )
-    collectiveBookingId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True)
+    collectiveBookingId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
     collectiveBooking: sa_orm.Mapped["educational_models.CollectiveBooking | None"] = sa_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="finance_events"
     )
-    bookingFinanceIncidentId = sa.Column(
+    bookingFinanceIncidentId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("booking_finance_incident.id"), index=True, nullable=True
     )
     bookingFinanceIncident: sa_orm.Mapped["BookingFinanceIncident | None"] = sa_orm.relationship(
@@ -330,12 +348,12 @@ class FinanceEvent(PcObject, Base, Model):
     )
 
     # `venueId` is denormalized and comes from `booking.venueId`
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
+    venueId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
     venue: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
     # `pricingPointId` may be None if the related venue did not have
     # any pricing point when the finance event occurred. If so, it
     # will be populated later from `link_venue_to_pricing_point()`.
-    pricingPointId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
+    pricingPointId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True)
     pricingPoint: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship(
         "Venue", foreign_keys=[pricingPointId]
     )
@@ -383,7 +401,7 @@ class FinanceEvent(PcObject, Base, Model):
     )
 
 
-class CashflowPricing(Base, Model):
+class CashflowPricing(Model):
     """An association table between cashflows and pricings for their
     many-to-many relationship.
 
@@ -398,45 +416,57 @@ class CashflowPricing(Base, Model):
     """
 
     __tablename__ = "cashflow_pricing"
-    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
-    pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, primary_key=True)
+    cashflowId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True
+    )
+    pricingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, primary_key=True
+    )
 
 
-class Pricing(PcObject, Base, Model):
+class Pricing(PcObject, Model):
     __tablename__ = "pricing"
-    status: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
+    status: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PricingStatus), index=True, nullable=False
+    )
 
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="pricings"
     )
-    collectiveBookingId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True)
+    collectiveBookingId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
     collectiveBooking: sa_orm.Mapped["educational_models.CollectiveBooking | None"] = sa_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
-    eventId = sa.Column(sa.BigInteger, sa.ForeignKey("finance_event.id"), index=True, nullable=False)
+    eventId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("finance_event.id"), index=True, nullable=False)
     event: sa_orm.Mapped[FinanceEvent] = sa_orm.relationship("FinanceEvent", foreign_keys=[eventId], backref="pricings")
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venueId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
     venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
-    pricingPointId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPointId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
     pricingPoint: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship("Venue", foreign_keys=[pricingPointId])
 
-    creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
     # `valueDate` is `Booking.dateUsed` but it's useful to denormalize
     # it here: many queries use this column and we thus avoid a JOIN.
-    valueDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
+    valueDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
     # See the note about `amount` at the beginning of this module.
     # The amount is zero for bookings that are not reimbursable. We do
     # create 0-pricings for these bookings to avoid processing them
     # again and again.
-    amount: int = sa.Column(sa.Integer, nullable=False)
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
     # See constraints below about the relationship between rate,
     # standardRule and customRuleId.
-    standardRule: str = sa.Column(sa.Text, nullable=False)
-    customRuleId = sa.Column(sa.BigInteger, sa.ForeignKey("custom_reimbursement_rule.id"), index=True, nullable=True)
+    standardRule: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    customRuleId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("custom_reimbursement_rule.id"), index=True, nullable=True
+    )
     customRule: sa_orm.Mapped["CustomReimbursementRule | None"] = sa_orm.relationship(
         "CustomReimbursementRule", foreign_keys=[customRuleId]
     )
@@ -444,7 +474,7 @@ class Pricing(PcObject, Base, Model):
     # Revenue is in euro cents. It's the revenue of the pricing point
     # as of `pricing.valueDate` (thus including the related booking).
     # It is zero or positive.
-    revenue: int = sa.Column(sa.Integer, nullable=False)
+    revenue: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
     cashflows: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
         "Cashflow", secondary=CashflowPricing.__table__, back_populates="pricings"
@@ -493,30 +523,36 @@ class Pricing(PcObject, Base, Model):
         return sa.cast(sa.func.round(cls.amount * utils.EUR_TO_XPF_RATE), sa.Integer)
 
 
-class PricingLine(PcObject, Base, Model):
+class PricingLine(PcObject, Model):
     __tablename__ = "pricing_line"
-    pricingId = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True)
+    pricingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True)
     pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
 
     # See the note about `amount` at the beginning of this module.
-    amount: int = sa.Column(sa.Integer, nullable=False)
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
-    category: PricingLineCategory = sa.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
+    category: sa_orm.Mapped[PricingLineCategory] = sa_orm.mapped_column(
+        db_utils.MagicEnum(PricingLineCategory), nullable=False
+    )
 
 
-class PricingLog(PcObject, Base, Model):
+class PricingLog(PcObject, Model):
     """A pricing log is created whenever the status of a pricing
     changes.
     """
 
     __tablename__ = "pricing_log"
-    pricingId: int = sa.Column(sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=False)
+    pricingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=False
+    )
     pricing: sa_orm.Mapped[Pricing] = sa_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
 
-    timestamp: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    statusBefore: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
-    statusAfter: PricingStatus = sa.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
-    reason: PricingLogReason = sa.Column(db_utils.MagicEnum(PricingLogReason), nullable=False)
+    timestamp: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    statusBefore: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(db_utils.MagicEnum(PricingStatus), nullable=False)
+    statusAfter: sa_orm.Mapped[PricingStatus] = sa_orm.mapped_column(db_utils.MagicEnum(PricingStatus), nullable=False)
+    reason: sa_orm.Mapped[PricingLogReason] = sa_orm.mapped_column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
 # TODO(fseguin|dbaty, 2022-01-11): maybe merge with core.categories.subcategories.ReimbursementRuleChoices ?
@@ -584,7 +620,7 @@ class ReimbursementRule:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(PcObject, ReimbursementRule, Base, Model):
+class CustomReimbursementRule(PcObject, ReimbursementRule, Model):
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
@@ -594,19 +630,19 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Base, Model):
 
     __tablename__ = "custom_reimbursement_rule"
 
-    offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
+    offerId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("offer.id"), nullable=True)
 
     offer: sa_orm.Mapped["offers_models.Offer | None"] = sa_orm.relationship(
         "Offer", foreign_keys=[offerId], backref="custom_reimbursement_rules"
     )
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=True)
+    venueId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=True)
 
     venue: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], backref="custom_reimbursement_rules"
     )
 
-    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
+    offererId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
 
     offerer: sa_orm.Mapped["offerers_models.Offerer | None"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref="custom_reimbursement_rules"
@@ -615,18 +651,20 @@ class CustomReimbursementRule(PcObject, ReimbursementRule, Base, Model):
     # A list of identifiers of subcategories on which the rule applies.
     # If the list is empty, the rule applies on all offers of an
     # offerer.
-    subcategories: list[str] = sa.Column(sa_psql.ARRAY(sa.Text()), server_default="{}")
+    subcategories: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
+        sa_psql.ARRAY(sa.Text()), server_default="{}", nullable=True
+    )
 
     # The amount of the reimbursement, or NULL if `rate` is set.
-    amount: int = sa.Column(sa.Integer, nullable=True)
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=True)
     # rate is between 0 and 1 (included), or NULL if `amount` is set.
-    rate: decimal.Decimal = sa.Column(sa.Numeric(5, 4), nullable=True)
+    rate: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(5, 4), nullable=True)
 
     # timespan is an interval during which this rule is applicable
     # (see `is_active()` below). The lower bound is inclusive and
     # required. The upper bound is exclusive and optional. If there is
     # no upper bound, it means that the rule is still applicable.
-    timespan: psycopg2.extras.DateTimeRange = sa.Column(sa_psql.TSRANGE)
+    timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(sa_psql.TSRANGE, nullable=True)
 
     __table_args__ = (
         # A rule relates to an offer, a venue, or an offerer, never more than one.
@@ -717,12 +755,16 @@ CustomReimbursementRule.trig_ddl = """
 sa.event.listen(CustomReimbursementRule.__table__, "after_create", sa.DDL(CustomReimbursementRule.trig_ddl))
 
 
-class InvoiceCashflow(Base, Model):
+class InvoiceCashflow(Model):
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
     __tablename__ = "invoice_cashflow"
-    invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True)
-    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True)
+    invoiceId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True
+    )
+    cashflowId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, primary_key=True
+    )
 
     __table_args__ = (
         sa.PrimaryKeyConstraint(
@@ -733,7 +775,7 @@ class InvoiceCashflow(Base, Model):
     )
 
 
-class Cashflow(PcObject, Base, Model):
+class Cashflow(PcObject, Model):
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
@@ -741,15 +783,21 @@ class Cashflow(PcObject, Base, Model):
     """
 
     __tablename__ = "cashflow"
-    creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    status: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
+    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    status: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CashflowStatus), index=True, nullable=False
+    )
 
-    bankAccountId: int = sa.Column(
+    bankAccountId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         "bankAccountId", sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True
     )
     bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship(BankAccount, foreign_keys=[bankAccountId])
 
-    batchId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
+    batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), index=True, nullable=False
+    )
     batch: sa_orm.Mapped["CashflowBatch"] = sa_orm.relationship(
         "CashflowBatch", foreign_keys=[batchId], backref="cashflows"
     )
@@ -758,7 +806,7 @@ class Cashflow(PcObject, Base, Model):
     # The amount cannot be zero.
     # For now, only negative (outgoing) cashflows are automatically
     # generated. Positive (incoming) cashflows are manually created.
-    amount: int = sa.Column(sa.Integer, nullable=False)
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
     logs: sa_orm.Mapped[list["CashflowLog"]] = sa_orm.relationship(
         "CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp"
@@ -771,45 +819,57 @@ class Cashflow(PcObject, Base, Model):
     )
 
 
-class CashflowLog(PcObject, Base, Model):
+class CashflowLog(PcObject, Model):
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
 
     __tablename__ = "cashflow_log"
-    cashflowId: int = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, nullable=False)
+    cashflowId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, nullable=False
+    )
     cashflow: sa_orm.Mapped[Cashflow] = sa_orm.relationship(
         "Cashflow", foreign_keys=[cashflowId], back_populates="logs"
     )
-    timestamp: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    statusBefore: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
-    statusAfter: CashflowStatus = sa.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
-    details: dict | None = sa.Column(
+    timestamp: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    statusBefore: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CashflowStatus), nullable=False
+    )
+    statusAfter: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CashflowStatus), nullable=False
+    )
+    details: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), nullable=True, default={}, server_default="{}"
     )
 
 
-class CashflowBatch(PcObject, Base, Model):
+class CashflowBatch(PcObject, Model):
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
 
     __tablename__ = "cashflow_batch"
-    creationDate: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    cutoff: datetime.datetime = sa.Column(sa.DateTime, nullable=False, unique=True)
-    label: str = sa.Column(sa.Text, nullable=False, unique=True)
+    creationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    cutoff: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, unique=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
 
-class InvoiceLine(PcObject, Base, Model):
+class InvoiceLine(PcObject, Model):
     __tablename__ = "invoice_line"
-    invoiceId: int = sa.Column(sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, nullable=False)
+    invoiceId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, nullable=False
+    )
     invoice: sa_orm.Mapped["Invoice"] = sa_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
-    label: str = sa.Column(sa.Text, nullable=False)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
-    group: dict = sa.Column(sa_psql.JSONB, nullable=False)
-    contributionAmount: int = sa.Column(sa.Integer, nullable=False)
-    reimbursedAmount: int = sa.Column(sa.Integer, nullable=False)
-    rate: decimal.Decimal = sa.Column(
+    group: sa_orm.Mapped[dict] = sa_orm.mapped_column(sa_psql.JSONB, nullable=False)
+    contributionAmount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
+    reimbursedAmount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
+    rate: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
         sa.Numeric(5, 4, asdecimal=True),
         nullable=False,
     )
@@ -843,24 +903,26 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(PcObject, Base, Model):
+class Invoice(PcObject, Model):
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
 
     __tablename__ = "invoice"
-    date: datetime.datetime = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    reference: str = sa.Column(sa.Text, nullable=False, unique=True)
-    bankAccountId = sa.Column(sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True)
+    date: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    reference: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    bankAccountId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=True)
     bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
     # See the note about `amount` at the beginning of this module.
-    amount: int = sa.Column(sa.Integer, nullable=False)
-    token: str = sa.Column(sa.Text, unique=True, nullable=False)
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
+    token: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=False)
     lines: sa_orm.Mapped[list[InvoiceLine]] = sa_orm.relationship("InvoiceLine", back_populates="invoice")
     cashflows: sa_orm.Mapped[list[Cashflow]] = sa_orm.relationship(
         "Cashflow", secondary=InvoiceCashflow.__table__, back_populates="invoices"
     )
-    status: InvoiceStatus = sa.Column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
+    status: sa_orm.Mapped[InvoiceStatus] = sa_orm.mapped_column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
 
     @property
     def storage_object_id(self) -> str:
@@ -880,33 +942,35 @@ class Invoice(PcObject, Base, Model):
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(PcObject, Base, Model):
+class Payment(PcObject, Model):
     __tablename__ = "payment"
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="payments"
     )
-    collectiveBookingId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True)
+    collectiveBookingId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
     collectiveBooking: sa_orm.Mapped["educational_models.CollectiveBooking"] = sa_orm.relationship(
         "CollectiveBooking",
         foreign_keys=[collectiveBookingId],
         backref="payments",
     )
     # Contrary to other models, this amount is in euros, not eurocents.
-    amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
-    reimbursementRule = sa.Column(sa.String(200))
-    reimbursementRate = sa.Column(sa.Numeric(10, 2))
-    customReimbursementRuleId = sa.Column(
+    amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
+    reimbursementRule = sa_orm.mapped_column(sa.String(200))
+    reimbursementRate = sa_orm.mapped_column(sa.Numeric(10, 2))
+    customReimbursementRuleId = sa_orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("custom_reimbursement_rule.id"),
     )
     customReimbursementRule: sa_orm.Mapped[CustomReimbursementRule | None] = sa_orm.relationship(
         "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
     )
-    recipientName: str = sa.Column(sa.String(140), nullable=False)
-    recipientSiren: str = sa.Column(sa.String(9), nullable=False)
-    iban = sa.Column(sa.String(27), nullable=True)
-    bic = sa.Column(
+    recipientName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
+    recipientSiren: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(9), nullable=False)
+    iban = sa_orm.mapped_column(sa.String(27), nullable=True)
+    bic = sa_orm.mapped_column(
         sa.String(11),
         sa.CheckConstraint(
             "(iban IS NULL AND bic IS NULL) OR (iban IS NOT NULL AND bic IS NOT NULL)",
@@ -914,15 +978,15 @@ class Payment(PcObject, Base, Model):
         ),
         nullable=True,
     )
-    comment = sa.Column(sa.Text, nullable=True)
-    author: str = sa.Column(sa.String(27), nullable=False)
-    transactionEndToEndId: UUID = sa.Column(sa_psql.UUID(as_uuid=True), nullable=True)
-    transactionLabel = sa.Column(sa.String(140), nullable=True)
-    paymentMessageId = sa.Column(sa.BigInteger, sa.ForeignKey("payment_message.id"), nullable=True)
+    comment = sa_orm.mapped_column(sa.Text, nullable=True)
+    author: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(27), nullable=False)
+    transactionEndToEndId: sa_orm.Mapped[UUID] = sa_orm.mapped_column(sa_psql.UUID(as_uuid=True), nullable=True)
+    transactionLabel = sa_orm.mapped_column(sa.String(140), nullable=True)
+    paymentMessageId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("payment_message.id"), nullable=True)
     paymentMessage: sa_orm.Mapped["PaymentMessage"] = sa_orm.relationship(
         "PaymentMessage", foreign_keys=[paymentMessageId], backref=sa_orm.backref("payments")
     )
-    batchDate = sa.Column(sa.DateTime, nullable=True, index=True)
+    batchDate = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
     __table_args__ = (
         sa.CheckConstraint(
@@ -955,23 +1019,25 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(PcObject, Base, Model):
+class PaymentStatus(PcObject, Model):
     __tablename__ = "payment_status"
-    paymentId: int = sa.Column(sa.BigInteger, sa.ForeignKey("payment.id"), index=True, nullable=False)
+    paymentId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("payment.id"), index=True, nullable=False
+    )
     payment: sa_orm.Mapped[Payment] = sa_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
-    date: datetime.datetime = sa.Column(
+    date: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
-    status: TransactionStatus = sa.Column(sa.Enum(TransactionStatus), nullable=False)
-    detail = sa.Column(sa.VARCHAR(), nullable=True)
+    status: sa_orm.Mapped[TransactionStatus] = sa_orm.mapped_column(sa.Enum(TransactionStatus), nullable=False)
+    detail = sa_orm.mapped_column(sa.VARCHAR(), nullable=True)
 
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(PcObject, Base, Model):
+class PaymentMessage(PcObject, Model):
     __tablename__ = "payment_message"
-    name: str = sa.Column(sa.String(50), unique=True, nullable=False)
-    checksum: bytes = sa.Column(sa.LargeBinary(32), unique=True, nullable=False)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(50), unique=True, nullable=False)
+    checksum: sa_orm.Mapped[bytes] = sa_orm.mapped_column(sa.LargeBinary(32), unique=True, nullable=False)
 
 
 ##
@@ -996,39 +1062,41 @@ class FinanceIncidentRequestOrigin(enum.Enum):
     SUPPORT_PRO = "Support Pro"
 
 
-class FinanceIncident(PcObject, Base, Model):
+class FinanceIncident(PcObject, Model):
     __tablename__ = "finance_incident"
-    kind: IncidentType = sa.Column(
+    kind: sa_orm.Mapped[IncidentType] = sa_orm.mapped_column(
         sa.Enum(IncidentType, native_enum=False, create_contraint=False),
         nullable=False,
     )
-    status: IncidentStatus = sa.Column(
+    status: sa_orm.Mapped[IncidentStatus] = sa_orm.mapped_column(
         sa.Enum(IncidentStatus, native_enum=False, create_constraint=False),
         nullable=False,
         server_default=IncidentStatus.CREATED.value,
         default=IncidentStatus.CREATED,
     )
 
-    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False)
+    venueId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False)
     venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], backref="finance_incidents"
     )
 
-    details: dict = sa.Column(
+    details: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), nullable=False, default={}, server_default="{}"
     )
 
-    forceDebitNote: bool = sa.Column(sa.Boolean, nullable=False, server_default="false", default=False)
+    forceDebitNote: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default="false", default=False
+    )
 
-    zendeskId: int | None = sa.Column(sa.BigInteger, nullable=True, index=True)
+    zendeskId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, nullable=True, index=True)
 
-    origin: FinanceIncidentRequestOrigin = sa.Column(
+    origin: sa_orm.Mapped[FinanceIncidentRequestOrigin] = sa_orm.mapped_column(
         db_utils.MagicEnum(FinanceIncidentRequestOrigin),
         nullable=False,
         index=True,
     )
 
-    comment: str | None = sa.Column(sa.Text, nullable=True)
+    comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     @property
     def is_partial(self) -> bool:
@@ -1120,29 +1188,33 @@ class FinanceIncident(PcObject, Base, Model):
         return None
 
 
-class BookingFinanceIncident(PcObject, Base, Model):
+class BookingFinanceIncident(PcObject, Model):
     __tablename__ = "booking_finance_incident"
-    bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
+    bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
         "Booking", foreign_keys=[bookingId], backref="incidents"
     )
 
-    collectiveBookingId = sa.Column(sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True)
+    collectiveBookingId = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
     collectiveBooking: sa_orm.Mapped["educational_models.CollectiveBooking | None"] = sa_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="incidents"
     )
 
-    incidentId = sa.Column(sa.BigInteger, sa.ForeignKey("finance_incident.id"), index=True, nullable=False)
+    incidentId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("finance_incident.id"), index=True, nullable=False)
     incident: sa_orm.Mapped["FinanceIncident"] = sa_orm.relationship(
         "FinanceIncident", foreign_keys=[incidentId], backref="booking_finance_incidents"
     )
 
-    beneficiaryId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
+    beneficiaryId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
     beneficiary: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship(
         "User", foreign_keys=[beneficiaryId], backref="incidents"
     )
 
-    newTotalAmount: int = sa.Column(sa.Integer, nullable=False)  # in cents
+    newTotalAmount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)  # in cents
 
     __table_args__ = (
         # - incident is either individual or collective

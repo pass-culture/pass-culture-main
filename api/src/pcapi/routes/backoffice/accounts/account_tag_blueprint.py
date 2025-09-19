@@ -98,7 +98,7 @@ def create_account_tag() -> utils.BackofficeResponse:
             name=form.name.data,
             label=form.label.data,
             description=form.description.data,
-            categories=new_categories,  # type: ignore[arg-type]
+            categories=new_categories,
         )
         db.session.add(tag)
         db.session.flush()
@@ -114,19 +114,22 @@ def create_account_tag() -> utils.BackofficeResponse:
 def _update_user_tag(
     user_tag: users_models.UserTag,
     name: str | Sentinel = sentinel,
-    label: str | Sentinel = sentinel,
-    description: str | Sentinel = sentinel,
+    label: str | None | Sentinel = sentinel,
+    description: str | None | Sentinel = sentinel,
     categories: list[users_models.UserTagCategory] | Sentinel = sentinel,
 ) -> None:
     update = False
 
     if name is not sentinel:
+        assert isinstance(name, str)  # helps mypy
         user_tag.name = name
         update = True
     if label is not sentinel:
+        assert isinstance(label, str | None)  # helps mypy
         user_tag.label = label
         update = True
     if description is not sentinel:
+        assert isinstance(description, str | None)  # helps mypy
         user_tag.description = description
         update = True
     if categories is not sentinel:

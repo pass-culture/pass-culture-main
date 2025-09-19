@@ -6,7 +6,6 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 
 from pcapi import settings
-from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -15,14 +14,18 @@ if typing.TYPE_CHECKING:
     import pcapi.core.offers.models as offers_models
 
 
-class Highlight(PcObject, Base, Model):
+class Highlight(PcObject, Model):
     __tablename__ = "highlight"
 
-    name: sa_orm.Mapped[str] = sa.Column(sa.Text, nullable=False)
-    description: sa_orm.Mapped[str] = sa.Column("description", sa.Text, nullable=False)
-    availability_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa.Column(postgresql.TSRANGE, nullable=False)
-    highlight_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa.Column(postgresql.TSRANGE, nullable=False)
-    mediation_uuid: sa_orm.Mapped[str] = sa.Column(sa.Text, nullable=False, unique=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    description: sa_orm.Mapped[str] = sa_orm.mapped_column("description", sa.Text, nullable=False)
+    availability_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(
+        postgresql.TSRANGE, nullable=False
+    )
+    highlight_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(
+        postgresql.TSRANGE, nullable=False
+    )
+    mediation_uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
 
     @property
     def mediation_url(self) -> str:
@@ -35,15 +38,17 @@ class Highlight(PcObject, Base, Model):
     )
 
 
-class HighlightRequest(PcObject, Base, Model):
+class HighlightRequest(PcObject, Model):
     __tablename__ = "highlight_request"
 
-    offerId: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
+    )
     offer: sa_orm.Mapped["offers_models.Offer"] = sa_orm.relationship(
         "Offer", foreign_keys=[offerId], backref="highlight_requests"
     )
 
-    highlightId: sa_orm.Mapped[int] = sa.Column(
+    highlightId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("highlight.id"), index=True, nullable=False
     )
     highlight: sa_orm.Mapped["Highlight"] = sa_orm.relationship(

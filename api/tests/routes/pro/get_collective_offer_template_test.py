@@ -187,11 +187,12 @@ class Returns403Test:
 
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
-        expected_num_queries = 5
+        expected_num_queries = 6
         # get user_session
         # get user
         # get offerer
         # check user_offerer exists
+        # rollback
         # rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers-template/{offer_id}")

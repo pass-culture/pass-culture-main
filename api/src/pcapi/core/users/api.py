@@ -336,6 +336,7 @@ def reset_password_with_token(new_password: str, encoded_reset_password_token: s
     except exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
+    assert user  # helps mypy
     user.setPassword(new_password)
 
     if not user.isEmailValidated:
@@ -958,13 +959,13 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
 
 
 def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Query:
-    filters = []
+    filters: list[sa.ColumnElement | sa.BinaryExpression] = []
     name_term = None
 
     if not search_term:
         return accounts
 
-    term_filters: list[sa.sql.ColumnElement] = []
+    term_filters: list[sa.ColumnElement] = []
 
     # phone number
     try:
@@ -1042,13 +1043,13 @@ def search_public_account_in_history_email(search_query: str) -> sa_orm.Query:
     accounts = get_public_account_base_query()
 
     if not search_query:
-        return accounts.filter(False)
+        return accounts.filter(sa.false())
 
     # including old emails: look for validated email updates inside user_email_history
     return (
         accounts.join(models.UserEmailHistory)
         .filter(
-            models.UserEmailHistory.oldEmail == sanitized_term,
+            typing.cast(sa_orm.Mapped[str], models.UserEmailHistory.oldEmail) == sanitized_term,
             models.UserEmailHistory.eventType.in_(
                 {
                     models.EmailHistoryEventTypeEnum.NEW_EMAIL_SELECTION,
@@ -1073,7 +1074,7 @@ def get_public_account_base_query() -> sa_orm.Query:
         db.session.query(models.User)
         .outerjoin(models.User.backoffice_profile)
         .filter(
-            sa.or_(  # type: ignore[type-var]
+            sa.or_(
                 sa.and_(
                     sa.not_(models.User.has_pro_role),
                     sa.not_(models.User.has_non_attached_pro_role),
@@ -1228,7 +1229,7 @@ def get_recent_suspicious_logins(user: models.User) -> list[models.LoginDeviceHi
     recent_logins = (
         db.session.query(models.LoginDeviceHistory)
         .filter(
-            models.LoginDeviceHistory.user == user,
+            models.LoginDeviceHistory.userId == user.id,
             models.LoginDeviceHistory.dateCreated >= yesterday,
         )
         .all()

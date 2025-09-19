@@ -37,7 +37,7 @@ class CineofficeContext(PivotContext):
     @classmethod
     def get_edit_form(cls, pivot_id: int) -> forms.EditCineOfficeForm:
         pivot = db.session.query(providers_models.CDSCinemaDetails).filter_by(id=pivot_id).one_or_none()
-        if not pivot:
+        if not (pivot and pivot.cinemaProviderPivot and pivot.cinemaProviderPivot.venue):
             raise NotFound()
         form = forms.EditCineOfficeForm(
             venue_id=[pivot.cinemaProviderPivot.venue.id],

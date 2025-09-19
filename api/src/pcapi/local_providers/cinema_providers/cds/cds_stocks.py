@@ -1,5 +1,6 @@
 import decimal
 import logging
+import typing
 import uuid
 from datetime import datetime
 from typing import Iterator
@@ -63,7 +64,7 @@ class CDSStocks(LocalProvider):
         self.filtered_movie_showtimes = None
         self.price_category_labels: list[offers_models.PriceCategoryLabel] = (
             db.session.query(offers_models.PriceCategoryLabel)
-            .filter(offers_models.PriceCategoryLabel.venue == self.venue)
+            .filter(offers_models.PriceCategoryLabel.venueId == self.venue.id)
             .all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
@@ -116,7 +117,9 @@ class CDSStocks(LocalProvider):
         else:
             query = db.session.query(model_type).filter_by(idAtProviders=id_at_providers)
 
-        return query.one_or_none()
+        return typing.cast(
+            offers_models.Product | offers_models.Offer | offers_models.Stock | None, query.one_or_none()
+        )
 
     def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, offers_models.Offer):
@@ -143,6 +146,7 @@ class CDSStocks(LocalProvider):
         offer.product = self.product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
+        assert self.provider  # helps mypy
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
@@ -228,7 +232,7 @@ class CDSStocks(LocalProvider):
 
         # sort features list to have always same order for all providers VO/VF then 3D
         cds_stock.features = sorted(
-            [ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL.get(feature) for feature in features if feature], reverse=True
+            [ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL[feature] for feature in features if feature], reverse=True
         )
 
         if movie_festivals_api.should_apply_movie_festival_rate(cds_stock.offer.id, cds_stock.beginningDatetime.date()):
@@ -247,7 +251,7 @@ class CDSStocks(LocalProvider):
         if self.last_offer not in self.price_category_lists_by_offer:
             self.price_category_lists_by_offer[self.last_offer] = (
                 db.session.query(offers_models.PriceCategory)
-                .filter(offers_models.PriceCategory.offer == self.last_offer)
+                .filter(offers_models.PriceCategory.offerId == self.last_offer.id)
                 .all()
                 if self.last_offer.id
                 else []
@@ -305,6 +309,7 @@ class CDSStocks(LocalProvider):
         return shows_with_pass_culture_tariff
 
     def get_or_create_movie_product(self, movie: MediaCDS) -> offers_models.Product | None:
+        assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid(movie.id, self.venue)
         product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)

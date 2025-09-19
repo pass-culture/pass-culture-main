@@ -66,7 +66,6 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
             .load_only(aliased_venue.id, aliased_venue.name, aliased_venue.publicName),
         )
         .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
-        .options(sa_orm.selectinload(models.Venue.openingHours))
     ).one_or_none()
     if not venue:
         flask.abort(404)
@@ -174,7 +173,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
 def edit_venue_collective_data(
     venue_id: int, body: venues_serialize.EditVenueCollectiveDataBodyModel
 ) -> venues_serialize.GetVenueResponseModel:
-    venue = offerers_api.get_venue_by_id(venue_id)
+    venue = get_or_404(Venue, venue_id)
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 

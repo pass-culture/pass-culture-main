@@ -21,7 +21,7 @@ class DeletedRecordException(Exception):
 
 
 class PcObject:
-    id: sa_orm.Mapped[int] = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore
+    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     def __init__(self, **kwargs: typing.Any) -> None:
         from_dict = kwargs.pop("from_dict", None)
@@ -64,19 +64,24 @@ class PcObject:
         message = integrity_error.args[0]
         if not hasattr(getattr(integrity_error, "orig"), "pgcode"):
             return PcObject.restize_global_error(integrity_error)
-        if integrity_error.orig.pgcode == DUPLICATE_KEY_ERROR_CODE:
+        if getattr(integrity_error.orig, "pgcode", None) == DUPLICATE_KEY_ERROR_CODE:
             if m := re.search(r"Key \((.*?)\)=", message, re.IGNORECASE):
                 field = m.group(1)
                 if "," in field:
                     field = "global"
                 return (field, "Une entrée avec cet identifiant existe déjà dans notre base de données")
-        elif integrity_error.orig.pgcode == NOT_FOUND_KEY_ERROR_CODE:
+        elif getattr(integrity_error.orig, "pgcode", None) == NOT_FOUND_KEY_ERROR_CODE:
             if m := re.search(r"Key \((.*?)\)=", message, re.IGNORECASE):
                 field = m.group(1)
                 return (field, "Aucun objet ne correspond à cet identifiant dans notre base de données")
-        if integrity_error.orig.pgcode == OBLIGATORY_FIELD_ERROR_CODE:
-            if m := re.search('column "(.*?)"', integrity_error.orig.pgerror, re.IGNORECASE):
-                field = m.group(1)
+        if getattr(integrity_error.orig, "pgcode", None) == OBLIGATORY_FIELD_ERROR_CODE:
+            match = re.search(
+                'column "(.*?)"',
+                getattr(integrity_error.orig, "pgerror", ""),
+                re.IGNORECASE,
+            )
+            if match:
+                field = match.group(1)
                 return (field, "Ce champ est obligatoire")
         return PcObject.restize_global_error(integrity_error)
 

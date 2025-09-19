@@ -54,7 +54,9 @@ def get_all_offerers_for_user(
             sa.not_(models.UserOfferer.isRejected) & sa.not_(models.UserOfferer.isDeleted),
         ]
         if not include_non_validated_user_offerers:
-            user_offerer_filters.append(models.UserOfferer.isValidated)
+            user_offerer_filters.append(
+                typing.cast(sa.ColumnElement[bool], models.UserOfferer.isValidated),
+            )
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
 
     if validated is not None:
@@ -256,12 +258,13 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
 
 
 def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
+    typed_status_column = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], offers_models.Offer.status)
     return db.session.query(
         db.session.query(models.Venue)
         .join(offers_models.Offer, models.Venue.id == offers_models.Offer.venueId)
         .filter(models.Venue.managingOffererId == offerer_id)
         .filter(models.Venue.isVirtual.is_(True))
-        .filter(offers_models.Offer.status != offer_mixin.OfferValidationStatus.DRAFT.name)
+        .filter(typed_status_column != offer_mixin.OfferStatus.DRAFT.name)
         .exists()
     ).scalar()
 
@@ -334,20 +337,26 @@ def find_new_offerer_user_email(offerer_id: int) -> str:
 
 def venues_have_individual_offers(*venues: models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
+    typed_status_column = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], offers_models.Offer.status)
     return db.session.query(
         db.session.query(offers_models.Offer)
         .filter(
             offers_models.Offer.venueId.in_([venue.id for venue in venues]),
-            offers_models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name,
+            typed_status_column == offer_mixin.OfferStatus.ACTIVE.name,
         )
         .exists()
     ).scalar()
 
 
 def venues_have_collective_offers(*venues: models.Venue) -> bool:
+    typed_offer_displayed_status = typing.cast(
+        sa_orm.Mapped[educational_models.CollectiveOfferDisplayedStatus],
+        educational_models.CollectiveOfferTemplate.displayedStatus,
+    )
+
     venue_ids = [venue.id for venue in venues]
 
-    collective_offer_query = db.session.query(educational_models.CollectiveOffer.id).filter(
+    collective_offer_query: sa_orm.Query = db.session.query(educational_models.CollectiveOffer.id).filter(
         educational_models.CollectiveOffer.venueId.in_(venue_ids)
     )
 
@@ -362,19 +371,21 @@ def venues_have_collective_offers(*venues: models.Venue) -> bool:
         ],
     )
 
-    collective_offer_query = collective_offer_query.exists()
-
     collective_offer_template_query = (
         db.session.query(educational_models.CollectiveOfferTemplate.id)
         .filter(
             educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids),
-            educational_models.CollectiveOfferTemplate.displayedStatus
-            == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
+            typed_offer_displayed_status == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
         )
         .exists()
     )
 
-    return db.session.query(sa.or_(collective_offer_query, collective_offer_template_query)).scalar()
+    return db.session.query(
+        sa.or_(
+            collective_offer_query.exists(),
+            collective_offer_template_query,
+        ),
+    ).scalar()
 
 
 def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
@@ -396,11 +407,11 @@ def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
 
 
-def get_venue_by_id(venue_id: int) -> models.Venue:
+def get_venue_by_id(venue_id: int) -> models.Venue | None:
     return db.session.get(models.Venue, venue_id)
 
 
-def get_venues_by_ids(ids: typing.Collection[int]) -> typing.Collection[models.Venue]:
+def get_venues_by_ids(ids: typing.Collection[int]) -> sa_orm.Query[models.Venue]:
     return (
         db.session.query(models.Venue)
         .filter(models.Venue.id.in_(ids))
@@ -489,6 +500,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - isOnboarded
         - hasHeadlineOffer
     """
+    typed_headline_offer_active = typing.cast(sa_orm.Mapped[bool], offers_models.HeadlineOffer.isActive)
     has_non_free_offers_subquery = (
         sa.select(1)
         .select_from(offers_models.Stock)
@@ -634,7 +646,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .where(
             sa.and_(
                 models.Offerer.id == offerer_id,
-                offers_models.HeadlineOffer.isActive == True,
+                typed_headline_offer_active == True,
             )
         )
         .correlate(models.Offerer)
@@ -780,7 +792,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                 db.session.query(offers_models.Stock)
                 .join(
                     offers_models.Offer,
-                    sa.and_(  # type: ignore[type-var]
+                    sa.and_(
                         offers_models.Stock.offerId == offers_models.Offer.id,
                         offers_models.Offer.venueId == models.Venue.id,
                         offers_models.Stock.price > 0,
@@ -917,6 +929,10 @@ def get_number_of_pending_offers_for_offerer(offerer_id: int) -> int:
 
 
 def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int:
+    typed_template_displayed_stats = typing.cast(
+        sa_orm.Mapped[educational_models.CollectiveOfferDisplayedStatus],
+        educational_models.CollectiveOfferTemplate.displayedStatus,
+    )
     collective_offers_query = (
         db.session.query(educational_models.CollectiveOffer)
         .join(models.Venue)
@@ -932,8 +948,7 @@ def get_number_of_bookable_collective_offers_for_offerer(offerer_id: int) -> int
         .join(models.Venue)
         .filter(
             models.Venue.managingOffererId == offerer_id,
-            educational_models.CollectiveOfferTemplate.displayedStatus
-            == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
+            typed_template_displayed_stats == educational_models.CollectiveOfferDisplayedStatus.PUBLISHED.value,
         )
         .with_entities(educational_models.CollectiveOfferTemplate.id)
     )
@@ -986,7 +1001,17 @@ def get_offerer_addresses(
     """When with_offers_option is provided, fetch only OffererAddress objects that are related to offers of the given type"""
 
     query = (
-        db.session.query(models.OffererAddress)
+        db.session.query(
+            models.OffererAddress.id,
+            geography_models.Address.id.label("addressId"),
+            models.OffererAddress.label,
+            typing.cast(sa_orm.Mapped[str], models.Venue.common_name),
+            models.Venue.id.label("venueId"),
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.departmentCode,
+        )
         .filter(models.OffererAddress.offererId == offerer_id)
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
         .outerjoin(models.Venue, models.Venue.offererAddressId == models.OffererAddress.id)
@@ -999,36 +1024,12 @@ def get_offerer_addresses(
         )
         query = query.where(subquery.filter(offer_model.offererAddressId == models.OffererAddress.id).exists())
 
-    query = query.with_entities(
-        models.OffererAddress.id,
-        geography_models.Address.id.label("addressId"),
-        models.OffererAddress.label,
-        models.Venue.common_name,
-        models.Venue.id.label("venueId"),
-        geography_models.Address.street,
-        geography_models.Address.postalCode,
-        geography_models.Address.city,
-        geography_models.Address.departmentCode,
-    )
     query = query.order_by(models.OffererAddress.label)
     return query
 
 
-def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> models.OffererAddress:
-    return (
-        db.session.query(models.OffererAddress)
-        .where(models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id)
-        .options(
-            sa_orm.with_expression(
-                models.OffererAddress._isLinkedToVenue,
-                models.OffererAddress.isLinkedToVenue.expression,  # type: ignore[attr-defined]
-            )
-        )
-        .one_or_none()
-    )
-
-
 def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
+    typed_headline_offer_active = typing.cast(sa_orm.Mapped[bool], offers_models.HeadlineOffer.isActive)
     return (
         db.session.query(offers_models.Offer)
         .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
@@ -1039,6 +1040,9 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
             sa_orm.joinedload(offers_models.Offer.mediations),
             sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
         )
-        .filter(models.Offerer.id == offerer_id, offers_models.HeadlineOffer.isActive == True)
+        .filter(
+            models.Offerer.id == offerer_id,
+            typed_headline_offer_active == True,
+        )
         .one()
     )
