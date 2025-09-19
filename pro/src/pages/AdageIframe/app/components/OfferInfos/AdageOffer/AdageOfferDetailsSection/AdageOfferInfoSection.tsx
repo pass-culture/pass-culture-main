@@ -3,7 +3,6 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   type GetCollectiveOfferLocationModel,
-  OfferAddressType,
 } from '@/apiClient/adage'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
@@ -17,26 +16,6 @@ import { getBookableOfferStockPrice } from '../utils/adageOfferStocks'
 
 export type AdageOfferInfoSectionProps = {
   offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
-}
-
-export function getLocationForOfferVenue(
-  offerVenue: CollectiveOfferResponseModel['offerVenue']
-) {
-  switch (offerVenue.addressType) {
-    case OfferAddressType.OTHER:
-      return offerVenue.otherAddress
-    case OfferAddressType.SCHOOL:
-      return 'Le partenaire culturel se déplace dans les établissements scolaires.'
-    default:
-      return (
-        <>
-          <div>{offerVenue.publicName || offerVenue.name}</div>
-          <div>
-            {offerVenue.address}, {offerVenue.postalCode} {offerVenue.city}
-          </div>
-        </>
-      )
-  }
 }
 
 export function getLocation(
@@ -105,7 +84,7 @@ export const AdageOfferInfoSection = ({
       </div>
 
       {!isOfferBookable &&
-        offer.offerVenue.addressType !== OfferAddressType.OFFERER_VENUE &&
+        offer.location?.locationType !== CollectiveLocationType.ADDRESS &&
         interventionArea.length > 0 && (
           <div className={styles['offer-section-group-item']}>
             <h3 className={styles['offer-section-group-item-subtitle']}>
