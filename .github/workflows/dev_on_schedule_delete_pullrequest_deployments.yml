@@ -32,7 +32,7 @@ jobs:
       # Get github api token
       - name: "Get secrets (github)"
         id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
