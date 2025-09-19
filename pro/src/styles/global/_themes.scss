@@ -1,17 +1,8 @@
 :root {
-  // STATE COLORS
-  --color-valid: #15884f;
-  --color-alert-dark: #f9c030;
-
-  // GRADIENTS COLORS
-  --color-loading-skeleton: linear-gradient(90deg,
-      #f1f1f4 25%,
-      #e1e1e7 50%,
-      #f1f1f4 75%);
   --shadow-overlay: var(--size-spacing-xxs) var(--size-spacing-m) var(--size-spacing-xxl) var(--color-background-shadow-overlay);
 
   // ADAGE COLORS
-  // waiting for designer approval :
+  // These must be replaced with brand and decorative colors
   --color-adage-purple: #4613ad;
   --color-adage-orange-light: #fa9f16;
   --color-adage-orange-dark: #b85901;
