@@ -7,7 +7,7 @@ import {
 } from '@/apiClient/adage'
 import { isCollectiveOfferBookable } from '@/pages/AdageIframe/app/types'
 
-import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+import { getInterventionAreaLabelsToDisplay } from '../../../OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 import styles from '../AdageOffer.module.scss'
 import {
   getFormattedDatesForBookableOffer,
