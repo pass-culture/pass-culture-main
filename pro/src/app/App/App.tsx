@@ -7,9 +7,8 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router'
-import useSWR, { SWRConfig } from 'swr'
+import { SWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
@@ -36,8 +35,6 @@ import { usePageTitle } from './hook/usePageTitle'
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
-const fetchOfferer = (id: number) => api.getOfferer(id)
-
 export const App = (): JSX.Element | null => {
   const location = useLocation()
   const navigate = useNavigate()
@@ -55,13 +52,16 @@ export const App = (): JSX.Element | null => {
   const [searchParams] = useSearchParams()
 
   const fromBo = searchParams.get('from-bo')
-  const structureId = fromBo ? Number(searchParams.get('structure')) : null
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = fromBo
+    ? Number(searchParams.get('structure'))
+    : selectedOffererId
 
-  const { data: offerer, error } = useSWR(
-    structureId ? ['offerer', structureId] : null,
-    ([_key, id]: [string, number]) => fetchOfferer(id),
-    { revalidateOnFocus: false }
-  )
+  const {
+    data: offerer,
+    error: offererApiError,
+    isValidating: isOffererValidating,
+  } = useOfferer(offererId)
 
   useEffect(() => {
     if (offerer) {
@@ -75,12 +75,6 @@ export const App = (): JSX.Element | null => {
     }
   }, [offerer, dispatch, navigate, searchParams])
 
-  useEffect(() => {
-    if (error) {
-      notify.error(GET_DATA_ERROR_MESSAGE)
-    }
-  }, [error, notify])
-
   // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
   useSentry()
@@ -88,11 +82,6 @@ export const App = (): JSX.Element | null => {
   useFirebase(consentedToFirebase)
   useLogNavigation()
   useLogExtraProData()
-
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  const { error: offererApiError, isValidating: isOffererValidating } =
-    useOfferer(selectedOffererId, true)
 
   const isAwaitingRattachment = !isOffererValidating && offererApiError
 
