@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> educational_models.CollectiveStock | None:
-    offer_id = stock_data.offer_id
-    start = stock_data.start_datetime
-    end = stock_data.end_datetime
-    booking_limit_datetime = stock_data.booking_limit_datetime
-    total_price = stock_data.total_price
-    number_of_tickets = stock_data.number_of_tickets
-    educational_price_detail = stock_data.educational_price_detail
+    offer_id = stock_data.offerId
+    start = stock_data.startDatetime
+    end = stock_data.endDatetime
+    booking_limit_datetime = stock_data.bookingLimitDatetime
+    total_price = stock_data.totalPrice
+    number_of_tickets = stock_data.numberOfTickets
+    educational_price_detail = stock_data.educationalPriceDetail
 
     if end:
         validation.check_start_and_end_dates_in_same_educational_year(start, end)
