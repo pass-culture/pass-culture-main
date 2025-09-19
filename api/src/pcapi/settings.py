@@ -457,6 +457,8 @@ CREATE_ADAGE_TESTING_DATA = bool(int(os.environ.get("CREATE_ADAGE_TESTING_DATA",
 
 EAC_OFFER_PRICE_LIMIT = int(os.environ.get("EAC_OFFER_PRICE_LIMIT", 60_000))
 EAC_NUMBER_OF_TICKETS_LIMIT = int(os.environ.get("EAC_NUMBER_OF_TICKETS_LIMIT", 3_000))
+# We set this flag to False in integration because we do not import deposits
+EAC_CHECK_INSTITUTION_FUND = bool(int(os.environ.get("EAC_CHECK_INSTITUTION_FUND", "1")))
 
 # EDUCONNECT
 API_URL_FOR_EDUCONNECT = os.environ.get(
