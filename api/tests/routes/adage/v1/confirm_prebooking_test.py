@@ -8,6 +8,7 @@ import time_machine
 from pcapi.core import testing
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import EducationalCurrentYearFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
@@ -256,6 +257,42 @@ class Returns200Test:
         with testing.assert_num_queries(self.expected_num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
         assert response.status_code == 200
+
+    @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
+    def test_no_deposit_without_check(self, client):
+        booking = PendingCollectiveBookingFactory()
+
+        client = client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        db.session.refresh(booking)
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+
+    @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
+    def test_insufficient_fund_without_check(self, client) -> None:
+        educational_institution = EducationalInstitutionFactory()
+        educational_year = EducationalCurrentYearFactory()
+        EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=Decimal(100),
+            isFinal=True,
+        )
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(400),
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+        )
+
+        client = client.with_eac_token()
+        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        db.session.refresh(booking)
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
 
 
 class ReturnsErrorTest:
