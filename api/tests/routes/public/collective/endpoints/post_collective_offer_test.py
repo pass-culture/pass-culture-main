@@ -393,44 +393,45 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.json == {"location.AddressLocation.addressId": ["There is no address with id -1"]}
 
     @time_machine.travel(time_travel_str)
-    def test_post_offers_location_address_with_no_address_id(self, public_client, minimal_payload, venue):
-        payload = {
-            **minimal_payload,
-            "location": {
-                "type": "ADDRESS",
-                "addressLabel": "My second address",
-                "isVenueAddress": False,
-            },
-        }
+    @pytest.mark.parametrize(
+        "location,error",
+        [
+            (None, "Le champ location doit être un objet"),
+            (1, "Le champ location doit être un objet"),
+            ({}, "Le champ type est requis"),
+            ({"type": "bloup"}, "Les valeurs autorisées pour le champ type sont SCHOOL, ADDRESS, TO_BE_DEFINED"),
+            ({"type": "SCHOOL", "isVenueAddress": True}, "Quand type=SCHOOL, aucun autre champ n'est accepté"),
+            (
+                {"type": "ADDRESS", "locationComment": "hello"},
+                "Quand type=ADDRESS, seuls les champs isVenueAddress, addressId, addressLabel sont acceptés",
+            ),
+            ({"type": "ADDRESS"}, "Quand type=ADDRESS, isVenueAddress est requis"),
+            (
+                {"type": "ADDRESS", "isVenueAddress": True, "addressId": 1},
+                "Quand type=ADDRESS et isVenueAddress=true, aucun autre champ n'est accepté",
+            ),
+            (
+                {"type": "ADDRESS", "isVenueAddress": False},
+                "Quand type=ADDRESS et isVenueAddress=false, le champ addressId est requis",
+            ),
+            ({"type": "TO_BE_DEFINED", "addressId": 1}, "Quand type=TO_BE_DEFINED, seul le champ comment est accepté"),
+        ],
+    )
+    def test_post_offers_location_errors(self, public_client, minimal_payload, location, error):
+        payload = {**minimal_payload, "location": location}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = public_client.post("/v2/collective/offers/", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {
-            "location.addressId": ["field required"],
-            "location.addressLabel": [
-                "extra fields not permitted",
-                "extra fields not permitted",
-                "extra fields not permitted",
-            ],
-            "location.isVenueAddress": [
-                "extra fields not permitted",
-                "unexpected value; permitted: True",
-                "extra fields not permitted",
-            ],
-            "location.type": [
-                "unexpected value; permitted: 'SCHOOL'",
-                "unexpected value; permitted: 'TO_BE_DEFINED'",
-            ],
-        }
+        assert response.json == {"location": [error]}
 
     @time_machine.travel(time_travel_str)
-    def test_post_offers_without_location(self, public_client, payload):
-        del payload["location"]
+    def test_post_offers_without_location(self, public_client, minimal_payload):
+        del minimal_payload["location"]
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = public_client.post("/v2/collective/offers/", json=payload)
+            response = public_client.post("/v2/collective/offers/", json=minimal_payload)
 
         assert response.status_code == 400
         assert response.json == {"location": ["field required"]}
