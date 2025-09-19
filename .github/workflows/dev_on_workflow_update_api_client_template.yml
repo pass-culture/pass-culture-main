@@ -84,7 +84,7 @@ jobs:
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d
       - name: 'Set up Cloud SDK'
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: 'google-github-actions/setup-gcloud@v2'
+        uses: 'google-github-actions/setup-gcloud@v3'
       - name: "Run API server"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
