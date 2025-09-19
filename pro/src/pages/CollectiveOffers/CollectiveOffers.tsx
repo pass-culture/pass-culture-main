@@ -11,11 +11,9 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
@@ -32,20 +30,11 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   const navigate = useNavigate()
-  const offererId = useSelector(selectCurrentOffererId)?.toString()
+  const offerer = useSelector(selectCurrentOfferer)
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
-
-  const {
-    data: offerer,
-    isLoading: isOffererLoading,
-    isValidating: isOffererValidating,
-  } = useOfferer(
-    offererId !== defaultCollectiveFilters.offererId ? offererId : null,
-    true
-  )
 
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -64,13 +53,13 @@ export const CollectiveOffers = (): JSX.Element => {
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: false,
     urlSearchFilters: finalSearchFilters,
-    selectedOffererId: offererId ?? '',
+    selectedOffererId: offerer?.id.toString() ?? '',
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
     ...finalSearchFilters,
-    ...{ offererId: offererId?.toString() ?? 'all' },
+    ...{ offererId: offerer?.id?.toString() ?? 'all' },
   }
   delete apiFilters.page
 
@@ -108,21 +97,15 @@ export const CollectiveOffers = (): JSX.Element => {
           : 'Offres collectives'
       }
     >
-      {/* When the venues are cached for a given offerer, we still need to reset the Screen component.
-      SWR isLoading is only true when the data is not cached, while isValidating is always set to true when the key is updated */}
-      {isOffererLoading || isOffererValidating ? (
-        <Spinner />
-      ) : (
-        <CollectiveOffersScreen
-          currentPageNumber={currentPageNumber}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offerer={offerer}
-          offers={offersQuery.data}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
-        />
-      )}
+      <CollectiveOffersScreen
+        currentPageNumber={currentPageNumber}
+        initialSearchFilters={apiFilters}
+        isLoading={offersQuery.isLoading}
+        offerer={offerer}
+        offers={offersQuery.data}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+      />
     </BasicLayout>
   )
 }

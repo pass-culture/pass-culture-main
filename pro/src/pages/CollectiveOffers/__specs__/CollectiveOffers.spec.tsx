@@ -641,9 +641,6 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
   beforeEach(() => {
     vi.mocked(useActiveFeature).mockReturnValue(true)
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-    })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
