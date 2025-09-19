@@ -49,12 +49,8 @@ export const AddressManual = ({
       <FormLayout.Row mdSpaceAfter>
         <TextInput
           label="Adresse postale"
-          charactersCount={{
-            max: 200,
-            current: methods.watch('street')?.length || 0,
-          }}
+          maxCharactersCount={200}
           disabled={readOnlyFields.includes('street')}
-          maxLength={200}
           {...methods.register('street')}
           error={methods.formState.errors.street?.message}
           required
@@ -64,10 +60,7 @@ export const AddressManual = ({
         <div className={styles['field-cp']}>
           <TextInput
             label="Code postal"
-            charactersCount={{
-              max: 5,
-              current: methods.watch('postalCode')?.length || 0,
-            }}
+            maxCharactersCount={5}
             disabled={readOnlyFields.includes('postalCode')}
             {...methods.register('postalCode')}
             error={methods.formState.errors.postalCode?.message}
@@ -78,10 +71,7 @@ export const AddressManual = ({
           <TextInput
             label="Ville"
             disabled={readOnlyFields.includes('city')}
-            charactersCount={{
-              max: 50,
-              current: methods.watch('city')?.length || 0,
-            }}
+            maxCharactersCount={50}
             {...methods.register('city')}
             error={methods.formState.errors.city?.message}
             required

@@ -6,6 +6,8 @@ import {
   forwardRef,
   type KeyboardEventHandler,
   useId,
+  useImperativeHandle,
+  useRef,
 } from 'react'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -31,10 +33,7 @@ export type TextInputProps = {
   error?: string
   required?: boolean
   asterisk?: boolean
-  charactersCount?: {
-    current: number
-    max: number
-  }
+  maxCharactersCount?: number
   step?: number | string
   min?: number | string
   max?: number | string
@@ -57,7 +56,7 @@ export const TextInput = forwardRef(
       error,
       required = false,
       asterisk = true,
-      charactersCount,
+      maxCharactersCount,
       icon,
       iconButton,
       onChange,
@@ -77,8 +76,11 @@ export const TextInput = forwardRef(
     const descriptionId = useId()
     const errorId = useId()
     const charactersCountId = useId()
+    const inputRef = useRef<HTMLInputElement>(null)
 
-    const describedByIds = `${description ? descriptionId : ''} ${error ? errorId : ''} ${charactersCount ? charactersCountId : ''} ${describedBy ?? ''}`
+    const describedByIds = `${description ? descriptionId : ''} ${error ? errorId : ''} ${maxCharactersCount ? charactersCountId : ''} ${describedBy ?? ''}`
+
+    useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
     return (
       <div
@@ -112,13 +114,13 @@ export const TextInput = forwardRef(
             aria-describedby={describedByIds}
             aria-invalid={Boolean(error)}
             aria-required={required}
-            ref={ref}
+            ref={inputRef}
             name={name}
             onChange={onChange}
             onBlur={onBlur}
             onKeyDown={onKeyDown}
             value={value}
-            maxLength={charactersCount?.max}
+            maxLength={maxCharactersCount}
             autoComplete={autoComplete}
             spellCheck={type === 'number' ? 'false' : spellCheck}
             step={type === 'number' ? step : undefined}
@@ -132,7 +134,15 @@ export const TextInput = forwardRef(
         </div>
         <div className={styles['footer']}>
           <FieldFooter
-            charactersCount={charactersCount}
+            charactersCount={
+              maxCharactersCount !== undefined
+                ? {
+                    max: maxCharactersCount,
+                    current:
+                      value?.length || inputRef.current?.value.length || 0,
+                  }
+                : undefined
+            }
             charactersCountId={charactersCountId}
             error={error}
             errorId={errorId}

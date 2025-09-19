@@ -161,7 +161,7 @@ export const AdageMultiselect = ({
         <TextInput
           {...getInputProps()}
           type="search"
-          charactersCount={{ max: filterMaxLength, current: inputValue.length }}
+          maxCharactersCount={filterMaxLength}
           value={inputValue}
           aria-describedby={indicationId}
           icon={strokeSearch}

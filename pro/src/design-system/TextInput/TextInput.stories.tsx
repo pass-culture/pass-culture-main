@@ -49,14 +49,14 @@ export const IsRequired: Story = {
 export const HasCharactersCount: Story = {
   args: {
     label: 'Characters count',
-    charactersCount: { current: 100, max: 200 },
+    maxCharactersCount: 200
   },
 }
 
 export const HasCharactersCountAndError: Story = {
   args: {
     label: 'Characters count and error',
-    charactersCount: { current: 100, max: 200 },
+    maxCharactersCount: 200,
     error: 'This is an error message',
   },
 }
@@ -84,7 +84,7 @@ export const WithEverything: Story = {
     label: 'With everything',
     description: 'Format: test@test.co',
     error: 'This is an error message',
-    charactersCount: { current: 100, max: 200 },
+    maxCharactersCount: 200,
     icon: strokeSearchIcon,
     iconButton: {
       icon: fullClearIcon,
@@ -99,7 +99,7 @@ export const WithExtension: Story = {
     label: 'With extension',
     description: 'Format: test@test.co',
     error: 'This is an error message',
-    charactersCount: { current: 100, max: 200 },
+    maxCharactersCount: 200,
     extension: <>Extension</>,
   },
 }

@@ -351,7 +351,7 @@ export const ModalImageUpsertOrEdit = ({
                 <TextInput
                   label="Crédit de l’image"
                   name="credit"
-                  charactersCount={{ current: credit.length, max: 255 }}
+                  maxCharactersCount={255}
                   value={credit}
                   onChange={(e) => setCredit(e.target.value)}
                 />

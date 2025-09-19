@@ -193,7 +193,7 @@ export const FormOfferType = ({
       <FormLayout.Section title="Dites-nous en plus sur votre offre culturelle">
         <FormLayout.Row className={styles['title']}>
           <TextInput
-            charactersCount={{ max: 110, current: watch('title').length }}
+            maxCharactersCount={110}
             required
             label="Titre de l’offre"
             {...register('title')}

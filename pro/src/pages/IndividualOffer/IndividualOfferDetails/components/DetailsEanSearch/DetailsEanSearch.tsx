@@ -157,10 +157,7 @@ export const DetailsEanSearch = ({
                     },
                   })}
               {...register('eanSearch')}
-              charactersCount={{
-                current: ean?.length || 0,
-                max: 13,
-              }}
+              maxCharactersCount={13}
               extension={
                 <Button
                   type="submit"
