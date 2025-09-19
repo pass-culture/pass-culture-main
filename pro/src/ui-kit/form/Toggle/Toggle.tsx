@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import styles from './Toggle.module.scss'
 
@@ -58,10 +58,6 @@ export const Toggle = ({
 }: ToggleProps) => {
   const [isActive, setIsActive] = useState(isActiveByDefault)
 
-  useEffect(() => {
-    setIsActive(isActiveByDefault)
-  }, [isActiveByDefault])
-
   const onClick = useCallback(() => {
     setIsActive(!isActive)
     handleClick?.()
@@ -69,14 +65,14 @@ export const Toggle = ({
 
   return (
     <button
-      className={cn(styles['toggle'])}
       type="button"
+      className={cn(styles['toggle'])}
       disabled={isDisabled}
       aria-pressed={isActive}
       onClick={onClick}
     >
       {labelPosition === 'left' ? label : null}
-      <span className={cn(styles['toggle-display'])} hidden />
+      <span className={cn(styles['toggle-display'])} aria-hidden="true" />
       {labelPosition === 'right' ? label : null}
     </button>
   )

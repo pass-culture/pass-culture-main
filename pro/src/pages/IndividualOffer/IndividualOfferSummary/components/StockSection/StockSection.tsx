@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
+import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import type {
@@ -7,6 +7,10 @@ import type {
   GetOfferStockResponseModel,
   StockStatsResponseModel,
 } from '@/apiClient/v1'
+import {
+  GET_STOCK_STATISTICS_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -33,55 +37,46 @@ export const StockSection = ({
   canBeDuo,
 }: StockSectionProps): JSX.Element => {
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const [isLoading, setIsLoading] = useState(false)
-  const [stocksEventsStats, setStocksEventsStats] = useState<
-    StockStatsResponseModel | undefined
-  >(undefined)
-  const [stockThing, setStockThing] = useState<GetOfferStockResponseModel>()
+  const isOnboarding = pathname.includes('onboarding')
   const notification = useNotification()
 
   const departmentCode = getDepartmentCode(offer)
 
-  useEffect(() => {
-    async function getStockThing() {
-      setIsLoading(true)
-      try {
-        const reponse = await api.getStocks(offer.id)
-        setStockThing(reponse.stocks[0])
-      } catch {
+  // Conditional SWR queries (only one runs depending on isEvent)
+  const { data: stocksResp, isLoading: isStocksLoading } = useSWR(
+    offer.isEvent ? null : [GET_STOCKS_QUERY_KEY, offer.id],
+    () => api.getStocks(offer.id),
+    {
+      revalidateOnFocus: false,
+      onError: () => {
         notification.error(
           'Une erreur est survenue lors de la récupération des informations de votre stock'
         )
+      },
+    }
+  )
+
+  const { data: stocksEventsStats, isLoading: isStatsLoading } =
+    useSWR<StockStatsResponseModel>(
+      offer.isEvent ? [GET_STOCK_STATISTICS_QUERY_KEY, offer.id] : null,
+      () => api.getStocksStats(offer.id),
+      {
+        revalidateOnFocus: false,
+        onError: () => {
+          notification.error(
+            'Une erreur est survenue lors de la récupération des informations de vos stocks'
+          )
+        },
       }
-      setIsLoading(false)
-    }
+    )
 
-    async function getStocksEventsStats() {
-      setIsLoading(true)
-      try {
-        const reponse = await api.getStocksStats(offer.id)
-        setStocksEventsStats(reponse)
-      } catch {
-        notification.error(
-          'Une erreur est survenue lors de la récupération des informations de vos stocks'
-        )
-      }
-      setIsLoading(false)
-    }
-
-    if (offer.isEvent) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getStocksEventsStats()
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getStockThing()
-    }
-  }, [notification, offer.id, offer.isEvent])
-
+  const isLoading = isStocksLoading || isStatsLoading
   if (isLoading) {
     return <Spinner />
   }
+
+  const stockThing: GetOfferStockResponseModel | undefined =
+    stocksResp?.stocks?.[0]
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
