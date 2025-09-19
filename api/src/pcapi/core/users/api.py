@@ -48,7 +48,6 @@ from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import repository
@@ -803,19 +802,11 @@ def get_domains_credit(
 
 
 def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None:
-    if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
-        token = token_utils.create_passwordless_login_token(
-            user_id=new_pro_user.id, ttl=constants.PASSWORDLESS_TOKEN_LIFE_TIME
-        )
-        if settings.IS_DEV or settings.IS_TESTING:
-            logger.info("Link for signup confirmation: %s/inscription/compte/confirmation/%s", settings.PRO_URL, token)
-    else:
-        token = token_utils.Token.create(
-            token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION,
-            ttl=constants.EMAIL_VALIDATION_TOKEN_FOR_PRO_LIFE_TIME,
-            user_id=new_pro_user.id,
-        ).encoded_token
-
+    token = token_utils.create_passwordless_login_token(
+        user_id=new_pro_user.id, ttl=constants.PASSWORDLESS_TOKEN_LIFE_TIME
+    )
+    if settings.IS_DEV or settings.IS_TESTING:
+        logger.info("Link for signup confirmation: %s/inscription/compte/confirmation/%s", settings.PRO_URL, token)
     transactional_mails.send_signup_email_confirmation_to_pro(new_pro_user, token)
 
     external_attributes_api.update_external_pro(new_pro_user.email)

@@ -7,7 +7,6 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core import token as token_utils
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -186,7 +185,6 @@ class Returns400Test:
         created_user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert created_user is None
 
-    @pytest.mark.features(WIP_2025_AUTOLOGIN=True)
     @pytest.mark.settings(
         PASSWORDLESS_LOGIN_PRIVATE_KEY=private_pem_file, PASSWORDLESS_LOGIN_PUBLIC_KEY=public_pem_file
     )
@@ -202,44 +200,6 @@ class Returns400Test:
         args, _ = mocked_send_signup_email.call_args
 
         assert "fake_passwordless_login_token" in args
-
-        user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
-        assert user is not None
-        assert user.has_beneficiary_role is False
-        assert user.has_non_attached_pro_role is True
-        assert user.email == "toto_pro@example.com"
-        assert user.firstName == "Toto"
-        assert not user.has_admin_role
-        assert user.lastName == "Pro"
-        assert user.phoneNumber == None
-        assert user.dateOfBirth is None
-        assert user.dateCreated is not None
-        assert user.notificationSubscriptions == {
-            "marketing_push": True,
-            "marketing_email": False,
-            "subscribed_themes": [],
-        }
-
-    @pytest.mark.features(WIP_2025_AUTOLOGIN=False)
-    @mock.patch("pcapi.core.token.Token.create")
-    @mock.patch("pcapi.core.token.create_passwordless_login_token")
-    @mock.patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
-    def test_signup_email_confirmation_is_used_with_ff_off(
-        self,
-        mocked_send_signup_email,
-        mocked_create_password_less_login_token,
-        mocked_signup_confirmation_email,
-        client,
-    ):
-        client.post("/users/signup", json=BASE_DATA_PRO)
-
-        mocked_create_password_less_login_token.assert_not_called()
-        mocked_signup_confirmation_email.assert_called_once()
-        mocked_send_signup_email.assert_called_once()
-
-        args, _ = mocked_signup_confirmation_email.call_args
-
-        assert token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION in args
 
         user = db.session.query(User).filter_by(email="toto_pro@example.com").first()
         assert user is not None
