@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 import flask
-import jwt
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -77,33 +76,17 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 @blueprint.pro_private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
-    def classic_token_check(token: str) -> None:
-        try:
-            stored_token = token_utils.Token.load_and_check(token, token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION)
-            user_to_validate = get_or_404(users_models.User, stored_token.user_id)
-            stored_token.expire()
-            users_api.validate_pro_user_email(user_to_validate)
-        except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
-            raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
-
-    if FeatureToggle.WIP_2025_AUTOLOGIN.is_active():
-        try:
-            user_id = token_utils.validate_passwordless_token(token)["sub"]
-            user = get_or_404(users_models.User, user_id)
-            users_api.validate_pro_user_email(user)
-        except jwt.InvalidAlgorithmError:
-            # Users could have signup before the FF were activated, but validate their email after.
-            # This can safely be removed a few days after the FF activation, while users consume their tokens.
-            classic_token_check(token)
-        except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
-            raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
-        discard_session()
-        login_user(user)
-        stamp_session(user)
-        flask.session["last_login"] = datetime.utcnow().timestamp()
-        users_api.update_last_connection_date(user)
-    else:
-        classic_token_check(token)
+    try:
+        user_id = token_utils.validate_passwordless_token(token)["sub"]
+        user = get_or_404(users_models.User, user_id)
+        users_api.validate_pro_user_email(user)
+    except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
+        raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
+    discard_session()
+    login_user(user)
+    stamp_session(user)
+    flask.session["last_login"] = datetime.utcnow().timestamp()
+    users_api.update_last_connection_date(user)
 
 
 @blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
