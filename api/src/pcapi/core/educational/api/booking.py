@@ -6,10 +6,7 @@ from functools import partial
 import sqlalchemy.orm as sa_orm
 from pydantic.v1.error_wrappers import ValidationError
 
-import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.models as finance_models
-import pcapi.core.finance.repository as finance_repository
-import pcapi.core.mails.transactional as transactional_mails
+from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
@@ -18,10 +15,12 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.repository import find_pending_booking_confirmation_limit_date_in_3_days
 from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import repository as finance_repository
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -94,7 +93,7 @@ def book_collective_offer(
 def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:
     try:
         adage_client.notify_prebooking(data=data)
-    except AdageException as adage_error:
+    except exceptions.AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
             adage_error.message,
@@ -133,6 +132,25 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     validation.check_collective_booking_status(collective_booking)
     validation.check_confirmation_limit_date_has_not_passed(collective_booking)
 
+    if settings.EAC_CHECK_INSTITUTION_FUND:
+        _check_institution_fund(collective_booking)
+
+    collective_booking.mark_as_confirmed()
+
+    db.session.add(collective_booking)
+    db.session.flush()
+
+    logger.info(
+        "Head of institution confirmed an educational offer",
+        extra={"collectiveBookingId": collective_booking.id},
+    )
+
+    transactional_mails.send_eac_new_booking_email_to_pro(collective_booking)
+
+    return collective_booking
+
+
+def _check_institution_fund(collective_booking: educational_models.CollectiveBooking) -> None:
     educational_institution_id = collective_booking.educationalInstitutionId
     educational_year_id = collective_booking.educationalYearId
     deposit = educational_repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
@@ -151,20 +169,6 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
             booking_date=collective_booking.collectiveStock.startDatetime,
             ministry=deposit.ministry,
         )
-
-    collective_booking.mark_as_confirmed()
-
-    db.session.add(collective_booking)
-    db.session.flush()
-
-    logger.info(
-        "Head of institution confirmed an educational offer",
-        extra={"collectiveBookingId": collective_booking.id},
-    )
-
-    transactional_mails.send_eac_new_booking_email_to_pro(collective_booking)
-
-    return collective_booking
 
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
@@ -324,7 +328,7 @@ def notify_pro_users_one_day_after() -> None:
 
 
 def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
-    bookings = find_pending_booking_confirmation_limit_date_in_3_days()
+    bookings = educational_repository.find_pending_booking_confirmation_limit_date_in_3_days()
     for booking in bookings:
         transactional_mails.send_eac_pending_booking_confirmation_limit_date_in_3_days(booking)
 
