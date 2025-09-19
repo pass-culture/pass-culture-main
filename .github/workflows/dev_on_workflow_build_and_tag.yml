@@ -45,7 +45,7 @@ jobs:
       TAG_NAME: v${{ inputs.tag_number }}
     steps:
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -87,7 +87,7 @@ jobs:
           driver: docker
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           create_credentials_file: true
           token_format: "access_token"
