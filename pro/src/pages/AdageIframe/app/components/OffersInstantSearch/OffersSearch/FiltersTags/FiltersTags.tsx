@@ -1,8 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 
-import { OfferAddressType } from '@/apiClient/adage'
 import { CollectiveLocationType } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { departmentOptions } from '@/pages/AdageIframe/app/constants/departmentOptions'
@@ -57,32 +55,19 @@ export const FiltersTags = ({
 }: FiltersTagsProps) => {
   const form = useFormContext<SearchFormValues>()
 
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
-
   const getOfferAdressTypeTag = () => {
-    const eventAddressTypeValue = form.watch('eventAddressType')
     const locationTypeValue = form.watch('locationType')
-    if (
-      eventAddressTypeValue === OfferAddressType.OTHER &&
-      locationTypeValue === CollectiveLocationType.TO_BE_DEFINED
-    ) {
+    if (locationTypeValue === CollectiveLocationType.TO_BE_DEFINED) {
       return <></>
     }
 
     const label =
-      eventAddressTypeValue === OfferAddressType.OFFERER_VENUE ||
       locationTypeValue === CollectiveLocationType.ADDRESS
         ? 'Sortie chez un partenaire culturel'
         : 'Intervention d’un partenaire culturel dans mon établissement'
 
     return createTag(label, () => {
-      if (isCollectiveOaActive) {
-        form.setValue('locationType', CollectiveLocationType.TO_BE_DEFINED)
-      } else {
-        form.setValue('eventAddressType', OfferAddressType.OTHER)
-      }
+      form.setValue('locationType', CollectiveLocationType.TO_BE_DEFINED)
       onSubmit()
     })
   }
@@ -186,7 +171,7 @@ export const FiltersTags = ({
           onSubmit()
         })
       )}
-      {!areFiltersEmpty(form.watch(), isCollectiveOaActive) && (
+      {!areFiltersEmpty(form.watch()) && (
         <Button
           onClick={resetForm}
           icon={fullRefreshIcon}
