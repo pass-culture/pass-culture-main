@@ -1,5 +1,3 @@
-import cn from 'classnames'
-
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
@@ -8,8 +6,6 @@ import {
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import { formatPrice } from '@/commons/utils/formatPrice'
-import strokeDuoIcon from '@/icons/stroke-duo.svg'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import type { Column } from '@/ui-kit/Table/Table'
 
 import { FilterByBookingStatus } from '../Components/Filters/FilterByBookingStatus'
@@ -51,21 +47,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       sortable: true,
       ordererField: (row) => row.stock.offerName,
       render: (row) => (
-        <div
-          className={cn(
-            styles['cell-item-wrapper'],
-            styles['offer-details-wrapper']
-          )}
-        >
-          <BookingOfferCell booking={row} isCaledonian={isCaledonian} />
-          {row.bookingIsDuo && (
-            <SvgIcon
-              src={strokeDuoIcon}
-              alt="Réservation DUO"
-              className={styles['bookings-duo-icon']}
-            />
-          )}
-        </div>
+        <BookingOfferCell booking={row} isCaledonian={isCaledonian} />
       ),
     },
     {
