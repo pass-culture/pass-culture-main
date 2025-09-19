@@ -37,10 +37,6 @@ const mockOffer = {
     ...defaultCollectiveOffer.venue,
     distance: 5,
   },
-  offerVenue: {
-    ...defaultCollectiveOffer.offerVenue,
-    distance: 10,
-  },
   isTemplate: false,
 }
 

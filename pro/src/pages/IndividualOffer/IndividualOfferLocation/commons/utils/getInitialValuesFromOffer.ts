@@ -30,7 +30,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
     const coords = `${latitude}, ${longitude}`
 
     // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
-    //  then set this OA id in formik field (so it will be checked by default)
+    //  then set this OA id in form field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
     const offerLocation =
       offerVenue?.address && offerVenue.address.id_oa === offer.address.id_oa
