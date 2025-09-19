@@ -42,6 +42,28 @@ class ThingStockUpdateBodyModel(BaseModel):
         extra = "forbid"
 
 
+class ThingStockUpsertBodyModel(BaseModel):
+    id: typing.Optional[int]
+    activation_codes: typing.Optional[list[str]]
+    activation_codes_expiration_datetime: typing.Optional[datetime]
+    booking_limit_datetime: typing.Optional[datetime]
+    offer_id: int
+    price: decimal.Decimal
+    quantity: typing.Optional[int]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class ThingStocksBulkUpsertBodyModel(BaseModel):
+    stocks: list[ThingStockUpsertBodyModel]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
 class EventStockCreateBodyModel(BaseModel):
     beginning_datetime: datetime
     price_category_id: int

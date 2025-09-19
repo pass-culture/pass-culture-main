@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import typing
 
 from pydantic.v1 import EmailStr
@@ -221,3 +222,12 @@ class CreateOrUpdateEANOffersRequest(BaseModel):
     provider_id: int
     address_id: int | None
     address_label: str | None
+
+
+class ThingStockUpsertInput(typing.TypedDict):
+    id: int | None
+    activation_codes: list[str] | None
+    activation_codes_expiration_datetime: datetime.datetime | None
+    booking_limit_datetime: datetime.datetime | None
+    price: decimal.Decimal | None
+    quantity: int | None

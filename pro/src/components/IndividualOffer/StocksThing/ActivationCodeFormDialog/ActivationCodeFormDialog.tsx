@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 
 import { Dialog } from '@/components/Dialog/Dialog'
 import strokeCodeIcon from '@/icons/stroke-code.svg'
@@ -35,77 +35,69 @@ export const ActivationCodeFormDialog = ({
   departmentCode,
 }: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
-  const [unsavedActivationCodes, setUnsavedActivationCodes] =
-    useState<string[]>()
+  const [unsavedActivationCodes, setUnsavedActivationCodes] = useState<
+    string[]
+  >([])
   const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
-  const hasNoActivationCodes =
-    unsavedActivationCodes === undefined || unsavedActivationCodes.length === 0
 
-  const submitFile = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsFileInputDisabled(true)
+  const loadCsvFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFileInputDisabled(true)
 
-      const currentFile =
-        e.currentTarget.files !== null ? e.currentTarget.files[0] : null
-      if (currentFile === null) {
-        setIsFileInputDisabled(false)
+    const currentFile =
+      e.currentTarget.files !== null ? e.currentTarget.files[0] : null
+    if (currentFile === null) {
+      setIsFileInputDisabled(false)
+      return
+    }
+
+    const { errorMessage, activationCodes } = await checkAndParseUploadedFile({
+      fileReader,
+      currentFile,
+    })
+
+    if (errorMessage) {
+      setErrorMessage(errorMessage)
+    } else {
+      if (!activationCodes) {
+        setErrorMessage(
+          "Aucune code d'activation n’est présent dans le fichier fourni"
+        )
         return
       }
+      setErrorMessage('')
 
-      const { errorMessage, activationCodes } = await checkAndParseUploadedFile(
-        {
-          fileReader,
-          currentFile,
-        }
-      )
+      setUnsavedActivationCodes(activationCodes)
+    }
 
-      if (errorMessage) {
-        setErrorMessage(errorMessage)
-      } else {
-        if (!activationCodes) {
-          setErrorMessage(
-            "Aucune code d'activation n’est présent dans le fichier fourni"
-          )
-          return
-        }
-        setErrorMessage('')
+    setIsFileInputDisabled(false)
+  }
 
-        setUnsavedActivationCodes(activationCodes)
-      }
+  const setExpirationDate = (expirationDate: string | undefined) => {
+    onSubmit(unsavedActivationCodes, expirationDate)
 
-      setIsFileInputDisabled(false)
-    },
-    [setUnsavedActivationCodes, setIsFileInputDisabled, setErrorMessage]
-  )
-
-  const dismissModal = useCallback(() => {
-    onCancel()
-  }, [onCancel])
+    setUnsavedActivationCodes([])
+  }
 
   return (
     <Dialog
-      onCancel={dismissModal}
+      onCancel={onCancel}
       title="Ajouter des codes d’activation"
       icon={strokeCodeIcon}
       extraClassNames={styles['activation-codes-upload']}
       open={isDialogOpen}
       refToFocusOnClose={activationCodeButtonRef}
     >
-      {hasNoActivationCodes && (
+      {unsavedActivationCodes.length === 0 ? (
         <AddActivationCodeForm
-          submitFile={submitFile}
+          submitFile={loadCsvFile}
           errorMessage={errorMessage}
           isFileInputDisabled={isFileInputDisabled}
         />
-      )}
-
-      {!hasNoActivationCodes && (
+      ) : (
         <AddActivationCodeConfirmationForm
           unsavedActivationCodes={unsavedActivationCodes}
           clearActivationCodes={onCancel}
-          submitActivationCodes={(expirationDate: string | undefined) =>
-            onSubmit(unsavedActivationCodes, expirationDate)
-          }
+          submitActivationCodes={setExpirationDate}
           today={today}
           minExpirationDate={minExpirationDate}
           departmentCode={departmentCode}
