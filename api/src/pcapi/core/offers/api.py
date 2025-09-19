@@ -9,9 +9,11 @@ import logging
 import re
 import time
 import typing
+import uuid
 from contextlib import suppress
 from functools import partial
 
+import PIL
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
@@ -31,13 +33,19 @@ import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.validation as offers_validation
+import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 import pcapi.core.reactions.models as reactions_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
+from pcapi.connectors import thumb_storage
+from pcapi.connectors import titelive
 from pcapi.connectors import youtube
 from pcapi.connectors.serialization import acceslibre_serializers
+from pcapi.connectors.serialization.titelive_serializers import TiteliveImage
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
@@ -69,6 +77,7 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import repository
+from pcapi.utils import requests
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
@@ -1581,15 +1590,78 @@ def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
     return False
 
 
-def whitelist_product(idAtProviders: str) -> models.Product:
-    titelive_product = get_new_product_from_ean13(idAtProviders)
+def create_or_update_product_mediations(product: models.Product, images: TiteliveImage | None) -> None:
+    if not images or (not images.recto and not images.verso):
+        return
 
-    product = fetch_or_update_product_with_titelive_data(titelive_product)
+    new_images_data = []
+    try:
+        if images.recto:
+            image_bytes_recto = titelive.download_titelive_image(images.recto)
+            new_images_data.append((models.ImageType.RECTO, image_bytes_recto))
+        if images.verso:
+            image_bytes_verso = titelive.download_titelive_image(images.verso)
+            new_images_data.append((models.ImageType.VERSO, image_bytes_verso))
+
+    except (
+        requests.ExternalAPIException,
+        PIL.UnidentifiedImageError,
+        OSError,
+        offers_exceptions.ImageValidationError,
+    ) as err:
+        logger.error(
+            "Error downloading Titelive image for product %s",
+            product.id,
+            extra={"exception": err, "ean": product.ean},
+        )
+        return
+
+    provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+
+    with atomic():
+        try:
+            db.session.query(models.ProductMediation).filter(
+                models.ProductMediation.productId == product.id,
+                models.ProductMediation.lastProvider == provider,
+            ).delete(synchronize_session=False)
+
+            for image_type, image_bytes in new_images_data:
+                image_id = str(uuid.uuid4())
+                mediation = models.ProductMediation(
+                    productId=product.id,
+                    lastProvider=provider,
+                    imageType=image_type,
+                    uuid=image_id,
+                )
+                db.session.add(mediation)
+                db.session.flush()
+
+                thumb_storage.create_thumb(
+                    product,
+                    image_bytes,
+                    keep_ratio=True,
+                    object_id=image_id,
+                )
+        except Exception as err:
+            logger.error(
+                "Error during product mediations update for product %s.",
+                product.id,
+                extra={"exception": err, "ean": product.ean},
+            )
+            mark_transaction_as_invalid()
+
+
+def whitelist_product(idAtProviders: str, update_images: bool = False) -> models.Product:
+    titelive_data = get_new_product_from_ean13(idAtProviders)
+
+    product = fetch_or_update_product_with_titelive_data(titelive_data.product)
 
     product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
 
     db.session.add(product)
     db.session.flush()
+    if update_images:
+        create_or_update_product_mediations(product, titelive_data.images)
     return product
 
 
