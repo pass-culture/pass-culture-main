@@ -1,3 +1,4 @@
+import contextlib
 from decimal import Decimal
 
 import pytest
@@ -8,6 +9,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -15,9 +17,9 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def offer_minimal_shared_data(name, subcategory_id, venue):
+def offer_minimal_shared_data(subcategory_id, venue):
     return {
-        "name": name,
+        "name": f"some {subcategory_id} offer",
         "subcategoryId": subcategory_id,
         "venueId": venue.id,
         "audioDisabilityCompliant": False,
@@ -51,86 +53,469 @@ def auth_client_fixture(client, user):
     return client.with_session_auth(user.email)
 
 
-class ThingOfferPayloadBuilder:
-    SUBCATEGORIES_SAMPLE = [
-        subcategories.ABO_BIBLIOTHEQUE.id,
-        subcategories.ABO_MEDIATHEQUE.id,
-        subcategories.ACHAT_INSTRUMENT.id,
-        subcategories.LIVRE_AUDIO_PHYSIQUE.id,
-        subcategories.LIVRE_PAPIER.id,
-        subcategories.MATERIEL_ART_CREATIF.id,
-        subcategories.PARTITION.id,
-        subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
-    ]
-
-    @classmethod
-    def minimal(cls, venue, subcategory_id):
-        return offer_minimal_shared_data("some thing", subcategory_id, venue)
-
-    @classmethod
-    def full(cls, venue, subcategory_id):
-        if subcategory_id in offers_factories.THINGS_PRODUCT_SUBCATEGORIES_IDS:
-            product = offers_factories.ProductFactory(subcategoryId=subcategory_id)
-        else:
-            product = None
-
-        return {
-            **offer_minimal_shared_data("some thing", subcategory_id, venue),
-            **offer_optional_shared_data(),
-            "productId": product.id if product else None,
-            "extraData": {"ean": product.ean} if product else None,
-        }
+THINGS_WITH_EAN = {
+    subcategories.LIVRE_PAPIER.id,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+}
 
 
-# missing: url
-ONLINE_SUBCATEGORIES_SAMPLE = [
-    subcategories.ABO_LIVRE_NUMERIQUE.id,
-    subcategories.ABO_PRESSE_EN_LIGNE.id,
-    # digital
-    subcategories.LIVRE_NUMERIQUE.id,
-    subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+THINGS_RANDOM = {
+    subcategories.ABO_BIBLIOTHEQUE.id,
+    subcategories.ABO_CONCERT.id,
+    subcategories.ABO_MEDIATHEQUE.id,
+    subcategories.ABO_PRATIQUE_ART.id,
+    subcategories.ACHAT_INSTRUMENT.id,
+    subcategories.CARTE_CINE_ILLIMITE.id,
+    subcategories.CARTE_CINE_MULTISEANCES.id,
+    subcategories.CARTE_JEUNES.id,
+    subcategories.CARTE_MUSEE.id,
+    subcategories.ESCAPE_GAME.id,
+    subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+    subcategories.LOCATION_INSTRUMENT.id,
+    subcategories.MATERIEL_ART_CREATIF.id,
+    subcategories.PARTITION.id,
+    subcategories.SUPPORT_PHYSIQUE_FILM.id,
+}
+
+
+THINGS = THINGS_WITH_EAN | THINGS_RANDOM
+
+
+DIGITAL = {
     subcategories.TELECHARGEMENT_MUSIQUE.id,
-]
+    subcategories.LIVRE_NUMERIQUE.id,
+    subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE.id,
+    subcategories.AUTRE_SUPPORT_NUMERIQUE.id,
+    subcategories.MUSEE_VENTE_DISTANCE.id,
+    subcategories.VISITE_VIRTUELLE.id,
+    subcategories.PRATIQUE_ART_VENTE_DISTANCE.id,
+    subcategories.ABO_PLATEFORME_VIDEO.id,
+    subcategories.ABO_PRESSE_EN_LIGNE.id,
+    subcategories.APP_CULTURELLE.id,
+    subcategories.JEU_EN_LIGNE.id,
+    subcategories.CINE_VENTE_DISTANCE.id,
+    subcategories.ABO_LIVRE_NUMERIQUE.id,
+    subcategories.ABO_JEU_VIDEO.id,
+    subcategories.PODCAST.id,
+    subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+    subcategories.ABO_PLATEFORME_MUSIQUE.id,
+    subcategories.VOD.id,
+}
 
 
-class CreateOfferSuccessTest:
+DIGITAL_EVENT = {
+    subcategories.SPECTACLE_ENREGISTRE.id,
+    subcategories.SPECTACLE_VENTE_DISTANCE.id,
+}
+
+
+CANNOT_BE_CREATED = {
+    subcategories.ACTIVATION_EVENT.id,
+    subcategories.CAPTATION_MUSIQUE.id,
+    subcategories.OEUVRE_ART.id,
+    subcategories.BON_ACHAT_INSTRUMENT.id,
+    subcategories.ACTIVATION_THING.id,
+    subcategories.ABO_LUDOTHEQUE.id,
+    subcategories.JEU_SUPPORT_PHYSIQUE.id,
+    subcategories.DECOUVERTE_METIERS.id,
+}
+
+
+ACTIVITY_SUBSCRIPTION = {
+    subcategories.ABO_SPECTACLE.id,
+}
+
+
+ACTIVITY_ONLINE = {
+    subcategories.LIVESTREAM_EVENEMENT.id,
+    subcategories.LIVESTREAM_MUSIQUE.id,
+    subcategories.RENCONTRE_EN_LIGNE.id,
+    subcategories.LIVESTREAM_PRATIQUE_ARTISTIQUE.id,
+}
+
+
+ACTIVITY_WITHDRAWABLE = {
+    subcategories.SPECTACLE_REPRESENTATION.id,
+    subcategories.FESTIVAL_ART_VISUEL.id,
+    subcategories.FESTIVAL_SPECTACLE.id,
+    subcategories.FESTIVAL_MUSIQUE.id,
+    subcategories.EVENEMENT_MUSIQUE.id,
+    subcategories.CONCERT.id,
+}
+
+
+ACTIVITY_RANDOM = {
+    subcategories.ATELIER_PRATIQUE_ART.id,
+    subcategories.CINE_PLEIN_AIR.id,
+    subcategories.CONCOURS.id,
+    subcategories.CONFERENCE.id,
+    subcategories.EVENEMENT_CINE.id,
+    subcategories.EVENEMENT_JEU.id,
+    subcategories.EVENEMENT_PATRIMOINE.id,
+    subcategories.FESTIVAL_CINE.id,
+    subcategories.FESTIVAL_LIVRE.id,
+    subcategories.RENCONTRE.id,
+    subcategories.RENCONTRE_JEU.id,
+    subcategories.SALON.id,
+    subcategories.SEANCE_CINE.id,
+    subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+    subcategories.VISITE.id,
+    subcategories.VISITE_GUIDEE.id,
+}
+
+
+def shared_response_json_checks(offer, response_json):
+    assert response_json["id"] == offer.id
+    assert response_json["name"] == offer.name
+    assert not response_json["publicationDate"]
+    assert not response_json["publicationDatetime"]
+    assert not response_json["bookingAllowedDatetime"]
+
+
+def shared_offer_checks(offer, payload):
+    assert offer.name == payload["name"]
+    assert offer.venueId == payload["venueId"]
+    assert offer.subcategoryId == payload["subcategoryId"]
+    assert not offer.publicationDate
+    assert not offer.publicationDatetime
+    assert not offer.bookingAllowedDatetime
+    assert not offer.isActive
+
+
+# shared
+# booking_email: EmailStr | None
+# description: str | None
+# extra_data: dict[str, typing.Any] | None
+# is_national: bool | None
+# product_id: int | None
+# video_url: HttpUrl | None = None
+#
+# -----
+#
+# things
+#
+# -----
+#
+# digital
+#
+# -----
+#
+# activity
+# booking_contact: EmailStr | None
+# address: offerers_schemas.AddressBodyModel | None
+# duration_minutes: int | None
+# external_ticket_office_url: HttpUrl | None
+# is_duo: bool | None
+# withdrawal_delay: int | None
+# withdrawal_details: str | None
+# withdrawal_type: offers_models.WithdrawalTypeEnum | None
+#
+# -----
+#
+# digital & activity
+# url: HttpUrl | None
+#
+# -----
+#
+
+
+@contextlib.contextmanager
+def assert_delta(model, delta):
+    before_count = db.session.query(model).count()
+
+    yield
+
+    after_count = db.session.query(model).count()
+    assert after_count == before_count + delta
+
+
+@contextlib.contextmanager
+def assert_no_object_created(model):
+    before_count = db.session.query(model).count()
+
+    yield
+
+    after_count = db.session.query(model).count()
+    assert after_count == before_count
+
+
+def default_address_payload():
+    return {"city": "Paris", "latitude": 2.0, "longitude": 48.0, "postalCode": 75002, "street": "1 rue des rues"}
+
+
+class CreateOfferBase:
     endpoint = "/v2/offers"
 
-    @pytest.mark.parametrize("subcategory_id", ThingOfferPayloadBuilder.SUBCATEGORIES_SAMPLE)
-    def test_create_minimal_thing_offer(self, auth_client, venue, subcategory_id):
-        payload = ThingOfferPayloadBuilder.minimal(venue, subcategory_id)
+    success_num_queries = 1  # fetch user session
+    success_num_queries += 1  # fetch user
+    success_num_queries += 1  # fetch venue
+    success_num_queries += 1  # user offerer check
+    success_num_queries += 1  # fetch product
+    success_num_queries += 1  # fetch FF
+    success_num_queries += 1  # create offer
+    success_num_queries += 1  # fetch mediation
+    success_num_queries += 1  # fetch stocks
+    success_num_queries += 1  # fetch price categories
+    success_num_queries += 1  # fetch offerer address
+    success_num_queries += 1  # fetch offer meta data
+    success_num_queries += 1  # fetch user
+    success_num_queries += 1  # fetch offerer
+    success_num_queries += 1  # check national program (?)
+    success_num_queries += 1  # check venue has collective offers (?)
+    success_num_queries += 1  # check offer regarding offer status (?)
+    success_num_queries += 1  # check offer's venue has at least one cancelled booking (?)
+
+    def send_request(self, client, payload):
+        with assert_delta(Offer, 1):
+            with assert_num_queries(self.success_num_queries):
+                response = client.post(self.endpoint, json=payload)
+                assert response.status_code == 201, response.json
+                return response
+
+
+class CreateThingTest(CreateOfferBase):
+    @pytest.mark.parametrize("subcategory_id", THINGS)
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        payload = offer_minimal_shared_data(subcategory_id, venue)
+        response = self.send_request(auth_client, payload)
+
+        offer = db.session.query(Offer).one()
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert not offer.isEvent
+
+    # TODO(jbaudet): most of `THINGS` subcategories should not accept any EAN
+    # but for now... it is valid.
+    @pytest.mark.parametrize("subcategory_id", THINGS)
+    def test_create_offer_with_ean_and_no_product_is_ok(self, auth_client, venue, subcategory_id):
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "bookingEmail": "booking.email@test.com",
+            "description": "some description",
+            "extraData": {"ean": "0000000000001"},
+        }
+        response = auth_client.post(self.endpoint, json=payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert not offer.isEvent
+        assert offer.ean == "0000000000001"
+        assert offer.description == payload["description"]
+        assert not offer.productId
+
+    @pytest.mark.parametrize("subcategory_id", THINGS_WITH_EAN)
+    def test_create_offer_with_product_is_ok(self, auth_client, venue, subcategory_id):
+        product = offers_factories.ProductFactory(subcategoryId=subcategory_id)
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "bookingEmail": "booking.email@test.com",
+            "description": "some description",
+            "extraData": {"ean": product.ean},
+            "productId": product.id,
+        }
+        response = auth_client.post(self.endpoint, json=payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert not offer.isEvent
+        assert offer.ean == product.ean
+        assert offer.description == product.description
+        assert offer.productId == product.id
+
+    @pytest.mark.parametrize(
+        "extra",
+        [
+            # TODO(jbaudet): fill this list after offer creation has been
+            # cleaned up. For example an `ABO_BIBLIOTHEQUE` should not accept
+            # any duration
+            {"url": "https://example.thing@test.com"},
+            {"withdrawalType": "in_app"},
+        ],
+    )
+    def test_create_offer_with_non_thing_field_is_not_ok(self, auth_client, venue, extra):
+        subcategory_id = sorted(THINGS)[0]
+        payload = {**offer_minimal_shared_data(subcategory_id, venue), **extra}
+        response = auth_client.post(self.endpoint, json=payload)
+
+        with assert_no_object_created(Offer):
+            assert response.status_code == 400
+
+
+@pytest.mark.parametrize("subcategory_id", DIGITAL)
+class CreateDigitalOfferTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        default_url = "https://default.url@test.com"
+        payload = {**offer_minimal_shared_data(subcategory_id, venue), "url": default_url}
+
         response = self.send_request(auth_client, payload)
         assert response.status_code == 201
 
         offer = db.session.query(Offer).one()
 
-        assert offer.subcategoryId == payload["subcategoryId"]
-        assert offer.name == payload["name"]
-        assert offer.venueId == payload["venueId"]
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
 
-        assert not offer.isActive
+        assert offer.isDigital
         assert not offer.isEvent
 
-    @pytest.mark.parametrize("subcategory_id", ThingOfferPayloadBuilder.SUBCATEGORIES_SAMPLE)
-    def test_create_full_thing_offer(self, auth_client, venue, subcategory_id):
-        payload = ThingOfferPayloadBuilder.full(venue, subcategory_id)
+
+@pytest.mark.parametrize("subcategory_id", DIGITAL_EVENT)
+class CreateDigitalEventTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        activity_url = "https://activity.online@test.com"
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+            "url": activity_url,
+        }
+
         response = self.send_request(auth_client, payload)
         assert response.status_code == 201
 
         offer = db.session.query(Offer).one()
 
-        assert offer.bookingContact == payload["bookingContact"]
-        assert offer.bookingEmail == payload["bookingEmail"]
-        assert offer.productId == payload["productId"]
-        assert offer.description == payload["description"] if payload["productId"] is None else None
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
 
-        assert not offer.isActive
+        assert offer.isDigital
         assert not offer.isEvent
 
-    def send_request(self, client, data):
-        return client.post(self.endpoint, json=data)
+
+@pytest.mark.parametrize("subcategory_id", ACTIVITY_SUBSCRIPTION)
+class CreateActivitySubscriptionTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+        }
+
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert not offer.isEvent
+
+
+@pytest.mark.parametrize("subcategory_id", ACTIVITY_ONLINE)
+class CreateActivityOnlineTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        activity_url = "https://activity.online@test.com"
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+            "url": activity_url,
+        }
+
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert offer.isDigital
+        assert offer.isEvent
+
+
+@pytest.mark.parametrize("subcategory_id", ACTIVITY_WITHDRAWABLE)
+class CreateActivityWithdrawableTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    @pytest.mark.parametrize("withdrawal_type", ["by_email", "on_site", "no_ticket"])
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id, withdrawal_type):
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+            "bookingContact": "booking.contact@test.com",
+            "withdrawalType": withdrawal_type,
+            "withdrawalDelay": 10 if withdrawal_type != "no_ticket" else None,
+        }
+
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert offer.isEvent
+
+    def test_cannot_manually_create_offer_with_in_app_withdrawal(self, auth_client, venue, subcategory_id):
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+            "bookingContact": "booking.contact@test.com",
+            "withdrawalType": "in_app",
+        }
+
+        response = auth_client.post(self.endpoint, json=payload)
+        assert response.status_code == 400
+        assert response.json == {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]}
+
+
+@pytest.mark.parametrize("subcategory_id", ACTIVITY_RANDOM)
+class CreateActivityRandomTest(CreateOfferBase):
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_succesful(self, auth_client, venue, subcategory_id):
+        payload = {
+            **offer_minimal_shared_data(subcategory_id, venue),
+            "extraData": {"showType": 100, "showSubType": 101},
+        }
+
+        response = self.send_request(auth_client, payload)
+        assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert not offer.isDigital
+        assert offer.isEvent
+
+
+@pytest.mark.parametrize("subcategory_id", CANNOT_BE_CREATED)
+class CannotCreateOfferTest:
+    endpoint = "/v2/offers"
+
+    def test_create_offer_with_minimal_payload_is_not_autorized(self, auth_client, venue, subcategory_id):
+        payload = {**offer_minimal_shared_data(subcategory_id, venue)}
+        response = auth_client.post(self.endpoint, json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "subcategory": ["Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"]
+        }
 
 
 class Returns200Test:
@@ -143,7 +528,7 @@ class Returns200Test:
         data = {
             "venueId": venue.id,
             "name": "Celeste",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "subcategoryId": subcategories.ABO_BIBLIOTHEQUE.id,
             "mentalDisabilityCompliant": True,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,

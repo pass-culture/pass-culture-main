@@ -633,7 +633,7 @@ class OfferVideo(ConfiguredBaseModel):
 
 class PostOfferBodyModel(BaseModel):
     address: offerers_schemas.AddressBodyModel | None
-    audio_disability_compliant: bool | None
+    audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
     description: str | None
@@ -642,15 +642,15 @@ class PostOfferBodyModel(BaseModel):
     extra_data: dict[str, typing.Any] | None
     is_duo: bool | None
     is_national: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
     name: str
     product_id: int | None
     subcategory_id: str
     url: HttpUrl | None
     venue_id: int
     video_url: HttpUrl | None = None
-    visual_disability_compliant: bool | None
+    visual_disability_compliant: bool
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None

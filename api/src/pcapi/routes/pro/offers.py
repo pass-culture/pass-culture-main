@@ -267,30 +267,29 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
 
     create_offer_schema = offers_schemas.CreateOffer(
         name=body.name,
-        subcategoryId=body.subcategory_id,
-        audioDisabilityCompliant=body.audio_disability_compliant or venue.audioDisabilityCompliant,
-        mentalDisabilityCompliant=body.mental_disability_compliant or venue.mentalDisabilityCompliant,
-        motorDisabilityCompliant=body.motor_disability_compliant or venue.motorDisabilityCompliant,
-        visualDisabilityCompliant=body.visual_disability_compliant or venue.visualDisabilityCompliant,
-        bookingContact=body.booking_contact,
-        bookingEmail=body.booking_email,
+        subcategory_id=body.subcategory_id,
+        audio_disability_compliant=body.audio_disability_compliant,
+        mental_disability_compliant=body.mental_disability_compliant,
+        motor_disability_compliant=body.motor_disability_compliant,
+        visual_disability_compliant=body.visual_disability_compliant,
+        booking_contact=body.booking_contact,
+        booking_email=body.booking_email,
         description=body.description,
-        durationMinutes=body.duration_minutes,
-        externalTicketOfficeUrl=body.external_ticket_office_url,
+        duration_minutes=body.duration_minutes,
+        external_ticket_office_url=body.external_ticket_office_url,
         ean=ean_code,
-        extraData=body.extra_data,
-        idAtProvider=None,
-        isDuo=None,
+        extra_data=body.extra_data,
+        id_at_provider=None,
+        is_duo=None,
         url=body.url,
-        withdrawalDelay=body.withdrawal_delay,
-        withdrawalDetails=body.withdrawal_details,
-        withdrawalType=body.withdrawal_type,
-        videoUrl=body.video_url,
-        isNational=body.is_national,
+        withdrawal_delay=body.withdrawal_delay,
+        withdrawal_details=body.withdrawal_details,
+        withdrawal_type=body.withdrawal_type,
+        video_url=body.video_url,
+        is_national=body.is_national,
     )
 
     offer = offers_api.create_offer(create_offer_schema, venue=venue, product=product, is_from_private_api=True)
-    breakpoint()
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
