@@ -33,7 +33,6 @@ describe('Signup journey with not diffusible offerer siret', () => {
     )
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_AUTOLOGIN', isActive: true },
       { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: true },
     ])
   })

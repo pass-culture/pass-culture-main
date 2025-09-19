@@ -90,37 +90,35 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
-  describe('Signup with auto-login feature (under WIP_2025_AUTOLOGIN)', () => {
-    it('should verify validity of passwordless login token and redirect to pro home page', async () => {
-      const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
-      const user = sharedCurrentUserFactory()
-      const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-      const initializeUserThunk = vi.spyOn(thunks, 'initializeUserThunk')
-      const mockDispatch = vi.fn().mockImplementation(() => ({
-        unwrap: () => Promise.resolve({ success: true }),
-      }))
-      vi.spyOn(reactRedux, 'useDispatch').mockReturnValue(mockDispatch)
+  it('should verify validity of passwordless login token and redirect to pro home page', async () => {
+    const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
+    const user = sharedCurrentUserFactory()
+    const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
+    const initializeUserThunk = vi.spyOn(thunks, 'initializeUserThunk')
+    const mockDispatch = vi.fn().mockImplementation(() => ({
+      unwrap: () => Promise.resolve({ success: true }),
+    }))
+    vi.spyOn(reactRedux, 'useDispatch').mockReturnValue(mockDispatch)
 
-      renderSignupValidation({ features: ['WIP_2025_AUTOLOGIN'] })
+    renderSignupValidation()
 
-      // The validity of the token is verified
-      await waitFor(() =>
-        expect(validateUser).toHaveBeenCalledExactlyOnceWith('AAA')
-      )
+    // The validity of the token is verified
+    await waitFor(() =>
+      expect(validateUser).toHaveBeenCalledExactlyOnceWith('AAA')
+    )
 
-      // The user profile is fetched …
-      await waitFor(() => expect(getProfile).toHaveBeenCalledOnce())
+    // The user profile is fetched …
+    await waitFor(() => expect(getProfile).toHaveBeenCalledOnce())
 
-      // … and the user is initialized
-      await waitFor(() =>
-        expect(initializeUserThunk).toHaveBeenCalledExactlyOnceWith(user)
-      )
+    // … and the user is initialized
+    await waitFor(() =>
+      expect(initializeUserThunk).toHaveBeenCalledExactlyOnceWith(user)
+    )
 
-      // The dispatch is called …
-      await waitFor(() => expect(mockDispatch).toHaveBeenCalledOnce())
+    // The dispatch is called …
+    await waitFor(() => expect(mockDispatch).toHaveBeenCalledOnce())
 
-      // … and we should be redirected to the homepage
-      await screen.findByText('Accueil')
-    })
+    // … and we should be redirected to the homepage
+    await screen.findByText('Accueil')
   })
 })

@@ -4,7 +4,6 @@ import { Navigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import type { AppDispatch } from '@/commons/store/store'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { initializeUserThunk } from '@/commons/store/user/thunks'
@@ -15,7 +14,6 @@ export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
-  const isAutologinEnabled = useActiveFeature('WIP_2025_AUTOLOGIN')
   const dispatch = useDispatch<AppDispatch>()
 
   const tokenConsumed = useRef(false)
@@ -29,14 +27,10 @@ export const SignupValidation = (): JSX.Element | null => {
           // Ensure that we call only 1 time the API upon different re-renders
           tokenConsumed.current = true
           await api.validateUser(token)
-          if (isAutologinEnabled) {
-            const user = await api.getProfile()
-            const result = await dispatch(initializeUserThunk(user)).unwrap()
-            if (result.success) {
-              setUrlToRedirect('/')
-            }
-          } else {
-            setUrlToRedirect('/connexion?accountValidation=true')
+          const user = await api.getProfile()
+          const result = await dispatch(initializeUserThunk(user)).unwrap()
+          if (result.success) {
+            setUrlToRedirect('/')
           }
         } catch (error) {
           if (isErrorAPIError(error)) {
@@ -54,7 +48,7 @@ export const SignupValidation = (): JSX.Element | null => {
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     validateTokenAndRedirect()
-  }, [token, currentUser?.id, isAutologinEnabled, dispatch])
+  }, [token, currentUser?.id, dispatch])
 
   return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
