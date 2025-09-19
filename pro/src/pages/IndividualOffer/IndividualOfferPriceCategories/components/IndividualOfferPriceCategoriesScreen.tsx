@@ -313,10 +313,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
                       {...register(`priceCategories.${index}.label`)}
                       label="Intitulé du tarif"
                       description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
-                      charactersCount={{
-                        max: PRICE_CATEGORY_LABEL_MAX_LENGTH,
-                        current: priceCategories[index]?.label.length,
-                      }}
+                      maxCharactersCount={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                       disabled={priceCategories.length <= 1 || isDisabled}
                       error={errors.priceCategories?.[index]?.label?.message}
                       autoComplete="off"

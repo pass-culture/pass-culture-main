@@ -96,10 +96,7 @@ export function IndividualOfferPracticalInfosFormWithdrawal({
         <TextInput
           {...form.register('bookingContact')}
           label="Email de contact communiqué aux bénéficiaires"
-          charactersCount={{
-            max: 90,
-            current: form.watch('bookingContact')?.length || 0,
-          }}
+          maxCharactersCount={90}
           disabled={isFormDisabled}
           description="Format : email@exemple.com"
           error={form.formState.errors.bookingContact?.message}
