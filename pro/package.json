@@ -37,7 +37,7 @@
     "@algolia/autocomplete-plugin-recent-searches": "1.19.4",
     "@firebase/analytics": "0.10.18",
     "@firebase/app": "0.14.2",
-    "@firebase/remote-config": "0.6.6",
+    "@firebase/remote-config": "0.7.0",
     "@hookform/resolvers": "5.2.1",
     "@pass-culture/design-system": "0.2.1",
     "@radix-ui/react-dialog": "1.1.15",
