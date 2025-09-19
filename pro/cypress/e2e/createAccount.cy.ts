@@ -1,10 +1,8 @@
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
-import { logInAndGoToPage } from '../support/helpers.ts'
 
 describe('Account creation', () => {
   before(() => {
     cy.visit('/')
-    cy.setFeatureFlags([{ name: 'WIP_2025_AUTOLOGIN', isActive: false }])
   })
 
   beforeEach(() => {
@@ -60,10 +58,7 @@ describe('Account creation', () => {
     cy.stepLog({
       message: 'check that we are redirected to connexion',
     })
-    cy.url().should('contain', '/connexion')
-    cy.contains('Connectez-vous')
+    cy.url().should('contain', '/inscription/structure/recherche')
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
-    logInAndGoToPage(randomEmail, '/inscription/structure/recherche')
   })
 })
