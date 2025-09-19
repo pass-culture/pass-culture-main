@@ -12,12 +12,24 @@
   }
 }
 
+.offer-details-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bookings-duo-icon {
+  width: rem.torem(24px);
+  height: rem.torem(24px);
+  top: rem.torem(-2px);
+  margin-left: rem.torem(8px);
+}
+
 .booking-offer-additional-info {
   @include fonts.body-accent-xs;
 
   color: var(--color-text-subtle);
-  display: flex;
-  align-items: center;
+  white-space: nowrap;
 }
 
 .tarif {
@@ -25,6 +37,7 @@
 
   margin-top: rem.torem(4px);
   color: var(--color-text-subtle);
+  white-space: nowrap;
 }
 
 .stocks {
@@ -50,7 +63,7 @@
 
     &:hover,
     &:focus {
-      &~.sold-out-dates {
+      & ~ .sold-out-dates {
         display: flex;
       }
     }

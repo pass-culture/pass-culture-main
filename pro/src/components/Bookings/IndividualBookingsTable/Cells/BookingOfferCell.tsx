@@ -16,18 +16,18 @@ import {
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
 import { formatPrice } from '@/commons/utils/formatPrice'
+import strokeDuoIcon from '@/icons/stroke-duo.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel
-  className?: string
   isCaledonian?: boolean
 }
 
 export const BookingOfferCell = ({
   booking,
-  className,
   isCaledonian = false,
 }: BookingOfferCellProps) => {
   const offerUrl = booking.stock.offerIsEducational
@@ -52,37 +52,46 @@ export const BookingOfferCell = ({
   )
 
   return (
-    <div className={cn(className)}>
-      <a
-        href={offerUrl}
-        className={styles['booking-offer-name']}
-        data-testid="booking-offer-name"
-      >
-        {booking.stock.offerName}
-      </a>
+    <div className={cn(styles['offer-details-wrapper'])}>
+      <div>
+        <a
+          href={offerUrl}
+          className={styles['booking-offer-name']}
+          data-testid="booking-offer-name"
+        >
+          {booking.stock.offerName}
+        </a>
 
-      {booking.stock.offerEan ||
-        (eventBeginningDatetime && (
-          <div className={styles['booking-offer-additional-info']}>
-            {eventDatetimeFormatted || booking.stock.offerEan}
-          </div>
-        ))}
+        {booking.stock.offerEan ||
+          (eventBeginningDatetime && (
+            <div className={styles['booking-offer-additional-info']}>
+              {eventDatetimeFormatted || booking.stock.offerEan}
+            </div>
+          ))}
 
-      <div className={styles['tarif']}>
-        {booking.bookingPriceCategoryLabel
-          ? `${booking.bookingPriceCategoryLabel} - ${
-              isCaledonian
-                ? formattedPacificFrancPrice
-                : formatPrice(booking.bookingAmount)
-            }`
-          : isCaledonian
-            ? formattedPacificFrancPrice
-            : formatPrice(booking.bookingAmount, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                trailingZeroDisplay: 'stripIfInteger',
-              })}
+        <div className={styles['tarif']}>
+          {booking.bookingPriceCategoryLabel
+            ? `${booking.bookingPriceCategoryLabel} - ${
+                isCaledonian
+                  ? formattedPacificFrancPrice
+                  : formatPrice(booking.bookingAmount)
+              }`
+            : isCaledonian
+              ? formattedPacificFrancPrice
+              : formatPrice(booking.bookingAmount, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                  trailingZeroDisplay: 'stripIfInteger',
+                })}
+        </div>
       </div>
+      {booking.bookingIsDuo && (
+        <SvgIcon
+          src={strokeDuoIcon}
+          alt="Réservation DUO"
+          className={styles['bookings-duo-icon']}
+        />
+      )}
     </div>
   )
 }
