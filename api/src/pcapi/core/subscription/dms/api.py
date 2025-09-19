@@ -244,6 +244,7 @@ def handle_dms_application(
             logger.warning("[DMS] Skipping because FraudCheck already has OK status", extra=log_extra_data)
             return fraud_check
 
+        # créer un nouveau fraud check
         _update_fraud_check_with_new_content(fraud_check, application_content)
 
     _process_dms_application(application_content, application_scalar_id, fraud_check, state, user)

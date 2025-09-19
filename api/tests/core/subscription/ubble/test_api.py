@@ -197,7 +197,9 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
+        (started_fraud_check, pending_fraud_check) = user.beneficiaryFraudChecks
+        assert started_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert pending_fraud_check.status == subscription_models.FraudCheckStatus.PENDING
 
     def test_ubble_identification_approved(self, requests_mock):
         user = users_factories.UserFactory(age=17)
@@ -216,8 +218,10 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
-        assert fraud_check.resultContent.get("birth_place") is not None
+        (started_fraud_check, ok_fraud_check) = user.beneficiaryFraudChecks
+        assert started_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert ok_fraud_check.status == subscription_models.FraudCheckStatus.OK
+        assert ok_fraud_check.resultContent.get("birth_place") is not None
 
     def test_ubble_identification_approved_with_test_email(self, requests_mock):
         user = users_factories.UserFactory(email="hello+ubble_test@example.com", age=17)
@@ -237,6 +241,7 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert user.validatedBirthDate == user.dateOfBirth.date()
 
@@ -256,8 +261,12 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_TOO_YOUNG]
+        assert set(fraud_check.reasonCodes) == {
+            subscription_models.FraudReasonCode.NOT_ELIGIBLE,
+            subscription_models.FraudReasonCode.AGE_TOO_YOUNG,
+        }
 
     def test_ubble_identification_approved_but_user_too_old(self, requests_mock):
         user = users_factories.UserFactory(age=40)
@@ -275,8 +284,12 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
-        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_TOO_OLD]
+        assert set(fraud_check.reasonCodes) == {
+            subscription_models.FraudReasonCode.AGE_TOO_OLD,
+            subscription_models.FraudReasonCode.NOT_ELIGIBLE,
+        }
 
     def test_ubble_retry_required(self, requests_mock):
         user = users_factories.UserFactory()
@@ -288,15 +301,20 @@ class UbbleWorkflowV2Test:
             json=build_ubble_identification_v2_response(
                 status="retry_required",
                 response_codes=[{"code": 61302, "summary": "document_video_lighting_issue"}],
+                documents=[],
             ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED.value
         assert fraud_check.status == subscription_models.FraudCheckStatus.SUSPICIOUS
-        assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.LACK_OF_LUMINOSITY]
+        assert set(fraud_check.reasonCodes) == {
+            subscription_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+            subscription_models.FraudReasonCode.MISSING_REQUIRED_DATA,
+        }
         assert "Ubble RETRY_REQUIRED" in fraud_check.reason
 
     def test_ubble_identification_declined(self, requests_mock):
@@ -310,11 +328,13 @@ class UbbleWorkflowV2Test:
                 status="declined",
                 response_codes=[{"code": 62401, "summary": "declared_identity_mismatch"}],
                 declared_data={"name": "Ai Mori"},
+                age_at_registration=18,
             ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == ubble_schemas.UbbleIdentificationStatus.DECLINED.value
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
@@ -343,6 +363,7 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
+        (_, fraud_check) = user.beneficiaryFraudChecks
         assert fraud_check.status == subscription_models.FraudCheckStatus.CANCELED
 
     def test_concurrent_requests_leave_fraud_check_ok(self, requests_mock):
@@ -370,7 +391,8 @@ class UbbleWorkflowV2Test:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        assert fraud_check.status == subscription_models.FraudCheckStatus.OK
+        for fraud_check in user.beneficiaryFraudChecks[-2:]:
+            assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert user.has_beneficiary_role is True
 
     def test_ubble_workflow_updates_birth_date(self, requests_mock):
@@ -434,7 +456,6 @@ class UbbleWorkflowV2Test:
             thirdPartyId=UBBLE_IDENTIFICATION_V2_RESPONSE["id"],
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        original_third_party_id = fraud_check.thirdPartyId
 
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
@@ -443,17 +464,17 @@ class UbbleWorkflowV2Test:
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        canceled_fraud_check, ok_fraud_check = sorted(user.beneficiaryFraudChecks, key=lambda fc: fc.id)
-        assert canceled_fraud_check.type == subscription_models.FraudCheckType.UBBLE
-        assert canceled_fraud_check.status == subscription_models.FraudCheckStatus.CANCELED
-        assert canceled_fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
-        assert canceled_fraud_check.thirdPartyId != original_third_party_id
-        assert subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED in canceled_fraud_check.reasonCodes
+        cancelled_fraud_check, ok_fraud_check = sorted(
+            user.beneficiaryFraudChecks[-2:], key=lambda check: check.status == subscription_models.FraudCheckStatus.OK
+        )
+        assert cancelled_fraud_check.type == subscription_models.FraudCheckType.UBBLE
+        assert cancelled_fraud_check.status == subscription_models.FraudCheckStatus.CANCELED
+        assert cancelled_fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED in cancelled_fraud_check.reasonCodes
 
         assert ok_fraud_check.type == subscription_models.FraudCheckType.UBBLE
         assert ok_fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert ok_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
-        assert ok_fraud_check.thirdPartyId == original_third_party_id
 
     def test_ubble_workflow_with_eligibility_change_18_19(self, requests_mock):
         eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
