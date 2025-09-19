@@ -47,7 +47,7 @@ export const LostPassword = (): JSX.Element => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = hookForm
 
   const submitChangePasswordRequest = async (formValues: FormValues) => {
@@ -102,6 +102,7 @@ export const LostPassword = (): JSX.Element => {
                 <Button
                   type="submit"
                   className={styles['validation-button']}
+                  disabled={isSubmitting}
                   variant={ButtonVariant.PRIMARY}
                 >
                   Réinitialiser
