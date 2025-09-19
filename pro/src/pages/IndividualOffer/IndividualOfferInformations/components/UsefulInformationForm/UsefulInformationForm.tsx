@@ -208,10 +208,7 @@ export const UsefulInformationForm = ({
             <TextInput
               {...register('bookingContact')}
               label="Email de contact communiqué aux bénéficiaires"
-              charactersCount={{
-                max: 90,
-                current: watch('bookingContact')?.length || 0,
-              }}
+              maxCharactersCount={90}
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
               error={errors.bookingContact?.message}
@@ -276,10 +273,7 @@ export const UsefulInformationForm = ({
             <TextInput
               {...register('bookingEmail')}
               label="Email auquel envoyer les notifications"
-              charactersCount={{
-                max: 90,
-                current: watch('bookingEmail')?.length || 0,
-              }}
+              maxCharactersCount={90}
               description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingEmail')}
               required

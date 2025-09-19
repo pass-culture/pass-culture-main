@@ -147,10 +147,7 @@ export function IndividualOfferPracticalInfosForm({
               {...form.register('bookingEmail')}
               type="email"
               label="Email auquel envoyer les notifications"
-              charactersCount={{
-                max: 90,
-                current: form.watch('bookingEmail')?.length || 0,
-              }}
+              maxCharactersCount={90}
               disabled={isFormDisabled}
               description="Format : email@exemple.com"
               required

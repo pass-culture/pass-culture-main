@@ -163,7 +163,7 @@ export const DetailsForm = ({
             )}
             <FormLayout.Row className={styles.row}>
               <TextInput
-                charactersCount={{ current: watch('name').length, max: 90 }}
+                maxCharactersCount={90}
                 label="Titre de l’offre"
                 {...register('name')}
                 error={errors.name?.message}

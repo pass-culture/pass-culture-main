@@ -65,7 +65,7 @@ export const EmailSpellCheckInput = forwardRef(
           name={name}
           description={description}
           autoComplete="email"
-          charactersCount={{ max: 255, current: currentCount }}
+          maxCharactersCount={255}
           required={required}
           error={error}
           {...props}

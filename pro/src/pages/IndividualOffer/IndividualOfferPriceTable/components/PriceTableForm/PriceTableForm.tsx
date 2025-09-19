@@ -230,10 +230,7 @@ export const PriceTableForm = ({
                   }
                   error={errors.entries?.[index]?.label?.message}
                   label="Intitulé du tarif"
-                  charactersCount={{
-                    max: PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH,
-                    current: entry.label?.length || 0,
-                  }}
+                  maxCharactersCount={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
                   description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
                 />
               </div>

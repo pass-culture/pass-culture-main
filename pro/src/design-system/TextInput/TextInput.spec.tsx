@@ -54,10 +54,12 @@ describe('TextInput', () => {
 
   it('should show the characters count', () => {
     renderTextInput({
-      charactersCount: { current: 10, max: 100 },
+      maxCharactersCount: 100,
+      value: 'bonjour',
+      onChange: () => {},
     })
 
-    expect(screen.getByText('10/100')).toBeInTheDocument()
+    expect(screen.getByText('7/100')).toBeInTheDocument()
   })
 
   it('should show an icon button', () => {

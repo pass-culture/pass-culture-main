@@ -154,10 +154,7 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('speaker') && (
                   <TextInput
                     label="Intervenant"
-                    charactersCount={{
-                      current: watch('speaker')?.length || 0,
-                      max: 1000,
-                    }}
+                    maxCharactersCount={1000}
                     disabled={readOnlyFields.includes('speaker')}
                     {...register('speaker')}
                     error={errors.speaker?.message}
@@ -166,10 +163,7 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('author') && (
                   <TextInput
                     label="Auteur"
-                    charactersCount={{
-                      current: watch('author')?.length || 0,
-                      max: 1000,
-                    }}
+                    maxCharactersCount={1000}
                     disabled={readOnlyFields.includes('author')}
                     {...register('author')}
                     error={errors.author?.message}
@@ -178,10 +172,7 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('visa') && (
                   <TextInput
                     label="Visa d’exploitation"
-                    charactersCount={{
-                      current: watch('visa')?.length || 0,
-                      max: 1000,
-                    }}
+                    maxCharactersCount={1000}
                     disabled={readOnlyFields.includes('visa')}
                     {...register('visa')}
                     error={errors.visa?.message}
@@ -190,10 +181,7 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('stageDirector') && (
                   <TextInput
                     label="Metteur en scène"
-                    charactersCount={{
-                      current: watch('stageDirector')?.length || 0,
-                      max: 1000,
-                    }}
+                    maxCharactersCount={1000}
                     disabled={readOnlyFields.includes('stageDirector')}
                     {...register('stageDirector')}
                     error={errors.stageDirector?.message}
@@ -202,10 +190,7 @@ export const DetailsSubForm = ({
                 {subcategoryConditionalFields.includes('performer') && (
                   <TextInput
                     label="Interprète"
-                    charactersCount={{
-                      current: watch('performer')?.length || 0,
-                      max: 1000,
-                    }}
+                    maxCharactersCount={1000}
                     disabled={readOnlyFields.includes('performer')}
                     {...register('performer')}
                     error={errors.performer?.message}
@@ -214,10 +199,7 @@ export const DetailsSubForm = ({
                 {displayEanField && (
                   <TextInput
                     label="EAN-13 (European Article Numbering)"
-                    charactersCount={{
-                      current: watch('ean')?.length || 0,
-                      max: 13,
-                    }}
+                    maxCharactersCount={13}
                     disabled={readOnlyFields.includes('ean')}
                     {...register('ean')}
                     error={errors.ean?.message}
