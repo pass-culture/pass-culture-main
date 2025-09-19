@@ -4,7 +4,10 @@ import uuid
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.elements import BooleanClauseList
 
+from pcapi.core.offers.models import Offer
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -55,6 +58,28 @@ class Artist(PcObject, Base, Model):
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", backref="artist")
 
     sa.Index("ix_artist_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
+
+    @hybrid_property
+    def is_eligible_for_search(self) -> bool:
+        if self.is_blacklisted:
+            return False
+
+        for product in self.products:
+            for offer in product.offers:
+                if offer.is_eligible_for_search:
+                    return True
+
+        return False
+
+    @is_eligible_for_search.expression  # type: ignore[no-redef]
+    def is_eligible_for_search(cls) -> BooleanClauseList:
+        return sa.and_(
+            cls.is_blacklisted.is_(False),
+            sa.exists()
+            .where(ArtistProductLink.artist_id == cls.id)
+            .where(Offer.productId == ArtistProductLink.product_id)
+            .where(Offer.is_eligible_for_search),
+        )
 
     @property
     def thumbUrl(self) -> str | None:
