@@ -66,7 +66,6 @@ def _get_custom_reimbursement_rules_query() -> sa_orm.Query:
                 offerers_models.Venue.id,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.siret,
             )
@@ -82,7 +81,6 @@ def _get_custom_reimbursement_rules_query() -> sa_orm.Query:
             .load_only(
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.siret,
             )

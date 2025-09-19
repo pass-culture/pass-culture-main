@@ -19,7 +19,6 @@ from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.selectable import Exists
@@ -66,6 +65,7 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# TODO(xordoquy): dur à modifier si les venues virtuelles ne sont que soft deleted
 CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
     OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
@@ -236,13 +236,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     publicName = sa.Column(sa.String(255), nullable=True)
     sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
-    isVirtual: bool = sa.Column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-        server_default=expression.false(),
-    )
-
     isPermanent: sa_orm.Mapped[bool] = sa.Column(sa.Boolean, nullable=False, default=False)
 
     isOpenToPublic = sa.Column(sa.Boolean, nullable=False, default=False)
@@ -367,7 +360,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True)
+    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=False, index=True)
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
@@ -375,6 +368,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="venue"
     )
+    isVirtual = False
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -711,13 +705,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
             return None
         return self.confidenceRule.confidenceLevel
 
-    __table_args__ = (
-        sa.CheckConstraint(
-            '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
-            name="check_physical_venue_has_offerer_address",
-        ),
-    )
-
     @property
     def ridet(self) -> str | None:
         if self.siret and siren_utils.is_ridet(self.siret):
@@ -755,7 +742,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
                 Venue.id == self.id,
             )
             .exists()
@@ -775,7 +761,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin, SoftDeleta
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 AliasedVenue.isPermanent.is_(True),
-                AliasedVenue.isVirtual.is_(False),
                 AliasedVenue.id == cls.id,
             )
             .exists()
@@ -894,11 +879,9 @@ def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None
 
 
 def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, None)
-        venue.store_departement_code()
-    venue.store_timezone()
+    if not venue.postalCode:
+        raise IntegrityError(None, None, None)
+    venue.store_departement_code()
 
 
 class VenuePricingPointLink(Base, Model):

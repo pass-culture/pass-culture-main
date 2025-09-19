@@ -60,7 +60,6 @@ class VenuesTest:
             "longitude": float(venue.longitude),
             "city": venue.city,
             "publicName": "Public name",
-            "isVirtual": venue.isVirtual,
             "isOpenToPublic": venue.isOpenToPublic,
             "isPermanent": venue.isPermanent,
             "withdrawalDetails": venue.withdrawalDetails,

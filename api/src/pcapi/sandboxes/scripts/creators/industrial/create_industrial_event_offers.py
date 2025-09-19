@@ -30,12 +30,10 @@ def create_industrial_event_offers(
     event_subcategories = [s for s in subcategories.ALL_SUBCATEGORIES if s.is_event and s.is_offline_only]
 
     for offerer in offerers_by_name.values():
-        event_venues = [venue for venue in offerer.managedVenues if not venue.isVirtual]
-
-        if not event_venues:
+        if not offerer.managedVenues:
             continue
 
-        event_venue = event_venues[0]
+        event_venue = offerer.managedVenues[0]
 
         for venue_event_index in range(0, EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE):
             event_subcategory_index = (venue_event_index + event_index) % len(event_subcategories)

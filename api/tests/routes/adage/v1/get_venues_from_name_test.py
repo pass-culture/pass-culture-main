@@ -17,10 +17,14 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
+        # Former virtual venue are now without siret & soft deleted.
+        # They should still not appear in the results.
+        former_virtual_venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            isPermanent=True,
         )
+        former_virtual_venue.isSoftDeleted = True
+        db_session.add(former_virtual_venue)
+        db_session.commit()
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20name")
@@ -40,10 +44,14 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
+        # Former virtual venue are now without siret & soft deleted.
+        # They should still not appear in the results.
+        former_virtual_venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            isPermanent=True,
         )
+        former_virtual_venue.isSoftDeleted = True
+        db_session.add(former_virtual_venue)
+        db_session.commit()
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20Name")
@@ -124,10 +132,6 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
-            isPermanent=True,
-        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a%20name%20with%20c")
@@ -145,10 +149,6 @@ class Returns200Test:
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -170,10 +170,6 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
-            isPermanent=True,
-        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/%C3%A0%20%C3%B1%C3%85m%C3%A9%20w%C3%AFth%20%C3%A7")
@@ -191,10 +187,6 @@ class Returns200Test:
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -216,10 +208,6 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
-            isPermanent=True,
-        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a-composed-name")
@@ -237,10 +225,6 @@ class Returns200Test:
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
