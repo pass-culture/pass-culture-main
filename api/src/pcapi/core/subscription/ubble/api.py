@@ -24,6 +24,7 @@ from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
@@ -42,38 +43,60 @@ from . import messages
 logger = logging.getLogger(__name__)
 PAGE_SIZE = 20_000
 
+PENDING_STATUSES = [
+    ubble_schemas.UbbleIdentificationStatus.PROCESSING,
+    ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+]
+STATUSES_TO_HANDLE = [
+    ubble_schemas.UbbleIdentificationStatus.APPROVED,
+    ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
+    ubble_schemas.UbbleIdentificationStatus.DECLINED,
+    ubble_schemas.UbbleIdentificationStatus.PROCESSED,
+]
+CANCELLED_STATUSES = [
+    ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
+    ubble_schemas.UbbleIdentificationStatus.REFUSED,
+    ubble_schemas.UbbleIdentificationStatus.ABORTED,
+    ubble_schemas.UbbleIdentificationStatus.EXPIRED,
+]
 
-def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
-    content = _get_content(fraud_check.thirdPartyId)
-    _fill_missing_content_test_fields(content, fraud_check)
 
-    _update_identity_fraud_check(fraud_check, content)
+def update_ubble_workflow(previous_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    ubble_content = _get_content(previous_fraud_check.thirdPartyId)
+    _fill_missing_content_test_fields(ubble_content, previous_fraud_check)
 
-    user = fraud_check.user
-    status = content.status
-    if status in (
-        ubble_schemas.UbbleIdentificationStatus.PROCESSING,
-        ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
-    ):
+    user = previous_fraud_check.user
+    id_provider_detected_eligibility = subscription_api.get_id_provider_detected_eligibility(user, ubble_content)
+    fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        type=subscription_models.FraudCheckType.UBBLE,
+        thirdPartyId=ubble_content.identification_id or "",
+        resultContent=ubble_content.dict(exclude_none=True) if ubble_content else None,
+        status=subscription_models.FraudCheckStatus.STARTED,  # the correct status will be set afterwards
+        eligibilityType=id_provider_detected_eligibility,
+    )
+    db.session.add(fraud_check)
+    db.session.flush()
+
+    if ubble_content.status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(user, fraud_check)
+        pcapi_repository.save(fraud_check)
 
-    elif status in [
-        ubble_schemas.UbbleIdentificationStatus.APPROVED,
-        ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
-        ubble_schemas.UbbleIdentificationStatus.DECLINED,
-        ubble_schemas.UbbleIdentificationStatus.PROCESSED,
-    ]:
-        fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
-            user, fraud_check, content
+    elif ubble_content.status in CANCELLED_STATUSES:
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
+        pcapi_repository.save(fraud_check)
+
+    elif ubble_content.status in STATUSES_TO_HANDLE:
+        subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
+            user, previous_fraud_check, fraud_check
         )
         try:
-            ubble_fraud_api.on_ubble_result(fraud_check)
-        except Exception:
-            logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
+            fraud_check_api.on_identity_fraud_check_result(fraud_check.user, fraud_check)
+        except Exception as e:
+            logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id, "exc": e})
             return
 
-        subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, ubble_content.get_birth_date())
 
         if fraud_check.status != subscription_models.FraudCheckStatus.OK:
             handle_validation_errors(user, fraud_check)
@@ -90,15 +113,6 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
 
         if not is_activated:
             external_attributes_api.update_external_user(user)
-
-    elif status in (
-        ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
-        ubble_schemas.UbbleIdentificationStatus.REFUSED,
-        ubble_schemas.UbbleIdentificationStatus.ABORTED,
-        ubble_schemas.UbbleIdentificationStatus.EXPIRED,
-    ):
-        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        pcapi_repository.save(fraud_check)
 
 
 def _fill_missing_content_test_fields(

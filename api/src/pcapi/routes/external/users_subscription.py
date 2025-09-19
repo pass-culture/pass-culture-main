@@ -67,6 +67,7 @@ def ubble_v2_webhook_update_application_status(
     if not should_process_webhook_call:
         return ubble_serializers.WebhookDummyReponse()
 
+    # il faut récupérer tous les fraud checks ubble plutôt qu'un seul
     fraud_check = ubble_fraud_api.get_ubble_fraud_check(identification_id)
     if not fraud_check:
         raise ValueError(f"no Ubble fraud check found with identification_id {identification_id}")

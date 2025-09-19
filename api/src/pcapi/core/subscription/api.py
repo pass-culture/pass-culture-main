@@ -626,38 +626,6 @@ def get_maintenance_page_type(user: users_models.User) -> subscription_schemas.M
 DEPRECATED_UBBLE_PREFIX = "deprecated-"
 
 
-def _update_fraud_check_eligibility_with_history(
-    fraud_check: subscription_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
-) -> subscription_models.BeneficiaryFraudCheck:
-    # Update fraud check by creating a new one with the correct eligibility
-    new_fraud_check = subscription_models.BeneficiaryFraudCheck(
-        user=fraud_check.user,
-        type=fraud_check.type,
-        thirdPartyId=fraud_check.thirdPartyId,
-        resultContent=fraud_check.resultContent,
-        status=fraud_check.status,
-        reason=fraud_check.reason,
-        reasonCodes=fraud_check.reasonCodes,
-        eligibilityType=eligibility,
-    )
-    # Cancel the old fraud check
-    fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-    reason_message = "Eligibility type changed by the identity provider"
-    fraud_check.reason = (
-        f"{fraud_check.reason} {fraud_api.FRAUD_RESULT_REASON_SEPARATOR} {reason_message}"
-        if fraud_check.reason
-        else reason_message
-    )
-    if fraud_check.reasonCodes is None:
-        fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED)
-    fraud_check.thirdPartyId = f"{DEPRECATED_UBBLE_PREFIX}{fraud_check.thirdPartyId}"
-
-    pcapi_repository.save(fraud_check, new_fraud_check)
-
-    return new_fraud_check
-
-
 def get_id_provider_detected_eligibility(
     user: users_models.User, identity_content: subscription_schemas.IdentityCheckContent
 ) -> users_models.EligibilityType | None:
@@ -666,52 +634,63 @@ def get_id_provider_detected_eligibility(
     )
 
 
-# TODO (Lixxday): use a proper BeneficiaryFraudCheck History model to track these kind of updates
 def handle_eligibility_difference_between_declaration_and_identity_provider(
     user: users_models.User,
-    fraud_check: subscription_models.BeneficiaryFraudCheck,
-    identity_content: subscription_schemas.IdentityCheckContent | None = None,
-) -> subscription_models.BeneficiaryFraudCheck:
-    if identity_content is None:
-        source_data = fraud_check.source_data()
-        assert isinstance(source_data, subscription_schemas.IdentityCheckContent)
-        identity_content = source_data
+    previous_fraud_check: subscription_models.BeneficiaryFraudCheck,
+    new_fraud_check: subscription_models.BeneficiaryFraudCheck,
+) -> None:
+    """Ports profile completion and honor statement fraud checks to the new eligibility."""
+    declared_eligibility = previous_fraud_check.eligibilityType
+    id_provider_detected_eligibility = new_fraud_check.eligibilityType
 
-    declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = get_id_provider_detected_eligibility(user, identity_content)
+    if declared_eligibility == id_provider_detected_eligibility:
+        return
 
-    if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
-        return fraud_check
+    _cancel_fraud_check(previous_fraud_check)
 
-    new_fraud_check = _update_fraud_check_eligibility_with_history(fraud_check, id_provider_detected_eligibility)
-
-    # Handle eligibility update for PROFILE_COMPLETION fraud check, if it exists
-    profile_completion_fraud_check = (
-        db.session.query(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.user == user,
-            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.PROFILE_COMPLETION,
-            subscription_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
+    FRAUD_CHECK_TYPES_TO_PORT = [
+        subscription_models.FraudCheckType.PROFILE_COMPLETION,
+        subscription_models.FraudCheckType.HONOR_STATEMENT,
+    ]
+    for fraud_check in user.beneficiaryFraudChecks:
+        should_port_to_new_eligibility = (
+            fraud_check.type in FRAUD_CHECK_TYPES_TO_PORT and fraud_check.eligibilityType == declared_eligibility
         )
-        .first()
-    )
-    if profile_completion_fraud_check:
-        _update_fraud_check_eligibility_with_history(profile_completion_fraud_check, id_provider_detected_eligibility)
+        if should_port_to_new_eligibility:
+            _cancel_fraud_check(fraud_check)
 
-    # Handle eligibility update for HONOR_STATEMENT fraud check, if it exists
-    honor_statement_fraud_check = (
-        db.session.query(subscription_models.BeneficiaryFraudCheck)
-        .filter(
-            subscription_models.BeneficiaryFraudCheck.user == user,
-            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.HONOR_STATEMENT,
-            subscription_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
-        )
-        .first()
-    )
-    if honor_statement_fraud_check:
-        _update_fraud_check_eligibility_with_history(honor_statement_fraud_check, id_provider_detected_eligibility)
+            if id_provider_detected_eligibility:
+                _port_fraud_check(fraud_check, id_provider_detected_eligibility)
 
-    return new_fraud_check
+
+def _port_fraud_check(
+    fraud_check: subscription_models.BeneficiaryFraudCheck, new_eligibility: users_models.EligibilityType
+) -> None:
+    new_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=fraud_check.user,
+        type=fraud_check.type,
+        thirdPartyId=fraud_check.thirdPartyId,
+        resultContent=fraud_check.resultContent,
+        status=fraud_check.status,
+        reason=fraud_check.reason,
+        reasonCodes=fraud_check.reasonCodes,
+        eligibilityType=new_eligibility,
+    )
+    pcapi_repository.save(new_fraud_check)
+
+
+def _cancel_fraud_check(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    cancellation_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=fraud_check.user,
+        type=fraud_check.type,
+        thirdPartyId=fraud_check.thirdPartyId,
+        resultContent={},
+        status=subscription_models.FraudCheckStatus.CANCELED,
+        reason="Eligibility type changed by the identity provider",
+        reasonCodes=[subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED],
+        eligibilityType=fraud_check.eligibilityType,
+    )
+    pcapi_repository.save(cancellation_fraud_check)
 
 
 def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_date: datetime.date | None) -> None:
