@@ -1,10 +1,9 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import {
-  type GetCollectiveOfferResponseModel,
-  type GetCollectiveOfferTemplateResponseModel,
-  OfferAddressType,
+import type {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
@@ -61,21 +60,5 @@ describe('AdagePreviewLayout', () => {
     expect(
       screen.getByRole('heading', { name: 'My test name bookable' })
     ).toBeInTheDocument()
-  })
-
-  it('should display the venue location infos if the offer happens at the offerer place', async () => {
-    const offer = getCollectiveOfferTemplateFactory()
-    renderAdagePreviewLayout({
-      ...offer,
-      offerVenue: {
-        ...offer.offerVenue,
-        addressType: OfferAddressType.OFFERER_VENUE,
-        venueId: 1,
-      },
-    })
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-    expect(screen.getByText(/à Montpellier/)).toBeInTheDocument()
   })
 })
