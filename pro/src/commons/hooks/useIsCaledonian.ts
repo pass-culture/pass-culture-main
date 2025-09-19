@@ -1,10 +1,7 @@
-import { selectCurrentOffererId } from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 import { useSelector } from 'react-redux'
 
-import { useOfferer } from './swr/useOfferer'
-
 export const useIsCaledonian = () => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const { data: offerer } = useOfferer(selectedOffererId)
+  const offerer = useSelector(selectCurrentOfferer)
   return offerer?.isCaledonian ?? false
 }

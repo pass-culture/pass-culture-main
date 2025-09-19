@@ -28,7 +28,9 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import type { DeepPartial } from '@/commons/custom_types/utils'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
+import type { RootState } from '@/commons/store/rootReducer'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   defaultGetOffererResponseModel,
@@ -38,6 +40,7 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
+import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -57,7 +60,8 @@ vi.mock('@/commons/utils/date', async () => {
 const renderStockThingScreen = async (
   stocks: GetOfferStockResponseModel[],
   props: StocksThingProps,
-  contextValue: IndividualOfferContextValues
+  contextValue: IndividualOfferContextValues,
+  storeOverrides?: DeepPartial<RootState>
 ) => {
   vi.spyOn(api, 'getStocks').mockResolvedValue({
     stocks,
@@ -101,6 +105,7 @@ const renderStockThingScreen = async (
           offerId: contextValue.offer?.id || undefined,
         }),
       ],
+      storeOverrides,
     }
   )
   await waitFor(() => {
@@ -607,19 +612,6 @@ describe('screens:StocksThing', () => {
   })
 
   describe('New caledonian offerer', () => {
-    beforeEach(() => {
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          isCaledonian: true,
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-    })
-
     it('should display the price in F CFP when offerer is Caledonian', async () => {
       vi.spyOn(hooks, 'useOfferer').mockReturnValue({
         data: {
@@ -643,7 +635,14 @@ describe('screens:StocksThing', () => {
         }),
       ]
 
-      await renderStockThingScreen(stocks, props, contextValue)
+      await renderStockThingScreen(stocks, props, contextValue, {
+        offerer: currentOffererFactory({
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            isCaledonian: true,
+          },
+        }),
+      })
 
       expect(screen.getByDisplayValue('2385')).toBeInTheDocument()
     })
@@ -652,7 +651,14 @@ describe('screens:StocksThing', () => {
       vi.spyOn(api, 'createThingStock').mockResolvedValue({
         id: 12,
       })
-      await renderStockThingScreen([], props, contextValue)
+      await renderStockThingScreen([], props, contextValue, {
+        offerer: currentOffererFactory({
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            isCaledonian: true,
+          },
+        }),
+      })
       const nextButton = screen.getByRole('button', {
         name: 'Enregistrer et continuer',
       })
