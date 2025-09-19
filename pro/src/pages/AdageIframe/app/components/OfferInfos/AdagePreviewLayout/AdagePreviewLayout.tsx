@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import type {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
-import {
-  type GetCollectiveOfferResponseModel,
-  type GetCollectiveOfferTemplateResponseModel,
-  type GetVenueResponseModel,
-  OfferAddressType,
+import type {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -28,32 +27,12 @@ type AdagePreviewLayoutProps = {
 }
 
 export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
-  const [venue, setVenue] = useState<GetVenueResponseModel | null>(null)
+  const { data: venue, isLoading } = useSWR(
+    [GET_VENUE_QUERY_KEY, offer.venue.id],
+    ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
+  )
 
-  const [loadingVenue, setLoadingVenue] = useState(false)
-  useState<GetVenueResponseModel | null>(null)
-
-  useEffect(() => {
-    async function getOfferVenue() {
-      const venueId =
-        offer.offerVenue.addressType === OfferAddressType.OFFERER_VENUE
-          ? offer.offerVenue.venueId
-          : offer.venue.id
-      if (!venueId) {
-        return
-      }
-
-      setLoadingVenue(true)
-      const venue = await api.getVenue(venueId)
-      setLoadingVenue(false)
-      setVenue(venue)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getOfferVenue()
-  }, [offer.venue.id, offer.offerVenue.venueId, offer.offerVenue.addressType])
-
-  if (loadingVenue) {
+  if (isLoading) {
     return <Spinner />
   }
 
@@ -63,7 +42,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
 
   const isBookable = isCollectiveOffer(offer) && offer.collectiveStock
 
-  //The venue and offerVenue from the created offer in pro must be modified to match the model of a venue in the adage iframe
+  //The venue from the created offer in pro must be modified to match the model of a venue in the adage iframe
   let offerForAdage:
     | CollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel = {
@@ -103,17 +82,6 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
         id: Number(offer.collectiveStock?.id),
         isBookable: offer.isBookable,
       },
-    }
-  }
-
-  if (offerForAdage.offerVenue.addressType === OfferAddressType.OFFERER_VENUE) {
-    offerForAdage.offerVenue = {
-      ...offer.offerVenue,
-      name: venue.name,
-      publicName: venue.publicName,
-      postalCode: venue.postalCode,
-      city: venue.city,
-      address: venue.street,
     }
   }
 
