@@ -23,7 +23,10 @@ const toThingStockUpsertBodyModel = (
   const activationCodesExpirationDatetime: string | null =
     (entry.activationCodes ?? []).length > 0 &&
     isDateValid(entry.activationCodesExpirationDatetime)
-      ? toBookingLimitDatetime(departementCode)
+      ? toBookingLimitDatetime(
+          entry.activationCodesExpirationDatetime,
+          departementCode
+        )
       : null
   const bookingLimitDatetime = isDateValid(entry.bookingLimitDatetime)
     ? toBookingLimitDatetime(entry.bookingLimitDatetime, departementCode)
