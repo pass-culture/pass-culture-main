@@ -1429,7 +1429,7 @@ class NonPaymentNotice(PcObject, Base, Model):
     amount: decimal.Decimal = sa.Column(sa.Numeric(10, 2), nullable=False)
     batchId = sa.Column(sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True)
     batch: sa_orm.Mapped["finance_models.CashflowBatch"] = sa_orm.relationship("CashflowBatch", foreign_keys=[batchId])
-    dateReceived = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
+    dateReceived: sa_orm.Mapped[date] = sa.Column(sa.Date, nullable=False, server_default=sa.func.current_date())
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     emitterName = sa.Column(sa.Text(), nullable=False)
     emitterEmail = sa.Column(sa.Text(), nullable=False)
@@ -1446,3 +1446,8 @@ class NonPaymentNotice(PcObject, Base, Model):
     venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship("Venue", foreign_keys=[venueId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True)
     offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+
+
+class NoticeRecipientType(enum.Enum):
+    SGC = "Service Gestion Comptable"
+    PRO = "Partenaire Culturel"
