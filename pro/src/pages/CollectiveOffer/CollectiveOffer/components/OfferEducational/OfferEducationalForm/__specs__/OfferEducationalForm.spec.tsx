@@ -185,10 +185,8 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render FormLocation when OA FF is active', async () => {
-    renderOfferEducationalForm(defaultProps, {
-      features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-    })
+  it('should render FormLocation', async () => {
+    renderOfferEducationalForm(defaultProps)
     expect(
       await screen.findByRole('radio', { name: 'À une adresse précise' })
     ).toBeInTheDocument()

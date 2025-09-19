@@ -6,11 +6,9 @@ import {
   AdageFrontRoles,
   CollectiveLocationType,
   EacFormat,
-  OfferAddressType,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from '@/commons/config/swrQueryKeys'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeBuildingIcon from '@/icons/stroke-building.svg'
@@ -56,10 +54,6 @@ export const OfferFilters = ({
   }>({})
 
   const form = useFormContext<SearchFormValues>()
-
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const { adageUser } = useAdageUser()
 
@@ -143,21 +137,15 @@ export const OfferFilters = ({
   const adressTypeRadios = [
     {
       label: 'Je n’ai pas de préférence (Voir tout)',
-      value: isCollectiveOaActive
-        ? CollectiveLocationType.TO_BE_DEFINED
-        : OfferAddressType.OTHER,
+      value: CollectiveLocationType.TO_BE_DEFINED,
     },
     {
       label: 'Sortie chez un partenaire culturel',
-      value: isCollectiveOaActive
-        ? CollectiveLocationType.ADDRESS
-        : OfferAddressType.OFFERER_VENUE,
+      value: CollectiveLocationType.ADDRESS,
     },
     {
       label: 'Intervention d’un partenaire culturel dans mon établissement',
-      value: isCollectiveOaActive
-        ? CollectiveLocationType.SCHOOL
-        : OfferAddressType.SCHOOL,
+      value: CollectiveLocationType.SCHOOL,
     },
   ]
 
@@ -177,13 +165,10 @@ export const OfferFilters = ({
     form.setValue(name, value as string | number | string[])
   }
 
-  const locationFieldKey = isCollectiveOaActive
-    ? 'locationType'
-    : 'eventAddressType'
+  const locationFieldKey = 'locationType'
 
   const domainsValue = form.watch('domains')
   const locationTypeValue = form.watch('locationType')
-  const eventAddressTypeValue = form.watch('eventAddressType')
   const formatsValue = form.watch('formats')
   const studentsValue = form.watch('students')
   return (
@@ -194,23 +179,15 @@ export const OfferFilters = ({
             <div className={styles['filter-container-buttons-list-items']}>
               <AdageButtonFilter
                 isActive={
-                  isCollectiveOaActive
-                    ? locationTypeValue.length > 0 &&
-                      locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
-                    : eventAddressTypeValue.length > 0 &&
-                      eventAddressTypeValue !== OfferAddressType.OTHER
+                  locationTypeValue.length > 0 &&
+                  locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
                 }
                 title="Type d’intervention"
                 itemsLength={
-                  isCollectiveOaActive
-                    ? locationTypeValue &&
-                      locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
-                      ? 1
-                      : null
-                    : eventAddressTypeValue &&
-                        eventAddressTypeValue !== OfferAddressType.OTHER
-                      ? 1
-                      : null
+                  locationTypeValue &&
+                  locationTypeValue !== CollectiveLocationType.TO_BE_DEFINED
+                    ? 1
+                    : null
                 }
                 isOpen={modalOpenStatus[locationFieldKey]}
                 setIsOpen={setModalOpenStatus}
@@ -221,9 +198,7 @@ export const OfferFilters = ({
                   onClean={() =>
                     resetModalFilter(
                       locationFieldKey,
-                      isCollectiveOaActive
-                        ? CollectiveLocationType.TO_BE_DEFINED
-                        : OfferAddressType.OTHER
+                      CollectiveLocationType.TO_BE_DEFINED
                     )
                   }
                   onSearch={() => onSearch(locationFieldKey)}

@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 import { Configure, Index, useInstantSearch } from 'react-instantsearch'
 
-import { OfferAddressType } from '@/apiClient/adage'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { CollectiveLocationType } from '@/apiClient/adage'
 import { ALGOLIA_COLLECTIVE_OFFERS_INDEX } from '@/commons/utils/config'
 import { isNumber } from '@/commons/utils/types'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
@@ -59,7 +58,7 @@ const getPossibleFilterValues = (
     possibleFacetFilters.push({
       values: {
         ...formValues,
-        eventAddressType: OfferAddressType.OTHER,
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
         domains: [],
         categories: [],
         formats: [],
@@ -73,7 +72,7 @@ const getPossibleFilterValues = (
     possibleFacetFilters.push({
       values: {
         ...formValues,
-        eventAddressType: OfferAddressType.OTHER,
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
         domains: [],
         geolocRadius: DEFAULT_GEO_RADIUS,
       },
@@ -82,11 +81,11 @@ const getPossibleFilterValues = (
     })
   }
 
-  if (formValues.eventAddressType !== OfferAddressType.OTHER) {
+  if (formValues.locationType !== CollectiveLocationType.TO_BE_DEFINED) {
     possibleFacetFilters.push({
       values: {
         ...formValues,
-        eventAddressType: OfferAddressType.OTHER,
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
         geolocRadius: DEFAULT_GEO_RADIUS,
       },
       headerMessage:
@@ -102,7 +101,7 @@ const getPossibleFilterValues = (
         domains: [],
         categories: [],
         formats: [],
-        eventAddressType: OfferAddressType.OTHER,
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
       },
       headerMessage:
         ' Découvrez des propositions de sorties scolaires à proximité de votre établissement',
@@ -114,7 +113,7 @@ const getPossibleFilterValues = (
         domains: [],
         categories: [],
         formats: [],
-        eventAddressType: OfferAddressType.OFFERER_VENUE,
+        locationType: CollectiveLocationType.ADDRESS,
       },
       headerMessage:
         'Découvrez les offres de partenaires culturels locaux prêts à intervenir dans votre classe',
@@ -131,10 +130,6 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
   const { scopedResults } = useInstantSearch()
   const searchIndexIdDisplayed: null | string =
     getSearchIndexIdDisplayed(scopedResults)
-
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
 
   const formValuesArray: {
     values: SearchFormValues
@@ -155,16 +150,11 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
               attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
               clickAnalytics
               facetFilters={
-                adageFiltersToFacetFilters(
-                  formValues.values,
-                  isCollectiveOaActive
-                ).queryFilters
+                adageFiltersToFacetFilters(formValues.values).queryFilters
               }
               query={''}
               filters={
-                isCollectiveOaActive
-                  ? 'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
-                  : 'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
+                'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
               }
               hitsPerPage={3}
               aroundLatLng={
