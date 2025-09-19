@@ -61,7 +61,7 @@
 }
 
 .toggle[aria-pressed="true"] .toggle-display {
-  background-color: var(--color-valid);
+  background-color: var(--color-icon-success);
 }
 
 .toggle[aria-pressed="true"] .toggle-display::before {

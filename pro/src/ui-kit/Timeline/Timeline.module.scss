@@ -50,7 +50,7 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .line-success {
-  background-image: radial-gradient(var(--color-valid) 100%, transparent 100%);
+  background-image: radial-gradient(var(--color-icon-success) 100%, transparent 100%);
   border-radius: var(--size-border-radius-s);
 }
 

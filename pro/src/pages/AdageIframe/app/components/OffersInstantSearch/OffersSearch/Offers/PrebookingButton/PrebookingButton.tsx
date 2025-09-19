@@ -7,10 +7,10 @@ import { apiAdage } from '@/apiClient/api'
 import { hasErrorCode } from '@/apiClient/helpers'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { LOGS_DATA } from '@/commons/utils/config'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullStockIcon from '@/icons/full-stock.svg'
 import strokeHourglass from '@/icons/stroke-hourglass.svg'
 import { Button } from '@/ui-kit/Button/Button'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './PrebookingButton.module.scss'
 import { PrebookingModal } from './PrebookingModal'
@@ -116,15 +116,11 @@ export const PrebookingButton = ({
     <>
       <div className={(styles['prebooking-button-container'], className)}>
         {hasPrebookedOffer ? (
-          <div className={styles['prebooking-tag']}>
-            <SvgIcon
-              className="prebooking-tag-icon"
-              src={strokeHourglass}
-              alt=""
-              width="16"
-            />
-            Préréservé
-          </div>
+          <Tag
+            label="Préréservé"
+            variant={TagVariant.WARNING}
+            icon={strokeHourglass}
+          />
         ) : (
           <div className={styles['prebooking-button-container']}>
             <Button
