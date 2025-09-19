@@ -59,10 +59,9 @@ export const Offerers = ({
           )}
         </>
       )}
-      {
-        /* istanbul ignore next: DEBT, TO FIX */ isUserOffererValidated &&
-          isOffererSoftDeleted && <SoftDeletedOffererWarning />
-      }
+      {isUserOffererValidated && isOffererSoftDeleted && (
+        <SoftDeletedOffererWarning />
+      )}
       {!userHasOfferers && <OffererCreationLinks />}
     </>
   )

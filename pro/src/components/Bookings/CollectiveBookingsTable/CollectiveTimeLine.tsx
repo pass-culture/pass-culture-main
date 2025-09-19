@@ -377,13 +377,14 @@ export const CollectiveTimeLine = ({
             {bookingRecap.bookingCancellationReason ===
               CollectiveBookingCancellationReasons.FRAUD && (
               <>
-                Pour plus d’informations, vous pouvez contacter{' '}
-                <a
-                  className={styles['contact-link']}
-                  href="mailto:support@passculture.app"
+                Pour plus d’informations, vous pouvez{' '}
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  opensInNewTab
+                  to="https://aide.passculture.app/hc/fr/requests"
                 >
-                  support@passculture.app
-                </a>
+                  contacter le support
+                </ButtonLink>
               </>
             )}
           </div>
