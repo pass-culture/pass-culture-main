@@ -659,3 +659,7 @@ class VideoMetatdataQueryModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class OfferHighlightResquestsResponseModel(BaseModel):
+    highlight_requests: list[str]
