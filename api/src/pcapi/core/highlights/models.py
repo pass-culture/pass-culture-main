@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import psycopg2.extras
@@ -29,6 +30,11 @@ class Highlight(PcObject, Model):
     highlight_requests: sa_orm.Mapped[list["HighlightRequest"]] = sa_orm.relationship(
         "HighlightRequest", foreign_keys="HighlightRequest.highlightId", back_populates="highlight"
     )
+
+    @property
+    def is_available(self) -> bool:
+        now = datetime.datetime.utcnow()
+        return self.availability_timespan.upper >= now and self.availability_timespan.lower < now
 
     __table_args__ = (
         sa.CheckConstraint('length("name") <= 200'),

@@ -23,6 +23,7 @@ import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockE
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CookieConsentRequest } from '../models/CookieConsentRequest';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
+import type { CreateOfferHighlightRequestBodyModel } from '../models/CreateOfferHighlightRequestBodyModel';
 import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
 import type { DeleteFilteredStockListBody } from '../models/DeleteFilteredStockListBody';
@@ -78,6 +79,7 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
+import type { OfferHighlightResquestsResponseModel } from '../models/OfferHighlightResquestsResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -2081,6 +2083,31 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * post_highlight_request_offer <POST>
+   * @param offerId
+   * @param requestBody
+   * @returns OfferHighlightResquestsResponseModel Created
+   * @throws ApiError
+   */
+  public postHighlightRequestOffer(
+    offerId: number,
+    requestBody: CreateOfferHighlightRequestBodyModel,
+  ): CancelablePromise<OfferHighlightResquestsResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/{offer_id}/highlight-requests',
       path: {
         'offer_id': offerId,
       },

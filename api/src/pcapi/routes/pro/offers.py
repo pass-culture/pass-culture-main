@@ -795,3 +795,36 @@ def get_offer_video_metadata(
         videoThumbnailUrl=video_metadata.thumbnail_url,
         videoUrl=query.video_url,
     )
+
+
+@private_api.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.OfferHighlightResquestsResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+@atomic()
+def post_highlight_request_offer(
+    offer_id: int,
+    body: offers_schemas.CreateOfferHighlightRequestBodyModel,
+) -> offers_serialize.OfferHighlightResquestsResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={"global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"]},
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    offers_validation.check_offer_can_ask_for_highlight_request(offer)
+
+    try:
+        highlight_requests = offers_api.upsert_highlight_requests(body.highlight_ids, offer)
+    except exceptions.HighlightNotFoundException:
+        raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'existe pas"]}, status_code=400)
+    except exceptions.UnavailableHighlightException:
+        raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'est pas disponible"]}, status_code=400)
+    return offers_serialize.OfferHighlightResquestsResponseModel(
+        highlight_requests=[highlight_request.highlight.name for highlight_request in highlight_requests]
+    )

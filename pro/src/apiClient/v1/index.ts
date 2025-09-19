@@ -66,6 +66,7 @@ export type { CombinedInvoiceListModel } from './models/CombinedInvoiceListModel
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
+export type { CreateOfferHighlightRequestBodyModel } from './models/CreateOfferHighlightRequestBodyModel';
 export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel';
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
@@ -190,6 +191,7 @@ export type { OffererEligibilityResponseModel } from './models/OffererEligibilit
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
+export type { OfferHighlightResquestsResponseModel } from './models/OfferHighlightResquestsResponseModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
 export { OfferStatus } from './models/OfferStatus';
