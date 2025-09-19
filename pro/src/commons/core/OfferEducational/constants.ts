@@ -1,4 +1,4 @@
-import { CollectiveLocationType, OfferAddressType } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
 import type {
@@ -16,11 +16,6 @@ export function getDefaultEducationalValues(
     duration: '',
     offererId: '',
     venueId: '',
-    eventAddress: {
-      addressType: OfferAddressType.OFFERER_VENUE,
-      otherAddress: '',
-      venueId: 0,
-    },
     location: {
       locationType: CollectiveLocationType.ADDRESS,
       address: {

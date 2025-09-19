@@ -1,7 +1,6 @@
 import {
   CollectiveLocationType,
   EacFormat,
-  OfferAddressType,
   type PatchCollectiveOfferBodyModel,
 } from '@/apiClient/v1'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
@@ -33,11 +32,6 @@ describe('createPatchOfferPayload', () => {
       { email: 'test2@email.com' },
     ],
     venueId: 'KM',
-    eventAddress: {
-      addressType: OfferAddressType.OFFERER_VENUE,
-      otherAddress: 'TestOtherAddress',
-      venueId: 12,
-    },
     city: 'Paris',
     latitude: '3',
     longitude: '2',
@@ -84,11 +78,6 @@ describe('createPatchOfferPayload', () => {
       { email: 'test4@email.com' },
     ],
     venueId: venueId.toString(),
-    eventAddress: {
-      addressType: OfferAddressType.SCHOOL,
-      otherAddress: 'TestOtherAddress update',
-      venueId: 12,
-    },
     participants: buildStudentLevelsMapWithDefaultValue(false),
     phone: '0123456788',
     email: 'test2@email.com',
@@ -129,11 +118,6 @@ describe('createPatchOfferPayload', () => {
     visualDisabilityCompliant: true,
     bookingEmails: ['test3@email.com', 'test4@email.com'],
     venueId,
-    offerVenue: {
-      addressType: OfferAddressType.SCHOOL,
-      otherAddress: 'TestOtherAddress update',
-      venueId,
-    },
     students: [],
     contactPhone: '0123456788',
     contactEmail: 'test2@email.com',
@@ -144,7 +128,7 @@ describe('createPatchOfferPayload', () => {
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {
-    const payload = createPatchOfferPayload({ ...offer }, initialValues, false)
+    const payload = createPatchOfferPayload({ ...offer }, initialValues)
 
     expect(payload).toMatchObject({
       ...patchOfferPayload,
@@ -155,8 +139,7 @@ describe('createPatchOfferPayload', () => {
   it('should return the correct patch offer payload for a template offer', () => {
     const payload = createPatchOfferTemplatePayload(
       { ...offer, priceDetail: '123', isTemplate: true },
-      initialValues,
-      false
+      initialValues
     )
 
     expect(payload).toMatchObject({
@@ -174,8 +157,7 @@ describe('createPatchOfferPayload', () => {
         beginningDate: '',
         datesType: 'permanent',
       },
-      initialValues,
-      false
+      initialValues
     )
 
     expect(payload).toMatchObject({
@@ -185,8 +167,8 @@ describe('createPatchOfferPayload', () => {
     })
   })
 
-  it('should return patch offer payload with location key when OA FF is active', () => {
-    const payload = createPatchOfferPayload(offer, initialValues, true)
+  it('should return patch offer payload with location key', () => {
+    const payload = createPatchOfferPayload(offer, initialValues)
 
     expect(payload).toEqual(
       expect.objectContaining({
@@ -209,11 +191,10 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
-  it('should return patch offer payload with location key when OA FF is active and city has changed', () => {
+  it('should return patch offer payload with location key when city has changed', () => {
     const payload = createPatchOfferPayload(
       { ...offer, city: 'Paris' },
-      initialValues,
-      true
+      initialValues
     )
 
     expect(payload).toEqual(
@@ -237,7 +218,7 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
-  it('should return patch offer payload with location key when OA FF is active and locationType is SCHOOL', () => {
+  it('should return patch offer payload with location key when locationType is SCHOOL', () => {
     const payload = createPatchOfferPayload(
       {
         ...offer,
@@ -250,8 +231,7 @@ describe('createPatchOfferPayload', () => {
           },
         },
       },
-      initialValues,
-      true
+      initialValues
     )
 
     expect(payload).toEqual(
@@ -263,7 +243,7 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
-  it('should return patch offer payload with location key when OA FF is active and locationType is TO_BE_DEFINED', () => {
+  it('should return patch offer payload with location key when locationType is TO_BE_DEFINED', () => {
     const payload = createPatchOfferPayload(
       {
         ...offer,
@@ -277,8 +257,7 @@ describe('createPatchOfferPayload', () => {
           locationComment: 'toto',
         },
       },
-      initialValues,
-      true
+      initialValues
     )
 
     expect(payload).toEqual(
@@ -286,20 +265,6 @@ describe('createPatchOfferPayload', () => {
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
           locationComment: 'toto',
-        },
-      })
-    )
-  })
-
-  it('should return patch offer payload with offerVenue key when OA FF is inactive', () => {
-    const payload = createPatchOfferPayload(offer, initialValues, false)
-
-    expect(payload).toEqual(
-      expect.objectContaining({
-        offerVenue: {
-          addressType: 'school',
-          otherAddress: 'TestOtherAddress update',
-          venueId: 12,
         },
       })
     )

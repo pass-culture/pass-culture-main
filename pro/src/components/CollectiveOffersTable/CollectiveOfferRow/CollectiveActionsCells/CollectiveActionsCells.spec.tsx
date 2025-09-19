@@ -9,7 +9,6 @@ import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
-  OfferAddressType,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
@@ -390,15 +389,25 @@ describe('CollectiveActionsCells', () => {
         domains: [1],
         durationMinutes: undefined,
         formats: ['Atelier de pratique'],
-        interventionArea: ['mainland'],
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,
         name: 'Offre de test',
         nationalProgramId: 1,
-        offerVenue: {
-          addressType: OfferAddressType.OTHER,
-          otherAddress: 'A la mairie',
-          venueId: 4,
+        interventionArea: [],
+        location: {
+          address: {
+            banId: undefined,
+            city: '',
+            coords: 'undefined, undefined',
+            isManualEdition: false,
+            isVenueAddress: true,
+            label: 'Le nom du lieu 4',
+            latitude: '',
+            longitude: '',
+            postalCode: '',
+            street: '',
+          },
+          locationType: 'ADDRESS',
         },
         students: ['Collège - 3e'],
         templateId: 200,

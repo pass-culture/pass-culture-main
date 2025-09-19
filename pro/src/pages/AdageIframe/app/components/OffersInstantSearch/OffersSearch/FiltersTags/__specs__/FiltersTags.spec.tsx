@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 
-import { CollectiveLocationType, OfferAddressType } from '@/apiClient/adage'
+import { CollectiveLocationType } from '@/apiClient/adage'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import type { SearchFormValues } from '../../../OffersInstantSearch'
@@ -73,10 +73,10 @@ describe('FiltersTag', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render in my school tag if event adress type school is selected', () => {
+  it('should render in my school tag if school location type is selected', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
-      eventAddressType: OfferAddressType.SCHOOL,
+      locationType: CollectiveLocationType.SCHOOL,
     })
 
     expect(
@@ -89,7 +89,6 @@ describe('FiltersTag', () => {
   it('should render in venue tag if event adress type school is selected', () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
-      eventAddressType: OfferAddressType.OFFERER_VENUE,
       locationType: CollectiveLocationType.ADDRESS,
     })
 
@@ -101,7 +100,7 @@ describe('FiltersTag', () => {
   it('should remove tag on click', async () => {
     renderFiltersTag({
       ...ADAGE_FILTERS_DEFAULT_VALUES,
-      eventAddressType: OfferAddressType.OFFERER_VENUE,
+      locationType: CollectiveLocationType.ADDRESS,
     })
     await userEvent.click(
       screen.getByText('Sortie chez un partenaire culturel')

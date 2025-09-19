@@ -15,7 +15,6 @@ import {
 
 import { SignupValidation } from '../SignUpValidation'
 
-vi.mock('repository/pcapi/pcapi')
 vi.mock('@/commons/store/user/thunks')
 vi.mock('react-redux', { spy: true })
 

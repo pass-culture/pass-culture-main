@@ -1,10 +1,4 @@
 export const STRUCTURE_LABEL = 'Structure'
-export const EVENT_ADDRESS_VENUE_LABEL = 'Dans votre structure'
-export const EVENT_ADDRESS_SCHOOL_LABEL = 'Dans l’établissement scolaire'
-export const EVENT_ADDRESS_OTHER_LABEL = 'Autre'
-export const EVENT_ADDRESS_VENUE_SELECT_LABEL = 'Sélectionner la structure'
-export const EVENT_ADDRESS_OTHER_ADDRESS_LABEL = 'Adresse de l’évènement'
 export const EMAIL_LABEL = 'Email'
 export const NOTIFICATIONS_EMAIL_LABEL =
   'Email auquel envoyer les notifications'
-export const INTERVENTION_AREA_LABEL = 'Zone de mobilité pour l’évènement'

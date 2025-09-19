@@ -5,7 +5,6 @@ import * as router from 'react-router'
 import {
   type AuthenticatedResponse,
   CollectiveLocationType,
-  OfferAddressType,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import {
@@ -76,69 +75,6 @@ describe('OfferCard component', () => {
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
   })
 
-  it('should render school tag when offer will happens in school', () => {
-    const offer = {
-      ...mockOffer,
-      offerVenue: {
-        ...mockOffer.offerVenue,
-        addressType: OfferAddressType.SCHOOL,
-      },
-    }
-    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
-
-    expect(
-      screen.getByText(/Dans l’établissement scolaire/)
-    ).toBeInTheDocument()
-  })
-
-  it('should render offer venue tag when offer will happens in pro venue', () => {
-    const offer = {
-      ...mockOffer,
-      offerVenue: {
-        ...mockOffer.offerVenue,
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
-    }
-    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
-
-    expect(screen.getByText(/Sortie/)).toBeInTheDocument()
-    expect(screen.getByText(/À 10 km/)).toBeInTheDocument()
-  })
-
-  it('should render other venue tag when offer will happens in other venue than pro one', () => {
-    const offer = {
-      ...mockOffer,
-      offerVenue: {
-        ...mockOffer.offerVenue,
-        addressType: OfferAddressType.OTHER,
-      },
-    }
-    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
-
-    expect(screen.getByText(/Sortie/)).toBeInTheDocument()
-    expect(screen.getByText(/Lieu à définir/)).toBeInTheDocument()
-  })
-
-  it('should display the distance when it is available', () => {
-    const offer = {
-      ...mockOffer,
-      offerVenue: {
-        ...mockOffer.offerVenue,
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
-      venue: {
-        ...mockOffer.venue,
-        coordinates: {
-          latitude: 48.869440910282734,
-          longitude: 2.3087717501609233,
-        },
-      },
-    }
-    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
-
-    expect(screen.getByText('à 1 km - Paris')).toBeInTheDocument()
-  })
-
   it('should redirect with "découverte" in url on click in offer card', () => {
     vi.spyOn(router, 'useSearchParams').mockReturnValueOnce([
       new URLSearchParams({ token: '123' }),
@@ -199,17 +135,14 @@ describe('OfferCard component', () => {
     expect(mockHandleTracking).toHaveBeenCalledTimes(1)
   })
 
-  it('should render offer venue tag when offer will happens in school and oa ff is enabled', () => {
+  it('should render location tag when offer has location attribute', () => {
     const offer = {
       ...mockOffer,
       location: {
         locationType: CollectiveLocationType.SCHOOL,
       },
     }
-    renderOfferCardComponent(
-      { offer, onCardClicked: vi.fn() },
-      { features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'] }
-    )
+    renderOfferCardComponent({ offer, onCardClicked: vi.fn() })
 
     expect(
       screen.getByText(/Dans l’établissement scolaire/)

@@ -45,18 +45,6 @@ const baseSerializer: PatchOfferSerializer<PatchCollectiveOfferBodyModel> = {
     ...payload,
     venueId: Number(offer.venueId),
   }),
-  eventAddress: (payload, offer) => {
-    const eventAddressPayload = {
-      ...offer.eventAddress,
-      venueId: offer.eventAddress.venueId,
-    }
-    return offer.eventAddress.addressType
-      ? {
-          ...payload,
-          offerVenue: eventAddressPayload,
-        }
-      : {}
-  },
   participants: (payload, offer) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
@@ -165,22 +153,18 @@ const templateSerializer: PatchOfferSerializer<PatchCollectiveOfferTemplateBodyM
 
 export const createPatchOfferPayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues,
-  isCollectiveOaActive: boolean
+  initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
-  const keysToOmmit = [
+  const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
     'imageCredit',
     'isTemplate',
     'addressAutocomplete',
   ]
-  isCollectiveOaActive
-    ? keysToOmmit.push('eventAddress')
-    : keysToOmmit.push('location')
 
   offerKeys.forEach((key) => {
     if (
@@ -199,8 +183,7 @@ export const createPatchOfferPayload = (
 
 export const createPatchOfferTemplatePayload = (
   offer: OfferEducationalFormValues,
-  initialValues: OfferEducationalFormValues,
-  isCollectiveOaActive: boolean
+  initialValues: OfferEducationalFormValues
 ): PatchCollectiveOfferTemplateBodyModel => {
   const keysToOmmit: (keyof OfferEducationalFormValues)[] = [
     'imageUrl',
@@ -214,10 +197,6 @@ export const createPatchOfferTemplatePayload = (
     'contactOptions',
     'addressAutocomplete',
   ]
-
-  isCollectiveOaActive
-    ? keysToOmmit.push('eventAddress')
-    : keysToOmmit.push('location')
 
   let changedValues: PatchCollectiveOfferTemplateBodyModel = {}
 

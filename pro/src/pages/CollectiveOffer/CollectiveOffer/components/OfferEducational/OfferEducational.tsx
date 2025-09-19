@@ -74,10 +74,6 @@ export const OfferEducational = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useCollectiveOfferImageUpload(offer, isTemplate)
 
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
-
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const { mutate } = useSWRConfig()
 
@@ -108,34 +104,23 @@ export const OfferEducational = ({
     try {
       if (isTemplate) {
         if (offer === undefined) {
-          const payload = createCollectiveOfferTemplatePayload(
-            offerValues,
-            isCollectiveOaActive
-          )
+          const payload = createCollectiveOfferTemplatePayload(offerValues)
 
           response = await api.createCollectiveOfferTemplate(payload)
         } else {
           const payload = createPatchOfferTemplatePayload(
             offerValues,
-            initialValues,
-            isCollectiveOaActive
+            initialValues
           )
           response = await api.editCollectiveOfferTemplate(offer.id, payload)
         }
       } else {
         if (offer === undefined) {
-          const payload = createCollectiveOfferPayload(
-            offerValues,
-            isCollectiveOaActive
-          )
+          const payload = createCollectiveOfferPayload(offerValues)
 
           response = await api.createCollectiveOffer(payload)
         } else {
-          const payload = createPatchOfferPayload(
-            offerValues,
-            initialValues,
-            isCollectiveOaActive
-          )
+          const payload = createPatchOfferPayload(offerValues, initialValues)
           response = await api.editCollectiveOffer(offer.id, payload)
         }
       }
@@ -207,7 +192,7 @@ export const OfferEducational = ({
   const form = useForm<OfferEducationalFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver<OfferEducationalFormValues, unknown, unknown>(
-      getOfferEducationalValidationSchema(isCollectiveOaActive)
+      getOfferEducationalValidationSchema()
     ),
     shouldFocusError: false,
     mode: 'onTouched',

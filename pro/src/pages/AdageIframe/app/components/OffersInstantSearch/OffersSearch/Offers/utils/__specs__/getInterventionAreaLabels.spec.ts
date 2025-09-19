@@ -1,4 +1,4 @@
-import { getInterventionAreaLabels } from '../OfferInterventionArea'
+import { getInterventionAreaLabels } from '../getInterventionAreaLabels'
 
 describe('getInterventionAreaLabels', () => {
   it('should format intervention area when there are a few departments', () => {

@@ -19,7 +19,7 @@ function renderFormDates(
   function FormDatesWrapper() {
     const form = useForm({
       defaultValues: { ...getDefaultEducationalValues(), ...initialValues },
-      resolver: yupResolver(getOfferEducationalValidationSchema(false)),
+      resolver: yupResolver(getOfferEducationalValidationSchema()),
     })
 
     return (

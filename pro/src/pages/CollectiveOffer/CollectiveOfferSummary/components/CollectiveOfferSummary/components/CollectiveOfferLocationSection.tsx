@@ -8,7 +8,7 @@ import {
   SummaryDescriptionList,
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+import { getInterventionAreaLabels } from '@/pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/utils/getInterventionAreaLabels'
 
 import styles from '../CollectiveOfferSummary.module.scss'
 

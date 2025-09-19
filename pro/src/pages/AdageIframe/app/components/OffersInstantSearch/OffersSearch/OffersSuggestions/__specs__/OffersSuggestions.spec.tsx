@@ -2,9 +2,11 @@ import { screen } from '@testing-library/react'
 import * as instantSearch from 'react-instantsearch'
 import { Configure } from 'react-instantsearch'
 
-import type { AuthenticatedResponse } from '@/apiClient/adage'
+import {
+  type AuthenticatedResponse,
+  CollectiveLocationType,
+} from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { OfferAddressType } from '@/apiClient/v1'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -151,10 +153,7 @@ describe('OffersSuggestions', () => {
     expect(Configure).toHaveBeenCalledWith(
       expect.objectContaining({
         facetFilters: expect.arrayContaining([
-          [
-            'offer.eventAddressType:offererVenue',
-            'offer.eventAddressType:other',
-          ],
+          ['offer.locationType:ADDRESS', 'offer.locationType:TO_BE_DEFINED'],
         ]),
         aroundRadius: 100000,
       }),
@@ -173,7 +172,7 @@ describe('OffersSuggestions', () => {
       {
         formValues: {
           ...props.formValues,
-          eventAddressType: OfferAddressType.SCHOOL,
+          locationType: CollectiveLocationType.SCHOOL,
         },
       },
       user

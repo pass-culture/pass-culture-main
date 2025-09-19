@@ -47,7 +47,6 @@ export interface SearchFormValues {
   students: string[]
   departments: string[]
   academies: string[]
-  eventAddressType: string
   locationType: string
   geolocRadius: number
   formats: string[]
@@ -65,9 +64,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
   const programParam = params.get('program')
 
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOaActive = useActiveFeature(
-    'WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'
-  )
+
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
@@ -154,14 +151,9 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           attributesToHighlight={[]}
           attributesToRetrieve={algoliaSearchDefaultAttributesToRetrieve}
           clickAnalytics
-          facetFilters={
-            adageFiltersToFacetFilters(filters, isCollectiveOaActive)
-              .queryFilters
-          }
+          facetFilters={adageFiltersToFacetFilters(filters).queryFilters}
           filters={
-            isCollectiveOaActive
-              ? 'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
-              : 'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
+            'offer.locationType:ADDRESS<score=3> OR offer.locationType:SCHOOL<score=2> OR offer.locationType:TO_BE_DEFINED<score=1>'
           }
           hitsPerPage={8}
           aroundLatLng={

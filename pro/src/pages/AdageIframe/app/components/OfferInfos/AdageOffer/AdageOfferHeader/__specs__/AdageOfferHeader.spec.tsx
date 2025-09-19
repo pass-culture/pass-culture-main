@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { AdageFrontRoles, StudentLevels } from '@/apiClient/adage'
-import { CollectiveLocationType, OfferAddressType } from '@/apiClient/v1'
+import { CollectiveLocationType } from '@/apiClient/v1'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
@@ -111,59 +111,6 @@ describe('AdageOfferHeader', () => {
     ).not.toBeInTheDocument()
   })
 
-  it("should show the offer's venue name", () => {
-    renderAdageOfferHeader({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        venue: {
-          ...defaultCollectiveTemplateOffer.venue,
-          publicName: 'Test venue name',
-          postalCode: '33333',
-          city: 'Ville test',
-        },
-      },
-      adageUser: defaultAdageUser,
-    })
-
-    expect(screen.getByText(/Test venue name/)).toBeInTheDocument()
-    expect(screen.getByText(/33333, Ville test/)).toBeInTheDocument()
-  })
-
-  it('should show that the offer happens in school', () => {
-    renderAdageOfferHeader({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        offerVenue: {
-          ...defaultCollectiveTemplateOffer.offerVenue,
-          addressType: OfferAddressType.SCHOOL,
-        },
-      },
-      adageUser: defaultAdageUser,
-    })
-
-    expect(
-      screen.getByText('Dans l’établissement scolaire')
-    ).toBeInTheDocument()
-  })
-
-  it('should show that the offer happens at a specific address', () => {
-    renderAdageOfferHeader({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        offerVenue: {
-          ...defaultCollectiveTemplateOffer.offerVenue,
-          addressType: OfferAddressType.OTHER,
-          otherAddress: '123 this is a very specific address',
-        },
-      },
-      adageUser: defaultAdageUser,
-    })
-
-    expect(
-      screen.getByText('123 this is a very specific address')
-    ).toBeInTheDocument()
-  })
-
   it('should show the dates of a template offer that has specific dates', () => {
     renderAdageOfferHeader({
       offer: {
@@ -233,31 +180,26 @@ describe('AdageOfferHeader', () => {
   })
 
   it('should show that the offer address displayed when location type is address', () => {
-    renderAdageOfferHeader(
-      {
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          location: {
-            locationType: CollectiveLocationType.ADDRESS,
-            address: {
-              id: 1,
-              id_oa: 1,
-              isManualEdition: false,
-              latitude: 48.8566,
-              longitude: 2.3522,
-              label: '123 this is a very specific address',
-              street: '123 Main St',
-              postalCode: '75000',
-              city: 'Paris',
-            },
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          address: {
+            id: 1,
+            id_oa: 1,
+            isManualEdition: false,
+            latitude: 48.8566,
+            longitude: 2.3522,
+            label: '123 this is a very specific address',
+            street: '123 Main St',
+            postalCode: '75000',
+            city: 'Paris',
           },
         },
-        adageUser: defaultAdageUser,
       },
-      {
-        features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-      }
-    )
+      adageUser: defaultAdageUser,
+    })
 
     expect(
       screen.getByText(
@@ -267,20 +209,15 @@ describe('AdageOfferHeader', () => {
   })
 
   it('should show that the offer address is to be defined when location type is to be defined', () => {
-    renderAdageOfferHeader(
-      {
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          location: {
-            locationType: CollectiveLocationType.TO_BE_DEFINED,
-          },
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        location: {
+          locationType: CollectiveLocationType.TO_BE_DEFINED,
         },
-        adageUser: defaultAdageUser,
       },
-      {
-        features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-      }
-    )
+      adageUser: defaultAdageUser,
+    })
 
     expect(
       screen.getByText('À déterminer avec l’enseignant')
@@ -288,20 +225,15 @@ describe('AdageOfferHeader', () => {
   })
 
   it('should show that the offer address is in school when location type is school', () => {
-    renderAdageOfferHeader(
-      {
-        offer: {
-          ...defaultCollectiveTemplateOffer,
-          location: {
-            locationType: CollectiveLocationType.SCHOOL,
-          },
+    renderAdageOfferHeader({
+      offer: {
+        ...defaultCollectiveTemplateOffer,
+        location: {
+          locationType: CollectiveLocationType.SCHOOL,
         },
-        adageUser: defaultAdageUser,
       },
-      {
-        features: ['WIP_ENABLE_OFFER_ADDRESS_COLLECTIVE'],
-      }
-    )
+      adageUser: defaultAdageUser,
+    })
 
     expect(
       screen.getByText('Dans l’établissement scolaire')

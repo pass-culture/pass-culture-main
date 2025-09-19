@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import * as hooks from '@/commons/hooks/swr/useOfferer'
 import {
   defaultGetOffererResponseModel,
-  venueListItemFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
@@ -58,8 +58,8 @@ describe('screens | OfferEducational : accessibility step', () => {
     vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
-        venueListItemFactory({ id: firstVenueId }),
-        venueListItemFactory({ id: secondVenueId }),
+        makeVenueListItem({ id: firstVenueId }),
+        makeVenueListItem({ id: secondVenueId }),
       ],
     })
   })
@@ -88,43 +88,5 @@ describe('screens | OfferEducational : accessibility step', () => {
     })
 
     await waitFor(() => expect(accessibilityCheckboxes).toHaveLength(2))
-  })
-
-  it('should prefill event address venue when selecting venue for reimbursement', async () => {
-    props.userOfferer = userOffererFactory({
-      id: offererId,
-      managedVenues: [
-        managedVenueFactory({
-          id: firstVenueId,
-          name: 'First venue name',
-        }),
-        managedVenueFactory({
-          id: secondVenueId,
-          name: 'Second venue name',
-        }),
-      ],
-    })
-
-    renderComponent(props)
-
-    const venuesSelect = await screen.findByLabelText('Structure *')
-    await userEvent.selectOptions(venuesSelect, [firstVenueId.toString()])
-
-    const offerVenueSelect = await screen.findByLabelText(
-      'Sélectionner la structure *'
-    )
-    expect(offerVenueSelect).toHaveValue(firstVenueId.toString())
-
-    expect(
-      screen.getByText('First venue name', { exact: false, selector: 'div' })
-    ).toBeInTheDocument()
-
-    await userEvent.selectOptions(venuesSelect, [secondVenueId.toString()])
-
-    expect(offerVenueSelect).toHaveValue(secondVenueId.toString())
-
-    expect(
-      screen.getByText('Second venue name', { exact: false, selector: 'div' })
-    ).toBeInTheDocument()
   })
 })

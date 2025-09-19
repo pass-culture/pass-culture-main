@@ -3,12 +3,8 @@ import {
   CollectiveLocationType,
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
-  OfferAddressType,
 } from '@/apiClient/adage'
-import {
-  getHumanizeRelativeDistance,
-  humanizeDistance,
-} from '@/commons/utils/getDistance'
+import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import fullLocationIcon from '@/icons/full-location.svg'
 import fullProfileIcon from '@/icons/full-profil.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -37,8 +33,7 @@ function getFormattedPrice(price: number) {
 export function getOfferTags(
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
   adageUser: AuthenticatedResponse,
-  showAllTags: boolean = true,
-  isCollectiveOaActive: boolean = false
+  showAllTags: boolean = true
 ) {
   const isTemplate = isCollectiveOfferTemplate(offer)
 
@@ -75,7 +70,7 @@ export function getOfferTags(
     )
 
   const tags: OfferTag[] = []
-  if (isCollectiveOaActive && offer.location) {
+  if (offer.location) {
     const locationTypeMap = {
       [CollectiveLocationType.SCHOOL]: {
         icon: fullLocationIcon,
@@ -99,47 +94,6 @@ export function getOfferTags(
         icon: fullLocationIcon,
         text: `Partenaire situé à ${distanceToOfferer}`,
       })
-    }
-  } else {
-    const locationTypeMap = {
-      [OfferAddressType.SCHOOL]: {
-        icon: fullLocationIcon,
-        text: 'Dans l’établissement scolaire',
-      },
-      [OfferAddressType.OFFERER_VENUE]: {
-        icon: fullLocationIcon,
-        text: 'Sortie',
-      },
-      [OfferAddressType.OTHER]: [
-        { icon: fullLocationIcon, text: 'Sortie' },
-        { icon: fullLocationIcon, text: 'Lieu à définir' },
-      ],
-    }
-
-    const locationTag = locationTypeMap[offer.offerVenue.addressType]
-    tags.push(...(Array.isArray(locationTag) ? locationTag : [locationTag]))
-
-    if (
-      (OfferAddressType.OFFERER_VENUE === offer.offerVenue.addressType &&
-        offer.offerVenue.distance) ||
-      offer.offerVenue.distance === 0
-    ) {
-      tags.push({
-        icon: fullLocationIcon,
-        text: `À ${humanizeDistance(offer.offerVenue.distance * 1000)}`,
-      })
-    }
-
-    if (
-      OfferAddressType.SCHOOL === offer.offerVenue.addressType ||
-      OfferAddressType.OTHER === offer.offerVenue.addressType
-    ) {
-      if (distanceToOfferer && showAllTags) {
-        tags.push({
-          icon: fullLocationIcon,
-          text: `Partenaire situé à ${distanceToOfferer}`,
-        })
-      }
     }
   }
 

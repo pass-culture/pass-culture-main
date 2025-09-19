@@ -28,7 +28,7 @@ const computeDistanceInMeters = (from: Coordinates, to: Coordinates) => {
   return EARTH_RADIUS_KM * c * 1000
 }
 
-export const humanizeDistance = (distance: number) => {
+const humanizeDistance = (distance: number) => {
   if (distance < 30) {
     return `${Math.round(distance)} m`
   }

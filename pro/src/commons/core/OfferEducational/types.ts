@@ -4,7 +4,6 @@ import type {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   ListOffersOfferResponseModel,
-  OfferAddressType,
   StudentLevels,
 } from '@/apiClient/v1'
 import type {
@@ -21,11 +20,6 @@ export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   duration?: string
   offererId: string
   venueId: string
-  eventAddress: {
-    addressType?: OfferAddressType
-    otherAddress?: string
-    venueId?: number | null
-  }
   location?: {
     locationType?: CollectiveLocationType
     address?: {
