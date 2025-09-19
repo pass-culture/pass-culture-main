@@ -21,10 +21,4 @@
   justify-content: center;
   gap: rem.torem(16px);
   margin-top: rem.torem(24px);
-
-  > * {
-    flex: 1;
-    max-width: rem.torem(255px);
-    white-space: nowrap;
-  }
 }

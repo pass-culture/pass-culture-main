@@ -25,7 +25,8 @@ export const OffererCreationLinks = () => (
         <ButtonLink
           variant={ButtonVariant.SECONDARY}
           isExternal
-          to="mailto:support-pro@passculture.app"
+          opensInNewTab
+          to="https://aide.passculture.app/hc/fr/requests"
         >
           Contacter le support
         </ButtonLink>
