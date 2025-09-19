@@ -242,6 +242,55 @@ CollectiveOfferLocation = (
 )
 
 
+def _validate_location(location: typing.Any) -> None:
+    """
+    Default pydantic error messages for a complex union like CollectiveOfferLocation are not very readable
+    as pydantic will try and apply each type of the union to the field and output all the errors
+    We manually generate a clear error message for each possible location field error
+    """
+
+    if not isinstance(location, dict):
+        raise ValueError("Le champ location doit être un objet")
+
+    location_type = location.get("type")
+    if location_type is None:
+        raise ValueError("Le champ type est requis")
+
+    location_fields = set(location.keys())
+    match location_type:
+        case CollectiveLocationType.SCHOOL.value:
+            allowed_fields = {"type"}
+            if location_fields - allowed_fields:
+                raise ValueError("Quand type=SCHOOL, aucun autre champ n'est accepté")
+
+        case CollectiveLocationType.ADDRESS.value:
+            allowed_fields = {"type", "isVenueAddress", "addressId", "addressLabel"}
+            if location_fields - allowed_fields:
+                raise ValueError(
+                    "Quand type=ADDRESS, seuls les champs isVenueAddress, addressId, addressLabel sont acceptés"
+                )
+
+            is_venue_address = location.get("isVenueAddress")
+            if not isinstance(is_venue_address, bool):
+                raise ValueError("Quand type=ADDRESS, isVenueAddress est requis")
+
+            if is_venue_address:
+                allowed_fields = {"type", "isVenueAddress"}
+                if location_fields - allowed_fields:
+                    raise ValueError("Quand type=ADDRESS et isVenueAddress=true, aucun autre champ n'est accepté")
+            elif "addressId" not in location:
+                raise ValueError("Quand type=ADDRESS et isVenueAddress=false, le champ addressId est requis")
+
+        case CollectiveLocationType.TO_BE_DEFINED.value:
+            allowed_fields = {"type", "comment"}
+            if location_fields - allowed_fields:
+                raise ValueError("Quand type=TO_BE_DEFINED, seul le champ comment est accepté")
+
+        case _:
+            allowed_types = [t.name for t in CollectiveLocationType]
+            raise ValueError(f"Les valeurs autorisées pour le champ type sont {', '.join(allowed_types)}")
+
+
 def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation | None:
     match offer.locationType:
         case CollectiveLocationType.SCHOOL:
@@ -463,6 +512,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return end_datetime
 
+    @validator("location", pre=True)
+    def location_validator(cls, location: typing.Any) -> dict:
+        _validate_location(location)
+        return location
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -582,6 +636,12 @@ class PatchCollectiveOfferBodyModel(BaseModel):
             )
 
         return values
+
+    @validator("location", pre=True)
+    def location_validator(cls, location: typing.Any) -> dict:
+        if location is not None:
+            _validate_location(location)
+        return location
 
     class Config:
         alias_generator = to_camel
