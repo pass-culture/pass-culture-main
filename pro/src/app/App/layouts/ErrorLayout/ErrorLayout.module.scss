@@ -1,16 +1,21 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.not-found {
+.content-wrapper {
   align-items: center;
   background-color: var(--color-background-default);
-  height: 100%;
-  min-height: 100vh;
-  position: relative;
   color: var(--color-text-default);
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 100%;
+  min-height: 100vh;
+  position: relative;
+
+  .error-icon {
+    width: rem.torem(350px);
+    color: var(--color-icon-brand-primary);
+  }
 
   .title {
     @include fonts.title1;
@@ -18,19 +23,15 @@
     margin: rem.torem(32px) 0 rem.torem(16px);
   }
 
-  p {
+  .description {
     @include fonts.title4;
+  }
+
+  .content {
+    text-align: center;
   }
 
   .nm-redirection-link {
     margin: rem.torem(40px) auto;
-  }
-
-  .no-match-icon {
-    color: var(--color-icon-brand-primary);
-  }
-
-  .not-found-content {
-    text-align: center;
   }
 }

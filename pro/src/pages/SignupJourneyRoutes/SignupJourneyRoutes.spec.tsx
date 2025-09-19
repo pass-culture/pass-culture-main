@@ -11,7 +11,8 @@ import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { SignupJourneyFormLayout } from '@/components/SignupJourneyFormLayout/SignupJourneyFormLayout'
+
+import { Component as SignupJourneyRoutes } from './SignupJourneyRoutes'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
@@ -24,18 +25,17 @@ const renderOffererAuthenticationScreen = (
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
-        <SignupJourneyFormLayout>
-          <Routes>
-            <Route
-              path="/inscription/structure/recherche"
-              element={<div>Offerer screen</div>}
-            />
-            <Route
-              path="/inscription/structure/identification"
-              element={<div>Identification screen</div>}
-            />
-          </Routes>
-        </SignupJourneyFormLayout>
+        <Routes>
+          <Route
+            path="/inscription/structure/recherche"
+            element={<div>Offerer screen</div>}
+          />
+          <Route
+            path="/inscription/structure/identification"
+            element={<div>Identification screen</div>}
+          />
+        </Routes>
+        <SignupJourneyRoutes />
       </SignupJourneyContext.Provider>
       <Notification />
     </>,
@@ -47,7 +47,7 @@ const renderOffererAuthenticationScreen = (
   )
 }
 
-describe('screens:SignupJourney::OffererAuthentication', () => {
+describe('SignupJourneyRoutes', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {

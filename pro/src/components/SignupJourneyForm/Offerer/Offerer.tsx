@@ -7,7 +7,6 @@ import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -18,13 +17,13 @@ import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { OnboardingFormNavigationAction } from '@/components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import {
   MAYBE_APP_USER_APE_CODE,
   MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE,
 } from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
+import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
@@ -168,7 +167,7 @@ export const Offerer = (): JSX.Element => {
       logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
         from: location.pathname,
         to: redirection.to,
-        used: OnboardingFormNavigationAction.ActionBar,
+        used: SignupJourneyAction.ActionBar,
       })
     } catch (error) {
       notify.error(
@@ -191,21 +190,15 @@ export const Offerer = (): JSX.Element => {
         isDialogOpen={showIsAppUserDialog}
         isHigherEducation={isHigherEducation}
       />
-      <FormLayout className={styles['offerer-layout']}>
+      <FormLayout>
         <form
           onSubmit={handleSubmit(onSubmit)}
           data-testid="signup-offerer-form"
         >
           <FormLayout.Section>
-            {/* eslint-disable-next-line react/forbid-elements */}
-            <MainHeading
-              mainHeading="Votre structure"
-              className={styles['main-heading-wrapper']}
-            />
             <h2 className={styles['subtitle']}>
               Dites-nous pour quelle structure vous travaillez
             </h2>
-
             <FormLayout.Row>
               <TextInput
                 {...register('siret')}

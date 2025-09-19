@@ -1,16 +1,16 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 
-import { Header } from '@/app/App/layouts/components/Header/Header'
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
-import { SignupJourneyContextProvider } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { SignupJourneyFormLayout } from '@/components/SignupJourneyFormLayout/SignupJourneyFormLayout'
+import {
+  SignupJourneyContextProvider,
+  useSignupJourneyContext,
+} from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { SignupJourneyStepper } from '@/components/SignupJourneyStepper/SignupJourneyStepper'
+
+import styles from './SignupJourneyRoutes.module.scss'
 
 export const SignupJourneyRoutes = () => {
-  const currentUser = useSelector(selectCurrentUser)
-
   useEffect(() => {
     if (window.Beamer?.config) {
       window.Beamer.hide()
@@ -22,13 +22,28 @@ export const SignupJourneyRoutes = () => {
       }
     }
   }, [])
+
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { offerer, setOfferer } = useSignupJourneyContext()
+
+  useEffect(() => {
+    if (!location.pathname.includes('/inscription/structure/recherche')) {
+      if (offerer?.siret === '' || offerer?.siren === '') {
+        setOfferer(null)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        navigate('/inscription/structure/recherche')
+      }
+    }
+  }, [offerer?.siren, offerer?.siret, location.pathname, navigate, setOfferer])
+
   return (
-    <FunnelLayout>
-      <Header disableHomeLink={!currentUser?.hasUserOfferer} />
+    <FunnelLayout mainHeading="Votre structure">
       <SignupJourneyContextProvider>
-        <SignupJourneyFormLayout>
+        <div className={styles['content-with-stepper']}>
+          <SignupJourneyStepper />
           <Outlet />
-        </SignupJourneyFormLayout>
+        </div>
       </SignupJourneyContextProvider>
     </FunnelLayout>
   )

@@ -22,7 +22,7 @@ const renderLayout = ({
   ...props
 }: FunnelLayoutTestProps = {}) => {
   renderWithProviders(
-    <FunnelLayout {...props} />,
+    <FunnelLayout {...props} mainHeading="Votre structure" />,
     isConnected
       ? {
           user: sharedCurrentUserFactory({
@@ -42,6 +42,13 @@ describe('FunnelLayout', () => {
 
     window.addEventListener = vi.fn()
     window.removeEventListener = vi.fn()
+  })
+
+  it('should always render a main landmark and a heading level 1', () => {
+    renderLayout()
+
+    expect(screen.getByRole('main')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   describe('about main heading & back to nav link', () => {

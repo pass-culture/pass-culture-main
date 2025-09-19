@@ -3,7 +3,6 @@ import { useCallback } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -82,11 +81,6 @@ export const OffererAuthentication = (): JSX.Element => {
           onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-offerer-authentication-form"
         >
-          {/* eslint-disable-next-line react/forbid-elements */}
-          <MainHeading
-            mainHeading="Votre structure"
-            className={styles['main-heading-wrapper']}
-          />
           <h2 className={styles['subtitle']}>
             Complétez les informations de votre structure
           </h2>

@@ -5,7 +5,6 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { Target } from '@/apiClient/v1'
-import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type ActivityContext,
@@ -102,11 +101,6 @@ export const Activity = (): JSX.Element => {
           onSubmit={methods.handleSubmit(onSubmit)}
           data-testid="signup-activity-form"
         >
-          {/* eslint-disable-next-line react/forbid-elements */}
-          <MainHeading
-            mainHeading="Votre structure"
-            className={styles['main-heading-wrapper']}
-          />
           <h2 className={styles['subtitle']}>
             Et enfin, définissez l’activité de votre structure
           </h2>
