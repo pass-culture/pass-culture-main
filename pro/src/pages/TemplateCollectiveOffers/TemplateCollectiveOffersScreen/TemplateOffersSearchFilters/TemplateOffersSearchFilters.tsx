@@ -195,7 +195,7 @@ export const TemplateOffersSearchFilters = ({
             label="Statut"
             options={collectiveFilterStatus}
             hasSearch
-            searchLabel="Rechercher"
+            searchLabel="Rechercher un statut"
             buttonLabel="Statut"
             onSelectedOptionsChanged={(selectedOptions) => {
               const selectedIds = selectedOptions.map(

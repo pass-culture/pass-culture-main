@@ -7,9 +7,9 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
@@ -147,20 +147,20 @@ export const Desk = (): JSX.Element => {
         <div className={styles['desk-form-wrapper']}>
           <div className={styles['desk-form']}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <TextInput
-                {...tokenRegister}
-                label="Contremarque"
-                name="token"
-                onChange={handleOnChangeToken}
-                description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
-                className={styles['desk-form-input']}
-                aria-describedby={`${statusId}`}
-                autoComplete="off"
-                ref={(input) => {
-                  tokenRegister.ref(input)
-                  tokenInputRef.current = input
-                }}
-              />
+              <div className={styles['desk-form-input']}>
+                <TextInput
+                  {...tokenRegister}
+                  label="Contremarque"
+                  onChange={handleOnChangeToken}
+                  description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
+                  describedBy={statusId}
+                  autoComplete="off"
+                  ref={(input) => {
+                    tokenRegister.ref(input)
+                    tokenInputRef.current = input
+                  }}
+                />
+              </div>
 
               {booking && <BookingDetails booking={booking} />}
 
@@ -176,6 +176,7 @@ export const Desk = (): JSX.Element => {
                 )}
               </div>
 
+              {/** biome-ignore lint/a11y/useSemanticElements: We want a status div here, and not an output element */}
               <div role="status" id={statusId}>
                 <DeskInputMessage
                   message={message.message}

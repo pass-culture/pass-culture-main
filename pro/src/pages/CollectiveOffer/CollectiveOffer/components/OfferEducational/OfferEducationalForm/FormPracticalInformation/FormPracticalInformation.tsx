@@ -73,7 +73,7 @@ export const FormPracticalInformation = ({
       )}
       disabled={disableForm}
       hasSearch
-      searchLabel="Rechercher"
+      searchLabel="Rechercher un département"
       hasSelectAllOptions
       onSelectedOptionsChanged={handleMultiSelectChange}
       error={getFieldState('interventionArea').error?.message}

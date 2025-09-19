@@ -147,9 +147,9 @@ describe('OffererAuthenticationForm', () => {
       contextValue: contextValue,
     })
 
-    const siretField = screen.getByLabelText('Numéro de SIRET *')
-    const nameField = screen.getByLabelText('Raison sociale *')
-    const addressField = screen.getByLabelText('Adresse postale *')
+    const siretField = screen.getByLabelText(/Numéro de SIRET/)
+    const nameField = screen.getByLabelText(/Raison sociale/)
+    const addressField = screen.getByLabelText(/Adresse postale/)
 
     await waitFor(() => {
       expect(siretField).toBeDisabled()

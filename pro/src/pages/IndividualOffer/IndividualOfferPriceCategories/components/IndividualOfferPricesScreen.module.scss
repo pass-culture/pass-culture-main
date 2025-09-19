@@ -9,7 +9,7 @@
 }
 
 .price-input {
-  width: rem.torem(200px);
+  width: rem.torem(240px);
 }
 
 .duo-section {
@@ -49,7 +49,7 @@
   .label-input {
     width: rem.torem(424px);
 
-    &-label {
+    label {
       @include fonts.body-accent-xs;
 
       display: block;

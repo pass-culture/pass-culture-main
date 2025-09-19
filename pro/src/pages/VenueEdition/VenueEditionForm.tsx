@@ -17,10 +17,10 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
-import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
@@ -46,6 +46,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
+    // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
     resolver: yupResolver(validationSchema as any),
     mode: 'onBlur',
   })
@@ -173,15 +174,18 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     className={styles['opening-hours-subsubsection']}
                   >
                     <FormLayout.Row>
-                      <TextInput
-                        name="street"
-                        label="Adresse postale"
+                      <div
                         className={
                           styles['opening-hours-subsubsection-address-input']
                         }
-                        disabled
-                        value={getFormattedAddress(venue.address)}
-                      />
+                      >
+                        <TextInput
+                          name="street"
+                          label="Adresse postale"
+                          disabled
+                          value={getFormattedAddress(venue.address)}
+                        />
+                      </div>
                       <Callout
                         testId="address-callout"
                         className={
@@ -224,6 +228,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.Row mdSpaceAfter>
                 <TextInput
                   label="Adresse email"
+                  type="email"
                   description="Format : email@exemple.com"
                   {...methods.register('email')}
                   error={methods.formState.errors.email?.message}
@@ -232,6 +237,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.Row>
                 <TextInput
                   label="URL de votre site web"
+                  type="url"
                   description="Format : https://exemple.com"
                   {...methods.register('webSite')}
                   error={methods.formState.errors.webSite?.message}

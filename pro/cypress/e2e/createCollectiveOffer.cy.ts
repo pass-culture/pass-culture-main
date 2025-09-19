@@ -67,14 +67,14 @@ describe('Create collective offers', () => {
     cy.findByLabelText('Concert').click()
     cy.findByText('Quel est le type de votre offre ?').click()
 
-    cy.findByLabelText('Titre de l’offre *').type(newOfferName)
+    cy.findByLabelText(/Titre de l’offre/).type(newOfferName)
     cy.findByLabelText(
       'Décrivez ici votre projet et son interêt pédagogique *'
     ).type('Bookable draft offer')
     cy.findByText('Collège').click()
     cy.findByText('6e').click()
-    cy.findByLabelText('Email *').type('example@passculture.app')
-    cy.findByLabelText('Email auquel envoyer les notifications *').type(
+    cy.findAllByLabelText(/Email/).eq(0).type('example@passculture.app')
+    cy.findByLabelText(/Email auquel envoyer les notifications/).type(
       'example@passculture.app'
     )
 
@@ -88,7 +88,7 @@ describe('Create collective offers', () => {
     )
     cy.findByLabelText('Horaire').type('18:30')
     cy.findByLabelText('Nombre de participants').type('10')
-    cy.findByLabelText('Prix total TTC').type('10')
+    cy.findByLabelText(/Prix total TTC/).type('10')
     cy.findByLabelText('Informations sur le prix').type('description')
     cy.findByLabelText('Date limite de réservation').type(
       format(tomorrow, 'yyyy-MM-dd')
@@ -233,17 +233,17 @@ describe('Create collective offers', () => {
     cy.findByLabelText('Concert').click()
     cy.findByText('Quel est le type de votre offre ?').click()
 
-    cy.findByLabelText('Titre de l’offre *').type(newOfferName)
+    cy.findByLabelText(/Titre de l’offre/).type(newOfferName)
     cy.findByLabelText(
       'Décrivez ici votre projet et son interêt pédagogique *'
     ).type('Bookable draft offer')
     cy.findByLabelText('Autre adresse').click()
-    cy.findByLabelText('Adresse postale *').type('10 Rue')
+    cy.findByLabelText(/Adresse postale/).type('10 Rue')
     cy.get('[data-testid="list"] li').first().click()
     cy.findByText('Collège').click()
     cy.findByText('6e').click()
-    cy.findByLabelText('Email *').type('example@passculture.app')
-    cy.findByLabelText('Email auquel envoyer les notifications *').type(
+    cy.findAllByLabelText(/Email/).eq(0).type('example@passculture.app')
+    cy.findByLabelText(/Email auquel envoyer les notifications/).type(
       'example@passculture.app'
     )
 
@@ -257,7 +257,7 @@ describe('Create collective offers', () => {
     )
     cy.findByLabelText('Horaire').type('18:30')
     cy.findByLabelText('Nombre de participants').type('10')
-    cy.findByLabelText('Prix total TTC').type('10')
+    cy.findByLabelText(/Prix total TTC/).type('10')
     cy.findByLabelText('Informations sur le prix').type('description')
     cy.findByLabelText('Date limite de réservation').type(
       format(tomorrow, 'yyyy-MM-dd')
