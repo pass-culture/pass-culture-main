@@ -342,13 +342,14 @@ export const PriceTableForm = ({
               entry.id === null &&
               !areAllFieldsDisabled &&
               !areAllFieldsDisabledButQuantity && (
-                <ListIconButton
-                  className={styles['button-action']}
-                  icon={fullCodeIcon}
-                  onClick={() => setActivationCodeEntryIndexToUpload(index)}
-                  ref={activationCodeButtonRef}
-                  tooltipContent="Ajouter des codes d'activation"
-                />
+                <div className={styles['button-action']}>
+                  <ListIconButton
+                    icon={fullCodeIcon}
+                    onClick={() => setActivationCodeEntryIndexToUpload(index)}
+                    ref={activationCodeButtonRef}
+                    tooltipContent="Ajouter des codes d'activation"
+                  />
+                </div>
               )}
             {
               // In EDITION mode, we don't allow removing/resetting prices for event offers
