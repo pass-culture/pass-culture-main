@@ -833,31 +833,43 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
             "otherAddress": "123 rue de la paix 75000 Paris",
         }
 
-    def test_patch_location_invalid(self):
+    @pytest.mark.parametrize(
+        "location,error",
+        [
+            (None, "Ce champ peut ne pas être présent mais ne peut pas être null."),
+            (1, "Le champ location doit être un objet"),
+            ({}, "Le champ type est requis"),
+            ({"type": "bloup"}, "Les valeurs autorisées pour le champ type sont SCHOOL, ADDRESS, TO_BE_DEFINED"),
+            ({"type": "SCHOOL", "isVenueAddress": True}, "Quand type=SCHOOL, aucun autre champ n'est accepté"),
+            (
+                {"type": "ADDRESS", "locationComment": "hello"},
+                "Quand type=ADDRESS, seuls les champs isVenueAddress, addressId, addressLabel sont acceptés",
+            ),
+            ({"type": "ADDRESS"}, "Quand type=ADDRESS, isVenueAddress est requis"),
+            (
+                {"type": "ADDRESS", "isVenueAddress": True, "addressId": 1},
+                "Quand type=ADDRESS et isVenueAddress=true, aucun autre champ n'est accepté",
+            ),
+            (
+                {"type": "ADDRESS", "isVenueAddress": False},
+                "Quand type=ADDRESS et isVenueAddress=false, le champ addressId est requis",
+            ),
+            ({"type": "TO_BE_DEFINED", "addressId": 1}, "Quand type=TO_BE_DEFINED, seul le champ comment est accepté"),
+        ],
+    )
+    def test_patch_location_invalid(self, location, error):
         key, venue_provider = self.setup_active_venue_provider()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
         collective_offer = educational_factories.PublishedCollectiveOfferFactory(
             venue=venue, provider=venue_provider.provider
         )
 
-        payload = {"location": {}}
+        payload = {"location": location}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = self.make_request(key, {"offer_id": collective_offer.id}, json_body=payload)
 
         assert response.status_code == 400
-        assert response.json == {
-            "location.addressId": ["field required"],
-            "location.isVenueAddress": [
-                "field required",
-                "field required",
-            ],
-            "location.type": [
-                "field required",
-                "field required",
-                "field required",
-                "field required",
-            ],
-        }
+        assert response.json == {"location": [error]}
 
 
 @pytest.mark.usefixtures("db_session")
