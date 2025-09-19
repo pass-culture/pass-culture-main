@@ -34,6 +34,11 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebouncedCallback: vi.fn((fn) => fn),
+}))
+
 const institutions: EducationalInstitutionResponseModel[] = [
   {
     id: 12,

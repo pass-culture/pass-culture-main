@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
+import { useDebouncedCallback } from 'use-debounce'
 import type { InferType } from 'yup'
 
 import { api } from '@/apiClient/api'
@@ -217,7 +218,7 @@ export const CollectiveOfferVisibilityScreen = ({
     ])
   }, [requestInformations, institutionsOptions, reset])
 
-  const onSearchTeacher = async (pattern: string) => {
+  const onSearchTeacher = useDebouncedCallback(async (pattern: string) => {
     const selectedInstitution = institutionsOptions.find(
       (institution) => institution.value === watch('institution')
     )
@@ -258,7 +259,7 @@ export const CollectiveOfferVisibilityScreen = ({
     } catch {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
-  }
+  }, 1000)
 
   return (
     <>
