@@ -429,25 +429,29 @@ def patch_all_offers_active_status(
 @private_api.route("/offers/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
+    load_all: offers_repository.OFFER_LOAD_OPTIONS = [
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
+        "headline_offer",
+        "meta_data",
+    ]
     try:
         offer = offers_repository.get_offer_by_id(
             offer_id,
-            load_options=[
-                "stock",
-                "venue",
-                "offerer_address",
-                "product",
-                "bookings_count",
-                "is_non_free_offer",
-                "meta_data",
-            ],
+            load_options=load_all,
         )
     except exceptions.OfferNotFound:
         raise api_errors.ResourceNotFoundError()
@@ -462,7 +466,7 @@ def patch_offer(
 
     offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/thumbnails/", methods=["POST"])
