@@ -140,7 +140,7 @@
           {% call description_detail_horizontal("Description") %}
             {{ offer.description | empty_string_if_null | nl2br }}
           {% endcall %}
-          <h5>Retrait de l'offre</h5>
+          <h5>Informations pratiques</h5>
           {% call description_detail_horizontal("Informations de retrait") %}
             {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
           {% endcall %}
@@ -148,13 +148,14 @@
             {{ offer.bookingContact | empty_string_if_null | nl2br }}
             {% if offer.bookingContact %}{{ clipboard.copy_to_clipboard(offer.bookingContact, "Copier") }}{% endif %}
           {% endcall %}
-          <h5>Accessibilité</h5>
-          <div class="hstack gap-5">
-            {{ accessibility_indicator(logo.handicap_visual() , offer.visualDisabilityCompliant, "Handicap visuel") }}
-            {{ accessibility_indicator(logo.handicap_mental() , offer.mentalDisabilityCompliant, "Handicap mental") }}
-            {{ accessibility_indicator(logo.handicap_motor() , offer.motorDisabilityCompliant, "Handicap moteur") }}
-            {{ accessibility_indicator(logo.handicap_audio() , offer.audioDisabilityCompliant, "Handicap auditif") }}
-          </div>
+          {% call description_detail_horizontal("Accessibilité") %}
+            <div class="hstack gap-5">
+              {{ accessibility_indicator(logo.handicap_visual() , offer.visualDisabilityCompliant, "Handicap visuel") }}
+              {{ accessibility_indicator(logo.handicap_mental() , offer.mentalDisabilityCompliant, "Handicap mental") }}
+              {{ accessibility_indicator(logo.handicap_motor() , offer.motorDisabilityCompliant, "Handicap moteur") }}
+              {{ accessibility_indicator(logo.handicap_audio() , offer.audioDisabilityCompliant, "Handicap auditif") }}
+            </div>
+          {% endcall %}
           <h5>Notification des réservations</h5>
           {% call description_detail_horizontal("Email auquel envoyer les notifications") %}
             {{ offer.bookingEmail | empty_string_if_null }}
