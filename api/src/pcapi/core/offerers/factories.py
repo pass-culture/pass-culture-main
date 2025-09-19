@@ -545,4 +545,4 @@ class NonPaymentNoticeFactory(BaseFactory[models.NonPaymentNotice]):
     emitterEmail = "plus.dargent@example.com"
     dateReceived = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
     noticeType = models.NoticeType.UNPAID_AMOUNT_NOTICE
-    reference = "ABC123"
+    reference = factory.Sequence("TEST{}".format)
