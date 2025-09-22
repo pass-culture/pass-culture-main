@@ -18,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("clean_database")
 
 
 class CheckActiveOfferersTest:
-    @patch("pcapi.connectors.entreprise.sirene.get_siren")
+    @patch("pcapi.connectors.entreprise.api.get_siren_open_data")
     def test_check_active_offerers(self, mock_get_siren, app):
         offerers_factories.OffererTagFactory(name="siren-caduc")
 
@@ -37,7 +37,7 @@ class CheckActiveOfferersTest:
             run_command(app, "check_active_offerers")
 
         # Only check that the task is called; its behavior is tested in offerers/test_task.py
-        mock_get_siren.assert_called_once_with(offerer.siren, with_address=False, raise_if_non_public=False)
+        mock_get_siren.assert_called_once_with(offerer.siren, with_address=False)
 
 
 class CheckClosedOfferersTest:

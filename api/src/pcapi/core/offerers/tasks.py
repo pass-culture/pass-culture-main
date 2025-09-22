@@ -12,7 +12,6 @@ from pcapi.connectors import googledrive
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import models as entreprise_models
-from pcapi.connectors.entreprise import sirene
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -67,9 +66,9 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         return
 
     try:
-        siren_info = sirene.get_siren(payload.siren, with_address=False, raise_if_non_public=False)
+        siren_info = entreprise_api.get_siren_open_data(payload.siren, with_address=False)
     except entreprise_exceptions.EntrepriseException as exc:
-        logger.info("Could not fetch info from Sirene API", extra={"siren": payload.siren, "exc": exc})
+        logger.info("Could not fetch info from Entreprise API", extra={"siren": payload.siren, "exc": exc})
         return
 
     offerer = (
@@ -91,7 +90,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
         if siren_info.closure_date:
             # When siren_info.closure_date is set in the future (still active), schedule a new check on closure date
             logger.warning(
-                "Sirene API reports an offerer closed in the future",
+                "Entreprise API reports an offerer closed in the future",
                 extra={"siren": siren_info.siren, "closure_date": siren_info.closure_date},
             )
             add_scheduled_siren_to_check(siren_info.siren, siren_info.closure_date)
@@ -105,7 +104,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                     history_models.ActionType.INFO_MODIFIED,
                     author=None,
                     offerer=offerer,
-                    comment="L'entité juridique est détectée comme active via l'API Sirene (INSEE)",
+                    comment="L'entité juridique est détectée comme active via l'API Entreprise (données INSEE)",
                     modified_info={"tags": {"old_info": tag.label}},
                 )
                 break
@@ -121,7 +120,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
             action_kwargs: dict[str, typing.Any] = {
                 "comment": "L'entité juridique est détectée comme fermée "
                 + (siren_info.closure_date.strftime("le %d/%m/%Y ") if siren_info.closure_date else "")
-                + "via l'API Sirene (INSEE)",
+                + "via l'API Entreprise (données INSEE)",
             }
 
             with transaction():

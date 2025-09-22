@@ -71,7 +71,7 @@ class CheckOffererTest:
         mock_redis_client_get.return_value = already_in_redis
 
         with patch(
-            "pcapi.connectors.entreprise.sirene.get_siren",
+            "pcapi.connectors.entreprise.api.get_siren_open_data",
             return_value=SirenInfo(
                 siren=offerer.siren,
                 name=offerer.name,
@@ -217,7 +217,10 @@ class CheckOffererTest:
         assert action.actionDate is not None
         assert action.authorUserId is None
         assert action.offererId == offerer.id
-        assert action.comment == "L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Sirene (INSEE)"
+        assert (
+            action.comment
+            == "L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Entreprise (données INSEE)"
+        )
         assert action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
 
         mock_search_file.assert_called_once()
@@ -260,7 +263,7 @@ class CheckOffererTest:
             offerer,
             closure_date=datetime.date(2025, 1, 16),
             author_user=None,
-            comment="L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Sirene (INSEE)",
+            comment="L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Entreprise (données INSEE)",
             modified_info={"tags": {"new_info": "SIREN caduc"}},
         )
 
@@ -310,7 +313,7 @@ class CheckOffererTest:
             offerer,
             closure_date=datetime.date(2025, 3, 5),
             author_user=None,
-            comment="L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Sirene (INSEE)",
+            comment="L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Entreprise (données INSEE)",
         )
 
     @patch("time.sleep")
@@ -331,7 +334,7 @@ class CheckOffererTest:
         assert action.actionDate is not None
         assert action.authorUserId is None
         assert action.offererId == offerer.id
-        assert action.comment == "L'entité juridique est détectée comme active via l'API Sirene (INSEE)"
+        assert action.comment == "L'entité juridique est détectée comme active via l'API Entreprise (données INSEE)"
         assert action.extraData == {"modified_info": {"tags": {"old_info": siren_caduc_tag.label}}}
 
     @patch("time.sleep")
