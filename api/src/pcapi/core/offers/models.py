@@ -138,7 +138,9 @@ class ProductMediation(PcObject, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
-    imageType: sa_orm.Mapped[ImageType] = sa_orm.mapped_column(db_utils.MagicEnum(ImageType), nullable=False)
+    imageType: sa_orm.Mapped[ImageType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(ImageType, use_values=False), nullable=False
+    )
     lastProviderId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -810,7 +812,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="offers")
     withdrawalDelay = sa_orm.mapped_column(sa.BigInteger, nullable=True)
     withdrawalDetails = sa_orm.mapped_column(sa.Text, nullable=True)
-    withdrawalType = sa_orm.mapped_column(sa.Enum(WithdrawalTypeEnum), nullable=True)
+    withdrawalType = sa_orm.mapped_column(db_utils.MagicEnum(WithdrawalTypeEnum, use_values=False), nullable=True)
     offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True
     )
