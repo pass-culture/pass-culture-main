@@ -15,7 +15,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -68,8 +67,6 @@ export const IndividualOfferPriceCategoriesScreen = ({
     useState<boolean>(false)
 
   const isCaledonian = useIsCaledonian()
-
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
@@ -186,9 +183,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: isMediaPageEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
           mode,
           isOnboarding,
         })

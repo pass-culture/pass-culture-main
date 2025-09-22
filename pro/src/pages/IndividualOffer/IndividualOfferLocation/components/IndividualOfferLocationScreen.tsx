@@ -15,7 +15,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -46,7 +45,6 @@ export const IndividualOfferLocationScreen = ({
   const mode = useOfferWizardMode()
   const { hasPublishedOfferWithSameEan, subCategories } =
     useIndividualOfferContext()
-  const withAddVideoFeatureFlag = useActiveFeature('WIP_ADD_VIDEO')
 
   const [isUpdateWarningDialogOpen, setIsUpdateWarningDialogOpen] =
     useState(false)
@@ -88,7 +86,6 @@ export const IndividualOfferLocationScreen = ({
   const { saveAndContinue } = useSaveOfferLocation({
     offer,
     setError: form.setError,
-    withAddVideoFeatureFlag,
   })
 
   const updateOffer = async (

@@ -37,7 +37,6 @@ import { IndividualOffersContainer } from './IndividualOffersContainer/Individua
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const IndividualOffers = (): JSX.Element => {
-  const isVideoFeatureEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -125,41 +124,37 @@ export const IndividualOffers = (): JSX.Element => {
     <HeadlineOfferContextProvider>
       <BasicLayout
         mainHeading="Offres individuelles"
-        {...(isVideoFeatureEnabled
-          ? {
-              mainTopElement: (
-                <HighlightBanner
-                  title="✨ Nouveau : Ajoutez une vidéo pour donner vie à votre offre !"
-                  description="2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du pass Culture."
-                  localStorageKey="GTM_VIDEO_BANNER_2025"
-                  img={
-                    <img
-                      className={styles['banner-img']}
-                      alt=""
-                      src={videoBannerPng}
-                    />
-                  }
-                  cta={
-                    <ButtonLink
-                      className={styles['banner-cta']}
-                      icon={fullNextIcon}
-                      to={
-                        isNewOfferCreationFlowFFEnabled
-                          ? getIndividualOfferUrl({
-                              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-                              mode: OFFER_WIZARD_MODE.CREATION,
-                              isOnboarding: false,
-                            }) + bannerVideoQueryParam
-                          : `/offre/creation${bannerVideoQueryParam}`
-                      }
-                    >
-                      Créer une offre
-                    </ButtonLink>
-                  }
-                />
-              ),
+        mainTopElement={
+          <HighlightBanner
+            title="✨ Nouveau : Ajoutez une vidéo pour donner vie à votre offre !"
+            description="2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du pass Culture."
+            localStorageKey="GTM_VIDEO_BANNER_2025"
+            img={
+              <img
+                className={styles['banner-img']}
+                alt=""
+                src={videoBannerPng}
+              />
             }
-          : {})}
+            cta={
+              <ButtonLink
+                className={styles['banner-cta']}
+                icon={fullNextIcon}
+                to={
+                  isNewOfferCreationFlowFFEnabled
+                    ? getIndividualOfferUrl({
+                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                        mode: OFFER_WIZARD_MODE.CREATION,
+                        isOnboarding: false,
+                      }) + bannerVideoQueryParam
+                    : `/offre/creation${bannerVideoQueryParam}`
+                }
+              >
+                Créer une offre
+              </ButtonLink>
+            }
+          />
+        }
       >
         <IndividualOffersContainer
           categories={categoriesOptions}

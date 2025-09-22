@@ -19,7 +19,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -70,11 +69,6 @@ export const IndividualOfferInformationsScreen = ({
   }>({ address: false, withdrawalInformations: false })
 
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(true)
-
-  const isEvent = subCategories.find(
-    (subcategory) => subcategory.id === offer.subcategoryId
-  )?.isEvent
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
@@ -151,11 +145,7 @@ export const IndividualOfferInformationsScreen = ({
 
       const nextStepForEdition =
         INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-      const nextStepForCreation = isMediaPageEnabled
-        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-        : isEvent
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+      const nextStepForCreation = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION

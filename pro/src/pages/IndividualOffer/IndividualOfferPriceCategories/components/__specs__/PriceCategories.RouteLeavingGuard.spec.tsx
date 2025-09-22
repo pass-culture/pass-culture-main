@@ -114,19 +114,16 @@ describe('PriceCategories', () => {
     )
   })
 
-  describe('when video is enabled', () => {
-    it('should let going to media when clicking on previous step in creation', async () => {
-      renderPriceCategories({
-        props: { offer: getIndividualOfferFactory() },
-        features: ['WIP_ADD_VIDEO'],
-      })
-
-      await userEvent.click(screen.getByText('Retour'))
-
-      expect(
-        screen.getByText('There is the media route content')
-      ).toBeInTheDocument()
+  it('should let going to media when clicking on previous step in creation', async () => {
+    renderPriceCategories({
+      props: { offer: getIndividualOfferFactory() },
     })
+
+    await userEvent.click(screen.getByText('Retour'))
+
+    expect(
+      screen.getByText('There is the media route content')
+    ).toBeInTheDocument()
   })
 
   it('should let going to information when clicking on previous step in creation', async () => {

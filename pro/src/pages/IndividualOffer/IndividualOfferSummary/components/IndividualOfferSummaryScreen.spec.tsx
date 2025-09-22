@@ -282,13 +282,10 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(screen.queryByText('Visualiser dans l’app')).toBeInTheDocument()
     })
 
-    it('should render a media section when media page is enabled (WIP_ADD_VIDEO)', () => {
+    it('should render a media section', () => {
       const contextValues = { offer: draftOfferBase }
-      const options = {
-        features: ['WIP_ADD_VIDEO'],
-      }
 
-      renderIndividualOfferSummaryScreen({ contextValues, options, path })
+      renderIndividualOfferSummaryScreen({ contextValues, path })
 
       expect(
         screen.getByRole('heading', { name: 'Image et vidéo' })

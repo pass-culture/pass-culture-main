@@ -296,13 +296,10 @@ describe('IndividualOfferDetailsScreenNext', () => {
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
 
-  describe('when media page is enabled (WIP_ADD_VIDEO)', () => {
+  describe('since media page exists', () => {
     it('should not display any image input', async () => {
       renderDetailsScreen({
         contextValue,
-        options: {
-          features: ['WIP_ADD_VIDEO'],
-        },
       })
 
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
@@ -340,9 +337,6 @@ describe('IndividualOfferDetailsScreenNext', () => {
 
       renderDetailsScreen({
         contextValue,
-        options: {
-          features: ['WIP_ADD_VIDEO'],
-        },
       })
       await userFillsEverything()
 

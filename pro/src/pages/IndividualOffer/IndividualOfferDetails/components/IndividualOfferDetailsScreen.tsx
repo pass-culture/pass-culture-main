@@ -25,7 +25,6 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -79,19 +78,11 @@ export const IndividualOfferDetailsScreen = ({
   const queryOfferType = queryParams.get('offer-type')
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const { categories, subCategories, offer, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const initialImageOffer = getIndividualOfferImage(offer)
-  const {
-    displayedImage,
-    hasUpsertedImage,
-    onImageDelete,
-    onImageUpload,
-    handleEanImage,
-    handleImageOnSubmit,
-  } = useIndividualOfferImageUpload(initialImageOffer)
+  const { handleEanImage } = useIndividualOfferImageUpload(initialImageOffer)
   const isDraftOffer = !offer
   const isNewOfferCreationFlowFeatureActive = false
 
@@ -161,12 +152,6 @@ export const IndividualOfferDetailsScreen = ({
 
       offerId = response?.id ?? initialOfferId
 
-      // Images can never be uploaded for product-based offers,
-      // the drag & drop should not be displayed / enabled so
-      // this is a safeguard.
-      if (!isMediaPageEnabled && !!offerId && !isProductBased) {
-        await handleImageOnSubmit(offerId)
-      }
       await mutate([GET_OFFER_QUERY_KEY, offerId])
 
       // replace url to fix back button
@@ -335,9 +320,6 @@ export const IndividualOfferDetailsScreen = ({
               readOnlyFields={readOnlyFields}
               venues={venues}
               venuesOptions={availableVenuesAsOptions}
-              displayedImage={displayedImage}
-              onImageUpload={onImageUpload}
-              onImageDelete={onImageDelete}
               withUrlInput={isOfferVirtual}
             />
           </FormLayout>
@@ -353,11 +335,7 @@ export const IndividualOfferDetailsScreen = ({
           />
         </form>
         <RouteLeavingGuardIndividualOffer
-          when={
-            (form.formState.isDirty ||
-              (!isMediaPageEnabled && hasUpsertedImage)) &&
-            !form.formState.isSubmitting
-          }
+          when={form.formState.isDirty && !form.formState.isSubmitting}
         />
       </FormProvider>
     </>

@@ -27,7 +27,6 @@ export const IndividualOfferNavigation = () => {
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
-  const isMediaPageFeatureEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -43,7 +42,6 @@ export const IndividualOfferNavigation = () => {
     : isEvent || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const steps = getSteps({
-    isMediaPageFeatureEnabled,
     isNewOfferCreationFlowFeatureActive,
     isEvent: isSurelyAnEvent,
     mode,
