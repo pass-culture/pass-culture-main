@@ -50,6 +50,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
       const { bookings } = await getFilteredIndividualBookingsAdapter({
         ...DEFAULT_PRE_FILTERS,
         offerId: String(offer.id),
+        bookingBeginningDate: '2015-01-01',
         bookingEndingDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
       })
       return bookings
