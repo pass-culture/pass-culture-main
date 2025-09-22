@@ -5,8 +5,8 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.connectors import boost
 from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
+from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
 from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
 from pcapi.core.offerers import models as offerers_models
@@ -106,7 +106,8 @@ class BoostContext(PivotContext):
     @classmethod
     def check_if_api_call_is_ok(cls, pivot: providers_models.BoostCinemaDetails) -> None:
         try:
-            boost.login(pivot, ignore_device=True)
+            client = BoostClientAPI("", cinema_details=pivot)
+            client.test_jwt_token_generation()
             flash("Connexion à l'API OK.", "success")
             return
         except boost_exceptions.BoostAPIException as exc:
@@ -124,7 +125,8 @@ class BoostContext(PivotContext):
         if not pivot:
             raise NotFound()
         try:
-            boost.logout(pivot)
+            client = BoostClientAPI("", cinema_details=pivot)
+            client.invalidate_jwt_token()
         except BoostInvalidTokenException:
             pass  # when the token is no longer valid, no need to raise an alert before its deletion
         except (requests.exceptions.RequestException, BoostAPIException) as exc:

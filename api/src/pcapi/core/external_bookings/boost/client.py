@@ -15,6 +15,7 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
+from pcapi.core.providers.models import BoostCinemaDetails
 from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.date import get_naive_utc_now
@@ -134,9 +135,14 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
 
 
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
-    def __init__(self, cinema_id: str, request_timeout: None | int = None):
+    def __init__(
+        self,
+        cinema_id: str,
+        request_timeout: None | int = None,
+        cinema_details: None | BoostCinemaDetails = None,
+    ):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
-        self.cinema_details = providers_repository.get_boost_cinema_details(cinema_id)
+        self.cinema_details = cinema_details or providers_repository.get_boost_cinema_details(cinema_id)
 
     def _generate_jwt_token(self) -> tuple[str, datetime.datetime]:
         """
@@ -229,7 +235,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
 
     @_retry_if_jwt_token_is_invalid
-    def _authenticated_post(self, url: str, payload: str) -> dict | list[dict] | list | None:
+    def _authenticated_post(self, url: str, payload: str | None = None) -> dict | list[dict] | list | None:
         """
         Make an authenticated POST request on given URL
         """
@@ -237,6 +243,19 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         response = requests.post(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
         _raise_for_status(response, self.cinema_details.token, f"POST {url}")
         return response.json()
+
+    # method used by BO to test pivot table is correctly set
+    def test_jwt_token_generation(self) -> None:
+        self._generate_jwt_token()
+
+    def invalidate_jwt_token(self) -> None:
+        """
+        Invalidate active JWT token on Boost side and unset it in our DB
+        """
+        if not self.cinema_details.token:
+            return
+        self._authenticated_post(f"{self.cinema_details.cinemaUrl}api/vendors/logout")
+        self._unset_cinema_details_token()
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
