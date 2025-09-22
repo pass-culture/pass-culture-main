@@ -440,10 +440,11 @@ class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetter
 
 
 class VideoData(ConfiguredBaseModel):
-    videoUrl: HttpUrl | None
+    videoDuration: int | None
+    videoExternalId: str | None
     videoTitle: str | None
     videoThumbnailUrl: str | None
-    videoDuration: int | None
+    videoUrl: HttpUrl | None
 
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -658,10 +659,3 @@ class VideoMetatdataQueryModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-class OfferVideo(ConfiguredBaseModel):
-    id: str
-    title: str | None
-    thumbnailUrl: str | None
-    duration: int | None
