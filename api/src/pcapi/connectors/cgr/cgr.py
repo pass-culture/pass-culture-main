@@ -1,13 +1,11 @@
 import json
 import logging
 
-from pydantic.v1 import parse_obj_as
 from zeep import Client
 from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy
 
 from pcapi import settings
-from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.providers import models as providers_models
 from pcapi.utils import requests
@@ -27,43 +25,6 @@ def get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) -
     client = Client(wsdl=f"{cinema_url}?wsdl", transport=transport)
     service = client.create_service(binding_name="{urn:GestionCinemaWS}GestionCinemaWSSOAPBinding", address=cinema_url)
     return service
-
-
-def reservation_pass_culture(
-    cinema_details: providers_models.CGRCinemaDetails,
-    body: cgr_serializers.ReservationPassCultureBody,
-    request_timeout: int | None = None,
-) -> cgr_serializers.ReservationPassCultureResponse:
-    timeout = request_timeout or CGR_TIMEOUT
-    user = settings.CGR_API_USER
-    password = decrypt(cinema_details.password)
-    cinema_url = cinema_details.cinemaUrl
-    service = get_cgr_service_proxy(cinema_url, request_timeout=timeout)
-    # We need to wait a little longer than the value we send them
-    # Otherwise, for attempts very (very) close to the value of `timeout`
-    # they might consider the booking as valid on their side
-    # while on ours, the duration of the attempt + delay of the HTTP request + delay of HTTP response
-    # could exceed the `timeout` value
-    timeout -= 2
-    params = {
-        "User": user,
-        "mdp": password,
-        "pIDSeances": body.pIDSeances,
-        "pNumCinema": body.pNumCinema,
-        "pPUTTC": body.pPUTTC,
-        "pNBPlaces": body.pNBPlaces,
-        "pNom": body.pNom,
-        "pPrenom": body.pPrenom,
-        "pEmail": body.pEmail,
-        "pToken": body.pToken,
-        "pDateLimiteAnnul": body.pDateLimiteAnnul,
-        "pTimeoutReservation": timeout,
-    }
-
-    response = service.ReservationPassCulture(**params)
-    response = json.loads(response)
-    _check_response_is_ok(response, "ReservationPassCulture")
-    return parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
 
 
 def annulation_pass_culture(

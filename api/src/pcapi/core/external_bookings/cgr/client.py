@@ -12,7 +12,6 @@ import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors.cgr.cgr import annulation_pass_culture
-from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
@@ -125,7 +124,10 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             extra={"show_id": show_id, "cinema_id": self.cinema_id, "booking_token": booking.token},
         )
         assert booking.cancellationLimitDate  # for typing; a movie screening is always an event
-        book_show_body = cgr_serializers.ReservationPassCultureBody(
+        timeout = self.request_timeout or CGR_TIMEOUT
+        response = self.service_proxy.ReservationPassCulture(
+            User=self.user,
+            mdp=decrypt(self.cinema_details.password),
             pIDSeances=show_id,
             pNumCinema=self.cinema_details.numCinema,
             pPUTTC=booking.amount,
@@ -135,12 +137,12 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pEmail=beneficiary.email,
             pToken=booking.token,
             pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
+            pTimeoutReservation=timeout - 2,  # to be conservative on network latency
         )
-        response = reservation_pass_culture(
-            self.cinema_details,
-            book_show_body,
-            request_timeout=self.request_timeout,
-        )
+        response = json.loads(response)
+        _check_response_is_ok(response, "ReservationPassCulture")
+        response = pydantic_v1.parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
+
         logger.info(
             "Booked CGR Ticket",
             extra={

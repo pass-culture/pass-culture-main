@@ -73,18 +73,6 @@ class GetSancesPassCultureResponse(BaseModel):
     ObjetRetour: GetSancesPassCultureResponseBody
 
 
-class ReservationPassCultureBody(BaseModel):
-    pIDSeances: int
-    pNumCinema: int
-    pPUTTC: Decimal
-    pNBPlaces: int
-    pNom: str
-    pPrenom: str
-    pEmail: str
-    pToken: str
-    pDateLimiteAnnul: str
-
-
 class ReservationPassCultureResponse(BaseModel):
     CodeErreur: int
     IntituleErreur: str
