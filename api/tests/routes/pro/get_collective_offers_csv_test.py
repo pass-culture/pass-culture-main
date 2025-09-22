@@ -1,6 +1,7 @@
 import csv
 import datetime
 import io
+from operator import attrgetter
 
 import pytest
 import pytz
@@ -141,6 +142,7 @@ class Returns200Test:
         offers = factories.BookedCollectiveOfferFactory.create_batch(
             3, venue__managingOfferer=user_offerer.offerer, locationType=models.CollectiveLocationType.SCHOOL
         )
+        offers = sorted(offers, key=attrgetter("dateCreated"), reverse=True)
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.num_queries_with_bookings):
