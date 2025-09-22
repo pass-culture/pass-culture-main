@@ -13,6 +13,13 @@ export const AdageHeaderBudget = ({
   logAdageLinkClick,
   institutionBudget,
 }: AdageHeaderBudgetProps) => {
+  // TODO (nizac, 2025-09-22): To remove after the 2025-10-01
+  const limitDate = new Date('2025-10-01T00:00:00')
+
+  if (Date.now() < limitDate.getTime()) {
+    return
+  }
+
   return (
     <div className={styles['adage-header-budget']}>
       <ButtonLink
