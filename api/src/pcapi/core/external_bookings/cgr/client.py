@@ -11,8 +11,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.connectors.cgr.cgr import annulation_pass_culture
-from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
@@ -23,6 +21,7 @@ from pcapi.utils.crypto import decrypt
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
+from . import serializers as cgr_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -180,12 +179,35 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             ]
         return tickets
 
+    def _annulation_pass_culture(self, barcode: str) -> None:
+        response = self.service_proxy.AnnulationPassCulture(
+            User=self.user,
+            mdp=decrypt(self.cinema_details.password),
+            pQrCode=barcode,
+        )
+        response = json.loads(response)
+
+        if response["CodeErreur"] == 1:  # booking is already cancelled on their side
+            return
+
+        _check_response_is_ok(response, "AnnulationPassCulture")
+
     def cancel_booking(self, barcodes: list[str]) -> None:
         barcodes_set = set(barcodes)
         for barcode in barcodes_set:
             logger.info("Cancelling CGR external booking", extra={"barcode": barcode, "cinema_id": self.cinema_id})
-            annulation_pass_culture(self.cinema_details, barcode, request_timeout=self.request_timeout)
+            self._annulation_pass_culture(barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError
+
+    def get_movie_poster_from_api(self, image_url: str) -> bytes:
+        api_response = requests.get(image_url)
+
+        if api_response.status_code != 200:
+            raise CGRAPIException(
+                f"Error getting CGR API movie poster {image_url} with code {api_response.status_code}"
+            )
+
+        return api_response.content

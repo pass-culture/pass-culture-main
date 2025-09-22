@@ -13,9 +13,8 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi import settings
 from pcapi.connectors import thumb_storage
-from pcapi.connectors.cgr.cgr import get_movie_poster_from_api
-from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.categories import subcategories
+from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.offers import api as offers_api
@@ -130,7 +129,7 @@ class CGRStocks(LocalProvider):
             if self.film_infos.Affiche:
                 image_url = self.film_infos.Affiche
                 try:
-                    image = get_movie_poster_from_api(image_url)
+                    image = self.cgr_client_api.get_movie_poster_from_api(image_url)
                 except CGRAPIException:
                     image = None
                     logger.info(
@@ -268,7 +267,7 @@ class CGRStocks(LocalProvider):
     def get_object_thumb(self) -> bytes:
         if self.film_infos.Affiche:
             image_url = self.film_infos.Affiche
-            return get_movie_poster_from_api(image_url)
+            return self.cgr_client_api.get_movie_poster_from_api(image_url)
         return bytes()
 
     def shall_synchronize_thumbs(self) -> bool:
