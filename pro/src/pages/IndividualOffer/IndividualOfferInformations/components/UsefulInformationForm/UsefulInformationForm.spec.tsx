@@ -491,11 +491,12 @@ describe('UsefulInformationForm', () => {
     })
   })
 
-  it('should NOT display the url field when the offer subcategory is online', () => {
+  it('should display the address form when the offer is not digital', () => {
     const contextValueForOnlineOffer: Partial<IndividualOfferContextValues> = {
       ...contextValueBase,
       offer: getIndividualOfferFactory({
         subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
+        isDigital: true,
       }),
     }
 
@@ -511,6 +512,7 @@ describe('UsefulInformationForm', () => {
       ...contextValueBase,
       offer: getIndividualOfferFactory({
         subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
+        isDigital: false,
       }),
     }
 

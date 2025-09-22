@@ -334,9 +334,10 @@ describe('<IndividualOfferLocationScreen />', () => {
     })
   })
 
-  describe('when offer subcategory is ONLINE', () => {
+  describe('when offer is digital', () => {
     const onlineOffer = getIndividualOfferFactory({
       id: 3,
+      isDigital: true,
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
       venue: getOfferVenueFactory({ id: 1 }),
     })
