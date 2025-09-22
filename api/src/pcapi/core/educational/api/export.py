@@ -153,7 +153,12 @@ def _get_query_with_loading_for_export(
     collective_offers_query: "sa_orm.Query[models.CollectiveOffer]",
 ) -> "typing.Iterator[models.CollectiveOffer]":
     CHUNK_SIZE = 1000
-    all_ids = [c.id for c in collective_offers_query.with_entities(models.CollectiveOffer.id).all()]
+    all_ids = [
+        c.id
+        for c in collective_offers_query.with_entities(models.CollectiveOffer.id)
+        .order_by(models.CollectiveOffer.dateCreated.desc())
+        .all()
+    ]
 
     start = 0
     while ids := all_ids[start : start + CHUNK_SIZE]:
@@ -174,6 +179,7 @@ def _get_query_with_loading_for_export(
                     offerers_models.OffererAddress.address
                 ),
             )
+            .order_by(models.CollectiveOffer.dateCreated.desc())
             .all()
         )
 
