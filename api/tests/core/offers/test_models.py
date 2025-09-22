@@ -227,10 +227,13 @@ class OfferStatusTest:
         )
         factories.StockFactory(offer=approved_offer)
         factories.StockFactory(offer=approved_offer_with_bookingAllowedDatetime)
+        active_offers = (
+            db.session.query(models.Offer).filter(models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name).all()
+        )
+        assert len(active_offers) == 2
+        assert approved_offer in active_offers
+        assert approved_offer_with_bookingAllowedDatetime in active_offers
 
-        assert db.session.query(models.Offer).filter(
-            models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name
-        ).all() == [approved_offer, approved_offer_with_bookingAllowedDatetime]
         assert (
             db.session.query(models.Offer).filter(models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name).all()
             == []
