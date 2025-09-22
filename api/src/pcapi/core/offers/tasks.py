@@ -100,6 +100,10 @@ def _create_offer_from_product(
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
+    offers_api.finalize_offer(
+        offer, publication_datetime=publicationDatetime, booking_allowed_datetime=bookingAllowedDatetime
+    )
+
     logger.info(
         "models.Offer has been created",
         extra={
