@@ -422,5 +422,5 @@ class CancelBookingTest:
 
         assert (
             str(exception.value)
-            == "Error on Boost API on PUT ResourceBoost.CANCEL_ORDER_SALE : Not found - The sale with ID: 55555 not found"
+            == "Error on Boost API on PUT https://cinema-0.example.com/api/sale/orderCancel : Not found - The sale with ID: 55555 not found"
         )
