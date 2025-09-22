@@ -64,7 +64,7 @@ class CachingUrlFetcher:
         if "file_obj" in result:
             # File objects cannot be serialized, we serialize their
             # content instead.
-            result["string"] = result.pop("file_obj").read()  # type: ignore[attr-defined]
+            result["string"] = result.pop("file_obj").read()
         with content_path.open("bx") as fp:
             fp.write(result["string"])  # despite the name, it's bytes
         metadata = {key: value for key, value in result.items() if key != "string"}

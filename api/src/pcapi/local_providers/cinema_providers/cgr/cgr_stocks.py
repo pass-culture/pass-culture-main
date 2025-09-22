@@ -105,7 +105,7 @@ class CGRStocks(LocalProvider):
 
             offer.extraData = offer._extraData or offers_models.OfferExtraData()
             if self.film_infos.NumVisa:
-                offer.extraData["visa"] = offer.extraData.get("visa") or str(self.film_infos.NumVisa)
+                offer.extraData["visa"] = offer.extraData.get("visa") or str(self.film_infos.NumVisa)  # type: ignore[index,union-attr]
 
         offer.product = self.product
 

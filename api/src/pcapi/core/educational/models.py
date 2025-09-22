@@ -2035,11 +2035,11 @@ class CollectiveDmsApplication(PcObject, models.Model):
     userDeletionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     @hybrid_property
-    def siren(self):
+    def siren(self) -> str:
         return self.siret[:SIREN_LENGTH]
 
     @siren.expression  # type: ignore[no-redef]
-    def siren(cls) -> str:
+    def siren(cls) -> sa.String:
         return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
 
     # Search application related to an offerer should use siren expression to use take benefit from the index

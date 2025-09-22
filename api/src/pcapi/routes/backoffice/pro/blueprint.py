@@ -45,7 +45,7 @@ class Context:
     and venues. Each one has its own context to handle its specificities
     """
 
-    fetch_rows_func: typing.Callable[[str, list[str]], sa_orm.Query]
+    fetch_rows_func: typing.Callable[[str, typing.Iterable[str]], sa_orm.Query]
     endpoint: str
     row_id_name: str
 
@@ -63,13 +63,13 @@ class UserContext(Context):
 
 
 class OffererContext(Context):
-    fetch_rows_func = offerers_api.search_offerer
+    fetch_rows_func = offerers_api.search_offerer  # type: ignore[assignment]
     endpoint = "backoffice_web.offerer.get"
     row_id_name = "offerer_id"
 
 
 class VenueContext(Context):
-    fetch_rows_func = offerers_api.search_venue
+    fetch_rows_func = offerers_api.search_venue  # type: ignore[assignment]
     endpoint = "backoffice_web.venue.get"
     row_id_name = "venue_id"
 
