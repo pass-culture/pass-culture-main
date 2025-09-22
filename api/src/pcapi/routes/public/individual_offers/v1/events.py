@@ -256,7 +256,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
     """
     Update Event Offer
 
-    Will update only the non-blank fields. If you some fields to keep their current values, leave them `undefined`.
+    Will update only the non-blank fields. If you want some fields to keep their current values, leave them `undefined`.
     """
     offer: offers_models.Offer | None = (
         utils.retrieve_offer_relations_query(utils.retrieve_offer_query(event_id))
