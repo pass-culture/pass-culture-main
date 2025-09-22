@@ -15,7 +15,6 @@ import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
@@ -80,12 +79,6 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         self.token = cinema_api_token
-        # (tcoudray-pass, 17/09/2025) TODO: Remove `self.api_url` & `self.account_id` when cine_digital_service connector is removed
-        self.api_url = settings.CDS_API_URL
-        if not self.api_url:
-            raise ValueError("`CDS_API_URL` not configured in this env")
-        self.account_id = account_id
-
         self.base_url = f"https://{account_id}.{settings.CDS_API_URL}"
 
     def _authenticated_get(self, url: str) -> dict:
@@ -163,7 +156,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 return cinema.is_internet_sale_gauge_active
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Cinema internet_sale_gauge_active not found in Cine Digital Service API "
-            f"for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     @external_bookings_models.cache_external_call(
@@ -183,7 +176,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             return shows
 
         raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Shows not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"Shows not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
@@ -193,25 +186,24 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             if show.id == show_id:
                 return show
         raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
         data = self._authenticated_get(f"{self.base_url}media")
         return parse_obj_as(list[cds_serializers.MediaCDS], data)
 
+    def get_rating(self) -> dict:  # method used by BO to check authentication is working
+        return self._authenticated_get(f"{self.base_url}rating")
+
     def get_movie_poster(self, image_url: str) -> bytes:
-        try:
-            return get_movie_poster_from_api(image_url)
-        except cds_exceptions.CineDigitalServiceAPIException:
-            logger.info(
-                "Could not fetch movie poster",
-                extra={
-                    "provider": "cds",
-                    "url": image_url,
-                },
-            )
+        api_response = requests.get(image_url)
+
+        if api_response.status_code != 200:
+            logger.info("Could not fetch movie poster", extra={"provider": "cds", "url": image_url})
             return bytes()
+
+        return api_response.content
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = self._authenticated_get(f"{self.base_url}paiementtype")
@@ -222,7 +214,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Pass Culture payment type not found in Cine Digital Service API for cinemaId={self.cinema_id}"
-            f" & url={self.api_url}"
+            f" & url={self.base_url}"
         )
 
     @lru_cache
@@ -242,7 +234,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             if screen.id == screen_id:
                 return screen
         raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     def get_hardcoded_seatmap(
@@ -474,7 +466,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             if cinema.id == self.cinema_id:
                 return cinema
         raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Cinema not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
+            f"Cinema not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
     @lru_cache

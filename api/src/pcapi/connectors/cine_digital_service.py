@@ -46,17 +46,6 @@ def get_resource(
     return response.json()
 
 
-def get_movie_poster_from_api(image_url: str) -> bytes:
-    api_response = requests.get(image_url)
-
-    if api_response.status_code != 200:
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Error getting CDS API movie poster {image_url} with code {api_response.status_code}"
-        )
-
-    return api_response.content
-
-
 def _build_url(
     api_url: str,
     account_id: str,
