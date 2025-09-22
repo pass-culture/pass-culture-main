@@ -8,11 +8,11 @@ import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
+import pcapi.core.external_bookings.boost.serializers as boost_serializers
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
-from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
 
