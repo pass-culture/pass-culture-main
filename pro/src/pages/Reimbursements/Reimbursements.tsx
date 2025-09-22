@@ -1,11 +1,10 @@
+import { useSelector } from 'react-redux'
 import { Outlet } from 'react-router'
 
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
+import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Reimbursement.module.scss'
 
@@ -14,27 +13,16 @@ export type ReimbursementsContextProps = {
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const selectedOffererId = useCurrentUser().selectedOffererId
-  const {
-    data: selectedOfferer,
-    error: offererApiError,
-    isLoading: isOffererLoading,
-  } = useOfferer(selectedOffererId)
-
-  const isNotReady = isOffererLoading || offererApiError
+  const selectedOfferer = useSelector(selectCurrentOfferer)
 
   return (
     <BasicLayout mainHeading="Gestion financière">
-      {isNotReady ? (
-        <Spinner />
-      ) : (
-        <div className={styles['reimbursements-container']}>
-          <div>
-            <ReimbursementsTabs selectedOfferer={selectedOfferer} />
-            <Outlet context={{ selectedOfferer }} />
-          </div>
+      <div className={styles['reimbursements-container']}>
+        <div>
+          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+          <Outlet context={{ selectedOfferer }} />
         </div>
-      )}
+      </div>
     </BasicLayout>
   )
 }

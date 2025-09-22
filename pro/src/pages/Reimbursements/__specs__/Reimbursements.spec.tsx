@@ -1,21 +1,13 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { routesReimbursements } from '@/app/AppRouter/subroutesReimbursements'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
-  defaultGetOffererResponseModel,
-  getOffererNameFactory,
-} from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import {
   Reimbursements,
@@ -30,7 +22,7 @@ vi.mock('react-router', async () => ({
   useOutletContext: () => contextData,
 }))
 
-const renderReimbursements = () => {
+const renderReimbursements = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <Routes>
       <Route path="/remboursements" element={<Reimbursements />}>
@@ -42,40 +34,14 @@ const renderReimbursements = () => {
     </Routes>,
     {
       initialRouterEntries: ['/remboursements'],
-      user: sharedCurrentUserFactory(),
-      storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
-        offerer: currentOffererFactory(),
-      },
+      ...options,
     }
   )
 }
 
 describe('Reimbursement page', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'first offerer',
-        }),
-      ],
-    })
-
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
-      defaultGetOffererResponseModel
-    )
-    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
-      bankAccounts: [],
-      id: 1,
-      managedVenues: [],
-    })
-  })
-
-  it('should render reimbursement page', async () => {
+  it('should render reimbursement page', () => {
     renderReimbursements()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Justificatifs/)).toBeInTheDocument()
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
@@ -87,16 +53,18 @@ describe('Reimbursement page', () => {
   })
 
   it('should render breadcrumb with error icon', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      venuesWithNonFreeOffersWithoutBankAccounts: [2],
+    renderReimbursements({
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            venuesWithNonFreeOffersWithoutBankAccounts: [2],
+          },
+        },
+      },
     })
 
-    renderReimbursements()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
+
     await waitFor(() => {
       expect(
         screen.getByRole('img', {
@@ -106,33 +74,20 @@ describe('Reimbursement page', () => {
     })
   })
 
-  it('should render component even if offererNames is empty', async () => {
+  it('should render component even if offererNames is empty', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [],
     })
 
     renderReimbursements()
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
   })
 
-  it('should render component on getOffererNames error', async () => {
+  it('should render component on getOffererNames error', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
     renderReimbursements()
 
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
-  })
-
-  it('should not render component on getOfferer error', async () => {
-    vi.spyOn(api, 'getOfferer').mockRejectedValue({})
-    renderReimbursements()
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Informations bancaires')
-      ).not.toBeInTheDocument()
-    })
   })
 })
