@@ -144,6 +144,18 @@ class CheckPricesForStockTest:
             validation.check_stock_price(-1.5, offer)
         assert error.value.errors["price"] == ["Le prix doit être positif"]
 
+    def test_event_prices_for_nc(self):
+        venue = offerers_factories.CaledonianVenueFactory()
+        offer = offers_factories.EventOfferFactory.create(name="Offre calédonienne EVENT", venue=venue)
+
+        validation.check_stock_price(0, offer)
+        validation.check_stock_price(20, offer)
+        validation.check_stock_price(200, offer)  # limit
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(200.01, offer)
+        assert error.value.errors["price23865"] == ["Le prix d’une offre ne peut excéder 23865 francs Pacifique."]
+
     def test_thing_prices(self):
         offer = offers_factories.ThingOfferFactory()
         validation.check_stock_price(0, offer)
@@ -156,6 +168,18 @@ class CheckPricesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_price(-1.5, offer)
         assert error.value.errors["price"] == ["Le prix doit être positif"]
+
+    def test_thing_prices_for_nc(self):
+        venue = offerers_factories.CaledonianVenueFactory()
+        offer = offers_factories.ThingOfferFactory.create(name="Offre calédonienne THING", venue=venue)
+
+        validation.check_stock_price(0, offer)
+        validation.check_stock_price(20, offer)
+        validation.check_stock_price(200, offer)  # limit
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_price(200.01, offer)
+        assert error.value.errors["price23865"] == ["Le prix d’une offre ne peut excéder 23865 francs Pacifique."]
 
     def test_price_limitation_rule(self):
         offers_factories.OfferPriceLimitationRuleFactory(
