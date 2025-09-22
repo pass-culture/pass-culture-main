@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -20,6 +21,14 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # get user_session
+    # get user
+    # get pending bookings
+    # check user_offerer exists
+    # stocks
+    # insert
+    num_queries = 6
+
     def test_patch_draft_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -444,12 +453,15 @@ class Returns200Test:
         )
 
         data = {"videoUrl": video_url}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
-
-        assert response.status_code == 200
+        auth_client = client.with_session_auth("user@example.com")
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.patch(f"/offers/draft/{offer_id}", json=data)
+            assert response.status_code == 200
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
+        assert response.json["address"]["street"]
 
     def test_update_offer_accepts_video_url_for_synchronized_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
