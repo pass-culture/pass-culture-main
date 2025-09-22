@@ -127,7 +127,6 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ADD_VIDEO = "Permettre aux pros d'avoir des vidéos sur leurs offres"
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
@@ -222,7 +221,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_FROM_BIGQUERY_TABLES,
-    FeatureToggle.WIP_ADD_VIDEO,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
