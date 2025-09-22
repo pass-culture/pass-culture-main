@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
@@ -19,7 +19,13 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'
 
-import { SideNavLinks } from '../SideNavLinks'
+import { SideNavLinks } from './SideNavLinks'
+
+const selectCurrentOfferer = vi.hoisted(() => vi.fn())
+vi.mock('@/commons/store/offerer/selectors', async (importOriginal) => ({
+  ...(await importOriginal()),
+  selectCurrentOfferer,
+}))
 
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
@@ -115,7 +121,7 @@ describe('SideNavLinks', () => {
     const offerer = currentOffererFactory()
 
     beforeEach(() => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      selectCurrentOfferer.mockReturnValue({
         ...defaultGetOffererResponseModel,
         hasPartnerPage: true,
         managedVenues: mockedManagedVenues,
@@ -225,8 +231,8 @@ describe('SideNavLinks', () => {
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
   })
 
-  it('should not display create offre button if offerer is not validated', async () => {
-    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({})
+  it('should not display create offre button if offerer is not validated', () => {
+    selectCurrentOfferer.mockReturnValue(null)
 
     renderSideNavLinks({
       storeOverrides: {
@@ -236,10 +242,6 @@ describe('SideNavLinks', () => {
         offerer: currentOffererFactory(),
       },
       user: sharedCurrentUserFactory(),
-    })
-
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalled()
     })
 
     expect(
@@ -353,7 +355,7 @@ describe('SideNavLinks', () => {
   })
 
   it('should show a create offer dropdown button with individual and collective choices if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    selectCurrentOfferer.mockReturnValue({
       ...defaultGetOffererResponseModel,
       isValidated: true,
     })
@@ -363,10 +365,6 @@ describe('SideNavLinks', () => {
         offerer: currentOffererFactory(),
       },
       features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
-    })
-
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalled()
     })
 
     await userEvent.click(
