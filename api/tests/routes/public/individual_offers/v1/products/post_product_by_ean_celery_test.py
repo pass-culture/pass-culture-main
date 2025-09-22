@@ -236,8 +236,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(plain_api_key, json_body=payload)
         assert response.status_code == 204
 
-        offer_1 = db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
+        offer_1: offers_models.Offer = (
+            db.session.query(offers_models.Offer).filter_by(ean=input_product_stock_dict["ean"]).one()
+        )
         assert offer_1.publicationDatetime == expected_publication_datetime
+        assert offer_1.finalizationDatetime is not None
 
     @time_machine.travel(datetime.datetime(2025, 7, 15), tick=False)
     @pytest.mark.parametrize(
