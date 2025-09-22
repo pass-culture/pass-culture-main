@@ -5,6 +5,7 @@ import logging
 from unittest.mock import patch
 
 import pytest
+import time_machine
 
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 import pcapi.core.bookings.factories as bookings_factories
@@ -930,9 +931,9 @@ class CineDigitalServiceGetVoucherForShowTest:
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.settings(CDS_API_URL="apiUrl_test/")
 class CineDigitalServiceBookTicketTest:
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.post_resource")
+    @time_machine.travel("2025-09-22T09:23:40.464832", tick=False)
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_seat")
@@ -945,7 +946,7 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_available_seat,
         mocked_get_screen,
         mocked_get_show,
-        mocked_post_resource,
+        requests_mock,
     ):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1)
@@ -976,23 +977,24 @@ class CineDigitalServiceBookTicketTest:
         )
         mocked_get_screen.return_value = create_screen_cds()
 
-        json_create_transaction = {
-            "id": 2964,
-            "invoiceid": "3472",
-            "tickets": [
-                {
-                    "barcode": "141414141414",
-                    "canceled": False,
-                    "cancellable": True,
-                    "id": 7699,
-                    "seatcol": 1,
-                    "seatnumber": "A_1",
-                    "seatrow": 1,
-                }
-            ],
-        }
-
-        mocked_post_resource.return_value = json_create_transaction
+        requests_mock.post(
+            "https://accountid_test.apiUrl_test/transaction/create?api_token=token_test",
+            json={
+                "id": 2964,
+                "invoiceid": "3472",
+                "tickets": [
+                    {
+                        "barcode": "141414141414",
+                        "canceled": False,
+                        "cancellable": True,
+                        "id": 7699,
+                        "seatcol": 1,
+                        "seatnumber": "A_1",
+                        "seatrow": 1,
+                    }
+                ],
+            },
+        )
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id",
@@ -1003,21 +1005,38 @@ class CineDigitalServiceBookTicketTest:
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
-        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
-
-        assert create_transaction_body_arg_call.cinema_id == "test_id"
-        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 1
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].seat_number == "A_1"
+        post_request = requests_mock.last_request
+        assert post_request.method == "POST"
+        assert post_request.url == "https://accountid_test.apiurl_test/transaction/create?api_token=token_test"
+        assert post_request.json() == {
+            "canceled": False,
+            "cinemaid": "test_id",
+            "paiementCollection": [
+                {"amount": 5.0, "id": -1, "paiementtypeid": {"id": 12}, "vouchertypeid": {"id": 3}},
+            ],
+            "ticketsaleCollection": [
+                {
+                    "canceled": False,
+                    "cinemaid": "test_id",
+                    "disabledperson": False,
+                    "id": -1,
+                    "operationdate": "2025-09-22T09:23:40.464832",
+                    "seatcol": 0,
+                    "seatnumber": "A_1",
+                    "seatrow": 0,
+                    "showid": {"id": 181},
+                    "tariffid": {"id": 42},
+                    "vouchertype": "PSCULTURE",
+                },
+            ],
+            "transactiondate": "2025-09-22T09:23:40.464832",
+        }
 
         assert len(tickets) == 1
         assert tickets[0].barcode == "141414141414"
         assert tickets[0].seat_number == "A_1"
 
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.post_resource")
+    @time_machine.travel("2025-09-22T09:23:40.464832", tick=False)
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_duo_seat")
@@ -1030,7 +1049,7 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_available_duo_seat,
         mocked_get_screen,
         mocked_get_show,
-        mocked_post_resource,
+        requests_mock,
         app,
     ):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -1059,32 +1078,33 @@ class CineDigitalServiceBookTicketTest:
         )
         mocked_get_screen.return_value = create_screen_cds()
 
-        json_create_transaction = {
-            "id": 2964,
-            "invoiceid": "3472",
-            "tickets": [
-                {
-                    "barcode": "141414141414",
-                    "canceled": False,
-                    "cancellable": True,
-                    "id": 7699,
-                    "seatcol": 1,
-                    "seatnumber": "A_1",
-                    "seatrow": 1,
-                },
-                {
-                    "barcode": "252525252525",
-                    "canceled": False,
-                    "cancellable": True,
-                    "id": 7700,
-                    "seatcol": 1,
-                    "seatnumber": "A_2",
-                    "seatrow": 2,
-                },
-            ],
-        }
-
-        mocked_post_resource.return_value = json_create_transaction
+        requests_mock.post(
+            "https://accountid_test.apiUrl_test/transaction/create?api_token=token_test",
+            json={
+                "id": 2964,
+                "invoiceid": "3472",
+                "tickets": [
+                    {
+                        "barcode": "141414141414",
+                        "canceled": False,
+                        "cancellable": True,
+                        "id": 7699,
+                        "seatcol": 1,
+                        "seatnumber": "A_1",
+                        "seatrow": 1,
+                    },
+                    {
+                        "barcode": "252525252525",
+                        "canceled": False,
+                        "cancellable": True,
+                        "id": 7700,
+                        "seatcol": 1,
+                        "seatnumber": "A_2",
+                        "seatrow": 2,
+                    },
+                ],
+            },
+        )
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
@@ -1092,23 +1112,46 @@ class CineDigitalServiceBookTicketTest:
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
-        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
-
-        assert create_transaction_body_arg_call.cinema_id == "test_id"
-        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 2
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].seat_number == "A_1"
-        assert create_transaction_body_arg_call.ticket_sale_collection[1].id == -2
-        assert create_transaction_body_arg_call.ticket_sale_collection[1].seat_number == "A_2"
-        assert len(create_transaction_body_arg_call.payement_collection) == 2
-        assert create_transaction_body_arg_call.payement_collection[0].id == -1
-        assert create_transaction_body_arg_call.payement_collection[0].amount == 5.0
-        assert create_transaction_body_arg_call.payement_collection[0].payement_type.id == 12
-        assert create_transaction_body_arg_call.payement_collection[1].id == -2
-        assert create_transaction_body_arg_call.payement_collection[1].amount == 5.0
-        assert create_transaction_body_arg_call.payement_collection[1].payement_type.id == 12
+        post_request = requests_mock.last_request
+        assert post_request.method == "POST"
+        assert post_request.url == "https://accountid_test.apiurl_test/transaction/create?api_token=token_test"
+        assert post_request.json() == {
+            "canceled": False,
+            "cinemaid": "test_id",
+            "paiementCollection": [
+                {"amount": 5.0, "id": -1, "paiementtypeid": {"id": 12}, "vouchertypeid": {"id": 3}},
+                {"amount": 5.0, "id": -2, "paiementtypeid": {"id": 12}, "vouchertypeid": {"id": 3}},
+            ],
+            "ticketsaleCollection": [
+                {
+                    "canceled": False,
+                    "cinemaid": "test_id",
+                    "disabledperson": False,
+                    "id": -1,
+                    "operationdate": "2025-09-22T09:23:40.464832",
+                    "seatcol": 0,
+                    "seatnumber": "A_1",
+                    "seatrow": 0,
+                    "showid": {"id": 181},
+                    "tariffid": {"id": 42},
+                    "vouchertype": "PSCULTURE",
+                },
+                {
+                    "canceled": False,
+                    "cinemaid": "test_id",
+                    "disabledperson": False,
+                    "id": -2,
+                    "operationdate": "2025-09-22T09:23:40.464832",
+                    "seatcol": 1,
+                    "seatnumber": "A_2",
+                    "seatrow": 0,
+                    "showid": {"id": 181},
+                    "tariffid": {"id": 42},
+                    "vouchertype": "PSCULTURE",
+                },
+            ],
+            "transactiondate": "2025-09-22T09:23:40.464832",
+        }
 
         assert len(tickets) == 2
         assert tickets[0].barcode == "141414141414"
@@ -1127,8 +1170,7 @@ class CineDigitalServiceBookTicketTest:
         assert first_external_booking_info["venue_id"] == venue_id
         assert first_external_booking_info["timestamp"]
 
-    @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-    @patch("pcapi.core.external_bookings.cds.client.post_resource")
+    @time_machine.travel("2025-09-22T09:23:40.464832", tick=False)
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
@@ -1139,7 +1181,7 @@ class CineDigitalServiceBookTicketTest:
         mocked_get_pc_voucher_types,
         mocked_get_screen,
         mocked_get_show,
-        mocked_post_resource,
+        requests_mock,
     ):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         booking = bookings_factories.BookingFactory(user=beneficiary, quantity=1)
@@ -1159,20 +1201,21 @@ class CineDigitalServiceBookTicketTest:
         )
         mocked_get_screen.return_value = create_screen_cds()
 
-        json_create_transaction = {
-            "id": 2964,
-            "invoiceid": "3472",
-            "tickets": [
-                {
-                    "barcode": "141414141414",
-                    "canceled": False,
-                    "cancellable": True,
-                    "id": 7699,
-                }
-            ],
-        }
-
-        mocked_post_resource.return_value = json_create_transaction
+        requests_mock.post(
+            "https://accountid_test.apiUrl_test/transaction/create?api_token=token_test",
+            json={
+                "id": 2964,
+                "invoiceid": "3472",
+                "tickets": [
+                    {
+                        "barcode": "141414141414",
+                        "canceled": False,
+                        "cancellable": True,
+                        "id": 7699,
+                    }
+                ],
+            },
+        )
 
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
@@ -1180,14 +1223,32 @@ class CineDigitalServiceBookTicketTest:
 
         tickets = cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
 
-        create_transaction_body_arg_call = mocked_post_resource.call_args_list[0][0][4]
-
-        assert create_transaction_body_arg_call.cinema_id == "test_id"
-        assert len(create_transaction_body_arg_call.ticket_sale_collection) == 1
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].id == -1
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].show.id == 181
-        assert create_transaction_body_arg_call.ticket_sale_collection[0].tariff.id == 42
-        assert not create_transaction_body_arg_call.ticket_sale_collection[0].seat_number
+        post_request = requests_mock.last_request
+        assert post_request.method == "POST"
+        assert post_request.url == "https://accountid_test.apiurl_test/transaction/create?api_token=token_test"
+        assert post_request.json() == {
+            "canceled": False,
+            "cinemaid": "test_id",
+            "paiementCollection": [
+                {"amount": 5.0, "id": -1, "paiementtypeid": {"id": 12}, "vouchertypeid": {"id": 3}},
+            ],
+            "ticketsaleCollection": [
+                {
+                    "canceled": False,
+                    "cinemaid": "test_id",
+                    "disabledperson": False,
+                    "id": -1,
+                    "operationdate": "2025-09-22T09:23:40.464832",
+                    "seatcol": None,
+                    "seatnumber": None,
+                    "seatrow": None,
+                    "showid": {"id": 181},
+                    "tariffid": {"id": 42},
+                    "vouchertype": "PSCULTURE",
+                },
+            ],
+            "transactiondate": "2025-09-22T09:23:40.464832",
+        }
 
         assert len(tickets) == 1
         assert tickets[0].barcode == "141414141414"

@@ -2,13 +2,11 @@ import enum
 from typing import Any
 
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
-from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
 
 
 class ResourceCDS(enum.Enum):
     TARIFFS = "tariffs"
-    CREATE_TRANSACTION = "transaction/create"
     RATING = "rating"
 
 
@@ -44,24 +42,6 @@ def get_resource(
     response = requests.get(url, timeout=request_timeout)
 
     _check_response_is_ok(response, cinema_api_token, f"GET {resource}")
-
-    return response.json()
-
-
-def post_resource(
-    api_url: str,
-    account_id: str,
-    cinema_api_token: str | None,
-    resource: ResourceCDS,
-    body: BaseModel,
-    *,
-    request_timeout: int | None = None,
-) -> dict:
-    url = _build_url(api_url, account_id, cinema_api_token, resource)
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, data=body.json(by_alias=True), timeout=request_timeout)
-
-    _check_response_is_ok(response, cinema_api_token, f"POST {resource}")
 
     return response.json()
 
