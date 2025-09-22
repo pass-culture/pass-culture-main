@@ -19,13 +19,11 @@ export interface StepPattern {
 import { LabelBooking } from '../LabelBooking/LabelBooking'
 
 export const getSteps = ({
-  isMediaPageFeatureEnabled,
   isNewOfferCreationFlowFeatureActive,
   isEvent,
   mode,
   bookingsCount,
 }: {
-  isMediaPageFeatureEnabled: boolean
   isNewOfferCreationFlowFeatureActive: boolean
   isEvent: boolean | null
   mode: OFFER_WIZARD_MODE
@@ -48,14 +46,11 @@ export const getSteps = ({
         return Boolean(offer.address ?? offer.url)
       },
     },
-  ]
-
-  if (isMediaPageFeatureEnabled) {
-    steps.push({
+    {
       id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
       label: 'Image et vidéo',
-    })
-  }
+    },
+  ]
 
   // We also show all possible steps when we don't know yet
   // (meaning `isEvent` is null or undefined).

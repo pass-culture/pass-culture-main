@@ -15,7 +15,6 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
@@ -46,7 +45,6 @@ export const IndividualOfferPriceTableScreen = ({
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
 
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isCaledonian = useIsCaledonian()
 
   const offerSubcategory = subCategories.find(
@@ -98,9 +96,7 @@ export const IndividualOfferPriceTableScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: isMediaPageEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
           mode,
           isOnboarding,
         })

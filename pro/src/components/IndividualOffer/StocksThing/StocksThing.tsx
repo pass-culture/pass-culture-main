@@ -20,7 +20,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -67,7 +66,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     useIndividualOfferContext()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
 
   const isCaledonian = useIsCaledonian()
 
@@ -210,9 +208,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: isMediaPageEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
           mode,
           isOnboarding,
         })

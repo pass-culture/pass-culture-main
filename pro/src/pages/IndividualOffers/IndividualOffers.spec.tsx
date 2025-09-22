@@ -934,8 +934,8 @@ describe('IndividualOffers', () => {
     })
   })
 
-  it('should display a GTM video banner when WIP_ADD_VIDEO FF is enabled', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ADD_VIDEO'])
+  it('should display a GTM video banner', async () => {
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
     const bannerTitle = screen.getByText(
       /Nouveau : Ajoutez une vidéo pour donner vie à votre offre !/
     )
@@ -944,7 +944,6 @@ describe('IndividualOffers', () => {
 
   it('should have a create offer button that skips the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
     await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, [
-      'WIP_ADD_VIDEO',
       'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
     ])
 
@@ -957,7 +956,7 @@ describe('IndividualOffers', () => {
   })
 
   it('should have a create offer button that redirects to the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is disabled', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ADD_VIDEO'])
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
 
     expect(
       screen.getByRole('link', { name: 'Créer une offre' })

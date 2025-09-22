@@ -60,7 +60,6 @@ export const IndividualOfferSummaryScreen = ({
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -197,13 +196,11 @@ export const IndividualOfferSummaryScreen = ({
         <SummaryLayout>
           <SummaryContent>
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
-            {isMediaPageEnabled && (
-              <MediaSection
-                offerId={offer.id}
-                videoUrl={offer.videoData.videoUrl}
-                shouldImageBeHidden
-              />
-            )}
+            <MediaSection
+              offerId={offer.id}
+              videoUrl={offer.videoData.videoUrl}
+              shouldImageBeHidden
+            />
             {offer.isEvent && (
               <PriceCategoriesSection
                 offer={offer}

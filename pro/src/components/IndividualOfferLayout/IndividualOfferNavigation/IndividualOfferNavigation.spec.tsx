@@ -72,7 +72,7 @@ describe('IndividualOfferNavigation', () => {
     priceCategories: [],
   })
 
-  it('should always display "Détails" and "Informations pratiques" steps', () => {
+  it('should always display "Détails", "Informations pratiques" and "Image et vidéo" steps', () => {
     const contextValues = individualOfferContextValuesFactory({
       offer: offerBase,
     })
@@ -90,21 +90,10 @@ describe('IndividualOfferNavigation', () => {
       listitem.textContent?.match(LABELS.USEFUL_INFORMATIONS)
     )
     expect(usefulInformationsStep).toBeDefined()
-  })
 
-  it('should display "Image et vidéo" step when WIP_ADD_VIDEO is enabled', () => {
-    const contextValues = individualOfferContextValuesFactory({
-      offer: offerBase,
-    })
-    const options: RenderWithProvidersOptions = {
-      features: ['WIP_ADD_VIDEO'],
-    }
-
-    renderIndividualOfferNavigation({ contextValues, options })
-
-    const mediaStep = screen
-      .getAllByRole('listitem')
-      .find((listitem) => listitem.textContent?.match(LABELS.MEDIA))
+    const mediaStep = steps.find((listitem) =>
+      listitem.textContent?.match(LABELS.MEDIA)
+    )
     expect(mediaStep).toBeDefined()
   })
 

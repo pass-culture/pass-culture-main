@@ -6,16 +6,11 @@ import type {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { useAnalytics } from '@/app/App/analytics/firebase'
-import { Events } from '@/commons/core/FirebaseEvents/constants'
-import type { IndividualOfferImage } from '@/commons/core/Offers/types'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
-import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
-import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -29,7 +24,6 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import styles from './DetailsForm.module.scss'
 import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
-import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Subcategories } from './Subcategories/Subcategories'
 
 type DetailsFormProps = {
@@ -40,9 +34,6 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readOnlyFields: string[]
-  displayedImage?: IndividualOfferImage | OnImageUploadArgs
-  onImageUpload: (values: OnImageUploadArgs) => void
-  onImageDelete: () => void
   // TODO (igabriele, 2025-07-24): Remove this prop once the FF is enabled in production.
   withUrlInput?: boolean
 }
@@ -55,12 +46,8 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   readOnlyFields,
-  displayedImage,
-  onImageUpload,
-  onImageDelete,
   withUrlInput = false,
 }: DetailsFormProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const {
     formState: { errors },
     register,
@@ -72,7 +59,6 @@ export const DetailsForm = ({
   const subcategoryId = watch('subcategoryId')
   const accessibility = watch('accessibility')
 
-  const isMediaPageEnabled = useActiveFeature('WIP_ADD_VIDEO')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -84,13 +70,6 @@ export const DetailsForm = ({
     setValue,
     accessibility
   )
-
-  const logOnImageDropOrSelected = () => {
-    logEvent(Events.DRAG_OR_SELECTED_IMAGE, {
-      imageType: UploaderModeEnum.OFFER,
-      imageCreationStage: 'add image',
-    })
-  }
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
   const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -203,16 +182,6 @@ export const DetailsForm = ({
           </>
         )}
       </FormLayout.Section>
-      {!isMediaPageEnabled && (
-        <ImageUploaderOffer
-          displayedImage={displayedImage}
-          onImageUpload={onImageUpload}
-          onImageDelete={onImageDelete}
-          onImageDropOrSelected={logOnImageDropOrSelected}
-          hideActionButtons={hasSelectedProduct}
-          isDisabled={hasSelectedProduct}
-        />
-      )}
       {!showAddVenueBanner && (
         <Subcategories
           readOnlyFields={readOnlyFields}
