@@ -180,6 +180,9 @@ class EntrepriseBackend(BaseBackend):
         assert isinstance(cached, str)  # help mypy
         return json.loads(cached)
 
+    def _is_active(self, data: dict, closure_date: datetime.date | None) -> bool:
+        return data["etat_administratif"] == "A" or (closure_date is not None and closure_date > datetime.date.today())
+
     def _is_diffusible(self, data: dict) -> bool:
         return data["diffusable_commercialement"] is True and data["status_diffusion"] == "diffusible"
 
@@ -248,20 +251,22 @@ class EntrepriseBackend(BaseBackend):
         head_office_siret = siren_data["siret_siege_social"]
         address = self._get_address_from_sirene_data(data["adresse"]) if with_address else None
 
+        # declared activity stopping date of the SIREN (may be in the future)
+        # may be different from the declared closing date of the main SIRET
+        closure_date = self._convert_timestamp_to_date(siren_data.get("date_cessation"))
+
         return models.SirenInfo(
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
             ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
-            active=siren_data["etat_administratif"] == "A",
+            active=self._is_active(siren_data, closure_date),
             diffusible=self._is_diffusible(siren_data),
             legal_category_code=siren_data["forme_juridique"]["code"],
             address=address,
             creation_date=self._convert_timestamp_to_date(siren_data.get("date_creation")),
-            # Unfortunately, date_cessation is part of unites_legales/{siren} response.
-            # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
-            closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
+            closure_date=closure_date,
         )
 
     def get_siren(self, siren: str, with_address: bool = True, raise_if_non_public: bool = True) -> models.SirenInfo:
@@ -284,20 +289,22 @@ class EntrepriseBackend(BaseBackend):
         head_office_siret = siren_data["siret_siege_social"]
         address = self._get_address_from_sirene_data(data["adresse"]) if with_address else None
 
+        # declared activity stopping date of the SIREN (may be in the future)
+        # may be different from the declared closing date of the main SIRET
+        closure_date = self._convert_timestamp_to_date(siren_data.get("date_cessation"))
+
         return models.SirenInfo(
             siren=siren_data["siren"],
             name=self._get_name_from_sirene_data(siren_data),
             head_office_siret=head_office_siret,
             ape_code=self._format_ape_code(siren_data["activite_principale"].get("code")),
             ape_label=data["activite_principale"]["libelle"],
-            active=siren_data["etat_administratif"] == "A",
+            active=self._is_active(siren_data, closure_date),
             diffusible=is_diffusible,
             legal_category_code=siren_data["forme_juridique"]["code"],
             address=address,
             creation_date=self._convert_timestamp_to_date(siren_data.get("date_creation")),
-            # Unfortunately, date_cessation is part of unites_legales/{siren} response.
-            # Information in /siege_social ("date_fermeture") may not be the same as the company closure date
-            closure_date=self._convert_timestamp_to_date(siren_data.get("date_cessation")),
+            closure_date=closure_date,
         )
 
     def _format_ape_code(self, ape_code: str | None) -> str | None:
@@ -313,10 +320,13 @@ class EntrepriseBackend(BaseBackend):
         subpath = f"/v3/insee/sirene/etablissements/diffusibles/{siret}"
         data = self._cached_get(subpath)["data"]
 
+        # declared closing date of the SIRET (may be in the future)
+        closure_date = self._convert_timestamp_to_date(data.get("date_fermeture"))
+
         return models.SiretInfo(
             siret=siret,
             siren=data["unite_legale"]["siren"],
-            active=data["etat_administratif"] == "A",
+            active=self._is_active(data, closure_date),
             diffusible=self._is_diffusible(data),
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),
@@ -337,10 +347,13 @@ class EntrepriseBackend(BaseBackend):
         if raise_if_non_public and not is_diffusible:
             raise exceptions.NonPublicDataException()
 
+        # declared closing date of the SIRET (may be in the future)
+        closure_date = self._convert_timestamp_to_date(data.get("date_fermeture"))
+
         return models.SiretInfo(
             siret=siret,
             siren=siret[:9],
-            active=data["etat_administratif"] == "A",
+            active=self._is_active(data, closure_date),
             diffusible=is_diffusible,
             name=self._get_name_from_sirene_data(data["unite_legale"]),
             address=self._get_address_from_sirene_data(data["adresse"]),

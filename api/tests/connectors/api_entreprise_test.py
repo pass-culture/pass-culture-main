@@ -5,6 +5,7 @@ import unittest.mock
 
 import pytest
 import requests_mock
+import time_machine
 
 from pcapi import settings
 from pcapi.connectors.entreprise import api
@@ -142,6 +143,21 @@ def test_get_siren_of_inactive_company():
         assert siren_info.active is False
         assert siren_info.diffusible is True
         assert siren_info.creation_date == datetime.date(2010, 1, 1)
+        assert siren_info.closure_date == datetime.date(2023, 12, 31)
+
+
+@time_machine.travel("2023-12-01")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_closing_in_the_future():
+    siren = "777899881"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/diffusibles/{siren}",
+            json=api_entreprise_test_data.RESPONSE_SIREN_INACTIVE_COMPANY,
+        )
+        siren_info = api.get_siren_open_data(siren, with_address=False)
+        assert siren_info.siren == siren
+        assert siren_info.active is True
         assert siren_info.closure_date == datetime.date(2023, 12, 31)
 
 
@@ -325,6 +341,20 @@ def test_get_siret_of_inactive_company():
         assert siret_info.legal_category_code == "5499"
         assert siret_info.active is False
         assert siret_info.diffusible is True
+
+
+@time_machine.travel("2023-12-01")
+@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siret_closing_in_the_future():
+    siret = "77789988100026"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}",
+            json=api_entreprise_test_data.RESPONSE_SIRET_INACTIVE_COMPANY,
+        )
+        siret_info = api.get_siret_open_data(siret)
+        assert siret_info.siret == siret
+        assert siret_info.active is True
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
