@@ -8,7 +8,6 @@ import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
 import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import {
-  defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   listOffersOfferFactory,
 } from '@/commons/utils/factories/individualApiFactories'
@@ -25,7 +24,27 @@ import {
 const renderOnboardingOfferIndividual = (
   options?: RenderWithProvidersOptions
 ) => {
-  return renderWithProviders(<OnboardingOfferIndividual />, { ...options })
+  return renderWithProviders(<OnboardingOfferIndividual />, {
+    ...options,
+    ...{
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            id: 42,
+            isOnboarded: false,
+            managedVenues: [
+              {
+                ...defaultGetOffererVenueResponseModel,
+                isPermanent: true,
+                id: 1337,
+              },
+            ],
+          },
+          offererNames: [],
+        },
+      },
+    },
+  })
 }
 
 vi.mock('@/apiClient/api', () => ({
@@ -34,17 +53,11 @@ vi.mock('@/apiClient/api', () => ({
     getOfferer: vi.fn(),
   },
 }))
+
 vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding')
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 42,
-      managedVenues: [
-        { ...defaultGetOffererVenueResponseModel, isPermanent: true, id: 1337 },
-      ],
-    })
     vi.spyOn(
       useHasAccessToDidacticOnboarding,
       'useHasAccessToDidacticOnboarding'
@@ -68,21 +81,9 @@ describe('<OnboardingOfferIndividual />', () => {
   })
 
   it('should redirect to venue settings if user chooses "automatiquement"', async () => {
-    renderOnboardingOfferIndividual({
-      storeOverrides: {
-        offerer: {
-          currentOfferer: {
-            id: 42,
-            isOnboarded: false,
-          },
-          offererNames: [],
-        },
-      },
-    })
+    renderOnboardingOfferIndividual()
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    expect(api.getOfferer).toHaveBeenCalledOnce()
 
     expect(
       await screen.findByRole('link', { name: /Automatiquement/ })

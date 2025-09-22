@@ -10,9 +10,8 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import editFullIcon from '@/icons/full-edit.svg'
 import connectStrokeIcon from '@/icons/stroke-connect.svg'
@@ -25,24 +24,21 @@ import styles from './OnboardingOfferIndividual.module.scss'
 export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOfferer = useSelector(selectCurrentOfferer)
 
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  const { data: offerer, isLoading: isOffererLoading } =
-    useOfferer(selectedOffererId)
-
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
     () => {
-      return api.listOffers(null, selectedOffererId, OfferStatus.DRAFT)
+      return api.listOffers(null, selectedOfferer?.id, OfferStatus.DRAFT)
     },
     { fallbackData: [] }
   )
 
-  if (offersQuery.isLoading || isOffererLoading) {
+  if (offersQuery.isLoading) {
     return <Spinner />
   }
 
@@ -50,13 +46,13 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     .filter(({ status }) => status === OfferStatus.DRAFT)
     .slice(0, MAX_DRAFT_TO_DISPLAY)
 
-  const physicalVenue = offerer?.managedVenues?.filter(
+  const physicalVenue = selectedOfferer?.managedVenues?.filter(
     ({ isVirtual }) => !isVirtual
   )[0]
 
   // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
   const synchronizedLink = physicalVenue
-    ? `/structures/${selectedOffererId}/lieux/${physicalVenue.id}/parametres`
+    ? `/structures/${selectedOfferer.id}/lieux/${physicalVenue.id}/parametres`
     : '/onboarding'
 
   return (
