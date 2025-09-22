@@ -52,7 +52,10 @@ export function toFormValues(
   const castOptions: CastOptions = {
     assert: false,
     stripUnknown: true,
-    context,
+    context: {
+      ...context,
+      isCast: true, // TODO (nizac, 22/09/2025): clean after handling price in different currencies in the application with currency attribute
+    },
   }
 
   return PriceTableValidationSchema.cast(

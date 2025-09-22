@@ -1,6 +1,10 @@
 import { isValid } from 'date-fns'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import {
+  convertEuroToPacificFranc,
+  convertPacificFrancToEuro,
+} from '@/commons/utils/convertEuroToPacificFranc'
 import { yup } from '@/commons/utils/yup'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 import { readonly } from '@/commons/utils/yup/readonly'
@@ -61,26 +65,53 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
     .nullable()
     .default(null)
     .defined()
-    .when(['$isCaledonian'], (vals, schema) => {
-      const [isCaledonian] = vals as [PriceTableFormContext['isCaledonian']]
+    .when(['$isCast', '$isCaledonian'], (vals, schema) => {
+      const [isCast, isCaledonian] = vals as [
+        boolean,
+        PriceTableFormContext['isCaledonian'],
+      ]
 
-      return schema
-        .typeError('Veuillez renseigner un prix')
-        .min(
-          0,
-          isCaledonian
-            ? 'Le prix ne peut pas être inférieur à 0F'
-            : 'Le prix ne peut pas être inferieur à 0€'
-        )
-        .max(
-          isCaledonian
-            ? PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
-            : PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR,
-          isCaledonian
-            ? `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
-            : `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`
-        )
-        .required('Veuillez renseigner un prix')
+      // TODO (nizac, 18/09/2025) clean after handling price in different currencies in the application with currency attribute
+      const nextSchema = schema.transform((_value, originalValue) => {
+        if (isCaledonian) {
+          if (isCast) {
+            return convertEuroToPacificFranc(originalValue)
+          }
+          return convertPacificFrancToEuro(originalValue)
+        }
+        return originalValue
+      })
+
+      return (
+        nextSchema
+          .typeError('Veuillez renseigner un prix')
+          .min(
+            0,
+            isCaledonian
+              ? 'Le prix ne peut pas être inférieur à 0F'
+              : 'Le prix ne peut pas être inferieur à 0€'
+          )
+          // TODO (nizac, 18/09/2025) clean and use "max" after handling price in different currencies in the application with currency attribute
+          .test(
+            'max',
+            isCaledonian
+              ? `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF} F`
+              : `Veuillez renseigner un prix inférieur à ${PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR} €`,
+            (value) => {
+              if (value) {
+                if (isCaledonian) {
+                  return (
+                    convertEuroToPacificFranc(value) <=
+                    PRICE_TABLE_ENTRY_MAX_PRICE_IN_XPF
+                  )
+                }
+                return value <= PRICE_TABLE_ENTRY_MAX_PRICE_IN_EUR
+              }
+              return true
+            }
+          )
+          .required('Veuillez renseigner un prix')
+      )
     }),
 
   quantity: yup
