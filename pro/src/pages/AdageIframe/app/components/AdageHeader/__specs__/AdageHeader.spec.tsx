@@ -59,6 +59,9 @@ describe('AdageHeader', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget').mockResolvedValue(
       defaultEducationalInstitution
     )
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2025-10-01T10:00:00').getTime()
+    )
   })
 
   it('should render adage header', async () => {
@@ -200,5 +203,27 @@ describe('AdageHeader', () => {
         screen.queryByRole('link', { name: /Mes Favoris (10)/ })
       ).toBeInTheDocument()
     })
+  })
+
+  it('should not display the budget if the date is before 2025-10-01', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2025-09-30T23:59:00').getTime()
+    )
+    renderAdageHeader(user)
+    await waitFor(() =>
+      expect(screen.queryByText('Solde prévisionnel')).not.toBeInTheDocument()
+    )
+    expect(screen.queryByText('1 000 €')).not.toBeInTheDocument()
+  })
+
+  it('should display the budget if the date is after 2025-10-01', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2025-10-01T00:01:00').getTime()
+    )
+    renderAdageHeader(user)
+    await waitFor(() =>
+      expect(screen.queryByText('Solde prévisionnel')).toBeInTheDocument()
+    )
+    expect(screen.queryByText('1 000 €')).toBeInTheDocument()
   })
 })
