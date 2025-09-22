@@ -40,8 +40,6 @@ class ResourceBoost(enum.Enum):
     if settings.IS_RUNNING_TESTS:
         EXAMPLE = "example"
         EXAMPLE_WITH_PATTERNS = "example/{start}/{end}"
-    COMPLETE_SALE = "api/sale/complete"
-    CANCEL_ORDER_SALE = "api/sale/orderCancel"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"

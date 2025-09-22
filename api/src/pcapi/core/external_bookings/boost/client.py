@@ -11,7 +11,6 @@ import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.utils import repository
@@ -198,10 +197,51 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             self._unset_cinema_details_token()
             auth_headers = self._get_authentication_header()
             response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
+            _raise_for_status(response, self.cinema_details.token, f"GET {url}")
 
         data = response.json()
         _log_external_call(self, f"GET {url}", data, query_params=params)
         return data
+
+    def _authenticated_put(self, url: str, payload: str) -> None:
+        """
+        Make an authenticated PUT request on given URL
+
+        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
+        and retries the call.
+        """
+        auth_headers = self._get_authentication_header()
+        response = requests.put(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
+
+        try:
+            _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
+        except exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            self._unset_cinema_details_token()
+            auth_headers = self._get_authentication_header()
+            response = requests.put(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
+            _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
+
+    def _authenticated_post(self, url: str, payload: str) -> dict | list[dict] | list | None:
+        """
+        Make an authenticated POST request on given URL
+
+        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
+        and retries the call.
+        """
+        auth_headers = self._get_authentication_header()
+        response = requests.post(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
+
+        try:
+            _raise_for_status(response, self.cinema_details.token, f"POST {url}")
+        except exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            self._unset_cinema_details_token()
+            auth_headers = self._get_authentication_header()
+            response = requests.post(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
+            _raise_for_status(response, self.cinema_details.token, f"POST {url}")
+
+        return response.json()
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
@@ -223,11 +263,9 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             sale_cancel_items.append(sale_cancel_item)
 
         sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
-        boost.put_resource(
-            self.cinema_id,
-            boost.ResourceBoost.CANCEL_ORDER_SALE,
-            sale_cancel,
-            request_timeout=self.request_timeout,
+        self._authenticated_put(
+            f"{self.cinema_details.cinemaUrl}api/sale/orderCancel",
+            payload=sale_cancel.json(by_alias=True),
         )
 
     @catch_cinema_provider_request_timeout
@@ -244,20 +282,19 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_body = boost_serializers.SaleRequest(
             codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT, basketItems=basket_items, idsBeforeSale=None
         )
-        sale_preparation_response = boost.post_resource(
-            self.cinema_id,
-            boost.ResourceBoost.COMPLETE_SALE,
-            sale_body,
-            request_timeout=self.request_timeout,
+
+        # step 1: preparation
+        sale_preparation_response = self._authenticated_post(
+            f"{self.cinema_details.cinemaUrl}api/sale/complete",
+            payload=sale_body.json(by_alias=True),
         )
         sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
 
+        # step 2: confirmation
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
-        sale_response = boost.post_resource(
-            self.cinema_id,
-            boost.ResourceBoost.COMPLETE_SALE,
-            sale_body,
-            request_timeout=self.request_timeout,
+        sale_response = self._authenticated_post(
+            f"{self.cinema_details.cinemaUrl}api/sale/complete",
+            payload=sale_body.json(by_alias=True),
         )
         sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
