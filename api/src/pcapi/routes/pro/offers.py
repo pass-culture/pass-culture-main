@@ -379,37 +379,44 @@ def post_draft_offer(
 @private_api.route("/offers/draft/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def patch_draft_offer(
     offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
-) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = (
-        db.session.query(models.Offer)
-        .options(
-            sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-            sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-            sa_orm.joinedload(models.Offer.venue)
-            .joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.Offer.product),
-            sa_orm.joinedload(models.Offer.metaData),
+) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
+        "headline_offer",
+        "meta_data",
+    ]
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=load_options)
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
         )
-        .filter_by(id=offer_id)
-        .one_or_none()
-    )
+
     if not offer:
         raise api_errors.ResourceNotFoundError
-
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
         body.extra_data = body_extra_data
     offer = offers_api.update_draft_offer(offer, body)
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers", methods=["POST"])
@@ -536,24 +543,23 @@ def patch_all_offers_active_status(
 @private_api.route("/offers/<int:offer_id>", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(
             offer_id,
             load_options=[
-                "stock",
-                "venue",
-                "offerer_address",
-                "product",
                 "bookings_count",
                 "is_non_free_offer",
                 "meta_data",
+                "product",
+                "stock",
+                "venue",
             ],
         )
     except exceptions.OfferNotFound:
@@ -572,17 +578,19 @@ def patch_offer(
     offer = offers_repository.get_offer_by_id(
         offer_id,
         load_options=[
-            "stock",
-            "venue",
-            "offerer_address",
-            "product",
             "bookings_count",
+            "headline_offer",
             "is_non_free_offer",
             "meta_data",
+            "offerer_address",
+            "pending_bookings",
+            "product",
+            "stock",
+            "venue",
         ],
     )
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/thumbnails/", methods=["POST"])
