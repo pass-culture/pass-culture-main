@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+import typing
+from functools import wraps
 
 from pydantic.v1 import parse_obj_as
 
@@ -106,6 +108,31 @@ def _extract_message_from_response(response: requests.Response) -> str:
     return message
 
 
+# typing to ensure that mypy understands the wrapped function signature has not changed
+F = typing.TypeVar("F", bound=typing.Callable[..., typing.Any])
+
+
+def _retry_if_jwt_token_is_invalid(func: F) -> F:
+    """
+    If the first call to Boost API fails because of an invalid JWT token,
+    this decorator forces re-authentication by unsetting the current token
+    and retries the call.
+
+    :func: Client method making an authenticated call to Boost API
+    """
+
+    @wraps(func)
+    def decorated_func(client: "BoostClientAPI", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+        try:
+            return func(client, *args, **kwargs)
+        except boost_exceptions.BoostInvalidTokenException:
+            # if the token is invalid, we unset current token to force re-authentication
+            client._unset_cinema_details_token()
+            return func(client, *args, **kwargs)
+
+    return decorated_func  # type: ignore[return-value]
+
+
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_id: str, request_timeout: None | int = None):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
@@ -180,67 +207,35 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return {"Authorization": f"Bearer {self.cinema_details.token}"}
 
+    @_retry_if_jwt_token_is_invalid
     def _authenticated_get(self, url: str, params: dict | None = None) -> dict:
         """
         Make an authenticated GET request on given URL
-
-        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
-        and retries the call.
         """
         auth_headers = self._get_authentication_header()
         response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
-
-        try:
-            _raise_for_status(response, self.cinema_details.token, f"GET {url}")
-        except exceptions.BoostInvalidTokenException:
-            # if the token is invalid, we unset current token to force re-authentication
-            self._unset_cinema_details_token()
-            auth_headers = self._get_authentication_header()
-            response = requests.get(url, headers=auth_headers, timeout=self.request_timeout, params=params)
-            _raise_for_status(response, self.cinema_details.token, f"GET {url}")
-
+        _raise_for_status(response, self.cinema_details.token, f"GET {url}")
         data = response.json()
         _log_external_call(self, f"GET {url}", data, query_params=params)
         return data
 
+    @_retry_if_jwt_token_is_invalid
     def _authenticated_put(self, url: str, payload: str) -> None:
         """
         Make an authenticated PUT request on given URL
-
-        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
-        and retries the call.
         """
         auth_headers = self._get_authentication_header()
         response = requests.put(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
+        _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
 
-        try:
-            _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
-        except exceptions.BoostInvalidTokenException:
-            # if the token is invalid, we unset current token to force re-authentication
-            self._unset_cinema_details_token()
-            auth_headers = self._get_authentication_header()
-            response = requests.put(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
-            _raise_for_status(response, self.cinema_details.token, f"PUT {url}")
-
+    @_retry_if_jwt_token_is_invalid
     def _authenticated_post(self, url: str, payload: str) -> dict | list[dict] | list | None:
         """
         Make an authenticated POST request on given URL
-
-        If the 1st call fails due to an invalid jwt token, this function tries to generate a new jwt token
-        and retries the call.
         """
         auth_headers = self._get_authentication_header()
         response = requests.post(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
-
-        try:
-            _raise_for_status(response, self.cinema_details.token, f"POST {url}")
-        except exceptions.BoostInvalidTokenException:
-            # if the token is invalid, we unset current token to force re-authentication
-            self._unset_cinema_details_token()
-            auth_headers = self._get_authentication_header()
-            response = requests.post(url, headers=auth_headers, timeout=self.request_timeout, data=payload)
-            _raise_for_status(response, self.cinema_details.token, f"POST {url}")
-
+        _raise_for_status(response, self.cinema_details.token, f"POST {url}")
         return response.json()
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
