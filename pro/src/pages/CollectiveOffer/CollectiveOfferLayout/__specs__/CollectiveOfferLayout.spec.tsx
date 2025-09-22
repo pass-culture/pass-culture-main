@@ -23,7 +23,15 @@ const renderCollectiveOfferLayout = (
     <CollectiveOfferLayout subTitle="Ma super offre" {...props}>
       Test
     </CollectiveOfferLayout>,
-    { initialRouterEntries: [path] }
+    {
+      initialRouterEntries: [path],
+
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { allowedOnAdage: true },
+        },
+      },
+    }
   )
 }
 

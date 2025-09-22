@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import type React from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router'
 
 import type {
@@ -8,15 +7,13 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from '@/components/HelpLink/HelpLink'
 import { Tag } from '@/design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from '@/pages/CollectiveOfferRoutes/utils/getActiveStep'
 
-import { useOfferEducationalFormData } from '../CollectiveOffer/components/OfferEducational/useOfferEducationalFormData'
 import { CollectiveEditionOfferNavigation } from './CollectiveEditionOfferNavigation/CollectiveEditionOfferNavigation'
 import styles from './CollectiveOfferLayout.module.scss'
 
@@ -41,17 +38,9 @@ export const CollectiveOfferLayout = ({
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const offererId = selectedOffererId?.toString()
 
-  const { ...offerEducationalFormData } = useOfferEducationalFormData(
-    Number(offererId),
-    offer
-  )
+  const allowedOnAdage = useIsAllowedOnAdage()
 
-  const { data: selectedOfferer } = useOfferer(
-    offerEducationalFormData.offerer?.id
-  )
   const { offerId: offerIdFromParams } = useParams<{
     offerId: string
   }>()
@@ -82,13 +71,10 @@ export const CollectiveOfferLayout = ({
       mainSubHeading={subTitle}
       isStickyActionBarInChild
     >
-      {isCreation && (
+      {allowedOnAdage && isCreation ? (
         <CollectiveBudgetCallout
           pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
         />
-      )}
-      {!selectedOfferer?.allowedOnAdage ? (
-        <></>
       ) : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
