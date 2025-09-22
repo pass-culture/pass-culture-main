@@ -15,9 +15,7 @@ import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
-from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
-from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
@@ -130,6 +128,24 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             return response.json()
 
         return None
+
+    def _authenticated_post(self, url: str, payload: str) -> dict | list[dict] | list | None:
+        """
+        Make an authenticated POST by adding an `api_token` in query params.
+
+        :raise: CineDigitalServiceAPIException
+        """
+        response = requests.post(
+            url,
+            params={"api_token": self.token},
+            headers={"Content-Type": "application/json"},
+            data=payload,
+            timeout=self.request_timeout,
+        )
+
+        _raise_for_status(response, self.token, f"POST {url}")
+
+        return response.json()
 
     def get_film_showtimes_stocks(self, film_id: str) -> dict:
         return {}
@@ -354,16 +370,10 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
             ticket_sale_collection=ticket_sale_collection,
             payement_collection=payement_collection,
-        )
+        ).json(by_alias=True)
 
-        json_response = post_resource(
-            self.api_url,
-            self.account_id,
-            self.token,
-            ResourceCDS.CREATE_TRANSACTION,
-            create_transaction_body,
-            request_timeout=self.request_timeout,
-        )
+        json_response = self._authenticated_post(f"{self.base_url}transaction/create", payload=create_transaction_body)
+
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
 
         for ticket in create_transaction_response.tickets:
