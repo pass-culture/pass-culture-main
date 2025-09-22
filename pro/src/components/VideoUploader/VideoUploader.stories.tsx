@@ -5,7 +5,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { configureTestStore } from '@/commons/store/testUtils'
 
 import sampleImageLandscape from './assets/sample-image-landscape.jpg'
-import { VideoUploader, type VideoUploaderProps } from './VideoUploader'
+import { VideoUploader } from './VideoUploader'
 
 export default {
   title: '@/components/VideoUploader/VideoUploader',
@@ -18,17 +18,6 @@ export default {
       </Provider>
     ),
   ],
-}
-
-const props: VideoUploaderProps = {}
-
-export const WithImage: StoryObj<typeof VideoUploader> = {
-  args: {
-    ...props,
-    videoImageUrl: sampleImageLandscape,
-    videoTitle: 'Super titre de vidéo',
-    videoDuration: 3,
-  },
 }
 
 export const WithoutImage: StoryObj<typeof VideoUploader> = {

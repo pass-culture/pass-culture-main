@@ -1,5 +1,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.video-uploader-tips {
+  margin-top: var(--size-spacing-xxxxl);
+}
+
 .hook {
   @include fonts.body-accent-xs;
 

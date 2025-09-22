@@ -2,6 +2,7 @@ import { useIndividualOfferContext } from '@/commons/context/IndividualOfferCont
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { VideoUploaderContextProvider } from './commons/context/VideoUploaderContext/VideoUploaderContext'
 import { IndividualOfferMediaScreen } from './components/IndividualOfferMediaScreen'
 
 const IndividualOfferMedia = (): JSX.Element | null => {
@@ -13,7 +14,12 @@ const IndividualOfferMedia = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer}>
-      <IndividualOfferMediaScreen offer={offer} />
+      <VideoUploaderContextProvider
+        initialVideoData={offer.videoData}
+        offerId={offer.id}
+      >
+        <IndividualOfferMediaScreen offer={offer} />
+      </VideoUploaderContextProvider>
     </IndividualOfferLayout>
   )
 }
