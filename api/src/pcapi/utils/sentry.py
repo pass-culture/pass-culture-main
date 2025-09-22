@@ -38,7 +38,7 @@ class SpecificPath(enum.Enum):
 
 
 def scrub_token_from_url_in_event(event: "Event") -> "Event":
-    full_url = str(event["request"]["url"])
+    full_url = str(event.get("request", {}).get("url"))
     if SpecificPath.PRO_AUTOLOGIN_SIGNUP.value in full_url:
         token_start = full_url.rfind("/") + 1
         event["request"]["url"] = full_url[:token_start] + SCRUBBED_INFO_PLACEHOLDER
