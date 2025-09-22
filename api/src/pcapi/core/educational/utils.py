@@ -56,7 +56,7 @@ def log_information_for_data_purpose(
 UAI_FOR_FAKE_TOKEN = "0910620E"
 
 
-def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True) -> str:
+def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True, uai: str | None = None) -> str:
     with open("tests/routes/adage_iframe/private_keys_for_tests/valid_rsa_private_key", "rb") as reader:
         authenticated_informations = {
             "civilite": "M.",
@@ -67,7 +67,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True) 
             "canPrebook": can_prebook,
         }
         if not readonly:
-            authenticated_informations["uai"] = UAI_FOR_FAKE_TOKEN
+            authenticated_informations["uai"] = uai if uai is not None else UAI_FOR_FAKE_TOKEN
             authenticated_informations["lat"] = 48.8566  # Paris
             authenticated_informations["lon"] = 2.3522  # Paris
 
