@@ -70,17 +70,36 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     @pytest.mark.parametrize(
-        "input_json,error_json",
+        "is_caledonian,input_json,error_json",
         [
-            ({"price": "coucou"}, {"price": ["Saisissez un nombre valide"]}),
-            ({"price": 12, "bookingLimitDatetime": ""}, {"bookingLimitDatetime": ["Format de date invalide"]}),
-            ({"price": float("NaN")}, {"price": ["La valeur n'est pas un nombre décimal valide"]}),
-            ({"price": 20, "quantity": 10**10}, {"quantity": ["ensure this value is less than or equal to 1000000"]}),
+            (False, {"price": "coucou"}, {"price": ["Saisissez un nombre valide"]}),
+            (False, {"price": 12, "bookingLimitDatetime": ""}, {"bookingLimitDatetime": ["Format de date invalide"]}),
+            (False, {"price": float("NaN")}, {"price": ["La valeur n'est pas un nombre décimal valide"]}),
+            (
+                False,
+                {"price": 20, "quantity": 10**10},
+                {"quantity": ["ensure this value is less than or equal to 1000000"]},
+            ),
+            (True, {"price": 23870}, {"price23865": ["Le prix d’une offre ne peut excéder 23865 francs Pacifique."]}),
         ],
     )
-    def test_should_raise_because_of_invalid_data(self, input_json, error_json, client):
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
-        response = client.with_session_auth("user@example.com").patch("/stocks/43", json=input_json)
+    def test_should_raise_because_of_invalid_data(self, is_caledonian, input_json, error_json, client):
+        if is_caledonian:
+            venue = offerers_factories.CaledonianVenueFactory()
+            offer = offers_factories.ThingOfferFactory.create(
+                isActive=True,
+                name="Offre calédonienne THING",
+                venue=venue,
+                validation=offers_models.OfferValidationStatus.PENDING,
+            )
+            stock = offers_factories.ThingStockFactory.create(offer=offer)
+            offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+            stockId = stock.id
+        else:
+            offerers_factories.UserOffererFactory(user__email="user@example.com")
+            stockId = 43
+
+        response = client.with_session_auth("user@example.com").patch(f"/stocks/{stockId}", json=input_json)
 
         assert response.status_code == 400
         assert response.json == error_json

@@ -1,7 +1,6 @@
 import datetime
 import re
 import typing
-from enum import Enum
 
 import email_validator
 import pydantic.v1 as pydantic_v1
@@ -17,6 +16,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import profile_options
@@ -91,11 +91,6 @@ class Credit(ConfiguredBaseModel):
 
     _convert_initial = validator("initial", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_remaining = validator("remaining", pre=True, allow_reuse=True)(convert_to_cent)
-
-
-class CurrencyEnum(Enum):
-    EUR = "EUR"
-    XPF = "XPF"
 
 
 class DomainsCredit(ConfiguredBaseModel):
