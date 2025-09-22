@@ -22,6 +22,7 @@ import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
+import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import {
   IndividualOfferMediaScreen,
   type IndividualOfferMediaScreenProps,
@@ -49,7 +50,12 @@ const renderIndividualOfferMediaScreen = async ({
 
   const res = renderWithProviders(
     <IndividualOfferContext.Provider value={finalContextValue}>
-      <IndividualOfferMediaScreen offer={finalOffer} />
+      <VideoUploaderContextProvider
+        offerId={finalOffer.id}
+        initialVideoData={finalOffer.videoData}
+      >
+        <IndividualOfferMediaScreen offer={finalOffer} />
+      </VideoUploaderContextProvider>
     </IndividualOfferContext.Provider>,
     {
       initialRouterEntries: [
@@ -72,6 +78,7 @@ const mockNavigate = vi.fn()
 vi.mock('@/apiClient/api', () => ({
   api: {
     patchDraftOffer: vi.fn(),
+    getOfferVideoMetadata: vi.fn(),
   },
 }))
 vi.mock('react-router', async () => {
@@ -97,6 +104,8 @@ const LABELS = {
   previousButtonEditionMode: 'Annuler et quitter',
   nextButtonCreationMode: 'Enregistrer et continuer',
   nextButtonEditionMode: 'Enregistrer les modifications',
+  videoButton: 'Ajouter une URL Youtube',
+  deleteVideoButton: 'Supprimer',
 }
 
 const getSubmitLabel = (mode: OFFER_WIZARD_MODE) => {
@@ -112,16 +121,18 @@ const updateVideoUrlAndSubmit = async ({
   text?: string
   mode?: OFFER_WIZARD_MODE
 } = {}) => {
-  const videoInput = screen.getByRole('textbox', {
-    name: LABELS.videoInput,
-  })
-
   if (text) {
-    await userEvent.type(videoInput, text)
-  } else {
-    await userEvent.clear(videoInput)
-  }
+    await userEvent.click(screen.getByText(LABELS.videoButton))
 
+    const videoInput = screen.getByRole('textbox', {
+      name: LABELS.videoInput,
+    })
+
+    await userEvent.type(videoInput, text)
+    await userEvent.click(screen.getByText('Ajouter'))
+  } else {
+    await userEvent.click(screen.getByText(LABELS.deleteVideoButton))
+  }
   const label = getSubmitLabel(mode)
   await userEvent.click(screen.getByRole('button', { name: label }))
 }
@@ -148,11 +159,11 @@ describe('IndividualOfferMediaScreen', () => {
     expect(input).toHaveAttribute('type', 'file')
   })
 
-  it('should always render a video url input', async () => {
+  it('should always render a video url button', async () => {
     await renderIndividualOfferMediaScreen()
 
     expect(screen.getByRole('heading', { name: LABELS.videoSubSection }))
-    expect(screen.getByRole('textbox', { name: LABELS.videoInput }))
+    expect(screen.getByRole('button', { name: LABELS.videoButton }))
   })
 
   describe('about image (and credit)', () => {
@@ -231,23 +242,6 @@ describe('IndividualOfferMediaScreen', () => {
   })
 
   describe('about video url input', () => {
-    it('should raise an error when video url has the wrong format & prevent submission', async () => {
-      Element.prototype.scrollIntoView = vi.fn()
-      await renderIndividualOfferMediaScreen()
-
-      await updateVideoUrlAndSubmit({
-        text: 'https://www.dailymotion.com/video/x9negsq',
-      })
-
-      const videoInput = screen.getByRole('textbox', {
-        name: LABELS.videoInput,
-      })
-      expect(videoInput).toBeInvalid()
-      const videoErrorMessage = screen.getByText(LABELS.videoError)
-      expect(videoErrorMessage).toBeInTheDocument()
-      expect(api.patchDraftOffer).not.toHaveBeenCalled()
-    })
-
     it('should not call the patch offer api until the video url has changed', async () => {
       await renderIndividualOfferMediaScreen()
 
@@ -256,6 +250,13 @@ describe('IndividualOfferMediaScreen', () => {
     })
 
     it('should call the patch offer api when the video url has changed', async () => {
+      vi.spyOn(api, 'getOfferVideoMetadata').mockResolvedValue({
+        videoDuration: 3,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+        videoUrl: 'http://youtube.url',
+      })
+
       const knownOffer = getIndividualOfferFactory()
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
@@ -267,39 +268,18 @@ describe('IndividualOfferMediaScreen', () => {
 
     it('should call the patch offer api when the video url has been deleted (empty string)', async () => {
       const knownOffer = getIndividualOfferFactory({
-        videoData: { videoUrl: MOCK_DATA.videoUrl },
+        videoData: {
+          videoUrl: MOCK_DATA.videoUrl,
+          videoDuration: 3,
+          videoThumbnailUrl: 'my image',
+          videoTitle: 'my title',
+        },
       })
       await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
 
       await updateVideoUrlAndSubmit({ text: '' })
       expect(api.patchDraftOffer).toHaveBeenCalledWith(knownOffer.id, {
         videoUrl: '',
-      })
-    })
-
-    it('should should log videoUrl when it is not youtube', async () => {
-      const knownOffer = getIndividualOfferFactory({
-        id: 1,
-      })
-      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-        logEvent: mockLogEvent,
-      }))
-      Element.prototype.scrollIntoView = vi.fn()
-      await renderIndividualOfferMediaScreen({ props: { offer: knownOffer } })
-
-      await updateVideoUrlAndSubmit({
-        text: 'https://www.dailymotion.com/video/x9negsq',
-      })
-
-      const videoInput = screen.getByRole('textbox', {
-        name: LABELS.videoInput,
-      })
-      expect(videoInput).toBeInvalid()
-
-      expect(mockLogEvent).toHaveBeenCalledWith('videoUrlError', {
-        offerId: 1,
-        userId: undefined,
-        videoUrl: 'https://www.dailymotion.com/video/x9negsq',
       })
     })
   })
@@ -346,7 +326,8 @@ describe('IndividualOfferMediaScreen', () => {
             mode,
           })
 
-          await updateVideoUrlAndSubmit({ mode })
+          const label = getSubmitLabel(mode)
+          await userEvent.click(screen.getByRole('button', { name: label }))
           expect(mockNavigate).toHaveBeenCalledWith(
             `/offre/individuelle/${eventOffer.id}/creation/tarifs`
           )
@@ -360,7 +341,8 @@ describe('IndividualOfferMediaScreen', () => {
             mode,
           })
 
-          await updateVideoUrlAndSubmit({ mode })
+          const label = getSubmitLabel(mode)
+          await userEvent.click(screen.getByRole('button', { name: label }))
           expect(mockNavigate).toHaveBeenCalledWith(
             `/offre/individuelle/${eventOffer.id}/creation/stocks`
           )
@@ -375,7 +357,8 @@ describe('IndividualOfferMediaScreen', () => {
           mode,
         })
 
-        await updateVideoUrlAndSubmit({ mode })
+        const label = getSubmitLabel(mode)
+        await userEvent.click(screen.getByRole('button', { name: label }))
         expect(mockNavigate).toHaveBeenCalledWith(
           `/offre/individuelle/${knownOffer.id}/media`
         )

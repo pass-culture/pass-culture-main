@@ -1,7 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { VideoUploaderContextProvider } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
 
 import { VideoUploader } from './VideoUploader'
 
@@ -19,12 +21,21 @@ describe('VideoUploader', () => {
   })
 
   it('should video meta data and action button when youtube url has been provided', () => {
+    const offer = getIndividualOfferFactory({
+      videoData: {
+        videoDuration: 180,
+        videoThumbnailUrl: 'http://youtube.image.com',
+        videoTitle: 'Ma super vidéo',
+      },
+    })
+
     renderWithProviders(
-      <VideoUploader
-        videoDuration={3}
-        videoImageUrl="http://youtube.image.com"
-        videoTitle="Ma super vidéo"
-      />
+      <VideoUploaderContextProvider
+        offerId={offer.id}
+        initialVideoData={offer.videoData}
+      >
+        <VideoUploader />
+      </VideoUploaderContextProvider>
     )
 
     expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument()
