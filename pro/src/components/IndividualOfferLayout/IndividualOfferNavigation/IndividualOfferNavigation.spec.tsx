@@ -377,7 +377,7 @@ describe('IndividualOfferNavigation', () => {
 
       renderIndividualOfferNavigation({ contextValues, options })
 
-      const locationStep = screen.getByRole('link', { name: '6 Récapitulatif' })
+      const locationStep = screen.getByRole('link', { name: '7 Récapitulatif' })
 
       expect(locationStep).toBeInTheDocument()
     })
