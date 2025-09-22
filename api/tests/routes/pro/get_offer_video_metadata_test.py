@@ -35,10 +35,11 @@ class Returns200Test:
             response = test_client.get(f"/get-offer-video-data/?videoUrl={video_url}")
             assert response.status_code == 200
         assert response.json == {
-            "id": "WtM4OW2qVjY",
-            "title": "Title",
-            "thumbnailUrl": "https://example.com/high.jpg",
-            "duration": 100,
+            "videoDuration": 100,
+            "videoExternalId": "WtM4OW2qVjY",
+            "videoTitle": "Title",
+            "videoThumbnailUrl": "https://example.com/high.jpg",
+            "videoUrl": video_url,
         }
 
 

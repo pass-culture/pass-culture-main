@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type VideoData = {
   videoDuration?: number | null;
+  videoExternalId?: string | null;
   videoThumbnailUrl?: string | null;
   videoTitle?: string | null;
   videoUrl?: string | null;

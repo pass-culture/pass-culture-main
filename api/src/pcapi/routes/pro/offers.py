@@ -766,13 +766,13 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
 @private_api.route("/get-offer-video-data", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.OfferVideo,
+    response_model=offers_serialize.VideoData,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def get_offer_video_metadata(
     query: offers_serialize.VideoMetatdataQueryModel,
-) -> offers_serialize.OfferVideo:
+) -> offers_serialize.VideoData:
     video_id = offers_validation.check_video_url(query.video_url)
     if video_id is None:
         raise api_errors.ApiErrors(
@@ -788,9 +788,10 @@ def get_offer_video_metadata(
         raise api_errors.ApiErrors(
             errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé"]}
         )
-    return offers_serialize.OfferVideo(
-        id=video_metadata.id,
-        title=video_metadata.title,
-        thumbnailUrl=video_metadata.thumbnail_url,
-        duration=video_metadata.duration,
+    return offers_serialize.VideoData(
+        videoDuration=video_metadata.duration,
+        videoExternalId=video_metadata.id,
+        videoTitle=video_metadata.title,
+        videoThumbnailUrl=video_metadata.thumbnail_url,
+        videoUrl=query.video_url,
     )

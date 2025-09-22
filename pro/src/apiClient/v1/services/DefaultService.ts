@@ -80,7 +80,6 @@ import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
-import type { OfferVideo } from '../models/OfferVideo';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
 import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollectiveOfferArchiveBodyModel';
@@ -124,6 +123,7 @@ import type { VenueLabelListResponseModel } from '../models/VenueLabelListRespon
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
 import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
+import type { VideoData } from '../models/VideoData';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
@@ -1340,12 +1340,12 @@ export class DefaultService {
   /**
    * get_offer_video_metadata <GET>
    * @param videoUrl
-   * @returns OfferVideo OK
+   * @returns VideoData OK
    * @throws ApiError
    */
   public getOfferVideoMetadata(
     videoUrl: string,
-  ): CancelablePromise<OfferVideo> {
+  ): CancelablePromise<VideoData> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/get-offer-video-data',

@@ -219,6 +219,7 @@ class Returns200Test:
             },
             "videoData": {
                 "videoDuration": None,
+                "videoExternalId": None,
                 "videoThumbnailUrl": None,
                 "videoTitle": None,
                 "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
