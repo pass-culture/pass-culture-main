@@ -18,11 +18,14 @@ from pcapi.core.categories.genres import show
 from pcapi.core.categories.subcategories import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import repository as finance_repository
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offerers.utils import get_currency
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.offers.constants import PRICE_TABLE_ENTRY_MAX_PRICE_BY_CURRENCY
 from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -142,17 +145,21 @@ def check_stocks_price(
 def check_stock_price(
     price: decimal.Decimal, offer: models.Offer, old_price: decimal.Decimal | None = None, error_key: str = "price"
 ) -> None:
-    if price < 0:
+    currency = get_currency(offer.venue)
+    price_in_currency = finance_utils.euros_to_currency(price, currency)
+    max_price = PRICE_TABLE_ENTRY_MAX_PRICE_BY_CURRENCY[currency]
+    currency_name = finance_utils.to_currency_name(currency)
+    if price_in_currency < 0:
         errors = api_errors.ApiErrors()
         errors.add_error(error_key, "Le prix doit être positif")
         raise errors
-    if price > 300:
+    if price_in_currency > max_price:
         if error_key == "price":
-            error_key += "300"
+            error_key += str(max_price)
         errors = api_errors.ApiErrors()
         errors.add_error(
             error_key,
-            "Le prix d’une offre ne peut excéder 300 euros.",
+            f"Le prix d’une offre ne peut excéder {max_price} {currency_name}.",
         )
         raise errors
 
