@@ -4,7 +4,10 @@ import styles from './VideoUploaderOfferTips.module.scss'
 import imageVideoTips from './video-tips.png'
 
 export const VideoUploaderTips = () => (
-  <TipsBanner decorativeImage={imageVideoTips}>
+  <TipsBanner
+    decorativeImage={imageVideoTips}
+    className={styles['video-uploader-tips']}
+  >
     <p className={styles['hook']}>
       "2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du
       pass Culture."

@@ -1,10 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   CreateThumbnailResponseModel,
@@ -23,21 +20,17 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import { VideoUploader } from '@/components/VideoUploader/VideoUploader'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 import { Divider } from '@/ui-kit/Divider/Divider'
 
 import { buildInitialValues } from '../commons/buildInitialValues'
-import { isYoutubeValid } from '../commons/isYoutubeValid'
-import type { IndividualOfferMediaFormValues } from '../commons/types'
-import { getValidationSchema } from '../commons/validationSchema'
+import { useVideoUploaderContext } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
 import styles from './IndividualOfferMediaScreen.module.scss'
 import { VideoUploaderTips } from './VideoUploaderOfferTips/VideoUploaderOfferTips'
 
@@ -49,7 +42,6 @@ export const IndividualOfferMediaScreen = ({
   offer,
 }: IndividualOfferMediaScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const currentUser = useSelector(selectCurrentUser)
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -68,17 +60,13 @@ export const IndividualOfferMediaScreen = ({
     handleImageOnSubmit,
   } = useIndividualOfferImageUpload(initialImageOffer)
 
+  const { handleVideoOnSubmit, videoUrl, videoData } = useVideoUploaderContext()
+
   const isProductBased = isOfferProductBased(offer)
 
-  const form = useForm<IndividualOfferMediaFormValues>({
-    defaultValues: { videoUrl: offer.videoData.videoUrl ?? '' },
-    resolver: yupResolver<IndividualOfferMediaFormValues, unknown, unknown>(
-      getValidationSchema()
-    ),
-    mode: 'onBlur',
-  })
+  const form = useForm()
 
-  const hasUpdatedVideoUrl = form.formState.isDirty
+  const hasUpdatedVideoUrl = videoUrl !== offer.videoData.videoUrl
   const isFormDirty = hasUpdatedVideoUrl || hasUpsertedImage
 
   const handlePreviousStep = async () => {
@@ -105,7 +93,7 @@ export const IndividualOfferMediaScreen = ({
     }
   }
 
-  const onSubmit = async (formValues: IndividualOfferMediaFormValues) => {
+  const onSubmit = async () => {
     try {
       // If only videoUrl was updated, there is an inner control on the
       // definition of handleImageOnSubmit so thumbnail associated requests cannot be made
@@ -156,19 +144,9 @@ export const IndividualOfferMediaScreen = ({
         }
 
         if (hasUpdatedVideoUrl) {
-          await mutate(
-            [GET_OFFER_QUERY_KEY, offer.id],
-            api.patchDraftOffer(offer.id, {
-              videoUrl: formValues.videoUrl,
-            }),
-            {
-              // FIXME: patchDraftOffer lacks a proper return type,
-              // we cant use it to update the cache - its not a quick fix
-              // on backend side and will be tackled in https://passculture.atlassian.net/browse/PC-38009.
-              // revalidate: false when fixed.
-              revalidate: true,
-            }
-          )
+          await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
+            revalidate: false,
+          })
         }
       }
 
@@ -196,11 +174,6 @@ export const IndividualOfferMediaScreen = ({
       if (!isErrorAPIError(error)) {
         return
       }
-      for (const field in error.body) {
-        form.setError(field as keyof IndividualOfferMediaFormValues, {
-          message: error.body[field],
-        })
-      }
     }
   }
 
@@ -214,7 +187,6 @@ export const IndividualOfferMediaScreen = ({
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout>
           <FormLayout.Section title="Illustrez votre offre">
             <FormLayout.Row inline className={styles['media-row']}>
@@ -241,27 +213,8 @@ export const IndividualOfferMediaScreen = ({
                 isNew
                 className={styles['media-sub-section']}
               >
-                <div className={styles['video-section-input']}>
-                  <TextInput
-                    label="Lien URL Youtube"
-                    type="url"
-                    description="Format : https://www.youtube.com/watch?v=0R5PZxOgoz8"
-                    error={form.formState.errors.videoUrl?.message}
-                    {...form.register('videoUrl')}
-                    onBlur={(e) => {
-                      const value = e.target.value
-                      form.register('videoUrl').onBlur(e)
-                      if (value && !isYoutubeValid(value)) {
-                        logEvent(Events.OFFER_FORM_VIDEO_URL_ERROR, {
-                          offerId: offer.id,
-                          userId: currentUser?.id,
-                          videoUrl: value,
-                        })
-                      }
-                    }}
-                  />
-                </div>
-                <VideoUploaderTips />
+                <VideoUploader />
+                {!videoData?.videoThumbnailUrl && <VideoUploaderTips />}
               </FormLayout.SubSection>
             </FormLayout.Row>
           </FormLayout.Section>
