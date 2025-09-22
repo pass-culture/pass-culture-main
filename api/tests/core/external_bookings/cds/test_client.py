@@ -195,7 +195,7 @@ class CineDigitalServiceGetShowTest:
 
         assert (
             str(cds_exception.value)
-            == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=apiUrl_test/"
+            == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=https://accountid_test.apiUrl_test/"
         )
 
     @pytest.mark.parametrize(
@@ -326,7 +326,7 @@ class CineDigitalServiceGetPaymentTypeTest:
             cine_digital_service.get_voucher_payment_type()
         assert (
             str(cds_exception.value)
-            == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=apiUrl_test/"
+            == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=https://accountid_test.apiUrl_test/"
         )
 
 
@@ -437,7 +437,7 @@ class CineDigitalServiceGetScreenTest:
             cine_digital_service.get_screen(4)
         assert (
             str(cds_exception.value)
-            == "Screen #4 not found in Cine Digital Service API for cinemaId=test_id & url=apiUrl_test/"
+            == "Screen #4 not found in Cine Digital Service API for cinemaId=test_id & url=https://accountid_test.apiUrl_test/"
         )
 
 

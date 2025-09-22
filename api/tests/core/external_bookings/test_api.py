@@ -72,8 +72,7 @@ class InstantiateCinemaApiClientTest:
         assert isinstance(client_api, CineDigitalServiceAPI)
         assert client_api.cinema_id == "test_id"
         assert client_api.token == "test_token"
-        assert client_api.account_id == "test_account"
-        assert client_api.api_url == "test_cds_url/vad/"
+        assert client_api.base_url == "https://test_account.test_cds_url/vad/"
 
     def test_should_raise_an_exception_if_no_cds_details_provided_when_required(self) -> None:
         cds_provider = get_provider_by_local_class("CDSStocks")

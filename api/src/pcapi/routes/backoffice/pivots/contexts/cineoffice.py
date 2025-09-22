@@ -5,9 +5,8 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi import settings
-from pcapi.connectors import cine_digital_service
 from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
@@ -110,12 +109,8 @@ class CineofficeContext(PivotContext):
     @classmethod
     def check_if_api_call_is_ok(cls, account_id: str, api_token: str) -> None:
         try:
-            cine_digital_service.get_resource(
-                api_url=settings.CDS_API_URL,
-                account_id=account_id,
-                cinema_api_token=api_token,
-                resource=cine_digital_service.ResourceCDS.RATING,
-            )
+            client = CineDigitalServiceAPI(cinema_id="", account_id=account_id, cinema_api_token=api_token)
+            client.get_rating()
             flash("Connexion à l'API OK.", "success")
             return
         except (requests.exceptions.RequestException, cds_exceptions.CineDigitalServiceAPIException) as exc:
