@@ -587,8 +587,7 @@ def edit_product(body: products_serializers.ProductOfferEdition) -> serializatio
     """
     Update Product Offer
 
-    Will update only the non-blank fields.
-    If you want to keep the current value of certains fields, leave them `undefined`.
+    Will update only the non-blank fields. If you want some fields to keep their current values, leave them `undefined`.
     """
     query = utils.retrieve_offer_query(body.offer_id)
     query = utils.retrieve_offer_relations_query(query)
