@@ -14,10 +14,10 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.utils.date as utils_date
 from pcapi import settings
 from pcapi.connectors import thumb_storage
-from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.external_bookings.cds.serializers import MediaCDS
+from pcapi.core.external_bookings.cds.serializers import ShowCDS
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
