@@ -12,7 +12,6 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -88,10 +87,6 @@ export const UsefulInformationForm = ({
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
-  const isOfferSubcategoryOnline = getIsOfferSubcategoryOnline(
-    offer,
-    subCategories
-  )
 
   const readOnlyFields = hasPublishedOfferWithSameEan
     ? Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
@@ -100,7 +95,7 @@ export const UsefulInformationForm = ({
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
   const displayWithdrawalReminder =
-    !offerSubCategory?.isEvent && !isOfferSubcategoryOnline
+    !offerSubCategory?.isEvent && !offer.isDigital
 
   if (!selectedVenue) {
     return <Spinner />
@@ -108,7 +103,7 @@ export const UsefulInformationForm = ({
 
   return (
     <>
-      {!isOfferSubcategoryOnline && (
+      {!offer.isDigital && (
         <FormLayout.Section title="Où profiter de l’offre ?">
           <OfferLocation
             venue={selectedVenue}
@@ -197,7 +192,7 @@ export const UsefulInformationForm = ({
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
             description={
-              isOfferSubcategoryOnline
+              offer.isDigital
                 ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
                 : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
             }

@@ -19,7 +19,6 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
 import { useSaveOfferLocation } from '../commons/hooks/useSaveOfferLocation'
@@ -49,11 +48,6 @@ export const IndividualOfferLocationScreen = ({
   const [isUpdateWarningDialogOpen, setIsUpdateWarningDialogOpen] =
     useState(false)
 
-  const isOfferSubcategoryOnline = getIsOfferSubcategoryOnline(
-    offer,
-    subCategories
-  )
-
   const offerVenue = venues.find(
     (v) => v.id.toString() === offer.venue.id.toString()
   )
@@ -71,10 +65,9 @@ export const IndividualOfferLocationScreen = ({
   )
 
   const validationSchema = getValidationSchema({
-    isOfferSubcategoryOnline,
+    isDigital: offer.isDigital,
   })
   const initialValues = getInitialValuesFromOffer(offer, {
-    isOfferSubcategoryOnline,
     offerVenue,
   })
   const form = useForm({

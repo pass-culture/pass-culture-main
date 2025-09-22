@@ -662,8 +662,7 @@ describe('IndividualOfferSummaryScreen', () => {
               postalCode: '1',
             }),
           },
-          // This is the condition determining if the venue address is displayed
-          isDigital: false, // TODO (igabriele, 2025-08-08): will be replaced by `isOfferSubcategoryOnline`.
+          isDigital: false,
           subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
           url: null,
         },
@@ -703,8 +702,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           address: null,
-          // This is the condition determining if the venue address is displayed
-          isDigital: false, // TODO (igabriele, 2025-08-08): will be replaced by `isOfferSubcategoryOnline`.
+          isDigital: false,
           subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
         },
       }
