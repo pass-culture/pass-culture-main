@@ -141,7 +141,7 @@ class CDSStocks(LocalProvider):
             if self.movie_information.duration:
                 offer.durationMinutes = self.movie_information.duration
             offer.extraData = offer._extraData or offers_models.OfferExtraData()
-            offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visanumber
+            offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visanumber  # type: ignore[index,union-attr]
 
         offer.product = self.product
 

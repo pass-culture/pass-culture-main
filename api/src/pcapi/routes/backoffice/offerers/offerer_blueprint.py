@@ -1099,10 +1099,8 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
     collective_dms_applications = (
         db.session.query(educational_models.CollectiveDmsApplication)
         .filter(
-            educational_models.CollectiveDmsApplication.siren
-            == sa.select(offerers_models.Offerer.siren)
-            .filter(offerers_models.Offerer.id == offerer_id)
-            .scalar_subquery()
+            sa.select(offerers_models.Offerer.siren).filter(offerers_models.Offerer.id == offerer_id).scalar_subquery()
+            == educational_models.CollectiveDmsApplication.siren
         )
         .options(
             sa_orm.load_only(

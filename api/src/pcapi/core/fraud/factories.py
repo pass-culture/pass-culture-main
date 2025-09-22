@@ -157,7 +157,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     dateCreated = factory.LazyFunction(datetime.utcnow)
 
     @factory.lazy_attribute
-    def eligibilityType(  # type: ignore[misc]
+    def eligibilityType(
         obj: models.BeneficiaryFraudCheck,
     ) -> users_models.EligibilityType:
         if obj.dateCreated >= settings.CREDIT_V3_DECREE_DATETIME:

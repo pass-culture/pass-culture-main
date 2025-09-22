@@ -54,7 +54,7 @@ def _apply_query_filters(
     if dms_adage_status:
         query = query.join(
             educational_models.CollectiveDmsApplication,
-            educational_models.CollectiveDmsApplication.siren == offerers_models.Offerer.siren,
+            offerers_models.Offerer.siren == educational_models.CollectiveDmsApplication.siren,
         ).filter(
             educational_models.CollectiveDmsApplication.state.in_(
                 [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
@@ -263,7 +263,7 @@ def list_offerers_to_be_validated(
         .outerjoin(
             offerers_models.Venue, offerers_models.Venue.siret == educational_models.CollectiveDmsApplication.siret
         )
-        .filter(educational_models.CollectiveDmsApplication.siren == offerers_models.Offerer.siren)
+        .filter(offerers_models.Offerer.siren == educational_models.CollectiveDmsApplication.siren)
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
     )

@@ -112,7 +112,7 @@ class BoostStocks(LocalProvider):
 
             offer.extraData = offer._extraData or offers_models.OfferExtraData()
             if movie_information.numVisa != 0:
-                offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)
+                offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)  # type: ignore[index,union-attr]
 
         offer.product = self.product
 
