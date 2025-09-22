@@ -198,6 +198,24 @@ class AuthenticatedGetTest:
         )
 
 
+class InvalidateJWTTokenTest:
+    def test_should_invalidate_token_and_unset_it(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="old-token",
+        )
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        response_json = {"code": 200, "message": "OK"}
+        requests_mock.post("https://cinema.example.com/api/vendors/logout", json=response_json)
+
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
+        boost.invalidate_jwt_token()
+
+        assert requests_mock.last_request.headers["Authorization"] == "Bearer old-token"
+        assert not cinema_details.token
+        assert not cinema_details.tokenExpirationDate
+
+
 class GetShowtimesTest:
     @time_machine.travel("2025-09-17", tick=False)
     def test_should_return_showtimes(self, caplog, requests_mock):
