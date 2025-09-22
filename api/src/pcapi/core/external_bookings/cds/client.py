@@ -8,7 +8,6 @@ from operator import attrgetter
 
 from pydantic.v1.tools import parse_obj_as
 
-import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
@@ -23,6 +22,7 @@ from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
+from . import serializers as cds_serializers
 
 
 logger = logging.getLogger(__name__)

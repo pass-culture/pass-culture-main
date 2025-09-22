@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
-from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
+from pcapi.core.external_bookings.cds.serializers import IdObjectCDS
+from pcapi.core.external_bookings.cds.serializers import MediaCDS
+from pcapi.core.external_bookings.cds.serializers import ShowCDS
+from pcapi.core.external_bookings.cds.serializers import ShowTariffCDS
+from pcapi.core.external_bookings.cds.serializers import ShowsMediaoptionsCDS
 
 
 MOVIE_1 = MediaCDS(

@@ -7,10 +7,10 @@ from unittest.mock import patch
 import pytest
 import time_machine
 
-import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.users.factories as users_factories
+from pcapi.core.external_bookings.cds import serializers as cds_serializers
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 
 
