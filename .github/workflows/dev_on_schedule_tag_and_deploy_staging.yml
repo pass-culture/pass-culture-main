@@ -55,12 +55,7 @@ jobs:
           fi
           commit_hash=$(git rev-list -n 1 "$rc_tag")
           echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
-      - name: Checkout RC commit
-        # Checkout on tag to have a nice deployment reference 
-        uses: actions/checkout@v4
-        with:
-          ref: v${{ steps.rc_commit.outputs.commitHash }}
-
+      
   beginning-slack-notification:
     name: "Send workflow beginning notification"
     needs: "get-version-and-trigger-release"
