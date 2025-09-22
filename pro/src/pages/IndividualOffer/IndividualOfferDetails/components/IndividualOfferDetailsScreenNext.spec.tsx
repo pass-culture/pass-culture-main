@@ -34,7 +34,6 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -289,9 +288,6 @@ describe('IndividualOfferDetailsScreenNext', () => {
     ).toBeInTheDocument()
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
-    ).toBeInTheDocument()
-    expect(
-      await screen.findByRole('heading', { name: 'Illustrez votre offre' })
     ).toBeInTheDocument()
     expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
@@ -690,23 +686,6 @@ describe('IndividualOfferDetailsScreenNext', () => {
     })
   })
 
-  describe('about image', () => {
-    it('should log an event when an image is uploaded (drag or selected)', async () => {
-      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-        logEvent: mockLogEvent,
-      }))
-      renderDetailsScreen({ contextValue })
-
-      const imageInput = screen.getByLabelText('Importez une image')
-      await userEvent.upload(imageInput, new File(['fake img'], 'fake_img.jpg'))
-
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
-        imageType: UploaderModeEnum.OFFER,
-        imageCreationStage: 'add image',
-      })
-    })
-  })
-
   it('should display first venue banner when venues are empty', () => {
     renderDetailsScreen({
       props: {
@@ -823,16 +802,9 @@ describe('IndividualOfferDetailsScreenNext', () => {
           const inputName = screen.getByRole('textbox', {
             name: nameInputLabel,
           })
-          const image = screen.getByTestId('image-preview')
           expect(inputName).toHaveValue(productData.name)
-          expect(image).toHaveAttribute('src', productData.images.recto)
-          // Inputs are disabled and image cannot be changed.
+          // Name input is disabled.
           expect(inputName).toBeDisabled()
-          const imageEditLabel = /Ajouter une image/
-          const imageEditButton = screen.queryByRole('button', {
-            name: imageEditLabel,
-          })
-          expect(imageEditButton).not.toBeInTheDocument()
         })
 
         it('should reset the prefilled form when EAN search is cleared', async () => {
@@ -1130,73 +1102,6 @@ describe('IndividualOfferDetailsScreenNext', () => {
       expect(
         screen.queryByText(/Scanner ou rechercher un produit par EAN/)
       ).not.toBeInTheDocument()
-    })
-
-    it('should let update an image for synchronized offers', async () => {
-      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
-      vi.spyOn(
-        imageUploadModule,
-        'useIndividualOfferImageUpload'
-      ).mockReturnValue({
-        displayedImage: { url: 'my url', credit: null },
-        hasUpsertedImage: false,
-        onImageDelete: vi.fn(),
-        onImageUpload: vi.fn(),
-        handleEanImage: vi.fn(),
-        handleImageOnSubmit: mockHandleImageOnSubmit,
-      })
-
-      const context = individualOfferContextValuesFactory({
-        categories: MOCK_DATA.categories,
-        subCategories: MOCK_DATA.subCategories,
-        offer: getIndividualOfferFactory({
-          productId: null,
-          lastProvider: { name: 'My awesome api' },
-          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
-        }),
-      })
-
-      renderDetailsScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.EDITION,
-      })
-      await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-      expect(api.patchDraftOffer).not.toHaveBeenCalledOnce()
-      expect(mockHandleImageOnSubmit).toHaveBeenCalled()
-    })
-
-    it('should not let update an image for product-based offers', async () => {
-      const mockHandleImageOnSubmit = vi.fn().mockResolvedValue(undefined)
-      vi.spyOn(
-        imageUploadModule,
-        'useIndividualOfferImageUpload'
-      ).mockReturnValue({
-        displayedImage: { url: 'my url', credit: null },
-        hasUpsertedImage: false,
-        onImageDelete: vi.fn(),
-        onImageUpload: vi.fn(),
-        handleEanImage: vi.fn(),
-        handleImageOnSubmit: mockHandleImageOnSubmit,
-      })
-
-      const context = individualOfferContextValuesFactory({
-        categories: MOCK_DATA.categories,
-        subCategories: MOCK_DATA.subCategories,
-        offer: getIndividualOfferFactory({
-          productId: 1,
-          subcategoryId: 'physicalBis' as SubcategoryIdEnum,
-        }),
-      })
-
-      renderDetailsScreen({
-        contextValue: context,
-        mode: OFFER_WIZARD_MODE.EDITION,
-      })
-
-      await userEvent.click(screen.getByText('Enregistrer les modifications'))
-
-      expect(mockHandleImageOnSubmit).not.toHaveBeenCalled()
     })
 
     it('should display categories and subcategories as disabled', () => {

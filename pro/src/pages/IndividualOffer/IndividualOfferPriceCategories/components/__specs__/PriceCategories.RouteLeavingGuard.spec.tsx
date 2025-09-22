@@ -126,18 +126,6 @@ describe('PriceCategories', () => {
     ).toBeInTheDocument()
   })
 
-  it('should let going to information when clicking on previous step in creation', async () => {
-    renderPriceCategories({
-      props: { offer: getIndividualOfferFactory() },
-    })
-
-    await userEvent.click(screen.getByText('Retour'))
-
-    expect(
-      screen.getByText('There is the informations route content')
-    ).toBeInTheDocument()
-  })
-
   it('should let going to stock when form has been filled in creation', async () => {
     renderPriceCategories({ props: { offer: getIndividualOfferFactory() } })
     await userEvent.type(
