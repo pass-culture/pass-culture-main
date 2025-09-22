@@ -12,12 +12,12 @@ const isAnyTrue = (values: Record<string, boolean>): boolean =>
 
 export const getValidationSchema = ({
   conditionalFields,
-  isOfferOnline,
+  isDigital,
 }: {
   conditionalFields: string[]
-  isOfferOnline: boolean
+  isDigital: boolean
 }) => {
-  const maybeLocationSchema = isOfferOnline ? {} : { ...locationSchema }
+  const maybeLocationSchema = isDigital ? {} : { ...locationSchema }
 
   return yup.object<UsefulInformationFormValues>().shape({
     accessibility: yup

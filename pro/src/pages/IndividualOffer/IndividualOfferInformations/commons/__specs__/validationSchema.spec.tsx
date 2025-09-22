@@ -5,7 +5,7 @@ import { getValidationSchema } from '../validationSchema'
 
 describe('getValidationSchema', () => {
   const baseParams = {
-    isOfferOnline: false,
+    isDigital: false,
   }
 
   const validInformationFormValuesBase: UsefulInformationFormValues = {
@@ -162,7 +162,7 @@ describe('getValidationSchema', () => {
       const virtualSchema = getValidationSchema({
         ...baseParams,
         conditionalFields: [],
-        isOfferOnline: true,
+        isDigital: true,
       })
       await expect(
         virtualSchema.validate({

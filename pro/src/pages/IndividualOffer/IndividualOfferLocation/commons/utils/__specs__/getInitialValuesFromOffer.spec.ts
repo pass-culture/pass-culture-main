@@ -17,10 +17,10 @@ describe('getInitialValuesFromOffer', () => {
     offerVenue: makeVenueListItem({}),
   }
 
-  describe('when offer subcategory is offline', () => {
+  describe('when offer subcategory is not digital', () => {
     const paramsWithOfflineSubcategory = {
       ...paramsBase,
-      isOfferSubcategoryOnline: false,
+      isDigital: false,
     }
 
     describe('when offer has an address', () => {
@@ -40,6 +40,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             longitude: 2.348979,
           },
+          isDigital: false,
         }
 
         const addressAutocomplete = computeAddressDisplayName(
@@ -90,6 +91,7 @@ describe('getInitialValuesFromOffer', () => {
             latitude: 48.85332,
             longitude: 2.348979,
           },
+          isDigital: false,
         }
         const params = {
           ...paramsWithOfflineSubcategory,
@@ -188,48 +190,31 @@ describe('getInitialValuesFromOffer', () => {
     })
   })
 
-  describe('when offer subcategory is online', () => {
-    const paramsWithOnlineSubcategory = {
-      ...paramsBase,
-      isOfferSubcategoryOnline: true,
+  it('should NOT include offer address when the offer is digital', () => {
+    const mockOfferWithAddress = {
+      ...offerBase,
+      address: {
+        id: 1,
+        id_oa: 997,
+        banId: '35288_7283_00001',
+        inseeCode: '89001',
+        label: 'Bureau',
+        city: 'Paris',
+        street: '3 rue de Valois',
+        postalCode: '75001',
+        isManualEdition: true,
+        latitude: 48.85332,
+        longitude: 2.348979,
+      },
+      url: 'https://passculture.app',
+      isDigital: true,
     }
 
-    it('should NOT include offer address', () => {
-      const mockOfferWithAddress = {
-        ...offerBase,
-        address: {
-          id: 1,
-          id_oa: 997,
-          banId: '35288_7283_00001',
-          inseeCode: '89001',
-          label: 'Bureau',
-          city: 'Paris',
-          street: '3 rue de Valois',
-          postalCode: '75001',
-          isManualEdition: true,
-          latitude: 48.85332,
-          longitude: 2.348979,
-        },
-        url: 'https://passculture.app',
-      }
+    const result = getInitialValuesFromOffer(mockOfferWithAddress, paramsBase)
 
-      const result = getInitialValuesFromOffer(
-        mockOfferWithAddress,
-        paramsWithOnlineSubcategory
-      )
-
-      expect(result).toMatchObject({
-        address: null,
-        url: 'https://passculture.app',
-      })
-    })
-
-    it('should include a valid url when online', () => {
-      const result = getInitialValuesFromOffer(
-        { ...offerBase, url: 'https://passculture.app' },
-        paramsWithOnlineSubcategory
-      )
-      expect(result.url).toBe('https://passculture.app')
+    expect(result).toMatchObject({
+      address: null,
+      url: 'https://passculture.app',
     })
   })
 
@@ -237,7 +222,7 @@ describe('getInitialValuesFromOffer', () => {
     const offer = { ...offerBase, address: undefined }
     const params = {
       offerVenue: makeVenueListItem({ address: undefined }),
-      isOfferSubcategoryOnline: false,
+      isDigital: false,
     }
 
     const result = getInitialValuesFromOffer(offer, params)

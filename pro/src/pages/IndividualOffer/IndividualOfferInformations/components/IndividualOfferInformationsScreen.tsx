@@ -27,7 +27,6 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { serializePatchOffer } from '@/pages/IndividualOffer/IndividualOfferInformations/commons/serializers'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -87,7 +86,7 @@ export const IndividualOfferInformationsScreen = ({
 
   const validationSchema = getValidationSchema({
     conditionalFields,
-    isOfferOnline: getIsOfferSubcategoryOnline(offer, subCategories),
+    isDigital: offer.isDigital,
   })
 
   const initialValues = getInitialValuesFromOffer(offer, {
