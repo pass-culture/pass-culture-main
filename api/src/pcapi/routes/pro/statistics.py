@@ -39,11 +39,11 @@ def get_statistics(query: StatisticsQueryModel) -> StatisticsModel:
     ) = []
     venues_have_individual, venues_have_collective = venues_have_individual_and_collective_offers(venue_ids)
     if not venues_have_individual:
-        results = clickhouse_queries.AggregatedCollectiveRevenueQuery().execute(tuple(venue_ids))
+        results = clickhouse_queries.AggregatedCollectiveRevenueQuery().execute({"venue_ids": tuple(venue_ids)})
     elif not venues_have_collective:
-        results = clickhouse_queries.AggregatedIndividualRevenueQuery().execute(tuple(venue_ids))
+        results = clickhouse_queries.AggregatedIndividualRevenueQuery().execute({"venue_ids": tuple(venue_ids)})
     else:
-        results = clickhouse_queries.AggregatedTotalRevenueQuery().execute(tuple(venue_ids))
+        results = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": tuple(venue_ids)})
 
     income_by_year = _aggregate_revenues_by_year(results)
     return StatisticsModel(income_by_year=income_by_year)
