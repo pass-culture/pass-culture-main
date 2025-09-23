@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 
 import pytest
 
@@ -78,6 +79,7 @@ class GetBookingsTest:
             displayAsEnded=True,
             dateUsed=datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
             stock__features=["VO"],
             stock__offer__extraData=None,
             cancellation_limit_date=datetime(2023, 3, 2),
@@ -139,7 +141,7 @@ class GetBookingsTest:
                 "beginningDatetime": None,
                 "features": ["VO"],
                 "id": used2.stock.id,
-                "price": used2.stock.price * 100,
+                "price": Decimal(used2.stock.price * 100),
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
@@ -155,11 +157,11 @@ class GetBookingsTest:
                         "timezone": used2.venue.offererAddress.address.timezone,
                     },
                     "bookingContact": None,
-                    "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
+                    "subcategoryId": subcategories.ABO_LIVRE_NUMERIQUE.id,
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},
-                    "hasUrl": True,
+                    "isDigital": True,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
