@@ -263,7 +263,7 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel4": gtl_code_4,
                 "headlinesCount": headlines_count or None,
                 "indexedAt": datetime.datetime.utcnow().isoformat(),
-                "isDigital": offer.isDigital,
+                "hasUrl": offer.hasUrl,
                 "isDuo": offer.isDuo,
                 "isEducational": False,
                 "isEvent": offer.isEvent,

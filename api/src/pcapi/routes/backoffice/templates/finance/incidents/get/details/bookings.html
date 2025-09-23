@@ -56,7 +56,7 @@
               {% endif %}
               <p class="mb-1">
                 <span class="fw-bold">Type d'offre :</span>
-                {% if booking_finance_incident.booking.stock.offer.isDigital %}
+                {% if booking_finance_incident.booking.stock.offer.hasUrl %}
                   Numérique
                 {% else %}
                   Physique

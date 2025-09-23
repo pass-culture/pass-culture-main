@@ -7,7 +7,7 @@ def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
     venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
     assert venue is not None  # helps mypy below
 
-    if offer.isDigital:
+    if offer.hasUrl:
         if offer.subcategory.is_offline_only:
             api_errors.add_error(
                 "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"

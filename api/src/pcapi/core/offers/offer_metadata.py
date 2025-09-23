@@ -73,7 +73,7 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         "@type": "Event",
     }
 
-    if offer.isDigital:
+    if offer.hasUrl:
         event_metadata["eventAttendanceMode"] = "OnlineEventAttendanceMode"
     else:
         event_metadata["eventAttendanceMode"] = "OfflineEventAttendanceMode"

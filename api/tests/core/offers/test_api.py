@@ -2008,10 +2008,10 @@ class UpdateOfferTest:
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
-    @pytest.mark.parametrize("isDigital", [True, False])
-    def test_offer_update_accordingly_of_its_digitalness(self, isDigital):
+    @pytest.mark.parametrize("hasUrl", [True, False])
+    def test_offer_update_accordingly_of_its_digitalness(self, hasUrl):
         kwargs = {}
-        if isDigital:
+        if hasUrl:
             kwargs["isVirtual"] = True
             kwargs["offererAddress"] = None
             kwargs["siret"] = None
@@ -2020,11 +2020,11 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             offererAddress=None,
             venue=venue,
-            url="http://example.com" if isDigital else None,
-            subcategoryId=subcategories.VOD.id if isDigital else subcategories.SPECTACLE_REPRESENTATION.id,
+            url="http://example.com" if hasUrl else None,
+            subcategoryId=subcategories.VOD.id if hasUrl else subcategories.SPECTACLE_REPRESENTATION.id,
         )
         body = offers_schemas.UpdateOffer(name="New name", offererAddress=offerer_address)
-        if isDigital:
+        if hasUrl:
             with pytest.raises(api_errors.ApiErrors) as error:
                 api.update_offer(offer, body)
                 assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]

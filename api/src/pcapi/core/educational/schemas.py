@@ -82,7 +82,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     durationMinutes: int | None = Field(description="Offer's duration in minutes")
     expirationDate: datetime.datetime | None = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
-    isDigital: bool = Field(description="If true the event is accessed digitally")
+    hasUrl: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
     numberOfTickets: int | None = Field(description="Number of tickets")
