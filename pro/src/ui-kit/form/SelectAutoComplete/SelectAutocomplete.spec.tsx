@@ -46,12 +46,12 @@ describe('SelectAutocomplete', () => {
 
   it('should display field', () => {
     render(<SelectAutocomplete {...props} />)
-    expect(screen.getByLabelText('Département *')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
   })
 
   it('should toggle the options panel', async () => {
     render(<SelectAutocomplete {...props} />)
-    await userEvent.type(screen.getByLabelText('Département *'), ' ')
+    await userEvent.type(screen.getByRole('combobox'), ' ')
 
     await userEvent.click(
       screen.getByRole('img', { name: 'Masquer les options' })
@@ -73,13 +73,13 @@ describe('SelectAutocomplete', () => {
 
     it('should open and display all options when the user focuses on the field', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.click(screen.getByLabelText('Département *'))
+      await userEvent.click(screen.getByRole('combobox'))
       expect(screen.getByTestId('list').children).toHaveLength(15)
     })
 
     it('should close and hide all options when the user triggers the close arrow button', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.click(screen.getByLabelText('Département *'))
+      await userEvent.click(screen.getByRole('combobox'))
       await userEvent.click(
         screen.getByRole('img', { name: 'Masquer les options' })
       )
@@ -93,7 +93,7 @@ describe('SelectAutocomplete', () => {
           <SelectAutocomplete {...props} />
         </>
       )
-      await userEvent.click(screen.getByLabelText('Département *'))
+      await userEvent.click(screen.getByRole('combobox'))
       await userEvent.click(
         await screen.findByRole('button', { name: 'Outside' })
       )
@@ -102,7 +102,7 @@ describe('SelectAutocomplete', () => {
 
     it('should replace single option', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.click(screen.getByLabelText('Département *'))
+      await userEvent.click(screen.getByRole('combobox'))
       const list = screen.getByTestId('list')
       await userEvent.click(await within(list).findByText('Aveyron'))
       expect(screen.queryByTestId('select')).toHaveValue('12')
@@ -112,7 +112,7 @@ describe('SelectAutocomplete', () => {
   describe('filter', () => {
     it('should filter options when the user types in the field', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.type(screen.getByLabelText('Département *'), 'al')
+      await userEvent.type(screen.getByRole('combobox'), 'al')
       expect(screen.getByTestId('list').children).toHaveLength(
         [
           'Allier',
@@ -130,7 +130,7 @@ describe('SelectAutocomplete', () => {
       delete propsWithoutFilterFunction.searchInOptions
 
       render(<SelectAutocomplete {...props} />)
-      await userEvent.type(screen.getByLabelText('Département *'), 'al')
+      await userEvent.type(screen.getByRole('combobox'), 'al')
       expect(screen.getByTestId('list').children).toHaveLength(
         [
           'Allier',
@@ -145,10 +145,7 @@ describe('SelectAutocomplete', () => {
 
     it('should warn that there are no results', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.type(
-        screen.getByLabelText('Département *'),
-        'pas dans la liste'
-      )
+      await userEvent.type(screen.getByRole('combobox'), 'pas dans la liste')
       expect(await screen.findByText(/Aucun résultat/)).toBeInTheDocument()
     })
   })
@@ -156,7 +153,7 @@ describe('SelectAutocomplete', () => {
   describe('keys', () => {
     it('should close the options panel when the Tab key is pressed', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.type(screen.getByLabelText('Département *'), ' ')
+      await userEvent.type(screen.getByRole('combobox'), ' ')
       expect(screen.getByTestId('list').children).toHaveLength(15)
       await userEvent.tab()
 
@@ -165,7 +162,7 @@ describe('SelectAutocomplete', () => {
 
     it('should close the options panel when the Escape key is pressed', async () => {
       render(<SelectAutocomplete {...props} />)
-      const inputContainer = screen.getByLabelText('Département *')
+      const inputContainer = screen.getByRole('combobox')
       await userEvent.type(inputContainer, ' ')
       expect(screen.getByTestId('list').children).toHaveLength(15)
       fireEvent.keyDown(inputContainer, {
@@ -180,7 +177,7 @@ describe('SelectAutocomplete', () => {
 
     it('should browse through the options with the keyboard when dropdown is open', async () => {
       render(<SelectAutocomplete {...props} />)
-      await userEvent.click(screen.getByLabelText('Département *'))
+      await userEvent.click(screen.getByRole('combobox'))
 
       expect(screen.getByTestId('list').children).toHaveLength(15)
 
@@ -188,7 +185,7 @@ describe('SelectAutocomplete', () => {
       await user.keyboard('{ArrowDown}{ArrowDown}{ArrowUp}{ArrowDown}')
       await user.keyboard('{Enter}')
 
-      expect(screen.getByLabelText('Département *')).toHaveValue('Aisne')
+      expect(screen.getByRole('combobox')).toHaveValue('Aisne')
     })
   })
 
@@ -201,7 +198,7 @@ describe('SelectAutocomplete', () => {
     )
     const user = userEvent.setup()
 
-    const input = screen.getByLabelText('Département *')
+    const input = screen.getByRole('combobox')
     await user.type(input, 'Aisne')
 
     const option = (
@@ -228,7 +225,7 @@ describe('SelectAutocomplete', () => {
     )
     const user = userEvent.setup()
 
-    const input = screen.getByLabelText('Département *')
+    const input = screen.getByRole('combobox')
     await user.type(input, 'Paris')
     await user.tab()
 
@@ -256,8 +253,8 @@ describe('SelectAutocomplete', () => {
         }}
       />
     )
-    await userEvent.click(screen.getByLabelText('Département *'))
+    await userEvent.click(screen.getByRole('combobox'))
 
-    expect(screen.getByLabelText('Département *')).toHaveValue('Aisne')
+    expect(screen.getByRole('combobox')).toHaveValue('Aisne')
   })
 })

@@ -2,11 +2,12 @@
 import type React from 'react'
 import { useState } from 'react'
 
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 
 import styles from './Icons.module.scss'
 import { fullIcons, otherIcons, strokeIcons } from './iconsList'
+import { TextInput } from '@/design-system/TextInput/TextInput'
 
 const fuzzyMatch = (pattern: string, str: string) => {
   pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
@@ -22,8 +23,6 @@ const iconsSections = [
 
 export const Icons = () => {
   const [searchInput, setSearchInput] = useState('')
-  const [fillColorInput, setFillColorInput] = useState('#000000')
-  const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff')
 
   const onClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.persist()
@@ -41,26 +40,12 @@ export const Icons = () => {
   return (
     <div className={styles['icon-stories']}>
       <div className={styles['search-input-container']}>
-        <BaseInput
+        <TextInput
           name="search"
+          label='Rechercher une icon'
+          icon={strokeSearchIcon}
           onChange={(event) => setSearchInput(event.target.value)}
           value={searchInput}
-        />
-
-        <BaseInput
-          type="color"
-          name="fillColor"
-          onChange={(event) => setFillColorInput(event.target.value)}
-          value={fillColorInput}
-          className={styles['color-input']}
-        />
-
-        <BaseInput
-          type="color"
-          name="backgroundColor"
-          onChange={(event) => setBackgroundColorInput(event.target.value)}
-          value={backgroundColorInput}
-          className={styles['color-input']}
         />
       </div>
 
@@ -105,11 +90,6 @@ export const Icons = () => {
                         alt={icon.src}
                         viewBox={icon.viewBox}
                         className={styles['icon']}
-                        style={{
-                          fill: fillColorInput,
-                          color: fillColorInput,
-                          backgroundColor: backgroundColorInput,
-                        }}
                       />
                     </div>
 

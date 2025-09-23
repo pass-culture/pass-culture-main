@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import type React from 'react'
 import {
   forwardRef,
@@ -8,7 +9,6 @@ import {
   useState,
 } from 'react'
 
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
@@ -56,6 +56,7 @@ export const PhoneNumberInput = forwardRef<
     ref
   ) => {
     const formatId = useId()
+    const inputId = useId()
 
     const defaultPrefix = PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
 
@@ -95,7 +96,7 @@ export const PhoneNumberInput = forwardRef<
       }
     }
 
-    // When <BaseInput> changes, combine prefix and phone number and notify the change up
+    // When input changes, combine prefix and phone number and notify the change up
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newPhoneNumber = e.target.value
       setPhoneNumber(newPhoneNumber)
@@ -158,19 +159,20 @@ export const PhoneNumberInput = forwardRef<
             onChange={handlePrefixChange}
             onBlur={handleBlur}
           />
-
-          <label htmlFor={name} className={styles['visually-hidden']}>
+          <label htmlFor={inputId} className={styles['visually-hidden']}>
             Numéro de téléphone
           </label>
-          <BaseInput
+          <input
             disabled={disabled}
-            hasError={!!error}
             type="text"
             name={name}
             value={phoneNumber}
             onChange={handleNumberChange}
             onBlur={handleBlur}
-            className={styles['phone-number-input']}
+            id={inputId}
+            className={classNames(styles['phone-number-input'], {
+              [styles['has-error']]: Boolean(error),
+            })}
             autoComplete="tel-national"
             maxLength={maxLength}
             aria-describedby={formatId}

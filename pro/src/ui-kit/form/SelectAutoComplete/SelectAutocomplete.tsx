@@ -1,4 +1,4 @@
-import cx from 'classnames'
+import classNames from 'classnames'
 import {
   type ForwardedRef,
   forwardRef,
@@ -10,7 +10,6 @@ import {
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { noop } from '@/commons/utils/noop'
-import { BaseInput } from '@/ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { OptionsList } from './OptionsList/OptionsList'
@@ -294,8 +293,9 @@ export const SelectAutocomplete = forwardRef(
         showError={!!error}
         description={description}
       >
+        {/** biome-ignore lint/a11y/noStaticElementInteractions: Seems to be the only solution for this pattern */}
         <div
-          className={cx(
+          className={classNames(
             styles['multi-select-autocomplete-container'],
             className
           )}
@@ -303,19 +303,24 @@ export const SelectAutocomplete = forwardRef(
           ref={containerRef}
         >
           {/* Search field */}
-          <BaseInput
+          <input
             {...(hoveredOptionIndex !== null && {
               'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
             })}
             onClick={openDropdown}
             onFocus={openDropdown}
-            className={styles['multi-select-autocomplete-placeholder-input']}
-            hasError={!!error}
+            className={classNames(
+              styles['multi-select-autocomplete-placeholder-input'],
+              {
+                [styles['has-error']]: Boolean(error),
+              }
+            )}
             type="search"
             disabled={disabled}
             aria-autocomplete="list"
             aria-controls={`list-${name}`}
             aria-describedby={`help-${name}`}
+            id={name}
             aria-expanded={isDropdownOpen}
             aria-haspopup="listbox"
             aria-required={!isOptional}

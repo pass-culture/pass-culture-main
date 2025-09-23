@@ -1,6 +1,5 @@
 import type { StoryObj } from '@storybook/react'
 
-import { BaseInput } from '../BaseInput/BaseInput'
 import { FieldLayout } from './FieldLayout'
 
 export default {
@@ -18,6 +17,6 @@ export const Default: StoryObj<typeof FieldLayout> = {
     count: 10,
     maxLength: 100,
     isOptional: true,
-    children: <BaseInput type="text" />,
+    children: <input type="text" />,
   },
 }
