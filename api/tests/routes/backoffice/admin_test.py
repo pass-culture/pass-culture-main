@@ -742,11 +742,11 @@ class ListUserProfileRefreshCampaignTest(GetEndpointWithoutPermissionHelper):
         assert {r["Id"] for r in rows} == {str(campaign1.id), str(campaign2.id)}
 
         row1 = [r for r in rows if r["Id"] == str(campaign1.id)][0]
-        assert row1["Date de début"] == "2026-01-01 01:01:00"
+        assert row1["Date de référence"] == "01/01/2026 à 02h01"
         assert row1["Active"] == "Oui"
 
         row2 = [r for r in rows if r["Id"] == str(campaign2.id)][0]
-        assert row2["Date de début"] == "2027-01-01 01:01:00"
+        assert row2["Date de référence"] == "01/01/2027 à 02h01"
         assert row2["Active"] == "Non"
 
 
@@ -861,7 +861,7 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
         assert cells[0] == "Modifier"
         assert cells[1] == str(campaign.id)
         assert cells[2] == "Oui"
-        assert cells[3] == "2027-01-01 01:01:00"
+        assert cells[3] == "01/01/2027 à 02h01"
 
         assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
         assert campaign.isActive is True
@@ -888,7 +888,7 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
         assert cells[0] == "Modifier"
         assert cells[1] == str(campaign.id)
         assert cells[2] == "Non"
-        assert cells[3] == "2026-01-01 01:01:00"
+        assert cells[3] == "01/01/2026 à 02h01"
 
         assert campaign.campaignDate == datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M")
         assert campaign.isActive is False
