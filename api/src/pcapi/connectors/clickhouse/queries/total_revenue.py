@@ -24,5 +24,5 @@ class TotalExpectedRevenueQuery(BaseQuery[TotalExpectedRevenueModel]):
             SELECT
                 ROUND(SUM(total_expected_revenue),2) as expected_revenue
             FROM analytics.yearly_aggregated_venue_revenue
-            WHERE "venue_id" in %s
+            WHERE "venue_id" in :venue_ids
         """

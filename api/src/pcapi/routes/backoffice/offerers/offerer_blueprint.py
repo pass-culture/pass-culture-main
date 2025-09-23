@@ -327,7 +327,7 @@ def get_stats_data(offerer: offerers_models.Offerer) -> utils.StatsData:
     else:
         try:
             clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
-                tuple(venue.id for venue in offerer.managedVenues)
+                {"venue_ids": tuple(venue.id for venue in offerer.managedVenues)}
             )
             stats["total_revenue"] = clickhouse_results[0].expected_revenue
         except ApiErrors:
@@ -369,7 +369,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
     if offerer.managedVenues:
         try:
             clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute(
-                tuple(venue.id for venue in offerer.managedVenues)
+                {"venue_ids": tuple(venue.id for venue in offerer.managedVenues)}
             )
             future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
             for aggregated_revenue in clickhouse_results:

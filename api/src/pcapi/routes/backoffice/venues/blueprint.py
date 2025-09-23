@@ -398,7 +398,7 @@ def get_stats_data(venue_id: int) -> utils.StatsData:
         stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
 
     try:
-        clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute((venue_id,))
+        clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute({"venue_ids": (venue_id,)})
         stats["total_revenue"] = clickhouse_results[0].expected_revenue
     except ApiErrors:
         stats["total_revenue"] = PLACEHOLDER
@@ -467,7 +467,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     try:
-        clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute((venue_id,))
+        clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": (venue_id,)})
         details: dict[str, dict] = {}
         future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
         for aggregated_revenue in clickhouse_results:
