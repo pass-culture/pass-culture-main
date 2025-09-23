@@ -78,7 +78,11 @@ def book_cinema_ticket(
 
     try:
         return client.book_ticket(show_id, booking, beneficiary)
-    except (exceptions.ExternalBookingSoldOutError, exceptions.ExternalBookingTimeoutException):
+    except (
+        exceptions.ExternalBookingSoldOutError,
+        exceptions.ExternalBookingTimeoutException,
+        exceptions.ExternalBookingNotEnoughSeatsError,
+    ):
         raise
     except Exception as exc:
         logger.warning(

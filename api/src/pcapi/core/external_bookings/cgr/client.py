@@ -3,6 +3,7 @@ import json
 import logging
 
 import pydantic.v1 as pydantic_v1
+import regex
 from zeep import Client
 from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy
@@ -14,6 +15,7 @@ from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
 from pcapi.utils import requests
@@ -27,6 +29,7 @@ from . import serializers as cgr_serializers
 logger = logging.getLogger(__name__)
 
 CGR_TIMEOUT = 10
+_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN = r"Impossible de délivrer \d places , il n'en reste que : (\d)"
 
 
 def _log_external_call(
@@ -51,6 +54,15 @@ def _log_external_call(
 def _check_response_is_ok(response: dict, resource: str) -> None:
     if response["CodeErreur"] != 0:
         error_message = response["IntituleErreur"]
+        logger.warning(
+            "[CGR] Error calling API",
+            extra={"error_code": response["CodeErreur"], "error_message": error_message},
+        )
+
+        if regex.match(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message):
+            remaining_seats = int(regex.findall(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message)[0])
+            raise ExternalBookingNotEnoughSeatsError(remaining_seats)
+
         raise CGRAPIException(f"Error on CGR API on {resource} : {error_message}")
 
 

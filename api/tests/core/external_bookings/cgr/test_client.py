@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
@@ -291,6 +292,42 @@ class BookTicketTest:
             f"<pDateLimiteAnnul>{booking.cancellationLimitDate.strftime('%Y-%m-%dT%H:%M:%S.%f')}</pDateLimiteAnnul>"
             in post_adapter.last_request.text
         )
+
+    @pytest.mark.parametrize(
+        "error_message,expected_remaining_quantity",
+        [
+            ("Impossible de délivrer 2 places , il n'en reste que : 0", 0),
+            ("Impossible de délivrer 2 places , il n'en reste que : 1", 1),
+            ("Impossible de délivrer 1 places , il n'en reste que : 0", 0),
+        ],
+    )
+    def test_should_raise_not_enough_seat_exception(self, error_message, expected_remaining_quantity, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5, stock=showtime_stock)
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_reservation_error_response_template(
+                99,  # not sure this is the actual error code for this error
+                error_message,
+            ),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        with pytest.raises(ExternalBookingNotEnoughSeatsError) as exc:
+            cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
+
+        assert exc.value.remainingQuantity == expected_remaining_quantity
 
 
 @pytest.mark.usefixtures("db_session")

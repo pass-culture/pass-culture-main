@@ -59,6 +59,27 @@ def cgr_reservation_response_template(ticket_response: dict) -> str:
         """.strip()
 
 
+def cgr_reservation_error_response_template(error_code: int, message_error: str) -> str:
+    return f"""
+       <?xml version="1.0" encoding="UTF-8"?>
+        <SOAP-ENV:Envelope
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+                <ns1:ReservationPassCultureResponse xmlns:ns1="urn:GestionCinemaWS">
+                    <ReservationPassCultureResult>
+                        {
+        json.dumps({"CodeErreur": error_code, "IntituleErreur": message_error, "QrCode": "", "Placement": ""})
+    }
+                    </ReservationPassCultureResult>
+                </ns1:ReservationPassCultureResponse>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        """.strip()
+
+
 def cgr_annulation_response_template(
     message_error: str | None = None,
     error_code: int | None = None,
