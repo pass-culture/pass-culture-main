@@ -100,7 +100,6 @@ class Returns200Test:
             "description": offer.description,
             "durationMinutes": None,
             "students": ["Lycée - Seconde"],
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",
             "hasBookingLimitDatetimesPassed": False,

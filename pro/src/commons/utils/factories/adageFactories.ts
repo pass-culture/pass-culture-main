@@ -8,7 +8,6 @@ import {
   type CollectiveOfferTemplateResponseModel,
   EacFormat,
   type EducationalInstitutionWithBudgetResponseModel,
-  OfferAddressType,
 } from '@/apiClient/adage'
 import { StudentLevels } from '@/apiClient/v1'
 
@@ -27,11 +26,6 @@ export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseMode
     isFavorite: false,
     isTemplate: true,
     name: 'Mon offre vitrine',
-    offerVenue: {
-      venueId: 1,
-      otherAddress: '',
-      addressType: OfferAddressType.OFFERER_VENUE,
-    },
     location: {
       locationType: CollectiveLocationType.ADDRESS,
       address: {
@@ -104,11 +98,6 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
   contactEmail: '',
   contactPhone: '',
   domains: [],
-  offerVenue: {
-    venueId: 1,
-    otherAddress: '',
-    addressType: OfferAddressType.OFFERER_VENUE,
-  },
   teacher: {
     firstName: 'Jean',
     lastName: 'Dupont',

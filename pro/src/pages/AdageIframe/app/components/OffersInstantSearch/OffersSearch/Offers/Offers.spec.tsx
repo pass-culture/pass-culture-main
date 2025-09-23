@@ -9,7 +9,6 @@ import {
   type CollectiveOfferResponseModel,
   EacFormat,
   type ListCollectiveOfferTemplateResponseModel,
-  OfferAddressType,
   StudentLevels,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -201,11 +200,6 @@ describe('offers', () => {
       contactEmail: '',
       contactPhone: '',
       domains: [],
-      offerVenue: {
-        venueId: 1,
-        otherAddress: '',
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['973'],
       formats: [EacFormat.CONCERT],
@@ -247,11 +241,6 @@ describe('offers', () => {
       contactEmail: '',
       contactPhone: '',
       domains: [],
-      offerVenue: {
-        venueId: 1,
-        otherAddress: '',
-        addressType: OfferAddressType.OFFERER_VENUE,
-      },
       students: [StudentLevels.COLL_GE_4E, StudentLevels.COLL_GE_3E],
       interventionArea: ['75', '92'],
       formats: [EacFormat.CONCERT],

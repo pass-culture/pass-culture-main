@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
-import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferBodyModel = {
@@ -21,7 +20,6 @@ export type PostCollectiveOfferBodyModel = {
   motorDisabilityCompliant?: boolean;
   name: string;
   nationalProgramId?: number | null;
-  offerVenue?: CollectiveOfferVenueBodyModel | null;
   students: Array<StudentLevels>;
   templateId?: number | null;
   venueId: number;

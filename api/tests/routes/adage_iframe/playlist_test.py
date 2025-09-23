@@ -6,7 +6,6 @@ from flask import url_for
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import OfferAddressType
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
@@ -83,8 +82,7 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         # fetch playlist data (1 query)
         # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        # fetch venues (1 query)
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
@@ -189,11 +187,6 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
 
         playlist_offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)
         for offer in playlist_offers[:-1]:
-            offer.offerVenue = {
-                "addressType": OfferAddressType.OFFERER_VENUE.value,
-                "otherAddress": "",
-                "venueId": offer.venueId,
-            }
             db.session.add(
                 educational_models.CollectivePlaylist(
                     type=educational_models.PlaylistType.NEW_OFFER,
@@ -205,11 +198,6 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
 
         # This item is to make sure that we issue an extended search if we have less than
         # 10 offers in the default search radius
-        playlist_offers[-1].offerVenue = {
-            "addressType": OfferAddressType.OFFERER_VENUE.value,
-            "otherAddress": "",
-            "venueId": playlist_offers[-1].venueId,
-        }
         db.session.add(
             educational_models.CollectivePlaylist(
                 type=educational_models.PlaylistType.NEW_OFFER,
@@ -232,8 +220,7 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         # fetch playlist data (1 query)
         # fetch playlist data if below 10 items (1 query)
         # fetch redactor's favorites (1 query)
-        # fetch venues (1 query)
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             response = iframe_client.get(url_for(self.endpoint))
 
             assert response.status_code == 200
@@ -245,7 +232,6 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         for idx, response_offer in enumerate(response_offers):
             assert response_offer["id"] == playlist_offers[idx].id
             assert response_offer["venue"]["distance"] == expected_distance if idx < 2 else 150
-            assert response_offer["offerVenue"]["distance"] == expected_distance if idx < 2 else 150
             assert response_offer["isFavorite"] == (
                 redactor.favoriteCollectiveOfferTemplates[0].id == response_offer["id"]
             )

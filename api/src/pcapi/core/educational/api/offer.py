@@ -139,69 +139,6 @@ class CollectiveOfferLocation:
     offerer_address: offerers_models.OffererAddress | None
 
 
-def get_offer_venue_from_location(
-    location_type: models.CollectiveLocationType | None,
-    location_comment: str | None,
-    offerer_address: offerers_models.OffererAddress | None,
-    is_venue_address: bool,
-    venue_id: int,
-) -> models.OfferVenueDict:
-    match location_type:
-        case models.CollectiveLocationType.SCHOOL:
-            return {
-                "addressType": models.OfferAddressType.SCHOOL,
-                "otherAddress": "",
-                "venueId": None,
-            }
-
-        case models.CollectiveLocationType.ADDRESS:
-            if is_venue_address:
-                return {
-                    "addressType": models.OfferAddressType.OFFERER_VENUE,
-                    "otherAddress": "",
-                    "venueId": venue_id,
-                }
-
-            if offerer_address is not None and offerer_address.address is not None:
-                other_address = offerer_address.address.fullAddress
-            else:
-                other_address = ""
-
-            return {
-                "addressType": models.OfferAddressType.OTHER,
-                "otherAddress": other_address,
-                "venueId": None,
-            }
-
-        case models.CollectiveLocationType.TO_BE_DEFINED:
-            return {
-                "addressType": models.OfferAddressType.OTHER,
-                "otherAddress": location_comment or "",
-                "venueId": None,
-            }
-
-        case _:
-            raise ValueError("Invalid location_type received")
-
-
-def get_location_values(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel, venue: offerers_models.Venue
-) -> tuple[offerers_models.OffererAddress | None, models.OfferVenueDict]:
-    address_body = offer_data.location.address
-
-    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
-
-    offer_venue = get_offer_venue_from_location(
-        location_type=offer_data.location.locationType,
-        location_comment=offer_data.location.locationComment,
-        offerer_address=offerer_address,
-        is_venue_address=address_body.isVenueAddress if address_body is not None else False,
-        venue_id=venue.id,
-    )
-
-    return offerer_address, offer_venue
-
-
 def create_collective_offer_template(
     offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
 ) -> models.CollectiveOfferTemplate:
@@ -217,7 +154,9 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
-    offerer_address, offer_venue = get_location_values(offer_data=offer_data, venue=venue)
+    offerer_address = offers_api.get_offerer_address_from_address_body(
+        address_body=offer_data.location.address, venue=venue
+    )
 
     collective_offer_template = models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -231,7 +170,7 @@ def create_collective_offer_template(
         contactPhone=offer_data.contact_phone,
         contactUrl=offer_data.contact_url,
         contactForm=offer_data.contact_form,
-        offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
+        offerVenue={},
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -287,7 +226,9 @@ def create_collective_offer(
             # if we are not creating from an offer template, we do not allow an invalid program
             raise
 
-    offerer_address, offer_venue = get_location_values(offer_data=offer_data, venue=venue)
+    offerer_address = offers_api.get_offerer_address_from_address_body(
+        address_body=offer_data.location.address, venue=venue
+    )
 
     collective_offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
@@ -300,7 +241,7 @@ def create_collective_offer(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
-        offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
+        offerVenue={},
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -389,12 +330,10 @@ def update_collective_offer_educational_institution(
     return offer
 
 
-def _get_location_and_offer_venue_from_public_model(
+def _get_location_from_public_model(
     location_body: public_api_collective_offers_serialize.CollectiveOfferLocation,
     venue: offerers_models.Venue,
-) -> tuple[CollectiveOfferLocation, models.OfferVenueDict]:
-    is_venue_address = False
-
+) -> CollectiveOfferLocation:
     match location_body:
         case public_api_collective_offers_serialize.CollectiveOfferLocationSchoolModel():
             location = CollectiveOfferLocation(
@@ -411,7 +350,6 @@ def _get_location_and_offer_venue_from_public_model(
             )
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
-            is_venue_address = True
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
@@ -435,15 +373,7 @@ def _get_location_and_offer_venue_from_public_model(
         case _:
             raise ValueError("Unexpected location body")
 
-    offer_venue = get_offer_venue_from_location(
-        location_type=location.location_type,
-        location_comment=location.location_comment,
-        offerer_address=location.offerer_address,
-        is_venue_address=is_venue_address,
-        venue_id=venue.id,
-    )
-
-    return location, offer_venue
+    return location
 
 
 def create_collective_offer_public(
@@ -470,7 +400,7 @@ def create_collective_offer_public(
     end_datetime = body.end_datetime or body.start_datetime
     validation.check_start_and_end_dates_in_same_educational_year(body.start_datetime, end_datetime)
 
-    location, offer_venue = _get_location_and_offer_venue_from_public_model(location_body=body.location, venue=venue)
+    location = _get_location_from_public_model(location_body=body.location, venue=venue)
 
     collective_offer = models.CollectiveOffer(
         venue=venue,
@@ -496,7 +426,7 @@ def create_collective_offer_public(
         locationType=location.location_type,
         locationComment=location.location_comment,
         offererAddressId=location.offerer_address.id if location.offerer_address else None,
-        offerVenue={**offer_venue, "addressType": offer_venue["addressType"].value},
+        offerVenue={},
     )
 
     collective_stock = models.CollectiveStock(
@@ -557,17 +487,13 @@ def edit_collective_offer_public(
             booking_limit_datetime=after_update_booking_limit_datetime,
         )
 
-    # when we receive location, we also write to offerVenue for now
     if location_body is not None:
-        location, offer_venue = _get_location_and_offer_venue_from_public_model(
-            location_body=location_body, venue=offer.venue
-        )
+        location = _get_location_from_public_model(location_body=location_body, venue=offer.venue)
 
         new_values["locationType"] = location.location_type
         new_values["locationComment"] = location.location_comment
         new_values["offererAddressId"] = location.offerer_address.id if location.offerer_address else None
         new_values.pop("location", None)
-        new_values["offerVenue"] = offer_venue
 
     # check domains and national program
     domains_to_check = offer.domains
@@ -1244,25 +1170,18 @@ def _update_collective_offer(
     if edit_domains or edit_national_program:
         validation.validate_national_program(national_program_id=program_id_to_check, domains=domains_to_check)
 
-    # receive location -> extract location field and write to offerVenue to keep the field up to date
     if "location" in new_values:
+        # the schema checks that if location is present it cannot be null
         assert location_body is not None
+
         offerer_address = offers_api.get_offerer_address_from_address_body(
             address_body=location_body.address, venue=offer.venue
         )
+
         new_values["offererAddress"] = offerer_address
-
-        offer_venue = get_offer_venue_from_location(
-            location_type=location_body.locationType,
-            location_comment=location_body.locationComment,
-            offerer_address=offerer_address,
-            is_venue_address=location_body.address.isVenueAddress if location_body.address is not None else False,
-            venue_id=offer.venue.id,
-        )
-        new_values["offerVenue"] = offer_venue
-
         new_values["locationType"] = location_body.locationType
         new_values["locationComment"] = location_body.locationComment
+
         new_values.pop("location", None)
 
     # This variable is meant for Adage mailing
@@ -1299,18 +1218,3 @@ def toggle_publish_collective_offers_template(
             log_extra={"changes": {"isActive"}},
         )
     )
-
-
-def get_collective_offer_venue_by_offer_id(
-    offers: typing.Collection[models.CollectiveOffer] | typing.Collection[models.CollectiveOfferTemplate],
-) -> dict[int, offerers_models.Venue | None]:
-    venue_ids = {offer.offerVenue.get("venueId") for offer in offers}
-    venues = offerers_repository.get_venues_by_ids([venue_id for venue_id in venue_ids if venue_id is not None])
-    venue_by_id = {venue.id: venue for venue in venues}
-
-    result = {}
-    for offer in offers:
-        venue_id = offer.offerVenue.get("venueId")
-        result[offer.id] = None if venue_id is None else venue_by_id.get(venue_id)
-
-    return result

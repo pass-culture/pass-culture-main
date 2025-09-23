@@ -1,6 +1,5 @@
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.repository import find_redactor_by_email
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -68,13 +67,9 @@ def get_collective_favorites(authenticated_information: AuthenticatedInformation
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=403)
 
-    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offer_templates)
-
     return FavoritesResponseModel(
         favoritesTemplate=[
-            serialize_offers.CollectiveOfferTemplateResponseModel.build(
-                offer=offer, is_favorite=True, offerVenue=offer_venue_by_offer_id[offer.id]
-            )
+            serialize_offers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=True)
             for offer in offer_templates
         ]
     )

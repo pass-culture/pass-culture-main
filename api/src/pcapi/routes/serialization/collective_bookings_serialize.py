@@ -17,7 +17,6 @@ from pcapi.core.educational import repository
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import export as utils_export
@@ -450,7 +449,6 @@ class CollectiveBookingEducationalRedactorResponseModel(BaseModel):
 
 class CollectiveBookingByIdResponseModel(BaseModel):
     id: int
-    offerVenue: CollectiveOfferOfferVenueResponseModel
     startDatetime: datetime
     endDatetime: datetime
     students: list[models.StudentLevels]
@@ -486,7 +484,6 @@ class CollectiveBookingByIdResponseModel(BaseModel):
 
         return cls(
             id=booking.id,
-            offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,  # type: ignore[arg-type]
             startDatetime=booking.collectiveStock.startDatetime,
             endDatetime=booking.collectiveStock.endDatetime,
             students=booking.collectiveStock.collectiveOffer.students,

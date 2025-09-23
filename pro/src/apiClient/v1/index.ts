@@ -51,7 +51,6 @@ export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplaye
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
-export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
@@ -59,7 +58,6 @@ export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOf
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
-export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenueBodyModel';
 export type { CollectiveRevenue } from './models/CollectiveRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
@@ -186,7 +184,6 @@ export type { MotorDisabilityModel } from './models/MotorDisabilityModel';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
-export { OfferAddressType } from './models/OfferAddressType';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererEligibilityResponseModel } from './models/OffererEligibilityResponseModel';
