@@ -17,12 +17,19 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
   // -------------------------------------------------------------------------
   // Readonly Data
 
-  id: yup.number().transform(readonly).optional(),
-  bookingsQuantity: yup.number().transform(readonly).optional(),
+  id: yup.number().nullable().default(null).defined().transform(readonly),
+  bookingsQuantity: yup
+    .number()
+    .nullable()
+    .default(null)
+    .defined()
+    .transform(readonly),
   offerId: yup.number().transform(readonly).defined(),
   remainingQuantity: yup
     .mixed<number | string>() // `number | "unlimited"`
     .nullable()
+    .default(null)
+    .defined()
     .transform(readonly),
 
   // -------------------------------------------------------------------------
@@ -40,6 +47,8 @@ export const PriceTableEntryValidationSchema = yup.object().shape({
   bookingLimitDatetime: nonEmptyStringOrNull().test((v) =>
     v ? isValid(new Date(v)) : true
   ),
+
+  hasActivationCode: yup.boolean().default(false).defined(),
 
   label: nonEmptyStringOrNull().when(['$offer'], (vals, schema) => {
     const [offer] = vals as [PriceTableFormContext['offer']]

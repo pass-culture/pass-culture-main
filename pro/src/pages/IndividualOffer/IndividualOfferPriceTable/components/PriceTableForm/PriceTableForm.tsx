@@ -179,6 +179,10 @@ export const PriceTableForm = ({
       `entries.${activationCodeEntryIndexToUpload}.activationCodesExpirationDatetime`,
       expirationDate ?? null
     )
+    setValue(
+      `entries.${activationCodeEntryIndexToUpload}.hasActivationCode`,
+      true
+    )
 
     setActivationCodeEntryIndexToUpload(null)
   }
@@ -207,9 +211,6 @@ export const PriceTableForm = ({
 
       {fields.map((field, index) => {
         const entry = watch(`entries.${index}`)
-
-        const hasActivationCodes =
-          (watch(`entries.${index}.activationCodes`) || []).length > 0
 
         return (
           <div
@@ -286,7 +287,7 @@ export const PriceTableForm = ({
             {!offer.isEvent && (
               <QuantityInput
                 className={styles['input-stock']}
-                disabled={areAllFieldsDisabled || hasActivationCodes}
+                disabled={areAllFieldsDisabled || entry.hasActivationCode}
                 error={errors.entries?.[index]?.quantity?.message}
                 label="Stock"
                 minimum={computeEntryConstraints(entry).quantityMin}
@@ -335,15 +336,20 @@ export const PriceTableForm = ({
 
             {!offer.isEvent &&
               offer.isDigital &&
+              // If a stock has been saved in DB with or without activation codes,
+              // the user must reset the entry in order to upload new ones
+              // (meaning both the old entry and its codes, if any, will be deleted)
+              entry.id === null &&
               !areAllFieldsDisabled &&
               !areAllFieldsDisabledButQuantity && (
-                <ListIconButton
-                  className={styles['button-action']}
-                  icon={fullCodeIcon}
-                  onClick={() => setActivationCodeEntryIndexToUpload(index)}
-                  ref={activationCodeButtonRef}
-                  tooltipContent="Ajouter des codes d'activation"
-                />
+                <div className={styles['button-action']}>
+                  <ListIconButton
+                    icon={fullCodeIcon}
+                    onClick={() => setActivationCodeEntryIndexToUpload(index)}
+                    ref={activationCodeButtonRef}
+                    tooltipContent="Ajouter des codes d'activation"
+                  />
+                </div>
               )}
             {
               // In EDITION mode, we don't allow removing/resetting prices for event offers
