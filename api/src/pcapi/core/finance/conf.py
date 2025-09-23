@@ -115,11 +115,11 @@ def _get_pre_decree_credit_amount_per_age(age: int) -> decimal.Decimal | None:
 
 
 def digital_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
-    return offer.isDigital and offer.subcategory.is_digital_deposit
+    return offer.hasUrl and offer.subcategory.is_digital_deposit
 
 
 def physical_cap_applies_to_offer(offer: offers_models.Offer) -> bool:
-    return not offer.isDigital and offer.subcategory.is_physical_deposit
+    return not offer.hasUrl and offer.subcategory.is_physical_deposit
 
 
 class SpecificCaps:

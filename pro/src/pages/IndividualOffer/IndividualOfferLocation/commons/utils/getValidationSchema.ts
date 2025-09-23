@@ -90,23 +90,19 @@ export const PhysicalLocationValidationSchema = yup
       }),
   })
 
-export const getValidationSchema = ({
-  isOfferSubcategoryOnline,
-}: {
-  isOfferSubcategoryOnline: boolean
-}) => {
+export const getValidationSchema = ({ isDigital }: { isDigital: boolean }) => {
   return yup.object<LocationFormValues>().shape({
     address: yup
       .mixed<PhysicalAddressSubformValues>()
       .nullable()
       .defined()
       .when({
-        is: () => isOfferSubcategoryOnline,
+        is: () => isDigital,
         then: () => yup.mixed().nullable().defined(),
         otherwise: () => PhysicalLocationValidationSchema.defined(),
       }),
     url: nonEmptyStringOrNull().when({
-      is: () => isOfferSubcategoryOnline,
+      is: () => isDigital,
       then: (schema) =>
         schema
           .nonNullable(

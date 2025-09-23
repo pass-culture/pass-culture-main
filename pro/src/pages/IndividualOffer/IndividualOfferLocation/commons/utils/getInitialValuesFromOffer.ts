@@ -13,14 +13,12 @@ import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
 function getPhysicalAddressSubformInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
   {
-    isOfferSubcategoryOnline,
     offerVenue,
   }: {
-    isOfferSubcategoryOnline: boolean
     offerVenue: VenueListItemResponseModel
   }
 ): PhysicalAddressSubformValues | null {
-  if (isOfferSubcategoryOnline) {
+  if (offer.isDigital) {
     return null
   }
 
@@ -83,16 +81,13 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
 export function getInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
   {
-    isOfferSubcategoryOnline,
     offerVenue,
   }: {
     offerVenue: VenueListItemResponseModel
-    isOfferSubcategoryOnline: boolean
   }
 ): LocationFormValues {
   const physicalAddressInitialValues =
     getPhysicalAddressSubformInitialValuesFromOffer(offer, {
-      isOfferSubcategoryOnline,
       offerVenue,
     })
 

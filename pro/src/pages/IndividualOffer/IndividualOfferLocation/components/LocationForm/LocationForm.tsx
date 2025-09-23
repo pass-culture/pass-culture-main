@@ -7,7 +7,6 @@ import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
 import { TextInput } from '@/ui-kit/form/TextInput/TextInput'
 
 import type { LocationFormValues } from '../../commons/types'
@@ -22,11 +21,9 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
     formState: { errors },
   } = useFormContext<LocationFormValues>()
 
-  const { hasPublishedOfferWithSameEan, offer, subCategories } =
-    useIndividualOfferContext()
+  const { hasPublishedOfferWithSameEan, offer } = useIndividualOfferContext()
   assertOrFrontendError(offer, '`offer` is undefined in LocationForm.')
 
-  const isOfferOnline = getIsOfferSubcategoryOnline(offer, subCategories)
   const mode = useOfferWizardMode()
   const isFormReadOnly =
     mode === OFFER_WIZARD_MODE.READ_ONLY ||
@@ -37,14 +34,14 @@ export const LocationForm = ({ offerVenue }: LocationFormProps) => {
   return (
     <FormLayout.Section title="Où profiter de l’offre ?">
       <FormLayout.Row>
-        {!isOfferOnline && (
+        {!offer.isDigital && (
           <PhysicalLocationSubform
             isDisabled={isFormReadOnly}
             venue={offerVenue}
           />
         )}
 
-        {isOfferOnline && (
+        {offer.isDigital && (
           <TextInput
             description="Format : https://exemple.com"
             disabled={isFormReadOnly}

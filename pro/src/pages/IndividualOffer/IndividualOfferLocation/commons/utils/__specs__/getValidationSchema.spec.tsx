@@ -21,8 +21,8 @@ describe('getValidationSchema', () => {
       address: { ...baseAddress, ...overrides },
     })
 
-  describe('when isOfferSubcategoryOnline is true', () => {
-    const schema = getValidationSchema({ isOfferSubcategoryOnline: true })
+  describe('when isDigital is true', () => {
+    const schema = getValidationSchema({ isDigital: true })
 
     it('should require url', async () => {
       await expect(schema.validateAt('url', defaultFormValues)).rejects.toThrow(
@@ -49,8 +49,8 @@ describe('getValidationSchema', () => {
     })
   })
 
-  describe('when isOfferSubcategoryOnline is false', () => {
-    const schema = getValidationSchema({ isOfferSubcategoryOnline: false })
+  describe('when isDigital is false', () => {
+    const schema = getValidationSchema({ isDigital: false })
 
     it('should require address.offerLocation when address object present', async () => {
       const values = buildWithAddress({ offerLocation: null })

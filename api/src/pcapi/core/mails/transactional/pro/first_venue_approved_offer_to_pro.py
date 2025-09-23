@@ -45,7 +45,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
             "VENUE_NAME": offer.venue.common_name,
             "IS_EVENT": offer.isEvent,
             "IS_THING": offer.isThing,
-            "IS_DIGITAL": offer.isDigital,
+            "IS_DIGITAL": offer.hasUrl,
             "WITHDRAWAL_PERIOD": (
                 booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
                 if offer.subcategoryId == subcategories.LIVRE_PAPIER.id

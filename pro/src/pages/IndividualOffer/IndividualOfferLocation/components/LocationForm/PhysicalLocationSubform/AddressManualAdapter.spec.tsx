@@ -43,10 +43,9 @@ const renderAddressManualAdapter = ({
 }) => {
   const Harness = () => {
     const validationSchema = getValidationSchema({
-      isOfferSubcategoryOnline: false,
+      isDigital: false,
     })
     const initialValues = getInitialValuesFromOffer(offer, {
-      isOfferSubcategoryOnline: false,
       offerVenue: makeVenueListItem({}),
     })
     const form = useForm({

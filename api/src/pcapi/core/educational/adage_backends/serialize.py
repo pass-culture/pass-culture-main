@@ -40,7 +40,7 @@ class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
     totalAmount: decimal.Decimal
     venueName: str
     venueTimezone: str
-    isDigital: bool
+    hasUrl: bool
     withdrawalDetails: str | None
     redactor: AdageRedactor | None
 
@@ -77,7 +77,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         totalAmount=stock.price,
         venueName=venue.name,
         venueTimezone=venue_timezone,
-        isDigital=False,
+        hasUrl=False,
         withdrawalDetails=None,
         redactor=AdageRedactor(
             email=collective_offer.teacher.email if collective_offer.teacher else None,

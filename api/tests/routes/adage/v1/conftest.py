@@ -25,7 +25,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "durationMinutes": offer.durationMinutes,
         "expirationDate": None,
         "id": booking.id,
-        "isDigital": False,
+        "hasUrl": False,
         "venueName": venue.name,
         "name": offer.name,
         "numberOfTickets": stock.numberOfTickets,
