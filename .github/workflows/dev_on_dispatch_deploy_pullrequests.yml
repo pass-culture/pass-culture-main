@@ -340,7 +340,6 @@ jobs:
           IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
           export IMAGE="${IMAGE}:${VERSION}"
           export PRID=${{ needs.deploy-preview-env-init.outputs.resource_label }}
-          sleep 3600;
           echo "=== exec: flask install_postgres_extensions"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
           start=$(date +%s.%N)
