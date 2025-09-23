@@ -103,7 +103,7 @@ class BookingOfferResponse(BaseModel):
     name: str
     extraData: BookingOfferExtraData | None
     image: OfferImageResponse | None
-    hasUrl: bool
+    isDigital: bool
     isPermanent: bool
     subcategoryId: SubcategoryIdEnum
     url: str | None

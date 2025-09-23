@@ -223,7 +223,7 @@ class BookingResponseGetterDict(GetterDict):
                 withdrawal=withdrawal,
             )
 
-        if offer.hasUrl:
+        if offer.isDigital:
             return TicketResponse(
                 activation_code=booking.activationCode,
                 external_booking=None,
