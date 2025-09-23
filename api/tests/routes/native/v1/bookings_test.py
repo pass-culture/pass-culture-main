@@ -870,6 +870,7 @@ class GetBookingsTest:
             displayAsEnded=True,
             dateUsed=datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
             stock__features=["VO"],
             stock__offer__extraData=None,
             cancellation_limit_date=datetime(2023, 3, 2),
@@ -885,6 +886,7 @@ class GetBookingsTest:
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
+
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
             expire_tomorrow.id,
             event_booking.id,
@@ -948,11 +950,11 @@ class GetBookingsTest:
                         "timezone": used2.venue.offererAddress.address.timezone,
                     },
                     "bookingContact": None,
-                    "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
+                    "subcategoryId": subcategories.ABO_LIVRE_NUMERIQUE.id,
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},
-                    "hasUrl": True,
+                    "isDigital": True,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",
@@ -971,7 +973,7 @@ class GetBookingsTest:
                 },
             },
             "token": used2.token,
-            "totalAmount": 1010,
+            "totalAmount": Decimal(1010),
             "externalBookings": [],
         }
 

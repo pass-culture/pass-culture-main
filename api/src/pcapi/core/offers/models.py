@@ -23,6 +23,7 @@ from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi import settings
+from pcapi.core.categories import models
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
@@ -998,6 +999,10 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @hasUrl.expression  # type: ignore[no-redef]
     def hasUrl(cls) -> BooleanClauseList:
         return sa.and_(cls.url.is_not(None), cls.url != "")
+
+    @property
+    def isDigital(self) -> bool:
+        return self.subcategory.online_offline_platform == models.OnlineOfflinePlatformChoices.ONLINE.value
 
     @property
     def isEditable(self) -> bool:
