@@ -14,6 +14,7 @@ import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/u
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
+import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { isSameOffer } from '@/commons/utils/isSameOffer'
@@ -150,9 +151,11 @@ export const CollectiveOffersScreen = ({
     }
   }
 
+  const allowedOnAdage = useIsAllowedOnAdage()
+
   return (
     <div>
-      {offerer?.allowedOnAdage && (
+      {allowedOnAdage && (
         <CollectiveBudgetCallout variant="COLLECTIVE_TABLE" pageName="offers" />
       )}
       <CollectiveOffersSearchFilters

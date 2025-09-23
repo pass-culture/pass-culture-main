@@ -11,10 +11,7 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constan
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -35,7 +32,9 @@ const renderOffers = (
       user: {
         currentUser: sharedCurrentUserFactory(),
       },
-      offerer: currentOffererFactory(),
+      offerer: {
+        currentOfferer: props.offerer,
+      },
     },
     ...options,
   })
