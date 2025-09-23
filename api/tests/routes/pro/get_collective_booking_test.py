@@ -35,7 +35,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": booking.id,
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "startDatetime": booking.collectiveStock.startDatetime.isoformat(),
             "endDatetime": booking.collectiveStock.endDatetime.isoformat(),
             "students": ["Lycée - Seconde"],
@@ -88,7 +87,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": booking.id,
-            "offerVenue": {"addressType": "other", "otherAddress": "1 rue des polissons, Paris 75017", "venueId": None},
             "startDatetime": booking.collectiveStock.startDatetime.isoformat(),
             "endDatetime": booking.collectiveStock.endDatetime.isoformat(),
             "students": ["Lycée - Seconde"],

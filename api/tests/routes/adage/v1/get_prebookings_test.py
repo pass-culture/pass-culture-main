@@ -36,11 +36,6 @@ class Returns200Test:
                 models.StudentLevels.GENERAL2,
                 models.StudentLevels.GENERAL1,
             ],
-            collectiveStock__collectiveOffer__offerVenue={
-                "addressType": "other",
-                "otherAddress": "1 rue des polissons, Paris 75017",
-                "venueId": "",
-            },
             collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.TO_BE_DEFINED,
             collectiveStock__collectiveOffer__contactEmail="miss.rond@point.com",
             collectiveStock__collectiveOffer__contactPhone="0101010101",

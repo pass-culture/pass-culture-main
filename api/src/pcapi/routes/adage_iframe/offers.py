@@ -8,11 +8,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.models import AdageFrontRoles
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
-from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -42,12 +38,7 @@ def get_collective_offer(
 
     _get_redactor(authenticated_information)
 
-    offer_venue = _get_offer_venue(offer)
-
-    return serializers.CollectiveOfferResponseModel.build(
-        offer=offer,
-        offerVenue=offer_venue,
-    )
+    return serializers.CollectiveOfferResponseModel.build(offer=offer)
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
@@ -70,11 +61,7 @@ def get_collective_offer_template(
     else:
         is_favorite = False
 
-    offer_venue = _get_offer_venue(offer)
-
-    return serializers.CollectiveOfferTemplateResponseModel.build(
-        offer=offer, is_favorite=is_favorite, offerVenue=offer_venue
-    )
+    return serializers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=is_favorite)
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/", methods=["GET"])
@@ -103,13 +90,9 @@ def get_collective_offer_templates(
     redactor = _get_redactor(authenticated_information)
     favorite_offers = set(redactor.favoriteCollectiveOfferTemplates) if redactor else set()
 
-    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offers)
-
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
-            serializers.CollectiveOfferTemplateResponseModel.build(
-                offer=offer, is_favorite=offer in favorite_offers, offerVenue=offer_venue_by_offer_id[offer.id]
-            )
+            serializers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=offer in favorite_offers)
             for offer in offers
         ]
     )
@@ -168,15 +151,6 @@ def _get_redactor(authenticated_information: AuthenticatedInformation) -> Educat
     return educational_repository.find_redactor_by_email(redactor_informations.email)
 
 
-def _get_offer_venue(offer: CollectiveOffer | CollectiveOfferTemplate) -> Venue | None:
-    offer_venue_id = offer.offerVenue.get("venueId", None)
-
-    if offer_venue_id:
-        return offerers_repository.find_venue_by_id(offer_venue_id, load_address=True)
-
-    return None
-
-
 @blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])
 @atomic()
 @spectree_serialize(
@@ -197,11 +171,6 @@ def get_collective_offers_for_my_institution(
         if offer.isBookable
     ]
 
-    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offers)
-
     return serializers.ListCollectiveOffersResponseModel(
-        collectiveOffers=[
-            serializers.CollectiveOfferResponseModel.build(offer=offer, offerVenue=offer_venue_by_offer_id[offer.id])
-            for offer in offers
-        ]
+        collectiveOffers=[serializers.CollectiveOfferResponseModel.build(offer=offer) for offer in offers]
     )

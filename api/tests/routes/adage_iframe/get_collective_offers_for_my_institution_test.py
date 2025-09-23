@@ -34,8 +34,7 @@ def redactor_fixture():
 class CollectiveOfferTest:
     # 1. fetch redactor
     # 2. fetch collective offer and related data
-    # 3. fetch the offerVenue's details (Venue)
-    num_queries = 3
+    num_queries = 2
 
     def test_get_collective_offer_for_my_institution(self, eac_client, redactor):
         START_DATE = datetime.today() + timedelta(days=3)
@@ -45,11 +44,6 @@ class CollectiveOfferTest:
             3,
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
-            collectiveOffer__offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )
@@ -61,11 +55,6 @@ class CollectiveOfferTest:
         stock_with_cancelled_booking = educational_factories.CollectiveStockFactory(
             startDatetime=START_DATE,
             collectiveOffer__institution=institution,
-            collectiveOffer__offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )

@@ -33,14 +33,6 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
 
 
-def validate_venue_id(venue_id: int | str | None) -> int | None:
-    # TODO(jeremieb): remove this validator once there is no empty
-    # string stored as a venueId
-    if not venue_id:
-        return None
-    return int(venue_id)  # should not be needed but it makes mypy happy
-
-
 def strip_string(s: str | None) -> str | None:
     if not s:
         return s
@@ -315,14 +307,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
         )
 
 
-class CollectiveOfferOfferVenueResponseModel(BaseModel):
-    addressType: educational_models.OfferAddressType
-    otherAddress: str
-    venueId: int | None
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-
 class CollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
@@ -426,8 +410,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     description: str
     durationMinutes: int | None
     students: list[educational_models.StudentLevels]
-    # offerVenue will be replaced with location, for now we send both
-    offerVenue: CollectiveOfferOfferVenueResponseModel
     location: GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
@@ -524,18 +506,6 @@ class CollectiveOfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class CollectiveOfferVenueBodyModel(BaseModel):
-    addressType: educational_models.OfferAddressType
-    otherAddress: str
-    venueId: int | None
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
 def validate_intervention_area_with_location(
     intervention_area: list[str] | None, location: CollectiveOfferLocationModel
 ) -> None:
@@ -596,8 +566,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     students: list[educational_models.StudentLevels]
-    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
-    offer_venue: CollectiveOfferVenueBodyModel | None
     location: CollectiveOfferLocationModel
     contact_email: EmailStr | None
     contact_phone: str | None
@@ -646,15 +614,6 @@ class PostCollectiveOfferBodyModel(BaseModel):
             raise ValueError("Un email doit etre renseigné.")
         return booking_emails
 
-    @validator("offer_venue")
-    def validate_offer_venue(
-        cls, offer_venue: CollectiveOfferVenueBodyModel | None
-    ) -> CollectiveOfferVenueBodyModel | None:
-        if offer_venue is not None:
-            raise ValueError("Cannot receive offerVenue, use location instead")
-
-        return offer_venue
-
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -676,8 +635,6 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     name: str | None
     students: list[educational_models.StudentLevels] | None
-    # offerVenue will be replaced with location, for now we accept one or the other (but not both)
-    offerVenue: CollectiveOfferVenueBodyModel | None
     location: CollectiveOfferLocationModel | None
     contactEmail: EmailStr | None
     contactPhone: str | None
@@ -739,14 +696,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
             raise ValueError("venue_id cannot be NULL.")
         return venue_id
 
-    @validator("offerVenue")
-    def validate_offer_venue(
-        cls, offer_venue: CollectiveOfferVenueBodyModel | None
-    ) -> CollectiveOfferVenueBodyModel | None:
-        if offer_venue is not None:
-            raise ValueError("Cannot receive offerVenue, use location instead")
+    @validator("location")
+    def validate_location(cls, location: CollectiveOfferLocationModel | None) -> CollectiveOfferLocationModel | None:
+        if location is None:
+            raise ValueError("location cannot be NULL.")
 
-        return offer_venue
+        return location
 
     class Config:
         alias_generator = to_camel

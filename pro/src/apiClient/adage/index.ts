@@ -22,7 +22,6 @@ export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferReq
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
 export type { CatalogViewBody } from './models/CatalogViewBody';
 export { CollectiveLocationType } from './models/CollectiveLocationType';
-export type { CollectiveOfferOfferVenue } from './models/CollectiveOfferOfferVenue';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
 export type { CollectiveRequestBody } from './models/CollectiveRequestBody';
@@ -46,7 +45,6 @@ export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel
 export type { LocalOfferersPlaylist } from './models/LocalOfferersPlaylist';
 export type { LocalOfferersPlaylistOffer } from './models/LocalOfferersPlaylistOffer';
 export type { NationalProgramModel } from './models/NationalProgramModel';
-export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferBody } from './models/OfferBody';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';

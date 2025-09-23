@@ -164,11 +164,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.domains == [domain]
         assert offer.institutionId == institution.id
         assert offer.interventionArea == []
-        assert offer.offerVenue == {
-            "venueId": None,
-            "addressType": "school",
-            "otherAddress": "",
-        }
         assert offer.locationType == educational_models.CollectiveLocationType.SCHOOL
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
@@ -214,11 +209,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.domains == [domain]
         assert offer.institutionId == institution.id
         assert offer.interventionArea == []
-        assert offer.offerVenue == {
-            "addressType": "school",
-            "otherAddress": "",
-            "venueId": None,
-        }
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert offer.isPublicApi
@@ -274,11 +264,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.domains == [domain]
         assert offer.institutionId == institution.id
         assert offer.interventionArea == []
-        assert offer.offerVenue == {
-            "venueId": None,
-            "addressType": "school",
-            "otherAddress": "",
-        }
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert offer.isPublicApi
@@ -302,12 +287,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.locationType == educational_models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "In Paris"
 
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": "In Paris",
-            "venueId": None,
-        }
-
     @time_machine.travel(time_travel_str)
     def test_post_offers_location_address_on_venue(self, public_client, minimal_payload, venue):
         payload = {
@@ -325,11 +304,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offererAddressId == venue.offererAddressId
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
-        assert offer.offerVenue == {
-            "addressType": "offererVenue",
-            "otherAddress": "",
-            "venueId": venue.id,
-        }
 
     @time_machine.travel(time_travel_str)
     def test_post_offers_location_address_other_address(self, public_client, minimal_payload, venue):
@@ -360,11 +334,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert offer.offererAddressId == offerer_address.id
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": offerer_address.address.fullAddress,
-            "venueId": None,
-        }
 
         assert offerer_address.label == "My second address"
 

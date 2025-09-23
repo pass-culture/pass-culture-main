@@ -183,7 +183,6 @@ class Returns200Test:
         oa = venue.offererAddress
         data = {
             **payload,
-            "offerVenue": None,
             "interventionArea": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
@@ -210,12 +209,9 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
-
     def test_location_school(self, pro_client, payload):
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -233,12 +229,9 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
-
     def test_location_address(self, pro_client, payload):
         data = {
             **payload,
-            "offerVenue": None,
             "interventionArea": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
@@ -261,16 +254,9 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": "3 Rue de Valois 75001 Paris",
-            "venueId": None,
-        }
-
     def test_location_to_be_defined(self, pro_client, payload):
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
@@ -287,8 +273,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
-
-        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
 
 class Returns403Test:
@@ -414,18 +398,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INVALID"}
 
-    def test_cannot_receive_offer_venue(self, pro_client, payload):
-        data = {
-            **payload,
-            "offerVenue": {"addressType": "school", "venueId": None, "otherAddress": ""},
-        }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.post("/collective/offers-template", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
-        assert db.session.query(models.CollectiveOfferTemplate).count() == 0
-
     def test_must_receive_location(self, pro_client, payload):
         data = {**payload, "location": None}
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -440,7 +412,6 @@ class Returns400Test:
     ):
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDEN COMMENT",
@@ -462,7 +433,6 @@ class Returns400Test:
     ):
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDEN COMMENT",
@@ -485,7 +455,6 @@ class Returns400Test:
         data = {
             **payload,
             "interventionArea": None,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -506,7 +475,6 @@ class Returns400Test:
         data = {
             **payload,
             "interventionArea": ["75", "1234"],
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -526,7 +494,6 @@ class Returns400Test:
     ):
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
@@ -556,7 +523,6 @@ class Returns400Test:
 
         data = {
             **payload,
-            "offerVenue": None,
             "location": {
                 "locationType": location_type,
                 "locationComment": None,

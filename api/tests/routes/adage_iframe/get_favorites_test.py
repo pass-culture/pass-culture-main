@@ -22,7 +22,6 @@ class GetFavoriteOfferTest:
     endpoint = "adage_iframe.get_collective_favorites"
     num_queries = 1  # fetch redactor
     num_queries += 1  # fetch collective offer template and related data
-    num_queries += 1  # fetch venues data
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_get_favorite_test(self, client):
@@ -68,17 +67,6 @@ class GetFavoriteOfferTest:
                         "publicName": collective_offer_template.venue.publicName,
                     },
                     "students": ["Lycée - Seconde"],
-                    "offerVenue": {
-                        "addressType": "other",
-                        "distance": None,
-                        "otherAddress": "1 rue des polissons, Paris 75017",
-                        "venueId": None,
-                        "name": None,
-                        "publicName": None,
-                        "address": None,
-                        "postalCode": None,
-                        "city": None,
-                    },
                     "location": {
                         "address": None,
                         "locationComment": None,

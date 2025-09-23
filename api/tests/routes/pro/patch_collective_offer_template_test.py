@@ -320,8 +320,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": offer_ctx.venue.id}
-
     def test_location_school(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
@@ -345,8 +343,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
-
-        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
 
     def test_location_address(self, client):
         offer_ctx = build_offer_context()
@@ -376,12 +372,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": "3 Rue de Valois 75001 Paris",
-            "venueId": None,
-        }
-
     def test_location_to_be_defined(self, client):
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
@@ -405,8 +395,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
-
-        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
     def test_location_change_venue(self, client):
         offer_ctx = build_offer_context()
@@ -447,8 +435,6 @@ class Returns200Test:
         assert offer.offererAddressId == other_venue.offererAddressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
-
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": other_venue.id}
 
     def test_national_program_unchanged(self, client):
         program = educational_factories.NationalProgramFactory()
@@ -745,24 +731,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
-
-    def test_cannot_receive_offer_venue(self, client):
-        offer_ctx = build_offer_context()
-        pro_client = build_pro_client(client, offer_ctx.user)
-        offer_id = offer_ctx.offer.id
-
-        payload = {
-            "offerVenue": {
-                "addressType": models.OfferAddressType.SCHOOL.value,
-                "venueId": None,
-                "otherAddress": "",
-            },
-        }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
 
     def test_patch_collective_offer_template_with_location_type_school_must_not_receive_location_comment(self, client):
         offer_ctx = build_offer_context()

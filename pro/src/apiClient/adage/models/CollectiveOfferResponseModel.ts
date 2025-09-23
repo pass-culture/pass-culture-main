@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
@@ -34,7 +33,6 @@ export type CollectiveOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerVenue: CollectiveOfferOfferVenue;
   stock: OfferStockResponse;
   students: Array<StudentLevels>;
   teacher?: EducationalRedactorResponseModel | null;

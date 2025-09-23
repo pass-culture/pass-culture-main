@@ -244,8 +244,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": offer.venue.id}
-
     def test_location_school(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -266,8 +264,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
-
-        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
 
     def test_location_address(self, client):
         offer = educational_factories.CollectiveOfferFactory()
@@ -294,12 +290,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": "3 Rue de Valois 75001 Paris",
-            "venueId": None,
-        }
-
     def test_location_to_be_defined(self, client):
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -320,8 +310,6 @@ class Returns200Test:
         assert offer.offererAddressId is None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
-
-        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
     def test_location_change_venue(self, client):
         offer = educational_factories.CollectiveOfferFactory()
@@ -361,8 +349,6 @@ class Returns200Test:
         assert offer.offererAddressId == other_venue.offererAddressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
-
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": other_venue.id}
 
     def test_national_program_unchanged(self, client):
         program = educational_factories.NationalProgramFactory()
@@ -679,18 +665,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
 
-    def test_patch_collective_offer_cannot_receive_offer_venue(self, auth_client, venue):
-        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
-
-        payload = {
-            "offerVenue": {"addressType": models.OfferAddressType.SCHOOL.value, "venueId": None, "otherAddress": ""},
-        }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = auth_client.patch(f"/collective/offers/{offer.id}", json=payload)
-
-        assert response.status_code == 400
-        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
-
     def test_patch_collective_offer_with_location_type_school_must_not_receive_location_comment(
         self, auth_client, venue
     ):
@@ -851,6 +825,16 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"location.address": ["address is not allowed for the provided locationType"]}
+
+    def test_location_none(self, auth_client, venue):
+        offer = educational_factories.PublishedCollectiveOfferFactory(venue=venue)
+
+        data = {"location": None}
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = auth_client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"location": ["location cannot be NULL."]}
 
 
 @pytest.mark.usefixtures("db_session")

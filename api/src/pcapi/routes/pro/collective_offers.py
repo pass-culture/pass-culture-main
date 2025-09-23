@@ -223,10 +223,7 @@ def create_collective_offer(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except exceptions.VenueIdDontExist:
-        logger.info(
-            "Could not create offer: the venue id does not exist",
-            extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
-        )
+        logger.info("Could not create offer: the venue id does not exist", extra={"venue_id": body.venue_id})
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
 
     # adage errors
@@ -583,10 +580,7 @@ def create_collective_offer_template(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except exceptions.VenueIdDontExist:
-        logger.info(
-            "Could not create offer: the venue id does not exist",
-            extra={"venue_id": body.venue_id, "offer_venue": body.offer_venue},
-        )
+        logger.info("Could not create offer: the venue id does not exist", extra={"venue_id": body.venue_id})
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
 
     # adage errors

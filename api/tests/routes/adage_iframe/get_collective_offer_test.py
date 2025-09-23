@@ -48,11 +48,6 @@ class CollectiveOfferTest:
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
             collectiveOffer__nationalProgramId=educational_factories.NationalProgramFactory().id,
-            collectiveOffer__offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
             collectiveOffer__venue=venue,
             collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveOffer__offererAddress=venue.offererAddress,
@@ -60,8 +55,7 @@ class CollectiveOfferTest:
         offer = stock.collectiveOffer
 
         dst = url_for("adage_iframe.get_collective_offer", offer_id=stock.collectiveOfferId)
-        num_queries = self.num_queries + 1  # fetch offerVenue venue details
-        with assert_num_queries(num_queries):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(dst)
 
         oa = offer.offererAddress
@@ -108,17 +102,6 @@ class CollectiveOfferTest:
             "durationMinutes": None,
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
-            "offerVenue": {
-                "addressType": "offererVenue",
-                "address": venue.offererAddress.address.street,
-                "city": venue.offererAddress.address.city,
-                "distance": None,
-                "name": venue.name,
-                "otherAddress": "",
-                "postalCode": venue.offererAddress.address.postalCode,
-                "publicName": venue.publicName,
-                "venueId": venue.id,
-            },
             "location": {
                 "locationType": offer.locationType.value,
                 "locationComment": offer.locationComment,
@@ -207,7 +190,6 @@ class CollectiveOfferTest:
         # string stored as a venueId
         redactor = educational_factories.EducationalRedactorFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__offerVenue={"venueId": "", "addressType": "other", "otherAddress": "REDACTED"},
             collectiveOffer__locationType=models.CollectiveLocationType.TO_BE_DEFINED,
         )
 
