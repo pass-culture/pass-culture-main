@@ -3,7 +3,6 @@ import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import { isValidTime } from '@/commons/utils/timezone'
 
-import { BaseInput, type BaseInputProps } from '../BaseInput/BaseInput'
 import styles from './BaseTimePicker.module.scss'
 
 export type SuggestedTimeList = {
@@ -12,9 +11,13 @@ export type SuggestedTimeList = {
   max?: string
 }
 
-type Props = Omit<BaseInputProps, 'value'> & {
+type BaseTimePickerProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'value' | 'placeholder'
+> & {
   value?: string
   suggestedTimeList?: SuggestedTimeList
+  hasError?: boolean
 }
 
 const getTimeOptions = (suggestedTimeList?: SuggestedTimeList) => {
@@ -48,7 +51,12 @@ const getTimeOptions = (suggestedTimeList?: SuggestedTimeList) => {
 
 export const BaseTimePicker = forwardRef(
   (
-    { className, suggestedTimeList = { interval: 15 }, ...props }: Props,
+    {
+      className,
+      suggestedTimeList = { interval: 15 },
+      hasError,
+      ...props
+    }: BaseTimePickerProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const optionsListId = useId()
@@ -63,7 +71,7 @@ export const BaseTimePicker = forwardRef(
 
     return (
       <>
-        <BaseInput
+        <input
           type="time"
           {...(hasTimeOptions ? { list: optionsListId } : {})}
           autoComplete="off"
@@ -73,7 +81,9 @@ export const BaseTimePicker = forwardRef(
           value={
             ref ? props.value : isValidTime(props.value) ? props.value : ''
           }
-          className={cn(className, styles['timepicker'])}
+          className={cn(className, styles['timepicker'], {
+            [styles['has-error']]: hasError,
+          })}
           ref={ref}
         />
         {hasTimeOptions && (

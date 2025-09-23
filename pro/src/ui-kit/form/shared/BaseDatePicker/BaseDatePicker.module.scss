@@ -1,8 +1,16 @@
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_forms.scss" as forms;
 
 .date-picker {
+  @include forms.input-theme;
+  @include forms.input-theme-nested;
+
   text-transform: uppercase;
   letter-spacing: -1px;
+
+  &.has-error {
+    @include forms.input-theme-error;
+  }
 
   &::-webkit-calendar-picker-indicator {
     margin-left: 0;

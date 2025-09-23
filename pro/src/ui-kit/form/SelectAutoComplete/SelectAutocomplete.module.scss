@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_forms.scss" as forms;
 
 .multi-select-autocomplete-container {
   box-sizing: border-box;
@@ -8,6 +9,13 @@
 }
 
 .multi-select-autocomplete-placeholder-input {
+  @include forms.input-theme;
+  @include forms.input-theme-nested;
+
+  &.has-error {
+    @include forms.input-theme-error;
+  }
+
   &::placeholder:not(:disabled) {
     color: var(--color-text-default);
   }
