@@ -16,12 +16,15 @@
               type="button">Créer une nouvelle campagne</button>
     </div>
   {% endif %}
+  <div class="alert alert-info mw-100">
+    La date de référence définit les jeunes qui seront exposés à la demande de mise à jour&nbsp;: tous les jeunes dont la dernière mise à jour d’informations (adresse, ville, statut) est plus ancienne que la date limite seront ciblés.
+  </div>
 {% endblock before_table %}
 {% block table_header %}
   {% if has_permission("MANAGE_USER_PROFILE_REFRESH_CAMPAIGN") %}<th scope="col"></th>{% endif %}
   <th scope="col">Id</th>
   <th scope="col">Active</th>
-  <th scope="col">Date de début</th>
+  <th scope="col">Date de référence</th>
   <th scope="col">Date de création</th>
   <th scope="col">Date de mise à jour</th>
 {% endblock table_header %}

@@ -21,8 +21,8 @@
     {% endif %}
     <td>{{ campaign.id }}</td>
     <td>{{ campaign.isActive | format_bool_badge }}</td>
-    <td>{{ campaign.campaignDate }}</td>
-    <td>{{ campaign.creationDate }}</td>
-    <td>{{ campaign.updateDate }}</td>
+    <td>{{ campaign.campaignDate | format_date_time }}</td>
+    <td>{{ campaign.creationDate | format_date_time }}</td>
+    <td>{{ campaign.updateDate | format_date_time }}</td>
   </tr>
 {% endfor %}
