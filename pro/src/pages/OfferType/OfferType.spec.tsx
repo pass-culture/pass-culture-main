@@ -1,12 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { COLLECTIVE_OFFER_CREATION_TITLE } from '@/components/CollectiveBudgetInformation/constants'
 import { OfferType } from '@/pages/OfferType/OfferType'
@@ -17,7 +12,7 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderOfferTypes = (initialRoute = '/') => {
+const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
   renderWithProviders(
     <Routes>
       <Route path="/" element={<OfferType />} />
@@ -26,7 +21,7 @@ const renderOfferTypes = (initialRoute = '/') => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: currentOffererFactory(),
+        offerer: { currentOfferer: { allowedOnAdage } },
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialRoute],
@@ -35,13 +30,6 @@ const renderOfferTypes = (initialRoute = '/') => {
 }
 
 describe('OfferType', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      allowedOnAdage: true,
-    })
-  })
-
   it('should display with the lateral bar', async () => {
     renderOfferTypes()
     expect(await screen.findByTestId('lateral-panel')).toBeInTheDocument()
@@ -69,7 +57,7 @@ describe('OfferType', () => {
   })
 
   it('should render the collective budget information when not onboarding and offerer is allowed on adage', async () => {
-    renderOfferTypes('/?type=collective')
+    renderOfferTypes('/?type=collective', true)
 
     expect(
       await screen.findByText(COLLECTIVE_OFFER_CREATION_TITLE)
@@ -77,11 +65,7 @@ describe('OfferType', () => {
   })
 
   it('should not render the collective budget information when not onboarding and offerer is not allowed on adage', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-      ...defaultGetOffererResponseModel,
-      allowedOnAdage: false,
-    })
-    renderOfferTypes('/?type=collective')
+    renderOfferTypes('/?type=collective', false)
 
     await waitFor(() => {
       expect(

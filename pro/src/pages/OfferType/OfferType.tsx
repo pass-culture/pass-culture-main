@@ -1,11 +1,9 @@
-import { useSelector } from 'react-redux'
 import { Navigate, useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
@@ -18,10 +16,7 @@ export const OfferType = (): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
-
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  const { data: offerer } = useOfferer(selectedOffererId?.toString())
+  const allowedOnAdage = useIsAllowedOnAdage()
 
   if (isOnboarding && isDidacticOnboardingEnabled === false) {
     return <Navigate to="/accueil" />
@@ -42,7 +37,7 @@ export const OfferType = (): JSX.Element => {
     <BasicLayout
       mainHeading={mainHeading}
       mainTopElement={
-        offerer?.allowedOnAdage && (
+        allowedOnAdage && (
           <CollectiveBudgetCallout pageName="offer-creation-hub" />
         )
       }

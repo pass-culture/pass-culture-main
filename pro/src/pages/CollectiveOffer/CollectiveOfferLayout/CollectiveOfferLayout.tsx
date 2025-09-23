@@ -71,11 +71,13 @@ export const CollectiveOfferLayout = ({
       mainSubHeading={subTitle}
       isStickyActionBarInChild
     >
-      {allowedOnAdage && isCreation ? (
+      {allowedOnAdage && isCreation && (
         <CollectiveBudgetCallout
           pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
         />
-      ) : navigationProps.isCreatingOffer ? (
+      )}
+
+      {!allowedOnAdage ? null : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
           className={cn(styles['eac-layout-navigation'], {
