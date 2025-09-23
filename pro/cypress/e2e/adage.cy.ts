@@ -42,7 +42,6 @@ describe('ADAGE discovery', () => {
                       interventionArea: ['2A', '2B'],
                       schoolInterventionArea: null,
                       locationType: 'TO_BE_DEFINED',
-                      eventAddressType: 'other',
                       beginningDatetime: 1726907257.840899,
                       description:
                         'a passionate description of collectiveoffer 98',
@@ -167,7 +166,7 @@ describe('ADAGE discovery', () => {
                 },
                 query: '',
                 params:
-                  'aroundLatLng=48.8566%2C%202.3522&aroundRadius=30000000&attributesToHighlight=%5B%5D&attributesToRetrieve=%5B%22objectID%22%2C%22offer.dates%22%2C%22offer.name%22%2C%22offer.thumbUrl%22%2C%22venue.name%22%2C%22venue.publicName%22%2C%22isTemplate%22%2C%22offer.interventionArea%22%5D&clickAnalytics=true&distinct=false&filters=offer.eventAddressType%3AoffererVenue%3Cscore%3D3%3E%20OR%20offer.eventAddressType%3Aschool%3Cscore%3D2%3E%20OR%20offer.eventAddressType%3Aother%3Cscore%3D1%3E&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=8&page=0&query=',
+                  'aroundLatLng=48.8566%2C%202.3522&aroundRadius=30000000&attributesToHighlight=%5B%5D&attributesToRetrieve=%5B%22objectID%22%2C%22offer.dates%22%2C%22offer.name%22%2C%22offer.thumbUrl%22%2C%22venue.name%22%2C%22venue.publicName%22%2C%22isTemplate%22%2C%22offer.interventionArea%22%5D&clickAnalytics=true&distinct=false&filters=offer.locationType%3AADDRESS%3Cscore%3D3%3E%20OR%20offer.locationType%3ASCHOOL%3Cscore%3D2%3E%20OR%20offer.locationType%3ATO_BE_DEFINED%3Cscore%3D1%3E&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=8&page=0&query=',
                 index: 'testing-collective-offers',
                 queryID: '324dafe3bdf5ec1e8bfeb03f89044fc0',
                 renderingContent: {},
