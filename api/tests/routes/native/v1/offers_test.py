@@ -253,7 +253,7 @@ class OffersTest:
         assert response.json["isSoldOut"] is False
         assert response.json["isDuo"] is True
         assert response.json["isEducational"] is False
-        assert response.json["isDigital"] is False
+        assert response.json["hasUrl"] is False
         assert response.json["isReleased"] is True
         assert response.json["name"] == "l'offre du siècle"
         assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
@@ -721,7 +721,7 @@ class OffersV2Test:
         assert response.json["isSoldOut"] is False
         assert response.json["isDuo"] is True
         assert response.json["isEducational"] is False
-        assert response.json["isDigital"] is False
+        assert response.json["hasUrl"] is False
         assert response.json["isReleased"] is True
         assert response.json["name"] == "l'offre du siècle"
         assert response.json["subcategoryId"] == subcategories.SEANCE_CINE.id
@@ -1600,7 +1600,7 @@ class OffersStocksV2Test:
         assert response_offer["isSoldOut"] is False
         assert response_offer["isDuo"] is False
         assert response_offer["isEducational"] is False
-        assert response_offer["isDigital"] is False
+        assert response_offer["hasUrl"] is False
         assert response_offer["isReleased"] is True
         assert response_offer["name"] == "l'offre du siècle"
         assert response_offer["subcategoryId"] == subcategories.SEANCE_CINE.id

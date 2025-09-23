@@ -255,7 +255,7 @@ class Returns200Test:
         assert offer.venue == venue
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.url == "http://example.com/offer"
-        assert offer.isDigital
+        assert offer.hasUrl
         assert offer.isNational
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False

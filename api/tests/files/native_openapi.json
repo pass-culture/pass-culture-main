@@ -562,7 +562,7 @@
                         "nullable": true,
                         "title": "OfferImageResponse"
                     },
-                    "isDigital": {
+                    "hasUrl": {
                         "title": "Isdigital",
                         "type": "boolean"
                     },
@@ -607,7 +607,7 @@
                 "required": [
                     "id",
                     "name",
-                    "isDigital",
+                    "hasUrl",
                     "isPermanent",
                     "subcategoryId",
                     "venue"
@@ -732,7 +732,7 @@
                         "nullable": true,
                         "title": "OfferImageResponse"
                     },
-                    "isDigital": {
+                    "hasUrl": {
                         "title": "Isdigital",
                         "type": "boolean"
                     },
@@ -759,7 +759,7 @@
                 "required": [
                     "id",
                     "name",
-                    "isDigital",
+                    "hasUrl",
                     "isPermanent",
                     "subcategoryId",
                     "venue"
@@ -3045,7 +3045,7 @@
                         "nullable": true,
                         "title": "OfferImageResponse"
                     },
-                    "isDigital": {
+                    "hasUrl": {
                         "title": "Isdigital",
                         "type": "boolean"
                     },
@@ -3152,7 +3152,7 @@
                     "isForbiddenToUnderage",
                     "isReleased",
                     "isSoldOut",
-                    "isDigital",
+                    "hasUrl",
                     "isDuo",
                     "isEducational",
                     "metadata",
@@ -3241,7 +3241,7 @@
                         "title": "Images",
                         "type": "object"
                     },
-                    "isDigital": {
+                    "hasUrl": {
                         "title": "Isdigital",
                         "type": "boolean"
                     },
@@ -3348,7 +3348,7 @@
                     "isForbiddenToUnderage",
                     "isReleased",
                     "isSoldOut",
-                    "isDigital",
+                    "hasUrl",
                     "isDuo",
                     "isEducational",
                     "metadata",

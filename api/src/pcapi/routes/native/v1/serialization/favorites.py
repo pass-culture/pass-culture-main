@@ -52,7 +52,7 @@ class FavoriteOfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
         default_coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
-        default_venue_name = offer.venue.managingOfferer.name if offer.isDigital else offer.venue.common_name
+        default_venue_name = offer.venue.managingOfferer.name if offer.hasUrl else offer.venue.common_name
 
         if offer.offererAddress:
             offer.coordinates = {

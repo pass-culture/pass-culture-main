@@ -469,7 +469,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     is_forbidden_to_underage: bool
     isReleased: bool
     isSoldOut: bool
-    isDigital: bool
+    hasUrl: bool
     isDuo: bool
     isEducational: bool
     last30DaysBookings: int | None

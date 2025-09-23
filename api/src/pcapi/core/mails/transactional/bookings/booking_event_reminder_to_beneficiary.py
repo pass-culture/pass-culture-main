@@ -27,7 +27,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
 
     department_code = (
         booking.stock.offer.offererAddress.address.departmentCode
-        if not booking.stock.offer.isDigital and booking.stock.offer.offererAddress is not None
+        if not booking.stock.offer.hasUrl and booking.stock.offer.offererAddress is not None
         else booking.user.departementCode
     )
 

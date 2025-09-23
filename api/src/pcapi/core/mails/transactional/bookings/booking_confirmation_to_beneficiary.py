@@ -26,7 +26,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
     venue = offer.venue
     beneficiary = booking.user
 
-    if offer.isDigital and booking.activationCode:
+    if offer.hasUrl and booking.activationCode:
         can_expire = False
     else:
         can_expire = offer.subcategory.can_expire
@@ -41,7 +41,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
 
     department_code = (
         offer.offererAddress.address.departmentCode
-        if not offer.isDigital and offer.offererAddress is not None
+        if not offer.hasUrl and offer.offererAddress is not None
         else beneficiary.departementCode
     )
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
@@ -61,12 +61,12 @@ def get_booking_confirmation_to_beneficiary_email_data(
         formatted_event_beginning_date = None
 
     is_digital_booking_with_activation_code_and_no_expiration_date = int(
-        bool(offer.isDigital and booking.activationCode and not booking.activationCode.expirationDate)
+        bool(offer.hasUrl and booking.activationCode and not booking.activationCode.expirationDate)
     )
 
     code_expiration_date = (
         get_date_formatted_for_email(booking.activationCode.expirationDate)
-        if offer.isDigital and booking.activationCode and booking.activationCode.expirationDate
+        if offer.hasUrl and booking.activationCode and booking.activationCode.expirationDate
         else None
     )
 
@@ -93,15 +93,15 @@ def get_booking_confirmation_to_beneficiary_email_data(
             ),
             "CODE_EXPIRATION_DATE": code_expiration_date,
             "VENUE_NAME": venue.common_name,
-            "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),
-            "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.isDigital,
+            "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.hasUrl),
+            "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.hasUrl,
             "IS_EVENT": offer.isEvent,
             "IS_EXTERNAL": booking.isExternal,
             "IS_SINGLE_EVENT": offer.isEvent and booking.quantity == 1,
             "IS_DUO_EVENT": booking.quantity == 2,
             "CAN_EXPIRE": can_expire,
             "EXPIRATION_DELAY": expiration_delay,
-            "HAS_OFFER_URL": offer.isDigital,
+            "HAS_OFFER_URL": offer.hasUrl,
             "DIGITAL_OFFER_URL": booking.completedUrl or None,
             "OFFER_WITHDRAWAL_DETAILS": offer.withdrawalDetails or None,
             "BOOKING_LINK": booking_app_link(booking),
