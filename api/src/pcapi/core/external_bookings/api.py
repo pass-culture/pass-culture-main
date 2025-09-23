@@ -81,7 +81,16 @@ def book_cinema_ticket(
     except (exceptions.ExternalBookingSoldOutError, exceptions.ExternalBookingTimeoutException):
         raise
     except Exception as exc:
-        logger.warning("Could not book external ticket: %s", exc)
+        logger.warning(
+            "Could not book external ticket: %s",
+            exc,
+            extra={
+                "stock_id": booking.stockId,
+                "beneficiary_id": beneficiary.id,
+                "stock_id_at_providers": stock_id_at_providers,
+                "local_class": local_class,
+            },
+        )
         raise exceptions.ExternalBookingException
 
 
