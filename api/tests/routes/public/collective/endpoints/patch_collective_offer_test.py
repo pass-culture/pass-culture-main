@@ -144,11 +144,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.domains == [domain]
         assert offer.durationMinutes == 183
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
-        assert offer.offerVenue == {
-            "venueId": None,
-            "addressType": "school",
-            "otherAddress": "",
-        }
         assert offer.interventionArea == ["33", "75"]
         assert offer.audioDisabilityCompliant is True
         assert offer.mentalDisabilityCompliant is True
@@ -729,12 +724,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.locationComment is None
         assert collective_offer.offererAddressId is None
 
-        assert collective_offer.offerVenue == {
-            "venueId": None,
-            "addressType": "school",
-            "otherAddress": "",
-        }
-
     def test_patch_offer_update_to_to_be_defined_location(self):
         key, venue_provider = self.setup_active_venue_provider()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -754,12 +743,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.locationComment == "In Paris"
         assert collective_offer.offererAddressId is None
 
-        assert collective_offer.offerVenue == {
-            "venueId": None,
-            "addressType": "other",
-            "otherAddress": "In Paris",
-        }
-
     def test_patch_offer_update_to_address_on_venue_location(self):
         key, venue_provider = self.setup_active_venue_provider()
         venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
@@ -778,12 +761,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert collective_offer.locationComment is None
         assert collective_offer.offererAddressId == venue.offererAddressId
-
-        assert collective_offer.offerVenue == {
-            "venueId": venue.id,
-            "addressType": "offererVenue",
-            "otherAddress": "",
-        }
 
     def test_patch_offer_update_to_address_on_other_location(self):
         key, venue_provider = self.setup_active_venue_provider()
@@ -826,12 +803,6 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert collective_offer.locationComment is None
         assert not collective_offer.offererAddressId == venue.offererAddressId
         assert collective_offer.offererAddressId == offerer_address.id
-
-        assert collective_offer.offerVenue == {
-            "venueId": None,
-            "addressType": "other",
-            "otherAddress": "123 rue de la paix 75000 Paris",
-        }
 
     @pytest.mark.parametrize(
         "location,error",

@@ -86,12 +86,6 @@ class CollectiveOfferExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class OfferVenueDict(typing.TypedDict):
-    addressType: OfferAddressType
-    venueId: int | None
-    otherAddress: str
-
-
 class OfferVenueDictStr(typing.TypedDict):
     addressType: typing.Literal["offererVenue"] | typing.Literal["school"] | typing.Literal["other"]
     venueId: int | None

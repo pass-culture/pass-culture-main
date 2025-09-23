@@ -7,9 +7,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository
 from pcapi.core.educational.api import institution as institution_api
-from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api import playlists as playlists_api
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -74,15 +72,11 @@ def get_classroom_playlist(
             .all()
         )
 
-    offers = [item.collective_offer_template for item in playlist_items]
-    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offers)
-
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             _serialize_collective_offer_template(
                 offer=item.collective_offer_template,
                 is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                offer_venue_by_offer_id=offer_venue_by_offer_id,
                 venue_distance=item.distanceInKm,
             )
             for item in playlist_items
@@ -97,20 +91,11 @@ def format_distance(distance: float | None) -> Decimal | None:
 
 
 def _serialize_collective_offer_template(
-    offer: educational_models.CollectiveOfferTemplate,
-    is_favorite: bool,
-    offer_venue_by_offer_id: dict[int, offerers_models.Venue | None],
-    venue_distance: float | None = None,
-    event_distance: float | None = None,
+    offer: educational_models.CollectiveOfferTemplate, is_favorite: bool, venue_distance: float | None = None
 ) -> serializers.CollectiveOfferTemplateResponseModel:
-    offer_venue = offer_venue_by_offer_id[offer.id]
-
-    serialized_offer = serializers.CollectiveOfferTemplateResponseModel.build(
-        offer=offer, offerVenue=offer_venue, is_favorite=is_favorite
-    )
+    serialized_offer = serializers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=is_favorite)
 
     serialized_offer.venue.distance = format_distance(venue_distance)
-    serialized_offer.offerVenue.distance = format_distance(event_distance)
 
     return serialized_offer
 
@@ -167,21 +152,11 @@ def new_template_offers_playlist(
             .all()
         )
 
-    offers = [item.collective_offer_template for item in playlist_items]
-    offer_venue_by_offer_id = educational_api_offer.get_collective_offer_venue_by_offer_id(offers)
-
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
             _serialize_collective_offer_template(
                 offer=item.collective_offer_template,
                 is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                offer_venue_by_offer_id=offer_venue_by_offer_id,
-                event_distance=(
-                    item.distanceInKm
-                    if item.collective_offer_template.offerVenue["addressType"]
-                    == educational_models.OfferAddressType.OFFERER_VENUE.value
-                    else None
-                ),
                 venue_distance=item.distanceInKm,
             )
             for item in playlist_items

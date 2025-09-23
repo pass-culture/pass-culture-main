@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
-import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
@@ -43,7 +42,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerVenue: CollectiveOfferOfferVenueResponseModel;
   students: Array<StudentLevels>;
   venue: GetCollectiveOfferVenueResponseModel;
   visualDisabilityCompliant?: boolean | null;

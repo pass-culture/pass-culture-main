@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
-import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
 import type { DateRangeModel } from './DateRangeModel';
 import type { EacFormat } from './EacFormat';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
@@ -26,7 +25,6 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
   nationalProgramId?: number | null;
-  offerVenue?: CollectiveOfferVenueBodyModel | null;
   priceDetail?: string | null;
   students?: Array<StudentLevels> | null;
   venueId?: number | null;

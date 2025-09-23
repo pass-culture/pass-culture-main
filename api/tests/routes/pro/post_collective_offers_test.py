@@ -201,7 +201,6 @@ class Returns200Test:
         data = {
             **base_offer_payload(venue=venue),
             "interventionArea": None,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
@@ -227,15 +226,12 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id}
-
     def test_location_school(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "interventionArea": ["75"],
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
@@ -254,8 +250,6 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.SCHOOL
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {"addressType": "school", "otherAddress": "", "venueId": None}
-
     def test_location_address(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
@@ -263,7 +257,6 @@ class Returns200Test:
         data = {
             **base_offer_payload(venue=venue),
             "interventionArea": None,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
@@ -285,19 +278,12 @@ class Returns200Test:
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
-        assert offer.offerVenue == {
-            "addressType": "other",
-            "otherAddress": "3 Rue de Valois 75001 Paris",
-            "venueId": None,
-        }
-
     def test_location_to_be_defined(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
@@ -314,8 +300,6 @@ class Returns200Test:
         assert offer.offererAddressId == None
         assert offer.locationType == models.CollectiveLocationType.TO_BE_DEFINED
         assert offer.locationComment == "Right here"
-
-        assert offer.offerVenue == {"addressType": "other", "otherAddress": "Right here", "venueId": None}
 
     def test_from_template_with_inactive_national_program(self, client):
         venue = offerers_factories.VenueFactory()
@@ -493,21 +477,6 @@ class Returns400Test:
         assert response.json == {"description": ["La description de l’offre doit faire au maximum 1500 caractères."]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
-    def test_create_collective_offer_cannot_receive_offer_venue(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-
-        data = {
-            **base_offer_payload(venue=venue),
-            "offerVenue": {"addressType": "offererVenue", "venueId": venue.id, "otherAddress": ""},
-        }
-        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
-
-        assert response.status_code == 400
-        assert response.json == {"offerVenue": ["Cannot receive offerVenue, use location instead"]}
-        assert db.session.query(models.CollectiveOffer).count() == 0
-
     def test_create_collective_offer_must_receive_location(self, client):
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
@@ -526,7 +495,6 @@ class Returns400Test:
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDED COMMENT",
@@ -549,7 +517,6 @@ class Returns400Test:
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDED COMMENT",
@@ -573,7 +540,6 @@ class Returns400Test:
         data = {
             **base_offer_payload(venue=venue),
             "interventionArea": None,
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -595,7 +561,6 @@ class Returns400Test:
         data = {
             **base_offer_payload(venue=venue),
             "interventionArea": ["977", "1234"],
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
@@ -616,7 +581,6 @@ class Returns400Test:
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
@@ -644,7 +608,6 @@ class Returns400Test:
 
         data = {
             **base_offer_payload(venue=venue),
-            "offerVenue": None,
             "location": {
                 "locationType": location_type,
                 "locationComment": None,

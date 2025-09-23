@@ -44,7 +44,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
     national_program = offer.nationalProgram
     is_favorite = offer.id in {offer.id for offer in redactor.favoriteCollectiveOfferTemplates}
     venue_address = offer.venue.offererAddress.address
-    offer_venue_address = offer_venue.offererAddress.address if offer_venue and offer_venue.offererAddress else None
     coordinates = {
         "longitude": float(venue_address.longitude),
         "latitude": float(venue_address.latitude),
@@ -82,17 +81,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "contactPhone": offer.contactPhone,
         "contactForm": offer.contactForm.value,
         "contactUrl": offer.contactUrl,
-        "offerVenue": {
-            "addressType": offer.offerVenue["addressType"],
-            "venueId": offer.offerVenue["venueId"],
-            "otherAddress": offer.offerVenue["otherAddress"],
-            "address": offer_venue_address.street if offer_venue_address else None,
-            "city": offer_venue_address.city if offer_venue_address else None,
-            "distance": None,
-            "name": offer_venue.name if offer_venue else None,
-            "postalCode": offer_venue_address.postalCode if offer_venue_address else None,
-            "publicName": offer_venue.publicName if offer_venue else None,
-        },
         "location": {
             "locationType": offer.locationType.value,
             "locationComment": offer.locationComment,
@@ -134,7 +122,6 @@ class CollectiveOfferTemplateTest:
     num_queries = 1  # fetch collective offer and related data
     num_queries += 1  # fetch redactor
     num_queries += 1  # check if offer is favorite
-    num_queries_with_venue = num_queries + 1  # fetch venue details
 
     def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -144,11 +131,6 @@ class CollectiveOfferTemplateTest:
             description="offer description",
             priceDetail="détail du prix",
             students=[StudentLevels.GENERAL2],
-            offerVenue={
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
             nationalProgramId=educational_factories.NationalProgramFactory().id,
@@ -156,7 +138,7 @@ class CollectiveOfferTemplateTest:
 
         url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        with assert_num_queries(self.num_queries_with_venue):
+        with assert_num_queries(self.num_queries):
             response = eac_client.get(url)
 
         assert response.status_code == 200
@@ -273,8 +255,7 @@ class GetCollectiveOfferTemplatesTest:
     # 1. fetch collective offer and related data
     # 2. fetch redactor
     # 3. check if offer is favorite
-    # 4. fetch venue details
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_one_template_id(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -295,7 +276,6 @@ class GetCollectiveOfferTemplatesTest:
         offers = []
         for venue in venues:
             offer = educational_factories.CollectiveOfferTemplateFactory(
-                offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
                 locationType=educational_models.CollectiveLocationType.ADDRESS,
                 offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
             )
@@ -379,7 +359,6 @@ class GetCollectiveOfferTemplatesTest:
         venue = offerers_factories.VenueFactory()
 
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            offerVenue={"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )
