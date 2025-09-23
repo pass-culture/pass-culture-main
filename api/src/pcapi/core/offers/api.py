@@ -1623,7 +1623,7 @@ def create_or_update_product_mediations(product: models.Product, images: Titeliv
         try:
             db.session.query(models.ProductMediation).filter(
                 models.ProductMediation.productId == product.id,
-                models.ProductMediation.lastProvider == provider,
+                models.ProductMediation.lastProviderId == provider.id,
             ).delete(synchronize_session=False)
 
             for image_type, image_bytes in new_images_data:
