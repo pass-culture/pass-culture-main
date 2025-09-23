@@ -91,7 +91,7 @@ def get_new_booking_to_pro_email_data(
             "IS_BOOKING_AUTOVALIDATED": is_booking_autovalidated,
             "IS_EVENT": offer.isEvent,
             "IS_THING": offer.isThing,
-            "IS_DIGITAL": offer.isDigital,
+            "IS_DIGITAL": offer.hasUrl,
             "IS_EXTERNAL": booking.isExternal,
             "ISBN": ean,
             "OFFER_NAME": offer.name,

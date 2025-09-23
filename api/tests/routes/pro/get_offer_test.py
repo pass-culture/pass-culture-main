@@ -165,7 +165,7 @@ class Returns200Test:
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "isDigital": False,
+            "hasUrl": False,
             "isDuo": False,
             "isEditable": True,
             "isEvent": True,

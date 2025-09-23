@@ -257,7 +257,7 @@ class ListOffersOfferResponseModel(BaseModel):
     status: OfferStatus
     isShowcase: bool | None
     address: AddressResponseIsLinkedToVenueModel | None
-    isDigital: bool
+    hasUrl: bool
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
     bookingsCount: int | None
@@ -462,7 +462,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasBookingLimitDatetimesPassed: bool
     hasStocks: bool
     isActive: bool
-    isDigital: bool
+    hasUrl: bool
     isDuo: bool
     isEditable: bool
     isEvent: bool

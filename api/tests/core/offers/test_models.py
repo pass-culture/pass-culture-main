@@ -52,9 +52,9 @@ class ProductModelTest:
 class OfferIsDigitalTest:
     def test_is_digital(self):
         offer = models.Offer(url="")
-        assert not offer.isDigital
+        assert not offer.hasUrl
         offer.url = "http://example.com/offer"
-        assert offer.isDigital
+        assert offer.hasUrl
 
 
 class OfferHasBookingLimitDatetimesPassedTest:

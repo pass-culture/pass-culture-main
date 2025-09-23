@@ -545,7 +545,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def get_location(cls, offer: offers_models.Offer) -> PhysicalLocation | DigitalLocation | AddressLocation:
-        if offer.isDigital:
+        if offer.hasUrl:
             return DigitalLocation.from_orm(offer)
         if offer.offererAddressId is not None and offer.offererAddressId != offer.venue.offererAddressId:
             return AddressLocation.build_from_offer(offer)

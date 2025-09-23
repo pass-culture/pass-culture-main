@@ -467,7 +467,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
 
     @property
     def canHaveActivationCodes(self) -> bool:
-        return self.offer.isDigital
+        return self.offer.hasUrl
 
     @hybrid_property
     def remainingStock(self) -> int | None:
@@ -992,11 +992,11 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     # TODO (igabriele, 2025-07-25): Rename that to `hasUrl` to avoid multiplying vocabulary terms related to online/offline offers.
     @hybrid_property
-    def isDigital(self) -> bool:
+    def hasUrl(self) -> bool:
         return self.url is not None and self.url != ""
 
-    @isDigital.expression  # type: ignore[no-redef]
-    def isDigital(cls) -> BooleanClauseList:
+    @hasUrl.expression  # type: ignore[no-redef]
+    def hasUrl(cls) -> BooleanClauseList:
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property

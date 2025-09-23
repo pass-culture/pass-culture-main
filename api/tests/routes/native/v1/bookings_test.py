@@ -952,7 +952,7 @@ class GetBookingsTest:
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},
-                    "isDigital": True,
+                    "hasUrl": True,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
                     "url": "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}",

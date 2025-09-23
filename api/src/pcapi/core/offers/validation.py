@@ -422,7 +422,7 @@ def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
 
 
 def check_offer_can_have_activation_codes(offer: models.Offer) -> None:
-    if not offer.isDigital or not offer.isThing:
+    if not offer.hasUrl or not offer.isThing:
         raise api_errors.ApiErrors(
             {"global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]}
         )

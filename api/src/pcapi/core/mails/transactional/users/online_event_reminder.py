@@ -90,7 +90,7 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
             Stock.beginningDatetime >= in_30_minutes,
             Stock.beginningDatetime < in_1_hour,
             Offer.isEvent,
-            Offer.isDigital,
+            Offer.hasUrl,
         )
     )
 

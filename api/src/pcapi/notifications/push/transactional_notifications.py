@@ -43,7 +43,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Trans
         return None
 
     cancelled_object = (
-        "commande" if bookings[0].stock.offer.isDigital or bookings[0].stock.offer.isThing else "réservation"
+        "commande" if bookings[0].stock.offer.hasUrl or bookings[0].stock.offer.isThing else "réservation"
     )
     return TransactionalNotificationData(
         group_id=GroupId.CANCEL_BOOKING.value,
