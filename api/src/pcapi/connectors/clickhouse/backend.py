@@ -31,7 +31,7 @@ class BaseBackend:
             self._engine = self._get_engine()
         return self._engine
 
-    def run_query(self, query: str, params: typing.Tuple) -> typing.Sequence:
+    def run_query(self, query: str, params: dict) -> typing.Sequence:
         try:
             with self.engine.connect() as connection:
                 results = connection.execute(sa.text(query), params).fetchall()

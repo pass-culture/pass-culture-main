@@ -56,7 +56,7 @@ class AggregatedCollectiveRevenueQuery(BaseQuery[AggregatedCollectiveRevenueMode
                     'collective', ROUND(SUM(expected_revenue), 2))
                 ) as expected_revenue
             FROM analytics.yearly_aggregated_venue_collective_revenue
-            WHERE "venue_id" in %s
+            WHERE "venue_id" in :venue_ids
             GROUP BY year
             ORDER BY year
         """
@@ -111,7 +111,7 @@ class AggregatedIndividualRevenueQuery(BaseQuery[AggregatedIndividualRevenueMode
                     'individual', ROUND(SUM(expected_revenue), 2))
                 ) as expected_revenue
             FROM analytics.yearly_aggregated_venue_individual_revenue
-            WHERE "venue_id" in %s
+            WHERE "venue_id" in :venue_ids
             GROUP BY year
             ORDER BY year
         """
@@ -170,7 +170,7 @@ class AggregatedTotalRevenueQuery(BaseQuery[AggregatedTotalRevenueModel]):
                     'total', ROUND(SUM(total_expected_revenue), 2))
                 ) as expected_revenue
             FROM analytics.yearly_aggregated_venue_revenue
-            WHERE "venue_id" in %s
+            WHERE "venue_id" in :venue_ids
             GROUP BY year
             ORDER BY year
         """
