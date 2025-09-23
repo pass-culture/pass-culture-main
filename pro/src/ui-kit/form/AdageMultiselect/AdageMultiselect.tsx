@@ -80,7 +80,6 @@ export const AdageMultiselect = ({
   selectedOptions,
   onSelectedOptionsChanged,
   sortOptions,
-  filterMaxLength = 255,
 }: AdageMultiselectProps) => {
   // We need to maintain the input value in state so that we can use it in itemToString
   const [inputValue, setInputValue] = useState('')
@@ -161,7 +160,6 @@ export const AdageMultiselect = ({
         <TextInput
           {...getInputProps()}
           type="search"
-          maxCharactersCount={filterMaxLength}
           value={inputValue}
           aria-describedby={indicationId}
           icon={strokeSearch}
