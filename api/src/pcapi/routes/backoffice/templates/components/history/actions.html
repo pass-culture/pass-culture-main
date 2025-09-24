@@ -65,7 +65,7 @@
                   {% if show_venue and action.venueId %}
                     sur le partenaire culturel
                     {% if action.venue %}
-                      {# FIXME: understand why venue can be None sometime #}
+                      {# FIXME (rpaoloni): understand why venue can be None sometime #}
                       {{ links.build_venue_name_to_details_link(action.venue) }}
                     {% endif %}
                     ({{ action.venueId }})

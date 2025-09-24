@@ -357,7 +357,9 @@ class BaseOfferResponseGetterDict(GetterDict):
             return product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount
 
         if key == "publicationDate":
-            return offer.bookingAllowedDatetime  # FIXME: to be removed when min app version stop using publicationDate
+            return (
+                offer.bookingAllowedDatetime
+            )  # FIXME (bpeyrou): to be removed when min app version stop using publicationDate
 
         if key == "video":
             if not (offer.metaData and offer.metaData.videoUrl):

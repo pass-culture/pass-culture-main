@@ -567,9 +567,6 @@ FraudCheckContent = typing.TypeVar(
 )
 
 
-# FIXME: ce status fait un peu doublon avec FraudStatus
-#  il faudra probablement en supprimer un quand le refacto du parcours
-#  d'inscription sera terminé
 class FraudCheckStatus(enum.Enum):
     CANCELED = "canceled"
     ERROR = "error"

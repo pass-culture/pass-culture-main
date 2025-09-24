@@ -1039,10 +1039,7 @@ def create_offerer(
 
         auto_tag_new_offerer(offerer, insee_data, user)
 
-        # FIXME: these data do not seem to be very useful, usage will be checked
         extra_data = {}
-        if insee_data:
-            extra_data = {"sirene_info": dict(insee_data)}
         _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
         extra_data.update(kwargs)
 
@@ -3267,7 +3264,6 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 
 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
-    # FIXME: to be modified when adage sync cron frequency is updated
     since_date = datetime.utcnow() - timedelta(days=2)
     adage_api.synchronize_adage_ids_on_venues(debug=True, since_date=since_date)
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
