@@ -27,10 +27,6 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
     def test_confirm_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -192,10 +188,6 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
     on_success_num_queries += 1  # 6. get finance events for booking
     on_success_num_queries += 1  # 7. update booking
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
     @pytest.mark.parametrize(
         "booking_factory",
         [
@@ -328,10 +320,6 @@ class UseCollectiveBookingTest(AdageMockEndpointHelper):
     default_path_params = {"booking_id": 1}
     default_factory = factories.ConfirmedCollectiveBookingFactory
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
     def test_use_confirmed_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         confirmed_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -401,10 +389,6 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
-
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_can_reset_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -483,10 +467,6 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
     default_path_params = {"booking_id": 1}
     default_factory = factories.UsedCollectiveBookingFactory
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
     def test_can_repay_used_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         used_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
@@ -543,10 +523,6 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
     endpoint_method = "post"
     default_path_params = {"offer_id": 1}
     default_factory = factories.CollectiveOfferFactory
-
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
 
     def test_can_book_collective_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

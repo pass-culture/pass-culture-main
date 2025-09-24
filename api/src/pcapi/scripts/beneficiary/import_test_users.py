@@ -279,7 +279,6 @@ def _create_provider(venue: offerers_models.Venue, row: dict) -> None:
     offerer_provider = offerers_models.OffererProvider(offerer=venue.managingOfferer, provider=provider)
     prefix = f"staging_{formatted_email}"
     key = offerers_models.ApiKey(
-        offerer=venue.managingOfferer,
         provider=provider,
         prefix=prefix,
         secret=crypto.hash_public_api_key(formatted_email),

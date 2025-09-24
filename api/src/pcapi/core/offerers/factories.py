@@ -370,7 +370,6 @@ class ApiKeyFactory(BaseFactory):
     class Meta:
         model = models.ApiKey
 
-    offerer = factory.SubFactory(OffererFactory)
     prefix = DEFAULT_PREFIX
 
     @classmethod

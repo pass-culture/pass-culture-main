@@ -59,26 +59,16 @@ def provider_api_key_required(route_function: typing.Callable) -> typing.Callabl
         _fill_current_api_key()
         public_utils.setup_public_api_log_extra(route_function)
 
-        if not g.current_api_key:
+        if not g.current_api_key or not g.current_api_key.provider:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
 
-        if not g.current_api_key.provider:
-            raise api_errors.UnauthorizedError(
-                errors={"auth": "Deprecated API key. Please contact provider support to get a new API key"}
-            )
         sentry_sdk.set_tag("provider-name", g.current_api_key.provider.name)
         sentry_sdk.set_tag("provider-id", g.current_api_key.provider.id)
 
-        _check_active_offerer(g.current_api_key)
         _check_active_provider(g.current_api_key)
         return route_function(*args, **kwds)
 
     return wrapper
-
-
-def _check_active_offerer(api_key: ApiKey) -> None:
-    if not api_key.offerer.isActive:
-        raise api_errors.ForbiddenError(errors={"auth": ["Inactive offerer"]})
 
 
 def _check_active_provider(api_key: ApiKey) -> None:

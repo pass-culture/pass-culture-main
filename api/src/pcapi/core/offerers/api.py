@@ -838,9 +838,7 @@ def generate_provider_api_key(provider: providers_models.Provider) -> tuple[mode
 
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = models.ApiKey(
-        offerer=offerer, provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret)
-    )
+    key = models.ApiKey(provider=provider, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -869,9 +867,6 @@ def find_api_key(key: str) -> models.ApiKey | None:
     api_key = (
         db.session.query(models.ApiKey)
         .filter_by(prefix=prefix)
-        .options(
-            sa_orm.joinedload(models.ApiKey.offerer),
-        )
         .options(sa_orm.joinedload(models.ApiKey.provider))
         .one_or_none()
     )
@@ -1360,9 +1355,6 @@ def reject_offerer(
         )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
-
-    # Remove any API key which could have been created when user was waiting for validation
-    db.session.query(models.ApiKey).filter(models.ApiKey.offererId == offerer.id).delete()
 
     db.session.flush()
 
@@ -2415,10 +2407,6 @@ def delete_offerer(offerer_id: int) -> None:
     ).delete(synchronize_session=False)
 
     db.session.query(offerers_models.UserOfferer).filter(offerers_models.UserOfferer.offererId == offerer_id).delete(
-        synchronize_session=False
-    )
-
-    db.session.query(offerers_models.ApiKey).filter(offerers_models.ApiKey.offererId == offerer_id).delete(
         synchronize_session=False
     )
 

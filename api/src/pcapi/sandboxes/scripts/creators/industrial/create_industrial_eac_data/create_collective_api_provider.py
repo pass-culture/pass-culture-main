@@ -31,6 +31,6 @@ def create_collective_api_provider(venues: Sequence[Venue], api_key_prefix: str 
         prefix = f"collective_{offerer.id}"
         secret = f"clear{offerer.id}"
 
-    ApiKeyFactory.create(offerer=offerer, provider=provider, prefix=prefix, secret=secret)
+    ApiKeyFactory.create(provider=provider, prefix=prefix, secret=secret)
 
     return provider

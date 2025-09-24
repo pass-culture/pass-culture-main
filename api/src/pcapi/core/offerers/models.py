@@ -1215,12 +1215,8 @@ class UserOfferer(PcObject, Model, ValidationStatusMixin):
 
 class ApiKey(PcObject, Model):
     __tablename__ = "api_key"
-    offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
-    )
-    offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId], backref="apiKeys")
     providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("provider.id", ondelete="CASCADE"), index=True, nullable=True
+        sa.BigInteger, sa.ForeignKey("provider.id", ondelete="CASCADE"), index=True, nullable=False
     )
     provider: sa_orm.Mapped["providers_models.Provider"] = sa_orm.relationship(
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"

@@ -48,7 +48,6 @@ def create_offerer_provider(
     )
 
     offerers_factories.ApiKeyFactory.create(
-        offererId=offerer.id,
         prefix=f"{settings.ENV}_{offerer.id}",
         secret=f"clearSecret{offerer.id}",
         providerId=provider.id,

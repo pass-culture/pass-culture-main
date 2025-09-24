@@ -41,12 +41,12 @@ class ListProvidersTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(name="Aaaaaah je suis au début")
         provider = providers_factories.ProviderFactory(name=offerer.name)
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         second_offerer = offerers_factories.OffererFactory(name="Zzzzz je dors à la fin")
         second_provider = providers_factories.ProviderFactory(name=second_offerer.name)
         providers_factories.OffererProviderFactory(offerer=second_offerer, provider=second_provider)
-        offerers_factories.ApiKeyFactory(offerer=second_offerer, provider=second_provider, prefix="other-prefix")
+        offerers_factories.ApiKeyFactory(provider=second_provider, prefix="other-prefix")
         providers_factories.VenueProviderFactory(provider=second_provider)
         providers_factories.VenueProviderFactory(provider=second_provider, isActive=False)
 
@@ -133,9 +133,6 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_offerer.siren == form_data["siren"]
         assert created_offerer.validationStatus == ValidationStatus.VALIDATED
 
-        created_api_key = created_provider.apiKeys[0]
-        assert created_api_key.offerer == created_offerer
-
     def test_create_provider(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
@@ -177,9 +174,6 @@ class CreateProviderTest(PostEndpointHelper):
         assert offerer.city != form_data["city"]
         assert offerer.postalCode != form_data["postal_code"]
 
-        created_api_key = created_provider.apiKeys[0]
-        assert created_api_key.offerer == offerer
-
     def test_create_provider_with_least_data(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
@@ -217,9 +211,6 @@ class CreateProviderTest(PostEndpointHelper):
         assert offerer.city != form_data["city"]
         assert offerer.postalCode != form_data["postal_code"]
 
-        created_api_key = created_provider.apiKeys[0]
-        assert created_api_key.offerer == offerer
-
 
 class GetProviderTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.get_provider"
@@ -241,7 +232,7 @@ class GetProviderTest(GetEndpointHelper):
             notificationExternalUrl="www.notification.passculture.exemple.fr",
         )
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         url = url_for(self.endpoint, provider_id=provider.id)
 
@@ -273,7 +264,7 @@ class GetProviderStatsTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")
         provider = providers_factories.ProviderFactory(name=offerer.name)
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         providers_factories.VenueProviderFactory(provider=provider, isActive=False)
         providers_factories.VenueProviderFactory(provider=provider, isActive=False)
@@ -324,7 +315,7 @@ class GetProviderVenuesTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")
         provider = providers_factories.ProviderFactory(name=offerer.name)
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offerers_factories.ApiKeyFactory(offerer=offerer, provider=provider)
+        offerers_factories.ApiKeyFactory(provider=provider)
 
         venue_1 = offerers_factories.VenueFactory(name="À la synchro active")
         providers_factories.VenueProviderFactory(venue=venue_1, provider=provider, isActive=True)

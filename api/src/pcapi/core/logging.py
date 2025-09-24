@@ -85,14 +85,6 @@ def get_logged_impersonator_id() -> int | None:
     return current_user.impersonator.id
 
 
-def get_api_key_offerer_id() -> int | None:
-    return (
-        flask.g.current_api_key.offererId
-        if _is_within_app_context() and hasattr(flask.g, "current_api_key") and flask.g.current_api_key
-        else None
-    )
-
-
 def get_api_key_provider_id() -> int | None:
     return (
         flask.g.current_api_key.providerId
@@ -197,9 +189,8 @@ class JsonFormatter(logging.Formatter):
         impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
-            # TODO(jbaudet): remove those two public api key/values since
+            # TODO(jbaudet): remove this public api key/values since
             # there is no need to log those outside of an public API call
-            "api_key_offerer_id": get_api_key_offerer_id(),
             "api_key_provider_id": get_api_key_provider_id(),
             "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,

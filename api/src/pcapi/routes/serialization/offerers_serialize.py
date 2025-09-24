@@ -255,10 +255,6 @@ class GetEducationalOfferersQueryModel(BaseModel):
         extra = "forbid"
 
 
-class GenerateOffererApiKeyResponse(BaseModel):
-    apiKey: str
-
-
 class CreateOffererQueryModel(BaseModel):
     city: str
     latitude: float | None
