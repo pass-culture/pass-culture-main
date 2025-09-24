@@ -2,6 +2,7 @@ import logging
 import typing
 from abc import abstractmethod
 from collections.abc import Iterator
+from datetime import UTC
 from datetime import datetime
 
 import pcapi.core.finance.api as finance_api
@@ -245,6 +246,21 @@ class LocalProvider(Iterator):
                     except ApiErrors:
                         continue
                 else:
+                    # TODO(jbaudet-09/2025): remove both two following
+                    # `if` when at least Offer's and Stock's datetime
+                    # fields have been migrated to always return
+                    # timezone-aware data
+                    if last_update_for_current_provider and not last_update_for_current_provider.tzinfo:
+                        last_update_for_current_provider = last_update_for_current_provider.replace(tzinfo=UTC)
+
+                    if (
+                        providable_info.date_modified_at_provider
+                        and not providable_info.date_modified_at_provider.tzinfo
+                    ):
+                        providable_info.date_modified_at_provider = providable_info.date_modified_at_provider.replace(
+                            tzinfo=UTC
+                        )
+
                     object_need_update = (
                         last_update_for_current_provider is None
                         or last_update_for_current_provider < providable_info.date_modified_at_provider
