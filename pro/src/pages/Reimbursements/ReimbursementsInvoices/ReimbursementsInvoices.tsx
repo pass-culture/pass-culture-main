@@ -1,4 +1,3 @@
-import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { format, subMonths } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -11,6 +10,7 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -26,7 +26,7 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const { data: selectedOfferer } = useOfferer(selectedOffererId)
+  const isCaledonian = useIsCaledonian()
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -49,8 +49,16 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     setSearchParams(newParams, { replace: true })
   }, [filters, setSearchParams])
 
+  const hasInvoiceQuery = useSWR(
+    selectedOffererId ? [GET_HAS_INVOICE_QUERY_KEY, selectedOffererId] : null,
+    ([, selectedOffererId]) => api.hasInvoice(selectedOffererId),
+    { fallbackData: { hasInvoice: false } }
+  )
+
+  const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
+
   const getInvoicesQuery = useSWR(
-    selectedOffererId
+    selectedOffererId && hasInvoice
       ? [GET_INVOICES_QUERY_KEY, selectedOffererId, searchFilters]
       : null,
     async () => {
@@ -69,12 +77,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     {
       fallbackData: [],
     }
-  )
-
-  const hasInvoiceQuery = useSWR(
-    selectedOffererId ? [GET_HAS_INVOICE_QUERY_KEY, selectedOffererId] : null,
-    ([, selectedOffererId]) => api.hasInvoice(selectedOffererId),
-    { fallbackData: { hasInvoice: false } }
   )
 
   const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
@@ -116,7 +118,6 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   const invoices = getInvoicesQuery.data
-  const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
 
   return (
     <>
@@ -129,14 +130,17 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         onReset={handleResetFilters}
         onSearch={handleSearch}
       />
-      {getInvoicesQuery.error && <InvoicesServerError />}
-      <InvoiceTable
-        data={invoices}
-        hasInvoice={hasInvoice}
-        isLoading={hasInvoiceQuery.isLoading}
-        isCaledonian={selectedOfferer?.isCaledonian}
-        onFilterReset={handleResetFilters}
-      />
+      {getInvoicesQuery.error ? (
+        <InvoicesServerError />
+      ) : (
+        <InvoiceTable
+          data={invoices}
+          hasInvoice={hasInvoice}
+          isLoading={getInvoicesQuery.isLoading}
+          isCaledonian={isCaledonian}
+          onFilterReset={handleResetFilters}
+        />
+      )}
     </>
   )
 }

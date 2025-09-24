@@ -5,7 +5,7 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin-top: rem.torem(32px);
+  margin: rem.torem(56px) 0;
 
   &-icon {
     color: var(--color-icon-subtle);
@@ -16,14 +16,4 @@
   @include fonts.title4;
 
   margin: rem.torem(16px) 0;
-}
-
-.no-refunds-description {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-
-  button {
-    margin: rem.torem(8px) 0;
-  }
 }
