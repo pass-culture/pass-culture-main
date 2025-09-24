@@ -3,6 +3,7 @@ import logging
 from typing import Any
 
 import pydantic.v1 as pydantic_v1
+from sqlalchemy.orm.exc import ObjectDeletedError
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
@@ -132,15 +133,18 @@ class BankAccountResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":
         now = datetime.datetime.utcnow()
+        linked_venues = []
+        for link in bank_account.venueLinks:
+            if link.timespan.lower <= now and (not link.timespan.upper or now <= link.timespan.upper):
+                try:
+                    link.venue.isSoftDeleted  # ignore soft-deleted venues when the link is still active
+                except ObjectDeletedError:
+                    pass
+                else:
+                    linked_venues.append(link.venue)
         bank_account.linkedVenues = pydantic_v1.parse_obj_as(
             list[LinkedVenues],
-            [
-                link.venue
-                for link in bank_account.venueLinks
-                if link.timespan.lower <= now
-                and (not link.timespan.upper or now <= link.timespan.upper)
-                and link.venue is not None  # ignore soft-deleted venues when the link is still active
-            ],
+            linked_venues,
         )
         bank_account.obfuscatedIban = cls._obfuscate_iban(bank_account.iban)
 

@@ -223,7 +223,7 @@ def test_invalid_validated(client):
     params = {"validated": "invalid"}
 
     client = client.with_session_auth(pro_user.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # + rollback
         response = client.get("/venues", params)
         assert response.status_code == 400
 
@@ -234,7 +234,7 @@ def test_invalid_active_offerer_only(client):
     params = {"activeOfferersOnly": "invalid"}
 
     client = client.with_session_auth(pro_user.email)
-    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # + rollback
         response = client.get("/venues", params)
         assert response.status_code == 400
 

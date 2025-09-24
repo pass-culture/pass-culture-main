@@ -10,6 +10,7 @@ import typing
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from functools import partial
 from math import ceil
 from typing import Optional
 
@@ -390,7 +391,8 @@ def update_venue_collective_data(
     for key, value in modifications.items():
         setattr(venue, key, value)
 
-    repository.save(venue)
+    db.session.add(venue)
+    db.session.flush()
 
     zendesk_sell.update_venue(venue)
 
@@ -1665,23 +1667,31 @@ def save_venue_banner(
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
         "crop_params": crop_params,
-        "updated_at": updated_at,
+        "updated_at": updated_at.isoformat(),
     }
 
-    repository.save(venue)
+    db.session.add(venue)
+    db.session.flush()
 
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=IndexationReason.VENUE_BANNER_UPDATE,
+    on_commit(
+        partial(
+            search.async_index_venue_ids,
+            [venue.id],
+            reason=IndexationReason.VENUE_BANNER_UPDATE,
+        )
     )
 
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
-    repository.save(venue)
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=IndexationReason.VENUE_BANNER_DELETION,
+
+    db.session.add(venue)
+    on_commit(
+        partial(
+            search.async_index_venue_ids,
+            [venue.id],
+            reason=IndexationReason.VENUE_BANNER_DELETION,
+        )
     )
 
 
