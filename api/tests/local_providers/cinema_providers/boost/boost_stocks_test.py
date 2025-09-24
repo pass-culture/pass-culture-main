@@ -174,7 +174,7 @@ class BoostStocksTest:
         assert created_offers[0].description == "Description du produit allociné 3"
         assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo
-        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 8, 11)
+        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 8, 11, tzinfo=datetime.UTC)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 270935}
         assert created_offers[0]._extraData == {}
@@ -195,7 +195,7 @@ class BoostStocksTest:
         assert created_offers[1].description == "Description du produit allociné 4"
         assert created_offers[1].durationMinutes == 444
         assert created_offers[1].isDuo
-        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 8, 11)
+        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 8, 11, tzinfo=datetime.UTC)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 269975}
         assert created_offers[1]._extraData == {}

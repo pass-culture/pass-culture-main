@@ -226,8 +226,8 @@ class CGRExtractTransformLoadProcessTest:
         assert offer_1.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_1.publicationDatetime == datetime.datetime(2022, 12, 12, 12, 41, 30)
         assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2022, 12, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.publicationDatetime == datetime.datetime(2022, 12, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_1.product
         assert offer_1.product.name == "Venom"

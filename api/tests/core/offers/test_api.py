@@ -2263,10 +2263,10 @@ class BatchUpdateOffersTest:
         db.session.refresh(pending_offer)
 
         assert offer1.isActive
-        assert offer1.publicationDatetime == now_datetime_without_tz
+        assert offer1.publicationDatetime == now_datetime_with_tz
 
         assert offer2.isActive
-        assert offer2.publicationDatetime == now_datetime_without_tz
+        assert offer2.publicationDatetime == now_datetime_with_tz
 
         assert not offer3.isActive
         assert not offer3.publicationDatetime
@@ -2330,8 +2330,8 @@ class BatchUpdateOffersTest:
         assert offer2.bookingAllowedDatetime == now_datetime_without_tz
 
         assert offer3.isActive
-        assert offer3.publicationDatetime == now_datetime_without_tz
         assert offer3.bookingAllowedDatetime == now_datetime_without_tz
+        assert offer3.publicationDatetime == now_datetime_with_tz
 
         assert len(caplog.records) == 4
         first_record = caplog.records[0]

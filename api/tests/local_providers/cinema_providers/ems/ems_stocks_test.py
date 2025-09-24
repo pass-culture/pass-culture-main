@@ -663,7 +663,7 @@ class EMSStocksTest:
         assert created_offers[0].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[0].withdrawalDetails == "Modalité de retrait"
         assert created_offers[0].isDuo
-        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 2, 12)
+        assert created_offers[0].publicationDatetime == datetime.datetime(2023, 2, 12, tzinfo=datetime.UTC)
 
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.15")
@@ -695,7 +695,7 @@ class EMSStocksTest:
         assert created_offers[1].bookingEmail == "seyne-sur-mer-booking@example.com"
         assert created_offers[1].withdrawalDetails == "Modalité de retrait"
         assert created_offers[1].isDuo
-        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 2, 12)
+        assert created_offers[1].publicationDatetime == datetime.datetime(2023, 2, 12, tzinfo=datetime.UTC)
 
         assert not created_stocks[2].quantity
         assert created_stocks[2].price == Decimal("5.15")
