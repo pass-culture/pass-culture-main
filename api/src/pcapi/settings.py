@@ -550,7 +550,7 @@ ENABLE_BO_BUNDLES_AUTORELOAD = bool(int(os.environ.get("ENABLE_BO_BUNDLES_AUTORE
 # SIRENE
 SIRENE_BACKEND = os.environ.get("SIRENE_BACKEND")
 INSEE_SIRENE_API_TOKEN = secrets_utils.get("INSEE_SIRENE_API_TOKEN", "")
-INSEE_SIRENE_API_URL = os.environ.get("INSEE_SIRENE_API_URL", "https://api.insee.fr/entreprises/sirene/V3.11")
+INSEE_SIRENE_API_URL = os.environ.get("INSEE_SIRENE_API_URL", "https://api.insee.fr/api-sirene/3.11")
 ENFORCE_SIRET_CHECK = bool(int(os.environ.get("ENFORCE_SIRET_CHECK", 1)))
 
 # API ENTREPRISE
