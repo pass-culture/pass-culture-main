@@ -1,3 +1,4 @@
+from datetime import UTC
 from datetime import datetime
 from unittest.mock import patch
 
@@ -71,7 +72,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_updates_existing_object(self, next_function):
         provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
-        providable_info = ProvidableInfo(date_modified_at_provider=datetime(2018, 1, 1))
+        providable_info = ProvidableInfo(date_modified_at_provider=datetime(2018, 1, 1, tzinfo=UTC))
         offers_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2000, 1, 1),
             lastProvider=provider,
