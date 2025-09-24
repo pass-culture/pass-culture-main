@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Navigate,
@@ -13,10 +12,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
-import {
-  GET_DATA_ERROR_MESSAGE,
-  SAVED_OFFERER_ID_KEY,
-} from '@/commons/core/shared/constants'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -25,9 +21,7 @@ import {
   selectCurrentOffererId,
   selectCurrentOffererIsOnboarded,
 } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Notification } from '@/components/Notification/Notification'
 
 import { useBeamer } from './analytics/beamer'
@@ -58,28 +52,26 @@ export const App = (): JSX.Element | null => {
   // This is to force the offerer if the url comes from the BO
   // (without breaking everything else)
   const [searchParams] = useSearchParams()
-  useEffect(() => {
-    if (searchParams.get('from-bo')) {
-      const structureId = Number(searchParams.get('structure'))
+  if (searchParams.get('from-bo')) {
+    const structureId = Number(searchParams.get('structure'))
 
-      api.getOfferer(structureId).then(
-        (offererObj) => {
-          dispatch(updateCurrentOfferer(offererObj))
-        },
-        () => notify.error(GET_DATA_ERROR_MESSAGE)
-      )
+    api.getOfferer(structureId).then(
+      (offererObj) => {
+        dispatch(updateCurrentOfferer(offererObj))
+      },
+      () => notify.error(GET_DATA_ERROR_MESSAGE)
+    )
 
-      searchParams.delete('from-bo')
-      searchParams.delete('structure')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate(
-        {
-          search: searchParams.toString(),
-        },
-        { replace: true }
-      )
-    }
-  }, [])
+    searchParams.delete('from-bo')
+    searchParams.delete('structure')
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    navigate(
+      {
+        search: searchParams.toString(),
+      },
+      { replace: true }
+    )
+  }
 
   // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
@@ -95,17 +87,6 @@ export const App = (): JSX.Element | null => {
     useOfferer(selectedOffererId, true)
 
   const isAwaitingRattachment = !isOffererValidating && offererApiError
-
-  useEffect(() => {
-    if (location.search.includes('logout')) {
-      api.signout()
-      if (storageAvailable('localStorage')) {
-        localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-      }
-      dispatch(updateUser(null))
-      dispatch(updateCurrentOfferer(null))
-    }
-  }, [location, dispatch])
 
   const currentRoute = findCurrentRoute(location)
   if (currentRoute && !currentRoute.meta?.public && currentUser === null) {
