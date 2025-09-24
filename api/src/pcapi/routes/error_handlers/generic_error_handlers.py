@@ -37,7 +37,6 @@ def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse | HtmlEr
     from pcapi.routes.backoffice import utils
 
     if utils.is_request_from_htmx():
-        # TODO use flask.g.request_ctx.flashes instead once flask is upgraded
         flashes = session.get("_flashes")
         if not flashes:
             flash("Objet non trouvé !", "warning")
