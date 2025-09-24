@@ -1230,8 +1230,6 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
         )
 
     file_paths = {}
-    logger.info("Generating bank accounts file")
-    file_paths["bank_accounts"] = _generate_bank_accounts_file(batch.cutoff)
 
     previous_batch = (
         db.session.query(models.CashflowBatch)
@@ -1355,110 +1353,6 @@ def _write_csv(
             zfile.write(path, arcname=path.name)
         path = compressed_path
     return path
-
-
-def _row_formatter(row: typing.Any) -> tuple:
-    return (
-        "",
-        "True",
-        "False",
-        str(row.id),
-        _clean_for_accounting(f"{row.offerer_name} - {row.label}"),
-        "A",
-        "ACTEURCULT",
-        "30J",
-        "15J",
-        "EUR",
-        "SPOT",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "fr-FR",
-        _clean_for_accounting(row.offerer_street),
-        "",
-        _clean_for_accounting(row.offerer_city),
-        "FR",
-        "",
-        _clean_for_accounting(row.offerer_postal_code),
-        "VSEPA",
-        _clean_for_accounting(row.iban),
-        "",
-        "",
-        _clean_for_accounting(row.offerer_siren),
-        "",
-        "EXO",
-    )
-
-
-def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
-    header = (
-        "Numéro",
-        "Actif",
-        "Traité",
-        "Identifiant des coordonnées bancaires",
-        "Nom du fournisseur - Libellé des coordonnées bancaires",
-        "Statut",
-        "Famille de fournisseurs",
-        "Condition de règlement",
-        "Cycle du relevé",
-        "Devise",
-        "Type de taux de change",
-        "Courriel",
-        "Site web",
-        "Téléphone 1",
-        "Téléphone 2",
-        "Fax",
-        "Langue",
-        "Adresse 1",
-        "Adresse 2",
-        "Ville",
-        "Pays",
-        "Département",
-        "Code postal",
-        "Mode de règlement bis",
-        "IBAN",
-        "Compte de trésorerie",
-        "Nature économique",
-        "SIREN",
-        "Numéro de TVA Intracom",
-        "Zone de taxes",
-    )
-    query = (
-        db.session.query(models.BankAccount)
-        .filter(
-            models.BankAccount.id.in_(
-                db.session.query(offerers_models.VenueBankAccountLink)
-                .filter(offerers_models.VenueBankAccountLink.timespan.contains(cutoff))
-                .with_entities(offerers_models.VenueBankAccountLink.bankAccountId)
-            )
-        )
-        .join(models.BankAccount.offerer)
-        .join(models.BankAccount.venueLinks)
-        .group_by(
-            models.BankAccount.id,
-            models.BankAccount.label,
-            models.BankAccount.iban,
-            offerers_models.Offerer.name,
-            offerers_models.Offerer.siren,
-            offerers_models.Offerer.street,
-            offerers_models.Offerer.city,
-            offerers_models.Offerer.postalCode,
-        )
-        .order_by(models.BankAccount.id)
-    ).with_entities(
-        models.BankAccount.id,
-        offerers_models.Offerer.name.label("offerer_name"),
-        offerers_models.Offerer.siren.label("offerer_siren"),
-        offerers_models.Offerer.street.label("offerer_street"),  # type: ignore[attr-defined]
-        offerers_models.Offerer.city.label("offerer_city"),
-        offerers_models.Offerer.postalCode.label("offerer_postal_code"),
-        models.BankAccount.label.label("label"),
-        models.BankAccount.iban.label("iban"),
-    )
-
-    return _write_csv("bank_accounts", header, rows=query, row_formatter=_row_formatter)
 
 
 def _changing_bank_accounts_row_formatter(row: typing.Any) -> tuple:
