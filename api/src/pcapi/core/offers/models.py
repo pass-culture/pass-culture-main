@@ -808,7 +808,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         "Criterion", back_populates="offers", secondary=OfferCriterion.__table__
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+        db_utils.TimezonedDatetime, nullable=False, default=date_utils.get_naive_utc_now
     )
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
