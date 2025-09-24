@@ -2,7 +2,6 @@ import { useFormContext } from 'react-hook-form'
 
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import type { Address } from '@/commons/core/shared/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
@@ -28,9 +27,6 @@ export interface OffererAuthenticationFormValues extends Address {
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
-  const isPartiallyDiffusableSignupEnabled = useActiveFeature(
-    'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
-  )
   const { offerer, initialAddress } = useSignupJourneyContext()
 
   const {
@@ -52,9 +48,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   }
 
   const shouldDisplayAddress =
-    !isPartiallyDiffusableSignupEnabled ||
-    watch('isOpenToPublic') === 'true' ||
-    offerer?.isDiffusible
+    watch('isOpenToPublic') === 'true' || offerer?.isDiffusible
 
   return (
     <FormLayout.Section>
@@ -67,7 +61,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
           disabled
         />
       </FormLayout.Row>
-      {offerer?.isDiffusible || !isPartiallyDiffusableSignupEnabled ? (
+      {offerer?.isDiffusible ? (
         <FormLayout.Row mdSpaceAfter>
           <TextInput
             {...register('name')}
@@ -97,11 +91,9 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         <TextInput
           {...register('publicName')}
           label="Nom public"
-          required={
-            !offerer?.isDiffusible && isPartiallyDiffusableSignupEnabled
-          }
+          required={!offerer?.isDiffusible}
           description={
-            offerer?.isDiffusible || !isPartiallyDiffusableSignupEnabled
+            offerer?.isDiffusible
               ? 'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
               : ''
           }
@@ -111,7 +103,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       <FormLayout.Row mdSpaceAfter className={styles['open-to-public-toggle']}>
         <OpenToPublicToggle
           onChange={(e) => {
-            if (isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible) {
+            if (!offerer?.isDiffusible) {
               if (e.target.value === 'true') {
                 // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
                 resetReactHookFormAddressFields((name, defaultValue) =>

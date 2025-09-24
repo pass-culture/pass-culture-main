@@ -31,10 +31,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
-    cy.setFeatureFlags([
-      { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-      { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: true },
-    ])
+    cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
   })
 
   it('I should be able to sign up with a new account and create a new offerer with a not diffusible siret without an address', () => {
