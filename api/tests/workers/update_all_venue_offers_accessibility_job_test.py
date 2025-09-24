@@ -22,7 +22,7 @@ def test_update_all_venue_offers_accessibility_job() -> None:
         "visualDisabilityCompliant": False,
     }
 
-    update_all_venue_offers_accessibility_job(venue, new_accessibility)
+    update_all_venue_offers_accessibility_job(venue.id, new_accessibility)
 
     assert offer1.audioDisabilityCompliant == new_accessibility["audioDisabilityCompliant"]
     assert offer1.mentalDisabilityCompliant == new_accessibility["mentalDisabilityCompliant"]
