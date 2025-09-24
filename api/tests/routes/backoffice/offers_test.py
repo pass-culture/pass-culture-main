@@ -88,7 +88,7 @@ def offers_fixture(criteria) -> tuple:
     offer_with_two_criteria = offers_factories.OfferFactory(
         name="A Very Specific Name That Is Longer",
         criteria=[criteria[0], criteria[1]],
-        dateCreated=datetime.date.today() - datetime.timedelta(days=2),
+        dateCreated=datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=2),
         validation=offers_models.OfferValidationStatus.REJECTED,
         offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="74000", address__departmentCode="74"
