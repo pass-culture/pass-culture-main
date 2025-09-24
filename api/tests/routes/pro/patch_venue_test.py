@@ -608,7 +608,7 @@ class Returns200Test:
         assert venue.audioDisabilityCompliant is True
 
         mocked_update_all_venue_offers_accessibility_job.assert_called_once_with(
-            venue,
+            venue.id,
             {
                 "audioDisabilityCompliant": True,
                 "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,

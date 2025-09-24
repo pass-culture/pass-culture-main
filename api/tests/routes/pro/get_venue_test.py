@@ -825,6 +825,8 @@ class Returns403Test:
         num_queries += 1  # select venue and offerer
         num_queries += 1  # select venue_pricing_point_link
         num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # rollback
+        num_queries += 1  # rollback
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
