@@ -99,6 +99,28 @@ class MagicEnum(sa_types.TypeDecorator):
         return self.enum_class[value]
 
 
+class TimezonedDatetime(sa_types.TypeDecorator):
+    """Add timezone data to datetimes objects read from database"""
+
+    impl = sa.DateTime
+
+    cache_ok = True
+
+    def process_bind_param(
+        self, value: datetime.datetime | None, dialect: sa.engine.Dialect
+    ) -> datetime.datetime | None:
+        if value and not value.tzinfo:
+            return value.replace(tzinfo=datetime.UTC)
+        return value
+
+    def process_result_value(
+        self, value: datetime.datetime | None, dialect: sa.engine.Dialect
+    ) -> datetime.datetime | None:
+        if value and not value.tzinfo:
+            return value.replace(tzinfo=datetime.UTC)
+        return value
+
+
 class TSVector(sa_types.TypeDecorator):
     impl = sa_postgresql.TSVECTOR
     cache_ok = True
