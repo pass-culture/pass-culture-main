@@ -635,14 +635,6 @@ class EditVenueContactTest:
 
 
 class ApiKeyTest:
-    def test_generate_and_save_api_key(self):
-        offerer = offerers_factories.OffererFactory()
-        generated_key = offerers_api.generate_and_save_api_key(offerer.id)
-
-        found_api_key = offerers_api.find_api_key(generated_key)
-
-        assert found_api_key.offerer == offerer
-
     def test_get_provider_from_api_key(self):
         value = "development_prefix_a very secret key"
         offerer = offerers_factories.OffererFactory()

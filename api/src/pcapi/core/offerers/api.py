@@ -831,25 +831,6 @@ def link_venue_to_pricing_point(
     )
 
 
-def generate_and_save_api_key(offerer_id: int) -> str:
-    # This is a soft limit for visual purposes only (not for security
-    # reasons). A user could create more than MAX_API_KEY_PER_OFFERER
-    # keys through a race condition. It's fine.
-    if db.session.query(models.ApiKey).filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
-        raise exceptions.ApiKeyCountMaxReached()
-    model_api_key, clear_api_key = generate_offerer_api_key(offerer_id)
-    repository.save(model_api_key)
-    return clear_api_key
-
-
-def generate_offerer_api_key(offerer_id: int) -> tuple[models.ApiKey, str]:
-    clear_secret = secrets.token_hex(32)
-    prefix = _generate_api_key_prefix()
-    key = models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_public_api_key(clear_secret))
-
-    return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
-
-
 def generate_provider_api_key(provider: providers_models.Provider) -> tuple[models.ApiKey, str]:
     offerer = provider.offererProvider.offerer if provider.offererProvider else None
     if offerer is None:

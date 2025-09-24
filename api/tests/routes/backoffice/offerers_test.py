@@ -7,7 +7,6 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
-from pcapi import settings
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
@@ -21,7 +20,6 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
-from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -305,7 +303,6 @@ class GetOffererTest(GetEndpointHelper):
 
         response_text = html_parser.content_as_text(response.data)
         assert "Entité juridique Fermée " in response_text
-        assert "Générer une clé API" not in response_text
 
     def test_get_offerer_with_fraudulent_booking(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -322,15 +319,6 @@ class GetOffererTest(GetEndpointHelper):
     def test_get_offerer_which_does_not_exist(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, offerer_id=12345))
         assert response.status_code == 404
-
-    class GenerateApiKeyButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
-        button_label = "Générer une clé API"
-
-        @property
-        def path(self):
-            offerer = offerers_factories.OffererFactory()
-            return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
     class ValidateButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.VALIDATE_OFFERER
@@ -616,45 +604,6 @@ class DeleteOffererTest(PostEndpointHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"L'entité juridique <script>alert('coucou')</script> ({offerer_id}) a été supprimée"
         )
-
-
-class GenerateOffererAPIKeyTest(PostEndpointHelper):
-    endpoint = "backoffice_web.offerer.generate_api_key"
-    endpoint_kwargs = {"offerer_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
-
-    def test_generate_api_key(self, legit_user, authenticated_client):
-        offerer = offerers_factories.OffererFactory()
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
-        response = authenticated_client.get(response.location)
-        api_key = db.session.query(offerers_models.ApiKey).filter_by(offererId=offerer.id).one()
-        alert = html_parser.extract_alert(response.data)
-        assert alert.startswith(f"Nouvelle clé API pour {offerer.name} ({offerer.id}): {api_key.prefix}")
-
-    def test_cant_generate_api_key_because_max_key_per_offerer_reached(self, legit_user, authenticated_client):
-        offerer = offerers_factories.OffererFactory()
-
-        for _ in range(settings.MAX_API_KEY_PER_OFFERER):
-            offerers_api.generate_and_save_api_key(offerer.id)
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
-        response = authenticated_client.get(response.location)
-        alert = html_parser.extract_alert(response.data)
-        assert alert == "Le nombre maximal de clés a été atteint"
-
-    def test_cant_generate_api_key_for_closed_offerer(self, legit_user, authenticated_client):
-        offerer = offerers_factories.ClosedOffererFactory()
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
-
-        assert response.status_code == 400
 
 
 class UpdateOffererTest(PostEndpointHelper):
