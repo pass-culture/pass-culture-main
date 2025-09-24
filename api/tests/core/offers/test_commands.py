@@ -69,7 +69,7 @@ class OfferCommandsTest:
     @mock.patch("pcapi.core.reminders.external.reminders_notifications.send_users_reminders_for_offer")
     @pytest.mark.usefixtures("clean_database")
     def test_future_offer_command(self, mock_notify_users, app):
-        offer = offers_factories.OfferFactory(bookingAllowedDatetime=datetime.date.today())
+        offer = offers_factories.OfferFactory(bookingAllowedDatetime=datetime.datetime.now(datetime.UTC))
         user = users_factories.BeneficiaryFactory()
         reminders_factories.OfferReminderFactory(user=user, offer=offer)
 
