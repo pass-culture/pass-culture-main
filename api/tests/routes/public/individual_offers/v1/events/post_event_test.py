@@ -2,6 +2,7 @@ import base64
 import decimal
 import logging
 import pathlib
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -89,7 +90,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert created_offer.description is None
         assert created_offer.publicationDatetime == now_datetime_with_tz.replace(second=0, microsecond=0, tzinfo=None)
-        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.status == offer_mixin.OfferStatus.DRAFT
         assert created_offer.withdrawalDetails is None
@@ -141,7 +142,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.publicationDatetime == date_utils.local_datetime_to_default_timezone(
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
-        assert created_offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert created_offer.finalizationDatetime == now_datetime_with_tz
         assert not created_offer.bookingAllowedDatetime
 
     @time_machine.travel(datetime(2025, 6, 26, tzinfo=timezone.utc), tick=False)
@@ -185,7 +186,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_offer = db.session.query(offers_models.Offer).one()
 
         assert created_offer.publicationDatetime == expected_publication_date
-        assert created_offer.finalizationDatetime == datetime(2025, 6, 26)
+        assert created_offer.finalizationDatetime == datetime(2025, 6, 26, tzinfo=UTC)
 
         assert not created_offer.bookingAllowedDatetime
 
@@ -326,7 +327,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         }
         assert created_offer.bookingEmail == "nicoj@example.com"
 
-        assert created_offer.finalizationDatetime == datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime(2025, 6, 25, 12, 30, tzinfo=UTC)
         assert created_offer.publicationDatetime == datetime(2025, 6, 25, 12, 30)
 
         assert not created_offer.bookingAllowedDatetime
