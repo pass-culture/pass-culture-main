@@ -9,12 +9,11 @@ class MovieType:
 
 def get_movie_label(code: str) -> str | None:
     for movie_type in MOVIE_TYPES:
-        if movie_type.name == code:
-            return movie_type.label
-        # TODO: (lixxday, 26/01/2024) This is a workaround
+        # This is a workaround
         # When this function is used in a pydantic validator, it will be called twice
-        # To avoid always returning empty responses, we check if the code is the label
-        if movie_type.label == code:
+        # Before serialization, the code would be the name, after serialization it would be the label
+        # To avoid always returning empty responses, we check both
+        if code in (movie_type.name, movie_type.label):
             return movie_type.label
     return None
 
