@@ -11,7 +11,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
-from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
+from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 
 
 @pytest.mark.usefixtures("db_session")
@@ -186,8 +186,9 @@ class EMSBookTicketTest:
 
         client = EMSClientAPI(cinema_id=cinema_id)
 
-        with pytest.raises(ExternalBookingSoldOutError):
+        with pytest.raises(ExternalBookingNotEnoughSeatsError) as exc:
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
+        assert exc.value.remainingQuantity == 0
 
 
 @pytest.mark.usefixtures("db_session")

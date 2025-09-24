@@ -359,14 +359,6 @@ def book_offer(
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise
-    except external_bookings_exceptions.ExternalBookingSoldOutError:
-        offers_api.edit_stock(stock, quantity=stock.dnBookedQuantity, editing_provider=stock.offer.lastProvider)
-        db.session.commit()
-        logger.info(
-            "Could not book offer: Event sold out",
-            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
-        )
-        raise
 
     if "apps_flyer" in beneficiary.externalIds:
         apps_flyer_job.log_user_booked_offer_event_job.delay(booking.id)

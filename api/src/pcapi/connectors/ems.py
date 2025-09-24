@@ -13,7 +13,7 @@ from requests.auth import HTTPBasicAuth  # noqa: TID251
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
-from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
+from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.utils import requests
 
 
@@ -151,7 +151,7 @@ class EMSBookingConnector:
 
         if content.get("statut") != 1:
             if content["code_erreur"] == 104:
-                raise ExternalBookingSoldOutError
+                raise ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
             raise EMSAPIException(f"Error on EMS API with {content['code_erreur']} - {content['message_erreur']}")
 
     def _build_headers(self) -> dict[str, str]:

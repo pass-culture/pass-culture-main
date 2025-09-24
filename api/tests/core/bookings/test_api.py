@@ -1030,33 +1030,15 @@ class BookOfferTest:
             assert booking.token
             assert len(booking.externalBookings) == 0
 
-        def test_sold_out_failure(self, requests_mock):
-            external_booking_url = "https://api.example.com/"
-            beneficiary = users_factories.BeneficiaryGrant18Factory()
-            provider = providers_factories.ProviderFactory(
-                bookingExternalUrl=external_booking_url,
-                cancelExternalUrl=external_booking_url,
-            )
-            stock = offers_factories.EventStockFactory(
-                offer__lastProvider=provider,
-                offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-                idAtProviders="",
-                quantity=25,
-                dnBookedQuantity=10,
-            )
-            requests_mock.post(
-                external_booking_url,
-                json={"error": "sold_out", "remainingQuantity": 0},
-                status_code=409,
-            )
-
-            with pytest.raises(external_bookings_exceptions.ExternalBookingSoldOutError):
-                api.book_offer(beneficiary, stock.id, quantity=1)
-
-            assert not db.session.query(models.Booking).count()
-            assert stock.quantity == 10  # dnBookedQuantity + 0
-
-        def test_not_enough_seats_failure(self, requests_mock):
+        @pytest.mark.parametrize(
+            "json_body,expected_remaining_quantity",
+            [
+                ({"error": "sold_out", "remainingQuantity": 0}, 0),
+                ({"error": "not_enough_seats", "remainingQuantity": 1}, 1),
+                ({"error": "not_enough_seats", "remainingQuantity": 0}, 0),
+            ],
+        )
+        def test_not_enough_seats_or_sold_out_failure(self, json_body, expected_remaining_quantity, requests_mock):
             external_booking_url = "https://api.example.com/"
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             provider = providers_factories.ProviderFactory(
@@ -1071,17 +1053,13 @@ class BookOfferTest:
                 quantity=25,
                 dnBookedQuantity=10,
             )
-            requests_mock.post(
-                external_booking_url,
-                json={"error": "not_enough_seats", "remainingQuantity": 1},
-                status_code=409,
-            )
+            requests_mock.post(external_booking_url, json=json_body, status_code=409)
 
             with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
                 api.book_offer(beneficiary, stock.id, quantity=2)
 
             assert not db.session.query(models.Booking).count()
-            assert stock.quantity == 11  # dnBookedQuantity + 1
+            assert stock.quantity == 10 + expected_remaining_quantity
 
         @pytest.mark.features(DISABLE_CDS_EXTERNAL_BOOKINGS=True)
         def test_should_raise_error_when_cds_external_bookings_are_disabled(self):
