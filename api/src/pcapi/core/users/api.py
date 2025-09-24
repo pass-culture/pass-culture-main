@@ -1141,7 +1141,7 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
 
     repository.save(user)
 
-    # FIXME: accept_offerer_invitation_if_exists also add() and commit()... in a loop!
+    # FIXME (prouzet-pass): accept_offerer_invitation_if_exists also add() and commit()... in a loop!
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 

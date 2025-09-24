@@ -378,7 +378,7 @@ def compute_deposit_expiration_date(beneficiary: users_models.User) -> datetime.
         raise ValueError(f"Beneficiary {beneficiary.id} has no birth date")
 
     # We add here an 11h buffer for the french territories overseas.
-    # TODO: use the actual department code of the user
+    # TODO (dnguyen): use the actual department code of the user
     return beneficiary.birth_date + relativedelta(years=21, hours=11)
 
 

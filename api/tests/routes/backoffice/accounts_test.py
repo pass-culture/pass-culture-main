@@ -151,7 +151,6 @@ def create_bunch_of_accounts():
     return underage, old_grant_18, new_grant_18, pro, random, no_address
 
 
-# TODO (prouzet) tests in which cards are checked
 def assert_user_equals(result_card_text: str, expected_user: users_models.User):
     assert f"{expected_user.firstName} {expected_user.lastName} " in result_card_text
     assert f"User ID : {expected_user.id} " in result_card_text

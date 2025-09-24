@@ -53,7 +53,6 @@ def update_contact_attributes(
     user: users_models.User | None = users_repository.find_user_by_email(email) if email else None
 
     # Then search by phone number, which is NOT unique in user database
-    # TODO(prouzet) Should we search by phone number in venues?
     if not user and phone_number:
         user = (
             db.session.query(users_models.User)

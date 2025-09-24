@@ -46,8 +46,8 @@ class BeneficiaryImport(PcObject, Model):
     eligibilityType: sa_orm.Mapped[EligibilityType] = sa_orm.mapped_column(
         sa.Enum(EligibilityType, create_constraint=False),
         nullable=False,
-        default=EligibilityType.AGE18,  # TODO (viconnex) remove default values
-        server_default=sa.text(EligibilityType.AGE18.name),  # TODO (viconnex) remove default values
+        default=EligibilityType.AGE18,
+        server_default=sa.text(EligibilityType.AGE18.name),
     )
     beneficiary: sa_orm.Mapped["User"] = relationship(
         "User", foreign_keys=[beneficiaryId], backref="beneficiaryImports"

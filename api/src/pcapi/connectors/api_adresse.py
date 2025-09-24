@@ -124,7 +124,6 @@ def format_q(address: str, city: str) -> str:
     address = address.replace(",", " ")
     address = " ".join(address.split())  # substitute multiple whitespaces with a single one
     address = address.title()
-    # TODO: subs can be improved
     subs = (
         (r"\s*\d{5}.*", ""),  # Remove postcode and city from address
         (" Bd ", " Boulevard "),

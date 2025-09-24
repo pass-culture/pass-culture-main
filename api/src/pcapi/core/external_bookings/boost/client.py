@@ -203,7 +203,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         _log_external_call(self, f"GET {url}", data, query_params=params)
         return data
 
-    # FIXME: define those later
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
         raise NotImplementedError()
 

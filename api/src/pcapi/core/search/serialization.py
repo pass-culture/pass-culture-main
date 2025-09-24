@@ -453,7 +453,7 @@ def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = N
         latitude = venue.offererAddress.address.latitude
         longitude = venue.offererAddress.address.longitude
     else:
-        # FIXME (dramelet, 03/02/2025): This can be removed once Venue table is sanizized
+        # FIXME (dramelet, 03/02/2025): This can be removed once Venue table is sanitized
         # and location columns dropped
         latitude = venue.latitude
         longitude = venue.longitude

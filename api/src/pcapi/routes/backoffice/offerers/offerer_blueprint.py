@@ -303,7 +303,6 @@ def get_stats_data(offerer: offerers_models.Offerer) -> utils.StatsData:
             "total": PLACEHOLDER,
         },
         "total_revenue": PLACEHOLDER,
-        # TODO (igabriele, 2025-07-25): Is it used?
         "placeholder": PLACEHOLDER,
     }
 

@@ -85,14 +85,6 @@ def get_logged_impersonator_id() -> int | None:
     return current_user.impersonator.id
 
 
-def get_api_key_provider_id() -> int | None:
-    return (
-        flask.g.current_api_key.providerId
-        if _is_within_app_context() and hasattr(flask.g, "current_api_key") and flask.g.current_api_key
-        else None
-    )
-
-
 def monkey_patch_logger_makeRecord() -> None:
     def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
@@ -189,9 +181,6 @@ class JsonFormatter(logging.Formatter):
         impersonator_id = get_logged_impersonator_id() if user_id else None
 
         json_record = {
-            # TODO(jbaudet): remove this public api key/values since
-            # there is no need to log those outside of an public API call
-            "api_key_provider_id": get_api_key_provider_id(),
             "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,

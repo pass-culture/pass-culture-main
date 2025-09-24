@@ -147,7 +147,7 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
 
     if form.order.data:
         base_query = base_query.order_by(getattr(getattr(offerers_models.Venue, "id"), form.order.data)())
-    # TODO(xordoquy): implement a proper fix in the soft delete lirary
+    # TODO(xordoquy): implement a proper fix in the soft delete library
     # +1 to check if there are more results than requested
     return base_query.filter(offerers_models.Venue.isSoftDeleted != True).limit(form.limit.data + 1).all()
 
@@ -378,7 +378,6 @@ def get_stats_data(venue_id: int) -> utils.StatsData:
             "total": PLACEHOLDER,
         },
         "total_revenue": PLACEHOLDER,
-        # TODO (igabriele, 2025-07-25): Is it used?
         "placeholder": PLACEHOLDER,
     }
 

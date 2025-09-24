@@ -286,8 +286,6 @@ class HistoryArchivedTest:
 
 
 class HistoryHiddenTest:
-    # TODO: for now it is possible to have a HIDDEN offer, with the public api only
-    # once the new statuses are applied to the public api, there should be no HIDDEN offer
     def test_published_hidden(self):
         offer = factories.HiddenCollectiveOfferFactory()
         history = get_collective_offer_history(offer)

@@ -562,7 +562,7 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(
             requests_mock,
             settings,
-            fixtures.build_titelive_one_book_response(taux_tva=taux_tva, code_tva="4"),  # TODO: find real values
+            fixtures.build_titelive_one_book_response(taux_tva=taux_tva, code_tva="4"),
         )
 
         # When
