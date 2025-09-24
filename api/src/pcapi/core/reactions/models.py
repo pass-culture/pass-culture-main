@@ -5,7 +5,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
+from pcapi.core.products.models import Product
 from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models import db

@@ -15,6 +15,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -75,7 +76,7 @@ def upsert_product_stock(
 
 def _create_offer_from_product(
     venue: offerers_models.Venue,
-    product: offers_models.Product,
+    product: products_models.Product,
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
     publicationDatetime: datetime.datetime,
@@ -117,15 +118,15 @@ def _create_offer_from_product(
     return offer
 
 
-def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
+def _get_existing_products(ean_to_create: set[str]) -> list[products_models.Product]:
     return (
-        db.session.query(offers_models.Product)
+        db.session.query(products_models.Product)
         .filter(
-            offers_models.Product.ean.in_(ean_to_create),
-            offers_models.Product.can_be_synchronized == True,
-            offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
+            products_models.Product.ean.in_(ean_to_create),
+            products_models.Product.can_be_synchronized == True,
+            products_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
             # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
-            offers_models.Product.lastProviderId.is_not(None),
+            products_models.Product.lastProviderId.is_not(None),
         )
         .all()
     )

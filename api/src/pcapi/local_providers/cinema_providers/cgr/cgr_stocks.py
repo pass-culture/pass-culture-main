@@ -17,7 +17,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
-from pcapi.core.offers import api as offers_api
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
@@ -142,7 +143,7 @@ class CGRStocks(LocalProvider):
                 if image and self.product and not self.product.productMediations:
                     try:
                         image_id = str(uuid.uuid4())
-                        mediation = offers_models.ProductMediation(
+                        mediation = products_models.ProductMediation(
                             productId=self.product.id,
                             lastProvider=self.provider,
                             imageType=offers_models.ImageType.POSTER,
@@ -256,11 +257,11 @@ class CGRStocks(LocalProvider):
 
         return price_category_label
 
-    def get_or_create_movie_product(self, movie: cgr_serializers.Film) -> offers_models.Product | None:
+    def get_or_create_movie_product(self, movie: cgr_serializers.Film) -> products_models.Product | None:
         assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
         id_at_providers = _build_movie_uuid_for_offer(movie.IDFilmAlloCine, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = products_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 

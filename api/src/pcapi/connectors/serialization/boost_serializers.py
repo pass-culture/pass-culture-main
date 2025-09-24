@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pydantic.v1 as pydantic_v1
 
-from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -24,8 +24,8 @@ class Film2(BaseModel):
     duration: int  # in minutes
     idFilmAllocine: int
 
-    def to_generic_movie(self) -> offers_models.Movie:
-        return offers_models.Movie(
+    def to_generic_movie(self) -> products_models.Movie:
+        return products_models.Movie(
             allocine_id=str(self.idFilmAllocine),
             description=None,
             duration=self.duration,

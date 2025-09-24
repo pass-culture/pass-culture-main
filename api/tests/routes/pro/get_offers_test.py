@@ -10,6 +10,7 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
+from pcapi.core.products import factories as products_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -282,7 +283,7 @@ class Returns200Test:
             address__street="8 Boulevard de Bercy",
             address__banId="75112_0877_00008",
         )
-        product = offers_factories.EventProductFactory()
+        product = products_factories.EventProductFactory()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             offererAddress=offerer_address1,

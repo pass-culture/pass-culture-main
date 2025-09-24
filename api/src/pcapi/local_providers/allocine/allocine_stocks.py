@@ -13,6 +13,8 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.allocine import build_movie_id_at_providers
 from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
@@ -122,7 +124,7 @@ class AllocineStocks(LocalProvider):
             if image and not self.product.productMediations:
                 try:
                     image_id = str(uuid.uuid4())
-                    mediation = offers_models.ProductMediation(
+                    mediation = products_models.ProductMediation(
                         productId=self.product.id,
                         lastProvider=self.provider,
                         imageType=offers_models.ImageType.POSTER,
@@ -228,11 +230,11 @@ class AllocineStocks(LocalProvider):
         self.price_categories_by_offer[offer].insert(0, price_category)
         return price_category
 
-    def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
+    def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> products_models.Product:
         assert self.provider  # helps mypy
         id_at_providers = build_movie_id_at_providers(self.provider.id, movie.internalId)
         generic_movie = create_generic_movie(movie)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = products_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
         assert product
 
         return product

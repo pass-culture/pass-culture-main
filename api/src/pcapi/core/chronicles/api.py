@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.utils.transaction_manager import atomic
@@ -146,13 +147,15 @@ def save_chronicle(
         )
 
     product_choice_id = answer_dict.get(product_identifier_field, EMPTY_ANSWER).choice_id
-    products: list[offers_models.Product] = []
+    products: list[products_models.Product] = []
     product_identifier = None
     if chronicle_type_id == models.ChronicleProductIdentifierType.EAN:
         product_identifier = _extract_book_club_ean(answer_dict.get(product_identifier_field, EMPTY_ANSWER))
         if product_identifier:
             products = (
-                db.session.query(offers_models.Product).filter(offers_models.Product.ean == product_identifier).all()
+                db.session.query(products_models.Product)
+                .filter(products_models.Product.ean == product_identifier)
+                .all()
             )
     elif chronicle_type_id == models.ChronicleProductIdentifierType.ALLOCINE_ID:
         product_identifier = _extract_cine_club_movie_identifier(
@@ -160,8 +163,8 @@ def save_chronicle(
         )
         if product_identifier:
             products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["allocineId"].astext == product_identifier)
+                db.session.query(products_models.Product)
+                .filter(products_models.Product.extraData["allocineId"].astext == product_identifier)
                 .all()
             )
 
@@ -231,7 +234,7 @@ def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Ch
         chronicles_query = (
             db.session.query(models.Chronicle)
             .join(models.Chronicle.products)
-            .filter(offers_models.Product.id == offer.productId)
+            .filter(products_models.Product.id == offer.productId)
         )
     else:
         chronicles_query = (
@@ -241,7 +244,7 @@ def get_offer_published_chronicles(offer: offers_models.Offer) -> list[models.Ch
     return chronicles_query.filter(models.Chronicle.isPublished).order_by(models.Chronicle.id.desc()).all()
 
 
-def get_product_identifier(chronicle: models.Chronicle, product: offers_models.Product) -> str | None:
+def get_product_identifier(chronicle: models.Chronicle, product: products_models.Product) -> str | None:
     match chronicle.productIdentifierType:
         case models.ChronicleProductIdentifierType.ALLOCINE_ID:
             return str(product.extraData.get("allocineId")) if product.extraData else None

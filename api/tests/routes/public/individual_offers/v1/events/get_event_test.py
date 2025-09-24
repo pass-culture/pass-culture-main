@@ -9,6 +9,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
 from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
@@ -36,7 +37,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def setup_base_resource(self, venue=None, **offer_kwargs) -> offers_models.Offer:
         venue = venue or self.setup_venue()
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             thumbCount=1,
             description="Un livre de contrepèterie",
             subcategoryId=subcategories.SEANCE_CINE.id,

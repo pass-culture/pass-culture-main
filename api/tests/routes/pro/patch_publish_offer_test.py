@@ -10,6 +10,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
@@ -386,7 +387,7 @@ class Returns400Test:
             managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
         )
 
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=ean)
+        product = products_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, ean=ean)
         offers_factories.OfferFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,

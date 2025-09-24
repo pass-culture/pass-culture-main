@@ -22,6 +22,7 @@ from pcapi.core.achievements import models as achievements_models
 from pcapi.core.artist import models as artist_models
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.operations import models as operations_models
+from pcapi.core.products import models as products_models
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import Model
 from pcapi.models import db
@@ -121,7 +122,7 @@ tables_to_clean: list[type[Model]] = [
     offers_models.Offer,
     offers_models.PriceCategory,
     offers_models.PriceCategoryLabel,
-    offers_models.Product,
+    products_models.Product,
     providers_models.CDSCinemaDetails,
     providers_models.BoostCinemaDetails,
     providers_models.CGRCinemaDetails,

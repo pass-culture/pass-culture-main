@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.history import api as history_api
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
@@ -120,7 +121,7 @@ def brevo_get_user_recommendations(user_id: int) -> serializers.BrevoOffersRespo
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(joinedload(offers_models.Offer.mediations))
-        .options(joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations))
+        .options(joinedload(offers_models.Offer.product).joinedload(products_models.Product.productMediations))
         .all()
     )
 

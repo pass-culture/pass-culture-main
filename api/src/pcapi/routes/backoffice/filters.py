@@ -38,6 +38,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import models as products_models
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -668,19 +669,19 @@ def format_offer_validation_status(status: offer_mixin.OfferValidationStatus, wi
 
 
 def format_product_cgu_compatibility_status(
-    cgu_compatibility: offers_models.GcuCompatibilityType, provider_name: str | None, with_badge: bool = False
+    cgu_compatibility: products_models.GcuCompatibilityType, provider_name: str | None, with_badge: bool = False
 ) -> str:
     prefix = "\u2022\u00a0"  # bullet(•) + no-break space
     match cgu_compatibility:
-        case offers_models.GcuCompatibilityType.COMPATIBLE:
+        case products_models.GcuCompatibilityType.COMPATIBLE:
             return format_badge(f"{prefix}Compatible", "success") if with_badge else "Compatible"
-        case offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
+        case products_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE:
             return (
                 format_badge(f"{prefix}Incompatible (Fraude & Conformité)", "danger")
                 if with_badge
                 else "Incompatible (Fraude & Conformité)"
             )
-        case offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
+        case products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE:
             return (
                 format_badge(f"{prefix}Incompatible (Provider)", "danger") if with_badge else "Incompatible (Provider)"
             )
@@ -1904,7 +1905,7 @@ def offer_mediation_link(mediation_id: int, thumb_count: int) -> str | None:
 
 
 def product_mediation_link(uuid: str) -> str | None:
-    mediation = offers_models.ProductMediation(
+    mediation = products_models.ProductMediation(
         uuid=uuid,
         imageType=offers_models.ImageType.RECTO,
         productId=0,

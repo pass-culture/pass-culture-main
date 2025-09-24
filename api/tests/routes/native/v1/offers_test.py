@@ -21,6 +21,7 @@ from pcapi.core.offerers.factories import OffererAddressFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import Offer
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reactions.factories import ReactionFactory
@@ -279,7 +280,7 @@ class OffersTest:
         assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1)
+        product = products_factories.ProductFactory(thumbCount=1)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -430,9 +431,9 @@ class OffersTest:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "1"
-        product_mediation = offers_factories.ProductMediationFactory(
+        product_mediation = products_factories.ProductMediationFactory(
             product=product, uuid=uuid, imageType=ImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
@@ -451,12 +452,12 @@ class OffersTest:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "recto"
-        product_mediation = offers_factories.ProductMediationFactory(
+        product_mediation = products_factories.ProductMediationFactory(
             product=product, uuid=uuid, imageType=ImageType.RECTO
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -473,7 +474,7 @@ class OffersTest:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -490,8 +491,8 @@ class OffersTest:
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -747,7 +748,7 @@ class OffersV2Test:
         assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -904,9 +905,9 @@ class OffersV2Test:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "11111111"
-        offers_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=ImageType.RECTO)
+        products_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -925,11 +926,11 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         first_uuid = "11111111"
         second_uuid = "22222222"
-        offers_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=ImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, uuid=second_uuid, imageType=ImageType.VERSO)
+        products_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=ImageType.RECTO)
+        products_factories.ProductMediationFactory(product=product, uuid=second_uuid, imageType=ImageType.VERSO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -952,7 +953,7 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -971,8 +972,8 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -1006,7 +1007,7 @@ class OffersV2Test:
         assert response.json["reactionsCount"] == {"likes": 2}
 
     def test_get_offer_attached_to_product_with_user_reaction(self, client):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        product = products_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.EventOfferFactory(product=product)
         offers_factories.EventStockFactory(offer=offer, price=12.34)
         ReactionFactory(product=product, reactionType=ReactionTypeEnum.LIKE)
@@ -1049,7 +1050,7 @@ class OffersV2Test:
         self, features, client, provider_class, ff_name, ff_value, booking_disabled
     ):
         provider = get_provider_by_local_class(provider_class)
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
+        product = products_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.OfferFactory(
             product=product,
             venue__isPermanent=True,
@@ -1123,7 +1124,7 @@ class OffersV2Test:
 
     def test_offer_extra_data_book_format_from_product(self, client):
         extra_data = {"bookFormat": BookFormat.POCHE}
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             thumbCount=1,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData=extra_data,
@@ -1151,7 +1152,7 @@ class OffersV2Test:
         assert response.json["extraData"]["bookFormat"] == "Moyen format"
 
     def test_offer_with_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicle = chronicles_factories.ChronicleFactory(
             products=[product],
@@ -1184,7 +1185,7 @@ class OffersV2Test:
         ]
 
     def test_offer_with_n_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory.create_batch(
             MAX_PREVIEW_CHRONICLES + 5, products=[product], isActive=True, isSocialMediaDiffusible=True
@@ -1198,7 +1199,7 @@ class OffersV2Test:
         assert len(response.json["chronicles"]) == MAX_PREVIEW_CHRONICLES
 
     def test_anonymize_author_of_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(
             products=[product],
@@ -1232,7 +1233,7 @@ class OffersV2Test:
         assert response.json["bookingAllowedDatetime"] == "2050-01-01T00:00:00Z"
 
     def test_get_offer_with_artists(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         artist_1 = artists_factories.ArtistFactory()
         artist_2 = artists_factories.ArtistFactory()
@@ -1305,7 +1306,7 @@ class OffersV2Test:
         assert response.json["chroniclesCount"] == 2
 
     def test_get_offer_with_product_with_no_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
 
         offer_id = offer.id
@@ -1315,7 +1316,7 @@ class OffersV2Test:
         assert response.json["chroniclesCount"] == 0
 
     def test_get_offer_with_product_with_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
         chronicles_factories.ChronicleFactory(products=[product])
@@ -1327,7 +1328,7 @@ class OffersV2Test:
         assert response.json["chroniclesCount"] == 2
 
     def test_get_offer_with_chronicles_with_product_with_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
         chronicles_factories.ChronicleFactory(products=[product])
@@ -1350,7 +1351,7 @@ class OffersV2Test:
         assert response.json["chroniclesCount"] == 1
 
     def test_get_offer_with_product_with_unpublished_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
 
@@ -1761,7 +1762,7 @@ class OfferChroniclesTest:
     expected_num_queries = 2
 
     def test_get_offer_chronicles(self, client):
-        product = offers_factories.ProductFactory(name="Test Product")
+        product = products_factories.ProductFactory(name="Test Product")
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(
             products=[product],
@@ -1784,7 +1785,7 @@ class OfferChroniclesTest:
         assert "Test Chronicle" in contents
 
     def test_get_offer_chronicles_with_no_author(self, client):
-        product = offers_factories.ProductFactory(name="Test Product")
+        product = products_factories.ProductFactory(name="Test Product")
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(
             products=[product],
@@ -1837,7 +1838,7 @@ class OfferChroniclesTest:
         assert response.json["chronicles"] == []
 
     def test_get_offer_chronicles_returns_full_content(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
 
         long_text = """
@@ -1868,7 +1869,7 @@ class OfferChroniclesTest:
         assert response.json["chronicles"][0]["content"] == long_text
 
     def test_get_chronicles_does_not_return_unpublished_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=True)
         chronicles_factories.ChronicleFactory(products=[product], isActive=True, isSocialMediaDiffusible=False)
@@ -1882,7 +1883,7 @@ class OfferChroniclesTest:
         assert response.json["chronicles"] == []
 
     def test_get_chronicles_with_anonymous_user(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(
             products=[product],
@@ -1901,7 +1902,7 @@ class OfferChroniclesTest:
         assert response.json["chronicles"][0]["author"] is None
 
     def test_chronicles_are_ordered_by_id(self, client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         chronicles_factories.ChronicleFactory(id=7777, products=[product], isActive=True, isSocialMediaDiffusible=True)
         chronicles_factories.ChronicleFactory(id=8888, products=[product], isActive=True, isSocialMediaDiffusible=True)

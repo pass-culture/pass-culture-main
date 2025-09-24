@@ -5,7 +5,6 @@ from unittest import mock
 import pytest
 
 import pcapi.core.artist.models as artist_models
-import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
@@ -19,7 +18,8 @@ from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistAlias
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products.factories import ProductFactory
 from pcapi.models import db
 
 from . import fixtures
@@ -259,7 +259,7 @@ class UpdateArtistsFromDeltaTest:
 def test_compute_artists_most_relevant_image():
     artist_with_image = ArtistFactory(image="http://example.com/image.jpg", computed_image=None)
     artist_without_image = ArtistFactory(image=None, computed_image=None)
-    product_mediation = offers_factories.ProductMediationFactory()
+    product_mediation = products_factories.ProductMediationFactory()
     ArtistProductLinkFactory(artist_id=artist_without_image.id, product_id=product_mediation.product.id)
 
     commands.compute_artists_most_relevant_image()

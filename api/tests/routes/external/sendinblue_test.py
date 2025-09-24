@@ -8,9 +8,9 @@ from pcapi.connectors.recommendation import RecommendationApiTimeoutException
 from pcapi.core.categories import subcategories
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import ProductMediationFactory
 from pcapi.core.offers.models import ImageType
+from pcapi.core.products.factories import ProductFactory
+from pcapi.core.products.factories import ProductMediationFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import db

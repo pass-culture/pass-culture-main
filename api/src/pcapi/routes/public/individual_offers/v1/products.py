@@ -18,6 +18,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.offers import validation as offers_validation
+from pcapi.core.products import models as products_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import api_errors
@@ -474,9 +475,9 @@ def check_eans_availability(
     """
     eans_to_check = set(query.eans)
     existing_products = (
-        db.session.query(offers_models.Product)
+        db.session.query(products_models.Product)
         .filter(
-            offers_models.Product.ean.in_(eans_to_check),
+            products_models.Product.ean.in_(eans_to_check),
         )
         .all()
     )

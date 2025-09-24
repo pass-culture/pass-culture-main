@@ -1,6 +1,7 @@
 import datetime
 
 import pcapi.core.offers.models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
@@ -8,7 +9,7 @@ from pcapi.models import db
 
 def get_object_from_current_chunks(
     providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
-) -> offers_models.Product | offers_models.Offer | offers_models.Stock | None:
+) -> products_models.Product | offers_models.Offer | offers_models.Stock | None:
     chunk_key = f"{providable_info.id_at_providers}|{providable_info.type.__name__}"
     pc_object = chunk_to_insert.get(chunk_key)
     if isinstance(pc_object, providable_info.type):
@@ -62,7 +63,7 @@ def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[tuple[str, Mo
 
 def get_last_update_for_provider(
     provider_id: int,
-    pc_obj: offers_models.Product | offers_models.Offer | offers_models.Stock | None,
+    pc_obj: products_models.Product | offers_models.Offer | offers_models.Stock | None,
 ) -> datetime.datetime | None:
     if pc_obj and pc_obj.lastProviderId == provider_id:
         return pc_obj.dateModifiedAtLastProvider

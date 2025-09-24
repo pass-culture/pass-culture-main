@@ -4,8 +4,9 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.models import GcuCompatibilityType
 from pcapi.core.offers.models import ImageType
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products.models import GcuCompatibilityType
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
@@ -46,14 +47,14 @@ class Return200Test:
         pro = user_offerer.user
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             name="Les Héritiers",
             description="Les étudiants et la culture",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
-        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
+        products_factories.ProductMediationFactory(product=product, imageType=ImageType.VERSO)
 
         offer = offers_factories.OfferFactory(venue=venue, product=product)
         offers_factories.HeadlineOfferFactory(offer=offer, venue=venue, without_mediation=True)

@@ -31,6 +31,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -252,10 +253,10 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[1]["Nom de l'offre"] == offers[2].name
 
     def test_list_offers_by_product(self, authenticated_client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer1 = offers_factories.OfferFactory(product=product)
         offer2 = offers_factories.OfferFactory(product=product)
-        offers_factories.OfferFactory(product=offers_factories.ProductFactory())
+        offers_factories.OfferFactory(product=products_factories.ProductFactory())
         offers_factories.OfferFactory()
         query_args = {
             "search-0-search_field": "PRODUCT",
@@ -1439,7 +1440,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == "Offerer Top Acteur"
 
     def test_list_offers_with_product_image(self, authenticated_client):
-        product_mediation = offers_factories.ProductMediationFactory()
+        product_mediation = products_factories.ProductMediationFactory()
         offer = offers_factories.OfferFactory(product=product_mediation.product)
 
         query_args = self._get_query_args_by_id(offer.id)
@@ -3654,7 +3655,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert "Type de musique" not in descriptions
 
     def test_get_detail_offer_with_product(self, authenticated_client):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
+        product = products_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id)
         with assert_num_queries(self.expected_num_queries_with_ff):
@@ -3662,7 +3663,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
     def test_get_detail_event_offer(self, authenticated_client):
-        product = offers_factories.ProductFactory(
+        product = products_factories.ProductFactory(
             name="good movie",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=133,

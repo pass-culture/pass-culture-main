@@ -31,6 +31,7 @@ from pcapi.core.geography.factories import AddressFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import InactiveProvider
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -958,7 +959,7 @@ class GetBookingsTest:
 
     def test_get_bookings_returns_user_reaction_when_reaction_is_on_the_product(self, client):
         now = datetime.utcnow()
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         stock = offers_factories.EventStockFactory(offer__product=product)
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)

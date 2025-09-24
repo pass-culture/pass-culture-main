@@ -12,8 +12,9 @@ from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -58,7 +59,7 @@ class EMSStocksTest:
         )
         cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
         synchronize_ems_venue_providers()
 
@@ -84,7 +85,7 @@ class EMSStocksTest:
         )
         providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
         should_apply_movie_festival_rate_mock.return_value = True
 
         synchronize_ems_venue_providers()
@@ -105,13 +106,13 @@ class EMSStocksTest:
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
 
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Produit allociné 1",
             description="Description du produit allociné 1",
             durationMinutes=111,
             extraData={"allocineId": 269975},
         )
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Produit allociné 2",
             description="Description du produit allociné 2",
             durationMinutes=222,
@@ -534,8 +535,8 @@ class EMSStocksTest:
         assert created_offers[0].durationMinutes == 111
         assert (
             created_offers[0].product
-            == db.session.query(offers_models.Product)
-            .filter(offers_models.Product.extraData["allocineId"] == "269975")
+            == db.session.query(products_models.Product)
+            .filter(products_models.Product.extraData["allocineId"] == "269975")
             .one()
         )
 
@@ -545,8 +546,8 @@ class EMSStocksTest:
         assert created_offers[1].durationMinutes == 222
         assert (
             created_offers[1].product
-            == db.session.query(offers_models.Product)
-            .filter(offers_models.Product.extraData["allocineId"] == "241065")
+            == db.session.query(products_models.Product)
+            .filter(products_models.Product.extraData["allocineId"] == "241065")
             .one()
         )
 

@@ -8,12 +8,12 @@ from flask import url_for
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.exceptions as offers_exceptions
-import pcapi.core.offers.models as offer_models
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -44,7 +44,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
     expected_num_queries = 3
 
     def test_search_by_ean_existing_product(self, authenticated_client):
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             description="Une offre pour tester",
             ean="1234567891234",
             extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
@@ -175,7 +175,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         )
 
     def test_search_by_visa_existing_product(self, authenticated_client):
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             description="Une offre pour tester",
             extraData={"visa": "123456"},
         )
@@ -207,7 +207,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert "Le produit est introuvable" in html_parser.content_as_text(response.data)
 
     def test_search_by_allocine_id_existing_product(self, authenticated_client):
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             description="Une offre pour tester",
             extraData={"allocineId": 123456},
         )
@@ -320,7 +320,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, ean=ean, is_ineligible=False)
         assert response.status_code == 303
 
-        product = db.session.query(offer_models.Product).one_or_none()
+        product = db.session.query(products_models.Product).one_or_none()
         assert product
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
@@ -341,7 +341,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
-        assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.COMPATIBLE
         assert len(product.productMediations) == 2
 
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()
@@ -374,7 +374,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
-        product = db.session.query(offer_models.Product).one_or_none()
+        product = db.session.query(products_models.Product).one_or_none()
         assert product
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
@@ -395,7 +395,7 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
             "date_parution": "2014-10-02 00:00:00",
             "num_in_collection": "5833",
         }
-        assert product.gcuCompatibilityType == offer_models.GcuCompatibilityType.COMPATIBLE
+        assert product.gcuCompatibilityType == products_models.GcuCompatibilityType.COMPATIBLE
         assert len(product.productMediations) == 2
 
         whitelist_product = db.session.query(fraud_models.ProductWhitelist).filter_by(ean=ean).one_or_none()

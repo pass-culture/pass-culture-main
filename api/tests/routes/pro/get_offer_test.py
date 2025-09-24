@@ -11,6 +11,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.products import factories as products_factories
 from pcapi.utils.human_ids import humanize
 
 
@@ -232,7 +233,7 @@ class Returns200Test:
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
             product=product, venue__managingOfferer=user_offerer.offerer, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -249,7 +250,7 @@ class Returns200Test:
 
     def test_returns_a_movie_with_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=120)
+        product = products_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=120)
         offer = offers_factories.OfferFactory(product=product, venue__managingOfferer=user_offerer.offerer)
         offers_factories.EventStockFactory(offer=offer)
         offer_id = offer.id

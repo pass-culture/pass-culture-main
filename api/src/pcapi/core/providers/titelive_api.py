@@ -8,7 +8,6 @@ import uuid
 import PIL
 import pydantic.v1 as pydantic
 
-import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
@@ -17,7 +16,9 @@ from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
+from pcapi.core.products import api as products_api
+from pcapi.core.products import exceptions as products_exceptions
+from pcapi.core.products import models as products_models
 from pcapi.models import db
 from pcapi.utils import repository
 from pcapi.utils import requests
@@ -132,7 +133,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
                 recent_product_page = filter_recent_products(product_page, updated_date)
                 allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
                 allowed_product_page = [work for work in allowed_product_page if work.article]
-                offers_api.reject_inappropriate_products(not_allowed_eans, author=None)
+                products_api.reject_inappropriate_products(not_allowed_eans, author=None)
 
                 yield allowed_product_page
 
@@ -174,19 +175,19 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
     def upsert_titelive_page(
         self,
         titelive_page: list[TiteliveWorkType],
-    ) -> list[offers_models.Product]:
+    ) -> list[products_models.Product]:
         titelive_eans = [article.gencod for work in titelive_page for article in work.article]
 
         products = (
-            db.session.query(offers_models.Product)
+            db.session.query(products_models.Product)
             .filter(
-                offers_models.Product.ean.in_(titelive_eans),
-                offers_models.Product.lastProviderId.is_not(None),
+                products_models.Product.ean.in_(titelive_eans),
+                products_models.Product.lastProviderId.is_not(None),
             )
             .all()
         )
 
-        products_by_ean: dict[str, offers_models.Product] = {p.ean: p for p in products}
+        products_by_ean: dict[str, products_models.Product] = {p.ean: p for p in products}
         for titelive_search_result in titelive_page:
             products_by_ean = self.upsert_titelive_result_in_dict(titelive_search_result, products_by_ean)
 
@@ -194,15 +195,15 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
 
     @abc.abstractmethod
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteliveWorkType, products_by_ean: dict[str, offers_models.Product]
-    ) -> dict[str, offers_models.Product]:
+        self, titelive_search_result: TiteliveWorkType, products_by_ean: dict[str, products_models.Product]
+    ) -> dict[str, products_models.Product]:
         raise NotImplementedError()
 
     def update_product_thumbnails(
         self,
-        products: list[offers_models.Product],
+        products: list[products_models.Product],
         titelive_page: list[TiteliveWorkType],
-    ) -> list[offers_models.Product]:
+    ) -> list[products_models.Product]:
         thumbnail_url_by_ean: dict[str, dict[offers_models.ImageType, str]] = {}
 
         for work in titelive_page:
@@ -231,7 +232,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
                     new_thumbnail_url = new_thumbnail_urls.get(image_type)
                     if new_thumbnail_url is not None:
                         image_id = str(uuid.uuid4())
-                        mediation = offers_models.ProductMediation(
+                        mediation = products_models.ProductMediation(
                             productId=product.id,
                             lastProvider=self.provider,
                             imageType=image_type,
@@ -267,13 +268,13 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
 
         return products
 
-    def remove_product_mediation(self, product: offers_models.Product) -> None:
+    def remove_product_mediation(self, product: products_models.Product) -> None:
         """
         warning this function does not automatically commit the transaction
         """
-        product_mediations = db.session.query(offers_models.ProductMediation).filter(
-            offers_models.ProductMediation.productId == product.id,
-            offers_models.ProductMediation.lastProviderId == self.provider.id,
+        product_mediations = db.session.query(products_models.ProductMediation).filter(
+            products_models.ProductMediation.productId == product.id,
+            products_models.ProductMediation.lastProviderId == self.provider.id,
         )
         for product_mediation in product_mediations:
             db.session.delete(product_mediation)
@@ -293,15 +294,17 @@ def filter_recent_products(
     return titelive_product_page
 
 
-def activate_newly_eligible_product_and_offers(product: offers_models.Product) -> None:
-    is_product_newly_eligible = product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+def activate_newly_eligible_product_and_offers(product: products_models.Product) -> None:
+    is_product_newly_eligible = (
+        product.gcuCompatibilityType == products_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
+    )
     ean = product.ean
     if ean is None:
         return
     if is_product_newly_eligible:
         try:
-            offers_api.approves_provider_product_and_rejected_offers(ean)
-        except NotUpdateProductOrOffers as exception:
+            products_api.approves_provider_product_and_rejected_offers(ean)
+        except products_exceptions.NotUpdateProductOrOffers as exception:
             logger.error("Product with ean cannot be approved", extra={"ean": ean, "exc": str(exception)})
 
 

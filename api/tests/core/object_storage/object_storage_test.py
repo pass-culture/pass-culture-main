@@ -9,6 +9,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.object_storage import check_backend_setting
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
+from pcapi.core.products import factories as products_factories
 
 
 class StorePublicObjectTest:
@@ -97,12 +98,12 @@ class GetThumbStorageIdTest:
         assert mediation.get_thumb_storage_id() == "mediations/PM"
 
     def test_product(self):
-        product = offers_factories.ProductFactory(id=123, thumbCount=1)
+        product = products_factories.ProductFactory(id=123, thumbCount=1)
 
         assert product.get_thumb_storage_id() == "products/PM"
 
     def test_product_with_4_thumbs(self):
-        product_with_4_thumbs = offers_factories.ProductFactory(id=123, thumbCount=4)
+        product_with_4_thumbs = products_factories.ProductFactory(id=123, thumbCount=4)
 
         assert product_with_4_thumbs.get_thumb_storage_id() == "products/PM_3"
 
@@ -117,7 +118,7 @@ class GetThumbStorageIdTest:
         assert venue.get_thumb_storage_id(suffix_str="", ignore_thumb_count=True) == "venues/PM"
 
     def test_no_thumb(self):
-        product_with_no_thumb = offers_factories.ProductFactory(id=123)
+        product_with_no_thumb = products_factories.ProductFactory(id=123)
 
         with pytest.raises(ValueError):
             product_with_no_thumb.get_thumb_storage_id()

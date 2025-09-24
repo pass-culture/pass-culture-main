@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.products import factories as products_factories
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -94,7 +95,7 @@ class PostReactionTest:
 
     def test_post_reaction_to_product(self, client):
         user = users_factories.BeneficiaryFactory()
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)

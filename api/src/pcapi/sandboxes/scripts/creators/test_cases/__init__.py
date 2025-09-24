@@ -30,6 +30,8 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import ImageType
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.reactions.factories import ReactionFactory
@@ -299,7 +301,7 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/3.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
@@ -315,7 +317,9 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        product = products_factories.ProductFactory.create(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
+        )
         offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
@@ -334,7 +338,7 @@ def create_artists() -> None:
         image_license_url="https://creativecommons.org/licenses/by-sa/2.0",
     )
     for _ in range(10):
-        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
+        product = products_factories.ProductFactory.create(subcategoryId=subcategories.SEANCE_CINE.id)
         offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
@@ -385,11 +389,11 @@ def _create_library_with_writers() -> None:
     image_paths = itertools.cycle(pathlib.Path(generic_picture_thumbs.__path__[0]).iterdir())
     for artist in artists:
         for num in range(5):
-            product = offers_factories.ProductFactory.create(
+            product = products_factories.ProductFactory.create(
                 name=f"Livre - {artist.name} - {num + 1}", subcategoryId=subcategories.LIVRE_PAPIER.id
             )
             image_path = next(image_paths)
-            mediation = offers_factories.ProductMediationFactory.create(product=product, imageType=ImageType.RECTO)
+            mediation = products_factories.ProductMediationFactory.create(product=product, imageType=ImageType.RECTO)
             thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True, object_id=mediation.uuid)
             offers_factories.ArtistProductLinkFactory.create(
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
@@ -446,7 +450,7 @@ def _create_offers_for_each_gtl_level_1(size_per_gtl_level_1: int, venue: offere
 
 def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_models.Venue) -> None:
     ean = Fake.ean13()
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
         extraData={"gtl_id": gtl_id, "author": Fake.name()},
@@ -464,7 +468,7 @@ def _create_offers_with_gtl_id(gtl_id: str, size_per_gtl: int, venue: offerers_m
 @log_func_duration
 def create_offers_with_same_ean() -> None:
     offers = []
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         name="Le livre du pass Culture",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
@@ -496,7 +500,7 @@ def create_offers_with_same_ean() -> None:
 
 
 def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -> None:
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         lastProvider=providers_factories.PublicApiProviderFactory.create(name="BookProvider"),
         ean=ean,
@@ -512,7 +516,7 @@ def create_offer_with_ean(ean: str, venue: offerers_models.Venue, author: str) -
 
 
 def create_offer_and_stocks_for_cinemas(
-    venues: list[offerers_models.Venue], products: list["offers_models.Product"]
+    venues: list[offerers_models.Venue], products: list["products_models.Product"]
 ) -> None:
     for venue in venues:
         for idx, product in enumerate(products):
@@ -557,9 +561,9 @@ def create_cinema_data() -> None:
     create_offer_and_stocks_for_cinemas(venues, products)
 
 
-def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
+def create_movie_products(offset: int = 0) -> list["products_models.Product"]:
     return [
-        offers_factories.ProductFactory.create(
+        products_factories.ProductFactory.create(
             subcategoryId=subcategories.SEANCE_CINE.id,
             description=f"Description du film {i}",
             name=f"Film {i}",
@@ -624,19 +628,19 @@ def create_offers_interactions() -> None:
         name="Librairie des interactions 4", venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
     )
 
-    product_1_likes_1_headline = offers_factories.ProductFactory.create(
+    product_1_likes_1_headline = products_factories.ProductFactory.create(
         name="Livre 1 headline 1 like dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    product_2_likes_2_headline_1_chronicle = offers_factories.ProductFactory.create(
+    product_2_likes_2_headline_1_chronicle = products_factories.ProductFactory.create(
         name="Livre 2 headline 1 chronique 2 likes dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    product_5_likes_1_headline_1_chronicle = offers_factories.ProductFactory.create(
+    product_5_likes_1_headline_1_chronicle = products_factories.ProductFactory.create(
         name="Livre 1 headline 1 chronique 5 likes dans vos Librairies des interactions",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
-    product_with_mixed_chronicles = offers_factories.ProductFactory.create(
+    product_with_mixed_chronicles = products_factories.ProductFactory.create(
         name="Livre avec chroniques mixtes",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
@@ -936,7 +940,7 @@ def _create_single_book_author(venues: list[offerers_models.Venue]) -> None:
 
 def _create_book_in_multiple_venues(venues: list[offerers_models.Venue]) -> None:
     # an author with 1 book in multiple venues
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
     for venue in venues[:3]:
@@ -952,7 +956,7 @@ def _create_books_with_the_same_author_duplicated_in_multiple_venues(venues: lis
     author = Fake.name()
     for tome in range(1, 11):
         ean = Fake.ean13()
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
@@ -967,7 +971,7 @@ def _create_books_with_the_same_author_duplicated_in_multiple_venues(venues: lis
 
     for tome in range(11, 16):
         ean = Fake.ean13()
-        product = offers_factories.ProductFactory.create(
+        product = products_factories.ProductFactory.create(
             name="One Piece tome " + str(tome),
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             ean=ean,
@@ -984,7 +988,7 @@ def _create_multiauthors_books(venues: list[offerers_models.Venue]) -> None:
     # multiple authors
     authors = [Fake.name() for _ in range(4)]
     ean = Fake.ean13()
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         name="multiauth",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         ean=ean,
@@ -1216,7 +1220,7 @@ def create_institutional_website_offer_playlist() -> None:
 
 @log_func_duration
 def create_product_with_multiple_images() -> None:
-    product = offers_factories.ProductFactory.create(
+    product = products_factories.ProductFactory.create(
         name="multiple thumbs",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         ean="9999999999999",
@@ -1225,12 +1229,12 @@ def create_product_with_multiple_images() -> None:
         product=product, name=product.name, subcategoryId=product.subcategoryId
     )
     offers_factories.StockFactory.create(offer=offer)
-    offers_factories.ProductMediationFactory.create(
+    products_factories.ProductMediationFactory.create(
         product=product,
         uuid="222A",
         imageType=ImageType.RECTO,
     )
-    offers_factories.ProductMediationFactory.create(
+    products_factories.ProductMediationFactory.create(
         product=product,
         uuid="222A_1",
         imageType=ImageType.VERSO,
@@ -1257,7 +1261,7 @@ def create_users_with_reactions() -> None:
     reactions_to_add = [ReactionTypeEnum.LIKE, ReactionTypeEnum.DISLIKE, ReactionTypeEnum.NO_REACTION, None]
     for reaction_type in reactions_to_add:
         # USER 1
-        product = offers_factories.ProductFactory.create()
+        product = products_factories.ProductFactory.create()
         stock = offers_factories.StockFactory.create(offer__product=product)
         bookings_factories.UsedBookingFactory.create(stock=stock, user=user_1)
         if reaction_type is not None:

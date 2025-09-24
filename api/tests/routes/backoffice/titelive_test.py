@@ -12,6 +12,7 @@ from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -156,7 +157,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.products_api.whitelist_product")
     @pytest.mark.parametrize(
         "form_data",
         [
@@ -167,7 +168,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
     def test_add_product_with_already_rejected_offers_to_whitelist(
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, form_data
     ):
-        thing_product = offers_factories.ThingProductFactory(
+        thing_product = products_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             name="Immortelle randonnée ; Compostelle malgré moi",
@@ -256,11 +257,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
         )
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.products_api.whitelist_product")
     def test_create_whitelisted_product_if_not_existing(
         self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
-        thing_product = offers_factories.ThingProductFactory(
+        thing_product = products_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             name="Immortelle randonnée ; Compostelle malgré moi",
@@ -344,11 +345,11 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
     @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
-    @patch("pcapi.routes.backoffice.titelive.blueprint.offers_api.whitelist_product")
+    @patch("pcapi.routes.backoffice.titelive.blueprint.products_api.whitelist_product")
     def test_add_product_to_whitelist_should_set_validation_author(
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, legit_user
     ):
-        thing_product = offers_factories.ThingProductFactory(
+        thing_product = products_factories.ThingProductFactory(
             ean=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             description="Tome 1",
             name="Immortelle randonnée ; Compostelle malgré moi",

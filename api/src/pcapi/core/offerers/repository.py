@@ -10,6 +10,7 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -1038,7 +1039,7 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
         .options(
             sa_orm.contains_eager(offers_models.Offer.headlineOffers),
             sa_orm.joinedload(offers_models.Offer.mediations),
-            sa_orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
+            sa_orm.joinedload(offers_models.Offer.product).joinedload(products_models.Product.productMediations),
         )
         .filter(
             models.Offerer.id == offerer_id,

@@ -11,6 +11,7 @@ from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import
     send_first_venue_approved_offer_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.settings import PRO_URL
 
@@ -42,7 +43,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
 
     def test_get_first_venue_approved_book_offer_correct_email_metadata(self):
         # Given
-        product = offers_factories.ProductFactory(name="Ma petite offre", subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = products_factories.ProductFactory(name="Ma petite offre", subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
             venue__name="Mon stade",
             product=product,

@@ -38,6 +38,7 @@ from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.products import models as products_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import get_and_lock_user
@@ -130,10 +131,10 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                 .options(
                     sa_orm.joinedload(offers_models.Offer.product)
                     .load_only(
-                        offers_models.Product.id,
-                        offers_models.Product.thumbCount,
+                        products_models.Product.id,
+                        products_models.Product.thumbCount,
                     )
-                    .joinedload(offers_models.Product.productMediations),
+                    .joinedload(products_models.Product.productMediations),
                     sa_orm.joinedload(offers_models.Offer.venue)
                     .load_only(
                         offerers_models.Venue.name,

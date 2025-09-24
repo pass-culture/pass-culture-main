@@ -12,6 +12,8 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
+from pcapi.core.products import factories as products_factories
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import CGRStocks
@@ -26,13 +28,13 @@ from tests.local_providers.provider_test_utils import create_finance_event_to_up
 @pytest.mark.usefixtures("db_session")
 class CGRStocksTest:
     def _create_products(self):
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Produit allociné 1",
             description="Description du produit allociné 1",
             durationMinutes=111,
             extraData={"allocineId": 138473},
         )
-        offers_factories.ProductFactory(
+        products_factories.ProductFactory(
             name="Produit allociné 2",
             description="Description du produit allociné 2",
             durationMinutes=222,
@@ -155,7 +157,7 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
-        assert db.session.query(offers_models.Product).count() == 0
+        assert db.session.query(products_models.Product).count() == 0
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()
@@ -658,8 +660,8 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
-        product_1 = offers_factories.ProductFactory(name="Produit 1", extraData={"visa": "149341"})
-        product_2 = offers_factories.ProductFactory(name="Produit 2", extraData={"visa": "82382"})
+        product_1 = products_factories.ProductFactory(name="Produit 1", extraData={"visa": "149341"})
+        product_2 = products_factories.ProductFactory(name="Produit 2", extraData={"visa": "82382"})
 
         cgr_stocks = CGRStocks(venue_provider=venue_provider)
         cgr_stocks.updateObjects()

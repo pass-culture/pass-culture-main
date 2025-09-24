@@ -8,7 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.elements import BinaryExpression
 
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Product
+from pcapi.core.products.models import Product
 from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin

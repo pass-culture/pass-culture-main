@@ -11,6 +11,7 @@ from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import models as products_models
 
 from .constants import MUSIC_SLUG_BY_GTL_ID
 from .constants import NOT_CD_LIBELLES
@@ -52,8 +53,8 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
         return titelive_product_page, list(non_allowed_eans)
 
     def upsert_titelive_result_in_dict(
-        self, titelive_search_result: TiteliveMusicWork, products_by_ean: dict[str, offers_models.Product]
-    ) -> dict[str, offers_models.Product]:
+        self, titelive_search_result: TiteliveMusicWork, products_by_ean: dict[str, products_models.Product]
+    ) -> dict[str, products_models.Product]:
         common_article_fields = get_common_article_fields(titelive_search_result)
         for article in titelive_search_result.article:
             ean = article.gencod
@@ -67,8 +68,8 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
 
     def create_product(
         self, article: TiteliveMusicArticle, common_article_fields: CommonMusicArticleFields
-    ) -> offers_models.Product:
-        return offers_models.Product(
+    ) -> products_models.Product:
+        return products_models.Product(
             description=article.resume,
             extraData=build_music_extra_data(article, common_article_fields),
             ean=article.gencod,
@@ -83,8 +84,8 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
         self,
         article: TiteliveMusicArticle,
         common_article_fields: CommonMusicArticleFields,
-        product: offers_models.Product,
-    ) -> offers_models.Product:
+        product: products_models.Product,
+    ) -> products_models.Product:
         product.description = article.resume
         if product.extraData is None:
             product.extraData = offers_models.OfferExtraData()

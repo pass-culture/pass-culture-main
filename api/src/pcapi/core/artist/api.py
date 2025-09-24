@@ -3,8 +3,8 @@ import sqlalchemy as sa
 from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.offers.models import ImageType
-from pcapi.core.offers.models import Product
-from pcapi.core.offers.models import ProductMediation
+from pcapi.core.products.models import Product
+from pcapi.core.products.models import ProductMediation
 from pcapi.models import db
 
 

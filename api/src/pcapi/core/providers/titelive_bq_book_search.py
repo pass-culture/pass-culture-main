@@ -5,7 +5,6 @@ import textwrap
 import sqlalchemy.exc as sa_exc
 
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
@@ -14,6 +13,8 @@ from pcapi.connectors.big_query.queries.product import BigQueryProductModel
 from pcapi.connectors.big_query.queries.product import ProductsToSyncQuery
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories.subcategories import LIVRE_PAPIER
+from pcapi.core.products import api as products_api
+from pcapi.core.products import models as products_models
 from pcapi.core.providers import constants
 from pcapi.core.providers.models import LocalProviderEventType
 from pcapi.core.providers.titelive_api import TiteliveDatabaseNotInitializedException
@@ -65,14 +66,14 @@ class BigQueryProductSync:
             type=event_type,
         )
 
-    def _remove_existing_mediations(self, product: offers_models.Product) -> None:
+    def _remove_existing_mediations(self, product: products_models.Product) -> None:
         (
-            db.session.query(offers_models.ProductMediation)
-            .filter(offers_models.ProductMediation.productId == product.id)
+            db.session.query(products_models.ProductMediation)
+            .filter(products_models.ProductMediation.productId == product.id)
             .delete(synchronize_session=False)
         )
 
-    def _update_product_images(self, product: offers_models.Product, bq_product: BigQueryProductModel) -> None:
+    def _update_product_images(self, product: products_models.Product, bq_product: BigQueryProductModel) -> None:
         if not bq_product.recto_uuid and not bq_product.verso_uuid:
             return
 
@@ -81,7 +82,7 @@ class BigQueryProductSync:
         self._remove_existing_mediations(product)
 
         if bq_product.recto_uuid:
-            recto_mediation = offers_models.ProductMediation(
+            recto_mediation = products_models.ProductMediation(
                 productId=product.id,
                 uuid=bq_product.recto_uuid,
                 imageType=offers_models.ImageType.RECTO,
@@ -90,7 +91,7 @@ class BigQueryProductSync:
             db.session.add(recto_mediation)
 
         if bq_product.verso_uuid:
-            verso_mediation = offers_models.ProductMediation(
+            verso_mediation = products_models.ProductMediation(
                 productId=product.id,
                 uuid=bq_product.verso_uuid,
                 imageType=offers_models.ImageType.VERSO,
@@ -136,7 +137,7 @@ class BigQueryProductSync:
                 logger.error("Failed to update images for EAN %s. Reason: %s", product.ean, exc)
 
         if ineligible_eans:
-            offers_api.reject_inappropriate_products(ineligible_eans, author=None)
+            products_api.reject_inappropriate_products(ineligible_eans, author=None)
 
         logger.info("Synchronization complete. Summary:")
         logger.info("  > %d products upserted.", total_products_upserted)
@@ -179,12 +180,12 @@ class BigQueryProductSync:
                 db.session.add(sync_error_event)
             raise
 
-    def create_or_update(self, bq_product: BigQueryProductModel) -> offers_models.Product:
-        product = db.session.query(offers_models.Product).filter_by(ean=bq_product.gencod).one_or_none()
+    def create_or_update(self, bq_product: BigQueryProductModel) -> products_models.Product:
+        product = db.session.query(products_models.Product).filter_by(ean=bq_product.gencod).one_or_none()
 
         is_update = product is not None
         if not is_update:
-            product = offers_models.Product(ean=bq_product.gencod)
+            product = products_models.Product(ean=bq_product.gencod)
 
         assert product  # helps mypy
         product.name = textwrap.shorten(

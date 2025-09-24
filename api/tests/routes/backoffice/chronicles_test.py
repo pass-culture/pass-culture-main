@@ -6,8 +6,8 @@ from flask import url_for
 import pcapi.core.chronicles.models as chronicles_models
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.history import models as history_models
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -33,7 +33,7 @@ class ListChroniclesTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_without_filters(self, authenticated_client):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         chronicle_1 = chronicles_factories.ChronicleFactory(
             products=[product],
             isActive=True,
@@ -61,7 +61,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_search_by_ean(self, authenticated_client):
         ean = "1234567890123"
-        product = offers_factories.ProductFactory(ean=ean)
+        product = products_factories.ProductFactory(ean=ean)
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
@@ -74,7 +74,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_search_by_allocine_id(self, authenticated_client):
         allocine_id = 1000013191
-        product = offers_factories.ProductFactory(extraData={"allocineId": allocine_id})
+        product = products_factories.ProductFactory(extraData={"allocineId": allocine_id})
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
@@ -126,7 +126,7 @@ class ListChroniclesTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
     def test_search_by_product_name(self, authenticated_client):
-        product = offers_factories.ProductFactory(name="My super product")
+        product = products_factories.ProductFactory(name="My super product")
         chronicle_with_product = chronicles_factories.ChronicleFactory(products=[product])
         chronicles_factories.ChronicleFactory()
         with assert_num_queries(self.expected_num_queries):
@@ -245,10 +245,10 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         authenticated_client,
     ):
         products = [
-            offers_factories.ProductFactory(ean="1235467890123"),
-            offers_factories.ProductFactory(extraData={"allocineId": 1000013191}),
-            offers_factories.ProductFactory(extraData={"visa": "1000013192"}),
-            offers_factories.ProductFactory(),
+            products_factories.ProductFactory(ean="1235467890123"),
+            products_factories.ProductFactory(extraData={"allocineId": 1000013191}),
+            products_factories.ProductFactory(extraData={"visa": "1000013192"}),
+            products_factories.ProductFactory(),
         ]
         user = users_factories.BeneficiaryFactory()
         chronicle = chronicles_factories.ChronicleFactory(
@@ -567,11 +567,11 @@ class AttachProductTest(PostEndpointHelper):
         self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
     ):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
-            product = offers_factories.ProductFactory(ean=product_identifier)
+            product = products_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product = offers_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
+            product = products_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
         else:
-            product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
+            product = products_factories.ProductFactory(extraData={"visa": product_identifier})
         chronicle = chronicles_factories.ChronicleFactory(
             productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
         )
@@ -616,11 +616,11 @@ class AttachProductTest(PostEndpointHelper):
         self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
     ):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
-            product = offers_factories.ProductFactory(ean=product_identifier)
+            product = products_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product = offers_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
+            product = products_factories.ProductFactory(extraData={"allocineId": int(product_identifier)})
         else:
-            product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
+            product = products_factories.ProductFactory(extraData={"visa": product_identifier})
 
         chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(
             2, productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
@@ -699,7 +699,7 @@ class DetachProductTest(PostEndpointHelper):
     expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
 
     def test_detach_product(self, authenticated_client, legit_user):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         chronicle = chronicles_factories.ChronicleFactory(products=[product])
 
         response = self.post_to_endpoint(
@@ -719,7 +719,7 @@ class DetachProductTest(PostEndpointHelper):
         ]
 
     def test_detach_product_from_multiple_chronicles(self, authenticated_client, legit_user):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         chronicles = chronicles_factories.ChronicleFactory.create_batch(
             2, productIdentifier="1234567890123", products=[product]
         )
@@ -748,7 +748,7 @@ class DetachProductTest(PostEndpointHelper):
         ]
 
     def test_detach_unattached_product(self, authenticated_client, legit_user):
-        product = offers_factories.ProductFactory()
+        product = products_factories.ProductFactory()
         chronicle = chronicles_factories.ChronicleFactory()
 
         response = self.post_to_endpoint(

@@ -19,6 +19,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.products import factories as products_factories
 from pcapi.core.providers.constants import BookFormat
 from pcapi.core.reactions import factories as reactions_factories
 from pcapi.core.reactions.models import ReactionTypeEnum
@@ -322,7 +323,7 @@ def test_serialize_offer_event():
     ),
 )
 def test_serialize_offer_distinct(extra_data, ean, expected_distinct):
-    product = offers_factories.ProductFactory(extraData=extra_data, ean=ean)
+    product = products_factories.ProductFactory(extraData=extra_data, ean=ean)
     offer = offers_factories.OfferFactory(id=1, product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["distinct"] == expected_distinct
@@ -345,14 +346,14 @@ def test_serialize_default_position():
 
 
 def test_serialize_offer_thumb_url():
-    product = offers_factories.ProductFactory(thumbCount=1)
+    product = products_factories.ProductFactory(thumbCount=1)
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
 
 
 def test_serialize_offer_gtl():
-    product = offers_factories.ProductFactory(extraData={"gtl_id": "01030100"})
+    product = products_factories.ProductFactory(extraData={"gtl_id": "01030100"})
     offer = offers_factories.OfferFactory(
         product=product,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -369,7 +370,7 @@ def test_serialize_offer_gtl():
 
 
 def test_use_titelive_music_type_if_offer_is_music():
-    product = offers_factories.ProductFactory(
+    product = products_factories.ProductFactory(
         extraData={"gtl_id": "01000000"}, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
     )
     offer = offers_factories.OfferFactory(product=product)
@@ -393,14 +394,14 @@ def test_serialize_offer_visa():
 
 
 def test_serialize_offer_release_date():
-    product = offers_factories.ProductFactory(extraData={"releaseDate": "2024-01-01"})
+    product = products_factories.ProductFactory(extraData={"releaseDate": "2024-01-01"})
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["releaseDate"] == 1704067200
 
 
 def test_serialize_offer_book_format():
-    product = offers_factories.ProductFactory(extraData={"bookFormat": BookFormat.BEAUX_LIVRES.name})
+    product = products_factories.ProductFactory(extraData={"bookFormat": BookFormat.BEAUX_LIVRES.name})
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["bookFormat"] == "Beaux livres"
@@ -424,7 +425,7 @@ def test_serialize_offer_temporarily_headline():
 
 def test_serialize_offer_artists():
     artist = artists_factories.ArtistFactory()
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
     artists_factories.ArtistProductLinkFactory(
         artist_id=artist.id, product_id=product.id, artist_type=artists_models.ArtistType.AUTHOR
@@ -471,7 +472,7 @@ def test_serialize_offer_chronicles_and_likes_count_when_0():
 
 
 def test_serialize_product_likes_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
     reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.LIKE, product=product)
     reactions_factories.ReactionFactory(reactionType=ReactionTypeEnum.DISLIKE, product=product)
@@ -503,7 +504,7 @@ def test_serialize_offer_chronicles_count():
 
 
 def test_serialize_offer_with_product_chronicles_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
     chronicles_factories.ChronicleFactory(products=[product])
 
@@ -513,7 +514,7 @@ def test_serialize_offer_with_product_chronicles_count():
 
 
 def test_serialize_product_headlines_count():
-    product = offers_factories.ProductFactory()
+    product = products_factories.ProductFactory()
     offer = offers_factories.OfferFactory(product=product)
     offers_factories.HeadlineOfferFactory(offer=offer)
 
