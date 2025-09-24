@@ -74,9 +74,7 @@ class TiteliveArticle(BaseModel):
     has_image: bool = pydantic_v1.Field(alias="image", default=False)
     has_verso_image: bool = pydantic_v1.Field(alias="image_4", default=False)
     imagesUrl: TiteliveImage | None
-    # TODO: (lixxday, 2024-04-17): titlelive sends an int for dispo, casting to str works ; but we probably want to change this
-    dispo: str | None
-    # TODO: (lixxday, 2024-04-17): titlelive sends a float for prix, casting to str works ; but we probably want to change this
+    dispo: int | None
     prix: str | None
     resume: str | None
     datemodification: datetime.date | None

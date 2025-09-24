@@ -105,7 +105,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     contenu_explicite: str | None
     date_parution: str | None
     dewey: str | None
-    dispo: str | None
+    dispo: int | None
     dispo_label: str | None
     distributeur: str | None
     editeur: str | None
