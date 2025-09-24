@@ -33,6 +33,7 @@ from pcapi.routes.serialization.address_serialize import retrieve_address_info_f
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_datetime
+from pcapi.serialization.utils import validate_timezoned_datetime
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -104,8 +105,8 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     motor_disability_compliant: bool | None
     visual_disability_compliant: bool | None
 
-    _validation_publication_datetime = validate_datetime("publicationDatetime")
     _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -141,8 +142,8 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_publication_datetime = validate_datetime("publicationDatetime")
     _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
+    _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):

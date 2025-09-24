@@ -1,5 +1,6 @@
 import copy
 import decimal
+from datetime import UTC
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -146,7 +147,7 @@ class UpdateObjectsTest:
 
         assert not created_offer.isDuo
         assert created_offer.name == "Ceux de chez nous"
-        assert created_offer.publicationDatetime == datetime(2023, 10, 15)
+        assert created_offer.publicationDatetime == datetime(2023, 10, 15, tzinfo=UTC)
         assert created_offer.subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offer.withdrawalDetails == venue.withdrawalDetails
 

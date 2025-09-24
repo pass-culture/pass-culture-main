@@ -154,8 +154,8 @@ def _create_offer_from_product(
     offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
     offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.publicationDatetime = publicationDatetime
     offer.bookingAllowedDatetime = bookingAllowedDatetime
+    offer.publicationDatetime = _ensure_timezone_exists(publicationDatetime)
     offer.lastValidationDate = utils_date.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
@@ -243,6 +243,7 @@ def _update_offer_and_related_stock(
     :return: (bool, Offer) bool is equal to `True` if the offer or its stock has been updated.
     """
     # Part 1 - Offer update
+    now = datetime.datetime.now(datetime.UTC)
     should_update_offer = (
         offer.lastProviderId != provider.id  # provider has changed
         or (offer.offererAddress != offerer_address)  # address has changed
@@ -252,12 +253,9 @@ def _update_offer_and_related_stock(
             # offer should be unpublished
             or (offer.publicationDatetime and stock_data["publication_datetime"] is None)
             # offer should be published in the future
-            or (
-                stock_data["publication_datetime"]
-                and stock_data["publication_datetime"] > utils_date.get_naive_utc_now()
-            )
+            or (stock_data["publication_datetime"] and stock_data["publication_datetime"] > now)
             # offer was planned to be published in the future but should be published now
-            or (offer.publicationDatetime and offer.publicationDatetime > utils_date.get_naive_utc_now())
+            or (offer.publicationDatetime and offer.publicationDatetime > now)
         )
         or (offer.bookingAllowedDatetime != stock_data["booking_allowed_datetime"])
     )

@@ -59,8 +59,8 @@ class Returns200Test:
         assert updated_offer.name == "Notre part de nuit"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert updated_offer.publicationDatetime == publication_datetime.replace(tzinfo=None)
         assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
+        assert updated_offer.publicationDatetime == publication_datetime
         assert not updated_offer.product
 
     def test_patch_virtual_offer(self, client):
@@ -98,8 +98,8 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
-        assert updated_offer.publicationDatetime == publication_datetime.replace(tzinfo=None)
         assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
+        assert updated_offer.publicationDatetime == publication_datetime
         assert not updated_offer.product
 
     @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
@@ -110,12 +110,22 @@ class Returns200Test:
             (
                 datetime.datetime(2025, 6, 26),
                 "2025-06-28T14:30:00+02:00",
-                datetime.datetime(2025, 6, 28, 12, 30),
+                datetime.datetime(2025, 6, 28, 12, 30, tzinfo=datetime.UTC),
                 "2025-06-28T12:30:00Z",
             ),
-            (None, "2025-06-28T14:30:00Z", datetime.datetime(2025, 6, 28, 14, 30), "2025-06-28T14:30:00Z"),
+            (
+                None,
+                "2025-06-28T14:30:00Z",
+                datetime.datetime(2025, 6, 28, 14, 30, tzinfo=datetime.UTC),
+                "2025-06-28T14:30:00Z",
+            ),
             # publish offer now
-            (datetime.datetime(2025, 6, 26), "now", datetime.datetime(2025, 6, 24), "2025-06-24T00:00:00Z"),
+            (
+                datetime.datetime(2025, 6, 26),
+                "now",
+                datetime.datetime(2025, 6, 24, tzinfo=datetime.UTC),
+                "2025-06-24T00:00:00Z",
+            ),
             # unpublish offer
             (datetime.datetime(2025, 6, 26), None, None, None),
         ],
@@ -198,7 +208,7 @@ class Returns200Test:
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.bookingAllowedDatetime == final_booking_allowed_datetime
-        assert updated_offer.publicationDatetime == datetime.datetime(2025, 6, 23)
+        assert updated_offer.publicationDatetime == datetime.datetime(2025, 6, 23, tzinfo=datetime.UTC)
 
     def test_we_handle_unique_address_among_manual_edition_while_patch_offer(self, client):
         user_offerer_1 = offerers_factories.UserOffererFactory(user__email="user1@example.com")
