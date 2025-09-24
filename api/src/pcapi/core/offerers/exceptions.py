@@ -1,10 +1,6 @@
 from pcapi.core.core_exception import ClientError
 
 
-class ApiKeyCountMaxReached(Exception):
-    pass
-
-
 class ApiKeyPrefixGenerationError(Exception):
     pass
 

@@ -126,7 +126,6 @@ SENTRY_FINE_SAMPLING = bool(int(os.environ.get("SENTRY_FINE_SAMPLING", 0)))
 
 # USERS
 MAX_FAVORITES = int(os.environ.get("MAX_FAVORITES", 100))  # 0 is unlimited
-MAX_API_KEY_PER_OFFERER = int(os.environ.get("MAX_API_KEY_PER_OFFERER", 5))
 USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM = bool(
     int(os.environ.get("USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM", False))
 )
