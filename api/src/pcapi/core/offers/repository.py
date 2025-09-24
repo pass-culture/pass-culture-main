@@ -192,19 +192,8 @@ def get_offers_by_date_field_range(
     )
 
 
-def get_offers_by_publication_datetime(
-    publication_datetime: datetime.datetime | None = None,
-) -> sa_orm.Query:
-    if publication_datetime is None:
-        publication_datetime = datetime.datetime.now(datetime.timezone.utc)
-
-    # The lower bound is intentionally very far in the past.
-    # This function should be called every quarter hour, but filtering the last days allows auto-correction
-    # when the function fails (timeout, or lock denied, most of the time)
-    upper_bound = publication_datetime
-    lower_bound = upper_bound - datetime.timedelta(hours=24)
-
-    return get_offers_by_date_field_range("publicationDatetime", lower_bound, upper_bound)
+def get_offers_by_publication_datetime(start: datetime.datetime, end: datetime.datetime) -> sa_orm.Query:
+    return get_offers_by_date_field_range("publicationDatetime", start, end)
 
 
 def get_offers_by_booking_allowed_datetime(booking_allowed_datetime: datetime.datetime | None = None) -> sa_orm.Query:

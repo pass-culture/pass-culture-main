@@ -991,7 +991,7 @@ class GetOffersByPublicationDateTest:
         # no publication date -> should be ignored ignored
         factories.OfferFactory(publicationDatetime=None)
 
-        # publication date outside of 24 hours range -> should be ignored
+        # publication date outside of range  -> should be ignored
         publication_date_before = publication_date_target - datetime.timedelta(hours=25)
         factories.OfferFactory(publicationDatetime=publication_date_before)
 
@@ -1008,7 +1008,10 @@ class GetOffersByPublicationDateTest:
         publication_date_after = publication_date_target + datetime.timedelta(minutes=17)
         factories.OfferFactory(publicationDatetime=publication_date_after)
 
-        offers_query = repository.get_offers_by_publication_datetime(publication_datetime=publication_date_target)
+        offers_query = repository.get_offers_by_publication_datetime(
+            start=publication_date_target - datetime.timedelta(minutes=30),
+            end=publication_date_target,
+        )
         assert offers_query.count() == 3
         assert {o.id for o in offers_query.all()} == {
             offer_to_publish_1.id,

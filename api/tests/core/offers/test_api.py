@@ -2223,7 +2223,7 @@ class FutureOfferReminderTest:
         offer_2 = factories.OfferFactory(publicationDatetime=publication_date)
         offer_3 = factories.OfferFactory(publicationDatetime=None)
 
-        api.reindex_recently_published_offers(publication_date)
+        api.reindex_recently_published_offers()
 
         mocked_async_index_offer_ids.assert_called_once()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == set([offer_1.id, offer_2.id])
