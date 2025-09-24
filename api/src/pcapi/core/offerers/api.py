@@ -10,6 +10,7 @@ import typing
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from functools import partial
 from math import ceil
 from typing import Optional
 
@@ -224,6 +225,8 @@ def update_venue(
         if venue.is_soft_deleted():
             raise pc_object.DeletedRecordException()
         for key, value in modifications.items():
+            if key == "venueTypeCode":
+                value = models.VenueTypeCode[value]
             setattr(venue, key, value)
     elif venue_snapshot.is_empty:
         return venue
@@ -410,7 +413,7 @@ def update_venue_collective_data(
         setattr(venue, key, value)
 
     db.session.add(venue)
-    db.session.commit()
+    db.session.flush()
 
     zendesk_sell.update_venue(venue)
 
@@ -1719,25 +1722,31 @@ def save_venue_banner(
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
         "crop_params": crop_params,
-        "updated_at": updated_at,
+        "updated_at": updated_at.isoformat(),
     }
 
     db.session.add(venue)
-    db.session.commit()
+    db.session.flush()
 
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=IndexationReason.VENUE_BANNER_UPDATE,
+    on_commit(
+        partial(
+            search.async_index_venue_ids,
+            [venue.id],
+            reason=IndexationReason.VENUE_BANNER_UPDATE,
+        )
     )
 
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
+
     db.session.add(venue)
-    db.session.commit()
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=IndexationReason.VENUE_BANNER_DELETION,
+    on_commit(
+        partial(
+            search.async_index_venue_ids,
+            [venue.id],
+            reason=IndexationReason.VENUE_BANNER_DELETION,
+        )
     )
 
 
