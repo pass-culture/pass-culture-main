@@ -16,13 +16,14 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
 import { CollectiveOfferType } from './CollectiveOfferType/CollectiveOfferType'
@@ -74,8 +75,7 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
 
   const offer = watch('offer')
 
-  const { data: offerer, isLoading: isOffererLoading } =
-    useOfferer(queryOffererId)
+  const offerer = useSelector(selectCurrentOfferer)
 
   const isOnboarding = location.pathname.indexOf('onboarding') !== -1
 
@@ -193,12 +193,9 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
             {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
               !isNewOfferCreationFlowFeatureActive && <IndividualOfferType />}
 
-            {offer.offerType === OFFER_TYPES.EDUCATIONAL &&
-              (isOffererLoading ? (
-                <Spinner />
-              ) : (
-                <CollectiveOfferType offerer={offerer} />
-              ))}
+            {offer.offerType === OFFER_TYPES.EDUCATIONAL && (
+              <CollectiveOfferType offerer={offerer} />
+            )}
 
             <ActionsBar disableNextButton={isDisabledForEducationnal} />
           </FormLayout>

@@ -1,5 +1,4 @@
 import { useFormContext } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import type { GetOffererResponseModel } from '@/apiClient/v1'
@@ -8,7 +7,6 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   OFFER_TYPES,
 } from '@/commons/core/Offers/constants'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeBookedIcon from '@/icons/stroke-booked.svg'
@@ -29,7 +27,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const { setValue, getValues } = useFormContext()
 
   const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = useSelector(selectCurrentOffererId)
+  const queryOffererId = offerer?.id
   const queryVenueId = queryParams.get('lieu')
 
   const lastDmsApplication = getLastDmsApplicationForOfferer(
