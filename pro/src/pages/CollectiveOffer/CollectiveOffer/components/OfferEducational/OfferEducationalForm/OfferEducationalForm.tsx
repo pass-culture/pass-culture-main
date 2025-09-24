@@ -18,7 +18,6 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -82,8 +81,6 @@ export const OfferEducationalForm = ({
 
   const { setValue, formState, watch } =
     useFormContext<OfferEducationalFormValues>()
-
-  const { data: selectedOfferer } = useOfferer(userOfferer?.id)
 
   const canEditDetails =
     !offer ||
@@ -153,7 +150,7 @@ export const OfferEducationalForm = ({
             Offre importée automatiquement
           </BannerPublicApi>
         )}
-        {!selectedOfferer?.allowedOnAdage ? (
+        {!userOfferer?.allowedOnAdage ? (
           <Callout className={styles['no-offerer-callout']}>
             Vous ne pouvez pas créer d’offre collective tant que votre entité
             juridique n’est pas validée.
