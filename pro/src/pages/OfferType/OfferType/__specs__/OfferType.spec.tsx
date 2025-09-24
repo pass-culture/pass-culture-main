@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { CancelablePromise, type GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
@@ -16,10 +16,7 @@ import {
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferTypeScreen } from '../OfferType'
@@ -35,13 +32,16 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn(),
     canOffererCreateEducationalOffer: vi.fn(),
     getCollectiveOffers: vi.fn(),
-    getOfferer: vi.fn(),
     getVenue: vi.fn(),
     getCategories: vi.fn(),
   },
 }))
 
-const renderOfferTypes = (structureId?: string, venueId?: string) => {
+const renderOfferTypes = (
+  structureId?: string,
+  venueId?: string,
+  offerer?: GetOffererResponseModel
+) => {
   renderWithProviders(
     <Routes>
       <Route
@@ -68,7 +68,13 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
     {
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
-        offerer: currentOffererFactory(),
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            isValidated: true,
+            ...offerer,
+          },
+        },
       },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
@@ -93,11 +99,6 @@ describe('OfferType', () => {
       ],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      isValidated: true,
-    })
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -187,8 +188,8 @@ describe('OfferType', () => {
         },
       ],
     }
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    renderOfferTypes('offererId')
+
+    renderOfferTypes('offererId', 'venueId', offerer)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
@@ -322,11 +323,12 @@ describe('OfferType', () => {
   })
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    const offerer = {
       ...defaultGetOffererResponseModel,
       isValidated: false,
-    })
-    renderOfferTypes('123')
+    }
+
+    renderOfferTypes('123', 'venueId', offerer)
 
     expect(
       screen.queryByText(
@@ -345,28 +347,13 @@ describe('OfferType', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render loader while fetching data', async () => {
-    vi.spyOn(api, 'getOfferer').mockImplementationOnce(() => {
-      return new CancelablePromise<GetOffererResponseModel>((resolve) =>
-        setTimeout(() => resolve({} as GetOffererResponseModel), 500)
-      )
-    })
-
-    renderOfferTypes('123')
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
-
-    expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
-  })
-
   it('should display DS banner if structure not allowed on adage and last ds reference request not found ', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    const offerer = {
       ...defaultGetOffererResponseModel,
       allowedOnAdage: false,
-    })
-    renderOfferTypes('123')
+    }
+
+    renderOfferTypes('123', 'venueId', offerer)
 
     await userEvent.click(
       screen.getByRole('radio', { name: 'À un groupe scolaire' })
