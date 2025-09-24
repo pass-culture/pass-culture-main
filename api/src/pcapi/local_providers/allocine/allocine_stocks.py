@@ -1,5 +1,6 @@
 import decimal
 import logging
+from datetime import UTC
 from datetime import datetime
 
 import PIL
@@ -24,7 +25,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.date import local_datetime_to_default_timezone
 
 
@@ -109,7 +109,7 @@ class AllocineStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
+        offer.publicationDatetime = offer.publicationDatetime or datetime.now(UTC)
         self.update_from_movie_information(offer)
 
         if offer.id is None:  # Newly created offer

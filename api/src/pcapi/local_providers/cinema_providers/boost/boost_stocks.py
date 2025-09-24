@@ -1,5 +1,6 @@
 import decimal
 import logging
+from datetime import UTC
 from datetime import datetime
 from typing import Iterator
 
@@ -25,7 +26,6 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils.date import get_naive_utc_now
 
 
 logger = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ class BoostStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
+        offer.publicationDatetime = offer.publicationDatetime or datetime.now(UTC)
         self.update_from_movie_information(offer, self.showtime_details.film)
 
         is_new_offer_to_insert = offer.id is None

@@ -13,7 +13,7 @@ from pcapi.models import db
 from pcapi.utils import date as utils_date
 
 
-NOW = utils_date.get_naive_utc_now()
+NOW = datetime.datetime.now(datetime.UTC)
 ONE_DAY_AGO = NOW - datetime.timedelta(days=1)
 ONE_DAY_FROM_NOW = NOW + datetime.timedelta(days=1)
 

@@ -289,7 +289,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
         # TODO(jbaudet): remove this part, do not use isActive once
         # the public API does not allow it anymore
         if "publicationDatetime" not in updates and updates.get("isActive") is not None:
-            publication_datetime = datetime.now(timezone.utc).replace(tzinfo=None) if is_active else None
+            publication_datetime = datetime.now(timezone.utc) if is_active else None
 
         offer = offers_api.update_offer(
             offer,

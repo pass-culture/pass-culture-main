@@ -247,7 +247,7 @@ class CGRStocksTest:
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
-        assert created_offers[0].publicationDatetime == datetime.datetime(2022, 12, 30)
+        assert created_offers[0].publicationDatetime == datetime.datetime(2022, 12, 30, tzinfo=datetime.UTC)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 138473}
         assert created_offers[0]._extraData == {}
@@ -267,7 +267,7 @@ class CGRStocksTest:
         assert created_offers[1].description == "Description du produit allociné 2"
         assert created_offers[1].durationMinutes == 222
         assert created_offers[1].isDuo
-        assert created_offers[1].publicationDatetime == datetime.datetime(2022, 12, 30)
+        assert created_offers[1].publicationDatetime == datetime.datetime(2022, 12, 30, tzinfo=datetime.UTC)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 234099}
         assert created_offers[1]._extraData == {}

@@ -143,7 +143,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             function="post_product_offer",
             venue=venue_provider.venueId,
             ean=payload["categoryRelatedFields"]["ean"],
-            publication_datetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            publication_datetime=datetime.datetime.now(datetime.UTC),
             booking_allowed_datetime=None,
         )
 
@@ -156,7 +156,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
-        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert not created_offer.bookingAllowedDatetime
         assert not created_offer.isDuo
@@ -253,7 +253,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             function="post_product_offer",
             venue=venue_provider.venueId,
             ean=payload["categoryRelatedFields"]["ean"],
-            publication_datetime=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+            publication_datetime=datetime.datetime.now(datetime.UTC),
             booking_allowed_datetime=None,
             stock_booking_limit=date_utils.to_naive_utc_datetime(in_ten_minutes_in_non_utc_tz),
             stock_price=payload["stock"]["price"],
@@ -269,7 +269,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
-        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.isDuo is False
@@ -337,16 +337,16 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         [
             (
                 {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
                 "2025-08-01T06:00:00Z",
             ),
             (
                 {"publicationDatetime": "now"},
-                datetime.datetime(2025, 6, 25, 12, 30),
+                datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC),
                 "2025-06-25T12:30:00Z",
             ),
             # should default to now
-            ({}, datetime.datetime(2025, 6, 25, 12, 30), "2025-06-25T12:30:00Z"),
+            ({}, datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC), "2025-06-25T12:30:00Z"),
             # draft
             ({"publicationDatetime": None}, None, None),
         ],

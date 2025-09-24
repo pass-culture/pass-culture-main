@@ -1,3 +1,4 @@
+from datetime import UTC
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -244,7 +245,7 @@ class CDSStocksTest:
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo
-        assert created_offers[0].publicationDatetime == datetime(2022, 3, 19)
+        assert created_offers[0].publicationDatetime == datetime(2022, 3, 19, tzinfo=UTC)
         assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[0].extraData == {"allocineId": 291483}
         assert created_offers[0]._extraData == {}
@@ -265,7 +266,7 @@ class CDSStocksTest:
         assert created_offers[1].description == "Film sur les avions"
         assert created_offers[1].durationMinutes == 150
         assert created_offers[1].isDuo
-        assert created_offers[1].publicationDatetime == datetime(2022, 3, 19)
+        assert created_offers[1].publicationDatetime == datetime(2022, 3, 19, tzinfo=UTC)
         assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
         assert created_offers[1].extraData == {"allocineId": 2133, "visa": "333333"}
         assert created_offers[1]._extraData == {}

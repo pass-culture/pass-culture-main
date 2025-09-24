@@ -823,7 +823,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         db_utils.TimezonedDatetime, nullable=True
     )
-    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
     bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     _description: sa_orm.Mapped[str | None] = sa_orm.mapped_column("description", sa.Text, nullable=True)
@@ -1088,7 +1090,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @hybrid_property
     def _released(self) -> bool:
-        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now = datetime.datetime.now(datetime.UTC)
         return self.validation == OfferValidationStatus.APPROVED and (
             self.publicationDatetime is not None and self.publicationDatetime <= now
         )
@@ -1234,12 +1236,15 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @property
     def searchableStocks(self) -> list[Stock]:
-        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now = datetime.datetime.now(datetime.timezone.utc)
         if (
             self.publicationDatetime
             and self.publicationDatetime <= now
             and self.bookingAllowedDatetime
-            and self.bookingAllowedDatetime > now
+            # TODO(jbaudet - 09/2025) remove call to replace() when
+            # Offer.bookingAllowedDatetime has been migrated to new custom
+            # datetime type that always return a timezone-aware object
+            and self.bookingAllowedDatetime > now.replace(tzinfo=None)
         ):
             return self.stocks
         return self.bookableStocks
@@ -1335,7 +1340,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         if self.validation == OfferValidationStatus.DRAFT:
             return OfferStatus.DRAFT
 
-        now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now_utc = datetime.datetime.now(datetime.UTC)
 
         if not self.publicationDatetime:
             return OfferStatus.INACTIVE
@@ -1343,7 +1348,10 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         if now_utc < self.publicationDatetime:
             return OfferStatus.SCHEDULED
 
-        if self.bookingAllowedDatetime and now_utc < self.bookingAllowedDatetime:
+        # TODO(jbaudet - 09/2025) remove call to replace() when
+        # Offer.bookingAllowedDatetime has been migrated to new custom
+        # datetime type that always return a timezone-aware object
+        if self.bookingAllowedDatetime and now_utc.replace(tzinfo=None) < self.bookingAllowedDatetime:
             return OfferStatus.PUBLISHED
 
         if self.validation == OfferValidationStatus.APPROVED:
