@@ -127,7 +127,6 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE = "Activer l'inscription de structures en diffusion partielle"
     WIP_ADD_VIDEO = "Permettre aux pros d'avoir des vidéos sur leurs offres"
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
@@ -242,10 +241,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD:
-    FEATURES_DISABLED_BY_DEFAULT += (
-        FeatureToggle.WIP_FREE_ELIGIBILITY,
-        FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE,
-    )
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
 if settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
 

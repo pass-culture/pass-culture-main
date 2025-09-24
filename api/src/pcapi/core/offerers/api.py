@@ -3293,8 +3293,6 @@ def find_structure_data(search_input: str) -> sirene_models.SiretInfo:
 
     if not data.active:
         raise offerers_exceptions.InactiveSirenException("Ce SIRET n'est pas actif.")
-    if not FeatureToggle.WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE.is_active() and not data.diffusible:
-        raise sirene_exceptions.NonPublicDataException()
 
     return data
 
