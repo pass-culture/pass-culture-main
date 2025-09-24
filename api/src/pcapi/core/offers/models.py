@@ -786,7 +786,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         db_utils.TimezonedDatetime, nullable=False, default=datetime.datetime.utcnow
     )
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        db_utils.TimezonedDatetime, nullable=True, default=datetime.datetime.utcnow
     )
     dateUpdated: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
