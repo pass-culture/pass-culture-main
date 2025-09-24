@@ -45,7 +45,6 @@ class Returns200Test:
         assert found_structure.get("name") is not None
         assert found_structure.get("address") is None
 
-    @pytest.mark.features(WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE=True)
     @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.TestingBackend")
     def test_find_partially_diffusible_structure_by_siret(self, client):
         pro = users_factories.ProFactory()
@@ -61,7 +60,6 @@ class Returns200Test:
         assert found_structure.get("address") is not None
         assert found_structure.get("address").get("street") == "Adresse non diffusée"
 
-    @pytest.mark.features(WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE=True)
     @patch("pcapi.connectors.api_adresse.find_ban_city", side_effect=api_adresse.AdresseException())
     def test_find_partially_diffusible_structure_by_siret_with_no_address(self, _find_ban_city_mock, client):
         pro = users_factories.ProFactory()
@@ -78,17 +76,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @pytest.mark.features(WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE=False)
-    def test_search_partially_diffusible_structure(self, client):
-        pro = users_factories.ProFactory()
-        client = client.with_session_auth(pro.email)
-
-        response = client.get(f"{GET_STRUCTURE_DATA_URL}{PARTIALLY_DIFFUSIBLE_SIRET}")
-
-        assert response.status_code == 400
-        message = "Le propriétaire de ce SIRET s'oppose à la diffusion de ses données au public."
-        assert response.json == {"global": [message]}
-
     def test_search_structure_by_invalid_siret(self, client):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
