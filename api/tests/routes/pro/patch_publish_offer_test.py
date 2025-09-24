@@ -82,10 +82,7 @@ class Returns200Test:
 
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == now_datetime_with_tz
-        # TODO(jbaudet - 09/2025) remove call to replace() when
-        # Offer.bookingAllowedDatetime has been migrated to new custom
-        # datetime type that always return a timezone-aware object
-        assert offer.finalizationDatetime == offer.publicationDatetime.replace(tzinfo=datetime.UTC)
+        assert offer.finalizationDatetime == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
@@ -138,7 +135,7 @@ class Returns200Test:
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz
-        assert offer.publicationDatetime == publication_date.replace(tzinfo=None)
+        assert offer.publicationDatetime == publication_date
         assert offer.publicationDate == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         mock_async_index_offer_ids.assert_not_called()
@@ -179,7 +176,7 @@ class Returns200Test:
                 },
             )
 
-        expected_publication_date = publication_date.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        expected_publication_date = publication_date.astimezone(datetime.UTC)
         assert response.status_code == 200
         assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
         assert response.json["status"] == OfferStatus.SCHEDULED.name
@@ -243,10 +240,7 @@ class Returns200Test:
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
         assert offer.finalizationDatetime == now_datetime_with_tz
-        # TODO(jbaudet - 09/2025) remove call to replace() when
-        # Offer.bookingAllowedDatetime has been migrated to new custom
-        # datetime type that always return a timezone-aware object
-        assert offer.publicationDatetime.replace(tzinfo=datetime.UTC) == offer.finalizationDatetime
+        assert offer.publicationDatetime == offer.finalizationDatetime
         assert offer.bookingAllowedDatetime == expected_booking_allowed_datetime
         mock_async_index_offer_ids.assert_called_once()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
@@ -288,8 +282,8 @@ class Returns200Test:
                 },
             )
 
-        expected_publication_datetime = publication_date.replace(tzinfo=None)
         booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
+        expected_publication_datetime = publication_date
 
         assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
@@ -308,10 +302,7 @@ class Returns200Test:
 
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == first_finalization_datetime
-        # TODO(jbaudet - 09/2025) remove offer.publicationDatetime.replace()
-        # call once Offer.publicationDatetime uses the new custom datetime
-        # type (that sets a default timezone if none)
-        assert offer.finalizationDatetime <= offer.publicationDatetime.replace(tzinfo=datetime.UTC)
+        assert offer.finalizationDatetime <= offer.publicationDatetime
         assert response.json["isActive"] is True
         mock_async_index_offer_ids.assert_called_once()
 
