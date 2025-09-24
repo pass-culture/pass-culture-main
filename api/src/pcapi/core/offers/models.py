@@ -388,7 +388,6 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:
         return sa.and_(cls.bookingLimitDatetime.is_not(None), cls.bookingLimitDatetime <= sa.func.now())
 
-    # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @hybrid_property
     def remainingQuantity(self) -> int | str:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity

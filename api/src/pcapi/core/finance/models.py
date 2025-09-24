@@ -555,7 +555,6 @@ class PricingLog(PcObject, Model):
     reason: sa_orm.Mapped[PricingLogReason] = sa_orm.mapped_column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
-# TODO(fseguin|dbaty, 2022-01-11): maybe merge with core.categories.subcategories.ReimbursementRuleChoices ?
 class RuleGroup(enum.Enum):
     STANDARD = dict(
         label="Barème général",
