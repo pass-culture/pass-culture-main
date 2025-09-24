@@ -331,7 +331,20 @@ class BookEventTicketTest:
         )
 
     @patch("pcapi.core.external_bookings.api.requests.post")
-    def test_raise_because_the_event_is_sold_out(self, requests_post):
+    @pytest.mark.parametrize(
+        "error_json,expected_remaining_quantity",
+        [
+            ({"error": "sold_out", "remainingQuantity": 0}, 0),
+            ({"error": "not_enough_seats", "remainingQuantity": 1}, 1),
+            ({"error": "not_enough_seats", "remainingQuantity": 0}, 0),
+        ],
+    )
+    def test_raise_because_the_event_is_sold_out_or_does_not_have_enough_seat(
+        self,
+        requests_post,
+        error_json,
+        expected_remaining_quantity,
+    ):
         provider = providers_factories.PublicApiProviderFactory()
         offer = offers_factories.EventOfferFactory(
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
@@ -343,36 +356,13 @@ class BookEventTicketTest:
 
         # mocks
         requests_post.return_value.status_code = 409
-        requests_post.return_value.json.return_value = {
-            "error": "sold_out",
-            "remainingQuantity": 0,
-        }
+        requests_post.return_value.json.return_value = error_json
 
         # try to book
-        with pytest.raises(external_bookings_exceptions.ExternalBookingSoldOutError):
+        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
             book_event_ticket(booking, stock, user)
 
-    @patch("pcapi.core.external_bookings.api.requests.post")
-    def test_raise_because_there_are_no_more_seats(self, requests_post):
-        provider = providers_factories.PublicApiProviderFactory()
-        offer = offers_factories.EventOfferFactory(
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            lastProviderId=provider.id,
-        )
-        stock = offers_factories.EventStockFactory(offer=offer)
-        booking = bookings_factories.BookingFactory(stock=stock, quantity=2)
-        user = user_factories.BeneficiaryFactory()
-
-        # mocks
-        requests_post.return_value.status_code = 409
-        requests_post.return_value.json.return_value = {
-            "error": "not_enough_seats",
-            "remainingQuantity": 1,
-        }
-
-        # try to book
-        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError):
-            book_event_ticket(booking, stock, user)
+        assert exc.value.remainingQuantity == expected_remaining_quantity
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_raise_because_there_is_an_unexpected_error(self, requests_post):

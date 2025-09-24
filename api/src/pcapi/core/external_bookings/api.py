@@ -78,11 +78,7 @@ def book_cinema_ticket(
 
     try:
         return client.book_ticket(show_id, booking, beneficiary)
-    except (
-        exceptions.ExternalBookingSoldOutError,
-        exceptions.ExternalBookingTimeoutException,
-        exceptions.ExternalBookingNotEnoughSeatsError,
-    ):
+    except (exceptions.ExternalBookingTimeoutException, exceptions.ExternalBookingNotEnoughSeatsError):
         raise
     except Exception as exc:
         logger.warning(
@@ -414,7 +410,7 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
                 f"External booking failed with status code {response.status_code} and message {response.text}"
             )
         if error_response.error == "sold_out":
-            raise exceptions.ExternalBookingSoldOutError()
+            raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
         if error_response.error == "not_enough_seats" and isinstance(error_response.remainingQuantity, int):
             raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
         if error_response.error == "already_cancelled":

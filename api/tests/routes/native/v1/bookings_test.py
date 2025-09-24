@@ -432,7 +432,7 @@ class PostBookingTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"code": "PROVIDER_STOCK_SOLD_OUT"}
+        assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
         assert stock.quantity == 10
         assert len(db.session.query(bookings_models.ExternalBooking).all()) == 0
         assert len(db.session.query(bookings_models.Booking).all()) == 0
@@ -576,7 +576,7 @@ class PostBookingTest:
         )
 
         assert response.status_code == 400
-        assert response.json["code"] == "PROVIDER_STOCK_SOLD_OUT"
+        assert response.json["code"] == "PROVIDER_STOCK_NOT_ENOUGH_SEATS"
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
