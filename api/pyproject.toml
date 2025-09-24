@@ -82,8 +82,6 @@ spectree = "1.2.1"
 sqlalchemy = { version = "2.0.41", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "2.19.0"
-# FIXME (fseguin-pass) tornado is a flower dependency. Dependabot cannot bump it to 6.5 so we bump it here manually
-tornado = "^6.5.2"
 transitions = "^0.9.3"
 weasyprint = "66.0"
 werkzeug = "3.1.3"
