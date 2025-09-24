@@ -60,8 +60,8 @@ class Returns200Test:
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
-        assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
         assert updated_offer.publicationDatetime == publication_datetime
+        assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime
         assert not updated_offer.product
 
     @time_machine.travel(datetime.datetime(2025, 6, 24, tzinfo=datetime.timezone.utc), tick=False)
