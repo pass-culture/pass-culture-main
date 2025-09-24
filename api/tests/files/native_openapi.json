@@ -5767,7 +5767,7 @@
         "title": "Service API Document",
         "version": "0.1.0"
     },
-    "openapi": "3.0.3",
+    "openapi": "3.1.0",
     "paths": {
         "/native/v1/account": {
             "post": {
@@ -5781,7 +5781,8 @@
                                 "$ref": "#/components/schemas/AccountRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -5801,7 +5802,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "create_account <POST>",
@@ -5831,7 +5832,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -5863,7 +5864,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -5911,7 +5912,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "account_suspension_token_validation <GET>",
@@ -5938,7 +5939,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -5962,7 +5963,8 @@
                                 "$ref": "#/components/schemas/SuspendAccountForSuspiciousLoginRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -5988,7 +5990,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "suspend_account_for_suspicious_login <POST>",
@@ -6022,7 +6024,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6061,7 +6063,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6093,7 +6095,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6117,7 +6119,8 @@
                                 "$ref": "#/components/schemas/MarkAchievementsAsSeenRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -6141,7 +6144,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6193,7 +6196,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_artist <GET>",
@@ -6239,7 +6242,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6278,7 +6281,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6300,7 +6303,8 @@
                                 "$ref": "#/components/schemas/BookOfferRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -6327,7 +6331,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6376,7 +6380,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6411,7 +6415,8 @@
                                 "$ref": "#/components/schemas/BookingDisplayStatusRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -6431,7 +6436,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6470,7 +6475,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_categories <GET>",
@@ -6489,7 +6494,8 @@
                                 "$ref": "#/components/schemas/ChangePasswordRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -6509,7 +6515,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6533,7 +6539,8 @@
                                 "$ref": "#/components/schemas/CookieConsentRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -6553,7 +6560,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "cookies_consent <POST>",
@@ -6572,7 +6579,8 @@
                                 "$ref": "#/components/schemas/CulturalSurveyAnswersRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -6592,7 +6600,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6631,7 +6639,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6680,7 +6688,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "email_validation_remaining_resends <GET>",
@@ -6699,7 +6707,8 @@
                                 "$ref": "#/components/schemas/PostFeedbackBody"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -6716,7 +6725,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6755,7 +6764,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6794,7 +6803,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6816,7 +6825,8 @@
                                 "$ref": "#/components/schemas/FavoriteRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -6843,7 +6853,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6886,7 +6896,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6925,7 +6935,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -6947,7 +6957,8 @@
                                 "$ref": "#/components/schemas/PostReminderRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "201": {
@@ -6971,7 +6982,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7014,7 +7025,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7038,7 +7049,8 @@
                                 "$ref": "#/components/schemas/GoogleAccountRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7065,7 +7077,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "create_account_with_google_sso <POST>",
@@ -7084,7 +7096,8 @@
                                 "$ref": "#/components/schemas/GoogleSigninRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7114,7 +7127,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "google_auth <POST>",
@@ -7148,7 +7161,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "google_oauth_state <GET>",
@@ -7182,7 +7195,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7236,7 +7249,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_offer <GET>",
@@ -7284,7 +7297,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "offer_chronicles <GET>",
@@ -7332,7 +7345,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_offerer_headline_offer <GET>",
@@ -7366,7 +7379,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7390,7 +7403,8 @@
                                 "$ref": "#/components/schemas/UserProfilePatchRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7414,7 +7428,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7436,7 +7450,8 @@
                                 "$ref": "#/components/schemas/UserProfilePatchRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7460,7 +7475,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7484,7 +7499,8 @@
                                 "$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -7501,7 +7517,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "cancel_email_update <POST>",
@@ -7520,7 +7536,8 @@
                                 "$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7544,7 +7561,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "validate_user_email <PUT>",
@@ -7578,7 +7595,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7602,7 +7619,8 @@
                                 "$ref": "#/components/schemas/PostReactionRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -7619,7 +7637,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7658,7 +7676,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7716,7 +7734,8 @@
                                 "$ref": "#/components/schemas/PlaylistRequestBody"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -7740,7 +7759,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -7854,7 +7873,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "similar_offers <GET>",
@@ -7891,7 +7910,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "refresh <POST>",
@@ -7910,7 +7929,8 @@
                                 "$ref": "#/components/schemas/RequestPasswordResetRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -7930,7 +7950,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "request_password_reset <POST>",
@@ -7949,7 +7969,8 @@
                                 "$ref": "#/components/schemas/ResendEmailValidationRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -7969,7 +7990,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -7991,7 +8012,8 @@
                                 "$ref": "#/components/schemas/ResetPasswordRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8018,7 +8040,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "reset_password <POST>",
@@ -8052,7 +8074,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8095,7 +8117,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8138,7 +8160,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8162,7 +8184,8 @@
                                 "$ref": "#/components/schemas/SendPhoneValidationRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8179,7 +8202,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8218,7 +8241,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_settings <GET>",
@@ -8237,7 +8260,8 @@
                                 "$ref": "#/components/schemas/SigninRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8267,7 +8291,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "signin <POST>",
@@ -8301,7 +8325,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_subcategories_v2 <GET>",
@@ -8335,7 +8359,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8367,7 +8391,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8402,7 +8426,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8424,7 +8448,8 @@
                                 "$ref": "#/components/schemas/ProfileUpdateRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8441,7 +8466,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8465,7 +8490,8 @@
                                 "$ref": "#/components/schemas/IdentificationSessionRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8489,7 +8515,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8513,7 +8539,8 @@
                                 "$ref": "#/components/schemas/E2EUbbleIdCheck"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8530,7 +8557,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8554,7 +8581,8 @@
                                 "$ref": "#/components/schemas/ValidateEmailRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8578,7 +8606,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "validate_email <POST>",
@@ -8597,7 +8625,8 @@
                                 "$ref": "#/components/schemas/ValidatePhoneNumberRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8614,7 +8643,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8667,7 +8696,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_venue <GET>",
@@ -8701,7 +8730,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8754,7 +8783,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_offer_v2 <GET>",
@@ -8773,7 +8802,8 @@
                                 "$ref": "#/components/schemas/OffersStocksRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8797,7 +8827,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "get_offers_and_stocks <POST>",
@@ -8816,7 +8846,8 @@
                                 "$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "200": {
@@ -8840,7 +8871,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "confirm_email_update <POST>",
@@ -8859,7 +8890,8 @@
                                 "$ref": "#/components/schemas/NewEmailSelectionRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8876,7 +8908,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8900,7 +8932,8 @@
                                 "$ref": "#/components/schemas/ResetPasswordRequest"
                             }
                         }
-                    }
+                    },
+                    "required": true
                 },
                 "responses": {
                     "204": {
@@ -8917,7 +8950,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "summary": "select_new_password <POST>",
@@ -8951,7 +8984,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -8983,7 +9016,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [
@@ -9022,7 +9055,7 @@
                                 }
                             }
                         },
-                        "description": "Unprocessable Entity"
+                        "description": "Unprocessable Content"
                     }
                 },
                 "security": [

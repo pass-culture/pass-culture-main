@@ -75,7 +75,7 @@ semver = "3.0.4"
 sentry-sdk = { version = "2.38.0", extras = ["flask"] }
 shapely = "^2.1.2"      # Used for iris importation
 slack-sdk = "3.36.0"
-spectree = "1.2.1"
+spectree = "1.5.7"
 # Do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).

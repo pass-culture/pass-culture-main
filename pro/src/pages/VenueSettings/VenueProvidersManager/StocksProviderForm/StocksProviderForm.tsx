@@ -17,7 +17,7 @@ import styles from './StocksProviderForm.module.scss'
 export interface StocksProviderFormProps {
   offererId: number
   providerId: number
-  saveVenueProvider: (payload?: PostVenueProviderBody) => Promise<boolean>
+  saveVenueProvider: (payload: PostVenueProviderBody) => Promise<boolean>
   siret?: string | null
   venueId: number
   hasOffererProvider: boolean

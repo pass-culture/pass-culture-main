@@ -92,8 +92,10 @@ KNOWN_PUBLIC_ENDPOINTS = [
 ]
 
 SUFFIX_WHITE_LIST = [
+    # swagger, redoc and scalar are available through spectree
     "_swagger",
     "_redoc",
+    "_scalar",
     "oauth2-redirect_html",
     "openapi_/",
     "openapi_/deprecated",
