@@ -193,7 +193,9 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should render error block', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockRejectedValue([])
+
     renderReimbursementsInvoices()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -419,6 +421,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should call api with requested filters', async () => {
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(
       api,
