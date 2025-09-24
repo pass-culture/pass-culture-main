@@ -751,7 +751,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         "Criterion", backref=sa_orm.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        db_utils.TimezonedDatetime, nullable=False, default=datetime.datetime.utcnow
     )
     dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
