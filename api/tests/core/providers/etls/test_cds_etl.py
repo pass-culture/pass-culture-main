@@ -486,7 +486,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_1.publicationDatetime == datetime.datetime(2022, 2, 12, 12, 41, 30)
-        assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30)
+        assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_1.product
         assert offer_1.product.name == "Test movie #1"
@@ -501,7 +501,7 @@ class CDSExtractTransformLoadProcessTest:
         assert offer_2.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_2.publicationDatetime == datetime.datetime(2022, 2, 12, 12, 41, 30)
-        assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30)
+        assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2022, 2, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_2.product
         assert offer_2.product.name == "Test movie #2"
