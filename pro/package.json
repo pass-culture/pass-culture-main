@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
-    "@cypress/grep": "4.1.1",
+    "@cypress/grep": "5.0.0",
     "@eslint/compat": "1.4.0",
     "@hookform/devtools": "4.4.0",
     "@storybook/addon-a11y": "8.6.14",
