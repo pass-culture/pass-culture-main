@@ -318,13 +318,13 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
             # should set new value
             (
                 {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
                 "2025-08-01T06:00:00Z",
             ),
             # should unset value
             ({"bookingAllowedDatetime": None}, None, None),
             # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3), "2025-05-01T03:00:00Z"),
+            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
         ],
     )
     def test_booking_allowed_datetime_param(
