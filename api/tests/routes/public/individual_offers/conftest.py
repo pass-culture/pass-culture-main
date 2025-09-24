@@ -44,7 +44,6 @@ def venue_fixture(provider):
 @pytest.fixture(name="api_key")
 def api_key_fixture(offerer_provider):
     return offerers_factories.ApiKeyFactory(
-        offerer=offerer_provider.offerer,
         provider=offerer_provider.provider,
         secret=SECRET,
         prefix=f"{offerers_factories.DEFAULT_PREFIX}{offerer_provider.offerer.id}",
@@ -111,7 +110,6 @@ def other_venue_fixture(other_provider):
 @pytest.fixture(name="other_api_key")
 def other_api_key_fixture(other_offerer_provider):
     return offerers_factories.ApiKeyFactory(
-        offerer=other_offerer_provider.offerer,
         provider=other_offerer_provider.provider,
         prefix=f"{offerers_factories.DEFAULT_PREFIX}{other_offerer_provider.offerer.id}",
         secret=OTHER_SECRET,

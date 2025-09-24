@@ -640,22 +640,12 @@ class ApiKeyTest:
         offerer = offerers_factories.OffererFactory()
         provider = providers_factories.ProviderFactory(localClass=None, name="RiotRecords")
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
-        offerers_factories.ApiKeyFactory(
-            offerer=offerer, provider=provider, prefix="development_prefix", secret="a very secret key"
-        )
+        offerers_factories.ApiKeyFactory(provider=provider, prefix="development_prefix", secret="a very secret key")
 
         with assert_num_queries(1):
             found_api_key = offerers_api.find_api_key(value)
 
         assert found_api_key.provider == provider
-
-    def test_legacy_api_key(self):
-        value = "a very secret legacy key"
-        key = offerers_factories.ApiKeyFactory(prefix="development_a very s", secret="ecret legacy key")
-
-        found_api_key = offerers_api.find_api_key(value)
-
-        assert found_api_key == key
 
     def test_no_key_found(self):
         assert not offerers_api.find_api_key("")
@@ -1263,19 +1253,6 @@ class DeleteOffererTest:
         assert db.session.query(offerers_models.Offerer).count() == 1
         assert db.session.query(offerers_models.UserOfferer).count() == 1
 
-    def test_delete_cascade_offerer_should_remove_api_key_of_offerer(self):
-        # Given
-        offerer_to_delete = offerers_factories.OffererFactory()
-        offerers_factories.ApiKeyFactory(offerer=offerer_to_delete)
-        offerers_factories.ApiKeyFactory(prefix="other-prefix")
-
-        # When
-        offerers_api.delete_offerer(offerer_to_delete.id)
-
-        # Then
-        assert db.session.query(offerers_models.Offerer).count() == 1
-        assert db.session.query(offerers_models.ApiKey).count() == 1
-
     def test_delete_cascade_offerer_should_remove_offers_of_offerer(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
@@ -1834,23 +1811,6 @@ class RejectOffererTest:
         user_offerer_query = db.session.query(offerers_models.UserOfferer)
         assert user_offerer_query.count() == 1
         assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
-
-    def test_api_key_has_been_removed(self):
-        # Given
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory()
-        offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
-
-        # When
-        offerers_api.reject_offerer(
-            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
-        )
-
-        # Then
-        user_offerer_query = db.session.query(offerers_models.UserOfferer)
-        assert user_offerer_query.count() == 1
-        assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
-        assert db.session.query(offerers_models.ApiKey).count() == 0
 
     @patch("pcapi.core.mails.transactional.send_offerer_attachment_rejection_email_to_pro")
     @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro")

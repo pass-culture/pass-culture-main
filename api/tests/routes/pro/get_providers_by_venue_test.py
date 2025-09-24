@@ -87,10 +87,7 @@ def test_venue_has_offerer_provider(client):
         name=name,
         localClass=None,
     )
-    offerer_provider = providers_factories.OffererProviderFactory(
-        provider=provider,
-    )
-    offerers_factories.ApiKeyFactory(offerer=offerer_provider.offerer)
+    providers_factories.OffererProviderFactory(provider=provider)
 
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 

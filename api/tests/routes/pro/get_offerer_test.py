@@ -46,8 +46,6 @@ class GetOffererTest:
         collective_factories.CollectiveDmsApplicationFactory(
             venue=venue,
         )
-        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
-        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)

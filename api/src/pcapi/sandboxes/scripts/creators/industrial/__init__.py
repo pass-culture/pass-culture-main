@@ -58,9 +58,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_confi
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerer_tags import create_industrial_offerer_tags
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers import create_industrial_offerers
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import create_industrial_pro_users
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import (
-    create_industrial_pro_users_api_keys,
-)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_products import create_industrial_products
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_objects import (
     create_industrial_search_indexed_objects,
@@ -147,8 +144,6 @@ def save_industrial_sandbox() -> None:
             assert user.deposit  # helps mypy
             user.deposit.expirationDate = datetime.utcnow()
             repository.save(user.deposit)
-
-    create_industrial_pro_users_api_keys(offerers_by_name)
 
     create_industrial_search_indexed_objects()
 

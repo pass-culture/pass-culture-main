@@ -127,10 +127,6 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
                     continue
                 child.unlink()
 
-    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client):
-        num_queries = 2  # Select API key + rollback
-        super().test_should_raise_401_because_api_key_not_linked_to_provider(client, num_queries=num_queries)
-
     @time_machine.travel(time_travel_str)
     def test_post_offers(self, public_client, payload, venue_provider, domain, institution, national_program, venue):
         num_queries = 1  # fetch api key

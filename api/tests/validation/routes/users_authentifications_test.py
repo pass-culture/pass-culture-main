@@ -23,9 +23,7 @@ class ProviderApiKeyRequiredTest:
         env = "test"
         prefix_id = str(uuid.uuid1())
 
-        offerers_factories.ApiKeyFactory(
-            offerer=offerer, provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
-        )
+        offerers_factories.ApiKeyFactory(provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id))
         plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
 
         return plain_api_key
@@ -41,23 +39,6 @@ class ProviderApiKeyRequiredTest:
 
         assert response.status_code == 401
         assert response.json == {"auth": "API key required"}
-
-    def test_should_raise_401_because_deprecated_api_key_given(self, client):
-        # deprecated = not linked to a provider
-        plain_api_key = self._setup_api_key(provider=None)
-        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
-
-        assert response.status_code == 401
-        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
-
-    def test_should_raise_403_because_inactive_offerer(self, client):
-        provider = providers_factories.PublicApiProviderFactory()
-        offerer = offerers_factories.OffererFactory(isActive=False)
-        plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
-        response = client.with_explicit_token(plain_api_key).get("/public/providers/v1/provider")
-
-        assert response.status_code == 403
-        assert response.json == {"auth": ["Inactive offerer"]}
 
     def test_should_raise_403_because_inactive_provider(self, client):
         provider = providers_factories.PublicApiProviderFactory(isActive=False)
