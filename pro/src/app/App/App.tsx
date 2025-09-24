@@ -64,7 +64,7 @@ export const App = (): JSX.Element | null => {
   } = useOfferer(offererId)
 
   useEffect(() => {
-    if (offerer) {
+    if (searchParams.get('from-bo')) {
       dispatch(updateCurrentOfferer(offerer))
 
       // remove query params safely
