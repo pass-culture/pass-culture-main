@@ -20,8 +20,8 @@ import {
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import type { Audience } from '@/commons/core/shared/types'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
+import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -88,8 +88,6 @@ export const CollectiveBookingsComponent = <
     })
   )
 
-  const { data: offerer } = useOfferer(selectedOffererId)
-
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
   )
@@ -127,9 +125,11 @@ export const CollectiveBookingsComponent = <
     logEvent(Events.CLICKED_RESET_FILTERS, { from: location.pathname })
   }
 
+  const allowedOnAdage = useIsAllowedOnAdage()
+
   return (
     <div>
-      {offerer?.allowedOnAdage && (
+      {allowedOnAdage && (
         <CollectiveBudgetCallout
           variant="COLLECTIVE_TABLE"
           pageName="bookings"
