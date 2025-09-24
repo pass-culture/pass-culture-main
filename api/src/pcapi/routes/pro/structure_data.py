@@ -11,36 +11,11 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-
-
-# TODO: deprecated, to delete once the frontend does not call this endpoint anymore
-@private_api.route("/sirene/siret/<siret>", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(
-    response_model=sirene_serializers.SiretInfo,
-    api=blueprint.pro_private_schema,
-)
-def get_siret_info(siret: str) -> sirene_serializers.SiretInfo:
-    info = offerers_api.find_structure_data(siret)
-    assert info.address  # helps mypy
-    info_address_dict = info.address.dict()
-    info_address_dict.pop("insee_code")
-
-    return sirene_serializers.SiretInfo(
-        siret=siret,
-        name=info.name,
-        active=info.active,
-        address=sirene_serializers.Address(**info_address_dict),
-        ape_code=info.ape_code or "0000Z",  # APE code can be null, frontend expects a string
-        legal_category_code=info.legal_category_code,
-    )
 
 
 @private_api.route("/structure/search/<search_input>", methods=["GET"])
