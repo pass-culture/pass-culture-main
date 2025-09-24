@@ -673,8 +673,10 @@ def batch_update_offers(
     return updated_offer_ids
 
 
-def reindex_recently_published_offers(publication_datetime: datetime.datetime | None = None) -> None:
-    offer_query = offers_repository.get_offers_by_publication_datetime(publication_datetime=publication_datetime)
+def reindex_recently_published_offers() -> None:
+    end = get_naive_utc_now()
+    start = end - datetime.timedelta(hours=1)
+    offer_query = offers_repository.get_offers_by_publication_datetime(start=start, end=end)
     offer_query = offers_repository.exclude_offers_from_inactive_venue_provider(offer_query)
 
     ids_to_reindex = []
