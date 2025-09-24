@@ -38,7 +38,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-      { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
     ])
   })
 
@@ -128,7 +127,6 @@ describe('Signup journey with known offerer...', () => {
     cy.setFeatureFlags([
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_AUTOLOGIN', isActive: true },
-      { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
     ])
   })
 
@@ -146,10 +144,7 @@ describe('Signup journey with known offerer...', () => {
           mySiret = siren + endSiret
         }
       )
-      cy.setFeatureFlags([
-        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
-      ])
+      cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
     it('I should be able to sign up with a new account and create a new venue with a known SIREN (unknown SIRET)', () => {
@@ -208,10 +203,7 @@ describe('Signup journey with known offerer...', () => {
       )
       interceptSearch5Adresses()
       cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
-      cy.setFeatureFlags([
-        { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
-        { name: 'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE', isActive: false },
-      ])
+      cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
     })
 
     it('I should be able as a local authority to sign up with a new account and a known offerer/venue and then create a new venue in the space', () => {

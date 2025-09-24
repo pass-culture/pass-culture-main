@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -23,9 +22,6 @@ import {
 import { validationSchema } from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
-  const isPartiallyDiffusableSignupEnabled = useActiveFeature(
-    'WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'
-  )
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -34,10 +30,7 @@ export const OffererAuthentication = (): JSX.Element => {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
     isOpenToPublic:
-      offerer?.isOpenToPublic ||
-      (isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible
-        ? 'false'
-        : 'true'),
+      offerer?.isOpenToPublic || (!offerer?.isDiffusible ? 'false' : 'true'),
     addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     latitude: offerer?.latitude || 0,
@@ -68,9 +61,7 @@ export const OffererAuthentication = (): JSX.Element => {
   const methods = useForm<OffererAuthenticationFormValues>({
     defaultValues: initialValues,
     resolver: yupResolver(
-      validationSchema(
-        isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible
-      )
+      validationSchema(!offerer?.isDiffusible)
     ) as unknown as Resolver<OffererAuthenticationFormValues>,
   })
 
@@ -91,7 +82,7 @@ export const OffererAuthentication = (): JSX.Element => {
             Complétez les informations de votre structure
           </h2>
           <FormLayout.MandatoryInfo />
-          {isPartiallyDiffusableSignupEnabled && !offerer?.isDiffusible && (
+          {!offerer?.isDiffusible && (
             <Callout
               className={styles['warning-callout']}
               variant={CalloutVariant.WARNING}

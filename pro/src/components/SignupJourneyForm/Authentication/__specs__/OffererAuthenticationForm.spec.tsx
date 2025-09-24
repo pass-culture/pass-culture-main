@@ -12,10 +12,7 @@ import {
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { Button } from '@/ui-kit/Button/Button'
 
@@ -79,18 +76,15 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-const renderOffererAuthenticationForm = (
-  {
-    initialValues,
-    onSubmit = vi.fn(),
-    contextValue,
-  }: {
-    initialValues: Partial<OffererAuthenticationFormValues>
-    onSubmit?: () => void
-    contextValue: SignupJourneyContextValues
-  },
-  options: RenderWithProvidersOptions = {}
-) => {
+const renderOffererAuthenticationForm = ({
+  initialValues,
+  onSubmit = vi.fn(),
+  contextValue,
+}: {
+  initialValues: Partial<OffererAuthenticationFormValues>
+  onSubmit?: () => void
+  contextValue: SignupJourneyContextValues
+}) => {
   const Wrapper = () => {
     const methods = useForm({
       defaultValues: initialValues,
@@ -114,7 +108,6 @@ const renderOffererAuthenticationForm = (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/identification'],
-      ...options,
     }
   )
 }
@@ -230,49 +223,41 @@ describe('OffererAuthenticationForm', () => {
     expect(noRadio).toBeInTheDocument()
   })
 
-  describe('With WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE FF', () => {
-    it('should render form without address when not dissufible', () => {
-      renderOffererAuthenticationForm(
-        {
-          initialValues: initialValues,
-          contextValue: {
-            ...contextValue,
-            offerer: {
-              ...offererAuthenticationFormValues,
-              isDiffusible: false,
-            },
-          },
+  it('should render form without address when not dissufible', () => {
+    renderOffererAuthenticationForm({
+      initialValues: initialValues,
+      contextValue: {
+        ...contextValue,
+        offerer: {
+          ...offererAuthenticationFormValues,
+          isDiffusible: false,
         },
-        { features: ['WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'] }
-      )
-
-      const addressField = screen.queryByLabelText('Adresse postale *')
-      expect(addressField).not.toBeInTheDocument()
+      },
     })
 
-    it('should call reset on open to public change', async () => {
-      renderOffererAuthenticationForm(
-        {
-          initialValues: initialValues,
-          contextValue: {
-            ...contextValue,
-            offerer: {
-              ...offererAuthenticationFormValues,
-              isDiffusible: false,
-            },
-          },
+    const addressField = screen.queryByLabelText('Adresse postale *')
+    expect(addressField).not.toBeInTheDocument()
+  })
+
+  it('should call reset on open to public change', async () => {
+    renderOffererAuthenticationForm({
+      initialValues: initialValues,
+      contextValue: {
+        ...contextValue,
+        offerer: {
+          ...offererAuthenticationFormValues,
+          isDiffusible: false,
         },
-        { features: ['WIP_2025_SIGN_UP_PARTIALLY_DIFFUSIBLE'] }
-      )
+      },
+    })
 
-      const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
-      const noRadio = await screen.findByRole('radio', { name: 'Non' })
+    const yesRadio = await screen.findByRole('radio', { name: 'Oui' })
+    const noRadio = await screen.findByRole('radio', { name: 'Non' })
 
-      expect(noRadio).not.toBeChecked()
-      await userEvent.click(yesRadio)
-      await waitFor(() => {
-        expect(screen.getByLabelText('Adresse postale *')).toHaveValue('')
-      })
+    expect(noRadio).not.toBeChecked()
+    await userEvent.click(yesRadio)
+    await waitFor(() => {
+      expect(screen.getByLabelText('Adresse postale *')).toHaveValue('')
     })
   })
 })
