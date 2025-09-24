@@ -820,7 +820,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         onupdate=date_utils.get_naive_utc_now,
     )
 
-    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
     publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
