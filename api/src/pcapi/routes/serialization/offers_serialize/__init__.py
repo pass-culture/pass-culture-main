@@ -106,7 +106,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     motor_disability_compliant: bool | None
     visual_disability_compliant: bool | None
 
-    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
+    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
 
     @validator("name", pre=True, allow_reuse=True)
@@ -143,8 +143,8 @@ class PatchOfferPublishBodyModel(BaseModel):
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
 
 
 class PatchOfferActiveStatusBodyModel(BaseModel):

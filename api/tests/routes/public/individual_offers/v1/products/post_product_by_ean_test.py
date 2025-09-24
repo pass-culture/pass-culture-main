@@ -267,7 +267,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                     ).isoformat(),
                     "stock": {"price": 1234, "quantity": 3},
                 },
-                datetime.datetime(2025, 7, 17, 10),
+                datetime.datetime(2025, 7, 17, 10, tzinfo=datetime.UTC),
             ),
             (  # unset `bookingAllowedDatetime`
                 {"ean": "2461567890123", "bookingAllowedDatetime": None, "stock": {"price": 1234, "quantity": 3}},
