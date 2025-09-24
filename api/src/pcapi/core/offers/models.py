@@ -826,7 +826,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
         db_utils.TimezonedDatetime, nullable=True
     )
-    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
 
     _description: sa_orm.Mapped[str | None] = sa_orm.mapped_column("description", sa.Text, nullable=True)
     _durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column("durationMinutes", sa.Integer, nullable=True)
@@ -1236,15 +1238,12 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @property
     def searchableStocks(self) -> list[Stock]:
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.UTC)
         if (
             self.publicationDatetime
             and self.publicationDatetime <= now
             and self.bookingAllowedDatetime
-            # TODO(jbaudet - 09/2025) remove call to replace() when
-            # Offer.bookingAllowedDatetime has been migrated to new custom
-            # datetime type that always return a timezone-aware object
-            and self.bookingAllowedDatetime > now.replace(tzinfo=None)
+            and self.bookingAllowedDatetime > now
         ):
             return self.stocks
         return self.bookableStocks
@@ -1348,10 +1347,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         if now_utc < self.publicationDatetime:
             return OfferStatus.SCHEDULED
 
-        # TODO(jbaudet - 09/2025) remove call to replace() when
-        # Offer.bookingAllowedDatetime has been migrated to new custom
-        # datetime type that always return a timezone-aware object
-        if self.bookingAllowedDatetime and now_utc.replace(tzinfo=None) < self.bookingAllowedDatetime:
+        if self.bookingAllowedDatetime and now_utc < self.bookingAllowedDatetime:
             return OfferStatus.PUBLISHED
 
         if self.validation == OfferValidationStatus.APPROVED:

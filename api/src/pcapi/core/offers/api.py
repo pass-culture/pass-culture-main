@@ -461,7 +461,7 @@ def update_offer(
 
     if "bookingAllowedDatetime" in updates:
         bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
-        if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
+        if not bookingAllowedDatetime or (bookingAllowedDatetime <= datetime.datetime.now(datetime.UTC)):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
     if (

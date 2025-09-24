@@ -69,10 +69,7 @@ class Returns204Test:
         assert first_offer.finalizationDatetime == finalization_datetime
         assert not first_offer.isActive
         assert not first_offer.publicationDatetime
-        # TODO(jbaudet - 09/2025) remove call to replace() when
-        # Offer.bookingAllowedDatetime has been migrated to new custom
-        # datetime type that always return a timezone-aware object
-        assert first_offer.bookingAllowedDatetime.replace(tzinfo=UTC) == finalization_datetime
+        assert first_offer.bookingAllowedDatetime == finalization_datetime
         assert not db.session.get(Offer, synchronized_offer.id).isActive
 
     @time_machine.travel(now_datetime_with_tz, tick=False)

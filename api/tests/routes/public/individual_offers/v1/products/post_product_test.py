@@ -373,7 +373,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         [
             (
                 {"bookingAllowedDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
                 "2025-08-01T06:00:00Z",
             ),
             ({"bookingAllowedDatetime": None}, None, None),
