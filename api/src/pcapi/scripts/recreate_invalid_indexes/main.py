@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 
 INDEXES_TO_RECREATE = [
     (
+        "ix_recredit_depositId",
+        'ON public."recredit" USING btree ("depositId")',
+    ),
+    (
         "idx_product_trgm_name",
         'ON public."product" USING gin (name gin_trgm_ops)',
     ),
@@ -186,6 +190,15 @@ def clean_temporary_indexes(lock_timeout: int, statement_timeout: int, max_retri
             drop_index(connection, index, max_retries)
 
 
+def create_missing_indexes(lock_timeout: int, statement_timeout: int, max_retries: int) -> None:
+    logger.info("Checking for missing indexes...")
+    missing_indexes = [index for index in INDEXES_TO_RECREATE if index[0] not in get_invalid_indexes()]
+    logger.info("Indexes to create: %s", [index for index, _ in missing_indexes])
+    with autocommit_connection(lock_timeout, statement_timeout) as connection:
+        for index_name, index_definition in missing_indexes:
+            create_index(connection, index_name, index_definition, max_retries=max_retries)
+
+
 if __name__ == "__main__":
     app.app_context().push()
 
@@ -196,4 +209,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
+    create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
     recreate_invalid_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
