@@ -244,7 +244,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
         "publication_datetime",
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_bookingAllowedDatetime = serialization_utils.validate_timezoned_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"
@@ -504,8 +504,8 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = fields.OFFER_PUBLICATION_DATETIME
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
     _validate_publicationDatetime = serialization_utils.validate_timezoned_datetime("publication_datetime")
+    _validate_bookingAllowedDatetime = serialization_utils.validate_timezoned_datetime("booking_allowed_datetime")
 
     class Config:
         extra = "forbid"

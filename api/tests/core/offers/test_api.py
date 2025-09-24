@@ -1916,9 +1916,9 @@ class UpdateOfferTest:
     @pytest.mark.parametrize(
         "bookingAllowedDatetime,expected_calls_count",
         [
-            (datetime.now() - timedelta(minutes=5), 1),
+            (datetime.now(UTC) - timedelta(minutes=5), 1),
             (None, 1),
-            (datetime.now() + timedelta(days=5), 0),
+            (datetime.now(UTC) + timedelta(days=5), 0),
         ],
     )
     @mock.patch("pcapi.core.reminders.external.reminders_notifications.notify_users_offer_is_bookable")
@@ -2063,11 +2063,11 @@ class BatchUpdateOffersTest:
 
         assert not offer2.isActive
         assert not offer2.publicationDatetime
-        assert offer2.bookingAllowedDatetime == now_datetime_without_tz
+        assert offer2.bookingAllowedDatetime == now_datetime_with_tz
 
         assert offer3.isActive
-        assert offer3.bookingAllowedDatetime == now_datetime_without_tz
         assert offer3.publicationDatetime == now_datetime_with_tz
+        assert offer3.bookingAllowedDatetime == now_datetime_with_tz
 
         assert len(caplog.records) == 4
         first_record = caplog.records[0]

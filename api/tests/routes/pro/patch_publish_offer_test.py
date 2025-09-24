@@ -229,7 +229,7 @@ class Returns200Test:
                 },
             )
 
-        expected_booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
+        expected_booking_allowed_datetime = booking_allowed_datetime
         assert response.status_code == 200
         assert response.json["bookingAllowedDatetime"] == format_into_utc_date(booking_allowed_datetime)
         assert response.json["status"] == OfferStatus.PUBLISHED.name
@@ -282,7 +282,6 @@ class Returns200Test:
                 },
             )
 
-        booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
         expected_publication_datetime = publication_date
 
         assert response.status_code == 200

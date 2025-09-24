@@ -827,9 +827,6 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
         else booking_limit_datetime.replace(tzinfo=datetime.UTC)
     )
 
-    if booking_limit_datetime.tzinfo is not None:
-        booking_limit_datetime = booking_limit_datetime.replace(tzinfo=None)
-
     if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
         errors += [
             "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"

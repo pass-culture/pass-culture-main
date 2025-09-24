@@ -154,8 +154,8 @@ def _create_offer_from_product(
     offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
     offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.bookingAllowedDatetime = bookingAllowedDatetime
     offer.publicationDatetime = _ensure_timezone_exists(publicationDatetime)
+    offer.bookingAllowedDatetime = _ensure_timezone_exists(bookingAllowedDatetime)
     offer.lastValidationDate = utils_date.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
