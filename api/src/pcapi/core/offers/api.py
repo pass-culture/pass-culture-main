@@ -1079,7 +1079,7 @@ def finalize_offer(
     :publication_datetime     : //!\\ must be a naive utc datetime
     :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
-    offer.finalizationDatetime = get_naive_utc_now()
+    offer.finalizationDatetime = datetime.datetime.now(datetime.UTC)
 
     if publication_datetime:
         publication_datetime = publication_datetime.replace(second=0, microsecond=0)
@@ -1110,7 +1110,7 @@ def publish_offer(
     :publication_datetime     : //!\\ must be a naive utc datetime
     :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
-    finalization_date = get_naive_utc_now()
+    finalization_date = datetime.datetime.now(datetime.UTC)
 
     if not offer.finalizationDatetime:
         offer.finalizationDatetime = finalization_date

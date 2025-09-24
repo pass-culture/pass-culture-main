@@ -157,7 +157,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
         assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
-        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert not created_offer.bookingAllowedDatetime
         assert not created_offer.isDuo
         assert created_offer.bookingEmail is None
@@ -270,7 +270,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.motorDisabilityCompliant is False
         assert created_offer.visualDisabilityCompliant is False
         assert created_offer.publicationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
-        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30)
+        assert created_offer.finalizationDatetime == datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC)
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.isDuo is False
         assert created_offer.bookingEmail == "spam@example.com"
