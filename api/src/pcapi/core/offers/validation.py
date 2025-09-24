@@ -815,9 +815,14 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
     booking_limit_datetime: datetime.datetime,
 ) -> None:
     """
-    :booking_limit_datetime: /!\ must be a naive utc datetime
+    :booking_limit_datetime: /!\ should be a timezone-aware datetime
     """
     errors = []
+    booking_limit_datetime = (
+        booking_limit_datetime
+        if booking_limit_datetime.tzinfo is not None
+        else booking_limit_datetime.replace(tzinfo=datetime.UTC)
+    )
 
     if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
         errors += [
@@ -834,7 +839,10 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
 
 
 def check_publication_date(publication_date: datetime.datetime) -> None:
-    if publication_date > date.get_naive_utc_now() + relativedelta(years=2):
+    # TODO(jbaudet - 09/2025): once models all uses timezone aware
+    # datetime objects, compare without removing tzinfo or using UTC
+    # date.
+    if publication_date.replace(tzinfo=None) > date.get_naive_utc_now() + relativedelta(years=2):
         raise exceptions.OfferException(
             {"publication_date": ["Impossible sélectionner une date de publication plus de 2 ans en avance"]}
         )

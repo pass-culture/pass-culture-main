@@ -18,7 +18,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 import tests
@@ -128,16 +127,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
-        publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
+        publication_date = datetime.now(UTC) + timedelta(days=30)
         payload["publicationDate"] = publication_date.isoformat()
         response = self.make_request(plain_api_key, json_body=payload)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
 
-        assert created_offer.publicationDatetime == date_utils.local_datetime_to_default_timezone(
-            publication_date, "Europe/Paris"
-        ).replace(microsecond=0, tzinfo=None)
+        assert created_offer.publicationDatetime == publication_date
         assert created_offer.finalizationDatetime == now_datetime_with_tz
         assert not created_offer.bookingAllowedDatetime
 
@@ -149,20 +146,20 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             (
                 "2025-06-26T14:30:00+02:00",
                 "Europe/Paris",
-                datetime(2025, 6, 26, 12, 30, tzinfo=None),
+                datetime(2025, 6, 26, 12, 30, tzinfo=UTC),
                 "2025-06-26T12:30:00Z",
             ),
             (
                 "2025-06-26T14:30:00Z",
                 "America/Cayenne",
-                datetime(2025, 6, 26, 14, 30, tzinfo=None),
+                datetime(2025, 6, 26, 14, 30, tzinfo=UTC),
                 "2025-06-26T14:30:00Z",
             ),
             # request publication date does NOT have tz
             (
                 "2025-06-26T14:30:00",
                 "America/Cayenne",
-                datetime(2025, 6, 26, 17, 30, tzinfo=None),
+                datetime(2025, 6, 26, 17, 30, tzinfo=UTC),
                 "2025-06-26T17:30:00Z",
             ),
         ],
@@ -192,16 +189,16 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         [
             (
                 {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime(2025, 8, 1, 6),  # tz: utc
+                datetime(2025, 8, 1, 6, tzinfo=UTC),
                 "2025-08-01T06:00:00Z",
             ),
             (
                 {"publicationDatetime": "now"},
-                datetime(2025, 6, 25, 12, 30),
+                datetime(2025, 6, 25, 12, 30, tzinfo=UTC),
                 "2025-06-25T12:30:00Z",
             ),
             # should default to now
-            ({}, datetime(2025, 6, 25, 12, 30), "2025-06-25T12:30:00Z"),
+            ({}, datetime(2025, 6, 25, 12, 30, tzinfo=UTC), "2025-06-25T12:30:00Z"),
             # draft
             ({"publicationDatetime": None}, None, None),
         ],
@@ -314,7 +311,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingEmail == "nicoj@example.com"
 
         assert created_offer.finalizationDatetime == datetime(2025, 6, 25, 12, 30, tzinfo=UTC)
-        assert created_offer.publicationDatetime == datetime(2025, 6, 25, 12, 30)
+        assert created_offer.publicationDatetime == datetime(2025, 6, 25, 12, 30, tzinfo=UTC)
 
         assert not created_offer.bookingAllowedDatetime
         assert created_offer.description == "Space is only noise if you can see"

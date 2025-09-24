@@ -78,10 +78,7 @@ class Returns200Test:
 
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.finalizationDatetime == now_datetime_with_tz
-        # TODO(jbaudet - 09/2025) remove call to replace() when
-        # Offer.bookingAllowedDatetime has been migrated to new custom
-        # datetime type that always return a timezone-aware object
-        assert offer.finalizationDatetime == offer.publicationDatetime.replace(tzinfo=datetime.UTC)
+        assert offer.finalizationDatetime == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice == stock.price
