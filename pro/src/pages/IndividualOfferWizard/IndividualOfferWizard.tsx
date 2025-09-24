@@ -38,7 +38,7 @@ export const IndividualOfferWizard = () => {
   ) : (
     <BasicLayout
       mainHeading={mainHeading}
-      isStickyActionBarInChild={isConfirmationPage}
+      isStickyActionBarInChild={!isConfirmationPage}
     >
       {children}
     </BasicLayout>
