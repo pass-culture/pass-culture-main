@@ -58,7 +58,7 @@ class OfferCommandsTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.usefixtures("clean_database")
     def test_reindex_recently_published_offers_command(self, mock_reindex_offers, app):
-        offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime.datetime.now(datetime.UTC))
         user = users_factories.BeneficiaryFactory()
         reminders_factories.OfferReminderFactory(user=user, offer=offer)
 
