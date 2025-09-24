@@ -180,7 +180,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
         assert created_offer.offererAddressId == venue.offererAddressId
-        assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15)
+        assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15, tzinfo=datetime.UTC)
         assert created_offer.bookingAllowedDatetime == None
 
         created_stock = db.session.query(offers_models.Stock).one()
@@ -195,11 +195,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         [
             (  # no `publicationDatetime` should default to "now"
                 {"ean": "1234567890123", "stock": {"price": 1234, "quantity": 3}},
-                datetime.datetime(2025, 7, 15),
+                datetime.datetime(2025, 7, 15, tzinfo=datetime.UTC),
             ),
             (  # `publicationDatetime="now"`
                 {"ean": "1234567890123", "publicationDatetime": "now", "stock": {"price": 1234, "quantity": 3}},
-                datetime.datetime(2025, 7, 15),
+                datetime.datetime(2025, 7, 15, tzinfo=datetime.UTC),
             ),
             (  # `publicationDatetime` in the future
                 {
@@ -209,7 +209,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
                     ).isoformat(),
                     "stock": {"price": 1234, "quantity": 3},
                 },
-                datetime.datetime(2025, 7, 17, 10),
+                datetime.datetime(2025, 7, 17, 10, tzinfo=datetime.UTC),
             ),
             (  # unset `publicationDatetime`
                 {"ean": "2461567890123", "publicationDatetime": None, "stock": {"price": 1234, "quantity": 3}},
