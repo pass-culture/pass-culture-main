@@ -225,7 +225,6 @@ jobs:
       - test-api
       - test-api-documentation
       - test-pro
-      - test-pro-e2e-parallel
     if: always()
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
