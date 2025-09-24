@@ -68,7 +68,7 @@ export const Footer = ({ layout }: FooterProps) => {
         <li className={styles['footer-list-item']}>
           <Button
             variant={ButtonVariant.QUATERNARY}
-            onClick={() => orejime.prompt()}
+            onClick={() => orejime?.prompt()}
           >
             Gestion des cookies
           </Button>
