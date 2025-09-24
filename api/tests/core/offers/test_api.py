@@ -4905,7 +4905,7 @@ class DeleteUnbookableUnusedOldOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class ProductCountsConsistencyTest:
+class FetchInconsistentProductsTest:
     def test_chronicles_count(self) -> None:
         product_1 = factories.ProductFactory()
         product_2 = factories.ProductFactory()
@@ -4942,6 +4942,36 @@ class ProductCountsConsistencyTest:
         product.likesCount = 0
 
         assert api.fetch_inconsistent_products() == {product.id}
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateProductCountsTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_update_product_count(self) -> None:
+        product_1 = factories.ProductFactory()
+        product_2 = factories.ProductFactory()
+        reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+        reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+        reactions_factories.ReactionFactory(product=product_2, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+        reactions_factories.ReactionFactory(product=product_2, reactionType=reactions_models.ReactionTypeEnum.LIKE)
+        reactions_factories.ReactionFactory(
+            product=product_1, reactionType=reactions_models.ReactionTypeEnum.NO_REACTION
+        )
+        reactions_factories.ReactionFactory(product=product_1, reactionType=reactions_models.ReactionTypeEnum.DISLIKE)
+        chronicles_factories.ChronicleFactory.create(products=[product_1])
+        factories.HeadlineOfferFactory(offer__product=product_2)
+
+        product_1.likesCount = 0
+        product_2.likesCount = 0
+
+        api.update_product_counts(batch_size=1)
+        db.session.refresh(product_1)
+        db.session.refresh(product_2)
+
+        assert product_1.likesCount == 2
+        assert product_2.likesCount == 2
+        assert product_1.chroniclesCount == 1
+        assert product_2.headlinesCount == 1
 
 
 @pytest.mark.usefixtures("db_session")
