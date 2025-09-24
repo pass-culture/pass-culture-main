@@ -42,6 +42,7 @@ class CGRStocks(LocalProvider):
     def __init__(self, venue_provider: providers_models.VenueProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
+        assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.cgr_client_api = CGRClientAPI(
             self.cinema_id,

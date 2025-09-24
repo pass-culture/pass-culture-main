@@ -53,6 +53,7 @@ def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
         )
 
         if venue_provider.provider.localClass == "EMSStocks":
+            assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
             ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
             target_version = ems_cinema_details.lastVersion - 1  # retry from previous version
 

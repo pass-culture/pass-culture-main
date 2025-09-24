@@ -89,6 +89,9 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
     active_venues_provider = providers_repository.get_active_venue_providers_by_provider(ems_provider_id)
 
     for active_venue_provider in active_venues_provider:
+        assert active_venue_provider.venueIdAtOfferProvider, (
+            "`active_venue_provider.venueIdAtOfferProvider` must be defined"
+        )
         venue_provider_by_site_id[active_venue_provider.venueIdAtOfferProvider] = active_venue_provider
         venues_provider_to_sync.add(active_venue_provider.id)
 
@@ -123,6 +126,7 @@ def synchronize_ems_venue_provider(
     target_version: int | None = None,
 ) -> None:
     connector = ems_connectors.EMSScheduleConnector()
+    assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
     target_version = target_version or ems_cinema_details.lastVersion
     schedules = connector.get_schedules(target_version)

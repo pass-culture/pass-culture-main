@@ -48,6 +48,7 @@ class BoostStocks(LocalProvider):
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
+        assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         self._boost_api_client = BoostClientAPI(
             venue_provider.venueIdAtOfferProvider,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,

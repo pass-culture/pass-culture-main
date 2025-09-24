@@ -46,6 +46,7 @@ class AllocineStocks(LocalProvider):
     def __init__(self, allocine_venue_provider: providers_models.AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
         self.venue = allocine_venue_provider.venue
+        assert allocine_venue_provider.venueIdAtOfferProvider, "`venue_provider.venueIdAtOfferProvider` must be defined"
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo

@@ -47,13 +47,14 @@ class CDSStocks(LocalProvider):
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
+        assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         self.cinema_id = venue_provider.venueIdAtOfferProvider
-        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
+        cinema_details = get_cds_cinema_details(self.cinema_id)
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.client_cds = CineDigitalServiceAPI(
-            cinema_id=venue_provider.venueIdAtOfferProvider,
+            cinema_id=self.cinema_id,
             account_id=self.accountId,
             cinema_api_token=self.apiToken,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
