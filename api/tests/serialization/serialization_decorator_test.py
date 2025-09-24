@@ -221,8 +221,10 @@ class SerializationDecoratorTest:
             headers={},
             content_type=None,
         )
+
+        # spectree parses as json by default and applies the pydantic validation
         assert response.status_code == 400
-        assert response.get_data() == b'Please send a "Content-Type: application/json" HTTP header'
+        assert response.get_data() == b'{"compulsory_int_query":["Ce champ est obligatoire"]}\n'
 
     def test_post_without_content_with_incorrect_content_type_throws_400(self, client):
         response = client.post(

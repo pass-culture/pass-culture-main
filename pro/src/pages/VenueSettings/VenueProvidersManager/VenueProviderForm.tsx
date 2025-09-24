@@ -32,7 +32,7 @@ export const VenueProviderForm = ({
 }: VenueProviderFormProps) => {
   const notify = useNotification()
   const createVenueProvider = async (
-    payload?: PostVenueProviderBody
+    payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
       await api.createVenueProvider(payload)

@@ -9,7 +9,6 @@ import pydantic.v1 as pydantic_v1
 from flask import request
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
-from spectree import BaseFile
 
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.core.categories import subcategories
@@ -762,6 +761,32 @@ class GetTiteliveMusicTypesResponse(serialization.ConfiguredBaseModel):
 
 class GetTiteliveEventMusicTypesResponse(serialization.ConfiguredBaseModel):
     __root__: list[TiteliveEventMusicTypeResponse]
+
+
+#### Taken from spectree.models
+#### BaseFile is defined differently if the installed version of Pydantic is 2
+#### We need the Pydantic v1 version of BaseFile
+class BaseFile:
+    """
+    An uploaded file, will be assigned as the corresponding web framework's
+    file object.
+    """
+
+    @classmethod
+    def __get_validators__(cls) -> typing.Any:
+        # one or more validators may be yielded which will be called in the
+        # order to validate the input, each validator will receive as an input
+        # the value returned from the previous validator
+        yield cls.validate
+
+    @classmethod
+    def __modify_schema__(cls, field_schema: dict[str, typing.Any]) -> None:
+        field_schema.update(format="binary", type="string")
+
+    @classmethod
+    def validate(cls, value: typing.Any, values: typing.Any, config: typing.Any, field: typing.Any) -> typing.Any:
+        # https://github.com/luolingchun/flask-openapi3/blob/master/flask_openapi3/models/file.py
+        return value
 
 
 class ImageUploadFile(BaseModel):
