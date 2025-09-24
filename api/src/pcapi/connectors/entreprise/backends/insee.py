@@ -25,7 +25,7 @@ class InseeBackend(BaseBackend):
 
     @property
     def headers(self) -> dict[str, str]:
-        return {"Authorization": "Bearer " + settings.INSEE_SIRENE_API_TOKEN}
+        return {"X-INSEE-Api-Key-Integration": settings.INSEE_SIRENE_API_TOKEN}
 
     def _get(self, subpath: str) -> dict:
         url = self.base_url + subpath
