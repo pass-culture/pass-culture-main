@@ -58,19 +58,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
-  active: true,
-  address: {
-    city: 'paris',
-    postalCode: '75008',
-    street: 'rue de paris',
-  },
-  name: 'lieu',
-  siret: '88145723823022',
-  ape_code: '95.07A',
-  legal_category_code: '1000',
-})
-
 vi.mock('@/apiClient/adresse/apiAdresse', async () => {
   return {
     ...(await vi.importActual('@/apiClient/adresse/apiAdresse')),

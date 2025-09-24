@@ -1,15 +1,12 @@
-import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 
 describe('getsiretData', () => {
   it('should not call API when SIRET is empty', async () => {
     const siret = ''
-    vi.spyOn(api, 'getSiretInfo')
 
     const response = await getSiretData(siret)
 
-    expect(api.getSiretInfo).not.toHaveBeenCalled()
     expect(response).toStrictEqual({
       address: null,
       apeCode: null,
@@ -21,8 +18,6 @@ describe('getsiretData', () => {
   })
 
   it('should return an error for wrong siret lengths', async () => {
-    vi.spyOn(api, 'getSiretInfo')
-
     try {
       await getSiretData('1')
     } catch (e) {
@@ -44,18 +39,6 @@ describe('getsiretData', () => {
 
   it('should return an error when the SIRET is inactive', async () => {
     const siret = '11111111111111'
-    vi.spyOn(api, 'getSiretInfo').mockResolvedValueOnce({
-      active: false,
-      address: {
-        city: '',
-        postalCode: '',
-        street: '',
-      },
-      ape_code: '',
-      legal_category_code: '',
-      name: '',
-      siret: siret,
-    })
 
     try {
       await getSiretData(siret)

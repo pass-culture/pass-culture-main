@@ -11,7 +11,6 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
-export type { Address } from './models/Address';
 export type { AddressBodyModel } from './models/AddressBodyModel';
 export type { AddressResponseIsLinkedToVenueModel } from './models/AddressResponseIsLinkedToVenueModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
@@ -224,7 +223,6 @@ export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
-export type { SiretInfo } from './models/SiretInfo';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
 export type { StockIdResponseModel } from './models/StockIdResponseModel';
