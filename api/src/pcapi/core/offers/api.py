@@ -2687,6 +2687,33 @@ def delete_unbookable_unbooked_old_offers(
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
 
 
+def update_product_counts(batch_size: int) -> None:
+    start = 0
+    product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar()
+    if not product_max_id:
+        return
+
+    while start <= product_max_id:
+        _update_product_count(_chronicles_count_query(start, start + batch_size), "chroniclesCount")
+        _update_product_count(_headlines_count_query(start, start + batch_size), "headlinesCount")
+        _update_product_count(_likes_count_query(start, start + batch_size), "likesCount")
+
+        logger.info("Updated products from id %d to %d", start, min(start + batch_size, product_max_id))
+        start += batch_size
+
+
+def _update_product_count(count_query: sa.sql.expression.Select, col_name: str) -> None:
+    subquery = count_query.subquery()
+    update_query = (
+        sa.update(models.Product)
+        .where(models.Product.id == subquery.c.product_id)
+        .values({col_name: subquery.c.total})
+        .execution_options(synchronize_session=False)
+    )
+    db.session.execute(update_query)
+    logger.info("Column %s updated", col_name)
+
+
 def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
     product_ids = set()
     start = 0
