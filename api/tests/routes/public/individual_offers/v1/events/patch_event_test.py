@@ -95,7 +95,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         db.session.refresh(offer)
         assert offer.isActive is True
-        assert offer.publicationDatetime == now.replace(tzinfo=None)
+        assert offer.publicationDatetime == now
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -291,18 +291,18 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             # should set new value
             (
                 {"publicationDatetime": "2025-08-01T08:00:00+02:00"},  # tz: Europe/Paris
-                datetime.datetime(2025, 8, 1, 6),  # tz: utc
+                datetime.datetime(2025, 8, 1, 6, tzinfo=datetime.UTC),
                 "2025-08-01T06:00:00Z",
             ),
             (
                 {"publicationDatetime": "now"},
-                datetime.datetime(2025, 6, 25, 12, 30),
+                datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.UTC),
                 "2025-06-25T12:30:00Z",
             ),
             # should unset previous value
             ({"publicationDatetime": None}, None, None),
             # should keep previous value
-            ({}, datetime.datetime(2025, 5, 1, 3), "2025-05-01T03:00:00Z"),
+            ({}, datetime.datetime(2025, 5, 1, 3, tzinfo=datetime.UTC), "2025-05-01T03:00:00Z"),
         ],
     )
     def test_publication_datetime_param(
