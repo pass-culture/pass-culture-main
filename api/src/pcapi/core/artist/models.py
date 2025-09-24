@@ -1,6 +1,7 @@
 import enum
 import typing
 import uuid
+from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -27,30 +28,42 @@ class ArtistType(enum.Enum):
 class ArtistProductLink(PcObject, Model):
     __tablename__ = "artist_product_link"
 
-    artist_id = sa_orm.mapped_column(
+    artist_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    product_id = sa_orm.mapped_column(
+    product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    artist_type = sa_orm.mapped_column(MagicEnum(ArtistType))
-    date_created = sa_orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa_orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType))
+    date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, onupdate=sa.func.now()
+    )
 
 
-class Artist(PcObject, Model):
+class Artist(Model):
     __tablename__ = "artist"
-    id = sa_orm.mapped_column(sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4()))
-    name = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
-    computed_image = sa_orm.mapped_column(sa.Text)
-    description = sa_orm.mapped_column(sa.Text)
-    image = sa_orm.mapped_column(sa.Text)
-    image_author = sa_orm.mapped_column(sa.Text)
-    image_license = sa_orm.mapped_column(sa.Text)
-    image_license_url = sa_orm.mapped_column(sa.Text)
-    date_created = sa_orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa_orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
-    is_blacklisted = sa_orm.mapped_column(sa.Boolean, nullable=False, server_default=sa.false(), default=False)
+    id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4())
+    )
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
+    computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    image_license_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, onupdate=sa.func.now()
+    )
+    is_blacklisted: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=sa.false(), default=False
+    )
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", backref="artists", secondary=ArtistProductLink.__table__
@@ -82,16 +95,20 @@ class ArtistAlias(PcObject, Model):
     """
 
     __tablename__ = "artist_alias"
-    artist_id = sa_orm.mapped_column(
+    artist_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    artist_alias_name = sa_orm.mapped_column(sa.Text)
-    artist_cluster_id = sa_orm.mapped_column(sa.Text)
-    artist_type = sa_orm.mapped_column(MagicEnum(ArtistType))
-    artist_wiki_data_id = sa_orm.mapped_column(sa.Text)
-    offer_category_id = sa_orm.mapped_column(sa.Text)
-    date_created = sa_orm.mapped_column(sa.DateTime, nullable=False, server_default=sa.func.now())
-    date_modified = sa_orm.mapped_column(sa.DateTime, nullable=True, onupdate=sa.func.now())
+    artist_alias_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    artist_cluster_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType))
+    artist_wiki_data_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    offer_category_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, onupdate=sa.func.now()
+    )
     __table_args__ = (
         sa.Index(
             "ix_artist_alias_trgm_unaccent_name",
