@@ -1,3 +1,4 @@
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
@@ -9,9 +10,8 @@ import { quantityPerPriceCategoriesSchema } from '../components/StocksCalendar/f
 import { areOpeningHoursEmpty } from './areOpeningHoursEmpty'
 import { HasDateEnum, type IndividualOfferTimetableFormValues } from './types'
 
-export const validationSchema = yup
-  .object<IndividualOfferTimetableFormValues>()
-  .shape({
+export const validationSchema: ObjectSchema<IndividualOfferTimetableFormValues> =
+  yup.object().shape({
     timetableType: yup
       .string<IndividualOfferTimetableFormValues['timetableType']>()
       .required(),

@@ -60,11 +60,7 @@ export const IndividualOfferPracticalInfosScreen = ({
 
   const form = useForm<IndividualOfferPracticalInfosFormValues>({
     defaultValues: getInitialValuesFromOffer(offer, subCategory),
-    resolver: yupResolver<
-      IndividualOfferPracticalInfosFormValues,
-      unknown,
-      unknown
-    >(getValidationSchema(subCategory?.canBeWithdrawable)),
+    resolver: yupResolver(getValidationSchema(subCategory?.canBeWithdrawable)),
     mode: 'onBlur',
   })
 

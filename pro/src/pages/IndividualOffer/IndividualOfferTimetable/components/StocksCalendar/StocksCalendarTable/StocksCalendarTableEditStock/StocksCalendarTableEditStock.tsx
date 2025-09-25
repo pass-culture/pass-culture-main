@@ -54,9 +54,7 @@ export function StocksCalendarTableEditStock({
 
   const form = useForm<EditStockFormValues>({
     defaultValues: getStockFormDefaultValues(stock, departmentCode),
-    resolver: yupResolver<EditStockFormValues, unknown, unknown>(
-      validationSchema
-    ),
+    resolver: yupResolver(validationSchema),
   })
 
   const isAllocineSynchro = isOfferAllocineSynchronized(offer)

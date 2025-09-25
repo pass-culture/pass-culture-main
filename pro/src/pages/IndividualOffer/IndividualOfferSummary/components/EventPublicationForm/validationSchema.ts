@@ -1,4 +1,5 @@
 import { addYears, isBefore, isSameDay, startOfDay } from 'date-fns'
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { buildDateTime, isDateValid } from '@/commons/utils/date'
@@ -92,11 +93,13 @@ export const bookingAllowedTimeValidationSchema = (schema: yup.StringSchema) =>
         ),
   })
 
-export const validationSchema = yup.object<EventPublicationFormValues>().shape({
-  publicationMode: yup.string<'now' | 'later'>().required(),
-  publicationDate: publicationDateValidationSchema(yup.string()),
-  publicationTime: publicationTimeValidationSchema(yup.string()),
-  bookingAllowedMode: yup.string<'now' | 'later'>().required(),
-  bookingAllowedDate: bookingAllowedDateValidationSchema(yup.string()),
-  bookingAllowedTime: bookingAllowedTimeValidationSchema(yup.string()),
-})
+export const validationSchema: ObjectSchema<EventPublicationFormValues> = yup
+  .object()
+  .shape({
+    publicationMode: yup.string<'now' | 'later'>().required(),
+    publicationDate: publicationDateValidationSchema(yup.string()),
+    publicationTime: publicationTimeValidationSchema(yup.string()),
+    bookingAllowedMode: yup.string<'now' | 'later'>().required(),
+    bookingAllowedDate: bookingAllowedDateValidationSchema(yup.string()),
+    bookingAllowedTime: bookingAllowedTimeValidationSchema(yup.string()),
+  })

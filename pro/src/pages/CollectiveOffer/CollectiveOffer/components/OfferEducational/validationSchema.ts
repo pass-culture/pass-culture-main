@@ -1,5 +1,6 @@
 import { addYears, isBefore } from 'date-fns'
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { CollectiveLocationType, type StudentLevels } from '@/apiClient/v1'
@@ -34,8 +35,8 @@ const isPhoneValid = (phone: string | undefined): boolean => {
 const isNotEmpty = (description: string | undefined): boolean =>
   description ? Boolean(description.trim().length > 0) : false
 
-export function getOfferEducationalValidationSchema() {
-  return yup.object<OfferEducationalFormValues>().shape({
+export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducationalFormValues> {
+  return yup.object().shape({
     title: yup.string().max(110).required('Veuillez renseigner un titre'),
     description: yup
       .string()

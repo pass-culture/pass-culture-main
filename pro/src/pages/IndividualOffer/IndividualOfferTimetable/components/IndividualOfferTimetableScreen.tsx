@@ -75,9 +75,7 @@ export function IndividualOfferTimetableScreen({
       offer,
       isOhoFFEnabled,
     }),
-    resolver: yupResolver<IndividualOfferTimetableFormValues, unknown, unknown>(
-      validationSchema
-    ),
+    resolver: yupResolver(validationSchema),
     mode: 'onBlur',
   })
 
