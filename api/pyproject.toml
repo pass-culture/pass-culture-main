@@ -73,7 +73,7 @@ rq = "2.6.0"
 schwifty = "2025.9.0"
 semver = "3.0.4"
 sentry-sdk = { version = "2.38.0", extras = ["flask"] }
-shapely = "^2.1.1"      # Used for iris importation
+shapely = "^2.1.2"      # Used for iris importation
 slack-sdk = "3.36.0"
 spectree = "1.2.1"
 # Do not use 1.4.46 that has a new
