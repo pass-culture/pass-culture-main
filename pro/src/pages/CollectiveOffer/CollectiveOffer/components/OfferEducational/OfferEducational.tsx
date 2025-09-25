@@ -191,9 +191,7 @@ export const OfferEducational = ({
 
   const form = useForm<OfferEducationalFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver<OfferEducationalFormValues, unknown, unknown>(
-      getOfferEducationalValidationSchema()
-    ),
+    resolver: yupResolver(getOfferEducationalValidationSchema()),
     shouldFocusError: false,
     mode: 'onTouched',
   })

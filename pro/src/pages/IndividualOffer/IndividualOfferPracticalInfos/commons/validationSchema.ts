@@ -1,3 +1,4 @@
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from '@/apiClient/v1'
@@ -6,8 +7,10 @@ import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
 
 import type { IndividualOfferPracticalInfosFormValues } from './types'
 
-export function getValidationSchema(canBeWithdrawable?: boolean) {
-  return yup.object<IndividualOfferPracticalInfosFormValues>().shape({
+export function getValidationSchema(
+  canBeWithdrawable?: boolean
+): ObjectSchema<IndividualOfferPracticalInfosFormValues> {
+  return yup.object().shape({
     withdrawalType: nonEmptyStringOrNull()
       .oneOf(Object.values(WithdrawalTypeEnum))
       .when([], {
