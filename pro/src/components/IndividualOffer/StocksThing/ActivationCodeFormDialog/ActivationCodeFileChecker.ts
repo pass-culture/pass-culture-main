@@ -36,6 +36,10 @@ export const checkAndParseUploadedFile = async ({
   fileReader: (file: Blob) => Promise<string | null>
   currentFile: Blob
 }) => {
+  if (!currentFile) {
+    return { errorMessage: 'Aucun fichier sélectionné.' }
+  }
+
   if (currentFile.size > MAX_FILE_SIZE) {
     return {
       errorMessage: `Le poids du fichier ne doit pas dépasser ${MAX_FILE_SIZE_TEXT}.`,
