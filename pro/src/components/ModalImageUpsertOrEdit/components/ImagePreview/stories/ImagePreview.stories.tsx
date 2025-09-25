@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 
 import { ImagePreview, type ImagePreviewScreenProps } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'

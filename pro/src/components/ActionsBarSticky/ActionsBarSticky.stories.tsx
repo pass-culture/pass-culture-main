@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 import { Provider } from 'react-redux'
 
 import { configureTestStore } from '@/commons/store/testUtils'

@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import { Skeleton } from './Skeleton'

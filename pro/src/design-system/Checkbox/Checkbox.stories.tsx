@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 
 import { TagVariant } from '@/design-system/Tag/Tag'
 import strokeCalendarIcon from '@/icons/stroke-date.svg'
