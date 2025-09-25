@@ -1,4 +1,3 @@
-// @ts-nocheck
 const MAX_FILE_SIZE = 1048576
 const MAX_FILE_SIZE_TEXT = '1 Mo'
 const CARRIAGE_RETURN = '\n'
@@ -68,16 +67,12 @@ export const checkAndParseUploadedFile = async ({
   }
 
   if ([...new Set(rows)].length < rows.length) {
-    const countByCode = rows.reduce((acc, cur) => {
-      if (!acc[cur]) {
-        acc[cur] = 1
-      } else {
-        acc[cur] = ++acc[cur]
-      }
+    const countByCode = rows.reduce<Record<string, number>>((acc, code) => {
+      acc[code] = (acc[code] ?? 0) + 1
       return acc
     }, {})
     const codeNonUniques = [
-      ...new Set(rows.filter((code) => countByCode[code] > 1)),
+      ...new Set(rows.filter((code) => (countByCode[code] ?? 0) > 1)),
     ]
     return {
       errorMessage: `Plusieurs codes identiques ont été trouvés dans le fichier : ${codeNonUniques
