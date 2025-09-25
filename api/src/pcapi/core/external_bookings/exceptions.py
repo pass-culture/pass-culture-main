@@ -20,3 +20,7 @@ class ExternalBookingNotEnoughSeatsError(Exception):
     def __init__(self, remainingQuantity: int) -> None:
         self.remainingQuantity = remainingQuantity
         super().__init__()
+
+
+class ExternalBookingShowDoesNotExistError(Exception):
+    pass

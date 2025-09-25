@@ -44,6 +44,7 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.utils.human_ids import humanize
 
 from tests.connectors.cgr import soap_definitions
+from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -577,6 +578,58 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "PROVIDER_STOCK_NOT_ENOUGH_SEATS"
+
+    @time_machine.travel("2022-10-12 17:09:25")
+    @pytest.mark.parametrize(
+        "error_message",
+        [
+            "Séance inconnue.",
+            "PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
+        ],
+    )
+    def test_handle_cgr_showtime_does_not_exist_case(self, error_message, client, requests_mock):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+        requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.post(
+            "http://example.com/web_service",
+            text=cgr_fixtures.cgr_reservation_error_response_template(
+                99,  # not sure this is the actual error code for this error
+                error_message,
+            ),
+        )
+        id_at_provider = "test_id_at_provider"
+
+        provider = db.session.query(providers_models.Provider).filter_by(localClass="CGRStocks").first()
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=provider, venueIdAtOfferProvider=id_at_provider
+        )
+        pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=provider, idAtProvider=id_at_provider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=pivot,
+            cinemaUrl="http://example.com/web_service",
+        )
+
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            offer__venue=venue_provider.venue,
+            quantity=1,
+            idAtProviders="#1",
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
+        assert stock.isSoftDeleted
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):

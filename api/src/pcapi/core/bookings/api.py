@@ -359,6 +359,12 @@ def book_offer(
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise
+    except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
+        # Event show does not exist anymore on provider side so we delete the stock on our side
+        # (can occur with cinema integrations)
+        offers_api.delete_stock(stock)
+        db.session.commit()
+        raise
 
     if "apps_flyer" in beneficiary.externalIds:
         apps_flyer_job.log_user_booked_offer_event_job.delay(booking.id)
