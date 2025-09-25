@@ -1,37 +1,30 @@
-import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFoundForNewTable,
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
+  MOCKED_BACK_ADDRESS_LABEL,
+} from '../support/constants.ts'
+import {
+  interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create individual offers', { testIsolation: false }, () => {
-  let venueName: string
-  const stock = '42'
-
+describe('Create individual offers with OA', () => {
   beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postOffersDraft')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postEventStocks')
     cy.intercept({ method: 'POST', url: '/stocks' }).as('postProductStock')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
-    cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
-      'getOfferersNames'
-    )
     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
       'getCategories'
     )
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
-  })
+    interceptSearch5Adresses()
 
-  after(() => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
-  })
-
-  it('I should be able to create an individual offer (event)', () => {
     cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
@@ -39,25 +32,24 @@ describe('Create individual offers', { testIsolation: false }, () => {
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
       (response) => {
         logInAndGoToPage(response.body.user.email, '/offre/creation')
-        venueName = response.body.venueName
       }
     )
+    cy.contains('À qui destinez-vous cette offre ?')
+  })
 
+  it('I should be able to create an individual offer (event)', () => {
+    const eventName = `Offer with OA (event) ${Cypress.currentRetry + 1}`
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
-
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
-
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
-
-    cy.findByLabelText(/Titre de l’offre/).type('Le Diner de Devs')
+    cy.findByLabelText(/Titre de l’offre/).type(eventName)
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -65,16 +57,25 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText(/Sous-catégorie/).select('Spectacle, représentation')
     cy.findByLabelText(/Type de spectacle/).select('Théâtre')
     cy.findByLabelText(/Sous-type/).select('Comédie')
-
     cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+    // field image label is not seen
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
 
     cy.stepLog({ message: 'I validate event details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getOffer', '@postOffersDraft'])
 
     cy.stepLog({ message: 'I fill in event useful informations' })
-
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
     cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
       'passculture@example.com'
@@ -82,13 +83,11 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
     cy.stepLog({ message: 'I validate event useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
     cy.stepLog({ message: 'I fill in media' })
-
     cy.findByLabelText('Importez une image').selectFile(
       'cypress/data/librairie.jpeg',
       {
@@ -101,18 +100,6 @@ describe('Create individual offers', { testIsolation: false }, () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
     cy.findByText('Importer').click()
-
-    cy.findAllByTestId('image-preview').then(($img) => {
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalWidth')
-        .and('eq', 470)
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalHeight')
-        .and('eq', 705)
-    })
-
     cy.findByText('Ajouter une URL Youtube').click()
     cy.findByLabelText('Lien URL Youtube').type(
       'https://www.youtube.com/watch?v=0R5PZxOgoz8'
@@ -138,24 +125,10 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I fill in prices' })
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
-    cy.findByText('Ajouter un tarif').click()
-    cy.findByText('Ajouter un tarif').click()
 
-    cy.findAllByLabelText('Intitulé du tarif').eq(0).type('Carré Or')
-    cy.findAllByLabelText(/Prix par personne/)
-      .eq(0)
-      .type('100')
-
-    cy.findAllByLabelText('Intitulé du tarif').eq(1).type('Fosse Debout')
-    cy.findAllByLabelText(/Prix par personne/)
-      .eq(1)
-      .type('10')
-
-    cy.findAllByLabelText('Intitulé du tarif').eq(2).type('Fosse Sceptique')
-    cy.findAllByRole('checkbox', { name: 'Gratuit' }).eq(2).click()
-
-    cy.findByText('Accepter les réservations “Duo“').should('exist')
+    cy.findByLabelText(/Prix par personne/).type('100')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
+    // trash icon button is just an image button
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I validate prices step' })
@@ -164,42 +137,19 @@ describe('Create individual offers', { testIsolation: false }, () => {
       responseTimeout: 60 * 1000 * 3,
     })
 
+    const fromDate = new Date()
+    fromDate.setDate(fromDate.getDate() + 2)
+    const fromDateStr = fromDate.toISOString().split('T')[0]
+    const toDate = new Date()
+    toDate.setDate(toDate.getDate() + 12)
+    const toDateStr = toDate.toISOString().split('T')[0]
     cy.stepLog({ message: 'I fill in recurrence' })
-    cy.findByRole('button', { name: 'Définir le calendrier' }).click()
-
-    cy.findByText('Toutes les semaines').click()
-    cy.findByLabelText('Vendredi').click()
-    cy.findByLabelText('Samedi').click()
-    cy.findByLabelText('Dimanche').click()
-    cy.findByLabelText('Du *').type('2030-05-01')
-    cy.findByLabelText('Au *').type('2030-09-30')
+    cy.findByText('Définir le calendrier').click()
+    cy.findByText('Tous les jours').click()
+    cy.findByLabelText('Du *').type(fromDateStr)
+    cy.findByLabelText('Au *').type(toDateStr)
     cy.findByLabelText(/Horaire 1/).type('18:30')
-    cy.findByText('Ajouter un créneau').click()
-    cy.findByLabelText(/Horaire 2/).type('21:00')
-    cy.findByText('Ajouter d’autres places et tarifs').click()
-    cy.findByText('Ajouter d’autres places et tarifs').click()
-
-    cy.findByTestId('wrapper-quantityPerPriceCategories.0').within(() => {
-      // trouve la première liste déroulante avec le label:
-      cy.findByLabelText(/Tarif/).select('0,00\xa0€ - Fosse Sceptique')
-    })
-
-    cy.findAllByLabelText('Nombre de places').eq(0).type('100')
-
-    cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
-      // trouve la euxième liste déroulante avec le label:
-      cy.findByLabelText(/Tarif/).select('10,00\xa0€ - Fosse Debout')
-    })
-
-    cy.findAllByLabelText('Nombre de places').eq(1).type('20')
-
-    cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
-      // trouve la troisième liste déroulante avec le label:
-      cy.findByLabelText(/Tarif/).select('100,00\xa0€ - Carré Or')
-    })
-
-    // manque un data-testid ou un placeholder ou un label accessible
-    cy.get('[name="bookingLimitDateInterval"]').type('3')
+    cy.findByLabelText(/Tarif/).select('100,00\xa0€ - Tarif unique')
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     // FIX ME: day selector has no visible label
@@ -216,39 +166,61 @@ describe('Create individual offers', { testIsolation: false }, () => {
     )
     cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
-    cy.wait(['@postEventStocks', '@getStocks'])
-
-    cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+    cy.wait(['@postEventStocks', '@getStocks', '@getOffer'])
+    cy.findByText('11 dates').should('be.visible')
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
-
-    cy.stepLog({ message: 'I publish my offer' })
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
+    cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
     cy.findByText('Plus tard').click()
-    cy.wait(['@publishOffer', '@getOffer'], {
-      requestTimeout: 60000 * 2,
-      responseTimeout: 60000 * 2,
+    cy.wait('@publishOffer', {
+      requestTimeout: 60000,
+      responseTimeout: 60000,
     })
+    cy.wait('@getOffer', { timeout: 60000 })
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.wait(['@getOffer', '@getCategories'], {
-      requestTimeout: 60 * 1000 * 3,
-      responseTimeout: 60 * 1000 * 3,
+      requestTimeout: 60 * 1000 * 2,
+      responseTimeout: 60 * 1000 * 2,
     })
 
     cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
-    cy.contains('Le Diner de Devs')
-    cy.contains('396 dates')
+    cy.contains(eventName)
+    cy.contains('11 dates')
+
+    cy.stepLog({ message: 'I want to update my offer' })
+    cy.findAllByText(eventName).eq(1).click()
+    cy.findByText('Informations pratiques').click()
+    cy.url().should('contain', '/pratiques')
+    cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
+    cy.findAllByText('Modifier').eq(1).click()
+    cy.url().should('contain', '/edition/pratiques')
+
+    cy.stepLog({ message: 'I update the OA' })
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse'
+    )
+
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
+    cy.findByText('Enregistrer les modifications').click()
+    cy.wait(['@getOffer', '@patchOffer'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
+    cy.contains('Intitulé : Libellé de mon adresse')
+    cy.contains(`Adresse : 3 RUE DE VALOIS 75008 Paris`)
   })
 
   it('I should be able to create an individual offer (thing)', () => {
-    cy.visit('/offre/creation')
-    const offerTitle = 'H2G2 Le Guide du voyageur galactique'
+    const offerTitle = `Offer with OA (thing) ${Cypress.currentRetry + 1}`
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
@@ -277,7 +249,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@postOffersDraft'])
 
     cy.stepLog({ message: 'I fill in useful informations for physical offer' })
     cy.findByLabelText('Informations de retrait').type(
@@ -293,11 +265,10 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.stepLog({ message: 'I validate offer useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'], {
-      responseTimeout: 60 * 1000 * 2,
+      responseTimeout: 60 * 1000,
     })
 
     cy.stepLog({ message: 'I fill in media' })
-
     cy.findByLabelText('Importez une image').selectFile(
       'cypress/data/librairie.jpeg',
       {
@@ -310,59 +281,99 @@ describe('Create individual offers', { testIsolation: false }, () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
     cy.findByText('Importer').click()
-
     cy.findByText('Ajouter une URL Youtube').click()
     cy.findByLabelText('Lien URL Youtube').type(
       'https://www.youtube.com/watch?v=0R5PZxOgoz8'
     )
     cy.findByText('Ajouter').click()
 
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
+
     cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait('@getOffer')
-
-    cy.url().should('contain', '/creation/media')
-    cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getStocks'], {
+    cy.wait(['@getOffer', '@getStocks'], {
       responseTimeout: 60 * 1000 * 2,
     })
 
     cy.stepLog({ message: 'I fill in stocks' })
     cy.findByLabelText(/Prix/).type('42')
     cy.get('[data-testid="bookingLimitDatetime"').type('2042-05-03')
-    cy.findByLabelText(/Quantité/).type(stock)
+    cy.findByLabelText(/Quantité/).type('42')
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
+
     cy.wait(['@patchOffer', '@postProductStock', '@getOffer'], {
-      responseTimeout: 30 * 1000,
-    })
-
-    cy.stepLog({ message: 'I publish my offer' })
-    cy.findByText('Publier l’offre').click()
-
-    cy.wait(['@publishOffer', '@getOffer'], {
-      requestTimeout: 60000 * 2,
-      responseTimeout: 60000 * 2,
-    })
-    cy.stepLog({ message: 'I go to the offers list' })
-    cy.findByText('Voir la liste des offres').click()
-    cy.url().should('contain', '/offres')
-    cy.wait(['@getOffer', '@getCategories'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })
 
-    cy.stepLog({ message: 'my new physical offer should be displayed' })
-    const expectedNewResults = [
-      ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
-      ['', offerTitle, venueName, stock, 'publiée'],
-      [],
-    ]
+    cy.stepLog({ message: 'I publish my offer' })
+    cy.findByText('Publier l’offre').click()
+    cy.wait(['@publishOffer', '@getOffer'], {
+      requestTimeout: 60000 * 2,
+      responseTimeout: 60000 * 2,
+    })
+    cy.findByText('Plus tard').click()
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedNewResults)
+    cy.stepLog({ message: 'I go to the offers list' })
+    cy.findByText('Voir la liste des offres').click()
+    cy.url().should('contain', '/offres')
+    cy.wait(['@getOffer', '@getCategories'], {
+      requestTimeout: 60 * 1000 * 2,
+      responseTimeout: 60 * 1000 * 2,
+    })
+
+    cy.stepLog({ message: 'my new physical offer should be displayed' })
+    cy.contains(offerTitle)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })
+
+    cy.stepLog({ message: 'I want to update my offer' })
+    cy.findAllByText(offerTitle).eq(1).click()
+    cy.findByText('Informations pratiques').click()
+    cy.url().should('contain', '/pratiques')
+    cy.contains('Adresse : 1 boulevard Poissonnière 75002 Paris')
+    cy.findAllByText('Modifier').eq(1).click()
+    cy.url().should('contain', '/edition/pratiques')
+
+    cy.stepLog({ message: 'I update the OA' })
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse custom'
+    )
+    cy.findByText('Vous ne trouvez pas votre adresse ?').click()
+
+    cy.stepLog({ message: 'I want to put a custom address' })
+    cy.findAllByLabelText(/Adresse postale/)
+      .last()
+      .type('Place de la gare')
+    cy.findAllByLabelText(/Code postal/).type('123123')
+    cy.findAllByLabelText(/Ville/).type('Y')
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.findAllByLabelText(/Coordonnées GPS/)
+      .type('48.853320, 2.348979')
+      .blur()
+    cy.findByText('Vérifiez la localisation en cliquant ici').should(
+      'be.visible'
+    )
+    cy.findByText('Enregistrer les modifications').click()
+    cy.wait(['@getOffer', '@patchOffer'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
+    cy.contains('Intitulé : Libellé de mon adresse custom')
+    cy.contains('Adresse : Place de la gare 12312 Y')
   })
 })

@@ -137,10 +137,12 @@ export const IndividualOfferInformationsScreen = ({
         formValues,
         shouldSendMail: sendWithdrawalMail,
       })
-      const response = await api.patchOffer(offer.id, requestBody)
 
-      const receivedOfferId = response.id
-      await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      await mutate(
+        [GET_OFFER_QUERY_KEY, offer.id],
+        api.patchOffer(offer.id, requestBody),
+        { revalidate: false }
+      )
 
       const nextStepForEdition =
         INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
@@ -154,7 +156,7 @@ export const IndividualOfferInformationsScreen = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          offerId: receivedOfferId,
+          offerId: offer.id,
           step: nextStep,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION

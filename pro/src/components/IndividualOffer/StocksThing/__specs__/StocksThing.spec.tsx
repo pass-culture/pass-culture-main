@@ -7,7 +7,6 @@ import { expect } from 'vitest'
 import { api } from '@/apiClient/api'
 import {
   ApiError,
-  type GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
   type GetOfferStockResponseModel,
   SubcategoryIdEnum,
@@ -144,7 +143,7 @@ describe('screens:StocksThing', () => {
       {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

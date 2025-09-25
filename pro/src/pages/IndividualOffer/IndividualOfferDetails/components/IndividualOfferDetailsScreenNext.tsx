@@ -6,10 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type {
-  GetIndividualOfferResponseModel,
-  VenueListItemResponseModel,
-} from '@/apiClient/v1'
+import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -127,23 +124,30 @@ export const IndividualOfferDetailsScreenNext = ({
         (!isNewOfferDraft && hasSelectedProduct)
       const initialOfferId = initialOffer?.id
 
-      let response: GetIndividualOfferResponseModel | undefined
       let offerId = initialOfferId
 
       if (isNewOfferDraft) {
-        response = await api.postDraftOffer(
-          serializeDetailsPostData(formValues, true)
+        await mutate(
+          [GET_OFFER_QUERY_KEY, offerId],
+          api.postDraftOffer(serializeDetailsPostData(formValues, true)),
+          {
+            revalidate: false,
+            populateCache: (newOffer) => {
+              offerId = newOffer.id
+              return newOffer
+            },
+          }
         )
       } else if (!shouldNotPatchData && initialOfferId) {
-        response = await api.patchDraftOffer(
-          initialOfferId,
-          serializeDetailsPatchData(formValues, true)
+        await mutate(
+          [GET_OFFER_QUERY_KEY, offerId],
+          api.patchDraftOffer(
+            initialOfferId,
+            serializeDetailsPatchData(formValues, true)
+          ),
+          { revalidate: false }
         )
       }
-
-      offerId = response?.id ?? initialOfferId
-
-      await mutate([GET_OFFER_QUERY_KEY, offerId])
 
       // replace url to fix back button
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

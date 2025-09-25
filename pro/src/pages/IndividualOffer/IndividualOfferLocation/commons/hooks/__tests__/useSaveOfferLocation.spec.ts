@@ -62,7 +62,7 @@ describe('useSaveOfferLocation', () => {
     vi.mocked(useLocation).mockReturnValue({
       pathname: '/offers',
     } as unknown as ReturnType<typeof useLocation>)
-    mutateMock = vi.fn().mockResolvedValue(undefined)
+    mutateMock = vi.fn((_key, promise) => promise)
     vi.mocked(useSWRConfig).mockReturnValue({
       mutate: mutateMock,
     } as unknown as ReturnType<typeof useSWRConfig>)
@@ -97,7 +97,11 @@ describe('useSaveOfferLocation', () => {
       shouldSendMail: true,
     })
     expect(api.patchOffer).toHaveBeenCalledWith(offerBase.id, requestBody)
-    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
+    expect(mutateMock).toHaveBeenCalledWith(
+      [GET_OFFER_QUERY_KEY, offerBase.id],
+      expect.anything(),
+      { revalidate: false }
+    )
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
@@ -129,7 +133,11 @@ describe('useSaveOfferLocation', () => {
       shouldSendMail: false,
     })
     expect(api.patchOffer).toHaveBeenCalled()
-    expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
+    expect(mutateMock).toHaveBeenCalledWith(
+      [GET_OFFER_QUERY_KEY, offerBase.id],
+      expect.anything(),
+      { revalidate: false }
+    )
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
@@ -188,7 +196,6 @@ describe('useSaveOfferLocation', () => {
     })
     expect(notificationMock.error).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
     expect(navigateMock).not.toHaveBeenCalled()
-    expect(mutateMock).not.toHaveBeenCalled()
   })
 
   it('should silently return on non-API errors (no notifications or field errors)', async () => {
@@ -206,6 +213,5 @@ describe('useSaveOfferLocation', () => {
     expect(setErrorMock).not.toHaveBeenCalled()
     expect(notificationMock.error).not.toHaveBeenCalled()
     expect(navigateMock).not.toHaveBeenCalled()
-    expect(mutateMock).not.toHaveBeenCalled()
   })
 })
