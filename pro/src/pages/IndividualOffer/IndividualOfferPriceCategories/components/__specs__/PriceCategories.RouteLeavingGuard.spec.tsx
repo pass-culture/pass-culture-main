@@ -107,7 +107,7 @@ describe('PriceCategories', () => {
       {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
       {} as GetIndividualOfferResponseModel

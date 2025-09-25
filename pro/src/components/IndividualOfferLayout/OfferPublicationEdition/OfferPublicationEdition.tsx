@@ -64,12 +64,14 @@ export function OfferPublicationEdition({
 
   async function onSubmit(values: EventPublicationEditionFormValues) {
     try {
-      await api.patchOffer(
-        offer.id,
-        getPatchOfferPayloadFromFormValues(offer, values)
+      await mutate(
+        [GET_OFFER_QUERY_KEY, offer.id],
+        api.patchOffer(
+          offer.id,
+          getPatchOfferPayloadFromFormValues(offer, values)
+        ),
+        { revalidate: false }
       )
-
-      await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
       setIsDialogOpen(false)
     } catch {

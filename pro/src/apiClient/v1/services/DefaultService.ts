@@ -1953,7 +1953,7 @@ export class DefaultService {
    */
   public patchDraftOffer(
     offerId: number,
-    requestBody?: PatchDraftOfferBodyModel,
+    requestBody: PatchDraftOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
@@ -2096,7 +2096,7 @@ export class DefaultService {
    */
   public patchOffer(
     offerId: number,
-    requestBody?: PatchOfferBodyModel,
+    requestBody: PatchOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',

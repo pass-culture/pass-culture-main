@@ -115,10 +115,11 @@ export const IndividualOfferPracticalInfosScreen = ({
     try {
       const requestBody = getPatchOfferBody(formValues, shouldSendMail)
 
-      const response = await api.patchOffer(offer.id, requestBody)
-
-      const receivedOfferId = response.id
-      await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      await mutate(
+        [GET_OFFER_QUERY_KEY, offer.id],
+        api.patchOffer(offer.id, requestBody),
+        { revalidate: false }
+      )
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
@@ -127,7 +128,7 @@ export const IndividualOfferPracticalInfosScreen = ({
 
       navigate(
         getIndividualOfferUrl({
-          offerId: receivedOfferId,
+          offerId: offer.id,
           step: nextStep,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION

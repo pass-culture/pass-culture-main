@@ -306,7 +306,7 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
 
     cy.url().should('contain', '/creation/media')
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@getStocks'], {
+    cy.wait(['@getStocks'], {
       responseTimeout: 60 * 1000 * 2,
     })
 

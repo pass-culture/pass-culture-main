@@ -6,7 +6,6 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -58,11 +57,11 @@ export const IndividualOfferPriceCategoriesScreen = ({
 }: IndividualOfferPriceCategoriesScreenProps): JSX.Element => {
   const { subCategories } = useIndividualOfferContext()
   const navigate = useNavigate()
+  const { mutate } = useSWRConfig()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const notify = useNotification()
-  const { mutate } = useSWRConfig()
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] =
     useState<boolean>(false)
 
@@ -150,8 +149,7 @@ export const IndividualOfferPriceCategoriesScreen = ({
 
     // Submit
     try {
-      await submitToApi(values, offer)
-      await mutate([GET_OFFER_QUERY_KEY, offer.id])
+      await submitToApi(values, offer, mutate)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
