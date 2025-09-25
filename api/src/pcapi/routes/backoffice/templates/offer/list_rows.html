@@ -117,7 +117,7 @@
         {% endif %}
       </td>
     {% endif %}
-    <td>
+    <td data-pc-sort-table-value="{% if row.prices.min_price %}{{ row.prices.min_price * 100 }}{% else %}0{% endif %}">
       {% if row.prices.min_price is none %}
         -
       {% elif row.prices.min_price == row.prices.max_price %}
@@ -129,7 +129,7 @@
       {% endif %}
     </td>
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
-    <td>
+    <td data-pc-sort-table-value="{% if row.offer_event_datetimes %}{{ row.offer_event_datetimes[0].timestamp() }}{% else %}{% endif %}">
       {% if row.offer_event_datetimes|length > 0 %}
         {% set min_date = row.offer_event_datetimes[0] | format_date("%d/%m/%Y", address) %}
         {% set max_date = row.offer_event_datetimes[-1] | format_date("%d/%m/%Y", address) %}
@@ -137,7 +137,7 @@
         {% if max_date != min_date %}→ {{ max_date }}{% endif %}
       {% endif %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{% if row.offer_booking_limit_datetimes|length > 0 %}{{ row.offer_booking_limit_datetimes[0].timestamp() }}{% else %}{% endif %}">
       {% if row.offer_booking_limit_datetimes|length > 0 %}
         {% set min_date = row.offer_booking_limit_datetimes[0] | format_date("%d/%m/%Y", address) %}
         {% set max_date = row.offer_booking_limit_datetimes[-1] | format_date("%d/%m/%Y", address) %}
@@ -148,18 +148,18 @@
     <td>{{ links.build_pro_user_name_to_details_link(offer.author.id, offer.author.full_name) }}</td>
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.rankingWeight | empty_string_if_null }}</td>{% endif %}
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
-    <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
+    <td data-pc-sort-table-value="{{ offer.dateCreated.timestamp() }}">{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
     <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
     <td>
       {% if address %}{{ address.departmentCode }}{% endif %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{{ offer.venue.managingOfferer.name | lower }}">
       {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_offerer_fraud_badges(row.offerer_badges) }}
       {% endcall %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{{ offer.venue.common_name | lower }}">
       {{ links.build_venue_name_to_details_link(offer.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(row.venue_badges) }}

@@ -1,0 +1,16 @@
+{% macro sortable_column(is_active=True, comparator="string", default_sort="down" ) %}
+  {% if is_active %}
+    <th class="col pc-sortable-column"
+        data-pc-sort-table-order="{{ default_sort }}"
+        data-pc-sort-table-comparator="{{ comparator }}"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        data-bs-custom-class="primary-tooltip"
+        data-bs-title="Le tri ne s’applique que sur les éléments affichés">
+      <a href="#"
+         class="text-decoration-none">{{ caller() }} <i class="bi bi-arrow-down-up"></i></a>
+    </th>
+  {% else %}
+    <th class="col">{{ caller() }}</th>
+  {% endif %}
+{% endmacro %}

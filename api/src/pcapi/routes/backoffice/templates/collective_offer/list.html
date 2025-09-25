@@ -1,8 +1,10 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_advanced_filters_form with context %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/table.html" import sortable_column %}
 {% set rows_count = rows|length %}
 {% set table_id = "collective-offer-table" %}
+{% set activate_sortable_columns = not date_created_sort_url %}
 {% block title %}Offres collectives{% endblock %}
 {% block search_block %}{{ build_advanced_filters_form(form, dst) }}{% endblock %}
 {% block table_header %}
@@ -20,22 +22,32 @@
   <th scope="col">État</th>
   <th scope="col">Statut</th>
   <th scope="col">Créateur de l'offre</th>
-  <th scope="col">
-    {% if date_created_sort_url %}
+  {% if date_created_sort_url %}
+    <th scope="col">
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
          title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
         <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
-    {% else %}
+    </th>
+  {% else %}
+    {% call sortable_column(activate_sortable_columns, comparator="float") %}
       Date de création
-    {% endif %}
-  </th>
-  <th scope="col">Date de l'évènement</th>
-  <th scope="col">Tarif</th>
-  <th scope="col">Entité juridique</th>
-  <th scope="col">Partenaire culturel</th>
+    {% endcall %}
+  {% endif %}
+  {% call sortable_column(activate_sortable_columns, comparator="float") %}
+    Date de l'évènement
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, comparator="float", default_sort="up") %}
+    Tarif
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Entité juridique
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Partenaire culturel
+  {% endcall %}
   <th scope="col">Offres du partenaire culturel</th>
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     <th scope="col">Ministère</th>
