@@ -82,7 +82,7 @@ jobs:
 
       - name: "Delete PR deployments"
         run: |
-          set -e
+          set -xe
           git config --global user.email "PassCulture-SA@passculture.team"
           git config --global user.name "PassCulture-SA"
           cd ./rendered-manifests
@@ -106,15 +106,14 @@ jobs:
 
           for id in $pullrequests_ids; do
             while true; do
-              kubectl get application -n argocd | grep $id
-              [[ $? -eq 0 ]] && sleep 5 || break
+              kubectl get application -n argocd | grep $id && sleep 5 || echo "application with id $id is deleted, continuing"; break
             done
             # Check for PR namespace and delete it
             kubectl get ns pcapi-pr-$id
             [[ $? -eq 0 ]] && kubectl delete ns pcapi-pr-$id || echo "namespace pcapi-pr-$id does not exist"
             # Delete DNS entry
-            gcloud dns record-sets delete backend-$id.testing.passculture.team. --type=A --zone=testing-passculture-team
-            gcloud dns record-sets delete backoffice-$id.testing.passculture.team. --type=A --zone=testing-passculture-team
-            gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
-            gcloud dns record-sets delete a-backoffice-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team
+            gcloud dns record-sets delete backend-$id.testing.passculture.team. --type=A --zone=testing-passculture-team || echo "record A backend-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete backoffice-$id.testing.passculture.team. --type=A --zone=testing-passculture-team || echo "record A backoffice-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete a-backend-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team || echo "record TXT backend-$id.testing.passculture.team does not exist"
+            gcloud dns record-sets delete a-backoffice-$id.testing.passculture.team. --type=TXT --zone=testing-passculture-team || echo "record TXT backoffice-$id.testing.passculture.team does not exist"
           done
