@@ -4,7 +4,10 @@ import { generatePath } from 'react-router'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import type { GetIndividualOfferResponseModel } from '@/apiClient/v1'
+import type {
+  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
+} from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -57,7 +60,7 @@ describe('PriceCategories', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(getIndividualOfferFactory())
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
