@@ -885,6 +885,17 @@ def create_stock(
         ),
     )
 
+    # This log is used for analytics purposes.
+    # If you need to make a 'breaking change' of this log, please contact the data team.
+    # Otherwise, you will break some dashboards
+    log_extra_data: dict[str, typing.Any] = {
+        "offer_id": created_stock.offerId,
+        "stock_id": created_stock.id,
+        "provider_id": creating_provider.id if creating_provider else None,
+        "price": str(created_stock.price),
+    }
+    logger.info("Successfully created stock", extra=log_extra_data, technical_message_id="stock.created")
+
     return created_stock
 
 
