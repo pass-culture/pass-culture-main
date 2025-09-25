@@ -67,7 +67,7 @@
     "swr": "2.3.6",
     "use-debounce": "10.0.6",
     "uuidv4": "6.2.13",
-    "yup": "1.7.0"
+    "yup": "1.7.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
