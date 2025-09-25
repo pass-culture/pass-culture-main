@@ -17,7 +17,7 @@ export const orejimeConfig = {
   privacyPolicyUrl: 'https://pass.culture.fr/politique-de-cookies/',
   cookie: {
     duration: 182,
-    stringify: (contents: any) => {
+    stringify: (contents: { [id: string]: boolean }) => {
       const nonMandatoryConsents = Object.entries(contents).filter(([app]) => {
         return mandatoryCookies.indexOf(app) === -1
       })
