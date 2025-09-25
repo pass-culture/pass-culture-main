@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -26,13 +27,14 @@ class Returns201Test:
             {"price": 0},
         ],
     )
-    def test_create_one_thing_stock(self, mocked_async_index_offer_ids, input_json: dict, client):
+    def test_create_one_thing_stock(self, mocked_async_index_offer_ids, input_json: dict, client, caplog):
         email = "user@example.com"
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email=email, offerer=offer.venue.managingOfferer)
         input_json["offerId"] = offer.id
 
-        response = client.with_session_auth(email).post("/stocks", json=input_json)
+        with caplog.at_level(logging.INFO):
+            response = client.with_session_auth(email).post("/stocks", json=input_json)
         created_stock = db.session.query(offers_models.Stock).first()
         assert response.status_code == 201
         assert response.json["id"] == created_stock.id
@@ -48,6 +50,14 @@ class Returns201Test:
         assert offer.validation == offers_models.OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with([offer.id], reason=IndexationReason.STOCK_CREATION)
+
+        target_log_message = "Successfully created stock"
+        log = next(record for record in caplog.records if record.message == target_log_message)
+
+        assert log.technical_message_id == "stock.created"
+        log_extra_data = log.__dict__.get("extra")
+        assert log_extra_data.get("offer_id") == offer.id
+        assert log_extra_data.get("stock_id") == created_stock.id
 
     def test_create_one_stock_with_activation_codes(self, client):
         offer = offers_factories.DigitalOfferFactory(url="https://chartreu.se")
