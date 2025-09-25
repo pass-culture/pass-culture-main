@@ -55,8 +55,8 @@
     </td>
     <td>{{ collective_offer.displayedStatus | format_collective_offer_displayed_status }}</td>
     <td>{{ links.build_pro_user_name_to_details_link(collective_offer.authorId, collective_offer.author.full_name) }}</td>
-    <td>{{ collective_offer.dateCreated | format_date }}</td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_offer.dateCreated.timestamp() }}">{{ collective_offer.dateCreated | format_date }}</td>
+    <td data-pc-sort-table-value="{% if collective_offer.collectiveStock %}{{ collective_offer.start.timestamp() }}{% else %}{% endif %}">
       {% if collective_offer.collectiveStock %}
         {% set start_date = collective_offer.start | format_date %}
         {% set end_date = collective_offer.end | format_date %}
@@ -64,16 +64,16 @@
         {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
       {% endif %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price * 100 }}{% else %}{% endif %}">
       {% if collective_offer.collectiveStock %}{{ collective_offer.collectiveStock.price | format_amount }}{% endif %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_offer.venue.managingOfferer.name | lower }}">
       {{ links.build_offerer_name_to_details_link(collective_offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_offerer_fraud_badges(row.offerer_badges) }}
       {% endcall %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_offer.venue.common_name  | lower }}">
       {{ links.build_venue_name_to_details_link(collective_offer.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(row.venue_badges) }}

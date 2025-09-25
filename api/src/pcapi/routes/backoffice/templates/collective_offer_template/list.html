@@ -1,8 +1,10 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/table.html" import sortable_column %}
 {% set rows_count = rows|length %}
 {% set table_id = "collective-offer-template-table" %}
+{% set activate_sortable_columns = not date_created_sort_url %}
 {% block title %}Offres collectives vitrine{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block table_header %}
@@ -18,20 +20,26 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}<th>Règles de conformité</th>{% endif %}
   <th>État</th>
   <th>Créateur de l'offre</th>
-  <th>
-    {% if date_created_sort_url %}
+  {% if date_created_sort_url %}
+    <th>
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
          title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
         <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
-    {% else %}
+    </th>
+  {% else %}
+    {% call sortable_column(activate_sortable_columns, comparator="float") %}
       Date de création
-    {% endif %}
-  </th>
-  <th>Entité juridique</th>
-  <th>Partenaire culturel</th>
+    {% endcall %}
+  {% endif %}
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Entité juridique
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Partenaire culturel
+  {% endcall %}
   <th>Offres du partenaire culturel</th>
 {% endblock %}
 {% block table_body %}

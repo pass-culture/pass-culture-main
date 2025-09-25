@@ -4,7 +4,9 @@
 {% from "components/forms.html" import build_advanced_filters_form with context %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/table.html" import sortable_column %}
 {% set rows_count = rows|length %}
+{% set activate_sortable_columns = not date_created_sort_url %}
 {% block title %}Offres individuelles{% endblock %}
 {% block search_block %}
   {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive des offres", "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en\n database.","advanced-search", page=="offer") , ("Recherche des offres réservables sur l’app jeune", "Remonte toutes les offres réservables sur l’app Jeune, en affichant une seule offre par\n produit. Si plusieurs acteurs proposent la même, une seule sera affichée.", "algolia-search", page=="algolia")), "px-1 mb-4") }}
@@ -36,33 +38,45 @@
     <th scope="col">Score data</th>
     <th scope="col">Prédiction de validité</th>
   {% endif %}
-  <th scope="col">Tarif</th>
+  {% call sortable_column(activate_sortable_columns, comparator="float", default_sort="up") %}
+    Tarif
+  {% endcall %}
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
-  <th scope="col">Date(s) de l'évènement</th>
-  <th scope="col">Date(s) limite(s) de réservation</th>
+  {% call sortable_column(activate_sortable_columns, comparator="float") %}
+    Date(s) de l'évènement
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, comparator="float") %}
+    Date(s) limite(s) de réservation
+  {% endcall %}
   <th scope="col">Créateur de l'offre</th>
   {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
     <th data-pc-column-name="Pondération"
         scope="col">Pond.</th>
   {% endif %}
   <th scope="col">État</th>
-  <th scope="col">
-    {% if date_created_sort_url %}
+  {% if date_created_sort_url %}
+    <th scope="col">
       <a href="{{ date_created_sort_url }}"
          class="text-decoration-none"
          title="Changer pour un tri {{ 'croissant' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
         Date de création
         <i class="bi bi-sort-{{ 'down' if request.args.get("sort") == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
       </a>
-    {% else %}
+    </th>
+  {% else %}
+    {% call sortable_column(activate_sortable_columns, comparator="float") %}
       Date de création
-    {% endif %}
-  </th>
+    {% endcall %}
+  {% endif %}
   <th scope="col">Dernière validation</th>
   <th scope="col"
       data-pc-column-name="Département">Dép.</th>
-  <th scope="col">Entité juridique</th>
-  <th scope="col">Partenaire culturel</th>
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Entité juridique
+  {% endcall %}
+  {% call sortable_column(activate_sortable_columns, default_sort="up") %}
+    Partenaire culturel
+  {% endcall %}
   <th scope="col"
       data-pc-column-name="Toutes les offres du partenaire culturel">Offres du partenaire culturel</th>
   <th scope="col">Partenaire technique</th>

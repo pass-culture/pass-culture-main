@@ -47,14 +47,16 @@
       {% endif %}
     </td>
     <td>{{ links.build_pro_user_name_to_details_link(collective_offer_template.authorId ,collective_offer_template.author.full_name) }}</td>
-    <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_offer_template.dateCreated.timestamp() }}">
+      {{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}
+    </td>
+    <td data-pc-sort-table-value="{{ collective_offer_template.venue.managingOfferer.name  | lower }}">
       {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_offerer_fraud_badges(collective_offer_template.venue.managingOfferer) }}
       {% endcall %}
     </td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_offer_template.venue.common_name  | lower }}">
       {{ links.build_venue_name_to_details_link(collective_offer_template.venue) }}
       {% call badges.badges_container() %}
         {{ badges.build_offer_venue_fraud_badges(collective_offer_template.venue) }}
