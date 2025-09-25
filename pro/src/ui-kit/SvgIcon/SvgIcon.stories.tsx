@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 
 import strokeUserIcon from '@/icons/stroke-user.svg'
 

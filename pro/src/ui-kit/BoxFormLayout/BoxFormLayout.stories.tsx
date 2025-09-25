@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 

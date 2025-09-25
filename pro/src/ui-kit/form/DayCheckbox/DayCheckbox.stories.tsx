@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 

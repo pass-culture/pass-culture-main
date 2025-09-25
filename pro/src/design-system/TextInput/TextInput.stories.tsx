@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import fullClearIcon from 'icons/full-clear.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 

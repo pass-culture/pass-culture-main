@@ -1,5 +1,5 @@
 /* istanbul ignore file: not needed */
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 
 import { ImageEditor } from './ImageEditor'
 import sampleImage from './sample-image.jpg'

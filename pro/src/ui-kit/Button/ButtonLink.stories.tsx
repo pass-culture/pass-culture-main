@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
 import fullBackIcon from '@/icons/full-back.svg'

@@ -1,4 +1,4 @@
-import type { StoryObj } from '@storybook/react'
+import type { StoryObj } from '@storybook/react-vite'
 
 import mockupPng from './mockup.png'
 import { TipsBanner, type TipsBannerProps } from './TipsBanner'
