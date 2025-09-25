@@ -47,13 +47,11 @@ export function useSaveOfferLocation({
         shouldSendMail,
       })
 
-      const response = await api.patchOffer(offer.id, requestBody)
-      await mutate([GET_OFFER_QUERY_KEY, response.id])
-
-      if (mode === OFFER_WIZARD_MODE.EDITION) {
-        // Force offer update so that READ_ONLY page is up to date once the user is redirected
-        await mutate([GET_OFFER_QUERY_KEY, offer.id])
-      }
+      await mutate(
+        [GET_OFFER_QUERY_KEY, offer.id],
+        api.patchOffer(offer.id, requestBody),
+        { revalidate: false }
+      )
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
