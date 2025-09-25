@@ -4,11 +4,13 @@ import logging
 import typing
 from functools import wraps
 
+import regex
 from pydantic.v1 import parse_obj_as
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
@@ -26,6 +28,11 @@ from . import serializers
 
 
 logger = logging.getLogger(__name__)
+
+
+_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN = (
+    r"Insufficient number of seats for the showtime \d+, remaining: (\d), required: \d"
+)
 
 
 def get_pcu_pricing_if_exists(
@@ -79,8 +86,18 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         message = _extract_message_from_response(response)
         if reason and cinema_api_token:
             error_message = reason.replace(cinema_api_token, "")
+
+        logger.warning(
+            "[Boost] Error calling API",
+            extra={"message_content": message, "status_code": response.status_code, "request_detail": request_detail},
+        )
+
         if response.status_code == 401:
             raise boost_exceptions.BoostInvalidTokenException(f"Boost: {message}")
+
+        if regex.match(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message):
+            remaining_seats = int(regex.findall(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message)[0])
+            raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remaining_seats)
 
         raise boost_exceptions.BoostAPIException(
             f"Error on Boost API on {request_detail} : {error_message} - {message}"
