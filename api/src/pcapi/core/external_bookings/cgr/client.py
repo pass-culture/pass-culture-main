@@ -16,6 +16,7 @@ from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
+from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
 from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
 from pcapi.utils import requests
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 CGR_TIMEOUT = 10
 _CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN = r"Impossible de délivrer \d places , il n'en reste que : (\d)"
+_CGR_SHOW_DOES_NOT_EXISTS_PATTERN = r"PASS CULTURE IMPOSSIBLE erreur création résa \(site\) : IdSeance\(\d+\) inconnu"
 
 
 def _log_external_call(
@@ -62,6 +64,9 @@ def _check_response_is_ok(response: dict, resource: str) -> None:
         if regex.match(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message):
             remaining_seats = int(regex.findall(_CGR_NOT_ENOUGH_SEAT_ERROR_PATTERN, error_message)[0])
             raise ExternalBookingNotEnoughSeatsError(remaining_seats)
+
+        if "Séance inconnue" in error_message or regex.match(_CGR_SHOW_DOES_NOT_EXISTS_PATTERN, error_message):
+            raise ExternalBookingShowDoesNotExistError()
 
         raise CGRAPIException(f"Error on CGR API on {resource} : {error_message}")
 

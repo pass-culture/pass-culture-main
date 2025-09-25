@@ -9,6 +9,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
+from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
 from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
@@ -328,6 +329,39 @@ class BookTicketTest:
             cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert exc.value.remainingQuantity == expected_remaining_quantity
+
+    @pytest.mark.parametrize(
+        "error_message",
+        [
+            "Séance inconnue.",
+            "PASS CULTURE IMPOSSIBLE erreur création résa (site) : IdSeance(528581) inconnu",
+        ],
+    )
+    def test_should_raise_show_does_not_exist(self, error_message, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2, amount=5.5, stock=showtime_stock)
+        cinema_details = providers_factories.CGRCinemaDetailsFactory(
+            cinemaUrl="http://cgr-cinema-0.example.com/web_service"
+        )
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        requests_mock.get(
+            "http://cgr-cinema-0.example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION
+        )
+
+        requests_mock.post(
+            "http://cgr-cinema-0.example.com/web_service",
+            text=fixtures.cgr_reservation_error_response_template(
+                99,  # not sure this is the actual error code for this error
+                error_message,
+            ),
+        )
+
+        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+
+        with pytest.raises(ExternalBookingShowDoesNotExistError):
+            cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
 
 @pytest.mark.usefixtures("db_session")

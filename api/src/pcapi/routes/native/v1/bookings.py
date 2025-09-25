@@ -98,6 +98,8 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
     except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:
         raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
+    except external_bookings_exceptions.ExternalBookingShowDoesNotExistError:
+        raise ApiErrors({"code": "PROVIDER_SHOW_DOES_NOT_EXIST"})
     return BookOfferResponse(bookingId=booking.id)
 
 
