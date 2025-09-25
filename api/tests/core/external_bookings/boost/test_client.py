@@ -9,6 +9,7 @@ import time_machine
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.boost.serializers as boost_serializers
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -403,6 +404,36 @@ class BookTicketTest:
         assert external_bookings_infos["barcode"] == "sale-133401"
         assert external_bookings_infos["timestamp"]
         assert external_bookings_infos["venue_id"] == booking.venueId
+
+    @pytest.mark.parametrize(
+        "error_message,expected_remaining_quantity",
+        [
+            ("Insufficient number of seats for the showtime 166622, remaining: 1, required: 2", 1),
+            ("Insufficient number of seats for the showtime 122088, remaining: 0, required: 1", 0),
+        ],
+    )
+    def test_should_raise_not_enough_seats_error(self, error_message, expected_remaining_quantity, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            json=fixtures.ShowtimeDetailsEndpointResponse.PC2_AND_FULL_PRICINGS_SHOWTIME_36684_DATA,
+        )
+        requests_mock.post(
+            "https://cinema-0.example.com/api/sale/complete",
+            status_code=400,
+            json={"code": 400, "message": error_message},
+            headers={"Content-Type": "application/json"},
+            additional_matcher=lambda request: not request.json().get("idsBeforeSale"),
+        )
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+            boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+
+        assert exc.value.remainingQuantity == expected_remaining_quantity
 
 
 class CancelBookingTest:
