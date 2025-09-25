@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import homeShell from '../../assets/offer-home-shell.png'
 import offerShell from '../../assets/offer-shell.png'
 import { ImagePreview } from '../../ImagePreview'

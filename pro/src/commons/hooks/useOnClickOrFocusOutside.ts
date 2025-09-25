@@ -1,7 +1,7 @@
 import { type RefObject, useEffect } from 'react'
 
 export function useOnClickOrFocusOutside(
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   handler: (event: Event) => void
 ) {
   useEffect(() => {

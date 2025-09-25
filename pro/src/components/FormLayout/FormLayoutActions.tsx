@@ -1,15 +1,15 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { type JSX } from 'react'
 
 import style from './FormLayout.module.scss'
 
 interface FormLayoutActionsProps {
-  children: React.ReactElement[] | React.ReactElement
+  children: React.ReactElement<any>[] | React.ReactElement<any>
   className?: string
 }
 
 const addActionClass = (
-  element: React.ReactElement,
+  element: React.ReactElement<any>,
   index?: number
 ): JSX.Element =>
   React.cloneElement(element, {

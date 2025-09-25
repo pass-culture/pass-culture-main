@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'

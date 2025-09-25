@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { BackToNavLink } from '@/components/BackToNavLink/BackToNavLink'
 

@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import type React from 'react'
+import type { JSX } from 'react'
 import { useLocation, useParams } from 'react-router'
 
 import type {

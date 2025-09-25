@@ -1,5 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import styles from './DropdownMenuWrapper.module.scss'
 

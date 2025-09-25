@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
@@ -134,7 +135,6 @@ export const PhysicalLocationSubform = ({
         disabled={isDisabled}
         required
       />
-
       {!isVenueAddress && (
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>

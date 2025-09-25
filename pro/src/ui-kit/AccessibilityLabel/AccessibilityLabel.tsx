@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { AccessibilityEnum } from '@/commons/core/shared/types'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'

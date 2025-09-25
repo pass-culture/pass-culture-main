@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type ElementType, useId } from 'react'
+import { type ElementType, type JSX, useId } from 'react'
 
 import {
   RadioButton,

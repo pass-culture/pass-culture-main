@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { Markdown } from '@/components/Markdown/Markdown'

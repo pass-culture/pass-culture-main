@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { type ForwardedRef, forwardRef, useId } from 'react'
+import { type ForwardedRef, forwardRef, type JSX, useId } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'

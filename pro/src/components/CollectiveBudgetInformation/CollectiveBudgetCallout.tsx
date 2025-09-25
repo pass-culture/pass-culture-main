@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Callout } from '@/ui-kit/Callout/Callout'

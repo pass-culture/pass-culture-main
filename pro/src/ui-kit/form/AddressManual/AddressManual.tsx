@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { AddressFormValues } from '@/commons/core/shared/types'

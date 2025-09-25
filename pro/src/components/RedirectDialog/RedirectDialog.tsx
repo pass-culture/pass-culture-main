@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'

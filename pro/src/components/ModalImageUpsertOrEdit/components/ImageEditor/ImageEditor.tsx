@@ -1,5 +1,8 @@
+// biome-ignore-all lint: wip
+
 import { forwardRef, useCallback, useEffect, useId, useState } from 'react'
-import AvatarEditor, { type Position } from 'react-avatar-editor'
+import type AvatarEditor from 'react-avatar-editor'
+import type { Position } from 'react-avatar-editor'
 import { useDebouncedCallback } from 'use-debounce'
 
 import { Slider } from '@/ui-kit/form/Slider/Slider'
@@ -140,7 +143,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
 
     return (
       <div className={style['image-editor']}>
-        <AvatarEditor
+        {/*<AvatarEditor
           color={[0, 0, 0, 0.2]}
           crossOrigin="anonymous"
           image={image}
@@ -159,7 +162,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           height={responsiveCanvasHeight}
           border={[responsiveCropBorderWidth, responsiveCropBorderHeight]}
           aria-label="Editeur d'image"
-        />
+        />*/}
         <label className={style['image-editor-label']} htmlFor="scale">
           Zoom
         </label>

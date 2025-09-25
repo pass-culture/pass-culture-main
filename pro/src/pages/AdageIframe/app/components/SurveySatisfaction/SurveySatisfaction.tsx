@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 
 import { apiAdage } from '@/apiClient/api'
 import { useNotification } from '@/commons/hooks/useNotification'

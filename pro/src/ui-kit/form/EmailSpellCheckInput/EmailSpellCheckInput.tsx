@@ -1,4 +1,4 @@
-import { type ForwardedRef, forwardRef, useState } from 'react'
+import { type ForwardedRef, forwardRef, type JSX, useState } from 'react'
 
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'

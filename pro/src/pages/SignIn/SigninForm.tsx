@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { Form, useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 

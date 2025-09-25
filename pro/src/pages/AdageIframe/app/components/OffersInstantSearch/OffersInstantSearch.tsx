@@ -1,5 +1,5 @@
 import { liteClient } from 'algoliasearch/lite'
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
 import { useSelector } from 'react-redux'
 

@@ -1,5 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import fullOtherIcon from '@/icons/full-other.svg'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
@@ -38,7 +39,7 @@ type DropdownMenuWrapperProps = {
   /**
    * Ref of the button triggering the openign of the dropdown
    */
-  dropdownTriggerRef?: React.RefObject<HTMLButtonElement>
+  dropdownTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 /**

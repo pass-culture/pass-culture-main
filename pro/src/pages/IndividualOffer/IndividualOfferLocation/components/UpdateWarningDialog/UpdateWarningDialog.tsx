@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -11,7 +11,7 @@ import styles from './UpdateWarningDialog.module.scss'
 interface UpdateWarningDialogProps {
   onCancel: () => void
   onConfirm: (shouldSendMail: boolean) => void
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
   message?: string
 }
 export const UpdateWarningDialog = ({

@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullInfoIcon from '@/icons/full-info.svg'

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { EacFormat } from '@/apiClient/adage'

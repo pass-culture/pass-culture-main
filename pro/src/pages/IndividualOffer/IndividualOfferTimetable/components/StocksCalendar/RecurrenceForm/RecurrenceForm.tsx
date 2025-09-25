@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
+import type { JSX } from 'react'
 import {
   FormProvider,
   useFieldArray,

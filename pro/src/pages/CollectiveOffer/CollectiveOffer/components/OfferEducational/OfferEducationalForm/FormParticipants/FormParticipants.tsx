@@ -1,4 +1,4 @@
-import { type ChangeEvent, useRef } from 'react'
+import { type ChangeEvent, type JSX, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import { StudentLevels } from '@/apiClient/adage'
@@ -35,7 +35,7 @@ export const FormParticipants = ({
     values: OfferEducationalFormValues,
     levelPrefixes: string[],
     levelLabel: string,
-    ref: React.RefObject<HTMLInputElement>
+    ref: React.RefObject<HTMLInputElement | null>
   ) => {
     const levelValues = Object.keys(values.participants).filter((v) =>
       levelPrefixes.some((prefix) => v.startsWith(prefix))

@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 
 export interface OpenToPublicToggleProps {

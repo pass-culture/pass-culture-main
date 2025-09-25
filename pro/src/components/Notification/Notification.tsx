@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from '@/commons/core/Notification/constants'

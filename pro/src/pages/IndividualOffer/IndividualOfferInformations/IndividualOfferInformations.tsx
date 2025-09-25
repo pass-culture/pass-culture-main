@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'

@@ -1,4 +1,5 @@
 import type React from 'react'
+import type { JSX } from 'react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'

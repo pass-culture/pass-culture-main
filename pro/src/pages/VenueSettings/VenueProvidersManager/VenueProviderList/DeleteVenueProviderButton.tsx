@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -14,7 +14,7 @@ import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
   venue: GetVenueResponseModel
-  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
 export const DeleteVenueProviderButton = ({

@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import { SortingMode } from '@/commons/hooks/useColumnSorting'

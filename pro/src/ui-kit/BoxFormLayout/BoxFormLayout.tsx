@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import style from './BoxFormLayout.module.scss'
 import { Fields } from './components/BoxFormLayoutFields'

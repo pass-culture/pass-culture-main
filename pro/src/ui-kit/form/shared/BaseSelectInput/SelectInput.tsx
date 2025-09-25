@@ -1,5 +1,10 @@
 import cn from 'classnames'
-import { type ComponentProps, type ForwardedRef, forwardRef } from 'react'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  type JSX,
+} from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import fullDownIcon from '@/icons/full-down.svg'

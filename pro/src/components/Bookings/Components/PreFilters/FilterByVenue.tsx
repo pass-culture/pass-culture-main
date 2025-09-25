@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { ALL_STRUCTURES_OPTION } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'

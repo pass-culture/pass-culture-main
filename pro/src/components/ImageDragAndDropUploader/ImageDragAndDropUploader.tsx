@@ -55,7 +55,7 @@ export const ImageDragAndDropUploader = ({
   const previousDraftImage = usePrevious(draftImage)
 
   const [refToFocusOnClose, setRefToFocusOnClose] = useState<
-    React.RefObject<HTMLElement> | undefined
+    React.RefObject<HTMLElement | null> | undefined
   >(inputDragAndDropRef)
 
   const imageUrl = croppedImageUrl || originalImageUrl

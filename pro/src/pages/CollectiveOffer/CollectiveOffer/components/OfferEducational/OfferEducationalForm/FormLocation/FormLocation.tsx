@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { type JSX, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { AdresseData } from '@/apiClient/adresse/types'

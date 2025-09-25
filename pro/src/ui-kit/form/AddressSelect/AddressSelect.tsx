@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  type JSX,
   type Ref,
   useImperativeHandle,
   useRef,

@@ -2,7 +2,7 @@
 
 import cn from 'classnames'
 import type React from 'react'
-import { type ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, forwardRef, type JSX } from 'react'
 
 import strokePassIcon from '@/icons/stroke-pass.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useCallback } from 'react'
+import { type JSX, useCallback } from 'react'
 import { FormProvider, type Resolver, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 

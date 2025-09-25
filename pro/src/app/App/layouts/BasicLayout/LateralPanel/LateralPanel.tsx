@@ -15,9 +15,9 @@ import styles from './LateralPanel.module.scss'
 interface LateralPanelProps {
   lateralPanelOpen: boolean
   setLateralPanelOpen: (value: boolean) => void
-  openButtonRef: React.RefObject<HTMLButtonElement>
-  closeButtonRef: React.RefObject<HTMLButtonElement>
-  navPanel: React.RefObject<HTMLDivElement>
+  openButtonRef: React.RefObject<HTMLButtonElement | null>
+  closeButtonRef: React.RefObject<HTMLButtonElement | null>
+  navPanel: React.RefObject<HTMLDivElement | null>
 }
 
 export const LateralPanel = ({

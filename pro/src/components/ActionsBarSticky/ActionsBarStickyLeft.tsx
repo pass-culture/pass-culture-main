@@ -1,4 +1,5 @@
 import type React from 'react'
+import type { JSX } from 'react'
 
 import style from './ActionsBarSticky.module.scss'
 

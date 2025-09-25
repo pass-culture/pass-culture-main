@@ -1,5 +1,5 @@
 import classnames from 'classnames'
-import { useEffect } from 'react'
+import { type JSX, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { setIsStickyBarOpen } from '@/commons/store/notifications/reducer'

@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useEffect } from 'react'
+import { type JSX, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'

@@ -1,4 +1,5 @@
 import classnames from 'classnames'
+import type { JSX } from 'react'
 
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import fullGoTop from '@/icons/full-go-top.svg'

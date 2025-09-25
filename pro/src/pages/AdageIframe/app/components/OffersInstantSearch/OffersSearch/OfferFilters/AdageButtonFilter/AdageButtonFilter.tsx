@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import type React from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
 
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'

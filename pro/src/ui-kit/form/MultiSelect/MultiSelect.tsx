@@ -2,6 +2,7 @@ import cn from 'classnames'
 import {
   type ForwardedRef,
   forwardRef,
+  type JSX,
   useEffect,
   useId,
   useRef,

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'

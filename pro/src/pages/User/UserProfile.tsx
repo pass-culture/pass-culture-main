@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { UserProfile } from '@/pages/User/UserProfile/UserProfile'

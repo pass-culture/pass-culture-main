@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { Provider } from 'react-redux'
 
 import { AppRouter } from '@/app/AppRouter/AppRouter'

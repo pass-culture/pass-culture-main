@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { Callout } from '@/ui-kit/Callout/Callout'
 import type { Link } from '@/ui-kit/LinkNodes/LinkNodes'

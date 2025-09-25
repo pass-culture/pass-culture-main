@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { type JSX, useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'

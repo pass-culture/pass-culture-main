@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { api } from '@/apiClient/api'

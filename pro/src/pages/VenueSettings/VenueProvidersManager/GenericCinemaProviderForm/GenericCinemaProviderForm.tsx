@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import type { JSX } from 'react'
 import { useForm } from 'react-hook-form'
 
 import type { PostVenueProviderBody } from '@/apiClient/v1'

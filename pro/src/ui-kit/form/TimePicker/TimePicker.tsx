@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { type ForwardedRef, forwardRef, useId } from 'react'
+import { type ForwardedRef, forwardRef, type JSX, useId } from 'react'
 
 import {
   BaseTimePicker,

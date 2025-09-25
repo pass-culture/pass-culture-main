@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TableNoData.module.scss'

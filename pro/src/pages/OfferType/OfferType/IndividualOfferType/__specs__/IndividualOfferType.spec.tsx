@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import type { JSX } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import {

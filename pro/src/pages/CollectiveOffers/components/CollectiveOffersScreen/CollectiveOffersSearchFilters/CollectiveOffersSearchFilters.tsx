@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, JSX, SetStateAction } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -45,7 +45,7 @@ export interface CollectiveOffersSearchFiltersProps {
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CollectiveOffersSearchFilters = ({

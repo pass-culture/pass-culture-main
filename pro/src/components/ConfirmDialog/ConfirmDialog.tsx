@@ -1,4 +1,5 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
+import type { JSX } from 'react'
 
 import strokeErrorIcon from '@/icons/stroke-error.svg'
 import { Button } from '@/ui-kit/Button/Button'

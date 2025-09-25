@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { type JSX, useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'

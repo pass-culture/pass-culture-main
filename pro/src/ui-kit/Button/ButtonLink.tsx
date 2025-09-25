@@ -1,6 +1,11 @@
 import cn from 'classnames'
 import type React from 'react'
-import { type ForwardedRef, forwardRef, type MouseEventHandler } from 'react'
+import {
+  type ForwardedRef,
+  forwardRef,
+  type JSX,
+  type MouseEventHandler,
+} from 'react'
 import { Link } from 'react-router'
 
 import fullLinkIcon from '@/icons/full-link.svg'

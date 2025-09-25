@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import homeShell from '../../assets/partner-home-shell.png'
 import partnerShell from '../../assets/partner-shell.png'
 import { ImagePreview } from '../../ImagePreview'

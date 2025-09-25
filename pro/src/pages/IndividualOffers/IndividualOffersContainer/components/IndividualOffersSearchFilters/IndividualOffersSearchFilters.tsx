@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, JSX, SetStateAction } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
 import {
@@ -26,7 +26,7 @@ interface IndividualOffersSearchFiltersProps {
   resetFilters: () => void
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 const individualFilterStatus = [

@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import type { AddressResponseIsLinkedToVenueModel } from '@/apiClient/v1'

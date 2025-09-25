@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { type JSX, useId } from 'react'
 
 import styles from './Slider.module.scss'
 

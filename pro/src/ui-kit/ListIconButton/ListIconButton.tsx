@@ -1,7 +1,7 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
 import type React from 'react'
-import { type ForwardedRef, forwardRef, type MouseEvent } from 'react'
+import { type ForwardedRef, forwardRef, type JSX, type MouseEvent } from 'react'
 import { Link } from 'react-router'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

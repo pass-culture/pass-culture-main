@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { type JSX, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'

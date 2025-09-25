@@ -1,4 +1,5 @@
 import { addDays, isBefore } from 'date-fns'
+import type { JSX } from 'react'
 import { useLocation, useParams } from 'react-router'
 import useSWR from 'swr'
 

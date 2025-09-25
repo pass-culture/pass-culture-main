@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 

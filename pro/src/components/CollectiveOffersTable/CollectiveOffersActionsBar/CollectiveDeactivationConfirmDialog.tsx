@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -12,7 +13,7 @@ export interface CollectiveDeactivationConfirmDialogProps {
   onCancel: (status: boolean) => void
   onConfirm: () => void
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CollectiveDeactivationConfirmDialog = ({

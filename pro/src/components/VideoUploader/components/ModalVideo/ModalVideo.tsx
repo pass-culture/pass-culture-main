@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import type { JSX } from 'react'
 
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'

@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { Link } from 'react-router'
 
 import type { Step } from './Stepper'

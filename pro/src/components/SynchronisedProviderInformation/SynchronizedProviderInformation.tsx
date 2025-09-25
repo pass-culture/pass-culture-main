@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
 import { Callout } from '@/ui-kit/Callout/Callout'
 

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { type JSX, useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'

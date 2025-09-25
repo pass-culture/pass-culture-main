@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import type { MouseEvent } from 'react'
+import type { JSX, MouseEvent } from 'react'
 
 import styles from './ToggleButtonGroup.module.scss'
 import { ToggleButtonGroupButton } from './ToggleButtonGroupButton/ToggleButtonGroupButton'

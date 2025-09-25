@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokePassIcon from '@/icons/stroke-pass.svg'
 
@@ -6,7 +8,7 @@ interface PrebookingModalProps {
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLElement>
+  refToFocusOnClose?: React.RefObject<HTMLElement | null>
 }
 
 export const PrebookingModal = ({

@@ -21,7 +21,7 @@ interface ActivationCodeFormProps {
   today: Date
   minExpirationDate: Date | null
   isDialogOpen: boolean
-  activationCodeButtonRef: React.RefObject<HTMLButtonElement>
+  activationCodeButtonRef: React.RefObject<HTMLButtonElement | null>
   departmentCode: string
 }
 
