@@ -9,6 +9,7 @@ import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cds import serializers as cds_serializers
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
@@ -1035,6 +1036,56 @@ class CineDigitalServiceBookTicketTest:
         assert len(tickets) == 1
         assert tickets[0].barcode == "141414141414"
         assert tickets[0].seat_number == "A_1"
+
+    @time_machine.travel("2025-09-22T09:23:40.464832", tick=False)
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_seat")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_screen")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_available_duo_seat")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_pc_voucher_types")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
+    @pytest.mark.parametrize("booking_quantity", [0, 1])
+    def test_should_raise_not_enough_seats_error(
+        self,
+        mocked_get_voucher_payment_type,
+        mocked_get_pc_voucher_types,
+        mocked_get_available_duo_seat,
+        mocked_get_screen,
+        mocked_get_show,
+        mocked_get_available_seat,
+        booking_quantity,
+    ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=booking_quantity)
+
+        mocked_get_voucher_payment_type.return_value = cds_serializers.PaymentTypeCDS(
+            id=12, internal_code="VCH", is_active=True
+        )
+        mocked_get_pc_voucher_types.return_value = [
+            cds_serializers.VoucherTypeCDS(
+                id=3,
+                code="PSCULTURE",
+                tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
+            )
+        ]
+
+        mocked_get_available_seat.return_value = []
+        mocked_get_available_duo_seat.return_value = []
+
+        mocked_get_show.return_value = create_show_cds(
+            id_=181,
+            shows_tariff_pos_type_ids=[42],
+            is_empty_seatmap='["0", "0", "0"], ["0", "0", "0"], ["0", "0", "0"]]',
+        )
+        mocked_get_screen.return_value = create_screen_cds()
+
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
+        )
+        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
+            cine_digital_service.book_ticket(show_id=14, booking=booking, beneficiary=beneficiary)
+
+        assert exc.value.remainingQuantity == 0
 
     @time_machine.travel("2025-09-22T09:23:40.464832", tick=False)
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")
