@@ -414,16 +414,9 @@ class AlgoliaSerializationMixin:
                 "students": [student.value for student in collective_offer_template.students],
                 "domains": [domain.id for domain in collective_offer_template.domains],
                 "interventionArea": collective_offer_template.interventionArea,
-                "schoolInterventionArea": (
-                    collective_offer_template.interventionArea
-                    if collective_offer_template.offerVenue.get("addressType") == "school"
-                    else None
-                ),
-                "eventAddressType": collective_offer_template.offerVenue.get("addressType"),
                 "locationType": (
                     collective_offer_template.locationType.value if collective_offer_template.locationType else None
                 ),
-                "beginningDatetime": date_created,  # this hack is needed to make the order keeps working
                 "description": remove_stopwords(collective_offer_template.description),
             },
             "offerer": {
