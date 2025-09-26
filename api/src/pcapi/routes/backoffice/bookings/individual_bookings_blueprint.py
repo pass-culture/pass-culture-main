@@ -20,15 +20,9 @@ from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
-from pcapi.connectors import ems
-from pcapi.core.bookings import api as bookings_api
-from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
-from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
-from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import models as finance_models
-from pcapi.core.geography import models as geography_models
 from pcapi.core.mails.transactional.pro.fraudulent_booking_suspicion import send_fraudulent_booking_suspicion_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -40,11 +34,9 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
-from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import urls
-from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 
@@ -307,21 +299,13 @@ def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
     )
 
 
-def _get_booking_query_for_validation() -> sa_orm.Query:
-    return (
-        db.session.query(bookings_models.Booking)
-        .options(sa_orm.joinedload(bookings_models.Booking.user).selectinload(users_models.User.achievements))
-        .options(sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer))
-    )
-
-
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
-    booking = _get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
+    booking = booking_helpers.get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
     if not booking:
         raise NotFound()
-    _batch_validate_bookings([booking])
+    booking_helpers.batch_validate_bookings([booking])
 
     return _render_individual_bookings([booking_id])
 
@@ -329,23 +313,8 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/<int:booking_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
-    booking = (
-        db.session.query(bookings_models.Booking)
-        .filter_by(id=booking_id)
-        .options(
-            sa_orm.joinedload(bookings_models.Booking.stock)
-            .load_only(offers_models.Stock.id)
-            .joinedload(offers_models.Stock.offer)
-            .load_only(offers_models.Offer.id)
-            .joinedload(offers_models.Offer.offererAddress)
-            .load_only(offerers_models.OffererAddress.label)
-            .joinedload(offerers_models.OffererAddress.address)
-            .load_only(
-                geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
-            )
-        )
-        .one_or_none()
-    )
+    booking = booking_helpers.get_booking_query_for_cancelation().filter_by(id=booking_id).one_or_none()
+
     if not booking:
         raise NotFound()
 
@@ -354,7 +323,7 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
-    _batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
+    booking_helpers.batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
 
     return _render_individual_bookings([booking_id])
 
@@ -382,8 +351,12 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _render_individual_bookings()
 
-    bookings = _get_booking_query_for_validation().filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
-    _batch_validate_bookings(bookings)
+    bookings = (
+        booking_helpers.get_booking_query_for_validation()
+        .filter(bookings_models.Booking.id.in_(form.object_ids_list))
+        .all()
+    )
+    booking_helpers.batch_validate_bookings(bookings)
 
     return _render_individual_bookings(form.object_ids_list)
 
@@ -414,210 +387,9 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
     bookings = (
         db.session.query(bookings_models.Booking).filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
     )
-    _batch_cancel_bookings(bookings, bookings_models.BookingCancellationReasons(form.reason.data))
+    booking_helpers.batch_cancel_bookings(bookings, bookings_models.BookingCancellationReasons(form.reason.data))
 
     return _render_individual_bookings(form.object_ids_list)
-
-
-def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
-    error_dict = defaultdict(list)
-    success_count = 0
-
-    for booking in bookings:
-        with atomic():
-            token = booking.token
-            try:
-                if booking.status == bookings_models.BookingStatus.CANCELLED:
-                    bookings_api.mark_as_used_with_uncancelling(
-                        booking, bookings_models.BookingValidationAuthorType.BACKOFFICE
-                    )
-                else:
-                    bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
-                success_count += 1
-            except (
-                bookings_exceptions.BookingIsAlreadyUsed,
-                bookings_exceptions.BookingIsAlreadyRefunded,
-                bookings_exceptions.BookingDepositCreditExpired,
-            ) as exc:
-                error_dict[exc.__class__.__name__].append(token)
-                mark_transaction_as_invalid()
-            except sa.exc.InternalError as exc:
-                if exc.orig and "tooManyBookings" in str(exc.orig):
-                    error_dict["tooManyBookings"].append(token)
-                elif exc.orig and "insufficientFunds" in str(exc.orig):
-                    error_dict["insufficientFunds"].append(token)
-                else:
-                    flash(
-                        Markup(
-                            "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
-                        ).format(
-                            token=token,
-                            url=url_for(
-                                "backoffice_web.individual_bookings.list_individual_bookings",
-                                q=token,
-                            ),
-                            message=str(exc) or exc.__class__.__name__,
-                        ),
-                        "warning",
-                    )
-                mark_transaction_as_invalid()
-            except Exception as exc:
-                flash(
-                    Markup(
-                        "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
-                    ).format(
-                        token=token,
-                        url=url_for(
-                            "backoffice_web.individual_bookings.list_individual_bookings",
-                            q=token,
-                        ),
-                        message=str(exc) or exc.__class__.__name__,
-                    ),
-                    "warning",
-                )
-                mark_transaction_as_invalid()
-
-    _flash_success_and_error_messages(success_count, error_dict, True)
-
-
-def _batch_cancel_bookings(
-    bookings: list[bookings_models.Booking], reason: bookings_models.BookingCancellationReasons
-) -> None:
-    error_dict = defaultdict(list)
-    success_count = 0
-
-    for booking in bookings:
-        with atomic():
-            token = booking.token
-            try:
-                bookings_api.mark_as_cancelled(
-                    booking=booking,
-                    reason=reason,
-                    author_id=current_user.id,
-                )
-                success_count += 1
-            except (
-                bookings_exceptions.BookingIsAlreadyUsed,
-                bookings_exceptions.BookingIsAlreadyRefunded,
-                bookings_exceptions.BookingIsAlreadyCancelled,
-            ) as exc:
-                error_dict[exc.__class__.__name__].append(token)
-                mark_transaction_as_invalid()
-            except (
-                cgr_exceptions.CGRAPIException,
-                cds_exceptions.CineDigitalServiceAPIException,
-                ems.EMSAPIException,
-            ) as exc:
-                logger.info(
-                    "API error for cancelling external booking, the booking will be cancelled unilaterally",
-                    extra={"booking_id": booking.id, "exc": str(exc)},
-                )
-                try:
-                    bookings_api.mark_as_cancelled(
-                        booking=booking,
-                        reason=reason,
-                        one_side_cancellation=True,
-                        author_id=current_user.id,
-                    )
-                    success_count += 1
-                except Exception as exception:
-                    mark_transaction_as_invalid()
-                    flash(
-                        Markup(
-                            "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
-                        ).format(
-                            token=token,
-                            url=url_for(
-                                "backoffice_web.individual_bookings.list_individual_bookings",
-                                q=token,
-                            ),
-                            message=str(exception) or exception.__class__.__name__,
-                        ),
-                        "warning",
-                    )
-            except Exception as exc:
-                mark_transaction_as_invalid()
-                flash(
-                    Markup(
-                        "Une erreur s'est produite pour la réservation (<a class='link-primary' href='{url}'>{token}</a>) : {message}"
-                    ).format(
-                        token=token,
-                        url=url_for(
-                            "backoffice_web.individual_bookings.list_individual_bookings",
-                            q=token,
-                        ),
-                        message=str(exc) or exc.__class__.__name__,
-                    ),
-                    "warning",
-                )
-
-    _flash_success_and_error_messages(success_count, error_dict, False)
-
-
-def _flash_success_and_error_messages(
-    success_count: int, error_dict: dict[str, list[str]], is_validating: bool
-) -> None:
-    if success_count > 0:
-        flash(
-            f"{success_count} {pluralize(success_count, 'réservation a', 'réservations ont')} été {'validée' if is_validating else 'annulée'}{pluralize(success_count)}",
-            "success",
-        )
-
-    if error_dict:
-        if success_count > 0:
-            error_text = Markup("Certaines réservations n'ont pas pu être {action} et ont été ignorées :<br> ").format(
-                action="validées" if is_validating else "annulées"
-            )
-        else:
-            error_text = Markup("Impossible {action} ces réservations : <br>").format(
-                action="de valider" if is_validating else "d'annuler"
-            )
-        for key in error_dict:
-            tokens = error_dict[key]
-            match key:
-                case "BookingIsAlreadyCancelled":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} déjà annulée{pluralize(len(tokens))}",
-                    )
-                case "BookingIsAlreadyUsed":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} déjà validée{pluralize(len(tokens))}",
-                    )
-                case "BookingIsAlreadyRefunded":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} déjà remboursée{pluralize(len(tokens))}",
-                    )
-                case "BookingDepositCreditExpired":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} dont le crédit associé est expiré",
-                    )
-                case "tooManyBookings":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} dont l'offre n'a plus assez de stock disponible",
-                    )
-                case "insufficientFunds":
-                    error_text += _build_booking_error_str(
-                        tokens,
-                        f"réservation{pluralize(len(tokens))} dont le crédit associé est insuffisant",
-                    )
-        flash(error_text, "warning")
-
-
-def _build_booking_error_str(tokens: list[str], message: str) -> str:
-    return Markup("- {count} {message} (<a class='link-primary' href='{url}'>{tokens}</a>)<br>").format(
-        count=len(tokens),
-        message=message,
-        url=url_for(
-            "backoffice_web.individual_bookings.list_individual_bookings",
-            q=", ".join(tokens),
-        ),
-        tokens=", ".join(tokens),
-    )
 
 
 @individual_bookings_blueprint.route("/batch-tag-fraudulent-form", methods=["POST"])
