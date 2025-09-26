@@ -327,7 +327,6 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -407,7 +406,6 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -464,7 +462,6 @@ class Returns200Test:
                 "subcategoryId": "SEANCE_CINE",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -591,7 +588,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -637,7 +633,6 @@ class Returns200Test:
                 "thumbUrl": None,
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -710,7 +705,6 @@ class Returns200Test:
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,
@@ -787,7 +781,6 @@ class Returns200Test:
                 "subcategoryId": "CONCERT",
                 "venue": {
                     "id": venue.id,
-                    "isVirtual": False,
                     "name": venue.name,
                     "offererName": venue.managingOfferer.name,
                     "publicName": venue.publicName,

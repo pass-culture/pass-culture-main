@@ -37,8 +37,6 @@ describe('venue create offer link', () => {
   })
 
   it('should track updating venue', async () => {
-    props.venue.isVirtual = false
-
     renderVenue(props)
 
     await userEvent.click(
@@ -52,8 +50,6 @@ describe('venue create offer link', () => {
   })
 
   it('should track updating venue with new venue creation journey', () => {
-    props.venue.isVirtual = false
-
     renderVenue(props)
 
     expect(

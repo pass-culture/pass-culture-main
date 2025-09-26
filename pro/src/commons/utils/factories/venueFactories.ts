@@ -10,7 +10,6 @@ export const offerVenueFactory = (
   return {
     id,
     audioDisabilityCompliant: true,
-    isVirtual: false,
     managingOfferer: {
       id: 1,
       allowedOnAdage: true,

@@ -39,7 +39,7 @@ function renderSiretOrComment(
     const methods = useForm({
       defaultValues: { comment: '', siret: initialSiret },
       resolver: yupResolver(
-        generateSiretValidationSchema(false, isSiretValued, '012345678')
+        generateSiretValidationSchema(isSiretValued, '012345678')
       ),
       mode: 'all',
     })

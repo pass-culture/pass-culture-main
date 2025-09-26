@@ -54,7 +54,7 @@ def create_free_invoice() -> None:
         name="Point de valorisation pour justificatifs à 0€",
         managingOfferer=offerer,
     )
-    venue = offerers_factories.VirtualVenueFactory.create(
+    venue = offerers_factories.VenueFactory.create(
         name="Lieu avec justificatif à 0€",
         managingOfferer=offerer,
         pricing_point=pricing_point,
@@ -106,7 +106,7 @@ def create_specific_invoice() -> None:
         pricing_point="self",
         bank_account=bank_account,
     )
-    virtual_venue = offerers_factories.VirtualVenueFactory.create(
+    virtual_venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name=f"{venue.name} (Offre numérique)",
         pricing_point=venue,
@@ -383,7 +383,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
         bankAccount=bank_account,
         venue=venue,
     )
-    virtual_venue = offerers_factories.VirtualVenueFactory.create(
+    virtual_venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name=f"{venue.name} (Offre numérique)",
         pricing_point=venue,

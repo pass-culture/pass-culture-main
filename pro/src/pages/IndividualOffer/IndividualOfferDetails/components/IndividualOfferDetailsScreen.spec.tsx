@@ -988,17 +988,6 @@ describe('IndividualOfferDetailsScreen', () => {
     })
   })
 
-  it('should not render venue field when there is just one virtual venue', () => {
-    renderDetailsScreen({
-      props: {
-        venues: [venueListItemFactory({ id: 189, isVirtual: true })],
-      },
-      contextValue,
-    })
-
-    expect(screen.queryByText(LABELS.venue)).not.toBeInTheDocument()
-  })
-
   it('should not render venue field when there is just one physical venue', () => {
     vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
       SUGGESTED_CATEGORIES: 'true',
@@ -1006,25 +995,7 @@ describe('IndividualOfferDetailsScreen', () => {
 
     renderDetailsScreen({
       props: {
-        venues: [venueListItemFactory({ id: 189, isVirtual: false })],
-      },
-      contextValue,
-    })
-
-    expect(screen.queryByText(LABELS.venue)).not.toBeInTheDocument()
-  })
-
-  it('should not render venue field when there is one physical venue and one virtual venue', () => {
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
-    renderDetailsScreen({
-      props: {
-        venues: [
-          venueListItemFactory({ id: 189, isVirtual: false }),
-          venueListItemFactory({ id: 190, isVirtual: true }),
-        ],
+        venues: [venueListItemFactory({ id: 189 })],
       },
       contextValue,
     })

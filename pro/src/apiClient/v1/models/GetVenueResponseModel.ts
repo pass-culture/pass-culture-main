@@ -52,7 +52,6 @@ export type GetVenueResponseModel = {
   isCaledonian: boolean;
   isOpenToPublic: boolean;
   isPermanent?: boolean | null;
-  isVirtual: boolean;
   latitude?: number | null;
   longitude?: number | null;
   managingOfferer: GetVenueManagingOffererResponseModel;

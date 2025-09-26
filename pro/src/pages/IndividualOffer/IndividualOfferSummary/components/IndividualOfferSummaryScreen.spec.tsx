@@ -95,7 +95,6 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
       venue: getOfferVenueFactory({
         name: 'ma venue',
         publicName: 'ma venue (nom public)',
-        isVirtual: true,
         managingOfferer: getOfferManagingOffererFactory({
           name: 'mon offerer',
         }),
@@ -182,7 +181,6 @@ describe('IndividualOfferSummaryScreen', () => {
     venue: getOfferVenueFactory({
       name: 'ma venue',
       publicName: 'ma venue (nom public)',
-      isVirtual: true,
       managingOfferer: getOfferManagingOffererFactory({
         name: 'mon offerer',
       }),

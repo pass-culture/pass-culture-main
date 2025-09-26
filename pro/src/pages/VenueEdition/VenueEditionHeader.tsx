@@ -142,9 +142,7 @@ export const VenueEditionHeader = ({
         <div className={styles['venue-details-main']}>
           <div className={styles['venue-type']}>{venueType?.label}</div>
           <h2 className={styles['venue-name']}>
-            {venue.isVirtual
-              ? `${offerer.name} (Offre numérique)`
-              : venue.publicName || venue.name}
+            venue.publicName || venue.name
           </h2>
         </div>
 

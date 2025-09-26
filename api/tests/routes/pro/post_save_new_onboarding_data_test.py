@@ -52,7 +52,7 @@ class Returns200Test:
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
-        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).one()
         assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
@@ -117,7 +117,7 @@ class Returns200Test:
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         assert created_offerer.postalCode == "75001"
-        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).one()
         assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
         assert created_venue.city == "Paris"
@@ -176,7 +176,7 @@ class Returns200Test:
         created_offerer = db.session.query(offerers_models.Offerer).one()
         assert created_offerer.isValidated
 
-        created_venue = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.isVirtual.is_(False)).one()
+        created_venue = db.session.query(offerers_models.Venue).one()
         assert created_venue.adageId is not None
         assert created_venue.adageInscriptionDate is not None
 

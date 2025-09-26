@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { checkCoords } from '@/commons/utils/coords'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
-export const getValidationSchema = (isVenueVirtual: boolean) =>
+export const getValidationSchema = () =>
   yup.object().shape({
     addressAutocomplete: yup
       .string()
@@ -40,12 +40,10 @@ export const getValidationSchema = (isVenueVirtual: boolean) =>
             ),
       }),
 
-    bookingEmail: isVenueVirtual
-      ? yup.string()
-      : yup
-          .string()
-          .test(emailSchema)
-          .required('Veuillez renseigner une adresse email'),
+    bookingEmail: yup
+      .string()
+      .test(emailSchema)
+      .required('Veuillez renseigner une adresse email'),
     name: yup
       .string()
       .required(`Veuillez renseigner la raison sociale de votre lieu`),

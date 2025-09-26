@@ -47,9 +47,8 @@ export const VenueSettingsScreen = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
-  const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
+  const formValidationSchema = getValidationSchema().concat(
     generateSiretValidationSchema(
-      venue.isVirtual,
       isSiretValued,
       offerer.siren,
       initialValues.siret

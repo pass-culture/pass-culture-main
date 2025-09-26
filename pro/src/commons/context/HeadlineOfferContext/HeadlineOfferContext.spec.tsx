@@ -130,7 +130,6 @@ describe('HeadlineOfferContext', () => {
       venues: [
         venueListItemFactory({
           id: MOCK_DATA.headlineOffer.venueId,
-          isVirtual: false,
           isPermanent: true,
         }),
       ],
@@ -156,7 +155,6 @@ describe('HeadlineOfferContext', () => {
         venues: [
           venueListItemFactory({
             id: MOCK_DATA.headlineOffer.venueId,
-            isVirtual: true,
             isPermanent: false,
           }),
         ],

@@ -46,9 +46,7 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
     .filter(({ status }) => status === OfferStatus.DRAFT)
     .slice(0, MAX_DRAFT_TO_DISPLAY)
 
-  const physicalVenue = selectedOfferer?.managedVenues?.filter(
-    ({ isVirtual }) => !isVirtual
-  )[0]
+  const physicalVenue = selectedOfferer?.managedVenues?.[0]
 
   // Assumed choice to redirect offerers without permanent venues (old cases) to /accueil
   const synchronizedLink = physicalVenue

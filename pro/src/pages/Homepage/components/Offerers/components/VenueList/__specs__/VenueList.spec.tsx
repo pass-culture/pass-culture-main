@@ -17,7 +17,6 @@ const renderVenueList = (props: Partial<VenueListProps> = {}) => {
 const virtualVenue = {
   ...defaultGetOffererVenueResponseModel,
   id: 1,
-  isVirtual: true,
   name: 'Le Sous-sol (Offre numérique)',
   publicName: null,
   isPermanent: false,
@@ -25,7 +24,6 @@ const virtualVenue = {
 const physicalVenue = {
   ...defaultGetOffererVenueResponseModel,
   id: 2,
-  isVirtual: false,
   name: 'Le Sous-sol (Offre physique)',
   publicName: null,
   isPermanent: false,
@@ -33,7 +31,6 @@ const physicalVenue = {
 const physicalVenueWithPublicName = {
   ...defaultGetOffererVenueResponseModel,
   id: 3,
-  isVirtual: false,
   name: 'Le deuxième Sous-sol (Offre physique)',
   publicName: 'Le deuxième Sous-sol',
   isPermanent: false,
@@ -41,7 +38,6 @@ const physicalVenueWithPublicName = {
 const physicalVenuePermanent = {
   ...defaultGetOffererVenueResponseModel,
   id: 3,
-  isVirtual: false,
   name: 'Le troisième Sous-sol (Offre physique)',
   publicName: null,
   isPermanent: true,
@@ -56,8 +52,6 @@ describe('VenueList', () => {
     }
     renderVenueList({ offerer })
 
-    const virtualVenueTitle = screen.getByText('Offres numériques')
-    expect(virtualVenueTitle).toBeInTheDocument()
     const physicalVenueTitle = screen.getByText(physicalVenue.name)
     expect(physicalVenueTitle).toBeInTheDocument()
     const physicalVenueContainer = physicalVenueTitle.closest('div')
@@ -70,16 +64,6 @@ describe('VenueList', () => {
 
     const secondOfflineVenueTitle = screen.getByText('Le deuxième Sous-sol')
     expect(secondOfflineVenueTitle).toBeInTheDocument()
-  })
-
-  it('should not display virtual venue informations when no virtual offers', () => {
-    const offerer = {
-      ...defaultGetOffererResponseModel,
-      managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
-    }
-    renderVenueList({ offerer })
-
-    expect(screen.queryByText('Offre numérique')).not.toBeInTheDocument()
   })
 
   it('should not display permanent venues', () => {

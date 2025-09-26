@@ -758,25 +758,23 @@ class CheckOfferExtraDataTest:
 
 class CheckBookingLimitDatetimeTest:
     @pytest.mark.parametrize(
-        "stock_factory, offer_factory, venue_factory",
+        "stock_factory, offer_factory",
         [
             (
                 educational_factories.CollectiveStockFactory,
                 educational_factories.CollectiveOfferFactory,
-                offerers_factories.VenueFactory,
             ),
             (
                 offers_factories.StockFactory,
                 offers_factories.DigitalOfferFactory,
-                offerers_factories.VirtualVenueFactory,
             ),
-            (offers_factories.StockFactory, offers_factories.OfferFactory, offerers_factories.VenueFactory),
+            (offers_factories.StockFactory, offers_factories.OfferFactory),
         ],
     )
     def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(
-        self, stock_factory, offer_factory, venue_factory
+        self, stock_factory, offer_factory
     ):
-        venue = venue_factory(departementCode=71)
+        venue = offerers_factories.VenueFactory(departementCode=71)
         offer = offer_factory(venueId=venue.id)
         if stock_factory == educational_factories.CollectiveStockFactory:
             stock = stock_factory(collectiveOfferId=offer.id)
@@ -859,15 +857,12 @@ class CheckBookingLimitDatetimeTest:
             if time_zone_expected == ZoneInfo("Indian/Reunion")
             else None
         )
-        if time_zone_expected in [ZoneInfo("Indian/Reunion"), ZoneInfo("America/Guadeloupe")]:
-            venue = offerers_factories.VenueFactory(
-                departementCode=71,
-                offererAddress__address__departmentCode="971",
-                offererAddress__address__inseeCode="97103",
-                offererAddress__address__timezone="America/Guadeloupe",
-            )  # oa guadeloupe venue#france
-        else:
-            venue = offerers_factories.VirtualVenueFactory(departementCode=71)
+        venue = offerers_factories.VenueFactory(
+            departementCode=71,
+            offererAddress__address__departmentCode="971",
+            offererAddress__address__inseeCode="97103",
+            offererAddress__address__timezone="America/Guadeloupe",
+        )  # oa guadeloupe venue#france
         offer = offers_factories.OfferFactory(offererAddress=oa, venue=venue)  # reunion
         stock = offers_factories.StockFactory(offer=offer)
         beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
@@ -968,12 +963,11 @@ class CheckPublicationDateTest:
 class CheckOffererIsEligibleForHeadlineOffersTest:
     def test_check_offerer_is_eligible_for_headline_offers(self):
         offerer = offerers_factories.OffererFactory()
-        offerers_factories.VenueFactory(isPermanent=True, isVirtual=False, managingOfferer=offerer)
-        offerers_factories.VirtualVenueFactory(isPermanent=False, managingOfferer=offerer)
+        offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
 
         assert validation.check_offerer_is_eligible_for_headline_offers(offerer.id) is None
 
-        another_venue = offerers_factories.VenueFactory(isPermanent=False, isVirtual=False, managingOfferer=offerer)
+        another_venue = offerers_factories.VenueFactory(isPermanent=False, managingOfferer=offerer)
         with pytest.raises(exceptions.OffererCanNotHaveHeadlineOffer) as exc:
             validation.check_offerer_is_eligible_for_headline_offers(offerer.id)
             msg = "This offerer can not have headline offers"
@@ -987,12 +981,11 @@ class CheckOffererIsEligibleForHeadlineOffersTest:
 
     def test_check_offer_is_eligible_to_be_headline(self):
         offerer = offerers_factories.OffererFactory()
-        permanent_venue = offerers_factories.VenueFactory(isPermanent=True, isVirtual=False, managingOfferer=offerer)
-        virtual_venue = offerers_factories.VirtualVenueFactory(isPermanent=False, managingOfferer=offerer)
+        permanent_venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=permanent_venue)
         offers_factories.StockFactory(offer=offer)
         offers_factories.MediationFactory(offer=offer)
-        digital_offer = offers_factories.DigitalOfferFactory(venue=virtual_venue)
+        digital_offer = offers_factories.DigitalOfferFactory(venue=permanent_venue)
         offers_factories.StockFactory(offer=digital_offer)
         offers_factories.MediationFactory(offer=digital_offer)
         offers_factories.MediationFactory(offer=digital_offer)

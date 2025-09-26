@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import { computeVenueDisplayName } from 'repository/venuesService'
 
 import type { ListOffersVenueResponseModel } from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
@@ -38,7 +37,7 @@ export const OfferVenueCell = ({
           {`${getCellsDefinition().VENUE.title} :`}
         </span>
       )}
-      {computeVenueDisplayName(venue)}
+      {venue.publicName || venue.name}
     </td>
   )
 }

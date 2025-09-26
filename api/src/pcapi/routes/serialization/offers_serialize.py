@@ -293,7 +293,6 @@ def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
     return base_serializers.ListOffersVenueResponseModel(
         id=venue.id,
-        isVirtual=venue.isVirtual,
         name=venue.name,
         offererName=venue.managingOfferer.name,
         publicName=venue.publicName,
@@ -375,7 +374,6 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     departementCode: str | None
     id: int
-    isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None

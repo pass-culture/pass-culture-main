@@ -68,17 +68,13 @@ export const VenueSettingsForm = ({
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
 
-      {!venue.isVirtual && (
-        <OffersSynchronization venueProviders={venueProviders} venue={venue} />
-      )}
+      <OffersSynchronization venueProviders={venueProviders} venue={venue} />
 
       <FormLayout fullWidthActions>
         <FormLayout.Section title="Informations administratives">
-          {!venue.isVirtual && (
-            <FormLayout.Row>
-              <SiretOrCommentFields siren={offerer.siren} />
-            </FormLayout.Row>
-          )}
+          <FormLayout.Row>
+            <SiretOrCommentFields siren={offerer.siren} />
+          </FormLayout.Row>
 
           <FormLayout.Row mdSpaceAfter>
             <TextInput
@@ -89,50 +85,46 @@ export const VenueSettingsForm = ({
             />
           </FormLayout.Row>
 
-          {!venue.isVirtual && (
-            <>
-              <FormLayout.Row mdSpaceAfter>
-                <TextInput
-                  {...register('publicName')}
-                  label="Nom public"
-                  description="À remplir si différent de la raison sociale. En le
-                    remplissant, c’est ce dernier qui sera visible du public."
-                />
-              </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              {...register('publicName')}
+              label="Nom public"
+              description="À remplir si différent de la raison sociale. En le
+                remplissant, c’est ce dernier qui sera visible du public."
+            />
+          </FormLayout.Row>
 
-              <FormLayout.Row>
-                <AddressSelect
-                  {...register('addressAutocomplete')}
-                  disabled={manuallySetAddress}
-                  label={'Adresse postale'}
-                  onAddressChosen={(addressData) => {
-                    setValue('manuallySetAddress', false)
-                    setValue('street', addressData.address)
-                    setValue('postalCode', addressData.postalCode)
-                    setValue('city', addressData.city)
-                    setValue('latitude', String(addressData.latitude))
-                    setValue('longitude', String(addressData.longitude))
-                    setValue('banId', addressData.id)
-                    setValue('inseeCode', addressData.inseeCode)
-                  }}
-                  error={errors.addressAutocomplete?.message}
-                />
-              </FormLayout.Row>
+          <FormLayout.Row>
+            <AddressSelect
+              {...register('addressAutocomplete')}
+              disabled={manuallySetAddress}
+              label={'Adresse postale'}
+              onAddressChosen={(addressData) => {
+                setValue('manuallySetAddress', false)
+                setValue('street', addressData.address)
+                setValue('postalCode', addressData.postalCode)
+                setValue('city', addressData.city)
+                setValue('latitude', String(addressData.latitude))
+                setValue('longitude', String(addressData.longitude))
+                setValue('banId', addressData.id)
+                setValue('inseeCode', addressData.inseeCode)
+              }}
+              error={errors.addressAutocomplete?.message}
+            />
+          </FormLayout.Row>
 
-              <FormLayout.Row>
-                <Button
-                  variant={ButtonVariant.QUATERNARY}
-                  icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
-                  onClick={toggleManuallySetAddress}
-                >
-                  {manuallySetAddress
-                    ? 'Revenir à la sélection automatique'
-                    : 'Vous ne trouvez pas votre adresse ?'}
-                </Button>
-              </FormLayout.Row>
-              {manuallySetAddress && <AddressManual />}
-            </>
-          )}
+          <FormLayout.Row>
+            <Button
+              variant={ButtonVariant.QUATERNARY}
+              icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
+              onClick={toggleManuallySetAddress}
+            >
+              {manuallySetAddress
+                ? 'Revenir à la sélection automatique'
+                : 'Vous ne trouvez pas votre adresse ?'}
+            </Button>
+          </FormLayout.Row>
+          {manuallySetAddress && <AddressManual />}
         </FormLayout.Section>
 
         <FormLayout.Section title="Activité principale">
@@ -147,23 +139,20 @@ export const VenueSettingsForm = ({
                 ...venueTypesOptions,
               ]}
               label="Activité principale"
-              disabled={venue.isVirtual}
               error={errors.venueType?.message}
             />
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {!venue.isVirtual && <WithdrawalDetails />}
+        <WithdrawalDetails />
 
         <FormLayout.Section title="Notifications de réservations">
           <FormLayout.Row
             sideComponent={
-              venue.isVirtual ? null : (
-                <TipsBanner>
-                  Cette adresse s’appliquera par défaut à toutes vos offres,
-                  vous pourrez la modifier à l’échelle de chaque offre.
-                </TipsBanner>
-              )
+              <TipsBanner>
+                Cette adresse s’appliquera par défaut à toutes vos offres, vous
+                pourrez la modifier à l’échelle de chaque offre.
+              </TipsBanner>
             }
           >
             <TextInput
@@ -171,8 +160,7 @@ export const VenueSettingsForm = ({
               label="Adresse email"
               type="email"
               description="Format : email@exemple.com"
-              required={!venue.isVirtual}
-              disabled={venue.isVirtual}
+              required
               error={errors.bookingEmail?.message}
             />
           </FormLayout.Row>

@@ -1,10 +1,7 @@
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import {
-  getPhysicalVenuesFromOfferer,
-  getVirtualVenueFromOfferer,
-} from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+import { getPhysicalVenuesFromOfferer } from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 export const useVenuesFromOfferer = (
   selectedOffererId: number | null,
@@ -16,8 +13,7 @@ export const useVenuesFromOfferer = (
   )
 
   const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
-  const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
-  const rawVenues = [...physicalVenues, virtualVenue].filter((v) => !!v)
+  const rawVenues = [...physicalVenues].filter((v) => !!v)
   const data = formatAndOrderVenues(rawVenues)
 
   return {

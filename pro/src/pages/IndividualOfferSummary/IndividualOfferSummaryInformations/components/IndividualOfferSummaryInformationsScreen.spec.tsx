@@ -44,7 +44,7 @@ describe('IndividualOfferSummaryInformationsScreen', () => {
       withdrawalDelay: 120,
       bookingContact: 'robert@exemple.com',
       externalTicketOfficeUrl: 'https://hey.no',
-      venue: { ...getOfferVenueFactory(), isVirtual: true },
+      venue: { ...getOfferVenueFactory() },
     })
 
     renderUsefulInformationsSummaryScreen(offer)

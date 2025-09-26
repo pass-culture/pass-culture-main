@@ -123,7 +123,6 @@ describe('CollectiveOfferRow', () => {
     it('should display the venue name when venue public name is not given', () => {
       props.offer.venue = listOffersVenueFactory({
         name: 'Paris',
-        isVirtual: false,
         offererName: 'Offerer name',
       })
 
@@ -136,26 +135,12 @@ describe('CollectiveOfferRow', () => {
       props.offer.venue = listOffersVenueFactory({
         name: 'Paris',
         publicName: 'lieu de ouf',
-        isVirtual: false,
         offererName: 'Offerer name',
       })
 
       renderOfferItem(props)
 
       expect(screen.getByText('lieu de ouf')).toBeInTheDocument()
-    })
-
-    it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
-      props.offer.venue = listOffersVenueFactory({
-        isVirtual: true,
-        name: 'Gaumont Montparnasse',
-        offererName: 'Gaumont',
-        publicName: 'Gaumontparnasse',
-      })
-
-      renderOfferItem(props)
-
-      expect(screen.getByText('Gaumont - Offre numérique')).toBeInTheDocument()
     })
 
     it('should not display venue cell when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {

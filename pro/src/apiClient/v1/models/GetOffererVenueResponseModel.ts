@@ -17,7 +17,6 @@ export type GetOffererVenueResponseModel = {
   hasVenueProviders: boolean;
   id: number;
   isPermanent: boolean;
-  isVirtual: boolean;
   name: string;
   postalCode?: string | null;
   publicName?: string | null;

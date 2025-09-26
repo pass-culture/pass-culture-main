@@ -73,7 +73,6 @@ export const listOffersVenueFactory = (
   id: 1,
   name: 'venue name',
   offererName: 'offerer name',
-  isVirtual: false,
   ...customListOffersVenue,
 })
 
@@ -347,7 +346,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasOffers: true,
   hasActiveIndividualOffer: true,
   isOpenToPublic: true,
-  isVirtual: false,
   managingOfferer: {
     id: 1,
     city: 'Paris',
