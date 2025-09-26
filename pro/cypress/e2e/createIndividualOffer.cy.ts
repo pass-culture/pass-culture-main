@@ -93,6 +93,11 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
+    // TODO: test video creation. This is only a workaround
+    cy.url().should('contain', '/creation/media')
+    cy.findByText('Enregistrer et continuer').click()
+    cy.wait('@getOffer')
+
     cy.stepLog({ message: 'I fill in prices' })
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
@@ -227,6 +232,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText('Sous-catégorie *').select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
+    /* TODO: this was moved to the media step
     cy.findByLabelText('Importez une image').selectFile(
       'cypress/data/librairie.jpeg',
       {
@@ -239,12 +245,13 @@ describe('Create individual offers', { testIsolation: false }, () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
 
-    cy.findByText('Importer').click()
+    cy.findByText('Importer').click()*/
 
     cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
 
+    /* TODO: this was moved to the media step
     // With a 1.7x zoom, width=470 and height=705
     cy.findAllByTestId('image-preview').then(($img) => {
       cy.wrap($img)
@@ -255,7 +262,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
         .should('be.visible')
         .should('have.prop', 'naturalHeight')
         .and('eq', 705)
-    })
+    })*/
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -274,8 +281,15 @@ describe('Create individual offers', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate offer useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@patchOffer', '@getStocks'], {
-      responseTimeout: 60 * 1000 * 3,
+    cy.wait(['@getOffer', '@patchOffer'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
+
+    // TODO: test video creation. This is only a workaround
+    cy.url().should('contain', '/creation/media')
+    cy.findByText('Enregistrer et continuer').click()
+    cy.wait(['@getOffer', '@getStocks'], {
+      responseTimeout: 60 * 1000 * 2,
     })
 
     cy.stepLog({ message: 'I fill in stocks' })

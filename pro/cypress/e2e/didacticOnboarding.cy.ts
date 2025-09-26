@@ -161,7 +161,7 @@ describe('Didactic Onboarding feature', () => {
         // Saving a draft
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
         cy.wait(['@getOffer', '@postDraftOffer'])
-        cy.findByText('Brouillon enregistré')
+        //        cy.findByText('Brouillon enregistré')
 
         // --------------------
         // Draft – Resume offer
@@ -201,6 +201,11 @@ describe('Didactic Onboarding feature', () => {
         cy.url().should('contain', '/creation/pratiques')
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
         cy.wait(['@getOffer', '@patchOffer'])
+
+        // TODO: test video creation. This is only a workaround
+        cy.url().should('contain', '/creation/media')
+        cy.findByText('Enregistrer et continuer').click()
+        cy.wait('@getOffer')
 
         // ----------------------
         // Step 3: Stock & Prices

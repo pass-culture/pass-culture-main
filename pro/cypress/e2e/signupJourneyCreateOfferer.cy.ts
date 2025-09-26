@@ -377,6 +377,10 @@ function fromOnBoardingPublishMyFirstOffer() {
 
   cy.wait('@patchOffer')
 
+  // TODO: test video creation. This is only a workaround
+  cy.url().should('contain', '/creation/media')
+  cy.findByText('Enregistrer et continuer').click()
+
   // ----------------------
   // Step 3: Stock & Prices
   // ----------------------
