@@ -935,11 +935,20 @@ class OfferIsHeadlineTest:
         assert active_headline_offer.offer.is_headline_offer
         assert not inactive_headline_offer.offer.is_headline_offer
 
-        assert db.session.query(models.Offer).filter(models.Offer.is_headline_offer.is_(True)).all() == [
+        expected_active_headline_offers = [
             active_headline_offer.offer,
             eternally_active_headline_offer.offer,
             reactivated_headline_offer.offer,
         ]
+        expected_active_headline_offers.sort(key=lambda o: o.id)
+
+        assert (
+            db.session.query(models.Offer)
+            .filter(models.Offer.is_headline_offer.is_(True))
+            .order_by(models.Offer.id)
+            .all()
+            == expected_active_headline_offers
+        )
         assert db.session.query(models.Offer).filter(models.Offer.is_headline_offer.is_(False)).all() == [
             inactive_headline_offer.offer
         ]
