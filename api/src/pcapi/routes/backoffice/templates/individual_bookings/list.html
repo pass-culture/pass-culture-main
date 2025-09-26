@@ -2,38 +2,7 @@
 {% import "components/forms.html" as forms with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
-{% macro booking_modal(booking, title, div_id, form, dst) %}
-  {% set aria_described_by_id = random_hash() %}
-  <div class="modal modal-lg fade"
-       id="{{ div_id }}"
-       tabindex="-1"
-       aria-labelledby="{{ aria_described_by_id }}"
-       aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <form name="{{ dst | action_to_name }}"
-              hx-target="#{{ table_id }}"
-              hx-post="{{ dst }}"
-              hx-swap="outerHTML"
-              hx-trigger="submit">
-          <div class="modal-header"
-               id="{{ aria_described_by_id }}">
-            <h5 class="modal-title">{{ title }}</h5>
-          </div>
-          <div class="modal-body row">{{ forms.build_form_fields_group(form) }}</div>
-          <div class="modal-footer">
-            <button type="button"
-                    class="btn btn-outline-primary-subtle-bg"
-                    data-bs-dismiss="modal">Annuler</button>
-            <button type="submit"
-                    class="btn btn-primary"
-                    data-modal-selector="#{{ div_id }}">Confirmer</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-{% endmacro %}
+{% from "components/bookings/modal.html" import booking_modal with context %}
 {% set rows_count = rows|length %}
 {% set table_id = "booking-table" %}
 {% block title %}Réservations individuelles{% endblock %}
@@ -162,8 +131,8 @@
   {% endif %}
   {% if has_permission("MANAGE_BOOKINGS") %}
     {% for booking in rows %}
-      {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, validate_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) ) }}
-      {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) ) }}
+      {{ booking_modal(booking, "Valider la réservation " + booking.token, "pc-validate-booking-modal-" + booking.id |string, mark_as_used_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) , table_id) }}
+      {{ booking_modal(booking, "Annuler la réservation " + booking.token, "pc-cancel-booking-modal-" + booking.id |string, cancel_booking_form, url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) , table_id) }}
     {% endfor %}
   {% endif %}
 {% endblock after_table %}
