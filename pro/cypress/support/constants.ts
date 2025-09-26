@@ -12,3 +12,14 @@ export const DEFAULT_AXE_RULES = {
     'color-contrast': { enabled: false },
   },
 }
+
+export const COLLECTIVE_OFFERS_TABLE_HEADER = [
+  '',
+  '',
+  "Nom de l'offre",
+  'Dates',
+  'Prix et participants',
+  'Établissement',
+  'Localisation',
+  'Statut',
+]

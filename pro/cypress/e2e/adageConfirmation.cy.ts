@@ -1,3 +1,4 @@
+import { COLLECTIVE_OFFERS_TABLE_HEADER } from '../support/constants.ts'
 import {
   collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
@@ -25,15 +26,15 @@ describe('Adage confirmation', () => {
         providerApiKey = response.body.providerApiKey
         cy.intercept({
           method: 'GET',
-          url: `/collective/offers?offererId=${offer.id}`,
+          url: `/collective/offers?offererId=1&collectiveOfferType=offer`,
         }).as('collectiveOffers')
         cy.intercept({
           method: 'GET',
-          url: '/collective/offers?offererId=1&status=BOOKED',
+          url: '/collective/offers?offererId=1&status=BOOKED&collectiveOfferType=offer',
         }).as('collectiveOffersBOOKED')
         cy.intercept({
           method: 'GET',
-          url: '/collective/offers?offererId=1&status=PREBOOKED',
+          url: '/collective/offers?offererId=1&status=PREBOOKED&collectiveOfferType=offer',
         }).as('collectiveOffersPREBOOKED')
         cy.intercept({
           method: 'GET',
@@ -110,22 +111,15 @@ describe('Adage confirmation', () => {
         .should('eq', 200)
 
       let expectedResults = [
-        [
-          '',
-          '',
-          'Titre',
-          'Date de l’évènement',
-          'Lieu',
-          'Établissement',
-          'Statut',
-        ],
+        COLLECTIVE_OFFERS_TABLE_HEADER,
         [
           '',
           '',
           offer.name,
           collectiveFormatEventDate(stock.startDatetime),
-          offer.venueName,
+          '100€25 participants',
           'DE LA TOUR',
+          'À déterminer',
           'préréservée',
         ],
       ]
@@ -192,22 +186,15 @@ describe('Adage confirmation', () => {
         .should('eq', 200)
 
       expectedResults = [
-        [
-          '',
-          '',
-          'Titre',
-          'Date de l’évènement',
-          'Lieu',
-          'Établissement',
-          'Statut',
-        ],
+        COLLECTIVE_OFFERS_TABLE_HEADER,
         [
           '',
           '',
           offer.name,
           collectiveFormatEventDate(stock.startDatetime),
-          offer.venueName,
+          '100€25 participants',
           'DE LA TOUR',
+          'À déterminer',
           'réservée',
         ],
       ]
@@ -257,22 +244,15 @@ describe('Adage confirmation', () => {
       cy.stepLog({ message: 'Offer is now canceled' })
       cy.contains('annulée')
       expectedResults = [
-        [
-          '',
-          '',
-          'Titre',
-          "Date de l'événement",
-          'Lieu',
-          'Établissement',
-          'Statut',
-        ],
+        COLLECTIVE_OFFERS_TABLE_HEADER,
         [
           '',
           '',
           offer.name,
           collectiveFormatEventDate(stock.startDatetime),
-          offer.venueName,
+          '100€25 participants',
           'DE LA TOUR',
+          'À déterminer',
           'annulée',
         ],
       ]
