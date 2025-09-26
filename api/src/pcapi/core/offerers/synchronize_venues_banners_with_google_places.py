@@ -8,8 +8,8 @@ from pcapi import settings
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.search import IndexationReason
 from pcapi.core.search import async_index_venue_ids
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils import image_conversion
 

@@ -15,6 +15,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search import redis_queues
 from pcapi.core.search import serialization
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 
@@ -74,13 +75,13 @@ def fail(*args, **kwargs):
 
 
 def test_async_index_offer_ids(app):
-    search.async_index_offer_ids({1, 2}, reason=search.IndexationReason.OFFER_UPDATE)
+    search.async_index_offer_ids({1, 2}, reason=IndexationReason.OFFER_UPDATE)
     queue = redis_queues.REDIS_OFFER_IDS_NAME
     assert app.redis_client.smembers(queue) == {"1", "2"}
 
 
 def test_async_index_offers_of_venue_ids(app):
-    search.async_index_offers_of_venue_ids({1, 2}, reason=search.IndexationReason.VENUE_UPDATE)
+    search.async_index_offers_of_venue_ids({1, 2}, reason=IndexationReason.VENUE_UPDATE)
     queue = redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME
     assert app.redis_client.smembers(queue) == {"1", "2"}
 
@@ -95,7 +96,7 @@ def test_async_index_venue_ids(app):
 
     search.async_index_venue_ids(
         [permanent_venue.id, other_venue.id],
-        search.IndexationReason.VENUE_CREATION,
+        IndexationReason.VENUE_CREATION,
     )
 
     queue = redis_queues.REDIS_VENUE_IDS_TO_INDEX
@@ -463,8 +464,8 @@ class UpdateProductBookingCountTest:
         search.update_products_last_30_days_booking_count(1)
 
         assert mock_async_index_offer_ids.call_count == 2
-        mock_async_index_offer_ids.assert_any_call({offer1.id}, reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
-        mock_async_index_offer_ids.assert_any_call({offer2.id}, reason=search.IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call({offer1.id}, reason=IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call({offer2.id}, reason=IndexationReason.BOOKING_COUNT_CHANGE)
 
 
 class ReadProductBookingCountTest:

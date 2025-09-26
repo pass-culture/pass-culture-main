@@ -6,12 +6,12 @@ import pytest
 from flask import url_for
 
 from pcapi import settings
-from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -251,7 +251,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
 
         mocked_async_index_offer_ids.assert_called_once_with(
             [o.id for o in offers_to_restore],
-            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+            reason=IndexationReason.PRODUCT_WHITELIST_ADDITION,
             log_extra={"ean": "9782070455379"},
         )
 
@@ -374,7 +374,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert offer.lastValidationAuthor == legit_user
         mocked_async_index_offer_ids.assert_called_once_with(
             [offer.id],
-            reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+            reason=IndexationReason.PRODUCT_WHITELIST_ADDITION,
             log_extra={"ean": "9782070455379"},
         )
 

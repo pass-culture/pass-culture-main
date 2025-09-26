@@ -11,7 +11,6 @@ import pytest
 from flask import g
 from flask import url_for
 
-from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import pro_categories
@@ -32,6 +31,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -1678,7 +1678,7 @@ class BatchEditOfferTest(PostEndpointHelper):
 
         mock_async_index.assert_called_once_with(
             [offer.id for offer in offers],
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            reason=IndexationReason.OFFER_BATCH_UPDATE,
         )
 
 
@@ -2383,7 +2383,7 @@ class EditOfferVenueTest(PostEndpointHelper):
             )
 
             mocked_async_index_offer_ids.assert_called_once_with(
-                {offer.id}, reason=search.IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
+                {offer.id}, reason=IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
             )
 
             # Mail is sent only for in-going booking

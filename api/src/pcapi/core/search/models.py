@@ -1,0 +1,38 @@
+import enum
+
+
+class IndexationReason(enum.Enum):
+    BOOKING_CANCELLATION = "booking-cancellation"
+    BOOKING_COUNT_CHANGE = "booking-count-change"
+    BOOKING_CREATION = "booking-creation"
+    BOOKING_UNCANCELLATION = "booking-uncancellation"
+    CINEMA_STOCK_QUANTITY_UPDATE = "cinema-stock-quantity-update"
+    CRITERIA_LINK = "criteria-link"
+    GOOGLE_PLACES_BANNER_SYNCHRONIZATION = "google-places-banner-synchronization"
+    MEDIATION_CREATION = "mediation-creation"
+    MEDIATION_DELETION = "mediation-deletion"
+    # Offer-related reasons apply to individual and collective offers and templates
+    OFFER_BATCH_UPDATE = "offer-batch-update"
+    OFFER_BATCH_VALIDATION = "offer-batch-validation"
+    OFFER_CREATION = "offer-publication"
+    OFFER_PUBLICATION = "offer-publication"
+    OFFER_MANUAL_REINDEXATION = "offer-manual-reindexation"
+    OFFER_REINDEXATION = "offer-reindexation"  # reason for the reindexation of venues
+    OFFER_UPDATE = "offer-update"
+    OFFERER_ACTIVATION = "offerer-activation"
+    OFFERER_DEACTIVATION = "offerer-deactivation"
+    OFFERER_VALIDATION = "offerer-validation"
+    PRODUCT_DEACTIVATION = "product-deactivation"
+    PRODUCT_REJECTION = "product-rejection"
+    PRODUCT_UPDATE = "product-update"
+    PRODUCT_WHITELIST_ADDITION = "product-whitelist-addition"
+    STOCK_CREATION = "stock-creation"
+    STOCK_DELETION = "stock-deletion"
+    STOCK_SYNCHRONIZATION = "stock-synchronization"
+    STOCK_UPDATE = "stock-update"
+    VENUE_BATCH_UPDATE = "venue-batch-update"
+    VENUE_CREATION = "venue-creation"
+    VENUE_UPDATE = "venue-update"
+    VENUE_BANNER_DELETION = "venue-banner-deletion"
+    VENUE_BANNER_UPDATE = "venue-banner-update"
+    VENUE_PROVIDER_CREATION = "venue-provider-creation"

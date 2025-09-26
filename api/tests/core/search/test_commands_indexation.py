@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils import repository
 
@@ -65,7 +66,7 @@ def test_update_products_booking_count_and_reindex_offers(mocked_async_index_off
 
     mocked_async_index_offer_ids.assert_called_once_with(
         expected_to_be_reindexed,
-        reason=search.IndexationReason.BOOKING_COUNT_CHANGE,
+        reason=IndexationReason.BOOKING_COUNT_CHANGE,
     )
 
 
@@ -99,7 +100,7 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
 
     args, kwargs = mocked_async_index_offer_ids.call_args
     assert sorted(args[0]) == sorted(expected_to_be_reindexed)
-    assert kwargs == {"reason": search.IndexationReason.BOOKING_COUNT_CHANGE}
+    assert kwargs == {"reason": IndexationReason.BOOKING_COUNT_CHANGE}
 
 
 @pytest.mark.usefixtures("clean_database")

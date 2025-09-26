@@ -43,6 +43,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.search import search_offer_ids
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -947,7 +948,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
         functools.partial(
             search.async_index_offer_ids,
             form.object_ids_list,
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            reason=IndexationReason.OFFER_BATCH_UPDATE,
         )
     )
 
@@ -1154,7 +1155,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         functools.partial(
             search.async_index_offer_ids,
             offer_ids,
-            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+            reason=IndexationReason.OFFER_BATCH_VALIDATION,
         )
     )
 
@@ -1206,7 +1207,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             functools.partial(
                 search.async_index_offer_ids,
                 offer_ids,
-                reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+                reason=IndexationReason.OFFER_BATCH_VALIDATION,
             )
         )
 
@@ -1608,7 +1609,7 @@ def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tupl
 def reindex(offer_id: int) -> utils.BackofficeResponse:
     search.async_index_offer_ids(
         {offer_id},
-        reason=search.IndexationReason.OFFER_MANUAL_REINDEXATION,
+        reason=IndexationReason.OFFER_MANUAL_REINDEXATION,
     )
 
     flash("La resynchronisation de l'offre a été demandée.", "success")

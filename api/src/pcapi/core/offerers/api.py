@@ -62,6 +62,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
@@ -235,7 +236,7 @@ def update_venue(
             functools.partial(
                 search.async_index_venue_ids,
                 [venue.id],
-                reason=search.IndexationReason.VENUE_UPDATE,
+                reason=IndexationReason.VENUE_UPDATE,
                 log_extra={"changes": set(modifications.keys())},
             )
         )
@@ -246,7 +247,7 @@ def update_venue(
                 functools.partial(
                     search.async_index_offers_of_venue_ids,
                     [venue.id],
-                    reason=search.IndexationReason.VENUE_UPDATE,
+                    reason=IndexationReason.VENUE_UPDATE,
                     log_extra={"changes": set(indexing_modifications_fields)},
                 )
             )
@@ -481,9 +482,7 @@ def create_venue(
     if venue.siret or venue.isOpenToPublic:
         venue.isPermanent = True
 
-    on_commit(
-        functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
-    )
+    on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=IndexationReason.VENUE_CREATION))
     external_attributes_api.update_external_pro(venue.bookingEmail)
     zendesk_sell.create_venue(venue)
 
@@ -1303,7 +1302,7 @@ def validate_offerer(
 
     db.session.flush()
 
-    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_VALIDATION)
+    _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_VALIDATION)
 
     if applicants:
         transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
@@ -1356,7 +1355,7 @@ def reject_offerer(
     db.session.flush()
 
     if was_validated:
-        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+        _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
 
 
 # We do not want to cancel bookings on events which took place on the last 3 days, because they automatically become
@@ -1404,7 +1403,7 @@ def close_offerer(
     _cancel_collective_bookings_on_offerer_closure(offerer.id, author_id)
 
     if was_validated:
-        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+        _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
 
 
 def auto_delete_attachments_on_closed_offerers() -> None:
@@ -1590,7 +1589,7 @@ def set_offerer_pending(
     db.session.flush()
 
     if was_validated:  # in case it was validated by mistake, then moved to PENDING state again
-        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+        _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
@@ -1673,7 +1672,7 @@ def save_venue_banner(
 
     search.async_index_venue_ids(
         [venue.id],
-        reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+        reason=IndexationReason.VENUE_BANNER_UPDATE,
     )
 
 
@@ -1682,7 +1681,7 @@ def delete_venue_banner(venue: models.Venue) -> None:
     repository.save(venue)
     search.async_index_venue_ids(
         [venue.id],
-        reason=search.IndexationReason.VENUE_BANNER_DELETION,
+        reason=IndexationReason.VENUE_BANNER_DELETION,
     )
 
 
@@ -2286,7 +2285,7 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
     history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
     db.session.flush()
 
-    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
+    _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_DEACTIVATION)
 
 
 def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
@@ -2300,12 +2299,10 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
     )
     db.session.flush()
 
-    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_ACTIVATION)
+    _update_external_offerer(offerer, index_with_reason=IndexationReason.OFFERER_ACTIVATION)
 
 
-def _update_external_offerer(
-    offerer: models.Offerer, *, index_with_reason: search.IndexationReason | None = None
-) -> None:
+def _update_external_offerer(offerer: models.Offerer, *, index_with_reason: IndexationReason | None = None) -> None:
     for email in offerers_repository.get_emails_by_offerer(offerer):
         external_attributes_api.update_external_pro(email)
 

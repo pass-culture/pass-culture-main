@@ -10,7 +10,6 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi import settings
-from pcapi.core.search import SearchError
 from pcapi.core.search import redis_queues
 from pcapi.core.search import serialization
 from pcapi.core.search.backends import base
@@ -21,6 +20,10 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 MAX_SEARCH_QUERY_COUNT = 1000
+
+
+class SearchError(Exception):
+    pass
 
 
 def create_algolia_client() -> algoliasearch.search_client.SearchClient:

@@ -26,7 +26,6 @@ import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
 from pcapi.connectors.ems import EMSAPIException
 from pcapi.connectors.ems import EMSBookingConnector
-from pcapi.core import search
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
@@ -48,6 +47,7 @@ from pcapi.core.external_bookings.models import Ticket
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.constants import SuspensionReason
@@ -188,7 +188,7 @@ class BookOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             [stock.offer.id],
-            reason=search.IndexationReason.BOOKING_CREATION,
+            reason=IndexationReason.BOOKING_CREATION,
         )
 
         assert len(mails_testing.outbox) == 2

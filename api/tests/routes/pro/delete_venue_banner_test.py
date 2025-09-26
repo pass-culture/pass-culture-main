@@ -4,7 +4,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
-from pcapi.core import search
+from pcapi.core.search.models import IndexationReason
 from pcapi.utils.human_ids import humanize
 
 
@@ -35,7 +35,7 @@ class VenueBannerTest:
 
         mock_search_async_index_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_BANNER_DELETION,
+            reason=IndexationReason.VENUE_BANNER_DELETION,
         )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
@@ -57,7 +57,7 @@ class VenueBannerTest:
 
         mock_search_async_index_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_BANNER_DELETION,
+            reason=IndexationReason.VENUE_BANNER_DELETION,
         )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
