@@ -8,6 +8,7 @@ It's designed to be run manually to fix database index issues.
 
 import argparse
 import logging
+import time
 import typing
 from contextlib import contextmanager
 
@@ -206,7 +207,12 @@ if __name__ == "__main__":
     parser.add_argument("--lock-timeout", type=int, default=5)
     parser.add_argument("--statement-timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=10)
+    parser.add_argument("--schedule-timestamp", type=int, default=int(time.time()))
     args = parser.parse_args()
+
+    now = int(time.time())
+    if args.schedule_timestamp > now:
+        time.sleep(args.schedule_timestamp - now)
 
     clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
     create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
