@@ -8,6 +8,7 @@ import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
@@ -135,6 +136,12 @@ describe('Offerer', () => {
       'href',
       'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-'
     )
+
+    expect(
+      screen.getByRole('link', {
+        name: /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises/,
+      })
+    ).toHaveAttribute('href', 'https://annuaire-entreprises.data.gouv.fr/')
   })
 
   it('should not display authentication screen on submit with form error', async () => {
@@ -570,6 +577,23 @@ describe('Offerer', () => {
     expect(
       await screen.findByText('Veuillez renseigner un SIRET')
     ).toBeInTheDocument()
+  })
+
+  it('should log event when unknown siret link clicked', async () => {
+    const mockLogEvent = vi.fn()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    renderOffererScreen(contextValue)
+    await userEvent.click(
+      screen.getByText(
+        /Vous ne connaissez pas votre SIRET \? Consultez l'Annuaire des Entreprises\./
+      )
+    )
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, 'hasClickedUnknownSiret', {
+      from: '/',
+    })
   })
 
   const lenErrorCondition = ['22223333', '1234567891234567']
