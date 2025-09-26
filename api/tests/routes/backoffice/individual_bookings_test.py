@@ -759,8 +759,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{cancelled.id}")
         assert cells[2] == str(cancelled.id)
 
         db.session.refresh(cancelled)
@@ -780,8 +779,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
@@ -802,8 +800,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
@@ -829,8 +826,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking.id).one()
@@ -854,8 +850,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
         assert cells[2] == str(booking_id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
@@ -878,8 +873,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
         assert cells[2] == str(booking_id)
 
         booking = db.session.query(bookings_models.Booking).filter_by(id=booking_id).one()
@@ -901,8 +895,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{festival_booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{festival_booking.id}")
         assert cells[2] == str(festival_booking.id)
         assert festival_booking.user.achievements
 
@@ -923,8 +916,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{confirmed.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{confirmed.id}")
         assert cells[2] == str(confirmed.id)
 
         db.session.refresh(confirmed)
@@ -950,8 +942,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_to_cancel.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_to_cancel.id}")
         assert cells[2] == str(booking_to_cancel.id)
 
         db.session.refresh(booking_to_cancel)
@@ -971,8 +962,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{pricing.bookingId}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{pricing.bookingId}")
         assert cells[2] == str(pricing.bookingId)
 
         db.session.refresh(pricing)
@@ -996,8 +986,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{reimbursed.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{reimbursed.id}")
         assert cells[2] == str(reimbursed.id)
 
         db.session.refresh(reimbursed)
@@ -1021,8 +1010,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{cancelled.id}")
         assert cells[2] == str(cancelled.id)
 
         db.session.refresh(cancelled)
@@ -1108,8 +1096,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         db.session.refresh(booking)
@@ -1168,8 +1155,7 @@ class CancelBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_to_cancel.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_to_cancel.id}")
         assert cells[2] == str(booking_to_cancel.id)
 
         db.session.refresh(booking_to_cancel)
@@ -1213,8 +1199,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_cancelled_bookings(self, legit_user, authenticated_client):
@@ -1233,8 +1218,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_with_already_used_bookings(self, legit_user, authenticated_client):
@@ -1250,8 +1234,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         assert bookings[0].status is bookings_models.BookingStatus.USED
@@ -1282,8 +1265,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         db.session.refresh(expired_booking)
@@ -1312,8 +1294,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         assert response.status_code == 200
 
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_bookings_insufficient_stock(self, legit_user, authenticated_client):
@@ -1341,8 +1322,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         assert response.status_code == 200
 
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
     def test_batch_mark_as_used_when_offerer_is_closed(self, legit_user, authenticated_client):
@@ -1357,8 +1337,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -1422,8 +1401,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
 
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{festival_booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{festival_booking.id}")
         assert cells[2] == str(festival_booking.id)
 
         assert festival_booking.user.achievements
@@ -1490,8 +1468,7 @@ class BatchCancelIndividualBookingsTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
 
@@ -1555,8 +1532,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
@@ -1606,8 +1582,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
@@ -1684,8 +1659,7 @@ class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         all_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
