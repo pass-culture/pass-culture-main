@@ -56,6 +56,7 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.bookings import forms as booking_forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
@@ -506,6 +507,8 @@ def render_public_account_details(
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
         has_gdpr_extract=has_gdpr_extract(user=user),
+        validate_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
         **kwargs,
     )
 
@@ -2302,3 +2305,155 @@ def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeRe
 
     flash("L'envoi du mail de changement de mot de passe a été initié", "success")
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    bookings: list[bookings_models.Booking] = []
+    if bookings_ids:
+        bookings = (
+            db.session.query(bookings_models.Booking)
+            .filter(bookings_models.Booking.id.in_(bookings_ids))
+            .options(
+                sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+                sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(
+                    finance_models.BookingFinanceIncident.incident
+                ),
+                sa_orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name),
+                sa_orm.joinedload(bookings_models.Booking.venue)
+                .load_only(offerers_models.Venue.bookingEmail)
+                .joinedload(offerers_models.Venue.contact)
+                .load_only(offerers_models.VenueContact.email),
+                sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
+            )
+            .all()
+        )
+    return render_template(
+        "accounts/get/details/bookings_rows.html",
+        bookings=bookings,
+    )
+
+
+@public_accounts_blueprint.route("cancel-booking/<int:booking_id>", methods=["POST"])
+def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.mark_booking_as_cancelled(
+        booking_id=booking_id,
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("mark-booking-as-used/<int:booking_id>", methods=["POST"])
+def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.mark_booking_as_used(
+        booking_id=booking_id,
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("/batch-validate-bookings", methods=["GET"])
+def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.get_batch_validate_individual_bookings_form(
+        dst=url_for("backoffice_web.public_accounts.batch_validate_individual_bookings")
+    )
+
+
+@public_accounts_blueprint.route("/batch-validate-bookings", methods=["POST"])
+def batch_validate_individual_bookings() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.batch_validate_individual_bookings(
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("/batch-cancel-bookings", methods=["GET"])
+def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.get_batch_cancel_individual_bookings_form(
+        dst=url_for("backoffice_web.public_accounts.batch_cancel_individual_bookings")
+    )
+
+
+@public_accounts_blueprint.route("/batch-cancel-bookings", methods=["POST"])
+def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.batch_cancel_individual_bookings(
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("/batch-tag-fraudulent-bookings-form", methods=["POST"])
+def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.get_batch_tag_fraudulent_bookings_form(
+        dst=url_for("backoffice_web.public_accounts.batch_tag_fraudulent_bookings"),
+    )
+
+
+@public_accounts_blueprint.route("/batch-tag-fraudulent-bookings", methods=["POST"])
+def batch_tag_fraudulent_bookings() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.batch_tag_fraudulent_bookings(
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("/batch-remove-fraudulent-form-bookings", methods=["POST"])
+def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.get_batch_remove_fraudulent_booking_tag_form(
+        dst=url_for("backoffice_web.public_accounts.batch_remove_fraudulent_booking_tag"),
+    )
+
+
+@public_accounts_blueprint.route("/batch-remove-fraudulent-bookings", methods=["POST"])
+def batch_remove_fraudulent_booking_tag() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.bookings import individual_bookings_blueprint
+
+    return individual_bookings_blueprint.batch_remove_fraudulent_booking_tag(
+        renderer=_render_individual_bookings,
+    )
+
+
+@public_accounts_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["POST"])
+def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.finance import finance_incidents_blueprint
+
+    return finance_incidents_blueprint.get_individual_bookings_overpayment_creation_form(
+        dst=url_for("backoffice_web.public_accounts.create_individual_booking_overpayment")
+    )
+
+
+@public_accounts_blueprint.route("/individual-bookings/commercial-gesture-creation-form", methods=["POST"])
+def get_individual_bookings_commercial_gesture_creation_form() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.finance import finance_incidents_blueprint
+
+    return finance_incidents_blueprint.get_individual_bookings_commercial_gesture_creation_form(
+        dst=url_for("backoffice_web.public_accounts.create_individual_booking_commercial_gesture")
+    )
+
+
+@public_accounts_blueprint.route("/individual-bookings/create-overpayment", methods=["POST"])
+def create_individual_booking_overpayment() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.finance import finance_incidents_blueprint
+
+    return finance_incidents_blueprint.create_individual_booking_overpayment(renderer=_render_individual_bookings)
+
+
+@public_accounts_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
+def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
+    from pcapi.routes.backoffice.finance import finance_incidents_blueprint
+
+    return finance_incidents_blueprint.create_individual_booking_commercial_gesture(
+        renderer=_render_individual_bookings
+    )
