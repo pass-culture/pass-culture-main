@@ -213,3 +213,7 @@ class TagAccountForm(FlaskForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: str(tag),
     )
+
+
+class TagFraudulentBookingsForm(utils.PCForm):
+    send_mails = fields.PCSwitchBooleanField("Envoyer un mail d'avertissement aux acteurs culturels", full_row=True)

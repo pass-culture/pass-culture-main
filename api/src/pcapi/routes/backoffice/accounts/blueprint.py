@@ -55,6 +55,7 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
@@ -64,6 +65,8 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from . import forms as account_forms
 from . import serialization
 
+
+OptionableType = typing.TypeVar("OptionableType", bound="sa.orm.Query | sa.orm.strategy_options._AbstractLoad")
 
 public_accounts_blueprint = utils.child_backoffice_blueprint(
     "public_accounts",
@@ -326,6 +329,22 @@ def get_user_tags() -> list[users_models.UserTag]:
     return db.session.query(users_models.UserTag).order_by(users_models.UserTag.label, users_models.UserTag.name).all()
 
 
+def _apply_bookings_joined_loads(query: OptionableType) -> OptionableType:
+    result = query.options(
+        sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
+            offers_models.Stock.offer, innerjoin=True
+        ),
+        sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(finance_models.BookingFinanceIncident.incident),
+        sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(offerers_models.Offerer.name),
+        sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
+        .load_only(offerers_models.Venue.bookingEmail)
+        .joinedload(offerers_models.Venue.contact)
+        .load_only(offerers_models.VenueContact.email),
+        sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
+    )
+    return typing.cast(OptionableType, result)
+
+
 def render_public_account_details(
     user_id: int,
     edit_account_form: account_forms.EditAccountForm | None = None,
@@ -338,22 +357,7 @@ def render_public_account_details(
         .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
-            sa_orm.subqueryload(users_models.User.userBookings).options(
-                sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
-                    offers_models.Stock.offer, innerjoin=True
-                ),
-                sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(
-                    finance_models.BookingFinanceIncident.incident
-                ),
-                sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(
-                    offerers_models.Offerer.name
-                ),
-                sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
-                .load_only(offerers_models.Venue.bookingEmail)
-                .joinedload(offerers_models.Venue.contact)
-                .load_only(offerers_models.VenueContact.email),
-                sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
-            ),
+            _apply_bookings_joined_loads(sa_orm.subqueryload(users_models.User.userBookings)),
             sa_orm.subqueryload(users_models.User.beneficiaryFraudChecks),
             sa_orm.subqueryload(users_models.User.beneficiaryFraudReviews),
             sa_orm.subqueryload(users_models.User.beneficiaryImports)
@@ -514,6 +518,8 @@ def render_public_account_details(
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
         has_gdpr_extract=has_gdpr_extract(user=user),
+        booking_fraudulent_form=account_forms.TagFraudulentBookingsForm(),
+        booking_remove_fraudulent_form=empty_forms.EmptyForm(),
         **kwargs,
     )
 
@@ -2343,3 +2349,47 @@ def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeRe
 
     flash("L'envoi du mail de changement de mot de passe a été initié", "success")
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    bookings: list[bookings_models.Booking] = []
+    if bookings_ids:
+        query = db.session.query(bookings_models.Booking).filter(
+            bookings_models.Booking.id.in_(bookings_ids),
+        )
+        bookings = _apply_bookings_joined_loads(query).all()
+
+    return render_template(
+        "accounts/get/details/bookings_rows.html",
+        bookings=bookings,
+    )
+
+
+@public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-fraudulent", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def mark_booking_as_fraudulent(booking_id: int) -> utils.BackofficeResponse:
+    form = account_forms.TagFraudulentBookingsForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _render_individual_bookings()
+
+    booking_helpers.tag_bookings_as_fraudulent(bookings_ids=[booking_id], send_emails=form.send_mails.data)
+
+    return _render_individual_bookings([booking_id])
+
+
+@public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-not-fraudulent", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def mark_booking_as_not_fraudulent(booking_id: int) -> utils.BackofficeResponse:
+    form = empty_forms.EmptyForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _render_individual_bookings()
+
+    db.session.query(bookings_models.FraudulentBookingTag).filter(
+        bookings_models.FraudulentBookingTag.bookingId == booking_id
+    ).delete(synchronize_session=False)
+    db.session.flush()
+
+    return _render_individual_bookings([booking_id])

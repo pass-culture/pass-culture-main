@@ -1,133 +1,40 @@
-{% from "components/badges.html" import build_fraudulent_booking_badge with context %}
-{% import "components/links.html" as links with context %}
-{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/bookings/modal.html" import booking_modal with context %}
 {% if bookings %}
-  <table class="table mb-4 get-details-bookings-view">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Offreur</th>
-        <th scope="col">Nom de l'offre</th>
-        <th scope="col">Vue app</th>
-        <th scope="col">Prix</th>
-        <th scope="col">Date de résa</th>
-        <th scope="col">État</th>
-        {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
-        <th scope="col">Contremarque</th>
-        <th scope="col">Modalités de retrait</th>
-      </tr>
-    </thead>
-    <tbody>
+  {# encapsulate this part of the page in a block to avoid leaking variables #}
+  {% with %}
+    {% set hide_search_block = True %}
+    {% set rows_count = bookings|length %}
+    {% set pagination = False %}
+    {% set table_name = "booking-table" %}
+    {% set table_id = table_name %}
+    {% set hide_count = True %}
+    {% set hide_menu = True %}
+    {% set table_header %}
+      <th scope="col">Actions</th>
+      <th scope="col">Offreur</th>
+      <th scope="col">Nom de l'offre</th>
+      <th scope="col">Vue app</th>
+      <th scope="col">Prix</th>
+      <th scope="col">Date de résa</th>
+      <th scope="col">État</th>
+      {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}<th scope="col">Fraude</th>{% endif %}
+      <th scope="col">Contremarque</th>
+      <th scope="col">Modalités de retrait</th>
+    {% endset %}
+    {% set table_body %}
+      {% include "accounts/get/details/bookings_rows.html" %}
+    {% endset %}
+    {% set after_table %}
       {% for booking in bookings %}
-        <tr>
-          <th scope="row">{{ build_booking_toggle_extra_row_button(booking) }}</th>
-          <td>{{ booking.offerer.name | escape }}</td>
-          <td>{{ links.build_offer_name_to_details_link(booking.stock.offer) }}</td>
-          <td>{{ links.build_offer_webapp_link(booking.stock.offer) }}</td>
-          <td>
-            {{ booking.amount | format_amount(target=booking.user) }}
-            {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
-          </td>
-          <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-          <td>{{ booking | format_booking_status_long }}</td>
-          {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
-            <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
-          {% endif %}
-          <td>
-            {% if booking.token %}{{ links.build_booking_token_to_booking_details_link(booking.token) }}{% endif %}
-          </td>
-          <td>{{ booking.stock.offer.withdrawalType | format_withdrawal_type }}</td>
-        </tr>
-        <tr class="collapse accordion-collapse pc-booking-{{ booking.id }}"
-            data-bs-parent=".table">
-          <td colspan="8">
-            <div class="card shadow-sm p-3 d-flex flex-row justify-content-between">
-              <div class="align-top">
-                {% if booking.stock.beginningDatetime %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Date de l'évènement :</span>
-                    {{ booking.stock.beginningDatetime | format_date_time }}
-                  </p>
-                {% endif %}
-                {% if booking.is_used_or_reimbursed %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Utilisée le :</span>
-                    {{ booking.dateUsed | format_date_time }}
-                  </p>
-                {% elif booking.isCancelled %}
-                  <p class="mb-1">
-                    <span class="fw-bold">Annulée le :</span>
-                    {{ booking.cancellationDate | format_date_time }}
-                  </p>
-                  <p class="mb-1">
-                    <span class="fw-bold">Motif d'annulation :</span>
-                    {{ booking.cancellationReason | format_booking_cancellation(booking.cancellationUser) }}
-                  </p>
-                {% endif %}
-                <p class="mb-1">
-                  <span class="fw-bold">Type d'offre :</span>
-                  {% if booking.stock.offer.isDigital %}
-                    Numérique
-                  {% else %}
-                    Physique
-                  {% endif %}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Catégorie :</span>
-                  {{ booking.stock.offer.subcategoryId | format_offer_category }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Sous-catégorie :</span>
-                  {{ booking.stock.offer.subcategoryId | format_offer_subcategory }}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Crédit utilisé par le jeune :</span>
-                  {{ booking | format_deposit_used }}
-                </p>
-              </div>
-              <div class="ps-5 pe-5 align-top">
-                {% if has_permission("READ_PRO_ENTITY") %}
-                  {# not shown to support_n1 #}
-                  {% if booking.venue.contact.email %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Contact du partenaire culturel :</span>
-                      {{ booking.venue.contact.email }}
-                    </p>
-                  {% endif %}
-                  {% if booking.stock.offer.bookingContact %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Contact pour cette offre :</span>
-                      {{ booking.stock.offer.bookingContact }}
-                    </p>
-                  {% endif %}
-                  {% if booking.venue.bookingEmail %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Notification du partenaire culturel :</span>
-                      {{ booking.venue.bookingEmail | empty_string_if_null }}
-                    </p>
-                  {% endif %}
-                  {% if booking.stock.offer.bookingEmail %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Notification pour cette offre :</span>
-                      {{ booking.stock.offer.bookingEmail }}
-                    </p>
-                  {% endif %}
-                {% else %}
-                  {% set contact_email = booking.stock.offer.bookingContact or booking.venue.contact.email %}
-                  {% if contact_email %}
-                    <p class="mb-1">
-                      <span class="fw-bold">Contact de l'organisateur :</span>
-                      {{ contact_email }}
-                    </p>
-                  {% endif %}
-                {% endif %}
-              </div>
-            </div>
-          </td>
-        </tr>
+        {% if has_permission("PRO_FRAUD_ACTIONS") %}
+          {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "pc-fraudulent-booking-modal-" + booking.id |string, booking_fraudulent_form, url_for('backoffice_web.public_accounts.mark_booking_as_fraudulent', booking_id=booking.id) , table_id) }}
+          {{ booking_modal(booking, "Supprimer le tag frauduleux sur la réservation " + booking.token, "pc-remove-fraudulent-booking-modal-" + booking.id |string, booking_remove_fraudulent_form, url_for('backoffice_web.public_accounts.mark_booking_as_not_fraudulent', booking_id=booking.id) , table_id) }}
+        {% endif %}
       {% endfor %}
-    </tbody>
-  </table>
+    {% endset %}
+    {% include "components/presentation/list.html" %}
+  {% endwith %}
 {% else %}
   <p class="m-5">Aucune réservation à ce jour</p>
 {% endif %}
