@@ -317,9 +317,9 @@ class GetProviderVenuesTest(GetEndpointHelper):
         providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
         offerers_factories.ApiKeyFactory(provider=provider)
 
-        venue_1 = offerers_factories.VenueFactory(name="À la synchro active")
+        venue_1 = offerers_factories.VenueFactory(publicName="À la synchro active")
         providers_factories.VenueProviderFactory(venue=venue_1, provider=provider, isActive=True)
-        venue_2 = offerers_factories.VenueFactory(name="À la synchro inactive")
+        venue_2 = offerers_factories.VenueFactory(publicName="À la synchro inactive")
         providers_factories.VenueProviderFactory(venue=venue_2, provider=provider, isActive=False)
         venue_with_other_provider = offerers_factories.VenueFactory(name="À la synchro perdue")
         providers_factories.VenueProviderFactory(venue=venue_with_other_provider, isActive=True)
@@ -337,10 +337,10 @@ class GetProviderVenuesTest(GetEndpointHelper):
         rows = sorted(rows, key=lambda row: row["Nom"])
 
         assert rows[0]["ID"] == str(venue_1.id)
-        assert rows[0]["Nom"] == venue_1.name
+        assert rows[0]["Nom"] == venue_1.publicName
 
         assert rows[1]["ID"] == str(venue_2.id)
-        assert rows[1]["Nom"] == venue_2.name
+        assert rows[1]["Nom"] == venue_2.publicName
 
 
 class UpdateProviderButtonTest(button_helpers.ButtonHelper):

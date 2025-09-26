@@ -17,7 +17,7 @@
       <tr>
         <th scope="row"></th>
         <td class="fw-bolder">{{ links.build_venue_name_to_details_link(venue, text_attr="id") }}</td>
-        <td class="text-break">{{ build_connect_as_link(connect_as[venue.id], (public_name or venue.name) , "link-primary") }}</td>
+        <td class="text-break">{{ build_connect_as_link(connect_as[venue.id], venue.common_name, "link-primary") }}</td>
         <td>{{ venue.siret | empty_string_if_null }}</td>
         <td>{{ "Activée" if venue.venueProviders[0].isActive else "Désactivée"}}</td>
         <td>{{ venue.venueProviders[0].lastSyncDate | format_date_time }}</td>
