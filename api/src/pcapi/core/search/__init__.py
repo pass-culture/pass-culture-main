@@ -516,6 +516,8 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                     offerers_models.Offerer.name,
                     offerers_models.Offerer.isActive,
                     offerers_models.Offerer.validationStatus,
+                    offerers_models.Offerer.siren,  # WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
+                    offerers_models.Offerer.postalCode,  # WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
                 )
             )
             .options(

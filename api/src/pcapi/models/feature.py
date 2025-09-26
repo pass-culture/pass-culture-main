@@ -161,6 +161,8 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
+    # TODO (prouzet, 2025-09-25) Remove feature flag after pass Culture is launched in NC
+    WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE = "Permettre l'indexation et la réservation des offres en Nouvelle-Calédonie"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -226,6 +228,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
+    FeatureToggle.WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
