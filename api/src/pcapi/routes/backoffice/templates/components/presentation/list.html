@@ -2,27 +2,36 @@
 <div class="vstack gap-4 overflow-auto">
   {{ before_table }}
   {% if rows_count %}
-    <div class="d-flex justify-content-between {% if not (hide_search_block or compact_display) %}mt-5{% endif %}">
-      <p class="num-results hstack text-secondary my-auto gap-2">
-        {{ rows_count }}
-        résultat{{ rows_count | pluralize }}
-        {% if not pagination and not hide_search_block %}
-          affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
+    {% if not (hide_count and hide_menu and not pagination) %}
+      <div class="d-flex justify-content-between {% if not (hide_search_block or compact_display) %}mt-5{% endif %}">
+        {% if not hide_count %}
+          <p class="num-results hstack text-secondary my-auto gap-2">
+            {{ rows_count }}
+            résultat{{ rows_count | pluralize }}
+            {% if not pagination and not hide_search_block %}
+              affiché{{ rows_count | pluralize }}<i class="bi bi-info-circle"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Pour afficher davantage de résultats, changer le filtre de résultats maximum dans la barre de recherche."></i>
+            {% endif %}
+          </p>
         {% endif %}
-      </p>
-      {% if pagination %}
-        {% include "components/search/pagination.html" %}
-      {% endif %}
-      <div id="{{ table_name }}-menu"
-           class="me-4"></div>
-    </div>
+        {% if pagination %}
+          {% include "components/search/pagination.html" %}
+        {% endif %}
+        {% if not hide_menu %}
+          <div id="{{ table_name }}-menu"
+               class="me-4"></div>
+        {% endif %}
+      </div>
+    {% endif %}
     <table class="table table-hover pc-table-manager d-none {{ table_class }}"
            {% if table_id %}id="{{ table_id }}"{% endif %}
            data-pc-table-manager-id="{{ table_name }}"
            data-pc-table-menu-container-id="{{ table_name }}-menu"
+           {%+ if hide_menu +%}
+           data-pc-table-menu-hide="true"
+           {% endif %}
            data-table-multi-select-id="{{ table_name }}">
       <thead>
         <tr class="bg-secondary-subtle fs-7 align-middle">{{ table_header }}</tr>
