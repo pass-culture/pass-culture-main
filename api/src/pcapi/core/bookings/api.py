@@ -38,6 +38,7 @@ from pcapi.core.external_bookings.ems import constants as ems_constants
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import get_and_lock_user
@@ -392,7 +393,7 @@ def book_offer(
 
     search.async_index_offer_ids(
         [stock.offerId],
-        reason=search.IndexationReason.BOOKING_CREATION,
+        reason=IndexationReason.BOOKING_CREATION,
     )
 
     update_external_user(booking.user)
@@ -435,7 +436,7 @@ def cancel_booking_for_finance_incident(booking: models.Booking) -> None:
         partial(
             search.async_index_offer_ids,
             [booking.stock.offerId],
-            reason=search.IndexationReason.BOOKING_CANCELLATION,
+            reason=IndexationReason.BOOKING_CANCELLATION,
         )
     )
 
@@ -510,7 +511,7 @@ def _cancel_booking(
         partial(
             search.async_index_offer_ids,
             [booking.stock.offerId],
-            reason=search.IndexationReason.BOOKING_CANCELLATION,
+            reason=IndexationReason.BOOKING_CANCELLATION,
         )
     )
     return True

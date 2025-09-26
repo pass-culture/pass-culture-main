@@ -6,8 +6,8 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core import search
 from pcapi.core.offers import models as offers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -47,7 +47,7 @@ class Returns201Test:
         assert db.session.query(offers_models.PriceCategoryLabel).count() == 0
         assert offer.validation == offers_models.OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id], reason=search.IndexationReason.STOCK_CREATION)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id], reason=IndexationReason.STOCK_CREATION)
 
     def test_create_one_stock_with_activation_codes(self, client):
         offer = offers_factories.DigitalOfferFactory(url="https://chartreu.se")

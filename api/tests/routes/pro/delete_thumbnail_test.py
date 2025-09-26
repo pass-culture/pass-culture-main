@@ -4,8 +4,8 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core import search
 from pcapi.core.offers.models import Mediation
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
@@ -32,7 +32,7 @@ class OfferMediationTest:
         ]
         mock_search_async_index_offer_ids.assert_called_once_with(
             [offer.id],
-            reason=search.IndexationReason.MEDIATION_DELETION,
+            reason=IndexationReason.MEDIATION_DELETION,
         )
 
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")

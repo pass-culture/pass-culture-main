@@ -8,10 +8,10 @@ import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.connectors import acceslibre as acceslibre_connector
-from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.history import models as history_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.models import db
@@ -735,7 +735,7 @@ class Returns200Test:
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_UPDATE,
+            reason=IndexationReason.VENUE_UPDATE,
             log_extra={"changes": {"publicName"}},
         )
 
@@ -758,7 +758,7 @@ class Returns200Test:
         # Then
         mocked_async_index_offers_of_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_UPDATE,
+            reason=IndexationReason.VENUE_UPDATE,
             log_extra={"changes": {"city"}},
         )
 

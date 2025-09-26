@@ -68,6 +68,7 @@ from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -590,7 +591,7 @@ def update_offer(
         partial(
             search.async_index_offer_ids,
             [offer.id],
-            reason=search.IndexationReason.OFFER_UPDATE,
+            reason=IndexationReason.OFFER_UPDATE,
             log_extra={"changes": updates_set},
         )
     )
@@ -646,7 +647,7 @@ def batch_update_offers(
             partial(
                 search.async_index_offer_ids,
                 offer_ids,
-                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                reason=IndexationReason.OFFER_BATCH_UPDATE,
                 log_extra={"changes": set(update_fields.keys())},
             ),
         )
@@ -683,7 +684,7 @@ def reindex_recently_published_offers() -> None:
     for (offer_id,) in offer_query.with_entities(offers_models.Offer.id).yield_per(1000):
         ids_to_reindex.append(offer_id)
 
-    search.async_index_offer_ids(ids_to_reindex, reason=search.IndexationReason.OFFER_PUBLICATION)
+    search.async_index_offer_ids(ids_to_reindex, reason=IndexationReason.OFFER_PUBLICATION)
 
 
 def send_future_offer_reminders(booking_allowed_datetime: datetime.datetime | None = None) -> None:
@@ -711,7 +712,7 @@ def set_upper_timespan_of_inactive_headline_offers() -> None:
     db.session.commit()
     search.async_index_offer_ids(
         {headline_offer.offerId for headline_offer in inactive_headline_offers},
-        reason=search.IndexationReason.OFFER_REINDEXATION,
+        reason=IndexationReason.OFFER_REINDEXATION,
     )
 
 
@@ -750,7 +751,7 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
             partial(
                 search.async_index_offer_ids,
                 {offer.id},
-                reason=search.IndexationReason.OFFER_REINDEXATION,
+                reason=IndexationReason.OFFER_REINDEXATION,
             ),
         )
     except sa_exc.IntegrityError as error:
@@ -770,7 +771,7 @@ def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
             partial(
                 search.async_index_offer_ids,
                 {headline_offer.offerId},
-                reason=search.IndexationReason.OFFER_REINDEXATION,
+                reason=IndexationReason.OFFER_REINDEXATION,
             ),
         )
     except sa_exc.IntegrityError:
@@ -874,7 +875,7 @@ def create_stock(
         partial(
             search.async_index_offer_ids,
             [offer.id],
-            reason=search.IndexationReason.STOCK_CREATION,
+            reason=IndexationReason.STOCK_CREATION,
         ),
     )
 
@@ -973,7 +974,7 @@ def edit_stock(
         partial(
             search.async_index_offer_ids,
             [stock.offerId],
-            reason=search.IndexationReason.STOCK_UPDATE,
+            reason=IndexationReason.STOCK_UPDATE,
             log_extra={"changes": set(modifications.keys())},
         ),
     )
@@ -1023,7 +1024,7 @@ def finalize_offer(
 
     offer.bookingAllowedDatetime = booking_allowed_datetime
 
-    on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
+    on_commit(partial(search.async_index_offer_ids, [offer.id], reason=IndexationReason.OFFER_PUBLICATION))
     on_commit(
         partial(
             logger.info,
@@ -1064,7 +1065,13 @@ def publish_offer(
     else:  # i.e. pro user publishes the offer right away
         offer.publicationDatetime = finalization_date
 
-        on_commit(partial(search.async_index_offer_ids, [offer.id], reason=search.IndexationReason.OFFER_PUBLICATION))
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                [offer.id],
+                reason=IndexationReason.OFFER_PUBLICATION,
+            )
+        )
         logger.info(
             "Offer has been published",
             extra={"offer_id": offer.id, "venue_id": offer.venueId, "offer_status": offer.status},
@@ -1161,7 +1168,7 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
         partial(
             search.async_index_offer_ids,
             [stock.offerId],
-            reason=search.IndexationReason.STOCK_DELETION,
+            reason=IndexationReason.STOCK_DELETION,
         )
     )
 
@@ -1221,7 +1228,7 @@ def create_mediation(
         partial(
             search.async_index_offer_ids,
             [offer.id],
-            reason=search.IndexationReason.MEDIATION_CREATION,
+            reason=IndexationReason.MEDIATION_CREATION,
         ),
     )
 
@@ -1238,7 +1245,7 @@ def delete_mediations(offer_ids: typing.Collection[int], reindex: bool = True) -
             partial(
                 search.async_index_offer_ids,
                 offer_ids,
-                reason=search.IndexationReason.MEDIATION_DELETION,
+                reason=IndexationReason.MEDIATION_DELETION,
             ),
         )
 
@@ -1335,7 +1342,7 @@ def add_criteria_to_offers(
             partial(
                 search.async_index_offer_ids,
                 offer_ids_to_tag,
-                reason=search.IndexationReason.CRITERIA_LINK,
+                reason=IndexationReason.CRITERIA_LINK,
                 log_extra={"criterion_ids": criterion_ids},
             ),
         )
@@ -1441,7 +1448,7 @@ def reject_inappropriate_products(
             partial(
                 search.async_index_offer_ids,
                 offer_ids,
-                reason=search.IndexationReason.PRODUCT_REJECTION,
+                reason=IndexationReason.PRODUCT_REJECTION,
                 log_extra={"eans": eans},
             ),
         )
@@ -1691,7 +1698,7 @@ def revalidate_offers_after_product_whitelist(product: offers_models.Product, us
             partial(
                 search.async_index_offer_ids,
                 offer_ids,
-                reason=search.IndexationReason.PRODUCT_WHITELIST_ADDITION,
+                reason=IndexationReason.PRODUCT_WHITELIST_ADDITION,
                 log_extra={"ean": product.ean},
             )
         )
@@ -1877,7 +1884,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
         if offer_ids:
             search.async_index_offer_ids(
                 set(offer_ids),
-                reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
+                reason=IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
             )
 
     except Exception as exception:
@@ -2043,7 +2050,7 @@ def move_offer(
         partial(
             search.async_index_offer_ids,
             {offer_id},
-            reason=search.IndexationReason.OFFER_UPDATE,
+            reason=IndexationReason.OFFER_UPDATE,
             log_extra={"changes": {"venueId"}},
         )
     )
@@ -2149,7 +2156,7 @@ def move_event_offer(
         partial(
             search.async_index_offer_ids,
             {offer_id},
-            reason=search.IndexationReason.OFFER_UPDATE,
+            reason=IndexationReason.OFFER_UPDATE,
             log_extra={"changes": {"venueId"}},
         )
     )

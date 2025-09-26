@@ -17,6 +17,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
@@ -134,7 +135,7 @@ class EMSStocks:
         offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(
             offer_ids,
-            reason=search.IndexationReason.STOCK_SYNCHRONIZATION,
+            reason=IndexationReason.STOCK_SYNCHRONIZATION,
             log_extra={"provider": "ems"},
         )
 

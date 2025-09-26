@@ -37,6 +37,7 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import get_or_404
@@ -991,7 +992,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
         partial(
             search.async_index_venue_ids,
             [v.id for v in updated_venues],
-            reason=search.IndexationReason.VENUE_BATCH_UPDATE,
+            reason=IndexationReason.VENUE_BATCH_UPDATE,
         )
     )
 

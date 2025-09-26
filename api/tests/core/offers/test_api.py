@@ -54,6 +54,7 @@ from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.reminders import factories as reminders_factories
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -932,7 +933,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
         mocked_async_index_offer_ids.assert_called_once_with(
             [stock.offerId],
-            reason=search.IndexationReason.STOCK_DELETION,
+            reason=IndexationReason.STOCK_DELETION,
         )
 
         # Test tracking
@@ -1117,7 +1118,7 @@ class CreateMediationV2Test:
         assert db.session.query(models.Mediation).filter(models.Mediation.offerId == offer.id).count() == 1
         mocked_async_index_offer_ids.assert_called_once_with(
             [offer.id],
-            reason=search.IndexationReason.MEDIATION_CREATION,
+            reason=IndexationReason.MEDIATION_CREATION,
         )
 
     @pytest.mark.settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
@@ -1659,7 +1660,7 @@ class UpdateOfferTest:
         assert offer.bookingEmail == "new@example.com"
         mocked_async_index_offer_ids.assert_called_once_with(
             [offer.id],
-            reason=search.IndexationReason.OFFER_UPDATE,
+            reason=IndexationReason.OFFER_UPDATE,
             log_extra={"changes": {"bookingEmail", "isDuo"}},
         )
 
@@ -2277,7 +2278,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2289,7 +2290,7 @@ class HeadlineOfferTest:
         api.make_offer_headline(offer=offer)
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
         with pytest.raises(exceptions.OfferHasAlreadyAnActiveHeadlineOffer) as error:
             api.make_offer_headline(offer=offer)
@@ -2309,7 +2310,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @time_machine.travel("2024-12-13 15:44:00")
@@ -2333,7 +2334,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @time_machine.travel(now_datetime_with_tz)
@@ -2359,7 +2360,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer_2.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2376,7 +2377,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {active_offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2396,7 +2397,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2421,7 +2422,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2437,7 +2438,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2477,7 +2478,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {headline_offer_1.offerId, headline_offer_2.offerId},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2518,7 +2519,7 @@ class HeadlineOfferTest:
             {
                 headline_offer_without_product_mediation.offerId,
             },
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2538,7 +2539,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             set(),
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2570,7 +2571,7 @@ class HeadlineOfferTest:
             {
                 current_headline_offer.offerId,
             },
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2595,7 +2596,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {headline_offer.offerId},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -2626,8 +2627,8 @@ class HeadlineOfferTest:
         assert new_headline_offer.timespan.upper is None
 
         expected_reindexation_calls = [
-            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
-            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
         ]
         mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
 
@@ -2650,7 +2651,7 @@ class HeadlineOfferTest:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {headline_offer.offerId},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
 
@@ -2699,7 +2700,7 @@ class AddCriterionToOffersTest:
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer11.id, offer12.id},
-            reason=search.IndexationReason.CRITERIA_LINK,
+            reason=IndexationReason.CRITERIA_LINK,
             log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
         )
 
@@ -2726,7 +2727,7 @@ class AddCriterionToOffersTest:
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer11.id, offer12.id},
-            reason=search.IndexationReason.CRITERIA_LINK,
+            reason=IndexationReason.CRITERIA_LINK,
             log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
         )
 
@@ -2753,7 +2754,7 @@ class AddCriterionToOffersTest:
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer1.id, offer2.id},
-            reason=search.IndexationReason.CRITERIA_LINK,
+            reason=IndexationReason.CRITERIA_LINK,
             log_extra={"criterion_ids": [criterion1.id, criterion2.id]},
         )
 

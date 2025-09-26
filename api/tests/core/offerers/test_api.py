@@ -13,7 +13,6 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.connectors.entreprise import models as sirene_models
-from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.criteria import factories as criteria_factories
@@ -38,6 +37,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -2278,7 +2278,7 @@ class VenueBannerTest:
 
         mock_search_async_index_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+            reason=IndexationReason.VENUE_BANNER_UPDATE,
         )
 
     @time_machine.travel("2020-10-15 00:00:00", tick=False)
@@ -2308,7 +2308,7 @@ class VenueBannerTest:
 
         mock_search_async_index_venue_ids.assert_called_once_with(
             [venue.id],
-            reason=search.IndexationReason.VENUE_BANNER_UPDATE,
+            reason=IndexationReason.VENUE_BANNER_UPDATE,
         )
 
     @patch("pcapi.core.search.async_index_venue_ids")

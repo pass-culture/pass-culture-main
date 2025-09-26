@@ -7,8 +7,8 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core import search
 from pcapi.core.offers import models as offers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -53,7 +53,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_called_once_with(
             [stock.offer.id],
-            reason=search.IndexationReason.STOCK_UPDATE,
+            reason=IndexationReason.STOCK_UPDATE,
             log_extra={"changes": expected_log_extra_changes},
         )
 

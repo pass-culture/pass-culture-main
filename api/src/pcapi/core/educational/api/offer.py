@@ -34,6 +34,7 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offer_validation
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import feature
@@ -656,7 +657,7 @@ def publish_collective_offer_template(
             partial(
                 search.async_index_collective_offer_template_ids,
                 [offer_template.id],
-                reason=search.IndexationReason.OFFER_PUBLICATION,
+                reason=IndexationReason.OFFER_PUBLICATION,
             )
         )
 
@@ -836,7 +837,7 @@ def archive_collective_offers_template(
         partial(
             search.async_index_collective_offer_template_ids,
             [offer.id for offer in offers],
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            reason=IndexationReason.OFFER_BATCH_UPDATE,
             log_extra={"changes": {"isActive", "dateArchived"}},
         )
     )
@@ -907,7 +908,7 @@ def batch_update_collective_offers_template(query: sa_orm.Query, update_fields: 
             partial(
                 search.async_index_collective_offer_template_ids,
                 collective_offer_template_ids_batch,
-                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                reason=IndexationReason.OFFER_BATCH_UPDATE,
                 log_extra={"changes": set(update_fields.keys())},
             )
         )
@@ -1141,7 +1142,7 @@ def update_collective_offer_template(
         partial(
             search.async_index_collective_offer_template_ids,
             [offer_to_update.id],
-            reason=search.IndexationReason.OFFER_UPDATE,
+            reason=IndexationReason.OFFER_UPDATE,
         )
     )
 
@@ -1214,7 +1215,7 @@ def toggle_publish_collective_offers_template(
         partial(
             search.async_index_collective_offer_template_ids,
             [offer.id for offer in collective_offers_templates],
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+            reason=IndexationReason.OFFER_BATCH_UPDATE,
             log_extra={"changes": {"isActive"}},
         )
     )

@@ -1,4 +1,3 @@
-import contextlib
 import typing
 from collections import abc
 
@@ -13,35 +12,6 @@ if typing.TYPE_CHECKING:
 class SearchBackend:
     def __str__(self) -> str:  # useful in logs
         return str(self.__class__.__name__)
-
-    def enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_offer_ids_in_error(self, offer_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_venue_ids_in_error(self, venue_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_collective_offer_template_ids_in_error(
-        self, collective_offer_template_ids: abc.Collection[int]
-    ) -> None:
-        raise NotImplementedError()
-
-    def enqueue_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def enqueue_venue_ids_for_offers(self, venue_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> contextlib.AbstractContextManager:
-        raise NotImplementedError()
-
-    def pop_venue_ids_for_offers_from_queue(self, count: int) -> contextlib.AbstractContextManager:
-        raise NotImplementedError()
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
         raise NotImplementedError()
@@ -81,28 +51,6 @@ class SearchBackend:
         raise NotImplementedError()
 
     def unindex_all_venues(self) -> None:
-        raise NotImplementedError()
-
-    def pop_venue_ids_from_queue(
-        self,
-        count: int,
-        from_error_queue: bool = False,
-    ) -> contextlib.AbstractContextManager:
-        raise NotImplementedError()
-
-    def pop_collective_offer_template_ids_from_queue(
-        self,
-        count: int,
-        from_error_queue: bool = False,
-    ) -> contextlib.AbstractContextManager:
-        raise NotImplementedError()
-
-    @classmethod
-    def serialize_offer(cls, offer: "offers_models.Offer", last_30_days_bookings: int) -> dict:
-        raise NotImplementedError()
-
-    @classmethod
-    def serialize_venue(cls, venue: "offerers_models.Venue") -> dict:
         raise NotImplementedError()
 
     def clean_processing_queues(self) -> None:

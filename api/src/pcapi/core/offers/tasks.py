@@ -16,6 +16,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
@@ -330,6 +331,6 @@ def _create_or_update_ean_offers(
 
     search.async_index_offer_ids(
         offers_to_index,
-        reason=search.IndexationReason.OFFER_UPDATE,
+        reason=IndexationReason.OFFER_UPDATE,
         log_extra={"venue_id": venue_id, "source": "offers_public_api"},
     )

@@ -5,6 +5,7 @@ from pcapi.core import search
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
@@ -34,5 +35,5 @@ def create_industrial_search_indexed_objects() -> None:
         ]
         search.async_index_collective_offer_template_ids(
             collective_offer_template_ids,
-            reason=search.IndexationReason.OFFER_CREATION,
+            reason=IndexationReason.OFFER_CREATION,
         )

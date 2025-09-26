@@ -10,7 +10,6 @@ from flask import url_for
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
-from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
@@ -26,6 +25,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -446,12 +446,12 @@ class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
 
 class ActivateOffererHelper(ActivateOrDeactivateOffererHelper):
     offerer_initially_active = False
-    indexation_reason = search.IndexationReason.OFFERER_ACTIVATION
+    indexation_reason = IndexationReason.OFFERER_ACTIVATION
 
 
 class DeactivateOffererHelper(ActivateOrDeactivateOffererHelper):
     offerer_initially_active = True
-    indexation_reason = search.IndexationReason.OFFERER_DEACTIVATION
+    indexation_reason = IndexationReason.OFFERER_DEACTIVATION
 
 
 class SuspendOffererTest(DeactivateOffererHelper):
@@ -2817,7 +2817,7 @@ class ValidateOffererTest(ActivateOffererHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
     offerer_initial_status = ValidationStatus.NEW
-    indexation_reason = search.IndexationReason.OFFERER_VALIDATION
+    indexation_reason = IndexationReason.OFFERER_VALIDATION
 
     @pytest.mark.parametrize(
         "review_all_offers,confidence_level", [("", None), ("on", offerers_models.OffererConfidenceLevel.MANUAL_REVIEW)]

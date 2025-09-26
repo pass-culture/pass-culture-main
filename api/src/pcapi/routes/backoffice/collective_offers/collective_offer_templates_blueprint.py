@@ -17,6 +17,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -369,7 +370,7 @@ def _batch_validate_or_reject_collective_offer_templates(
         functools.partial(
             search.async_index_collective_offer_template_ids,
             collective_offer_template_update_succeed_ids,
-            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+            reason=IndexationReason.OFFER_BATCH_VALIDATION,
         ),
     )
 

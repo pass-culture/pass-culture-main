@@ -6,6 +6,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core import search
+from pcapi.core.search.models import IndexationReason
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -17,7 +18,7 @@ def test_offer_indexation_on_booking_cycle(app):
     offer = stock.offer
     assert search_testing.search_store["offers"] == {}
 
-    search.async_index_offer_ids([offer.id], reason=search.IndexationReason.OFFER_UPDATE)
+    search.async_index_offer_ids([offer.id], reason=IndexationReason.OFFER_UPDATE)
     assert search_testing.search_store["offers"] == {}
 
     search.index_offers_in_queue()
@@ -38,7 +39,7 @@ def test_offer_indexation_on_venue_cycle(app):
     venue = offer.venue
     assert search_testing.search_store["offers"] == {}
 
-    search.async_index_offers_of_venue_ids([venue.id], reason=search.IndexationReason.VENUE_UPDATE)
+    search.async_index_offers_of_venue_ids([venue.id], reason=IndexationReason.VENUE_UPDATE)
     assert search_testing.search_store["offers"] == {}
 
     search.index_offers_of_venues_in_queue()
@@ -50,7 +51,7 @@ def test_venue_indexation_cycle(app):
     offers_factories.OfferFactory(venue=venue)
     assert search_testing.search_store["venues"] == {}
 
-    search.async_index_venue_ids([venue.id], search.IndexationReason.VENUE_CREATION)
+    search.async_index_venue_ids([venue.id], IndexationReason.VENUE_CREATION)
     assert search_testing.search_store["venues"] == {}
 
     search.index_venues_in_queue()

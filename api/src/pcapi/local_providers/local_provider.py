@@ -10,6 +10,7 @@ import pcapi.core.providers.models as providers_models
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.search.models import IndexationReason
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.chunk_manager import get_object_from_current_chunks
 from pcapi.local_providers.chunk_manager import save_chunks
@@ -334,7 +335,7 @@ def _reindex_offers(
             offer_ids.add(obj.id)
     search.async_index_offer_ids(
         offer_ids,
-        reason=search.IndexationReason.STOCK_UPDATE,
+        reason=IndexationReason.STOCK_UPDATE,
         log_extra={
             "source": "provider_api",
             "venue_id": venue_provider.venueId if venue_provider else None,

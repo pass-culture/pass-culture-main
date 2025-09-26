@@ -7,8 +7,8 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core import search
 from pcapi.core.offers import models as offers_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 
 
@@ -50,7 +50,7 @@ class Returns200Test:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -82,7 +82,7 @@ class Returns200Test:
 
         mocked_async_index_offer_ids.assert_called_once_with(
             {offer.id},
-            reason=search.IndexationReason.OFFER_REINDEXATION,
+            reason=IndexationReason.OFFER_REINDEXATION,
         )
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -118,8 +118,8 @@ class Returns200Test:
         assert log.technical_message_id == "headline_offer_deactivation"
 
         expected_reindexation_calls = [
-            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
-            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
         ]
         mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
 
@@ -159,8 +159,8 @@ class Returns200Test:
         assert log.technical_message_id == "headline_offer_deactivation"
 
         expected_reindexation_calls = [
-            mock.call({offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
-            mock.call({another_offer.id}, reason=search.IndexationReason.OFFER_REINDEXATION),
+            mock.call({offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
+            mock.call({another_offer.id}, reason=IndexationReason.OFFER_REINDEXATION),
         ]
         mocked_async_index_offer_ids.assert_has_calls(expected_reindexation_calls)
 
