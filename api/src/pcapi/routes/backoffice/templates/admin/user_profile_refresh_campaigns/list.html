@@ -39,12 +39,16 @@
   {% set button_text = "Créer" %}
   {% set dst = url_for("backoffice_web.user_profile_refresh_campaigns.create_campaign") %}
   {% set ajax_submit = False %}
-  <div class="modal fade modal-{{ modal_size }}"
+  <div class="modal fade modal-xl"
        id="create-campaign-modal"
        tabindex="-1"
        aria-labelledby="create-campaign-label"
        aria-hidden="false">
-    <div class="modal-dialog modal-dialog-centered">{% include "components/dynamic/modal_form.html" %}</div>
+    <div class="modal-dialog modal-dialog-centered">
+      {% with alert = "La création d'une campagne active désactivera toutes les autres campagnes." %}
+        {% include "components/dynamic/modal_form.html" %}
+      {% endwith %}
+    </div>
   </div>
   {% for campaign in rows %}
     {{ build_dynamic_modal(url_for('backoffice_web.user_profile_refresh_campaigns.get_campaign_edit_form', campaign_id=campaign.id) , "edit-campaign-modal-" + campaign.id|string) }}

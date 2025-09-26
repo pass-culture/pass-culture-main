@@ -88,6 +88,16 @@ def extract_table_rows(
     return rows
 
 
+def remove_tag(html_content: str, tag_name: str, tag_id: str = None, is_xml: bool = False) -> str:
+    """Remove a specific tag from the html content"""
+    soup = get_soup(html_content, is_xml=is_xml)
+    filters = {"id": tag_id} if tag_id is not None else {}
+    for tag in soup.find_all(tag_name, **filters):
+        tag.decompose()
+
+    return soup.encode("utf-8")
+
+
 def count_table_rows(html_content: str, parent_class: str | None = None, table_id: str | None = None) -> int:
     soup = get_soup(html_content)
 
