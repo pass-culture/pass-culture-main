@@ -14,6 +14,7 @@ from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.finance import exceptions as finance_exceptions
@@ -5505,3 +5506,33 @@ class TagPublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {"tags": {"old_info": ["Ambassadeur A"], "new_info": None}}
+
+
+class MarkBookingAsFraudulentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_fraudulent"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_mark_as_fraudulent(self, authenticated_client):
+        booking = bookings_factories.BookingFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={}, booking_id=booking.id)
+        assert response.status_code == 200
+
+        fraudulent_tags = db.session.query(bookings_models.FraudulentBookingTag).all()
+        assert len(fraudulent_tags) == 1
+        assert fraudulent_tags[0].bookingId == booking.id
+
+
+class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_not_fraudulent"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_mark_as_not_fraudulent(self, authenticated_client):
+        fraudulent_tag = bookings_factories.FraudulentBookingTagFactory()
+
+        response = self.post_to_endpoint(authenticated_client, form={}, booking_id=fraudulent_tag.bookingId)
+        assert response.status_code == 200
+
+        assert db.session.query(bookings_models.FraudulentBookingTag).count() == 0
