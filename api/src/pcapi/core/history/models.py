@@ -91,6 +91,9 @@ class ActionType(enum.Enum):
     # Chronicles
     CHRONICLE_PUBLISHED = "CHRONICLE_PUBLISHED"
     CHRONICLE_UNPUBLISHED = "CHRONICLE_UNPUBLISHED"
+    # User profile refresh campaigns
+    USER_PROFILE_REFRESH_CAMPAIGN_CREATED = "USER_PROFILE_REFRESH_CAMPAIGN_CREATED"
+    USER_PROFILE_REFRESH_CAMPAIGN_UPDATED = "USER_PROFILE_REFRESH_CAMPAIGN_UPDATED"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
@@ -208,12 +211,23 @@ class ActionHistory(PcObject, Model):
         backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
+    userProfileRefreshCampaignId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("user_profile_refresh_campaign.id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    userProfileRefreshCampaign: sa_orm.Mapped[users_models.UserProfileRefreshCampaign | None] = sa_orm.relationship(
+        "UserProfileRefreshCampaign",
+        foreign_keys=[userProfileRefreshCampaignId],
+        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+    )
+
     comment = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId") >= 1 '
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId", "userProfileRefreshCampaignId") >= 1 '
                 'OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME" '
                 'OR actionType = "ROLE_PERMISSIONS_CHANGED"'
             ),
@@ -226,4 +240,9 @@ class ActionHistory(PcObject, Model):
         sa.Index("ix_action_history_bankAccountId", bankAccountId, postgresql_where=bankAccountId.is_not(None)),
         sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
         sa.Index("ix_action_history_chronicleId", chronicleId, postgresql_where=chronicleId.is_not(None)),
+        sa.Index(
+            "ix_action_history_userProfileRefreshCampaignId",
+            userProfileRefreshCampaignId,
+            postgresql_where=userProfileRefreshCampaignId.is_not(None),
+        ),
     )

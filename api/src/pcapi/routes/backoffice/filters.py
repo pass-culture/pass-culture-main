@@ -120,6 +120,9 @@ ACTION_TYPE_TO_STRING = {
     # Chronicles
     history_models.ActionType.CHRONICLE_PUBLISHED: "Publication d'une chronique",
     history_models.ActionType.CHRONICLE_UNPUBLISHED: "Dépublication d'une chronique",
+    # User profile refresh campaign
+    history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED: "Création de campagne de mise à jour de données",
+    history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED: "Modification de campagne de mise à jour de données",
 }
 
 
@@ -185,6 +188,16 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
             return text
         case _:
             return "Aucune information"
+
+
+def format_user_profile_refresh_campaign_action_type(action_type: history_models.ActionType) -> str:
+    match action_type:
+        case history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED:
+            return "Création"
+        case history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED:
+            return "Mise à jour"
+        case _:
+            return action_type.value
 
 
 def format_deposit_used(booking: bookings_models.Booking) -> str:
@@ -1152,6 +1165,8 @@ def _format_modified_info_value(value: typing.Any, name: str | None = None) -> s
         return format_string_list(value)
     if isinstance(value, bool):
         return format_bool(value)
+    if isinstance(value, datetime.datetime):
+        return format_date_time(value)
     return str(value)
 
 
@@ -1333,6 +1348,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "ID ADAGE"
         case "isOpenToPublic":
             return "Accueil du public"
+        case "campaignDate":
+            return "Date"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -2026,3 +2043,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["product_mediation_link"] = product_mediation_link
     app.jinja_env.filters["format_artist_visibility_status"] = format_artist_visibility_status
     app.jinja_env.filters["format_collective_location_type"] = format_collective_location_type
+    app.jinja_env.filters["format_user_profile_refresh_campaign_action_type"] = (
+        format_user_profile_refresh_campaign_action_type
+    )
