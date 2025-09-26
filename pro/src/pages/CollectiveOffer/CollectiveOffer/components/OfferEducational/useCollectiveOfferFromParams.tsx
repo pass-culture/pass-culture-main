@@ -14,7 +14,6 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { extractOfferIdAndOfferTypeFromRouteParams } from '@/commons/core/OfferEducational/utils/extractOfferIdAndOfferTypeFromRouteParams'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 export type MandatoryCollectiveOfferFromParamsProps = {
@@ -45,7 +44,7 @@ export const useCollectiveOfferFromParams = (
 
   const { data: offer } = useSWR<
     GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
-    any,
+    number,
     [string, number] | null
   >(
     offerId !== undefined
@@ -62,9 +61,6 @@ export const useCollectiveOfferFromParams = (
         : api.getCollectiveOffer(offerIdParams)
   )
 
-  const offererId = offer?.venue.managingOfferer.id
-  const { data: offerer } = useOfferer(offererId)
-
   if (offerIdFromParams === undefined) {
     assertOrFrontendError(
       !isOfferMandatory,
@@ -75,14 +71,12 @@ export const useCollectiveOfferFromParams = (
     return {
       offer: undefined,
       isTemplate: pathNameIncludesTemplate,
-      offerer: undefined,
     }
   }
 
   return {
     offer,
     isTemplate,
-    offerer,
   }
 }
 
