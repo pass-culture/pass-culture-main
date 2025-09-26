@@ -93,13 +93,6 @@ export const serializeApiCollectiveFilters = (
       }
     }
 
-    if (isNewOffersAndBookingsActive && field === 'offererId') {
-      return {
-        ...accumulator,
-        offererId: undefined,
-      }
-    }
-
     if (isNewOffersAndBookingsActive && field === 'venueId') {
       return {
         ...accumulator,
