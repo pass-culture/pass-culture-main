@@ -1399,8 +1399,13 @@ def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> 
 
 
 def has_profile_expired(user: models.User) -> bool:
-    campaign_date = _get_current_profile_refresh_campaign_date()
+    should_check_for_profile_expiration = (
+        models.UserRole.UNDERAGE_BENEFICIARY in user.roles or models.UserRole.BENEFICIARY in user.roles
+    )
+    if not should_check_for_profile_expiration:
+        return False
 
+    campaign_date = _get_current_profile_refresh_campaign_date()
     if not campaign_date:
         return False
 
@@ -1418,6 +1423,7 @@ def has_profile_expired(user: models.User) -> bool:
 
     # The profile has never been completed → it's not expired
     if latest_profile_completion is None and latest_profile_modification is None:
+        logger.error("User %s is beneficiary without completing their profile", user.id)
         return False
 
     return not (has_completed_profile_after_campaign_start or has_modified_profile_after_campaign_start)
