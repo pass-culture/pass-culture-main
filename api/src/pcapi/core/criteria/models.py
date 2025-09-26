@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -21,9 +23,9 @@ class CriterionCategoryMapping(PcObject, Model):
 class Criterion(PcObject, Model):
     __tablename__ = "criterion"
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False, unique=True)
-    description = sa_orm.mapped_column(sa.Text, nullable=True)
-    startDateTime = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    endDateTime = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    startDateTime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    endDateTime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
@@ -39,7 +41,7 @@ class VenueCriterion(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False
     )
     criterionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True
+        sa.BigInteger, sa.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
     )
 
     __table_args__ = (

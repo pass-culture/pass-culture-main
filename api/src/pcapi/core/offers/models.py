@@ -48,8 +48,9 @@ logger = logging.getLogger(__name__)
 if typing.TYPE_CHECKING:
     import flask_sqlalchemy
 
-    from pcapi.core.artists.models import Artist
+    from pcapi.core.artist.models import Artist
     from pcapi.core.bookings.models import Booking
+    from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
@@ -190,6 +191,9 @@ class Product(PcObject, Model, HasThumbMixin):
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     thumb_path_component = "products"
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
+    chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship(
+        "Chronicle", back_populates="products", secondary="product_chronicle"
+    )
     productMediations: sa_orm.Mapped[list[ProductMediation]] = sa_orm.relationship(
         "ProductMediation",
         backref="product",
@@ -825,6 +829,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     )
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship(
         "Reaction", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True
+    )
+    chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship(
+        "Chronicle", back_populates="offers", secondary="offer_chronicle"
     )
     headlineOffers: sa_orm.Mapped[list["HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="offer", uselist=True, cascade="all, delete-orphan", passive_deletes=True

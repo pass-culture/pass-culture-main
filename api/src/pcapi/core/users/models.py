@@ -41,6 +41,7 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
+    from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.finance.models import Deposit
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.offerers.models import UserOfferer
@@ -246,6 +247,7 @@ class User(PcObject, Model, DeactivableMixin):
     )
     tags: sa_orm.Mapped[list["UserTag"]] = sa_orm.relationship("UserTag", secondary=UserTagMapping.__table__)
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="user", uselist=True)
+    chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship("Chronicle", back_populates="user", uselist=True)
     beneficiaryFraudChecks: sa_orm.Mapped[list["BeneficiaryFraudCheck"]] = sa_orm.relationship(
         "BeneficiaryFraudCheck", back_populates="user", order_by="BeneficiaryFraudCheck.dateCreated"
     )
