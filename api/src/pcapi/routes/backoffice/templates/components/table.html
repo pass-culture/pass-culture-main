@@ -1,0 +1,15 @@
+{% macro sortable_column(is_active=True) %}
+  {% if is_active %}
+    <th class="col pc-sortable-column"
+        data-sortable-sort="undefined"
+        data-bs-toggle="tooltip"
+        data-bs-placement="top"
+        data-bs-custom-class="primary-tooltip"
+        data-bs-title="Le tri ne s’applique que sur les éléments affichés">
+      <a href="#"
+         class="text-decoration-none">{{ caller() }} <i class="bi bi-arrow-down-up"></i></a>
+    </th>
+  {% else %}
+    <th class="col">{{ caller() }}</th>
+  {% endif %}
+{% endmacro %}
