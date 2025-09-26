@@ -115,6 +115,8 @@ describe('TemplateCollectiveOffers', () => {
     expect(screen.getByText('Offres vitrines')).toBeInTheDocument()
   })
 
+  const offererId = '1'
+
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
@@ -137,7 +139,7 @@ describe('TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
-            undefined,
+            offererId,
             [CollectiveOfferDisplayedStatus.REJECTED],
             undefined,
             undefined,
@@ -175,7 +177,7 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
-            undefined,
+            offererId,
             undefined,
             undefined,
             undefined,
@@ -201,7 +203,7 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            offererId,
             undefined,
             undefined,
             undefined,
@@ -226,7 +228,7 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            offererId,
             undefined,
             undefined,
             undefined,
