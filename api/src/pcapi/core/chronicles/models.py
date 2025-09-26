@@ -68,17 +68,21 @@ class ChronicleClubType(enum.Enum):
 
 class Chronicle(PcObject, Model, DeactivableMixin):
     __tablename__ = "chronicle"
-    age = sa_orm.mapped_column(sa.SmallInteger, nullable=True)
-    city = sa_orm.mapped_column(sa.Text(), nullable=True)
-    clubType = sa_orm.mapped_column(db_utils.MagicEnum(ChronicleClubType), nullable=False)
-    content = sa_orm.mapped_column(sa.Text, nullable=False)
-    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    age: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.SmallInteger)
+    city: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text())
+    clubType: sa_orm.Mapped[ChronicleClubType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(ChronicleClubType), nullable=False
+    )
+    content: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
     # used to reconciliate data if the form changed on typeform
-    identifierChoiceId = sa_orm.mapped_column(sa.Text(), nullable=True)
-    email = sa_orm.mapped_column(sa.Text(), nullable=False)
-    firstName = sa_orm.mapped_column(sa.Text(), nullable=True)
-    externalId = sa_orm.mapped_column(sa.Text(), nullable=False, unique=True)
-    isIdentityDiffusible = sa_orm.mapped_column(
+    identifierChoiceId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text())
+    email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text())
+    externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False, unique=True)
+    isIdentityDiffusible: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
     isSocialMediaDiffusible: sa_orm.Mapped[bool] = sa_orm.mapped_column(
@@ -94,12 +98,12 @@ class Chronicle(PcObject, Model, DeactivableMixin):
         db_utils.MagicEnum(ChronicleProductIdentifierType), nullable=False
     )
     productIdentifier = sa_orm.mapped_column(sa.Text(), nullable=False, index=True)
-    userId = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True, index=True
+    userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True
     )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="chronicles")
+    user: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[userId], backref="chronicles")
 
-    _content_ts_vector = sa_orm.mapped_column(
+    _content_ts_vector: sa_orm.Mapped[db_utils.TSVector] = sa_orm.mapped_column(
         db_utils.TSVector(),
         sa.Computed("to_tsvector('french', content)", persisted=True),
         nullable=False,
