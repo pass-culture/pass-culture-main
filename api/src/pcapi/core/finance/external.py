@@ -4,11 +4,13 @@ import time
 
 from flask import current_app as app
 
+from pcapi import settings
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
+from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
 logger = logging.getLogger(__name__)
@@ -118,3 +120,15 @@ def push_invoices(count: int) -> None:
                 time.sleep(time_to_sleep)
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
+            invoice_ids = [e[0] for e in invoices]
+            cashflow = (
+                db.session.query(finance_models.Cashflow)
+                .join(finance_models.Cashflow.invoices)
+                .filter(finance_models.Invoice.id.in_(invoice_ids))
+                .order_by(finance_models.Invoice.id)
+                .first()
+            )
+            assert cashflow  # helps mypy
+            batch = cashflow.batch
+            export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
