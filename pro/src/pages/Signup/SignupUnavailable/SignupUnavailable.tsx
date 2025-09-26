@@ -15,15 +15,13 @@ export const SignupUnavailable: FunctionComponent = () => {
           src={strokeWipIcon}
           width="180"
         />
-        <h1 className={styles['title']}>Inscription indisponible</h1>
-        <h2 className={styles['subtitle']}>
+        <h2 className={styles['title']}>Inscription indisponible</h2>
+        <div>
           Pour des raisons techniques, l’inscription sur le pass Culture est
           indisponible aujourd’hui.
-        </h2>
+        </div>
         <br />
-        <h2 className={styles['subtitle']}>
-          Vous pourrez vous inscrire dès demain.
-        </h2>
+        <div>Vous pourrez vous inscrire dès demain.</div>
       </div>
     </section>
   )

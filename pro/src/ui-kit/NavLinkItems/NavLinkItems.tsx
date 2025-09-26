@@ -59,24 +59,32 @@ export const NavLinkItems = ({
 }: NavLinkItemsProps): JSX.Element => {
   return (
     <nav aria-label={navLabel}>
-      <ul className={cn(styles['menu-list'], className)}>
-        {links.map(({ key, label, url }) => (
-          <li key={key}>
-            <Link
-              to={url}
-              className={cn(styles['menu-list-item'], {
-                [styles['is-selected']]: selectedKey === key,
-              })}
-            >
-              <span className={styles['menu-list-item-label']}>
-                {selectedKey === key && (
-                  <span className={styles['visually-hidden']}>Lien actif</span>
-                )}
-                {label}
-              </span>
-            </Link>
-          </li>
-        ))}
+      {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
+          rendered once per page, so there cannot be id duplications.> */}
+      <ul id="tablist" className={cn(styles['menu-list'], className)}>
+        {links.map(({ key, label, url }) => {
+          const isSelected = selectedKey === key
+
+          return (
+            <li {...(isSelected ? { id: 'selected' } : {})} key={key}>
+              <Link
+                to={url}
+                className={cn(styles['menu-list-item'], {
+                  [styles['is-selected']]: isSelected,
+                })}
+              >
+                <span className={styles['menu-list-item-label']}>
+                  {isSelected && (
+                    <span className={styles['visually-hidden']}>
+                      Lien actif
+                    </span>
+                  )}
+                  {label}
+                </span>
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )
