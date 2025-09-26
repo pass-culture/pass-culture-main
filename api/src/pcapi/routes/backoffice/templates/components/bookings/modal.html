@@ -1,0 +1,33 @@
+{% import "components/forms.html" as forms with context %}
+{% macro booking_modal(booking, title, div_id, form, dst, table_id) %}
+  {% set aria_described_by_id = random_hash() %}
+  <div class="modal modal-lg fade"
+       id="{{ div_id }}"
+       tabindex="-1"
+       aria-labelledby="{{ aria_described_by_id }}"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form name="{{ dst | action_to_name }}"
+              hx-target="#{{ table_id }}"
+              hx-post="{{ dst }}"
+              hx-swap="outerHTML"
+              hx-trigger="submit">
+          <div class="modal-header"
+               id="{{ aria_described_by_id }}">
+            <h5 class="modal-title">{{ title }}</h5>
+          </div>
+          <div class="modal-body row">{{ forms.build_form_fields_group(form) }}</div>
+          <div class="modal-footer">
+            <button type="button"
+                    class="btn btn-outline-primary-subtle-bg"
+                    data-bs-dismiss="modal">Annuler</button>
+            <button type="submit"
+                    class="btn btn-primary"
+                    data-modal-selector="#{{ div_id }}">Confirmer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endmacro %}
