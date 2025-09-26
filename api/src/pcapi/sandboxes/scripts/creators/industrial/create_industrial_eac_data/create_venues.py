@@ -423,7 +423,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory.create(**kwargs, collectiveEmail="email@exemple.com")
+    venue = offerers_factories.VenueFactory.create(**kwargs, collectiveEmail="email@exemple.com", isPermanent=True)
     if reimbursement:
         bank_account = finance_factories.BankAccountFactory.create(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)
