@@ -25,6 +25,8 @@ import {
 } from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -199,7 +201,7 @@ export const Offerer = (): JSX.Element => {
             <h2 className={styles['subtitle']}>
               Dites-nous pour quelle structure vous travaillez
             </h2>
-            <FormLayout.Row>
+            <FormLayout.Row mdSpaceAfter>
               <div className={styles['input-siret']}>
                 <TextInput
                   {...register('siret')}
@@ -219,8 +221,23 @@ export const Offerer = (): JSX.Element => {
                 />
               </div>
             </FormLayout.Row>
+            <FormLayout.Row>
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                to="https://annuaire-entreprises.data.gouv.fr/"
+                isExternal
+                opensInNewTab
+                onClick={() =>
+                  logEvent(Events.CLICKED_UNKNOWN_SIRET, {
+                    from: location.pathname,
+                  })
+                }
+              >
+                Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des
+                Entreprises.
+              </ButtonLink>
+            </FormLayout.Row>
           </FormLayout.Section>
-
           {showInvisibleBanner && (
             <BannerInvisibleSiren isNewOnboarding={true} />
           )}
