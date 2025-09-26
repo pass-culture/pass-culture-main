@@ -40,9 +40,7 @@ describe('ADAGE discovery', () => {
                       students: ['Lycée - Seconde'],
                       domains: [10],
                       interventionArea: ['2A', '2B'],
-                      schoolInterventionArea: null,
                       locationType: 'TO_BE_DEFINED',
-                      beginningDatetime: 1726907257.840899,
                       description:
                         'a passionate description of collectiveoffer 98',
                     },

@@ -13,10 +13,8 @@
   "queryLanguages": ["fr"],
   "attributesForFaceting": [
     "filterOnly(offer.domains)",
-    "filterOnly(offer.eventAddressType)",
     "filterOnly(offer.locationType)",
     "filterOnly(offer.interventionArea)",
-    "filterOnly(offer.schoolInterventionArea)",
     "filterOnly(offer.students)",
     "filterOnly(venue.departmentCode)",
     "filterOnly(venue.id)",
