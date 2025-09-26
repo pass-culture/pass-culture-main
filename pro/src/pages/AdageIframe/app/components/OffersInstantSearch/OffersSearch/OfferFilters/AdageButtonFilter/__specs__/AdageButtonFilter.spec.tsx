@@ -49,7 +49,6 @@ describe('AdageButtonFilter', () => {
       query: '',
       domains: [],
       students: [],
-      eventAddressType: '',
     },
   }
 
