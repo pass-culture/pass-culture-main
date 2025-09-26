@@ -250,7 +250,9 @@ describe('SignIn', () => {
       screen.getAllByText('Identifiant ou mot de passe incorrect.')
     ).toHaveLength(2)
 
-    expect(screen.getByLabelText('Adresse email')).toHaveFocus()
+    await waitFor(() => {
+      expect(screen.getByLabelText('Adresse email')).toHaveFocus()
+    })
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
