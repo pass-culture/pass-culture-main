@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+import sqlalchemy.event as sa_event
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
@@ -218,6 +219,10 @@ class Booking(PcObject, Model):
 
     fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag"] = sa_orm.relationship(
         "FraudulentBookingTag", back_populates="booking", uselist=False
+    )
+
+    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship(
+        "Pricing", back_populates="booking", uselist=True
     )
 
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
@@ -483,7 +488,7 @@ class Booking(PcObject, Model):
         return self.dateUsed is not None and self.stock.offer.subcategoryId in SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
 
 
-Booking.trig_ddl = f"""
+booking_trig_ddl = f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
         RETURNS numeric
         AS $$
@@ -580,9 +585,9 @@ Booking.trig_ddl = f"""
     WHEN (NEW.status <> '{BookingStatus.REIMBURSED.value}')
     EXECUTE PROCEDURE check_booking()
     """
-sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_ddl))
+sa_event.listen(Booking.__table__, "after_create", sa.DDL(booking_trig_ddl))
 
-Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
+booking_trig_update_cancellationDate_on_isCancelled_ddl = f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -603,7 +608,7 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     EXECUTE PROCEDURE save_cancellation_date()
     """
 
-sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
+sa_event.listen(Booking.__table__, "after_create", sa.DDL(booking_trig_update_cancellationDate_on_isCancelled_ddl))
 
 
 class FraudulentBookingTag(PcObject, Model):
