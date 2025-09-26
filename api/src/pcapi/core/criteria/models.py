@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -21,9 +23,9 @@ class CriterionCategoryMapping(PcObject, Model):
 class Criterion(PcObject, Model):
     __tablename__ = "criterion"
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False, unique=True)
-    description = sa_orm.mapped_column(sa.Text, nullable=True)
-    startDateTime = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    endDateTime = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    description: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text)
+    startDateTime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime)
+    endDateTime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime)
 
     categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
