@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, FormEvent, JSX, SetStateAction } from 'react'
 
 import {
   CollectiveLocationType,

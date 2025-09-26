@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
+import type { JSX } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
@@ -34,7 +35,7 @@ export interface RequestFormDialogProps {
   contactUrl: string
   isPreview: boolean
   onConfirmDialog: () => void
-  dialogTriggerRef?: React.RefObject<HTMLButtonElement>
+  dialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const RequestFormDialog = ({

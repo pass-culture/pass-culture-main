@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { createRef } from 'react'
+import { createRef, type JSX } from 'react'
 
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
 import fullArrowLeftIcon from '@/icons/full-arrow-left.svg'
@@ -17,7 +17,7 @@ type CarouselProps = {
   onLastCarouselElementVisible?: () => void
   loading?: boolean
   className?: string
-  observableRef?: React.RefObject<HTMLDivElement> //  Reference for the  IntersectionObserver API
+  observableRef?: React.RefObject<HTMLDivElement | null> //  Reference for the  IntersectionObserver API
 }
 
 export function Carousel({

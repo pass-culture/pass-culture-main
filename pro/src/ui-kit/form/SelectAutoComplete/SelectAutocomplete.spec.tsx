@@ -244,12 +244,7 @@ describe('SelectAutocomplete', () => {
           value: '02',
           resetOnOpen: false,
           onReset: undefined,
-          ref: (ref) => {
-            if (ref) {
-              ref.defaultValue = '02'
-            }
-            return ref
-          },
+          defaultValue: '02',
         }}
       />
     )

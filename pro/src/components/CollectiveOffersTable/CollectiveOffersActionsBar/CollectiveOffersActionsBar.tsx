@@ -33,7 +33,7 @@ export type CollectiveOffersActionsBarProps = {
   clearSelectedOfferIds: () => void
   selectedOffers: CollectiveOfferResponseModel[]
   areTemplateOffers: boolean
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {

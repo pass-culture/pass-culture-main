@@ -19,8 +19,8 @@ interface VenueProviderFormProps {
   afterSubmit: () => Promise<void>
   provider: ProviderResponse
   venue: GetVenueResponseModel
-  providerSelectRef?: React.RefObject<HTMLSelectElement>
-  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement>
+  providerSelectRef?: React.RefObject<HTMLSelectElement | null>
+  selectSoftwareButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const VenueProviderForm = ({

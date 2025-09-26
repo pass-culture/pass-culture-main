@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'

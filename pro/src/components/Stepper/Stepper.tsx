@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import type React from 'react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { type JSX, useLayoutEffect, useRef, useState } from 'react'
 
 import { findLastIndex } from '@/commons/utils/findLastIndex'
 import { StepContent } from '@/components/Stepper/StepContent'

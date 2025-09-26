@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import { FormProvider, useFormContext } from 'react-hook-form'
 import useSWR from 'swr'
 

@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
-import { type ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, forwardRef, type JSX } from 'react'
 
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from '@/commons/utils/date'
 

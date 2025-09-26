@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 
 import type { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'

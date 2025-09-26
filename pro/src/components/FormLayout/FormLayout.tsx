@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import style from './FormLayout.module.scss'
 import { Actions } from './FormLayoutActions'

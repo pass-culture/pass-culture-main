@@ -1,4 +1,4 @@
-import { type MouseEvent, useState } from 'react'
+import { type JSX, type MouseEvent, useState } from 'react'
 
 import type {
   CollectiveOfferResponseModel,

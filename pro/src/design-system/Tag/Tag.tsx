@@ -1,4 +1,5 @@
 import cx from 'classnames'
+import type { JSX } from 'react'
 
 import bookIcon from '@/icons/full-book.svg'
 import headlineIcon from '@/icons/full-boosted.svg'

@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
 import fullValidateIcon from '@/icons/full-validate.svg'

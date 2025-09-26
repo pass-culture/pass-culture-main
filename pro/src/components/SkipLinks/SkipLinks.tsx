@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import fullNextIcon from '@/icons/full-next.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'

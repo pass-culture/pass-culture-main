@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useNotification } from '@/commons/hooks/useNotification'
 import * as notificationReducer from '@/commons/store/notifications/reducer'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'

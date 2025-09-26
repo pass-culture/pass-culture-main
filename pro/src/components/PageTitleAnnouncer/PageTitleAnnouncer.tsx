@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import styles from './PageTitleAnnouncer.module.scss'
 
 export const PageTitleAnnouncer = (): JSX.Element => {

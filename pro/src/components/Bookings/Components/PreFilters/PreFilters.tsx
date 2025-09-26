@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { type FormEvent, useCallback, useState } from 'react'
+import { type FormEvent, type JSX, useCallback, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import type {

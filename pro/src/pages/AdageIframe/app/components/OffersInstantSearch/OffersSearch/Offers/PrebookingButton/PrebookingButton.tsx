@@ -1,6 +1,6 @@
 import { format } from 'date-fns-tz'
 import type React from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { type JSX, useCallback, useRef, useState } from 'react'
 
 import type { OfferStockResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -29,7 +29,7 @@ export interface PrebookingButtonProps {
   institutionOfferCount?: number
   setOfferPrebooked?: (value: boolean) => void
   shouldDisablePrebookButton: boolean
-  refToFocusOnOfferPrebooked?: React.RefObject<HTMLElement>
+  refToFocusOnOfferPrebooked?: React.RefObject<HTMLElement | null>
 }
 
 export const PrebookingButton = ({

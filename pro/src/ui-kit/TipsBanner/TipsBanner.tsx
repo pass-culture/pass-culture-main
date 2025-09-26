@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import fullBulbIcon from '@/icons/full-bulb.svg'
 import fullLinkIcon from '@/icons/full-link.svg'

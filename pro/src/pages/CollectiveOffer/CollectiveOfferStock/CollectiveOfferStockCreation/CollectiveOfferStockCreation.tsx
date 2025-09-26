@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 

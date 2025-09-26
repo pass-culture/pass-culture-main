@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'

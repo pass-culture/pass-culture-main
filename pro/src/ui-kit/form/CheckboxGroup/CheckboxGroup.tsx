@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useId } from 'react'
+import { type JSX, useId } from 'react'
 
 import { Checkbox, type CheckboxProps } from '@/design-system/Checkbox/Checkbox'
 import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
@@ -14,7 +14,7 @@ type GroupOption = {
   onBlur?: (event: React.ChangeEvent<HTMLInputElement>) => void
   checked?: boolean
   indeterminate?: boolean
-  ref?: React.RefObject<HTMLInputElement>
+  ref?: React.RefObject<HTMLInputElement | null>
   sizing?: CheckboxProps['sizing']
 }
 

@@ -1,5 +1,11 @@
 import classNames from 'classnames'
-import React, { useId, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+  type JSX,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import styles from './Tooltip.module.scss'
 import { useTooltipProps } from './useTooltipProps'

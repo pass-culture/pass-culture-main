@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'

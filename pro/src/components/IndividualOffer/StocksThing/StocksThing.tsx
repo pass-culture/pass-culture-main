@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, type JSX, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'

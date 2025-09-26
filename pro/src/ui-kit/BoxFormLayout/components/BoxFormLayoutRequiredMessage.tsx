@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 

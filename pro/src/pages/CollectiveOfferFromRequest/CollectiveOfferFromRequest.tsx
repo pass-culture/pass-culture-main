@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'

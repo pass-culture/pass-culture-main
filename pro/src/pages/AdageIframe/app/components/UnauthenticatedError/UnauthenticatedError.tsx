@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 

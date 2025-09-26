@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { Callout } from '@/ui-kit/Callout/Callout'
 
 export const BannerReimbursementsInfo = (): JSX.Element => {

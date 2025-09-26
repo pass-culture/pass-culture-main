@@ -1,5 +1,5 @@
 import cx from 'classnames'
-import type { Ref } from 'react'
+import type { JSX, Ref } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 

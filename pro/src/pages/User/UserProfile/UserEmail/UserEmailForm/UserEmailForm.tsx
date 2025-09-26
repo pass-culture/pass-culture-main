@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import type { JSX } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'

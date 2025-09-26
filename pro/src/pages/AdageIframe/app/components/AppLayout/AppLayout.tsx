@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import type { JSX } from 'react'
 import {
   Navigate,
   Route,

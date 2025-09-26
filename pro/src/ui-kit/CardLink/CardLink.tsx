@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 import { Link } from 'react-router'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { type JSX, useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { type JSX, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Navigate,

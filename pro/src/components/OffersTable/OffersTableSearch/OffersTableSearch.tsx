@@ -28,7 +28,7 @@ export type OffersTableSearchProps = {
   }
   onResetFilters: () => void
   children: React.ReactNode
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const OffersTableSearch = ({

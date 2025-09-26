@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import strokeErrorIcon from '@/icons/stroke-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

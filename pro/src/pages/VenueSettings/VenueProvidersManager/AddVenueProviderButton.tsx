@@ -23,7 +23,7 @@ import { VenueProviderForm } from './VenueProviderForm'
 export interface AddVenueProviderButtonProps {
   venue: GetVenueResponseModel
   linkedProviders: ProviderResponse[]
-  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement>
+  selectSoftwareButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
 export const AddVenueProviderButton = ({

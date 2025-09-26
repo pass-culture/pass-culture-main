@@ -1,6 +1,6 @@
 import { useOfferer } from 'commons/hooks/swr/useOfferer'
 import { format, subMonths } from 'date-fns'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { type JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
 import useSWR from 'swr'

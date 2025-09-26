@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect, useState } from 'react'
+import { type JSX, useEffect, useState } from 'react'
 import useSWRMutation from 'swr/mutation'
 
 import {

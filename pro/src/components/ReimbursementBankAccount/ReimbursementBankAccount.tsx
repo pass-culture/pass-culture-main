@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 import { useLocation } from 'react-router'
 
 import {
@@ -25,7 +26,7 @@ interface ReimbursementBankAccountProps {
   onUpdateButtonClick?: (id: number) => void
   offererId?: number
   hasWarning?: boolean
-  updateButtonRef?: React.RefObject<HTMLButtonElement>
+  updateButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const ReimbursementBankAccount = ({

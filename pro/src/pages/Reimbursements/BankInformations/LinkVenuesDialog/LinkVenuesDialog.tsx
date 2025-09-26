@@ -27,7 +27,7 @@ interface LinkVenuesDialogProps {
   managedVenues: Array<ManagedVenues>
   closeDialog: (update?: boolean) => void
   updateBankAccountVenuePricingPoint: (venueId: number) => void
-  editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement>
+  editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const LinkVenuesDialog = ({

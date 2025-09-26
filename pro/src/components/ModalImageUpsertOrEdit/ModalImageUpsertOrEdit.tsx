@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import type AvatarEditor from 'react-avatar-editor'
 import type { CroppedRect } from 'react-avatar-editor'
 

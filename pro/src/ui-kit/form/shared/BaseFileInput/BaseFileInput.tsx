@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import buttonStyle from '@/ui-kit/Button/Button.module.scss'
 

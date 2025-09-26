@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import strokeDownIcon from '@/icons/stroke-down.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 

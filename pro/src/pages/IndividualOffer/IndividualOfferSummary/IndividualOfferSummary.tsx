@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'

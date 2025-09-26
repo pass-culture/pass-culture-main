@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { NonIndexRouteObject } from 'react-router'
 
 interface CustomRouteMeta {

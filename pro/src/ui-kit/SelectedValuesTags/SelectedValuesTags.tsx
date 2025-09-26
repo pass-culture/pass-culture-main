@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useRef } from 'react'
+import { type JSX, useRef } from 'react'
 
 import fullCloseIcon from '@/icons/full-close.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

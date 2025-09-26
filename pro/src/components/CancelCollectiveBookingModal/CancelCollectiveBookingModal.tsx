@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import strokeWrongIcon from '@/icons/stroke-wrong.svg'
@@ -9,7 +11,7 @@ interface OfferEducationalModalProps {
   onValidate(): void
   isFromOffer?: boolean
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement>
+  refToFocusOnClose?: React.RefObject<HTMLButtonElement | null>
 }
 
 export const CancelCollectiveBookingModal = ({

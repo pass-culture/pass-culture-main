@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { type JSX, useId } from 'react'
 
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 

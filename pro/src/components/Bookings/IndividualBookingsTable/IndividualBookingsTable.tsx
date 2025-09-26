@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
@@ -32,7 +32,10 @@ export const IndividualBookingsTable = ({
 }: IndividualBookingsTableProps): JSX.Element => {
   const bookingsWithIds = bookings.map(
     (b, i) =>
-      ({ ...(b as object), id: i }) as BookingRecapResponseModel & {
+      ({
+        ...(b as object),
+        id: i,
+      }) as BookingRecapResponseModel & {
         id: number
       }
   )

@@ -1,3 +1,5 @@
+import type { JSX } from 'react'
+
 import type { BookingStatusFilter } from '@/apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'

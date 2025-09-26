@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, JSX, SetStateAction } from 'react'
 import { useSearchParams } from 'react-router'
 
 import type { SelectOption } from '@/commons/custom_types/form'

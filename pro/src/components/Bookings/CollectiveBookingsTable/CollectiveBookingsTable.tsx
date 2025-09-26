@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect } from 'react'
+import { type JSX, useEffect } from 'react'
 
 import type { CollectiveBookingResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'

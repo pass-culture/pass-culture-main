@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import { NotificationTypeEnum } from '@/commons/hooks/useNotification'
 import fullErrorIcon from '@/icons/full-error.svg'

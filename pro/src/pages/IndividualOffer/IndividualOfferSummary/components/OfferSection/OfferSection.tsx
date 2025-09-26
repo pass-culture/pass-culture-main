@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useLocation } from 'react-router'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import useSWR from 'swr'

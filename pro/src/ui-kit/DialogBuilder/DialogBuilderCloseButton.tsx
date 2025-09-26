@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
+import type { JSX } from 'react'
 
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

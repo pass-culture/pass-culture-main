@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'

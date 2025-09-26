@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
@@ -36,7 +36,7 @@ export type IndividualOffersActionsBarProps = {
   canDelete: boolean
   canPublish: boolean
   canDeactivate: boolean
-  searchButtonRef?: React.RefObject<HTMLButtonElement>
+  searchButtonRef?: React.RefObject<HTMLButtonElement | null>
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {

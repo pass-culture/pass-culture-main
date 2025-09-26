@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'

@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useLocation } from 'react-router'
 
 import type {
@@ -20,7 +21,9 @@ interface OfferEducationalModalProps {
   hasMultipleOffers?: boolean
   selectedOffers?: CollectiveOfferResponseModel[]
   isDialogOpen: boolean
-  refToFocusOnClose?: React.RefObject<HTMLButtonElement | HTMLAnchorElement>
+  refToFocusOnClose?: React.RefObject<
+    HTMLButtonElement | HTMLAnchorElement | null
+  >
 }
 
 export const ArchiveConfirmationModal = ({

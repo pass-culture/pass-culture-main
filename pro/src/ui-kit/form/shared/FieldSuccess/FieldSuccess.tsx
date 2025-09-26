@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import type { JSX } from 'react'
 
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'

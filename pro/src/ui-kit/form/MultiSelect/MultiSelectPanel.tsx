@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { type JSX, useMemo, useState } from 'react'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { TextInput } from '@/design-system/TextInput/TextInput'
