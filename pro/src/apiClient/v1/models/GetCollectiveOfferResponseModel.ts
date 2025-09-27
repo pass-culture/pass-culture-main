@@ -5,7 +5,6 @@
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferHistory } from './CollectiveOfferHistory';
-import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
@@ -51,7 +50,6 @@ export type GetCollectiveOfferResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerVenue: CollectiveOfferOfferVenueResponseModel;
   provider?: GetCollectiveOfferProviderResponseModel | null;
   students: Array<StudentLevels>;
   teacher?: EducationalRedactorResponseModel | null;

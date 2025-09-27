@@ -29,7 +29,11 @@ def fill_adage_playlists() -> None:
         .all()
     )
 
-    classroom_offers = [offer for offer in collective_offer_templates if _offer_is_in_school(offer)]
+    classroom_offers = [
+        offer
+        for offer in collective_offer_templates
+        if offer.locationType == educational_models.CollectiveLocationType.SCHOOL
+    ]
 
     for institution in institutions:
         playlist_items_to_add = [
@@ -79,16 +83,6 @@ def fill_adage_playlists() -> None:
         db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
 
     db.session.commit()
-
-
-def _offer_is_in_school(offer: educational_models.CollectiveOfferTemplate) -> bool:
-    """
-    offerVenue["addressType"] is the current location field, which will be replaced with locationType
-    """
-    return (
-        offer.offerVenue["addressType"] == educational_models.OfferAddressType.SCHOOL
-        or offer.locationType == educational_models.CollectiveLocationType.SCHOOL
-    )
 
 
 @cache

@@ -103,26 +103,6 @@ class OfferVenueResponse(BaseModel):
         )
 
 
-class CollectiveOfferOfferVenue(BaseModel):
-    addressType: educational_models.OfferAddressType
-    otherAddress: str
-    venueId: int | None
-    name: str | None
-    publicName: str | None
-    address: str | None
-    postalCode: str | None
-    city: str | None
-    distance: Decimal | None
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(
-        collective_offers_serialize.validate_venue_id
-    )
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
 class OfferDomain(BaseModel):
     id: int
     name: str
@@ -162,8 +142,6 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     name: str
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
-    # offerVenue will be replaced with location, for now we send both
-    offerVenue: CollectiveOfferOfferVenue
     location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
@@ -193,12 +171,8 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
 
     @classmethod
     def build(
-        cls: "type[CollectiveOfferResponseModel]",
-        offer: educational_models.CollectiveOffer,
-        offerVenue: offerers_models.Venue | None = None,
+        cls: "type[CollectiveOfferResponseModel]", offer: educational_models.CollectiveOffer
     ) -> "CollectiveOfferResponseModel":
-        offer_venue_address = offerVenue.offererAddress.address if offerVenue and offerVenue.offererAddress else None
-
         return cls(
             id=offer.id,
             description=offer.description,
@@ -208,17 +182,6 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             collectiveStock=offer.collectiveStock,  # type: ignore[call-arg]
             venue=offer.venue,
             students=offer.students,
-            offerVenue=CollectiveOfferOfferVenue(
-                name=offerVenue.name if offerVenue else None,
-                publicName=offerVenue.publicName if offerVenue else None,
-                address=offer_venue_address.street if offer_venue_address else None,
-                postalCode=offer_venue_address.postalCode if offer_venue_address else None,
-                city=offer_venue_address.city if offer_venue_address else None,
-                distance=None,
-                addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
-                venueId=offer.offerVenue["venueId"],
-                otherAddress=offer.offerVenue["otherAddress"],
-            ),
             location=collective_offers_serialize.get_collective_offer_location_model(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
@@ -258,14 +221,11 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         cls: "type[CollectiveOfferTemplateResponseModel]",
         offer: educational_models.CollectiveOfferTemplate,
         is_favorite: bool,
-        offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:
             dates = collective_offers_serialize.TemplateDatesModel(start=offer.start, end=offer.end)
         else:
             dates = None
-
-        offer_venue_address = offerVenue.offererAddress.address if offerVenue and offerVenue.offererAddress else None
 
         return cls(
             id=offer.id,
@@ -275,17 +235,6 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             name=offer.name,
             venue=offer.venue,
             students=offer.students,
-            offerVenue=CollectiveOfferOfferVenue(
-                name=offerVenue.name if offerVenue else None,
-                publicName=offerVenue.publicName if offerVenue else None,
-                address=offer_venue_address.street if offer_venue_address else None,
-                postalCode=offer_venue_address.postalCode if offer_venue_address else None,
-                city=offer_venue_address.city if offer_venue_address else None,
-                distance=None,
-                addressType=offer.offerVenue["addressType"],  # type: ignore[arg-type]
-                venueId=offer.offerVenue["venueId"],
-                otherAddress=offer.offerVenue["otherAddress"],
-            ),
             location=collective_offers_serialize.get_collective_offer_location_model(offer),
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,

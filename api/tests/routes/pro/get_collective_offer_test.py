@@ -111,11 +111,6 @@ class Returns200Test:
                 "id": national_program.id,
                 "name": national_program.name,
             },
-            "offerVenue": {
-                "addressType": "other",
-                "otherAddress": "1 rue des polissons, Paris 75017",
-                "venueId": None,
-            },
             "provider": {
                 "name": provider.name,
             },

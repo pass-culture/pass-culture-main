@@ -27,7 +27,6 @@ import {
   type GetCollectiveOfferVenueResponseModel,
   type GetVenueResponseModel,
   type ListOffersVenueResponseModel,
-  OfferAddressType,
   StudentLevels,
   VenueTypeCode,
 } from '@/apiClient/v1'
@@ -94,11 +93,6 @@ const sharedCollectiveOfferData = {
   interventionArea: ['mainland'],
   isPublicApi: false,
   id: 123,
-  offerVenue: {
-    venueId: null,
-    otherAddress: 'A la mairie',
-    addressType: OfferAddressType.OTHER,
-  },
   students: [StudentLevels.COLL_GE_3E],
   venueId: 'VENUE_ID',
   imageUrl: 'https://example.com/image.jpg',
@@ -294,11 +288,6 @@ export const collectiveBookingByIdFactory = (
     id: currentBookingDetailsId,
     isCancellable: true,
     numberOfTickets: 1,
-    offerVenue: {
-      addressType: OfferAddressType.SCHOOL,
-      otherAddress: '',
-      venueId: 1,
-    },
     offererId: 1,
     price: 100,
     students: [StudentLevels.LYC_E_SECONDE],
