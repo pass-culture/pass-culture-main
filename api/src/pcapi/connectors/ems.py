@@ -150,9 +150,10 @@ class EMSBookingConnector:
             return
 
         if content.get("statut") != 1:
-            if content["code_erreur"] == 104:
+            error_code = content["code_erreur"]
+            if error_code == 104 or error_code == 106:
                 raise ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
-            raise EMSAPIException(f"Error on EMS API with {content['code_erreur']} - {content['message_erreur']}")
+            raise EMSAPIException(f"Error on EMS API with {error_code} - {content['message_erreur']}")
 
     def _build_headers(self) -> dict[str, str]:
         """

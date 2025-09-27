@@ -153,7 +153,14 @@ class EMSBookTicketTest:
         assert tickets[1].barcode == "000000144660"
         assert tickets[1].seat_number == ""
 
-    def test_we_handle_no_session_left_case(self, requests_mock):
+    @pytest.mark.parametrize(
+        "error_payload",
+        [
+            {"statut": 0, "code_erreur": 104, "message_erreur": "Il n'y a plus de séance disponible pour ce film"},
+            {"statut": 0, "code_erreur": 106, "message_erreur": "La séance n'est plus disponible à la vente"},
+        ],
+    )
+    def test_we_handle_no_session_left_case(self, error_payload, requests_mock):
         token = "AAAAAA"
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         showtime_stock = offers_factories.EventStockFactory()
@@ -176,13 +183,7 @@ class EMSBookTicketTest:
         }
         url = self._build_url("VENTE/", payload_reservation)
 
-        expected_data = {
-            "statut": 0,
-            "code_erreur": 104,
-            "message_erreur": "Il n'y a plus de séance disponible pour ce film",
-        }
-
-        requests_mock.post(url, json=expected_data, headers={"Source": settings.EMS_API_BOOKING_HEADER})
+        requests_mock.post(url, json=error_payload, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
         client = EMSClientAPI(cinema_id=cinema_id)
 
