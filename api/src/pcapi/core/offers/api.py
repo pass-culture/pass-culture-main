@@ -213,7 +213,6 @@ def create_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
     product: offers_models.Product | None = None,
-    is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
@@ -225,7 +224,10 @@ def create_draft_offer(
 
     validation.check_offer_name_does_not_contain_ean(body.name)
     body_ean = body.extra_data.pop("ean", None)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
+    validation.check_offer_extra_data(
+        body.subcategory_id, body.extra_data, venue, is_from_private_api=True, ean=body_ean
+    )
+    validation.check_duration_minutes(body.duration_minutes, is_from_private_api=True)
 
     if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
         validation.check_accessibility_compliance(
@@ -379,6 +381,10 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
             offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer, ean=body_ean
         )
 
+    if "durationMinutes" in updates:
+        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
+        validation.check_duration_minutes(duration_minutes, is_from_private_api=True)
+
     changes = {key: {"old": getattr(offer, key), "new": new_value} for key, new_value in updates.items()}
     on_commit(partial(logger.info, "update draft offer", extra={"offer": offer.id, "changes": changes}))
 
@@ -419,6 +425,7 @@ def create_offer(
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
+    validation.check_duration_minutes(body.duration_minutes, is_from_private_api)
 
     fields = body.dict(by_alias=True)
 
@@ -550,6 +557,10 @@ def update_offer(
             booking_contact=booking_contact,
             provider=offer.lastProvider,
         )
+
+    if "durationMinutes" in updates:
+        duration_minutes = get_field(offer, updates, "durationMinutes", aliases=aliases)
+        validation.check_duration_minutes(duration_minutes, is_from_private_api)
 
     validation.check_validation_status(offer)
     if offer.lastProvider is not None:
