@@ -1175,7 +1175,7 @@ class CreateMediationV2Test:
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1194,7 +1194,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer 4759217254634",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1226,7 +1226,7 @@ class CreateDraftOfferTest:
             venue=venue,
         )
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1240,7 +1240,7 @@ class CreateDraftOfferTest:
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1251,7 +1251,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
@@ -1264,7 +1264,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
@@ -1276,7 +1276,7 @@ class CreateDraftOfferTest:
 
     def test_create_draft_offer_with_video_url(self):
         venue = offerers_factories.VenueFactory()
-        body = offers_schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -4830,7 +4830,7 @@ class DeleteUnbookableUnusedOldOffersTest:
     def test_old_offer_without_any_stock_id_deleted(self):
         offer_id = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago).id
 
-        api.delete_unbookable_unbooked_old_offers()
+        api.delete_unbookable_unbooked_old_offers(max_id=offer_id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])
 
     def test_old_offer_with_unbookable_stocks_and_more_is_deleted(self):
@@ -4841,7 +4841,7 @@ class DeleteUnbookableUnusedOldOffersTest:
         users_factories.FavoriteFactory(offer=offer)
         factories.OfferReportFactory(offer=offer)
 
-        api.delete_unbookable_unbooked_old_offers()
+        api.delete_unbookable_unbooked_old_offers(max_id=offer.id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])
 
     def test_recent_or_still_bookable_old_offers_are_ignored(self):
@@ -4853,15 +4853,18 @@ class DeleteUnbookableUnusedOldOffersTest:
             offer__dateCreated=self.a_year_ago,
             offer__dateUpdated=self.a_year_ago,
         ).offer
+        old_bookable_offer_id = old_bookable_offer.id
+
         # recent -> should be ignored (event if it is not bookable, eg. it has no stocks)
         recent_offer = factories.OfferFactory()
+        recent_offer_id = recent_offer.id
 
-        api.delete_unbookable_unbooked_old_offers()
+        api.delete_unbookable_unbooked_old_offers(max_id=offer_id * 2)
         db.session.flush()
         assert_offers_have_been_completely_cleaned([offer_id])
 
-        assert db.session.get(models.Offer, old_bookable_offer.id) is not None
-        assert db.session.get(models.Offer, recent_offer.id) is not None
+        assert db.session.get(models.Offer, old_bookable_offer_id) is not None
+        assert db.session.get(models.Offer, recent_offer_id) is not None
 
 
 @pytest.mark.usefixtures("db_session")
