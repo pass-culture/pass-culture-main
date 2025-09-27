@@ -751,16 +751,24 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         "Criterion", backref=sa_orm.backref("criteria", lazy="dynamic"), secondary=OfferCriterion.__table__
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        db_utils.TimezonedDatetime, nullable=False, default=datetime.datetime.utcnow
     )
-    dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    dateModifiedAtLastProvider = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True, default=datetime.datetime.utcnow
+    )
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        db_utils.TimezonedDatetime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
 
-    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
+    publicationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
+    bookingAllowedDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
+        db_utils.TimezonedDatetime, nullable=True
+    )
 
     _description = sa_orm.mapped_column("description", sa.Text, nullable=True)
     _durationMinutes = sa_orm.mapped_column("durationMinutes", sa.Integer, nullable=True)
@@ -950,7 +958,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @hybrid_property
     def _released(self) -> bool:
-        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now = datetime.datetime.now(datetime.UTC)
         return self.validation == OfferValidationStatus.APPROVED and (
             self.publicationDatetime is not None and self.publicationDatetime <= now
         )
@@ -1099,7 +1107,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     @property
     def searchableStocks(self) -> list[Stock]:
-        now = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now = datetime.datetime.now(datetime.timezone.utc)
         if (
             self.publicationDatetime
             and self.publicationDatetime <= now
@@ -1208,7 +1216,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         if self.validation == OfferValidationStatus.DRAFT:
             return OfferStatus.DRAFT
 
-        now_utc = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now_utc = datetime.datetime.now(datetime.timezone.utc)
 
         if not self.publicationDatetime:
             return OfferStatus.INACTIVE

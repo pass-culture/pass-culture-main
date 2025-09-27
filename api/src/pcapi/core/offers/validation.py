@@ -811,7 +811,10 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
     """
     errors = []
 
-    if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
+    # TODO(jbaudet - 09/2025) remove call to replace() when
+    # Offer.bookingAllowedDatetime has been migrated to new custom
+    # datetime type that always return a timezone-aware object
+    if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime.replace(tzinfo=None):
         errors += [
             "the stock will not be published before its `bookingLimitDatetime`. Either change `bookingLimitDatetime` to a later date, or update the offer `publicationDatetime`"
         ]
