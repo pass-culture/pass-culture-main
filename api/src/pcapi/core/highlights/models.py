@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import psycopg2.extras
@@ -30,6 +31,11 @@ class Highlight(PcObject, Model):
     @property
     def mediation_url(self) -> str:
         return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
+
+    @property
+    def is_available(self) -> bool:
+        now = datetime.datetime.utcnow()
+        return self.availability_timespan.upper >= now and self.availability_timespan.lower < now
 
     __table_args__ = (
         sa.CheckConstraint('length("name") <= 200'),

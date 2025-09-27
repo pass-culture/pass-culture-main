@@ -30,6 +30,7 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.chronicles.models as chronicles_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.conf as finance_conf
+import pcapi.core.highlights.models as highlights_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
@@ -2660,3 +2661,48 @@ def extract_youtube_video_id(url: str) -> str | None:
         return match.group("video_id")
 
     return None
+
+
+def manage_highlight_requests(
+    highlight_ids: list[int], offer: offers_models.Offer
+) -> list[highlights_models.HighlightRequest]:
+    highlights = (
+        db.session.query(highlights_models.Highlight).filter(highlights_models.Highlight.id.in_(highlight_ids)).all()
+    )
+
+    if len(highlights) < len(highlight_ids):
+        raise exceptions.HighlightNotFoundException()
+    if any(not h.is_available for h in highlights):
+        raise exceptions.UnavailableHighlightException()
+
+    now = datetime.datetime.utcnow()
+    current_highlight_request = (
+        db.session.query(highlights_models.HighlightRequest)
+        .join(highlights_models.HighlightRequest.highlight)
+        .filter(
+            highlights_models.Highlight.availability_timespan.contains(now),
+            highlights_models.HighlightRequest.offerId == offer.id,
+        )
+        .options(sa_orm.joinedload(highlights_models.HighlightRequest.highlight))
+        .all()
+    )
+    current_highlight_ids = {highlight_request.highlight.id for highlight_request in current_highlight_request}
+    highlight_ids_to_delete = current_highlight_ids - set(highlight_ids)
+
+    db.session.query(highlights_models.HighlightRequest).filter(
+        highlights_models.HighlightRequest.highlightId.in_(highlight_ids_to_delete),
+        highlights_models.HighlightRequest.offerId == offer.id,
+    ).delete()
+
+    highlight_requests = [
+        highlight_request
+        for highlight_request in current_highlight_request
+        if highlight_request.highlightId not in highlight_ids_to_delete
+    ]
+    for highlight_id in set(highlight_ids) - current_highlight_ids:
+        highlight_request = highlights_models.HighlightRequest(offerId=offer.id, highlightId=highlight_id)
+        highlight_requests.append(highlight_request)
+        db.session.add(highlight_request)
+
+    db.session.flush()
+    return highlight_requests
