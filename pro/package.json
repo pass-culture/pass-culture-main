@@ -53,7 +53,6 @@
     "date-fns-tz": "3.2.0",
     "dompurify": "3.2.7",
     "downshift": "9.0.10",
-    "eslint-plugin-cypress": "5.1.1",
     "libphonenumber-js": "1.12.22",
     "react": "18.3.1",
     "react-avatar-editor": "13.0.2",
@@ -72,7 +71,6 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "@cypress/grep": "5.0.0",
-    "@eslint/compat": "1.4.0",
     "@hookform/devtools": "4.4.0",
     "@storybook/addon-a11y": "9.1.8",
     "@storybook/addon-docs": "9.1.8",
