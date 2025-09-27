@@ -432,7 +432,7 @@ class Pricing(PcObject, Model):
 
     bookingId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sa_orm.Mapped["bookings_models.Booking | None"] = sa_orm.relationship(
-        "Booking", foreign_keys=[bookingId], backref="pricings"
+        "Booking", foreign_keys=[bookingId], back_populates="pricings"
     )
     collectiveBookingId = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_booking.id"), index=True, nullable=True
