@@ -833,6 +833,25 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Date de début de la campagne : Information obligatoire ;"
         )
 
+    def test_create_campaign_action_history(self, authenticated_client, legit_user):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": False,
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 1
+        campaign = campaigns[0]
+        actions = campaign.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED
+        assert action.authorUser == legit_user
+
 
 class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
@@ -892,3 +911,36 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
 
         assert campaign.campaignDate == datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M")
         assert campaign.isActive is False
+
+    def test_edit_campaign_action_history(self, authenticated_client, legit_user):
+        campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign.id,
+            form={
+                "campaign_date": "2026-01-01T01:01",
+                "is_active": False,
+            },
+        )
+        assert response.status_code == 200
+        actions = campaign.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED
+        assert action.authorUser == legit_user
+        assert action.extraData == {
+            "modified_info": {
+                "campaignDate": {
+                    "new_info": "2026-01-01T01:01:00",
+                    "old_info": "2026-01-01T01:01:00",
+                },
+                "isActive": {
+                    "new_info": False,
+                    "old_info": True,
+                },
+            },
+        }

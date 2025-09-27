@@ -3,8 +3,12 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
+from sqlalchemy import orm as sa_orm
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -25,6 +29,7 @@ def list_campaigns() -> utils.BackofficeResponse:
     creation_form = forms.UserProfileRefreshCampaignForm()
     campaigns = (
         db.session.query(users_models.UserProfileRefreshCampaign)
+        .options(sa_orm.joinedload(users_models.UserProfileRefreshCampaign.action_history))
         .order_by(users_models.UserProfileRefreshCampaign.id)
         .all()
     )
@@ -52,6 +57,11 @@ def create_campaign() -> utils.BackofficeResponse:
         isActive=bool(form.is_active.data),
     )
     db.session.add(campaign)
+    history_api.add_action(
+        history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED,
+        author=current_user,
+        user_profile_refresh_campaign=campaign,
+    )
     db.session.flush()
     flash("Campagne de mise à jour de données créée avec succès.", "success")
 
@@ -93,16 +103,27 @@ def edit_campaign(campaign_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
-    campaign.isActive = form.is_active.data
-    campaign.campaignDate = form.campaign_date.data
-    db.session.add(campaign)
-    db.session.flush()
+    if (campaign.isActive != form.is_active.data) or (campaign.campaignDate != form.campaign_date.data):
+        history_api.add_action(
+            history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED,
+            author=current_user,
+            user_profile_refresh_campaign=campaign,
+            modified_info={
+                "isActive": {"old_info": campaign.isActive, "new_info": form.is_active.data},
+                "campaignDate": {"old_info": campaign.campaignDate, "new_info": form.campaign_date.data},
+            },
+        )
+        campaign.isActive = form.is_active.data
+        campaign.campaignDate = form.campaign_date.data
+        db.session.add(campaign)
+        db.session.flush()
 
-    flash("La campagne a été modifiée", "success")
+        flash("La campagne a été modifiée", "success")
 
     campaigns = (
         db.session.query(users_models.UserProfileRefreshCampaign)
         .filter(users_models.UserProfileRefreshCampaign.id == campaign_id)
+        .options(sa_orm.joinedload(users_models.UserProfileRefreshCampaign.action_history))
         .all()
     )
 
