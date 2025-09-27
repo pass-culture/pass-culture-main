@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import enum
 import re
 
 import pytz
@@ -17,6 +18,11 @@ EUR_TO_XPF_RATE = 1000 / 8.38
 XPR_TO_EUR_RATE = 1 / EUR_TO_XPF_RATE
 # Every amount is rounded to the nearest 5 XPF
 XPF_PRECISION = 5
+
+
+class CurrencyEnum(enum.Enum):
+    EUR = "EUR"
+    XPF = "XPF"
 
 
 def to_cents(amount_in_euros: decimal.Decimal | float) -> int:
@@ -42,6 +48,14 @@ def euros_to_xpf(amount_in_euros: decimal.Decimal | float) -> int:
 def xpf_to_euros(amount_in_xpf: int) -> decimal.Decimal:
     exponent = decimal.Decimal("0.01")
     return decimal.Decimal(amount_in_xpf / decimal.Decimal(EUR_TO_XPF_RATE)).quantize(exponent)
+
+
+def euros_to_currency(amount_in_euros: decimal.Decimal, currency: CurrencyEnum) -> int | decimal.Decimal:
+    if currency == CurrencyEnum.XPF:
+        return euros_to_xpf(amount_in_euros)
+    if currency == CurrencyEnum.EUR:
+        return amount_in_euros
+    raise NotImplementedError("Currency not implemented")
 
 
 def round_to_integer(amount: decimal.Decimal) -> int:

@@ -83,26 +83,45 @@ class Returns201Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     @pytest.mark.parametrize(
-        "input_json,error_json",
+        "is_caledonian,input_json,error_json",
         [
-            ({}, {"offerId": ["Ce champ est obligatoire"], "price": ["Ce champ est obligatoire"]}),
-            ({"offerId": 43, "price": "coucou"}, {"price": ["Saisissez un nombre valide"]}),
+            (False, {}, {"offerId": ["Ce champ est obligatoire"], "price": ["Ce champ est obligatoire"]}),
+            (False, {"offerId": 43, "price": "coucou"}, {"price": ["Saisissez un nombre valide"]}),
             (
+                False,
                 {"offerId": 43, "price": 12, "bookingLimitDatetime": "", "activationCodesExpirationDatetime": ""},
                 {
                     "activationCodesExpirationDatetime": ["Format de date invalide"],
                     "bookingLimitDatetime": ["Format de date invalide"],
                 },
             ),
-            ({"offerId": 43, "price": float("NaN")}, {"price": ["La valeur n'est pas un nombre décimal valide"]}),
             (
+                False,
+                {"offerId": 43, "price": float("NaN")},
+                {"price": ["La valeur n'est pas un nombre décimal valide"]},
+            ),
+            (
+                False,
                 {"offerId": 43, "price": 20, "quantity": 1234567890987654},
                 {"quantity": ["ensure this value is less than or equal to 1000000"]},
             ),
+            (True, {"price": 23866}, {"price23865": ["Le prix d’une offre ne peut excéder 23865 francs Pacifique."]}),
         ],
     )
-    def test_should_raise_because_of_invalid_data(self, input_json, error_json, client):
-        offerers_factories.UserOffererFactory(user__email="user@example.com")
+    def test_should_raise_because_of_invalid_data(self, is_caledonian, input_json, error_json, client):
+        if is_caledonian:
+            venue = offerers_factories.CaledonianVenueFactory()
+            offer = offers_factories.ThingOfferFactory.create(
+                isActive=False,
+                name="Offre calédonienne THING",
+                venue=venue,
+                validation=offers_models.OfferValidationStatus.DRAFT,
+            )
+            offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+            input_json["offerId"] = offer.id
+        else:
+            offerers_factories.UserOffererFactory(user__email="user@example.com")
+
         response = client.with_session_auth("user@example.com").post("/stocks", json=input_json)
 
         assert response.status_code == 400

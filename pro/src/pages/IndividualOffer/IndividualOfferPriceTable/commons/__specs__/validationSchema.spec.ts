@@ -1,3 +1,4 @@
+import { describe } from 'vitest'
 import * as yup from 'yup'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
@@ -25,32 +26,31 @@ const buildContext = (
   }
 }
 
-describe('PriceTableValidationSchema', () => {
-  const baseContext = buildContext()
-  const baseEntry = {
-    activationCodes: [],
-    activationCodesExpirationDatetime: '',
-    bookingLimitDatetime: '',
-    bookingsQuantity: undefined,
-    id: undefined,
-    label: 'Normal',
-    price: 10,
-    quantity: 5,
-    offerId: baseContext.offer.id,
-    remainingQuantity: null,
-  }
-  const baseFormValues: PriceTableFormValues = {
-    entries: [baseEntry],
-    isDuo: true,
-  } as unknown as PriceTableFormValues
+const baseContext = buildContext()
+const baseEntry = {
+  activationCodes: [],
+  activationCodesExpirationDatetime: '',
+  bookingLimitDatetime: '',
+  bookingsQuantity: undefined,
+  id: undefined,
+  label: 'Normal',
+  price: 10,
+  quantity: 5,
+  offerId: baseContext.offer.id,
+  remainingQuantity: null,
+}
+const baseFormValues: PriceTableFormValues = {
+  entries: [baseEntry],
+  isDuo: true,
+} as unknown as PriceTableFormValues
 
+describe('PriceTableValidationSchema validation error', () => {
   interface Case {
     description: string
     formValues: PriceTableFormValues
     context: PriceTableFormContext
     expectedErrors: string[]
   }
-
   const cases: Case[] = [
     {
       description: 'valid event form (creation)',
@@ -90,6 +90,27 @@ describe('PriceTableValidationSchema', () => {
       },
       context: baseContext,
       expectedErrors: ['Veuillez renseigner un prix'],
+    },
+    {
+      description: 'CREATION mode with maximum price limit in EUR reached',
+      formValues: {
+        ...baseFormValues,
+        entries: [{ ...baseEntry, price: 301 }],
+      },
+      context: baseContext,
+      expectedErrors: ['Veuillez renseigner un prix inférieur à 300 €'],
+    },
+    {
+      description: 'CREATION mode with maximum price limit in XPF reached',
+      formValues: {
+        ...baseFormValues,
+        entries: [{ ...baseEntry, price: 28370 }],
+      },
+      context: {
+        ...baseContext,
+        isCaledonian: true,
+      },
+      expectedErrors: ['Veuillez renseigner un prix inférieur à 23865 F'],
     },
     {
       description: 'quantity below 1 in creation triggers min error',
@@ -159,5 +180,51 @@ describe('PriceTableValidationSchema', () => {
 
       expect(collected).toEqual(expectedErrors)
     })
+  })
+})
+
+describe('PriceTableValidationSchema validation success', () => {
+  it(`should validate and keep price in EUR when not isCaledonian`, async () => {
+    const formValues = {
+      ...baseFormValues,
+      entries: [{ ...baseEntry, price: 200 }],
+    }
+    const context = {
+      ...baseContext,
+      isCaledonian: false,
+    }
+    const schema = PriceTableValidationSchema
+    const validatedFormValues = await schema.validate(formValues, {
+      abortEarly: false,
+      context: {
+        ...context,
+        isCaledonian: context.isCaledonian,
+        mode: context.mode,
+        offer: context.offer,
+      },
+    })
+    expect(validatedFormValues.entries[0].price).toBe(200)
+  })
+
+  it(`should validate and convert price from XPF to EUR when isCaledonian`, async () => {
+    const formValues = {
+      ...baseFormValues,
+      entries: [{ ...baseEntry, price: 2000 }],
+    }
+    const context = {
+      ...baseContext,
+      isCaledonian: true,
+    }
+    const schema = PriceTableValidationSchema
+    const validatedFormValues = await schema.validate(formValues, {
+      abortEarly: false,
+      context: {
+        ...context,
+        isCaledonian: context.isCaledonian,
+        mode: context.mode,
+        offer: context.offer,
+      },
+    })
+    expect(validatedFormValues.entries[0].price).toBe(16.76)
   })
 })
