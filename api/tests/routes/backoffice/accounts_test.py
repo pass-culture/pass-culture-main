@@ -5505,3 +5505,85 @@ class TagPublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {"tags": {"old_info": ["Ambassadeur A"], "new_info": None}}
+
+
+class GetBatchValidateIndividualBookingsFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_validate_individual_bookings_form"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_cancel_individual_bookings_form"
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class MarkBookingAsCancelledTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_cancelled"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class MarkBookingAsUsedTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_used"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class BatchValidateIndividualBookingsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_validate_individual_bookings"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class BatchCancelIndividualBookingsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_cancel_individual_bookings"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class GetBatchTagFraudulentBookingsFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_tag_fraudulent_bookings_form"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+
+class BatchTagFraudulentBookingsTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_tag_fraudulent_bookings"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+
+class GetBatchRemoveFraudulentBookingTagFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_batch_remove_fraudulent_booking_tag_form"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+
+class BatchRemoveFraudulentBookingTagTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.batch_remove_fraudulent_booking_tag"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+
+class GetIndividualBookingsOverpaymentCreationFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_individual_bookings_overpayment_creation_form"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_INCIDENTS
+
+
+class GetIndividualBookingsCommercialGestureCreationFormTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_individual_bookings_commercial_gesture_creation_form"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_INCIDENTS
+
+
+class CreateIndividualBookingOverpaymentTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.create_individual_booking_overpayment"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_INCIDENTS
+
+
+class CreateIndividualBookingCommercialGestureTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.create_individual_booking_commercial_gesture"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.CREATE_INCIDENTS

@@ -33,6 +33,12 @@ class PcTableManager extends PcAddOn {
     if (configuration === null){
       return defaultConfiguration
     }
+    if (!defaultConfiguration.displayMenu){
+      return defaultConfiguration
+    }
+
+    configuration.displayMenu = defaultConfiguration.displayMenu
+
     // create mappings to move from two quadratic expressions to four linear ones
     const columns = configuration.columns.reduce((map, obj) => {
       map[obj.id] = obj;
@@ -86,7 +92,8 @@ class PcTableManager extends PcAddOn {
     let headerNumber = 0
     const configuration = {
       id: $table.dataset.pcTableManagerId,
-      columns: []
+      displayMenu: String($table.dataset.pcTableMenuHide).toLowerCase() !== "true",
+      columns: [],
     }
     $table.querySelectorAll("th").forEach(($column) => {
       headerNumber++
@@ -107,6 +114,9 @@ class PcTableManager extends PcAddOn {
   }
   /** MENU **/
   #initializeMenu = ($table, configuration) => {
+    if(!configuration.displayMenu){
+      return
+    }
     let $container
     if ($table.dataset.pcTableMenuContainerId){
       $container = document.querySelector('#' + $table.dataset.pcTableMenuContainerId)
@@ -147,6 +157,10 @@ class PcTableManager extends PcAddOn {
   }
 
   #updateMenuContent = (configuration) => {
+    if(!configuration.displayMenu){
+      return
+    }
+
     const $container = document.querySelector(`#pc-table-manager-menu-container-${configuration.id}`)
     const elements = []
     configuration.columns.forEach((column) => {
@@ -457,7 +471,9 @@ class PcTableManager extends PcAddOn {
   }
 
   saveConfiguration = (configuration) => {
-    localStorage.setItem(this.#getConfigurationUniqueId(configuration.id), JSON.stringify(configuration))
+    if (configuration.displayMenu){
+      localStorage.setItem(this.#getConfigurationUniqueId(configuration.id), JSON.stringify(configuration))
+    }
   }
 
   getConfiguration = (configurationId) => {
