@@ -11,6 +11,7 @@ from pydantic.v1.tools import parse_obj_as
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
@@ -401,7 +402,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             )
 
             if not seats_to_book:
-                raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable seats to book for show={show.id}")
+                raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
 
         assert show_voucher_type.tariff
 
