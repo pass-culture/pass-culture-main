@@ -111,62 +111,53 @@ def get_capped_offers_for_filters(
                 models.Offer.url,
                 models.Offer.publicationDatetime,
                 models.Offer.bookingAllowedDatetime,
-            ).joinedload(models.Offer.headlineOffers)
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.venue)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.isVirtual,
-            )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
-            sa_orm.joinedload(models.Offer.venue)
-            .joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.Offer.venue)
-            .joinedload(offerers_models.Venue.offererAddress)
-            .with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+            ).selectinload(models.Offer.headlineOffers),
+            sa_orm.joinedload(models.Offer.venue).options(
+                sa_orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.departementCode,
+                    offerers_models.Venue.isVirtual,
+                )
+                .joinedload(offerers_models.Venue.managingOfferer)
+                .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).options(
+                    sa_orm.joinedload(offerers_models.OffererAddress.address),
+                    sa_orm.with_expression(
+                        offerers_models.OffererAddress._isLinkedToVenue,
+                        offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                    ),
+                ),
             ),
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.stocks).load_only(
+            sa_orm.selectinload(models.Offer.stocks).load_only(
                 models.Stock.id,
                 models.Stock.beginningDatetime,
                 models.Stock.bookingLimitDatetime,
                 models.Stock.quantity,
                 models.Stock.dnBookedQuantity,
                 models.Stock.isSoftDeleted,
-            )
-        )
-        .options(
-            sa_orm.joinedload(models.Offer.mediations).load_only(
+            ),
+            sa_orm.selectinload(models.Offer.mediations).load_only(
                 models.Mediation.id,
                 models.Mediation.credit,
                 models.Mediation.dateCreated,
                 models.Mediation.thumbCount,
                 models.Mediation.isActive,
-            )
-        )
-        .options(
+            ),
             sa_orm.joinedload(models.Offer.product)
             .load_only(
                 models.Product.id,
                 models.Product.thumbCount,
             )
-            .joinedload(models.Product.productMediations)
-        )
-        .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
-        .options(
-            sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+            .selectinload(models.Product.productMediations),
+            sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass),
+            sa_orm.joinedload(models.Offer.offererAddress).options(
+                sa_orm.joinedload(offerers_models.OffererAddress.address),
+                sa_orm.with_expression(
+                    offerers_models.OffererAddress._isLinkedToVenue,
+                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                ),
             ),
         )
         .limit(offers_limit)
@@ -938,19 +929,19 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
 
         if "offerer_address" in load_options:
             query = query.options(
-                sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                sa_orm.joinedload(models.Offer.offererAddress).options(
+                    sa_orm.joinedload(offerers_models.OffererAddress.address),
+                    sa_orm.with_expression(
+                        offerers_models.OffererAddress._isLinkedToVenue,
+                        offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                    ),
                 ),
-                sa_orm.defaultload(models.Offer.venue)
-                .joinedload(offerers_models.Venue.offererAddress)
-                .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.defaultload(models.Offer.venue)
-                .joinedload(offerers_models.Venue.offererAddress)
-                .with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                sa_orm.defaultload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress).options(
+                    sa_orm.with_expression(
+                        offerers_models.OffererAddress._isLinkedToVenue,
+                        offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                    ),
+                    sa_orm.joinedload(offerers_models.OffererAddress.address),
                 ),
             )
         if "pending_bookings" in load_options:
