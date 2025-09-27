@@ -11,6 +11,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   type CollectiveOffersStockResponseModel,
+  CollectiveOfferType,
   type GetOffererAddressResponseModel,
   type VenueListItemResponseModel,
 } from '@/apiClient/v1'
@@ -120,6 +121,8 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
+const offererId = '1'
+
 describe('CollectiveOffers', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
@@ -155,7 +158,7 @@ describe('CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
-            '1',
+            offererId,
             [CollectiveOfferDisplayedStatus.EXPIRED],
             undefined,
             undefined,
@@ -194,7 +197,7 @@ describe('CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
-            '1',
+            offererId,
             [
               CollectiveOfferDisplayedStatus.EXPIRED,
               CollectiveOfferDisplayedStatus.PREBOOKED,
@@ -265,7 +268,7 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
-            '1',
+            offererId,
             undefined,
             undefined,
             undefined,
@@ -294,7 +297,7 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
-            '1',
+            offererId,
             undefined,
             proVenues[0].id.toString(),
             undefined,
@@ -320,7 +323,7 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            '1',
+            offererId,
             undefined,
             undefined,
             undefined,
@@ -345,7 +348,7 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            '1',
+            offererId,
             undefined,
             undefined,
             undefined,
@@ -367,7 +370,10 @@ describe('CollectiveOffers', () => {
         })
 
         const offerTypeSelect = screen.getByLabelText('Type de l’offre')
-        await userEvent.selectOptions(offerTypeSelect, 'template')
+        await userEvent.selectOptions(
+          offerTypeSelect,
+          CollectiveOfferType.TEMPLATE
+        )
 
         const button = screen.getByRole('button', { name: 'Rechercher' })
 
@@ -376,13 +382,13 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            '1',
+            offererId,
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            'template',
+            CollectiveOfferType.TEMPLATE,
             undefined,
             undefined,
             undefined
@@ -482,7 +488,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
-        '1',
+        offererId,
         undefined,
         '666',
         undefined,
@@ -501,7 +507,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
-        '1',
+        offererId,
         undefined,
         proVenues[0].id.toString(),
         undefined,
@@ -522,7 +528,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
-        '1',
+        offererId,
         undefined,
         undefined,
         undefined,
@@ -561,7 +567,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         nameOrIsbn,
-        '1',
+        offererId,
         undefined,
         '666',
         undefined,
@@ -580,7 +586,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         nameOrIsbn,
-        '1',
+        offererId,
         undefined,
         proVenues[0].id.toString(),
         undefined,
@@ -599,7 +605,7 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         nameOrIsbn,
-        '1',
+        offererId,
         undefined,
         undefined,
         undefined,
@@ -652,13 +658,13 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
+        offererId,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        'offer',
+        CollectiveOfferType.OFFER,
         undefined,
         undefined,
         undefined
@@ -678,13 +684,13 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
+        offererId,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        'offer',
+        CollectiveOfferType.OFFER,
         undefined,
         CollectiveLocationType.ADDRESS,
         1
@@ -705,13 +711,13 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
+        offererId,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        'offer',
+        CollectiveOfferType.OFFER,
         undefined,
         CollectiveLocationType.TO_BE_DEFINED,
         null
@@ -732,13 +738,13 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
+        offererId,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        'offer',
+        CollectiveOfferType.OFFER,
         undefined,
         CollectiveLocationType.SCHOOL,
         null
@@ -756,13 +762,13 @@ describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_ST
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
+        offererId,
         undefined,
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        'offer',
+        CollectiveOfferType.OFFER,
         undefined,
         undefined,
         undefined
