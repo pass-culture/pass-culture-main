@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -15,7 +16,7 @@ from pcapi.utils.date import format_into_utc_date
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
-    def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
+    def test_create_event_stocks(self, mocked_async_index_offer_ids, client, caplog):
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         first_label = offers_factories.PriceCategoryLabelFactory(label="Tarif 1", venue=offer.venue)
@@ -44,8 +45,8 @@ class Returns201Test:
                 },
             ],
         }
-
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
+        with caplog.at_level(logging.INFO):
+            response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
 
         assert response.status_code == 201
 
@@ -67,6 +68,14 @@ class Returns201Test:
             [offer.id],
             [offer.id],
         ]
+
+        target_log_message = "Successfully created stock"
+        log = next(record for record in caplog.records if record.message == target_log_message)
+
+        assert log.technical_message_id == "stock.created"
+        log_extra_data = log.__dict__.get("extra")
+        assert log_extra_data.get("offer_id") == offer.id
+        assert log_extra_data.get("stock_id") == created_stocks[0].id
 
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_event_stocks_with_multi_price(self, mocked_async_index_offer_ids, client):
