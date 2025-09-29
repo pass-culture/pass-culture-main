@@ -12,8 +12,8 @@ from requests.auth import HTTPBasicAuth  # noqa: TID251
 
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
+from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
-from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.utils import requests
 
 
@@ -152,7 +152,11 @@ class EMSBookingConnector:
         if content.get("statut") != 1:
             error_code = content["code_erreur"]
             if error_code == 104 or error_code == 106:
-                raise ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+                # 104 = "Il n'y a plus de séance disponible pour ce film"
+                # 106 = "La séance n'est plus disponible à la vente"
+                raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
+            if error_code == 105:  # 105 = "La séance n'a pas été trouvée"
+                raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
             raise EMSAPIException(f"Error on EMS API with {error_code} - {content['message_erreur']}")
 
     def _build_headers(self) -> dict[str, str]:
