@@ -40,7 +40,9 @@ export const getSteps = ({
       canGoBeyondStep: (offer) => Boolean(offer.name),
     },
     {
-      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      id: isNewOfferCreationFlowFeatureActive
+        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
+        : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
       label: isNewOfferCreationFlowFeatureActive
         ? 'Localisation'
         : 'Informations pratiques',

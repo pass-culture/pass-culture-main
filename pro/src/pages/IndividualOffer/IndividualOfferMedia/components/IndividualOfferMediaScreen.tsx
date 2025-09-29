@@ -86,7 +86,9 @@ export const IndividualOfferMediaScreen = ({
       await navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: isNewOfferCreationFlowFeature
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })

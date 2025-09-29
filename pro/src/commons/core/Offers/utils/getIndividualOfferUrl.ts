@@ -28,6 +28,11 @@ const routes = {
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/pratiques`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/pratiques`,
   },
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION]: {
+    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/localisation`,
+    [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/localisation`,
+    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/localisation`,
+  },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/media`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/media`,

@@ -100,7 +100,7 @@ describe('useSaveOfferLocation', () => {
     expect(mutateMock).toHaveBeenCalledWith([GET_OFFER_QUERY_KEY, offerBase.id])
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding: false,
     })
