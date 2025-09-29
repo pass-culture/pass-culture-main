@@ -86,7 +86,6 @@ class CollectiveOfferTest:
                     "latitude": float(venue.offererAddress.address.latitude),
                     "longitude": float(venue.offererAddress.address.longitude),
                 },
-                "distance": None,
                 "id": offer.venue.id,
                 "imgUrl": None,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},

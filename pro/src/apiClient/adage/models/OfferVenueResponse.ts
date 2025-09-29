@@ -10,7 +10,6 @@ export type OfferVenueResponse = {
   city?: string | null;
   coordinates: Coordinates;
   departmentCode?: string | null;
-  distance?: number | null;
   id: number;
   imgUrl?: string | null;
   managingOfferer: OfferManagingOffererResponse;

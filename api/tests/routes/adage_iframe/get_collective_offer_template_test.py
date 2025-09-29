@@ -62,7 +62,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
             "address": venue_address.street,
             "city": venue_address.city,
             "coordinates": coordinates,
-            "distance": None,
             "id": offer.venue.id,
             "imgUrl": offer.venue.bannerUrl,
             "managingOfferer": {"name": offer.venue.managingOfferer.name},

@@ -92,11 +92,6 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
 
         for idx, response_offer in enumerate(response_offers):
             assert response_offer["id"] == offers[idx].id
-            # Ensure we rounded the distance
-            if idx == 2:
-                assert response_offer["venue"]["distance"] == 150
-            else:
-                assert response_offer["venue"]["distance"] == expected_distance
 
     def test_no_rows(self, client):
         iframe_client = _get_iframe_client(client)
@@ -231,7 +226,6 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
 
         for idx, response_offer in enumerate(response_offers):
             assert response_offer["id"] == playlist_offers[idx].id
-            assert response_offer["venue"]["distance"] == expected_distance if idx < 2 else 150
             assert response_offer["isFavorite"] == (
                 redactor.favoriteCollectiveOfferTemplates[0].id == response_offer["id"]
             )

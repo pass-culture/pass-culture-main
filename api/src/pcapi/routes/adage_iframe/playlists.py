@@ -24,6 +24,12 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
+def _format_distance(distance: float | None) -> Decimal | None:
+    if not distance:
+        return None
+    return Decimal.from_float(distance).quantize(Decimal("1.0"))
+
+
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
 @atomic()
 @spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
@@ -74,30 +80,13 @@ def get_classroom_playlist(
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
-            _serialize_collective_offer_template(
+            serializers.CollectiveOfferTemplateResponseModel.build(
                 offer=item.collective_offer_template,
                 is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                venue_distance=item.distanceInKm,
             )
             for item in playlist_items
         ]
     )
-
-
-def format_distance(distance: float | None) -> Decimal | None:
-    if not distance:
-        return None
-    return Decimal.from_float(distance).quantize(Decimal("1.0"))
-
-
-def _serialize_collective_offer_template(
-    offer: educational_models.CollectiveOfferTemplate, is_favorite: bool, venue_distance: float | None = None
-) -> serializers.CollectiveOfferTemplateResponseModel:
-    serialized_offer = serializers.CollectiveOfferTemplateResponseModel.build(offer=offer, is_favorite=is_favorite)
-
-    serialized_offer.venue.distance = format_distance(venue_distance)
-
-    return serialized_offer
 
 
 @blueprint.adage_iframe.route("/playlists/new_template_offers", methods=["GET"])
@@ -154,10 +143,9 @@ def new_template_offers_playlist(
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
         collectiveOffers=[
-            _serialize_collective_offer_template(
+            serializers.CollectiveOfferTemplateResponseModel.build(
                 offer=item.collective_offer_template,
                 is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-                venue_distance=item.distanceInKm,
             )
             for item in playlist_items
         ]
@@ -186,7 +174,7 @@ def get_local_offerers_playlist(
                 imgUrl=item.venue.bannerUrl,
                 publicName=item.venue.publicName,
                 name=item.venue.name,
-                distance=format_distance(item.distanceInKm),
+                distance=_format_distance(item.distanceInKm),
                 # TODO(OA): remove this when the virtual venues are migrated
                 city=item.venue.offererAddress.address.city if item.venue.offererAddress else None,
                 id=item.venue.id,
@@ -217,7 +205,7 @@ def get_new_offerers_playlist(
                 imgUrl=item.venue.bannerUrl,
                 publicName=item.venue.publicName,
                 name=item.venue.name,
-                distance=format_distance(item.distanceInKm),
+                distance=_format_distance(item.distanceInKm),
                 # TODO(OA): remove this when the virtual venues are migrated
                 city=item.venue.offererAddress.address.city if item.venue.offererAddress else None,
                 id=item.venue.id,
