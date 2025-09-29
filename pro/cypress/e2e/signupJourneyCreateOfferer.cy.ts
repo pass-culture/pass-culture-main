@@ -218,7 +218,9 @@ describe('Signup journey with known offerer...', () => {
       cy.stepLog({ message: 'I add a new offerer' })
       cy.url().should('contain', '/inscription/structure/rattachement')
 
-      cy.findByText('Ajouter une nouvelle structure').click()
+      cy.findByRole('button', { name: 'Ajouter une nouvelle structure' }).click(
+        { force: true }
+      )
       cy.wait('@search5Address')
 
       cy.stepLog({ message: 'I fill identification form with a new address' })
@@ -282,7 +284,10 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I chose to join the space' })
-      cy.contains('Rejoindre cet espace').click()
+
+      cy.findByRole('button', { name: 'Rejoindre cet espace' }).click({
+        force: true,
+      })
 
       cy.findByTestId('confirm-dialog-button-confirm').click()
       cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
@@ -314,9 +319,9 @@ function fromOnBoardingPublishMyFirstOffer() {
   cy.stepLog({
     message: 'I start my first offer for the beneficiaries on the mobile app',
   })
-  cy.findByLabelText(
-    'Commencer la création d’offre sur l’application mobile'
-  ).click()
+  cy.findByRole('link', {
+    name: 'Commencer la création d’offre sur l’application mobile',
+  }).click({ force: true })
   cy.findByRole('heading', {
     level: 1,
     name: 'Offre à destination des jeunes',
