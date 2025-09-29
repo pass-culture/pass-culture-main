@@ -99,7 +99,7 @@ def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule) ->
             | models.CustomReimbursementRule.subcategories.overlap(rule.subcategories)
         )
 
-    if rule.id:
+    if rule.id:  # False when creating the rule
         overlapping = overlapping.filter(models.CustomReimbursementRule.id != rule.id)
     conflicts = {str(rule_id) for (rule_id,) in overlapping.with_entities(models.CustomReimbursementRule.id)}
     if conflicts:

@@ -3535,6 +3535,7 @@ def validate_finance_overpayment_incident(
                     reason="NO_EVENT",
                 )
             else:
+                assert booking_incident.booking  # helps mypy
                 send_booking_cancellation_by_pro_to_beneficiary_email(
                     booking=booking_incident.booking,
                 )

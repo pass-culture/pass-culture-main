@@ -311,6 +311,7 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
                 pc_pro_path=urls.build_pc_pro_offer_path(offer),
             )
         else:
+            assert isinstance(booking, educational_models.CollectiveBooking)  # helps mypy
             offer = booking.collectiveStock.collectiveOffer
             connect_as[booking.id] = get_connect_as(
                 object_type="collective_offer",
@@ -318,8 +319,10 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
                 pc_pro_path=urls.build_pc_pro_offer_path(offer),
             )
 
-    bookings_total_amount = sum(booking.total_amount for booking in bookings)
-    reimbursement_pricings = [booking.reimbursement_pricing for booking in bookings if booking.reimbursement_pricing]
+    bookings_total_amount = sum(booking.total_amount for booking in bookings if booking)  # helps mypy
+    reimbursement_pricings = [
+        booking.reimbursement_pricing for booking in bookings if booking and booking.reimbursement_pricing
+    ]  # helps mypy
     initial_reimbursement_amount = sum(pricing.amount for pricing in reimbursement_pricings) * -1
 
     return render_template(
@@ -350,13 +353,15 @@ def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse
                 pc_pro_path=urls.build_pc_pro_offer_path(offer),
             )
         else:
+            assert isinstance(booking, educational_models.CollectiveBooking)  # helps mypy
             offer = booking.collectiveStock.collectiveOffer
             connect_as[offer.id] = get_connect_as(
                 object_type="collective_offer",
                 object_id=offer.id,
                 pc_pro_path=urls.build_pc_pro_offer_path(offer),
             )
-    bookings_total_amount = sum(booking.total_amount for booking in bookings)
+
+    bookings_total_amount = sum(booking.total_amount for booking in bookings if booking)  # helps mypy
 
     return render_template(
         "finance/incidents/get_commercial_gesture.html",
