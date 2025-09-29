@@ -435,6 +435,24 @@ class BookTicketTest:
 
         assert exc.value.remainingQuantity == expected_remaining_quantity
 
+    def test_should_raise_show_does_not_exist_error(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            status_code=400,
+            json={"code": 400, "message": "No showtime found"},
+        )
+        post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
+        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+            boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+
+        assert post_adapter.last_request == None
+
 
 class CancelBookingTest:
     def test_should_cancel_booking_with_success(self, requests_mock):
