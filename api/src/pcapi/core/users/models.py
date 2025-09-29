@@ -26,6 +26,7 @@ from sqlalchemy.sql.elements import BooleanClauseList
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import DepositType
 from pcapi.core.geography.models import IrisFrance
+from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.users import constants
 from pcapi.core.users import utils as users_utils
 from pcapi.models import Model
@@ -46,6 +47,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.finance.models import Deposit
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.fraud.models import BeneficiaryFraudReview
+    from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
@@ -174,6 +176,13 @@ class User(PcObject, Model, DeactivableMixin):
     __tablename__ = "user"
 
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="user")
+    action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        foreign_keys="ActionHistory.userId",
+        back_populates="user",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
+    )
     activity = sa_orm.mapped_column(sa.String(128), nullable=True)
     address = sa_orm.mapped_column(sa.Text, nullable=True)
     adminFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(

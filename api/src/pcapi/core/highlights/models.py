@@ -26,16 +26,19 @@ class Highlight(PcObject, Model):
         postgresql.TSRANGE, nullable=False
     )
     mediation_uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
-
-    @property
-    def mediation_url(self) -> str:
-        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
+    highlight_requests: sa_orm.Mapped[list["HighlightRequest"]] = sa_orm.relationship(
+        "HighlightRequest", back_populates="highlight"
+    )
 
     __table_args__ = (
         sa.CheckConstraint('length("name") <= 200'),
         sa.CheckConstraint('length("mediation_uuid") <= 100'),
         sa.CheckConstraint('length("description") <= 2000'),
     )
+
+    @property
+    def mediation_url(self) -> str:
+        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
 
 
 class HighlightRequest(PcObject, Model):
@@ -45,14 +48,14 @@ class HighlightRequest(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
     )
     offer: sa_orm.Mapped["offers_models.Offer"] = sa_orm.relationship(
-        "Offer", foreign_keys=[offerId], backref="highlight_requests"
+        "Offer", foreign_keys=[offerId], back_populates="highlight_requests"
     )
 
     highlightId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("highlight.id"), index=True, nullable=False
     )
     highlight: sa_orm.Mapped["Highlight"] = sa_orm.relationship(
-        "Highlight", foreign_keys=[highlightId], backref="highlight_requests"
+        "Highlight", foreign_keys=[highlightId], back_populates="highlight_requests"
     )
 
     __table_args__ = (

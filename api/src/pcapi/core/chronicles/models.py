@@ -1,12 +1,14 @@
 import datetime
 import enum
 import logging
+import typing
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.elements import BinaryExpression
 
+from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.users.models import User
@@ -17,6 +19,9 @@ from pcapi.utils import db as db_utils
 
 
 logger = logging.getLogger(__name__)
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.history.models import ActionHistory
 
 
 class ProductChronicle(PcObject, Model):
@@ -109,6 +114,14 @@ class Chronicle(PcObject, Model, DeactivableMixin):
         nullable=False,
         name="__content_ts_vector__",
     )
+
+    action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        back_populates="chronicle",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
+    )
+
     __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", _content_ts_vector, postgresql_using="gin"),)
 
     @hybrid_property

@@ -93,9 +93,6 @@ class ActionType(enum.Enum):
     CHRONICLE_UNPUBLISHED = "CHRONICLE_UNPUBLISHED"
 
 
-ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
-
-
 class ActionHistory(PcObject, Model):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
@@ -121,7 +118,6 @@ class ActionHistory(PcObject, Model):
     __tablename__ = "action_history"
 
     actionType: sa_orm.Mapped[ActionType] = sa_orm.mapped_column(db_utils.MagicEnum(ActionType), nullable=False)
-    sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash")
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     actionDate = sa_orm.mapped_column(
@@ -145,9 +141,7 @@ class ActionHistory(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=True
     )
     user: sa_orm.Mapped[users_models.User | None] = sa_orm.relationship(
-        "User",
-        foreign_keys=[userId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        "User", foreign_keys=[userId], back_populates="action_history"
     )
 
     # ActionHistory.offererId.is_(None) is used in a query, keep non-conditional index
@@ -155,18 +149,14 @@ class ActionHistory(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=True
     )
     offerer: sa_orm.Mapped["offerers_models.Offerer | None"] = sa_orm.relationship(
-        "Offerer",
-        foreign_keys=[offererId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        "Offerer", foreign_keys=[offererId], back_populates="action_history"
     )
 
     venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
     )
     venue: sa_orm.Mapped["offerers_models.Venue | None"] = sa_orm.relationship(
-        "Venue",
-        foreign_keys=[venueId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        "Venue", foreign_keys=[venueId], back_populates="action_history"
     )
 
     financeIncidentId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -175,7 +165,7 @@ class ActionHistory(PcObject, Model):
     financeIncident: sa_orm.Mapped["finance_models.FinanceIncident | None"] = sa_orm.relationship(
         "FinanceIncident",
         foreign_keys=[financeIncidentId],
-        backref=sa_orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
+        back_populates="action_history",
     )
 
     bankAccountId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -185,7 +175,7 @@ class ActionHistory(PcObject, Model):
     bankAccount: sa_orm.Mapped["finance_models.BankAccount | None"] = sa_orm.relationship(
         "BankAccount",
         foreign_keys=[bankAccountId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
     )
 
     ruleId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -195,7 +185,7 @@ class ActionHistory(PcObject, Model):
     rule: sa_orm.Mapped["offers_models.OfferValidationRule | None"] = sa_orm.relationship(
         "OfferValidationRule",
         foreign_keys=[ruleId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
     )
 
     chronicleId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -205,10 +195,10 @@ class ActionHistory(PcObject, Model):
     chronicle: sa_orm.Mapped[chronicles_models.Chronicle | None] = sa_orm.relationship(
         "Chronicle",
         foreign_keys=[chronicleId],
-        backref=sa_orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
+        back_populates="action_history",
     )
 
-    comment = sa_orm.mapped_column(sa.Text(), nullable=True)
+    comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
@@ -226,4 +216,5 @@ class ActionHistory(PcObject, Model):
         sa.Index("ix_action_history_bankAccountId", bankAccountId, postgresql_where=bankAccountId.is_not(None)),
         sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
         sa.Index("ix_action_history_chronicleId", chronicleId, postgresql_where=chronicleId.is_not(None)),
+        sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash"),
     )

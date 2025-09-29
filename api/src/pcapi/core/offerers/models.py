@@ -34,6 +34,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
 from pcapi.core.criteria.models import VenueCriterion
 from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import constants
 from pcapi.core.offerers.schemas import BannerMetaModel
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -60,6 +61,7 @@ from pcapi.utils.human_ids import humanize
 if typing.TYPE_CHECKING:
     import pcapi.core.bookings.models as bookings_models
     import pcapi.core.criteria.models as criteria_models
+    import pcapi.core.history.models as history_models
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
@@ -391,6 +393,13 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="venue")
+
+    action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        back_populates="venue",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
+    )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -1117,6 +1126,13 @@ class Offerer(
 
     allowedOnAdage: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, default=False, server_default=sa.sql.expression.false()
+    )
+
+    action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        back_populates="offerer",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
     )
 
     _street = sa_orm.mapped_column("street", sa.Text(), nullable=True)
