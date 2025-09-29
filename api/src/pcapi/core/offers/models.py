@@ -28,6 +28,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
+from pcapi.core.finance.models import CustomReimbursementRule
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.providers.models import Provider
@@ -50,7 +51,7 @@ logger = logging.getLogger(__name__)
 if typing.TYPE_CHECKING:
     import flask_sqlalchemy
 
-    from pcapi.core.artists.models import Artist
+    from pcapi.core.artist.models import Artist
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.criteria.models import Criterion
@@ -852,6 +853,10 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     )
     highlight_requests: sa_orm.Mapped[list[HighlightRequest]] = sa_orm.relationship(
         HighlightRequest, back_populates="offer"
+    )
+
+    custom_reimbursement_rules: sa_orm.Mapped[list["CustomReimbursementRule"]] = sa_orm.relationship(
+        "CustomReimbursementRule", back_populates="offer"
     )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")

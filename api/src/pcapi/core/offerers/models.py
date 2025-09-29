@@ -391,6 +391,12 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="venue"
     )
+    finance_incidents: sa_orm.Mapped[list["finance_models.FinanceIncident"]] = sa_orm.relationship(
+        "FinanceIncident", back_populates="venue"
+    )
+    custom_reimbursement_rules: sa_orm.Mapped[list["finance_models.CustomReimbursementRule"]] = sa_orm.relationship(
+        "CustomReimbursementRule", back_populates="venue"
+    )
 
     bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="venue")
 
@@ -1144,6 +1150,10 @@ class Offerer(
 
     managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship("Venue", back_populates="managingOfferer")
     bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="offerer")
+
+    custom_reimbursement_rules: sa_orm.Mapped[list["finance_models.CustomReimbursementRule"]] = sa_orm.relationship(
+        "CustomReimbursementRule", back_populates="offerer"
+    )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:

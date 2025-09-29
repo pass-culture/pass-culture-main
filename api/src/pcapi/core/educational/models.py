@@ -1759,6 +1759,19 @@ class CollectiveBooking(PcObject, models.Model):
         uselist=False,
     )
 
+    finance_events: sa_orm.Mapped[list["finance_models.FinanceEvent"]] = sa_orm.relationship(
+        "FinanceEvent", back_populates="collectiveBooking"
+    )
+    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship(
+        "Pricing", back_populates="collectiveBooking"
+    )
+    incidents: sa_orm.Mapped[list["finance_models.BookingFinanceIncident"]] = sa_orm.relationship(
+        "BookingFinanceIncident", back_populates="collectiveBooking"
+    )
+    payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship(
+        "Payment", back_populates="collectiveBooking"
+    )
+
     def cancel_booking(
         self,
         reason: CollectiveBookingCancellationReasons,

@@ -24,6 +24,7 @@ def send_finance_incident_emails(finance_incident: finance_models.FinanceInciden
     ] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
         booking = booking_finance_incident.booking or booking_finance_incident.collectiveBooking
+        assert booking  # helps mypy
         if isinstance(booking, bookings_models.Booking):
             offer = booking.stock.offer
         else:
@@ -90,6 +91,7 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
     ] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
         booking = booking_finance_incident.booking or booking_finance_incident.collectiveBooking
+        assert booking  # helps mypy
         if isinstance(booking, bookings_models.Booking):
             offer = booking.stock.offer
         else:

@@ -44,6 +44,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
+    from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.fraud.models import BeneficiaryFraudReview
@@ -270,6 +271,10 @@ class User(PcObject, Model, DeactivableMixin):
     )
     userBookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.userId", back_populates="user"
+    )
+    deposits: sa_orm.Mapped[list["Deposit"]] = sa_orm.relationship("Deposit", back_populates="user", uselist=True)
+    incidents: sa_orm.Mapped[list["BookingFinanceIncident"]] = sa_orm.relationship(
+        "BookingFinanceIncident", back_populates="beneficiary", uselist=True
     )
 
     # unaccent is not immutable, so it can't be used for an index.

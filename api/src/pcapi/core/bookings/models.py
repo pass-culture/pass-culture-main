@@ -218,6 +218,14 @@ class Booking(PcObject, Model):
     )
 
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="booking")
+    finance_events: sa_orm.Mapped[list["finance_models.FinanceEvent"]] = sa_orm.relationship(
+        "FinanceEvent", back_populates="booking"
+    )
+    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship("Pricing", back_populates="booking")
+    incidents: sa_orm.Mapped[list["finance_models.BookingFinanceIncident"]] = sa_orm.relationship(
+        "BookingFinanceIncident", back_populates="booking"
+    )
+    payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship("Payment", back_populates="booking")
 
     __table_args__ = (
         sa.Index("ix_booking_date_created", dateCreated),
