@@ -229,7 +229,12 @@ class Product(PcObject, Model, HasThumbMixin):
     )
 
     __table_args__ = (
-        sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Text), unique=True),
+        sa.Index(
+            "product_allocineId_idx",
+            sa.literal_column("(\"jsonData\" -> 'allocineId'::text)"),
+            postgresql_where=sa.text("""(("jsonData" ->> 'allocineId'::text) IS NOT NULL)"""),
+            unique=True,
+        ),
         sa.Index(
             "ix_product_visa",
             extraData["visa"].astext,

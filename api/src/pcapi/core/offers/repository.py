@@ -324,7 +324,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
-                typing.cast(sa_orm.QueryableAttribute, offerers_models.Venue.bannerUrl),
+                offerers_models.Venue._bannerUrl,
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.timezone,
             )
