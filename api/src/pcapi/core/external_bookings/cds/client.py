@@ -181,14 +181,17 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
+        """
+        Fetch all shows and filter them using `show_id`
+
+        :raise: `ExternalBookingShowDoesNotExistError` if no show has the given `show_id`
+        """
         data = self._authenticated_get(f"{self.base_url}shows")
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         for show in shows:
             if show.id == show_id:
                 return show
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
-        )
+        raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
 
     def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
         data = self._authenticated_get(f"{self.base_url}media")

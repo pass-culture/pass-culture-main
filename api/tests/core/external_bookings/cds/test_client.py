@@ -182,7 +182,7 @@ class CineDigitalServiceGetShowTest:
         )
 
         with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
-            with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+            with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
                 cine_digital_service.get_show(4)
 
         assert len(caplog.records) == 1
@@ -193,11 +193,6 @@ class CineDigitalServiceGetShowTest:
             "cinema_id": "test_id",
             "response": ONE_SHOW_RESPONSE_JSON,
         }
-
-        assert (
-            str(cds_exception.value)
-            == "Show #4 not found in Cine Digital Service API for cinemaId=test_id & url=https://accountid_test.apiUrl_test/"
-        )
 
     @pytest.mark.parametrize(
         "seatmap, expected_result",
