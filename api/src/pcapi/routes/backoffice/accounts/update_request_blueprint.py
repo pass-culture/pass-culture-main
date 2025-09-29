@@ -79,7 +79,7 @@ def _get_account_update_requests_query() -> sa_orm.Query:
                 users_models.User.firstName,
                 users_models.User.lastName,
                 users_models.User.email,
-                typing.cast(sa_orm.QueryableAttribute[str], users_models.User.phoneNumber),
+                users_models.User._phoneNumber,
                 users_models.User.dateOfBirth,
                 users_models.User.validatedBirthDate,
                 users_models.User.departementCode,

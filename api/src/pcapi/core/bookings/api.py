@@ -140,7 +140,7 @@ def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
                         offerers_models.Venue.publicName,
                         # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
                         offerers_models.Venue.timezone,
-                        typing.cast(sa_orm.QueryableAttribute, offerers_models.Venue.bannerUrl),
+                        offerers_models.Venue._bannerUrl,
                         offerers_models.Venue.isOpenToPublic,
                         offerers_models.Venue.venueTypeCode,
                     )

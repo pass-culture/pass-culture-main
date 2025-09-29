@@ -79,7 +79,7 @@ spectree = "1.5.7"
 # Do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = { version = "2.0.41", extras = ["mypy"] }
+sqlalchemy = { version = "2.0.43", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "2.19.0"
 transitions = "^0.9.3"
