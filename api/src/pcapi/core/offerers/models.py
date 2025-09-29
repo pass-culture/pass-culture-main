@@ -376,6 +376,13 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
+    cinemaProviderPivot: sa_orm.Mapped["providers_models.CinemaProviderPivot | None"] = sa_orm.relationship(
+        "CinemaProviderPivot", back_populates="venue", uselist=False
+    )
+    allocinePivot: sa_orm.Mapped["providers_models.AllocinePivot | None"] = sa_orm.relationship(
+        "AllocinePivot", back_populates="venue", uselist=False
+    )
+
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="venue"
     )
