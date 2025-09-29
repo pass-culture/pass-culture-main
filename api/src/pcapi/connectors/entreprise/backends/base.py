@@ -1,5 +1,3 @@
-import datetime
-
 from pcapi.connectors.entreprise import models
 from pcapi.utils import module_loading
 
@@ -30,7 +28,4 @@ class BaseBackend:
         raise NotImplementedError()
 
     def get_dgfip(self, siren: str) -> models.DgfipInfo:
-        raise NotImplementedError()
-
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
         raise NotImplementedError()

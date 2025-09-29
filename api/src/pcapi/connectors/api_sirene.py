@@ -1,6 +1,10 @@
-"""A client for the Sirene API on api.insee.fr
-
-Documentation of the API: https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee
+"""
+A client for Insee Sirene API, configured in SIRENE_BACKEND
+Documentation: https://www.sirene.fr/static-resources/documentation/sommaire_311.html
+Usage: Search Open Data about legal entities and structures with multiple criteria
+Use Enterprise API instead to find:
+- Open Data about a legal entity or structure with simple criteria, such as SIREN or SIRET,
+- Protected Data (for internal use only)
 """
 
 import datetime
@@ -8,15 +12,63 @@ import json
 import logging
 
 from pcapi import settings
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise.backends.base import BaseBackend
 from pcapi.utils import cache as cache_utils
+from pcapi.utils import module_loading
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
 
 CACHE_DURATION = datetime.timedelta(minutes=15)
+
+
+class InseeException(Exception):
+    pass
+
+
+class ApiException(InseeException):
+    pass  # error from the API itself
+
+
+class RateLimitExceeded(ApiException):
+    pass
+
+
+class InvalidFormatException(InseeException):
+    pass  # likely a SIREN or SIRET with the wrong number of digits
+
+
+class UnknownEntityException(InseeException):
+    pass  # SIREN or SIRET that does not exist
+
+
+class NonPublicDataException(InseeException):
+    # Some SIREN/SIRET is marked as "non diffusibles", which means
+    # that we cannot access information about them from the Sirene
+    # API.
+    pass
+
+
+def _get_backend() -> "BaseBackend":
+    backend_class = module_loading.import_string(settings.SIRENE_BACKEND)
+    return backend_class()
+
+
+def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
+    """Returns the list of SIREN which closure has been declared on the given date.
+    Closure date may be the same day, in the past or in the future.
+    """
+    return _get_backend().get_siren_closed_at_date(date_closed)
+
+
+class BaseBackend:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+        raise NotImplementedError()
+
+
+class TestingBackend(BaseBackend):
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+        return ["000099002", "900099003", "109599001"]
 
 
 class InseeBackend(BaseBackend):
@@ -33,23 +85,23 @@ class InseeBackend(BaseBackend):
             response = requests.get(url, headers=self.headers, timeout=self.timeout)
         except requests.exceptions.RequestException as exc:
             logger.exception("Network error on Sirene API", extra={"exc": exc, "url": url})
-            raise exceptions.ApiException(f"Network error on Sirene API: {url}") from exc
+            raise ApiException(f"Network error on Sirene API: {url}") from exc
         if response.status_code == 400:
-            raise exceptions.InvalidFormatException()
+            raise InvalidFormatException()
         if response.status_code == 403:
-            raise exceptions.NonPublicDataException()
+            raise NonPublicDataException()
         if response.status_code in (301, 404):
-            raise exceptions.UnknownEntityException()
+            raise UnknownEntityException()
         if response.status_code == 429:
             raise ValueError("Pass Culture exceeded Sirene API rate limit")
         if response.status_code in (500, 503):
-            raise exceptions.ApiException("Sirene API is unavailable")
+            raise ApiException("Sirene API is unavailable")
         if response.status_code != 200:
-            raise exceptions.ApiException(f"Unexpected {response.status_code} response from Sirene API: {url}")
+            raise ApiException(f"Unexpected {response.status_code} response from Sirene API: {url}")
         try:
             return response.json()
         except requests.exceptions.JSONDecodeError:
-            raise exceptions.ApiException(f"Unexpected non-JSON response from Sirene API: {url}")
+            raise ApiException(f"Unexpected non-JSON response from Sirene API: {url}")
 
     def _cached_get(self, subpath: str) -> dict:
         key_template = f"cache:sirene:{subpath}"

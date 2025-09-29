@@ -2,9 +2,6 @@ class EntrepriseException(Exception):
     pass  # base class, never raised directly
 
 
-SireneException = EntrepriseException
-
-
 class ApiException(EntrepriseException):
     pass  # error from the API itself
 
