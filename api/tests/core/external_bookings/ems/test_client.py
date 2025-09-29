@@ -10,8 +10,8 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
+from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
-from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 
 
 @pytest.mark.usefixtures("db_session")
@@ -187,9 +187,43 @@ class EMSBookTicketTest:
 
         client = EMSClientAPI(cinema_id=cinema_id)
 
-        with pytest.raises(ExternalBookingNotEnoughSeatsError) as exc:
+        with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
         assert exc.value.remainingQuantity == 0
+
+    def test_we_handle_show_does_not_exist(self, requests_mock):
+        token = "AAAAAA"
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
+        showtime_stock = offers_factories.EventStockFactory()
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, quantity=1, amount=7.15, stock=showtime_stock, token=token
+        )
+        cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="9997")
+        cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        payload_reservation = {
+            "num_cine": "9997",
+            "id_seance": "999700079979",
+            "qte_place": 1,
+            "pass_culture_price": 7.15,
+            "total_price": 7.15,
+            "email": beneficiary.email,
+            "num_pass_culture": str(beneficiary.id),
+            "num_cmde": token,
+        }
+        url = self._build_url("VENTE/", payload_reservation)
+
+        requests_mock.post(
+            url,
+            json={"statut": 0, "code_erreur": 105, "message_erreur": "La séance n'a pas été trouvée"},
+            headers={"Source": settings.EMS_API_BOOKING_HEADER},
+        )
+
+        client = EMSClientAPI(cinema_id=cinema_id)
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+            client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
 
 @pytest.mark.usefixtures("db_session")

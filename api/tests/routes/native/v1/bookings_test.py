@@ -553,7 +553,14 @@ class PostBookingTest:
         }
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
-    def test_handle_ems_empty_showtime_case(self, client, requests_mock):
+    @pytest.mark.parametrize(
+        "error_payload",
+        [
+            {"statut": 0, "code_erreur": 104, "message_erreur": "Il n'y a plus de séance disponible pour ce film"},
+            {"statut": 0, "code_erreur": 106, "message_erreur": "La séance n'est plus disponible à la vente"},
+        ],
+    )
+    def test_handle_ems_showtime_fully_booked_cases(self, error_payload, client, requests_mock):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
@@ -568,7 +575,7 @@ class PostBookingTest:
 
         requests_mock.post(
             url=re.compile(r"https://fake_url.com/VENTE/*"),
-            json={"code_erreur": 104, "message_erreur": "Il n'y a plus de séance disponible pour ce film", "statut": 0},
+            json=error_payload,
         )
 
         response = client.with_token(self.identifier).post(
@@ -578,6 +585,35 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "PROVIDER_STOCK_NOT_ENOUGH_SEATS"
+
+    @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
+    def test_handle_ems_showtime_does_not_exist_case(self, client, requests_mock):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+        requests_mock.post(
+            url=re.compile(r"https://fake_url.com/VENTE/*"),
+            json={"statut": 0, "code_erreur": 105, "message_erreur": "La séance n'a pas été trouvée"},
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "PROVIDER_SHOW_DOES_NOT_EXIST"
+        assert stock.isSoftDeleted
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
     @pytest.mark.parametrize(
