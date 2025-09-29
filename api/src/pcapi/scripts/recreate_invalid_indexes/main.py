@@ -4,6 +4,8 @@ This script is a Python version of the main.sql script. It drops and recreates
 a list of indexes that have been reported as invalid.
 
 It's designed to be run manually to fix database index issues.
+
+Link to script : https://github.com/pass-culture/pass-culture-main/blob/pc-38005-recreate-invalid-sql-indices/api/src/pcapi/scripts/recreate_invalid_indexes/main.py
 """
 
 import argparse
@@ -11,6 +13,8 @@ import logging
 import time
 import typing
 from contextlib import contextmanager
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import sqlalchemy as sa
 import sqlalchemy.exc
@@ -22,7 +26,8 @@ from pcapi.models import db
 
 logger = logging.getLogger(__name__)
 
-
+DATE_FORMAT = "%d-%m-%Y:%H:%M"
+LOCAL_TZ = ZoneInfo("Europe/Paris")
 INDEXES_TO_RECREATE = [
     (
         "ix_recredit_depositId",
@@ -137,6 +142,7 @@ def create_index(connection: sa.engine.Connection, index_name: str, index_defini
             if "lock timeout" in str(exc):
                 retry = True
                 logger.info("Failed due to lock timeout, retrying...")
+                time.sleep(attempts * 10)
         else:
             logger.info(f"Created index {index_name}")
 
@@ -155,9 +161,11 @@ def drop_index(connection: sa.engine.Connection, index_name: str, max_retries: i
             if "lock timeout" in str(exc):
                 retry = True
                 logger.info("Failed due to lock timeout, retrying...")
+                time.sleep(attempts * 10)
             elif "statement timeout" in str(exc):
                 retry = True
                 logger.info("Failed due to statement timeout, retrying...")
+                time.sleep(attempts * 10)
         else:
             logger.info(f"Dropped index {index_name}")
 
@@ -200,6 +208,16 @@ def create_missing_indexes(lock_timeout: int, statement_timeout: int, max_retrie
             create_index(connection, index_name, index_definition, max_retries=max_retries)
 
 
+def toggle_feature_flag(is_active: bool) -> None:
+    update_feature_query = """
+    UPDATE feature
+    SET "isActive" = :active_status
+    WHERE name = 'ENABLE_RECURRENT_CRON';
+    """
+    db.session.execute(sa.text(update_feature_query), params={"active_status": is_active})
+    db.session.commit()
+
+
 if __name__ == "__main__":
     app.app_context().push()
 
@@ -207,13 +225,24 @@ if __name__ == "__main__":
     parser.add_argument("--lock-timeout", type=int, default=5)
     parser.add_argument("--statement-timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=10)
-    parser.add_argument("--schedule-timestamp", type=int, default=int(time.time()))
+    parser.add_argument(
+        "--schedule-date",
+        type=str,
+        default=datetime.now(LOCAL_TZ).strftime(DATE_FORMAT),
+        help="Date et heure de planification au format DD-MM-YYYY:HH:MM. Par défaut, l'instant de lancement",
+    )
     args = parser.parse_args()
 
     now = int(time.time())
-    if args.schedule_timestamp > now:
-        time.sleep(args.schedule_timestamp - now)
+    scheduled_timestamp = int(datetime.strptime(args.schedule_date, DATE_FORMAT).replace(tzinfo=LOCAL_TZ).timestamp())
+    if scheduled_timestamp > now:
+        time_to_wait = scheduled_timestamp - now
+        logger.info("Recréation d'indexes planifiée pour %s. Attente de %s secondes", args.schedule_date, time_to_wait)
+        time.sleep(time_to_wait)
+        logger.info("Lancement de la recréation d'indexes")
 
+    toggle_feature_flag(is_active=False)  # désactive le FF au moment du lancement
     clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
     create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
     recreate_invalid_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
+    toggle_feature_flag(is_active=True)
