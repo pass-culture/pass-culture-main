@@ -41,6 +41,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
@@ -495,6 +496,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_eligible_for_search(self) -> bool:
+        if self.is_caledonian and not FeatureToggle.WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE.is_active():
+            return False
         return (
             bool(self.isOpenToPublic)
             and self.managingOfferer.isActive

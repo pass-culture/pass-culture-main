@@ -278,6 +278,22 @@ class ReindexOfferIdsTest:
             == serialization.Last30DaysBookingsRange.VERY_LOW.value
         )
 
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=False)
+    def test_caledonian_offer_is_not_indexed_before_launch_date(self):
+        offer_id = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory()).offer.id
+
+        assert search_testing.search_store["offers"] == {}
+        search.reindex_offer_ids([offer_id])
+        assert search_testing.search_store["offers"] == {}
+
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
+    def test_caledonian_offer_is_indexed_after_launch_date(self):
+        offer_id = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory()).offer.id
+
+        assert search_testing.search_store["offers"] == {}
+        search.reindex_offer_ids([offer_id])
+        assert offer_id in search_testing.search_store["offers"]
+
 
 class ReindexVenueIdsTest:
     def test_index_new_venue(self):
@@ -326,6 +342,23 @@ class ReindexVenueIdsTest:
 
         search.reindex_venue_ids([indexable_venue.id, venue1.id, venue2.id, venue3.id])
         assert search_testing.search_store["venues"].keys() == {indexable_venue.id}
+
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=False)
+    def test_caledonian_venue_is_not_indexed_before_launch_date(self):
+        offer_id = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory()).offer.id
+
+        assert search_testing.search_store["venues"] == {}
+        search.reindex_offer_ids([offer_id])
+        assert offer_id not in search_testing.search_store["offers"]
+
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
+    def test_caledonian_venue_is_indexed_after_launch_date(self):
+        venue = offerers_factories.CaledonianVenueFactory()
+        offers_factories.StockFactory(offer__venue=venue)
+
+        assert search_testing.search_store["offers"] == {}
+        search.reindex_venue_ids([venue.id])
+        assert search_testing.search_store["offers"] == {}
 
 
 @pytest.mark.settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
