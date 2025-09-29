@@ -501,7 +501,9 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(age_at_registration=19),
+            json=build_ubble_identification_v2_response(
+                age_at_registration=19, created_on=datetime.datetime.utcnow() - relativedelta(months=2)
+            ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
