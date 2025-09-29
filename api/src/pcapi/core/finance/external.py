@@ -10,6 +10,7 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
+from pcapi.notifications.internal import send_internal_message
 from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
@@ -90,8 +91,10 @@ def push_invoices(count: int) -> None:
 
     app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
 
+    invoice_ids = [e[0] for e in invoices]
+    encountered_error = False
+
     try:
-        invoice_ids = [e[0] for e in invoices]
         for invoice_id in invoice_ids:
             try:
                 backend_name = finance_backend.get_backend_name()
@@ -106,6 +109,7 @@ def push_invoices(count: int) -> None:
                     },
                 )
                 # Wait until next cron run to continue sync process
+                encountered_error = True
                 break
             else:
                 db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id == invoice_id).update(
@@ -120,15 +124,31 @@ def push_invoices(count: int) -> None:
                 time.sleep(time_to_sleep)
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
-        if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-            invoice_ids = [e[0] for e in invoices]
+
+        if not encountered_error:
             cashflow = (
                 db.session.query(finance_models.Cashflow)
                 .join(finance_models.Cashflow.invoices)
                 .filter(finance_models.Invoice.id.in_(invoice_ids))
                 .order_by(finance_models.Invoice.id)
-                .first()
+                .limit(1)
+                .one()
             )
-            assert cashflow  # helps mypy
             batch = cashflow.batch
-            export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
+            if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
+                export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
+
+            if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
+                send_internal_message(
+                    channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
+                    blocks=[
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"L'envoi des factures du ({batch.label}) sur l'outil comptable est terminé avec succès",
+                            },
+                        }
+                    ],
+                    icon_emoji=":large_green_circle:",
+                )
