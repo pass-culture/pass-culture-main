@@ -168,7 +168,9 @@ class AccountTest:
     def test_status_contains_subscription_status_when_eligible(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
 
-        expected_num_queries = 8  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking + achievement + action_history
+        expected_num_queries = (
+            7  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking + achievement
+        )
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -182,7 +184,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud check + action_history
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(email=self.identifier)
 
@@ -195,7 +197,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud check + action_history
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -210,7 +212,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud check + action_history
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -256,7 +258,7 @@ class AccountTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         client.with_token(user.email)
 
-        expected_num_queries = 9  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement + action_history
+        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
         assert response.status_code == 200
@@ -286,7 +288,7 @@ class AccountTest:
         )
 
         client.with_token(user.email)
-        expected_num_queries = 9  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement + action_history
+        expected_num_queries = 8  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + feature + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
@@ -312,9 +314,7 @@ class AccountTest:
     ):
         user = users_factories.UserFactory(age=18)
 
-        expected_num_queries = (
-            8  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement + action_history
-        )
+        expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
         features.ENABLE_CULTURAL_SURVEY = enable_cultural_survey
@@ -328,7 +328,7 @@ class AccountTest:
     def test_not_eligible_user_should_not_need_to_fill_cultural_survey(self, client):
         user = users_factories.UserFactory(age=4)
 
-        expected_num_queries = 7  # user + achievement + booking + deposit + ff + fraud check + action_history
+        expected_num_queries = 6  # user + achievement + booking + deposit + ff + fraud check
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -340,9 +340,7 @@ class AccountTest:
     def test_cultural_survey_disabled(self, client):
         user = users_factories.UserFactory(age=18)
 
-        expected_num_queries = (
-            8  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement + action_history
-        )
+        expected_num_queries = 7  # user + booking + deposit + feature + beneficiary_fraud_review * 2 + achievement
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):
@@ -373,8 +371,7 @@ class AccountTest:
         n_queries = 1  # get user session
         n_queries += 1  # get user
         n_queries += 1  # get bookings
-        n_queries += 1  # get all feature flages
-        n_queries += 1  # get user_profile_refresh_campaign
+        n_queries += 1  # get all feature flags
 
         with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
@@ -413,9 +410,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = (
-            8  # user(update) + user + achievements + bookings + deposit + ff + fraud check + action history
-        )
+        expected_num_queries = 7  # user(update) + user + achievements + bookings + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -425,7 +420,7 @@ class AccountTest:
     def test_currency_pacific_franc(self, client):
         user = users_factories.UserFactory(departementCode="988", postalCode="98818")
 
-        expected_num_queries = 8  # user*2 + achievements + bookings + deposit + ff + fraud check + action history
+        expected_num_queries = 7  # user*2 + achievements + bookings + deposit + ff + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
 
@@ -489,12 +484,12 @@ class AccountTest:
 
     def test_user_profile_has_expired_past_campaign(self, client):
         campaign_date = datetime.utcnow() - relativedelta(days=1)
-        before_campaign_date = campaign_date - relativedelta(days=1)
         users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date, isActive=True)
-        user = users_factories.PhoneValidatedUserFactory()
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user, dateCreated=before_campaign_date)
+        before_campaign_date = campaign_date - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_campaign_date)
 
         response = client.with_token(user.email).get("/native/v1/me")
+
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is True
 
@@ -525,6 +520,17 @@ class AccountTest:
         campaign_date = datetime.utcnow() + relativedelta(days=30)
         users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
         user = users_factories.PhoneValidatedUserFactory()
+
+        response = client.with_token(user.email).get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["hasProfileExpired"] is False
+
+    def test_free_beneficiary_profile_can_not_expire(self, client):
+        campaign_date = datetime.utcnow() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        before_campaign_date = campaign_date - relativedelta(days=1)
+        user = users_factories.FreeBeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_campaign_date)
 
         response = client.with_token(user.email).get("/native/v1/me")
 
