@@ -81,6 +81,29 @@ class ExternalFinanceTest:
         batch_label = invoices[0].cashflows[0].batch.label
         mock_export_csv_and_send_notification_emails_job.assert_called_once_with(batch_id, batch_label)
 
+    @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
+    @patch("pcapi.core.finance.external.send_internal_message")
+    def test_publish_invoices_sends_slack_notification(self, mock_send_internal_message):
+        invoices = finance_factories.InvoiceFactory.create_batch(
+            5, status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
+        )
+        external.push_invoices(10)
+        batch = invoices[0].cashflows[0].batch
+        assert mock_send_internal_message.call_count == 1
+
+        call_kwargs = mock_send_internal_message.call_args.kwargs
+        assert len(call_kwargs["blocks"]) == 1
+        call_block = call_kwargs["blocks"][0]
+        assert (
+            call_block["text"]["text"]
+            == f"L'envoi des factures du ({batch.label}) sur l'outil comptable est terminé avec succès"
+        )
+        assert call_block["text"]["type"] == "mrkdwn"
+        assert call_block["type"] == "section"
+
+        assert call_kwargs["channel"] == "channel"
+        assert call_kwargs["icon_emoji"] == ":large_green_circle:"
+
 
 class ExternalFinanceCommandTest:
     def test_push_bank_accounts_command(self, run_command, mocker):
