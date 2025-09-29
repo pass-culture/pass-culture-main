@@ -1323,7 +1323,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     except entreprise_exceptions.UnknownEntityException:
         mark_transaction_as_invalid()
         data["siren_error"] = "Ce SIREN est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
-    except entreprise_exceptions.SireneException as error:
+    except entreprise_exceptions.EntrepriseException as error:
         mark_transaction_as_invalid()
         data["siren_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
 

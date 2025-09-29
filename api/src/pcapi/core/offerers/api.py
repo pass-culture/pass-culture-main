@@ -38,7 +38,7 @@ from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
 from pcapi.connectors.entreprise import api as api_entreprise
-from pcapi.connectors.entreprise import exceptions as sirene_exceptions
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
 from pcapi.core import search
 from pcapi.core.bookings import api as bookings_api
@@ -1033,8 +1033,8 @@ def create_offerer(
     if is_new:
         try:
             insee_data = api_entreprise.get_siren_open_data(offerer.siren)
-        except sirene_exceptions.SireneException as exc:
-            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+        except entreprise_exceptions.EntrepriseException as exc:
+            logger.info("Could not fetch info from Entreprise API", extra={"exc": exc})
 
         auto_tag_new_offerer(offerer, insee_data, user)
 

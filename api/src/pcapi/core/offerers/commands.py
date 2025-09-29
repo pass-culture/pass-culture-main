@@ -6,8 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 import pcapi.utils.cron as cron_decorators
-from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors import api_sirene
 from pcapi.core.external.automations import venue as venue_automations
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -81,8 +80,8 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         query_date = datetime.date.today() - datetime.timedelta(days=2)
 
     try:
-        siren_list = sirene.get_siren_closed_at_date(query_date)
-    except entreprise_exceptions.SireneException as exc:
+        siren_list = api_sirene.get_siren_closed_at_date(query_date)
+    except api_sirene.InseeException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
     else:
         known_siren_list = [

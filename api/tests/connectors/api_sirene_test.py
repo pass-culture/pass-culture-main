@@ -3,24 +3,23 @@ import datetime
 import pytest
 import requests_mock
 
-from pcapi.connectors.entreprise import exceptions
-from pcapi.connectors.entreprise import sirene
+from pcapi.connectors import api_sirene
 
-from . import sirene_test_data
+from . import api_sirene_test_data
 
 
 @pytest.mark.parametrize(
     "status_code,expected_exception",
     [
-        (301, exceptions.UnknownEntityException),
-        (400, exceptions.InvalidFormatException),
-        (403, exceptions.NonPublicDataException),
-        (404, exceptions.UnknownEntityException),
-        (500, exceptions.ApiException),
-        (503, exceptions.ApiException),
+        (301, api_sirene.UnknownEntityException),
+        (400, api_sirene.InvalidFormatException),
+        (403, api_sirene.NonPublicDataException),
+        (404, api_sirene.UnknownEntityException),
+        (500, api_sirene.ApiException),
+        (503, api_sirene.ApiException),
     ],
 )
-@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.api_sirene.InseeBackend")
 def test_error_handling(status_code, expected_exception):
     with requests_mock.Mocker() as mock:
         mock.get(
@@ -28,10 +27,10 @@ def test_error_handling(status_code, expected_exception):
             status_code=status_code,
         )
         with pytest.raises(expected_exception):
-            sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
+            api_sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
 
 
-@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.api_sirene.InseeBackend")
 def test_error_handling_on_non_json_response():
     with requests_mock.Mocker() as mock:
         mock.get(
@@ -39,23 +38,23 @@ def test_error_handling_on_non_json_response():
             status_code=200,
             text="non-JSON content",
         )
-        with pytest.raises(exceptions.ApiException):
-            sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
+        with pytest.raises(api_sirene.ApiException):
+            api_sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
 
 
-@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.entreprise.backends.insee.InseeBackend")
+@pytest.mark.settings(SIRENE_BACKEND="pcapi.connectors.api_sirene.InseeBackend")
 def test_get_siren_closed_at_date():
     with requests_mock.Mocker() as mock:
         mock.get(
             "https://api.insee.fr/api-sirene/3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&curseur=*&nombre=1000",
             status_code=200,
-            json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE1,
+            json=api_sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE1,
         )
         mock.get(
             "https://api.insee.fr/api-sirene/3.11/siren?q=dateDernierTraitementUniteLegale:2025-01-21+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale&curseur=AoEpODg5Mjg4Mzc5&nombre=1000",
             status_code=200,
-            json=sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE2,
+            json=api_sirene_test_data.RESPONSE_CLOSED_SIREN_PAGE2,
         )
-        siren_list = sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
+        siren_list = api_sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
 
     assert siren_list == ["111111118", "222222226", "333333334", "555555556"]

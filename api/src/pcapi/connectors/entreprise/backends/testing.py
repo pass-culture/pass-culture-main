@@ -229,9 +229,6 @@ class TestingBackend(BaseBackend):
             verified_date=datetime.date.today() - datetime.timedelta(days=10),
         )
 
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
-        return ["000099002", "900099003", "109599001"]
-
     def get_siren_open_data(self, siren: str, with_address: bool = True) -> models.SirenInfo:
         self._check_siren(siren)
 

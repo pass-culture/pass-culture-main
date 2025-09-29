@@ -43,7 +43,7 @@ class CheckActiveOfferersTest:
 class CheckClosedOfferersTest:
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
-        "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
         return_value=["222222226", "333333334", "444444442", "666666664"],
     )
     def test_check_closed_offerers(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
@@ -75,7 +75,7 @@ class CheckClosedOfferersTest:
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
-        "pcapi.connectors.entreprise.sirene.get_siren_closed_at_date",
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
         return_value=["222222226", "333333334"],
     )
     def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
@@ -85,7 +85,7 @@ class CheckClosedOfferersTest:
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch("flask.current_app.redis_client.get", return_value=json.dumps(["111222337"]))
-    @patch("pcapi.connectors.entreprise.sirene.get_siren_closed_at_date", return_value=[])
+    @patch("pcapi.connectors.api_sirene.get_siren_closed_at_date", return_value=[])
     def test_check_scheduled_offerers(
         self, mock_get_siren_closed_at_date, mock_redis_client_get, mock_check_offerer_siren_task, app
     ):

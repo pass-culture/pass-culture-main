@@ -1,10 +1,12 @@
-"""A client for "API Entreprise": https://entreprise.api.gouv.fr/
+"""
+A client for API Entreprise, configured in ENTREPRISE_BACKEND: https://entreprise.api.gouv.fr/
 
 Documentation: https://entreprise.api.gouv.fr/developpeurs/
 Staging data: https://github.com/etalab/siade_staging_data
-
-For security reasons, non-public data should not be stored in pass Culture database.
-Data is not persistent on the platform after redis cache expiration.
+Usage: Find legal & administrative data from several sources, such as Insee, URSSAF, RCS, DGFiP, through Entreprise portal
+Warning: Some sources allow to access non-public data. For security and confidentiality reasons:
+- Always use Open Data routes if possible
+- Do not use Protected Data in public interfaces such as native & pro apps
 """
 
 import datetime

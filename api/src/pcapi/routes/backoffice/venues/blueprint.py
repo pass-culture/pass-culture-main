@@ -621,7 +621,7 @@ def get_entreprise_info(venue_id: int) -> utils.BackofficeResponse:
     except entreprise_exceptions.UnknownEntityException:
         mark_transaction_as_invalid()
         siret_error = "Ce SIRET est inconnu dans la base de données Sirene, y compris dans les non-diffusibles"
-    except entreprise_exceptions.SireneException:
+    except entreprise_exceptions.EntrepriseException:
         mark_transaction_as_invalid()
         siret_error = "Une erreur s'est produite lors de l'appel à API Entreprise"
 
