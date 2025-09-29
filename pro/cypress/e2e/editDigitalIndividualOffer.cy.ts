@@ -18,18 +18,19 @@ describe('Edit digital individual offers', () => {
       )
     })
 
-    it('An edited offer is displayed with 4 links', () => {
+    it('An edited offer is displayed with 5 links', () => {
       logInAndGoToPage(login1, '/offre/individuelle/1/recapitulatif/details')
 
       cy.contains('Récapitulatif')
       cy.injectAxe(DEFAULT_AXE_CONFIG)
       cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-      cy.stepLog({ message: 'I check that the 4 links are displayed' })
+      cy.stepLog({ message: 'I check that the 5 links are displayed' })
       cy.findByRole('link', { name: 'Lien actif Détails de l’offre' }).should(
         'exist'
       )
       cy.findByRole('link', { name: 'Informations pratiques' }).should('exist')
+      cy.findByRole('link', { name: 'Image et vidéo' }).should('exist')
       cy.findByRole('link', { name: 'Stock & Prix' }).should('exist')
       cy.findAllByRole('link', { name: 'Réservations' }).eq(1).should('exist')
     })

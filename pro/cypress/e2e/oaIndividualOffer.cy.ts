@@ -87,8 +87,37 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
-    // TODO: test video creation. This is only a workaround
-    cy.url().should('contain', '/creation/media')
+    cy.stepLog({ message: 'I fill in media' })
+    cy.findByLabelText('Importez une image').selectFile(
+      'cypress/data/librairie.jpeg',
+      {
+        force: true,
+      }
+    )
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.findByLabelText('Crédit de l’image').type(
+      'Les êtres les plus intelligents de l’univers'
+    )
+    cy.get('input[type=range]').setSliderValue(1.7)
+    cy.findByText('Importer').click()
+    cy.findByLabelText('Lien URL Youtube').type(
+      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
+    )
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
+
+    cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait('@getOffer')
 
@@ -223,36 +252,10 @@ describe('Create individual offers with OA', () => {
     cy.findByLabelText('Sous-catégorie *').select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
-    /* TODO: fix this
-    cy.findByLabelText('Importez une image').selectFile(
-      'cypress/data/librairie.jpeg',
-      {
-        force: true,
-      }
-    )
-    cy.findByLabelText('Crédit de l’image').type(
-      'Les êtres les plus intelligents de l’univers'
-    )
-    cy.get('input[type=range]').setSliderValue(1.7)
-
-    cy.findByText('Importer').click()*/
 
     cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
-
-    /* TODO: fix this
-    // With a 1.7x zoom, width=470 and height=705
-    cy.findAllByTestId('image-preview').then(($img) => {
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalWidth')
-        .and('eq', 470)
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalHeight')
-        .and('eq', 705)
-    })*/
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -275,8 +278,37 @@ describe('Create individual offers with OA', () => {
       responseTimeout: 60 * 1000,
     })
 
-    // TODO: test video creation. This is only a workaround
-    cy.url().should('contain', '/creation/media')
+    cy.stepLog({ message: 'I fill in media' })
+    cy.findByLabelText('Importez une image').selectFile(
+      'cypress/data/librairie.jpeg',
+      {
+        force: true,
+      }
+    )
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.findByLabelText('Crédit de l’image').type(
+      'Les êtres les plus intelligents de l’univers'
+    )
+    cy.get('input[type=range]').setSliderValue(1.7)
+    cy.findByText('Importer').click()
+    cy.findByLabelText('Lien URL Youtube').type(
+      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
+    )
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(
+      undefined,
+      {
+        ...DEFAULT_AXE_RULES,
+        rules: {
+          ...DEFAULT_AXE_RULES?.rules,
+          'label-title-only': { enabled: false },
+        },
+      },
+      cy.a11yLog
+    )
+
+    cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@getStocks'], {
       responseTimeout: 60 * 1000 * 2,
