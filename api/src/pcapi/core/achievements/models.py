@@ -33,12 +33,14 @@ class Achievement(PcObject, Model):
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
     )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], backref="achievements")
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="achievements")
 
     bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("booking.id"), nullable=False, index=True
     )
-    booking: sa_orm.Mapped["Booking"] = sa_orm.relationship("Booking", foreign_keys=[bookingId], backref="achievements")
+    booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
+        "Booking", foreign_keys=[bookingId], back_populates="achievements"
+    )
 
     name: sa_orm.Mapped[AchievementEnum] = sa_orm.mapped_column(db_utils.MagicEnum(AchievementEnum), nullable=False)
     unlockedDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
