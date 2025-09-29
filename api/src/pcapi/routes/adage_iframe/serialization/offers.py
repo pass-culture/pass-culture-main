@@ -2,7 +2,6 @@ import logging
 import typing
 from datetime import date
 from datetime import datetime
-from decimal import Decimal
 
 from pydantic.v1 import Field
 from pydantic.v1 import root_validator
@@ -61,7 +60,6 @@ class OfferVenueResponse(BaseModel):
     coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None
-    distance: Decimal | None
     bannerUrl: str | None = Field(alias="imgUrl")
 
     class Config:
@@ -69,7 +67,7 @@ class OfferVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
     @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
+    def from_orm(cls: type["OfferVenueResponse"], venue: offerers_models.Venue) -> "OfferVenueResponse":
         if venue.offererAddress is not None:
             source_address = venue.offererAddress.address
             address = source_address.street
@@ -98,7 +96,6 @@ class OfferVenueResponse(BaseModel):
             coordinates=coordinates,
             managingOfferer=venue.managingOfferer,
             adageId=venue.adageId,
-            distance=None,
             imgUrl=venue.bannerUrl,
         )
 

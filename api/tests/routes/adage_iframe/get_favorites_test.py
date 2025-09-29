@@ -57,7 +57,6 @@ class GetFavoriteOfferTest:
                             "latitude": float(collective_offer_template.venue.offererAddress.address.latitude),
                             "longitude": float(collective_offer_template.venue.offererAddress.address.longitude),
                         },
-                        "distance": None,
                         "id": collective_offer_template.venue.id,
                         "imgUrl": None,
                         "managingOfferer": {"name": collective_offer_template.venue.managingOfferer.name},
