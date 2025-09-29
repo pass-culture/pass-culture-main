@@ -1,14 +1,13 @@
-import enum
-
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.base import BaseQuery
 
 
 class ArtistModel(pydantic_v1.BaseModel):
     id: str
-    name: str | None
+    name: str
     description: str | None
     image: str | None
     image_author: str | None
@@ -76,11 +75,6 @@ class ArtistAliasQuery(BaseQuery):
     """
 
     model = ArtistAliasModel
-
-
-class DeltaAction(str, enum.Enum):
-    ADD = "add"
-    REMOVE = "remove"
 
 
 class DeltaArtistModel(ArtistModel):
