@@ -42,7 +42,7 @@ def test_offer_indexation_on_artist_cycle(app):
     offer = stock.offer
     assert search_testing.search_store["offers"] == {}
 
-    search.async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_UPDATE)
+    search.async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
     assert search_testing.search_store["offers"] == {}
 
     search.index_offers_of_artists_in_queue()
