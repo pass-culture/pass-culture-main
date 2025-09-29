@@ -128,7 +128,13 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
-            .load_only(Offerer.validationStatus, Offerer.isActive, Offerer.name)
+            .load_only(
+                Offerer.validationStatus,
+                Offerer.isActive,
+                Offerer.name,
+                Offerer.siren,  # Remove along with WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
+                Offerer.postalCode,  # Remove along with WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
+            )
         )
         .options(
             sa_orm.joinedload(Favorite.offer)

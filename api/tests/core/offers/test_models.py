@@ -6,6 +6,7 @@ from sqlalchemy import exc as sa_exc
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.utils.db as db_utils
 from pcapi.core.categories import subcategories
@@ -1057,3 +1058,17 @@ class OfferIsSearchableTest:
         factories.StockFactory(offer=offer)
 
         assert offer.is_eligible_for_search is is_eligible_for_search
+
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=False)
+    def test_caledonian_venue_is_note_eligible_for_search_before_launch_date(self):
+        venue = offerers_factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
+        offer = factories.StockFactory(offer__venue=venue).offer
+
+        assert offer.is_eligible_for_search is False
+
+    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
+    def test_caledonian_venue_is_eligible_for_search_after_launch_date(self):
+        venue = offerers_factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
+        offer = factories.StockFactory(offer__venue=venue).offer
+
+        assert offer.is_eligible_for_search is True
