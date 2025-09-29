@@ -58,10 +58,12 @@ from pcapi.utils.human_ids import humanize
 
 
 if typing.TYPE_CHECKING:
+    import pcapi.core.bookings.models as bookings_models
     import pcapi.core.criteria.models as criteria_models
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
+
 
 logger = logging.getLogger(__name__)
 
@@ -387,6 +389,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
         "HeadlineOffer", back_populates="venue"
     )
+
+    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="venue")
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -1123,6 +1127,7 @@ class Offerer(
     )
 
     managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship("Venue", back_populates="managingOfferer")
+    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="offerer")
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:

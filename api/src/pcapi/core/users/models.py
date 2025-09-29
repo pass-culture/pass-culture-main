@@ -41,6 +41,7 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 
 if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
+    from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.finance.models import Deposit
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
@@ -257,6 +258,9 @@ class User(PcObject, Model, DeactivableMixin):
     chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship("Chronicle", back_populates="user", uselist=True)
     beneficiaryFraudChecks: sa_orm.Mapped[list["BeneficiaryFraudCheck"]] = sa_orm.relationship(
         "BeneficiaryFraudCheck", back_populates="user", order_by="BeneficiaryFraudCheck.dateCreated"
+    )
+    userBookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship(
+        "Booking", foreign_keys="Booking.userId", back_populates="user"
     )
 
     # unaccent is not immutable, so it can't be used for an index.

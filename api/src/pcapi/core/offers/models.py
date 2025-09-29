@@ -357,6 +357,8 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
     )
 
+    bookings: sa_orm.Mapped[list["Booking"]] = sa_orm.relationship("Booking", back_populates="stock")
+
     __table_args__ = (
         sa.Index(
             "ix_stock_beginningDatetime_partial", beginningDatetime, postgresql_where=beginningDatetime.is_not(None)
