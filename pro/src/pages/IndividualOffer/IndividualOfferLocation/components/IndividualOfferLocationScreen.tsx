@@ -122,7 +122,7 @@ export const IndividualOfferLocationScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -158,7 +158,7 @@ export const IndividualOfferLocationScreen = ({
 
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION}
             isDisabled={
               form.formState.isSubmitting ||
               isOfferDisabled(offer) ||

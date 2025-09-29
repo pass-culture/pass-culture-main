@@ -230,7 +230,9 @@ export const OfferSection = ({
         title="Informations pratiques"
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: isNewOfferCreationFlowFeatureActive
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}

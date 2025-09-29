@@ -57,7 +57,7 @@ export function useSaveOfferLocation({
 
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
 
       navigate(

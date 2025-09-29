@@ -94,6 +94,31 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
     path: '/offre/individuelle/:offerId/pratiques',
     title: 'Informations pratiques - Consulter une offre individuelle',
   },
+  //  Localisation
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
+    path: '/offre/individuelle/:offerId/creation/localisation',
+    title: 'Localisation - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
+    path: '/offre/individuelle/:offerId/edition/localisation',
+    title: 'Localisation - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferSummary/IndividualOfferSummaryInformations/IndividualOfferSummaryInformations'
+      ),
+    path: '/offre/individuelle/:offerId/localisation',
+    title: 'Localisation - Consulter une offre individuelle',
+  },
   // Image & video (media) pages
   {
     lazy: () =>
@@ -242,7 +267,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
-  //  Description page
+  //  Description
   {
     lazy: () =>
       import(
@@ -261,7 +286,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     title: 'Description - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
-
+  //  Informations pratiques
   {
     lazy: () =>
       import(
@@ -269,6 +294,16 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  //  Localisation
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
+    title: 'Localisation - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {
