@@ -177,13 +177,19 @@ export function IndividualOfferSummaryDetailsScreen({
         )}
 
         <SummarySection
-          title="Détails de l’offre"
+          title={
+            isNewOfferCreationFlowFeatureActive
+              ? 'Description'
+              : 'Détails de l’offre'
+          }
           {...(cannotEditDetails
             ? {}
             : {
                 editLink: getIndividualOfferUrl({
                   offerId: offer.id,
-                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                  step: isNewOfferCreationFlowFeatureActive
+                    ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+                    : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                   mode: OFFER_WIZARD_MODE.EDITION,
                 }),
                 'aria-label': 'Modifier les détails de l’offre',

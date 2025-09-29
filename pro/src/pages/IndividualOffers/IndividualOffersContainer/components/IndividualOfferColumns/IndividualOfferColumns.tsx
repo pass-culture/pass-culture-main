@@ -19,7 +19,8 @@ import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
 export function getIndividualOfferColumns(
   headlineOffer: HeadLineOfferResponseModel | null,
-  isHeadlineOfferAllowedForOfferer: boolean
+  isHeadlineOfferAllowedForOfferer: boolean,
+  isNewOfferCreationFlowFFEnabled: boolean
 ): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
     {
@@ -32,7 +33,9 @@ export function getIndividualOfferColumns(
             offer.status === OFFER_STATUS_DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: isNewOfferCreationFlowFFEnabled
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         })
 
         return <OfferNameCell offer={offer} offerLink={offerLink} />
@@ -86,7 +89,9 @@ export function getIndividualOfferColumns(
             offer.status === OFFER_STATUS_DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: isNewOfferCreationFlowFFEnabled
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
         })
 
         const editionStockLink = getIndividualOfferUrl({

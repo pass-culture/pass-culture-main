@@ -10,6 +10,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import {
   FORMAT_DD_MM_YYYY_HH_mm,
   toDateStrippedOfTimezone,
@@ -39,12 +40,18 @@ export const BookingOfferCell = ({
   booking,
   className,
 }: BookingOfferCellProps) => {
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
+
   const offerUrl = booking.stock.offerIsEducational
     ? `/offre/${booking.stock.offerId}/collectif/recapitulatif`
     : getIndividualOfferUrl({
         offerId: booking.stock.offerId,
         mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: isNewOfferCreationFlowFeatureActive
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       })
 
   const eventBeginningDatetime = booking.stock.eventStartDatetime

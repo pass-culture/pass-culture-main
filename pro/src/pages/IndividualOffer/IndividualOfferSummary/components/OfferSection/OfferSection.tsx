@@ -12,6 +12,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -42,6 +43,10 @@ export const OfferSection = ({
     { fallbackData: [] }
   )
   const musicTypes = musicTypesQuery.data
+
+  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const offerData = serializeOfferSectionData(
     offer,
@@ -187,10 +192,16 @@ export const OfferSection = ({
   return (
     <>
       <SummarySection
-        title="Détails de l’offre"
+        title={
+          isNewOfferCreationFlowFeatureActive
+            ? 'Descritpion'
+            : 'Détails de l’offre'
+        }
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: isNewOfferCreationFlowFeatureActive
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}

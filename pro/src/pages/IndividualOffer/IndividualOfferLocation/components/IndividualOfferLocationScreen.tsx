@@ -113,7 +113,7 @@ export const IndividualOfferLocationScreen = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })

@@ -951,7 +951,7 @@ describe('IndividualOffers', () => {
       screen.getByRole('link', { name: 'Créer une offre' })
     ).toHaveAttribute(
       'href',
-      '/offre/individuelle/creation/details?from_banner=banner_video'
+      '/offre/individuelle/creation/description?from_banner=banner_video'
     )
   })
 

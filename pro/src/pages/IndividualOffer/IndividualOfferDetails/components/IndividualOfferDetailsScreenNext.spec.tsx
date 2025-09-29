@@ -604,13 +604,13 @@ describe('IndividualOfferDetailsScreenNext', () => {
       visualDisabilityCompliant: true,
     })
     expect(mockNavigate).toHaveBeenCalledWith(
-      '/offre/individuelle/12/creation/details',
+      '/offre/individuelle/12/creation/description',
       { replace: true }
     )
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
       {
-        from: 'details',
+        from: 'description',
         offerId: 12,
         offerType: 'individual',
         subcategoryId: 'physical',

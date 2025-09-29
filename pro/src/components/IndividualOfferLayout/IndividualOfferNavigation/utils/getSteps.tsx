@@ -31,7 +31,9 @@ export const getSteps = ({
 }): StepPattern[] => {
   const steps: StepPattern[] = [
     {
-      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+      id: isNewOfferCreationFlowFeatureActive
+        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+        : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
       label: isNewOfferCreationFlowFeatureActive
         ? 'Description'
         : 'Détails de l’offre',
