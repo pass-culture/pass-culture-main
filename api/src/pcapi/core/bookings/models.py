@@ -30,6 +30,7 @@ from pcapi.utils.human_ids import humanize
 
 
 if TYPE_CHECKING:
+    from pcapi.core.achievements.models import Achievement
     from pcapi.core.offerers import models as offerers_models
 
 
@@ -219,6 +220,8 @@ class Booking(PcObject, Model):
     fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag"] = sa_orm.relationship(
         "FraudulentBookingTag", back_populates="booking", uselist=False
     )
+
+    achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="booking")
 
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
         if self.is_used_or_reimbursed:

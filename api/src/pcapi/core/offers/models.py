@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 if typing.TYPE_CHECKING:
     import flask_sqlalchemy
 
+    from pcapi.core.artists.models import Artist
     from pcapi.core.bookings.models import Booking
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
@@ -216,6 +217,10 @@ class Product(PcObject, Model, HasThumbMixin):
         sa.CheckConstraint('"likesCount" >= 0', name="check_likes_count_is_positive"),
         nullable=False,
         server_default=sa.text("0"),
+    )
+
+    artists: sa_orm.Mapped[list["Artist"]] = sa_orm.relationship(
+        "Artist", back_populates="products", secondary="artist_product_link"
     )
 
     __table_args__ = (

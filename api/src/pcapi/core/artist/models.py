@@ -34,7 +34,7 @@ class ArtistProductLink(PcObject, Model):
     product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType))
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
@@ -49,12 +49,12 @@ class Artist(Model):
         sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4())
     )
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
-    computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    image_license_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_license_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
@@ -66,9 +66,9 @@ class Artist(Model):
     )
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
-        "Product", backref="artists", secondary=ArtistProductLink.__table__
+        "Product", back_populates="artists", secondary=ArtistProductLink.__table__
     )
-    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", backref="artist")
+    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", back_populates="artist")
 
     __table_args__ = (
         sa.Index(
@@ -98,11 +98,12 @@ class ArtistAlias(PcObject, Model):
     artist_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    artist_alias_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    artist_cluster_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType))
-    artist_wiki_data_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
-    offer_category_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text)
+    artist: sa_orm.Mapped[Artist] = sa_orm.relationship(Artist, foreign_keys=[artist_id], back_populates="aliases")
+    artist_alias_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    artist_cluster_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
+    artist_wiki_data_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    offer_category_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
