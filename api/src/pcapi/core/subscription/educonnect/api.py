@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def handle_educonnect_authentication(
     user: users_models.User, educonnect_user: educonnect_models.EduconnectUser
-) -> list[fraud_models.FraudReasonCode]:
+) -> list[fraud_models.FraudReasonCode] | None:
     educonnect_content = fraud_models.EduconnectContent(
         birth_date=educonnect_user.birth_date,
         civility=educonnect_user.civility if educonnect_user.civility else None,
