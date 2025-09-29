@@ -237,7 +237,14 @@ class BookingResponseGetterDict(GetterDict):
             booking_visible = is_external_event_booking_visible(offer=offer, stock=stock)
             return TicketResponse(
                 activation_code=None,
-                external_booking=ExternalBookingResponseV2(data=booking.externalBookings if booking_visible else None),
+                external_booking=ExternalBookingResponseV2(
+                    data=[
+                        ExternalBookingDataResponseV2(barcode=ext.barcode, seat=ext.seat)
+                        for ext in booking.externalBookings
+                    ]
+                    if booking_visible
+                    else None
+                ),
                 display=TicketDisplayEnum.QR_CODE if booking_visible else TicketDisplayEnum.NOT_VISIBLE,
                 token=None,
                 voucher=None,

@@ -105,21 +105,20 @@ class ExternalBooking(PcObject, Model):
     )
 
     booking: sa_orm.Mapped["Booking"] = sa_orm.relationship(
-        "Booking", foreign_keys=[bookingId], backref="externalBookings"
+        "Booking", foreign_keys=[bookingId], back_populates="externalBookings"
     )
 
     barcode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String, nullable=False)
 
-    seat = sa_orm.mapped_column(sa.String)
+    seat: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String, nullable=True)
 
-    additional_information: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(postgresql.JSONB)
+    additional_information: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(postgresql.JSONB, nullable=True)
 
 
 class Booking(PcObject, Model):
     __tablename__ = "booking"
 
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
-    sa.Index("ix_booking_date_created", dateCreated)
 
     dateUsed: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
@@ -128,7 +127,7 @@ class Booking(PcObject, Model):
     )
 
     stock: sa_orm.Mapped["offers_models.Stock"] = sa_orm.relationship(
-        "Stock", foreign_keys=[stockId], backref="bookings"
+        "Stock", foreign_keys=[stockId], back_populates="bookings"
     )
 
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -136,7 +135,7 @@ class Booking(PcObject, Model):
     )
 
     venue: sa_orm.Mapped["offerers_models.Venue"] = sa_orm.relationship(
-        "Venue", foreign_keys=[venueId], backref="bookings"
+        "Venue", foreign_keys=[venueId], back_populates="bookings"
     )
 
     offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -144,7 +143,7 @@ class Booking(PcObject, Model):
     )
 
     offerer: sa_orm.Mapped["offerers_models.Offerer"] = sa_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref="bookings"
+        "Offerer", foreign_keys=[offererId], back_populates="bookings"
     )
 
     quantity: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False, default=1)
@@ -154,13 +153,12 @@ class Booking(PcObject, Model):
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
     )
+    user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
+        "User", foreign_keys=[userId], back_populates="userBookings"
+    )
 
     activationCode: sa_orm.Mapped["offers_models.ActivationCode"] = sa_orm.relationship(
         "ActivationCode", uselist=False, back_populates="booking"
-    )
-
-    user: sa_orm.Mapped["users_models.User"] = sa_orm.relationship(
-        "User", foreign_keys=[userId], backref="userBookings"
     )
 
     amount: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
@@ -169,11 +167,11 @@ class Booking(PcObject, Model):
 
     cancellationDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    displayAsEnded = sa_orm.mapped_column(sa.Boolean, nullable=True)
+    displayAsEnded: sa_orm.Mapped[bool | None] = sa_orm.mapped_column(sa.Boolean, nullable=True)
 
-    cancellationLimitDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    cancellationLimitDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    cancellationReason = sa_orm.mapped_column(
+    cancellationReason: sa_orm.Mapped[BookingCancellationReasons | None] = sa_orm.mapped_column(
         "cancellationReason",
         sa.Enum(
             BookingCancellationReasons,
@@ -181,10 +179,9 @@ class Booking(PcObject, Model):
         ),
         nullable=True,
     )
-    sa.Index(
-        "ix_booking_cancellation_reason",
-        cancellationReason,
-        postgresql_where=cancellationReason.is_not(None),
+
+    externalBookings: sa_orm.Mapped[list[ExternalBooking]] = sa_orm.relationship(
+        ExternalBooking, back_populates="booking"
     )
 
     cancellationUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -193,35 +190,44 @@ class Booking(PcObject, Model):
     cancellationUser: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship(
         "User", foreign_keys=[cancellationUserId]
     )
-    # Index avoids timeout when any user is deleted (because of foreign key)
-    sa.Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None))
 
     status: sa_orm.Mapped[BookingStatus] = sa_orm.mapped_column(
         sa.Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED
     )
-    sa.Index("ix_booking_status", status)
 
-    validationAuthorType: sa_orm.Mapped[BookingValidationAuthorType] = sa_orm.mapped_column(
+    validationAuthorType: sa_orm.Mapped[BookingValidationAuthorType | None] = sa_orm.mapped_column(
         sa.Enum(BookingValidationAuthorType), nullable=True
     )
 
     reimbursementDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
-    depositId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True)
+    depositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True
+    )
 
     deposit: sa_orm.Mapped["finance_models.Deposit | None"] = sa_orm.relationship(
         "Deposit", foreign_keys=[depositId], back_populates="bookings"
     )
 
-    usedRecreditType: sa_orm.Mapped[BookingRecreditType] = sa_orm.mapped_column(
+    usedRecreditType: sa_orm.Mapped[BookingRecreditType | None] = sa_orm.mapped_column(
         MagicEnum(BookingRecreditType), nullable=True
     )
 
-    fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag"] = sa_orm.relationship(
+    fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag | None"] = sa_orm.relationship(
         "FraudulentBookingTag", back_populates="booking", uselist=False
     )
 
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="booking")
+
+    __table_args__ = (
+        sa.Index("ix_booking_date_created", dateCreated),
+        sa.Index("ix_booking_status", status),
+        # Index avoids timeout when any user is deleted (because of foreign key)
+        sa.Index("ix_booking_cancellationUserId", cancellationUserId, postgresql_where=cancellationUserId.is_not(None)),
+        sa.Index(
+            "ix_booking_cancellation_reason", cancellationReason, postgresql_where=cancellationReason.is_not(None)
+        ),
+    )
 
     def mark_as_used(self, validation_author_type: BookingValidationAuthorType) -> None:
         if self.is_used_or_reimbursed:
@@ -621,6 +627,8 @@ class FraudulentBookingTag(PcObject, Model):
         "Booking", foreign_keys=[bookingId], back_populates="fraudulentBookingTag"
     )
 
-    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
+    authorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
+    )
 
     author: sa_orm.Mapped["users_models.User | None"] = sa_orm.relationship("User", foreign_keys=[authorId])
