@@ -99,6 +99,9 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
             remaining_seats = int(regex.findall(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message)[0])
             raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remaining_seats)
 
+        if "No showtime found" in message:
+            raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
+
         raise boost_exceptions.BoostAPIException(
             f"Error on Boost API on {request_detail} : {error_message} - {message}"
         )

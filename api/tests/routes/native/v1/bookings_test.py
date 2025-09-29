@@ -632,6 +632,50 @@ class PostBookingTest:
         assert len(db.session.query(bookings_models.Booking).all()) == 0
 
     @time_machine.travel("2022-10-12 17:09:25")
+    def test_handle_boost_showtime_does_not_exist_case(self, client, requests_mock):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+
+        id_at_provider = "test_id_at_provider"
+
+        provider = db.session.query(providers_models.Provider).filter_by(localClass="BoostStocks").first()
+        venue_provider = providers_factories.VenueProviderFactory(
+            provider=provider, venueIdAtOfferProvider=id_at_provider
+        )
+        pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=provider, idAtProvider=id_at_provider
+        )
+        providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema-0.example.com/", cinemaProviderPivot=pivot
+        )
+
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            offer__venue=venue_provider.venue,
+            quantity=1,
+            idAtProviders="#1",
+        )
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/1",
+            status_code=400,
+            json={"code": 400, "message": "No showtime found"},
+        )
+        post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
+        assert stock.isSoftDeleted
+        assert len(db.session.query(bookings_models.Booking).all()) == 0
+        assert post_adapter.last_request == None
+
+    @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
