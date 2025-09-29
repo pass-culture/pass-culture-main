@@ -6,12 +6,15 @@ import pytest
 
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
+from pcapi.connectors.big_query.importer.artist import ArtistImporter
+from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
+from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
 from pcapi.core.artist import commands
-from pcapi.core.artist.commands import DeltaAction
 from pcapi.core.artist.factories import ArtistAliasFactory
 from pcapi.core.artist.factories import ArtistFactory
 from pcapi.core.artist.factories import ArtistProductLinkFactory
@@ -36,21 +39,17 @@ class ImportAllArtistsTest:
     ):
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
 
-        commands.import_all_artists()
+        ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
-
         all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
     @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
-    def test_import_all_artists_creates_artists_is_idempotent(
-        self,
-        get_all_artists_mock,
-    ):
+    def test_import_all_artists_creates_artists_is_idempotent(self, get_all_artists_mock):
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
 
-        commands.import_all_artists()
+        ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
 
@@ -58,10 +57,9 @@ class ImportAllArtistsTest:
         assert len(all_artists) == 2
 
         get_all_artists_mock.reset_mock()
-        commands.import_all_artists()
+        ArtistImporter().import_all()
 
         get_all_artists_mock.assert_called_once()
-
         all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
@@ -83,11 +81,10 @@ class ImportAllArtistsTest:
             artist_id=performer.id,
             artist_type=artist_models.ArtistType.PERFORMER.value,
         )
-
         get_all_artists_product_links_mock.return_value = artists_product_link_fixture
 
         with caplog.at_level(logging.INFO):
-            commands.import_all_artist_product_links()
+            ArtistProductLinkImporter().import_all()
 
         get_all_artists_product_links_mock.assert_called_once()
 
@@ -111,17 +108,15 @@ class ImportAllArtistsTest:
         get_all_artist_aliases_mock.return_value = fixtures.big_query_artist_alias_fixture
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
 
-        commands.import_all_artists()
-        commands.import_all_artist_aliases()
+        ArtistImporter().import_all()
+        ArtistAliasImporter().import_all()
 
         get_all_artist_aliases_mock.assert_called_once()
-
         all_artist_aliases = db.session.query(ArtistAlias).all()
-
         assert len(all_artist_aliases) == 4
 
     @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
-    @mock.patch("pcapi.core.artist.commands.BATCH_SIZE", 2)
+    @mock.patch("pcapi.connectors.big_query.importer.base.BATCH_SIZE", 2)
     def test_import_all_artist_ignores_missing_products(self, get_all_artists_product_link_mock, caplog):
         artist = ArtistFactory()
         existing_product = ProductFactory()
@@ -134,8 +129,8 @@ class ImportAllArtistsTest:
             ),
         ]
 
-        with caplog.at_level(logging.INFO):
-            commands.import_all_artist_product_links()
+        with caplog.at_level(logging.ERROR):
+            ArtistProductLinkImporter().import_all()
 
         assert 'Key (product_id)=(999999999) is not present in table "product"' in caplog.text
         assert db.session.query(ArtistProductLink).count() == 1
@@ -147,13 +142,12 @@ class UpdateArtistsFromDeltaTest:
         artist_to_delete_id = str(uuid.uuid4())
         artist_to_delete = ArtistFactory(id=artist_to_delete_id)
         new_artist_id = str(uuid.uuid4())
-
         mock_artist_delta_query.return_value = [
             DeltaArtistModel(id=new_artist_id, action=DeltaAction.ADD, name="Nouvel Artiste"),
-            DeltaArtistModel(id=artist_to_delete.id, action=DeltaAction.REMOVE),
+            DeltaArtistModel(id=artist_to_delete.id, action=DeltaAction.REMOVE, name="Artist to Delete"),
         ]
 
-        commands.UpdateArtists().run_delta_update()
+        ArtistImporter().run_delta_update()
 
         assert db.session.query(Artist).filter_by(id=new_artist_id).first() is not None
         assert db.session.query(Artist).filter_by(id=artist_to_delete_id).first() is None
@@ -188,7 +182,7 @@ class UpdateArtistsFromDeltaTest:
             ),
         ]
 
-        commands.UpdateArtistProductLinks().run_delta_update()
+        ArtistProductLinkImporter().run_delta_update()
 
         assert db.session.query(ArtistProductLink).filter_by(id=link_to_keep.id).first() is not None
         assert (
@@ -200,7 +194,7 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistProductLink).filter_by(id=link_to_delete_id).first() is None
         assert db.session.query(ArtistProductLink).count() == 2
 
-    @mock.patch("pcapi.core.artist.commands.ArtistAliasDeltaQuery.execute")
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistAliasDeltaQuery.execute")
     def test_updates_and_creates_artist_aliases(self, mock_alias_delta_query):
         artist = ArtistFactory()
         alias_name_to_delete = "Alias a supprimer"
@@ -238,7 +232,7 @@ class UpdateArtistsFromDeltaTest:
             ),
         ]
 
-        commands.UpdateArtistAliases().run_delta_update()
+        ArtistAliasImporter().run_delta_update()
 
         assert (
             db.session.query(ArtistAlias)
@@ -254,6 +248,39 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistAlias).filter_by(id=alias_to_keep.id).first() is not None
         assert db.session.query(ArtistAlias).filter_by(id=alias_to_delete_id).first() is None
         assert db.session.query(ArtistAlias).count() == 2
+
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
+        artist_to_update = ArtistFactory(name="Ancien Nom", description="Description initiale")
+        initial_artist_count = db.session.query(Artist).count()
+        mock_artist_delta_query.return_value = [
+            DeltaArtistModel(
+                id=artist_to_update.id,
+                name="Nouveau Nom",
+                description="Description mise à jour",
+                action=DeltaAction.UPDATE,
+            ),
+        ]
+
+        ArtistImporter().run_delta_update()
+
+        assert artist_to_update.name == "Nouveau Nom"
+        assert artist_to_update.description == "Description mise à jour"
+        assert db.session.query(Artist).count() == initial_artist_count
+
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_update_action_does_nothing_for_non_existent_artist(self, mock_artist_delta_query):
+        ArtistFactory()
+        initial_artist_count = db.session.query(Artist).count()
+        non_existent_id = str(uuid.uuid4())
+        mock_artist_delta_query.return_value = [
+            DeltaArtistModel(id=non_existent_id, name="Artiste Fantôme", action=DeltaAction.UPDATE),
+        ]
+
+        ArtistImporter().run_delta_update()
+
+        assert db.session.query(Artist).filter_by(id=non_existent_id).first() is None
+        assert db.session.query(Artist).count() == initial_artist_count
 
 
 def test_compute_artists_most_relevant_image():
