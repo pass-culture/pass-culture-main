@@ -202,13 +202,17 @@ describe('Didactic Onboarding feature', () => {
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
         cy.wait(['@getOffer', '@patchOffer'])
 
-        // TODO: test video creation. This is only a workaround
+        // ----------------------
+        // Step 3: Media
+        // ----------------------
+
+        // No media added, but we can still go to the next step as it's not mandatory.
         cy.url().should('contain', '/creation/media')
         cy.findByText('Enregistrer et continuer').click()
         cy.wait('@getOffer')
 
         // ----------------------
-        // Step 3: Stock & Prices
+        // Step 4: Stock & Prices
         // ----------------------
 
         // Set price
@@ -219,7 +223,7 @@ describe('Didactic Onboarding feature', () => {
         cy.wait(['@getOffer', '@patchOffer'])
 
         // -----------------------
-        // Step 4: Details summary
+        // Step 5: Details summary
         // -----------------------
 
         cy.findByRole('heading', { level: 2, name: 'Détails de l’offre' })

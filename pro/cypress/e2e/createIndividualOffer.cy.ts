@@ -48,13 +48,17 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
+
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
+
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'I fill in event details' })
+
     cy.findByLabelText(/Titre de l’offre/).type('Le Diner de Devs')
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
@@ -63,8 +67,59 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
     cy.findByLabelText('Type de spectacle *').select('Théâtre')
     cy.findByLabelText('Sous-type *').select('Comédie')
+
     cy.injectAxe(DEFAULT_AXE_CONFIG)
-    // field image label is not seen
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
+    cy.stepLog({ message: 'I validate event details step' })
+    cy.findByText('Enregistrer et continuer').click()
+    cy.wait(['@getOffer', '@postDraftOffer'])
+
+    cy.stepLog({ message: 'I fill in event useful informations' })
+
+    cy.findByText('Retrait sur place (guichet, comptoir...)').click()
+    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
+      'passculture@example.com'
+    )
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+
+    cy.stepLog({ message: 'I validate event useful informations step' })
+    cy.findByText('Enregistrer et continuer').click()
+    cy.wait(['@getOffer', '@patchOffer'])
+
+    cy.stepLog({ message: 'I fill in media' })
+
+    cy.findByLabelText('Importez une image').selectFile(
+      'cypress/data/librairie.jpeg',
+      {
+        force: true,
+      }
+    )
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.findByLabelText('Crédit de l’image').type(
+      'Les êtres les plus intelligents de l’univers'
+    )
+    cy.get('input[type=range]').setSliderValue(1.7)
+    cy.findByText('Importer').click()
+
+    cy.findAllByTestId('image-preview').then(($img) => {
+      cy.wrap($img)
+        .should('be.visible')
+        .should('have.prop', 'naturalWidth')
+        .and('eq', 470)
+      cy.wrap($img)
+        .should('be.visible')
+        .should('have.prop', 'naturalHeight')
+        .and('eq', 705)
+    })
+
+    cy.findByLabelText('Lien URL Youtube').type(
+      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
+    )
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(
       undefined,
       {
@@ -77,24 +132,7 @@ describe('Create individual offers', { testIsolation: false }, () => {
       cy.a11yLog
     )
 
-    cy.stepLog({ message: 'I validate event details step' })
-    cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
-
-    cy.stepLog({ message: 'I fill in event useful informations' })
-    cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
-      'passculture@example.com'
-    )
-    cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
-    cy.stepLog({ message: 'I validate event useful informations step' })
-    cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@patchOffer'])
-
-    // TODO: test video creation. This is only a workaround
-    cy.url().should('contain', '/creation/media')
+    cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait('@getOffer')
 
@@ -232,37 +270,10 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText('Sous-catégorie *').select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
-    /* TODO: this was moved to the media step
-    cy.findByLabelText('Importez une image').selectFile(
-      'cypress/data/librairie.jpeg',
-      {
-        force: true,
-      }
-    )
-    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-    cy.findByLabelText('Crédit de l’image').type(
-      'Les êtres les plus intelligents de l’univers'
-    )
-    cy.get('input[type=range]').setSliderValue(1.7)
-
-    cy.findByText('Importer').click()*/
 
     cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
-
-    /* TODO: this was moved to the media step
-    // With a 1.7x zoom, width=470 and height=705
-    cy.findAllByTestId('image-preview').then(($img) => {
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalWidth')
-        .and('eq', 470)
-      cy.wrap($img)
-        .should('be.visible')
-        .should('have.prop', 'naturalHeight')
-        .and('eq', 705)
-    })*/
 
     cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
@@ -285,7 +296,29 @@ describe('Create individual offers', { testIsolation: false }, () => {
       responseTimeout: 60 * 1000 * 2,
     })
 
-    // TODO: test video creation. This is only a workaround
+    cy.stepLog({ message: 'I fill in media' })
+
+    cy.findByLabelText('Importez une image').selectFile(
+      'cypress/data/librairie.jpeg',
+      {
+        force: true,
+      }
+    )
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.findByLabelText('Crédit de l’image').type(
+      'Les êtres les plus intelligents de l’univers'
+    )
+    cy.get('input[type=range]').setSliderValue(1.7)
+    cy.findByText('Importer').click()
+
+    cy.findByLabelText('Lien URL Youtube').type(
+      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
+    )
+
+    cy.stepLog({ message: 'I validate media step' })
+    cy.findByText('Enregistrer et continuer').click()
+    cy.wait('@getOffer')
+
     cy.url().should('contain', '/creation/media')
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@getStocks'], {
