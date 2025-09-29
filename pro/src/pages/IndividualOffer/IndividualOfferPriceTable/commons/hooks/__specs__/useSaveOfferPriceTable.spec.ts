@@ -6,6 +6,7 @@ import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { ApiError } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -32,6 +33,9 @@ vi.mock('../../utils/saveEventOfferPriceTable', () => ({
 }))
 vi.mock('../../utils/saveNonEventOfferPriceTable', () => ({
   saveNonEventOfferPriceTable: vi.fn(() => Promise.resolve()),
+}))
+vi.mock('@/commons/hooks/useActiveFeature', () => ({
+  useActiveFeature: vi.fn(),
 }))
 
 const renderUseSaveOfferPriceTable = (params: {
@@ -90,6 +94,8 @@ describe('useSaveOfferPriceTable', () => {
       success: notifySuccess,
       error: notifyError,
     }))
+
+    vi.mocked(useActiveFeature).mockReturnValueOnce(true)
   })
 
   it('should early navigate + success when EDITION mode and form not dirty', async () => {

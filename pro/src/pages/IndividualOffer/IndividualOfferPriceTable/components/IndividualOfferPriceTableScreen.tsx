@@ -15,6 +15,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
@@ -44,6 +45,10 @@ export const IndividualOfferPriceTableScreen = ({
   const { pathname } = useLocation()
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
+
+  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
 
   const isCaledonian = useIsCaledonian()
 
@@ -141,7 +146,11 @@ export const IndividualOfferPriceTableScreen = ({
           )}
           <ActionBar
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
+            step={
+              isNewOfferCreationFlowFFEnabled
+                ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+                : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+            }
             isDisabled={
               isOfferDisabled(offer) ||
               hasPublishedOfferWithSameEan ||

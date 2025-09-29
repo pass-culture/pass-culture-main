@@ -97,7 +97,9 @@ export function getIndividualOfferColumns(
         const editionStockLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode: OFFER_WIZARD_MODE.EDITION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: isNewOfferCreationFlowFFEnabled
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         })
 
         return (

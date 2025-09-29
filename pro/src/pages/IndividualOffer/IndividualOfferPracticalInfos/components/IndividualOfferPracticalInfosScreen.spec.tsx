@@ -145,7 +145,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Retour' }))
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      expect.stringContaining('/creation/stocks')
+      expect.stringContaining('/creation/horaires')
     )
   })
 

@@ -194,6 +194,31 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
     path: '/offre/individuelle/:offerId/stocks',
     title: 'Stocks et prix - Consulter une offre individuelle',
   },
+  // Timetable
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
+    path: '/offre/individuelle/:offerId/creation/horaires',
+    title: 'Horaires - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
+    path: '/offre/individuelle/:offerId/edition/horaires',
+    title: 'Horaires - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/IndividualOfferSummaryStocks'
+      ),
+    path: '/offre/individuelle/:offerId/horaires',
+    title: 'Horaires - Consulter une offre individuelle',
+  },
   {
     lazy: () =>
       import(
@@ -332,6 +357,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
+  //  Stocks
   {
     lazy: () =>
       import(
@@ -339,6 +365,16 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  //  Timetable
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/horaires',
+    title: 'Horaires - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
   {

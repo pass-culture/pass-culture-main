@@ -50,7 +50,9 @@ export function StocksCalendarActionsBar({
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: isNewOfferCreationFlowFeatureActive
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -135,7 +137,7 @@ export function StocksCalendarActionsBar({
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNextStep()
           }}
-          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS}
+          step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE}
           dirtyForm={false}
           isEvent={true}
         />
