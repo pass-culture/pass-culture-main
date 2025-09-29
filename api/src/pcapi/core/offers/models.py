@@ -28,6 +28,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
+from pcapi.core.highlights.models import HighlightRequest
+from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.providers.models import Provider
 from pcapi.models import Model
 from pcapi.models import db
@@ -45,16 +47,16 @@ from pcapi.utils import db as db_utils
 
 
 logger = logging.getLogger(__name__)
-
 if typing.TYPE_CHECKING:
     import flask_sqlalchemy
 
-    from pcapi.core.artist.models import Artist
+    from pcapi.core.artists.models import Artist
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
+    from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers import models as offerers_models
     from pcapi.core.offerers.models import OffererAddress
     from pcapi.core.offerers.models import Venue
@@ -848,6 +850,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     openingHours: sa_orm.Mapped[list["offerers_models.OpeningHours"]] = sa_orm.relationship(
         "OpeningHours", back_populates="offer", passive_deletes=True
     )
+    highlight_requests: sa_orm.Mapped[list[HighlightRequest]] = sa_orm.relationship(
+        HighlightRequest, back_populates="offer"
+    )
 
     sa.Index("idx_offer_trgm_name", name, postgresql_using="gin")
     sa.Index("offer_idAtProvider", idAtProvider)
@@ -1508,6 +1513,9 @@ class OfferValidationRule(PcObject, Model, DeactivableMixin):
         "CollectiveOfferTemplate",
         secondary=ValidationRuleCollectiveOfferTemplateLink.__table__,
         back_populates="flaggingValidationRules",
+    )
+    action_history: sa_orm.Mapped["ActionHistory | None"] = sa_orm.relationship(
+        "ActionHistory", back_populates="rule", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True
     )
 
 

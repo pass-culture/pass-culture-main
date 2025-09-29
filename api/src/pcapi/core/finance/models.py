@@ -23,6 +23,7 @@ from sqlalchemy.sql.selectable import Exists
 
 import pcapi.utils.db as db_utils
 from pcapi import settings
+from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -34,6 +35,7 @@ from . import utils
 if typing.TYPE_CHECKING:
     import pcapi.core.bookings.models as bookings_models
     import pcapi.core.educational.models as educational_models
+    import pcapi.core.history.models as history_models
     import pcapi.core.offerers.models as offerers_models
     import pcapi.core.offers.models as offers_models
     import pcapi.core.users.models as users_models
@@ -279,6 +281,13 @@ class BankAccount(PcObject, Model, DeactivableMixin):
         uselist=True,
     )
     lastCegidSyncDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+
+    action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        back_populates="bankAccount",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
+    )
 
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
@@ -1096,6 +1105,13 @@ class FinanceIncident(PcObject, Model):
     )
 
     comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+    action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        back_populates="financeIncident",
+        order_by="ActionHistory.actionDate.asc()",
+        passive_deletes=True,
+    )
 
     @property
     def is_partial(self) -> bool:

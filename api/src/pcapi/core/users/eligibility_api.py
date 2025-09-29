@@ -319,6 +319,7 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
 
         case None, action:
             assert action is not None
+            assert action.extraData is not None
             known_birthday_at_date = datetime.datetime.strptime(
                 action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
             ).date()
@@ -326,6 +327,7 @@ def get_known_birthday_at_date(user: users_models.User, at_date: datetime.dateti
         case check, action:
             assert check is not None
             assert action is not None
+            assert action.extraData is not None
             if check.dateCreated < action.actionDate:
                 known_birthday_at_date = datetime.datetime.strptime(
                     action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
