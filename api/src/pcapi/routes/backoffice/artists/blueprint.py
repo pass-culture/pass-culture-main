@@ -16,6 +16,8 @@ from werkzeug.utils import redirect
 from pcapi.core.artist import models as artist_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.search import async_index_artist_ids
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -339,6 +341,7 @@ def post_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
     form = forms.ArtistEditForm()
     if form.validate_on_submit():
         form.populate_obj(artist)
+        async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_EDITION)
         flash(Markup("L'artiste <strong>{name}</strong> a été mis à jour.").format(name=artist.name), "success")
     else:
         flash(utils.build_form_error_msg(form), "warning")
@@ -377,6 +380,7 @@ def post_artist_blacklist(artist_id: str) -> utils.BackofficeResponse:
 
     artist.is_blacklisted = True
     db.session.add(artist)
+    async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
 
     flash(Markup("L'artiste <strong>{name}</strong> a été blacklisté.").format(name=artist.name), "success")
     return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
@@ -412,6 +416,7 @@ def post_artist_unblacklist(artist_id: str) -> utils.BackofficeResponse:
         raise NotFound()
 
     artist.is_blacklisted = False
+    async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
     flash(Markup("L'artiste <strong>{name}</strong> a été réactivé.").format(name=artist.name), "success")
     return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
 
@@ -452,6 +457,7 @@ def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResp
     )
 
     if link:
+        async_index_artist_ids([link.artist_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         db.session.delete(link)
         flash("Le lien avec le produit a été supprimé.", "success")
         return "", 200
@@ -553,6 +559,7 @@ def confirm_association(artist_id: str) -> utils.BackofficeResponse:
                 artist_id=artist_id, product_id=product_id, artist_type=artist_type
             )
             db.session.add(new_link)
+            async_index_artist_ids([new_link.artist_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
             flash("Produit associé avec succès.", "success")
 
     else:
@@ -613,6 +620,7 @@ def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
         db.session.query(artist_models.ArtistProductLink).filter_by(artist_id=artist_to_delete_id).update(
             {"artist_id": artist_to_keep_id}
         )
+        async_index_artist_ids([artist_to_keep_id, artist_to_delete.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         db.session.delete(artist_to_delete)
     except Exception as err:
         flash(f"Une erreur est survenue lors de la fusion : {err}", "warning")
@@ -691,6 +699,7 @@ def post_split_artist(artist_id: str) -> utils.BackofficeResponse:
         new_artist = artist_models.Artist(name=form.new_artist_name.data, description=form.new_artist_description.data)
         db.session.add(new_artist)
         db.session.flush()
+        async_index_artist_ids([source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION)
 
         if form.new_artist_aliases.data:
             aliases_names = [name.strip() for name in form.new_artist_aliases.data.split(",") if name.strip()]

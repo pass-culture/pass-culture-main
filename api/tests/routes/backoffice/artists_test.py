@@ -8,6 +8,7 @@ from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
@@ -85,7 +86,8 @@ class PostArtistEditTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_edit_artist_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_edit_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create(name="Old Name")
         form_data = {"name": "New Name", "description": "New Description"}
 
@@ -94,6 +96,7 @@ class PostArtistEditTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
+        mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_EDITION)
         assert f"L'artiste {artist.name} a été mis à jour." in html_parser.extract_alerts(response.data)
         artist = db_session.query(artist_models.Artist).filter_by(id=artist.id).one()
         assert artist.name == "New Name"
@@ -134,7 +137,8 @@ class PostArtistBlacklistTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_blacklist_artist_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_blacklist_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=False)
         with patch("pcapi.routes.backoffice.artists.blueprint.db.session.commit"):
             response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
@@ -142,6 +146,7 @@ class PostArtistBlacklistTest(PostEndpointHelper):
 
         artist = db.session.query(artist_models.Artist).filter_by(id=artist.id).one()
         assert artist.is_blacklisted is True
+        mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
         assert f"L'artiste {artist.name} a été blacklisté." in html_parser.extract_alerts(response.data)
 
 
@@ -179,11 +184,13 @@ class PostArtistUnblacklistTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_unblacklist_artist_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_unblacklist_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=True)
         response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
         db_session.refresh(artist)
         assert response.status_code == 200
+        mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
         assert f"L'artiste {artist.name} a été réactivé." in html_parser.extract_alerts(response.data)
         assert artist.is_blacklisted is False
 
@@ -225,13 +232,15 @@ class PostConfirmAssociationTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_associate_product_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_associate_product_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
         product = offers_factories.ProductFactory.create()
         form_data = {"product_id": product.id, "artist_type": artist_models.ArtistType.AUTHOR.name}
         response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, form=form_data)
 
         assert response.status_code == 303
+        mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         link = (
             db_session.query(artist_models.ArtistProductLink)
             .filter_by(artist_id=artist.id, product_id=product.id)
@@ -283,7 +292,8 @@ class PostUnlinkProductTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_unlink_product_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_unlink_product_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         product = offers_factories.ProductFactory.create()
         artist = artist_factories.ArtistFactory.create(products=[product])
 
@@ -291,6 +301,7 @@ class PostUnlinkProductTest(PostEndpointHelper):
             authenticated_client, artist_id=artist.id, product_id=product.id, follow_redirects=True
         )
         assert response.status_code == 200
+        mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         assert response.data == b""
 
         link_exists = (
@@ -339,7 +350,8 @@ class PostMergeArtistsTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_merge_artists_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_merge_artists_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         artist_to_keep = artist_factories.ArtistFactory.create()
         product1 = offers_factories.ProductFactory.create()
         product2 = offers_factories.ProductFactory.create()
@@ -357,6 +369,9 @@ class PostMergeArtistsTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
+        mock_async_index_artist_ids.assert_called_once_with(
+            [artist_to_keep.id, artist_to_delete_id], reason=IndexationReason.ARTIST_LINKS_UPDATE
+        )
         assert (
             f"L'artiste {artist_to_delete.name} a été fusionné dans {artist_to_keep.name}."
             in html_parser.extract_alerts(response.data)
@@ -409,7 +424,8 @@ class PostSplitArtistTest(PostEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    def test_split_artist_success(self, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
+    def test_split_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
         product_to_move = offers_factories.ProductFactory.create()
         source_artist = artist_factories.ArtistFactory.create(products=[product_to_move])
         new_artist_name = "New Split Artist"
@@ -429,6 +445,9 @@ class PostSplitArtistTest(PostEndpointHelper):
         )
 
         new_artist = db_session.query(artist_models.Artist).filter_by(name="New Split Artist").one()
+        mock_async_index_artist_ids.assert_called_once_with(
+            [source_artist.id, new_artist.id], reason=IndexationReason.ARTIST_CREATION
+        )
         assert product_to_move in new_artist.products
 
 
