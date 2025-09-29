@@ -33,7 +33,7 @@ export function TimetableOpeningHoursActionsBar({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

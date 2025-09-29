@@ -141,7 +141,9 @@ export function IndividualOfferTimetableScreen({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: isNewOfferCreationFlowFFEnabled
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

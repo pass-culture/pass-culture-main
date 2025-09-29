@@ -70,7 +70,7 @@ export const IndividualOfferPracticalInfosScreen = ({
         getIndividualOfferUrl({
           offerId: offer.id,
           step: offer.isEvent
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
             : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,

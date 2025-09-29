@@ -59,7 +59,8 @@ export const ActionBar = ({
 
     if (
       mode === OFFER_WIZARD_MODE.EDITION &&
-      step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS &&
+      (step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS ||
+        step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE) &&
       isEvent
     ) {
       return (

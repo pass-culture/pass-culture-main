@@ -20,6 +20,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -76,6 +77,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
 
+  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
+  )
+
   useEffect(() => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
@@ -108,6 +113,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
+  const currentStepId = isNewOfferCreationFlowFFEnabled
+    ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+    : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     if (isCaledonian && values.price) {
       values.price = convertPacificFrancToEuro(Number(values.price))
@@ -117,7 +126,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+          ? currentStepId
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
@@ -198,7 +207,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: currentStepId,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

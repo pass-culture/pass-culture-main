@@ -67,7 +67,7 @@ export const getSteps = ({
           canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
         },
         {
-          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           label: 'Horaires',
           canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
         }
