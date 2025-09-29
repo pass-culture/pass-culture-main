@@ -44,6 +44,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.finance.models import Deposit
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
+    from pcapi.core.fraud.models import BeneficiaryFraudReview
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
@@ -174,6 +175,12 @@ class User(PcObject, Model, DeactivableMixin):
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="user")
     activity = sa_orm.mapped_column(sa.String(128), nullable=True)
     address = sa_orm.mapped_column(sa.Text, nullable=True)
+    adminFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(
+        "BeneficiaryFraudReview", foreign_keys="BeneficiaryFraudReview.authorId", back_populates="author"
+    )
+    beneficiaryFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(
+        "BeneficiaryFraudReview", foreign_keys="BeneficiaryFraudReview.userId", back_populates="user"
+    )
     birthPlace = sa_orm.mapped_column(sa.Text, nullable=True)
     city = sa_orm.mapped_column(sa.String(100), nullable=True)
     civility = sa_orm.mapped_column(sa.VARCHAR(length=20), nullable=True)

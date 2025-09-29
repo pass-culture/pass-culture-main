@@ -21,7 +21,7 @@ class Coordinates:
 
 class IrisFrance(PcObject, Model):
     __tablename__ = "iris_france"
-    code = sa_orm.mapped_column(sa.String(9), nullable=False, unique=True)
+    code: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(9), nullable=False, unique=True)
     shape: sa_orm.Mapped[str | Geometry] = sa_orm.mapped_column(
         "shape", Geometry(srid=WGS_SPATIAL_REFERENCE_IDENTIFIER), nullable=False
     )
