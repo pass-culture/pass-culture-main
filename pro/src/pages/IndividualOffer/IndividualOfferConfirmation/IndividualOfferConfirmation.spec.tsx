@@ -146,6 +146,6 @@ describe('IndividualOfferConfirmation', () => {
 
     expect(
       screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    ).toHaveAttribute('href', `/offre/individuelle/creation/details`)
+    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
   })
 })

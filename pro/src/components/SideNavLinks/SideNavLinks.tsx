@@ -156,7 +156,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                     element: (
                       <ButtonLink
                         to={getIndividualOfferUrl({
-                          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
                           mode: OFFER_WIZARD_MODE.CREATION,
                           isOnboarding: false,
                         })}

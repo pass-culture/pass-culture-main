@@ -68,7 +68,8 @@ describe('getIndividualOfferColumns', () => {
 
     const columns = getIndividualOfferColumns(
       headlineOffer,
-      isHeadlineOfferAllowedForOfferer
+      isHeadlineOfferAllowedForOfferer,
+      false
     )
 
     return renderWithProviders(

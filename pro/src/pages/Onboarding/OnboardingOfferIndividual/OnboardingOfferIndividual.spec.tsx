@@ -160,7 +160,7 @@ describe('<OnboardingOfferIndividual />', () => {
 
     expect(screen.getByRole('link', { name: 'Manuellement' })).toHaveAttribute(
       'href',
-      '/onboarding/offre/individuelle/creation/details'
+      '/onboarding/offre/individuelle/creation/description'
     )
   })
 

@@ -36,6 +36,39 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
     path: '/offre/individuelle/:offerId/recapitulatif/details',
     title: 'Détails de l’offre - Consulter une offre individuelle',
   },
+  //  Description
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/offre/individuelle/creation/description',
+    title: 'Description - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/offre/individuelle/:offerId/creation/description',
+    title: 'Description - Créer une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/offre/individuelle/:offerId/edition/description',
+    title: 'Description - Modifier une offre individuelle',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
+      ),
+    path: '/offre/individuelle/:offerId/recapitulatif/description',
+    title: 'Description - Consulter une offre individuelle',
+  },
   // Information pages
   {
     lazy: () =>
@@ -209,6 +242,26 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
     featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
   },
+  //  Description page
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/onboarding/offre/individuelle/creation/description',
+    title: 'Description - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/description',
+    title: 'Description - Créer une offre individuelle - Onboarding',
+    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+  },
+
   {
     lazy: () =>
       import(

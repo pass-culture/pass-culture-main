@@ -88,7 +88,9 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
 
       return navigate({
         pathname: getIndividualOfferUrl({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: isNewOfferCreationFlowFeatureActive
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         }),

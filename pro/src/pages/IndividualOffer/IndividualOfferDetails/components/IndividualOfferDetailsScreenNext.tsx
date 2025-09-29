@@ -149,7 +149,7 @@ export const IndividualOfferDetailsScreenNext = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           offerId,
           mode,
           isOnboarding: pathname.indexOf('onboarding') !== -1,
@@ -158,11 +158,11 @@ export const IndividualOfferDetailsScreenNext = ({
       )
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
         offerId,
         venueId: form.getValues('venueId'),
         offerType: 'individual',
@@ -199,7 +199,7 @@ export const IndividualOfferDetailsScreenNext = ({
       navigate(
         getIndividualOfferUrl({
           offerId: initialOffer?.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
