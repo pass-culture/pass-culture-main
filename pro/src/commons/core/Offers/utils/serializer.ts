@@ -34,10 +34,7 @@ export const serializeApiFilters = (
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
     if (filterValue && filterValue !== defaultFilters[field]) {
-      return {
-        ...accumulator,
-        [field]: filterValue,
-      }
+      ;(accumulator as any)[field] = filterValue
     }
     return accumulator
   }, body)
@@ -69,59 +66,47 @@ export const serializeApiCollectiveFilters = (
     if (field === 'locationType' && filterValue) {
       switch (filterValue) {
         case CollectiveLocationType.ADDRESS:
-          return {
-            ...accumulator,
-            locationType: CollectiveLocationType.ADDRESS,
-            offererAddressId: searchFilters.offererAddressId
-              ? Number(searchFilters.offererAddressId)
-              : null,
-          }
+          accumulator.locationType = CollectiveLocationType.ADDRESS
+          accumulator.offererAddressId = searchFilters.offererAddressId
+            ? Number(searchFilters.offererAddressId)
+            : null
+          return accumulator
         case CollectiveLocationType.SCHOOL:
-          return {
-            ...accumulator,
-            locationType: CollectiveLocationType.SCHOOL,
-            offererAddressId: null,
-          }
+          accumulator.locationType = CollectiveLocationType.SCHOOL
+          accumulator.offererAddressId = null
+          return accumulator
+
         case CollectiveLocationType.TO_BE_DEFINED:
-          return {
-            ...accumulator,
-            locationType: CollectiveLocationType.TO_BE_DEFINED,
-            offererAddressId: null,
-          }
+          accumulator.locationType = CollectiveLocationType.TO_BE_DEFINED
+          accumulator.offererAddressId = null
+          return accumulator
         default:
           return accumulator
       }
     }
 
     if (isNewOffersAndBookingsActive && field === 'venueId') {
-      return {
-        ...accumulator,
-        venueId: undefined,
-      }
+      accumulator.venueId = undefined
+      return accumulator
     }
 
     if (isNewOffersAndBookingsActive && field === 'collectiveOfferType') {
-      return {
-        ...accumulator,
-        collectiveOfferType:
-          defaultFilters.collectiveOfferType === 'offer'
-            ? CollectiveOfferType.OFFER
-            : defaultFilters.collectiveOfferType === 'template'
-              ? CollectiveOfferType.TEMPLATE
-              : null,
-      }
+      accumulator.collectiveOfferType =
+        defaultFilters.collectiveOfferType === 'offer'
+          ? CollectiveOfferType.OFFER
+          : defaultFilters.collectiveOfferType === 'template'
+            ? CollectiveOfferType.TEMPLATE
+            : null
+      return accumulator
     }
 
     if (filterValue && !isEqual(filterValue, defaultFilters[field])) {
-      return {
-        ...accumulator,
-        [field]:
-          field === 'offererAddressId'
-            ? filterValue
-              ? Number(filterValue)
-              : null
-            : filterValue,
+      if (field === 'offererAddressId') {
+        accumulator.offererAddressId = filterValue ? Number(filterValue) : null
+      } else {
+        ;(accumulator as any)[field] = filterValue
       }
+      return accumulator
     }
     return accumulator
   }, body)
