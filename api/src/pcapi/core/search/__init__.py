@@ -173,6 +173,30 @@ def async_index_venue_ids(
         logger.exception("Could not enqueue venue ids to index", extra={"venues": venue_ids})
 
 
+def async_index_offers_of_artist_ids(
+    artist_ids: abc.Collection[str],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
+    """Ask for an asynchronous reindexation of the offers attached to artists
+    from the list of ``Venue.id``.
+
+    This function returns quickly. The "real" reindexation will be
+    done later through a cron job.
+    """
+    _log_async_request("offers of artists", artist_ids, reason, log_extra)
+    backend = _get_backend()
+    try:
+        backend.enqueue_artist_ids_for_offers(artist_ids)
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception(
+            "Could not enqueue artist ids to index their offers",
+            extra={"artists": artist_ids},
+        )
+
+
 def async_index_offers_of_venue_ids(
     venue_ids: abc.Collection[int],
     reason: IndexationReason,
@@ -298,7 +322,7 @@ def index_artists_in_queue(from_error_queue: bool = False) -> None:
         ) as artist_ids:
             if not artist_ids:
                 return
-            reindex_artist_ids(backend, artist_ids, from_error_queue)
+            reindex_artist_ids(artist_ids, from_error_queue)
 
     except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
@@ -416,6 +440,33 @@ def _reindex_collective_offer_template_ids(
     if to_delete_ids:
         unindex_collective_offer_template_ids(to_delete_ids)
         logger.info("Finished unindexing collective offers templates", extra={"count": len(to_delete_ids)})
+
+
+def index_offers_of_artists_in_queue() -> None:
+    """Pop artists from indexation queue and reindex their offers."""
+    backend = _get_backend()
+    try:
+        with backend.pop_artist_ids_for_offers_from_queue(
+            count=settings.REDIS_ARTIST_IDS_FOR_OFFERS_CHUNK_SIZE,
+        ) as artist_ids:
+            for artist_id in artist_ids:
+                page = 0
+                logger.info("Starting to index offers of artist", extra={"artist": artist_id})
+                while True:
+                    offer_ids = offers_repository.get_paginated_offer_ids_by_artist_id(
+                        limit=settings.ALGOLIA_OFFERS_BY_ARTIST_CHUNK_SIZE,
+                        page=page,
+                        artist_id=artist_id,
+                    )
+                    if not offer_ids:
+                        break
+                    reindex_offer_ids(offer_ids, from_error_queue=False)
+                    page += 1
+                logger.info("Finished indexing offers of artist", extra={"artist": artist_id})
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not index offers of artists from queue")
 
 
 def index_offers_of_venues_in_queue() -> None:

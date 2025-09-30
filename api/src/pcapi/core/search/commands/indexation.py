@@ -30,6 +30,14 @@ def index_offers_in_algolia_by_offer() -> None:
     search.index_offers_in_queue()
 
 
+@blueprint.cli.command("index_offers_in_algolia_by_artist")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_offers_in_algolia_by_artist() -> None:
+    """Pop artists from indexation queue and reindex their offers."""
+    search.index_offers_of_artists_in_queue()
+
+
 @blueprint.cli.command("index_offers_in_algolia_by_venue")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)

@@ -34,6 +34,21 @@ def test_offer_indexation_on_booking_cycle(app):
     assert offer.id in search_testing.search_store["offers"]
 
 
+def test_offer_indexation_on_artist_cycle(app):
+    artist = artist_factories.ArtistFactory()
+    product = offers_factories.ProductFactory()
+    artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
+    stock = offers_factories.StockFactory(offer__product=product)
+    offer = stock.offer
+    assert search_testing.search_store["offers"] == {}
+
+    search.async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_UPDATE)
+    assert search_testing.search_store["offers"] == {}
+
+    search.index_offers_of_artists_in_queue()
+    assert offer.id in search_testing.search_store["offers"]
+
+
 def test_offer_indexation_on_venue_cycle(app):
     stock = offers_factories.StockFactory(quantity=1)
     offer = stock.offer
