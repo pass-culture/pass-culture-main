@@ -29,10 +29,6 @@ class InsufficientFund(Exception):
     pass
 
 
-class InsufficientMinistryFund(Exception):
-    pass
-
-
 class InsufficientTemporaryFund(Exception):
     pass
 

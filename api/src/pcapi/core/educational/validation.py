@@ -43,27 +43,6 @@ def _event_is_in_educational_year_first_period(booking_date: datetime.datetime) 
     return CREDIT_PERIOD_MONTH_MIN <= booking_date.month <= CREDIT_PERIOD_MONTH_MAX
 
 
-def check_ministry_fund(
-    educational_year_id: str,
-    booking_amount: Decimal,
-    booking_date: datetime.datetime,
-    ministry: models.Ministry | None,
-) -> None:
-    if booking_date.month < 9:
-        return
-    spent_amount = repository.get_confirmed_collective_bookings_amount_for_ministry(
-        educational_year_id=educational_year_id, ministry=ministry
-    )
-    total_spent_amount = spent_amount + booking_amount
-    yearly_available_amount = repository.get_ministry_budget_for_year(
-        educational_year_id=educational_year_id, ministry=ministry
-    )
-    # on sptember-december period we only have 4/12 of the budget
-    available_amount = yearly_available_amount / 3
-    if total_spent_amount > available_amount:
-        raise exceptions.InsufficientMinistryFund()
-
-
 def check_collective_stock_is_bookable(stock: models.CollectiveStock) -> None:
     if not stock.isBookable:
         raise exceptions.CollectiveStockNotBookable()

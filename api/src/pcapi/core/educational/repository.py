@@ -108,38 +108,6 @@ def get_and_lock_educational_deposit(
     return educational_deposit
 
 
-def get_ministry_budget_for_year(
-    ministry: models.Ministry | None,
-    educational_year_id: str,
-) -> Decimal:
-    query = db.session.query(sa.func.sum(models.EducationalDeposit.amount).label("amount"))
-    query = query.filter(
-        models.EducationalDeposit.educationalYearId == educational_year_id,
-        models.EducationalDeposit.ministry == ministry,
-    )
-    result = query.first()
-    return result.amount if (result and result.amount) else Decimal(0)
-
-
-def get_confirmed_collective_bookings_amount_for_ministry(
-    ministry: models.Ministry | None,
-    educational_year_id: str,
-) -> Decimal:
-    query = db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
-    query = query.join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
-    query = query.join(models.EducationalInstitution, models.CollectiveBooking.educationalInstitution)
-    query = query.join(models.EducationalDeposit, models.EducationalInstitution.deposits)
-    query = query.filter(
-        models.CollectiveBooking.educationalYearId == educational_year_id,
-        models.CollectiveBooking.status.not_in(
-            [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
-        ),
-        models.EducationalDeposit.ministry == ministry,
-    )
-    result = query.first()
-    return result.amount if (result and result.amount) else Decimal(0)
-
-
 def get_confirmed_collective_bookings_amount(
     educational_institution_id: int,
     educational_year_id: str,

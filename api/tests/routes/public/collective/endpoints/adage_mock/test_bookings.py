@@ -93,40 +93,6 @@ class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
                 expected_error_json={"code": "INSUFFICIENT_FUND"},
             )
 
-    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
-    def test_confirm_when_insufficient_ministry_fund(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        auth_client = client.with_explicit_token(plain_api_key)
-        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        used_booking = self.setup_base_resource(
-            factory=factories.UsedCollectiveBookingFactory,
-            venue=venue_provider.venue,
-            provider=venue_provider.provider,
-            deposit=pending_booking.educationalInstitution.deposits[0],
-        )
-
-        # ensure offer's stock start between september and december
-        # because this validation is not ran after and before that.
-        start = pending_booking.collectiveStock.startDatetime.replace(month=10)
-        pending_booking.collectiveStock.startDatetime = start
-
-        # pending booking price is within the the institution's budget
-        # but some special rules apply at the end of the year: the
-        # overall used budget must be at most 1/3 of the total.
-        institution = used_booking.educationalInstitution
-        deposit_amount = sum(deposit.amount for deposit in institution.deposits)
-        used_booking.collectiveStock.price = deposit_amount / 3
-
-        db.session.flush()
-
-        with assert_attribute_does_not_change(pending_booking, "status"):
-            self.assert_request_has_expected_result(
-                auth_client,
-                url_params={"booking_id": pending_booking.id},
-                expected_status_code=403,
-                expected_error_json={"code": "INSUFFICIENT_MINISTRY_FUND"},
-            )
-
     def test_confirm_when_insufficient_temporary_fund(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
