@@ -43,6 +43,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
         <div className={styles['text-input']}>
           <div className={styles['text-input']}>
             <TextInput
+              autoComplete="username"
               label="Adresse email"
               required
               type="email"
@@ -55,6 +56,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
         </div>
         <div className={styles['text-input']}>
           <PasswordInput
+            autoComplete="current-password"
             label="Mot de passe"
             required
             error={errors.password?.message}
