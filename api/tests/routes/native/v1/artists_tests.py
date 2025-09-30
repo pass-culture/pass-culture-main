@@ -7,7 +7,7 @@ class GetArtistsTest:
         artist = artist_factories.ArtistFactory()
 
         artist_id = artist.id
-        nb_queries = 1
+        nb_queries = 1  # artist
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/artists/{artist_id}")
 
@@ -22,7 +22,6 @@ class GetArtistsTest:
 
         artist_id = artist.id
         nb_queries = 1  # artist
-        nb_queries += 1  # product mediation
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/artists/{artist_id}")
 
@@ -33,10 +32,11 @@ class GetArtistsTest:
         assert response.json["image"] is None
 
     def test_get_non_existent_artist(self, client):
-        _ = artist_factories.ArtistFactory()
+        artist_factories.ArtistFactory()
 
         artist_id = "123-test-3a2b"
         nb_queries = 1
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/artists/{artist_id}")
-            assert response.status_code == 404
+
+        assert response.status_code == 404
