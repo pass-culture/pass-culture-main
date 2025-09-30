@@ -350,6 +350,10 @@ SET
   "email" = 'special_event' || "id" || '@anonymized.email',
   "phoneNumber" = pg_temp.fake_phone_number_from_id("userId");
 
+-- anonymize special event answers
+UPDATE special_event_answer
+SET "text" = 'special_event_answer ' || "id";
+
 -- anonymize user_account_update_request
 UPDATE "user_account_update_request"
 SET
