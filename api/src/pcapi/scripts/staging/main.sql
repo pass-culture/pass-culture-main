@@ -1,0 +1,1 @@
+UPDATE special_event_answer SET "text" = 'special_event_answer ' || "id";
