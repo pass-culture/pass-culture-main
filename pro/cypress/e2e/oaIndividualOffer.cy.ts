@@ -100,9 +100,10 @@ describe('Create individual offers with OA', () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
     cy.findByText('Importer').click()
-    /*     cy.findByLabelText('Lien URL Youtube').type(
+    // FIXME: uncomment me when PC-38122 is implemented
+    /*cy.findByLabelText('Lien URL Youtube').type(
       'https://www.youtube.com/watch?v=0R5PZxOgoz8'
-    ) */
+    )*/
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(
@@ -291,9 +292,10 @@ describe('Create individual offers with OA', () => {
     )
     cy.get('input[type=range]').setSliderValue(1.7)
     cy.findByText('Importer').click()
-    /*     cy.findByLabelText('Lien URL Youtube').type(
+    // FIXME: uncomment me when PC-38122 is implemented
+    /*cy.findByLabelText('Lien URL Youtube').type(
       'https://www.youtube.com/watch?v=0R5PZxOgoz8'
-    ) */
+    )*/
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(
