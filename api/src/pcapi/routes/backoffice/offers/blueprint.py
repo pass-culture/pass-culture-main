@@ -1073,6 +1073,23 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
+def _get_offer_recipients(offer: offers_models.Offer) -> list[str]:
+    if offer.venue.bookingEmail:
+        return [offer.venue.bookingEmail]
+
+    # Additional query in a loop is acceptable here since we rarely have no venue.bookingEmail
+    user_offerer_emails = (
+        db.session.query(users_models.User.email)
+        .join(users_models.User.UserOfferers)
+        .filter(
+            offerers_models.UserOfferer.offererId == offer.venue.managingOffererId,
+            offerers_models.UserOfferer.isValidated,
+        )
+        .all()
+    )
+    return [email for (email,) in user_offerer_emails]
+
+
 def _batch_validate_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.APPROVED
 
@@ -1096,7 +1113,10 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
             sa_orm.joinedload(offers_models.Offer.venue.of_type(aliased_venue)).load_only(
-                aliased_venue.bookingEmail, aliased_venue.name, aliased_venue.publicName
+                aliased_venue.bookingEmail,
+                aliased_venue.name,
+                aliased_venue.publicName,
+                aliased_venue.managingOffererId,
             ),
             sa_orm.joinedload(offers_models.Offer.offererAddress).options(
                 sa_orm.joinedload(offerers_models.OffererAddress.address),
@@ -1124,11 +1144,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
             db.session.add(offer)
 
-            recipients = (
-                [offer.venue.bookingEmail]
-                if offer.venue.bookingEmail
-                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
-            )
+            recipients = _get_offer_recipients(offer)
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
@@ -1145,7 +1161,17 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
 def _batch_reject_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.REJECTED
-    offers = db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids)).all()
+    offers = (
+        db.session.query(offers_models.Offer)
+        .filter(offers_models.Offer.id.in_(offer_ids))
+        .options(
+            sa_orm.joinedload(offers_models.Offer.venue).load_only(
+                offerers_models.Venue.bookingEmail,
+                offerers_models.Venue.managingOffererId,
+            )
+        )
+        .all()
+    )
 
     for offer in offers:
         if offer.validation != new_validation:
@@ -1169,11 +1195,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
             repository.save(offer)
 
-            recipients = (
-                [offer.venue.bookingEmail]
-                if offer.venue.bookingEmail
-                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
-            )
+            recipients = _get_offer_recipients(offer)
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
