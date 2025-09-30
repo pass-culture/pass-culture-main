@@ -212,64 +212,6 @@ class CineDigitalServiceGetShowTest:
 
 
 @pytest.mark.settings(CDS_API_URL="apiUrl_test/")
-class CineDigitalServiceGetShowsRemainingPlacesTest:
-    @patch(
-        "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
-        return_value=True,
-    )
-    def test_should_return_shows_id_with_corresponding_internet_remaining_places(
-        self,
-        mocked_internet_sale_gauge_active,
-        caplog,
-        requests_mock,
-    ):
-        requests_mock.get(
-            "https://accountid_test.apiUrl_test/shows?api_token=token_test",
-            json=MANY_SHOWS_RESPONSE_JSON,
-        )
-
-        cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", account_id="accountid_test", cinema_api_token="token_test", request_timeout=14
-        )
-
-        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
-            shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
-
-        assert len(caplog.records) == 1
-        assert caplog.records[0].message == "[CINEMA] Call to external API"
-        assert caplog.records[0].extra == {
-            "api_client": "CineDigitalServiceAPI",
-            "method": "GET https://accountid_test.apiUrl_test/shows",
-            "cinema_id": "cinemaid_test",
-            "response": MANY_SHOWS_RESPONSE_JSON,
-        }
-
-        assert shows_remaining_places == {"2": 30, "3": 100}
-
-    @patch(
-        "pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
-        return_value=False,
-    )
-    def test_should_return_shows_id_with_corresponding_remaining_places(
-        self, mocked_internet_sale_gauge_active, requests_mock
-    ):
-        requests_mock.get(
-            "https://accountid_test.apiUrl_test/shows?api_token=token_test",
-            json=MANY_SHOWS_RESPONSE_JSON,
-        )
-
-        cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test",
-            account_id="accountid_test",
-            cinema_api_token="token_test",
-            request_timeout=14,
-        )
-        shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
-
-        assert shows_remaining_places == {"2": 88, "3": 88}
-
-
-@pytest.mark.settings(CDS_API_URL="apiUrl_test/")
 class CineDigitalServiceGetPaymentTypeTest:
     def test_should_return_voucher_payment_type(self, caplog, requests_mock):
         requests_mock.get(

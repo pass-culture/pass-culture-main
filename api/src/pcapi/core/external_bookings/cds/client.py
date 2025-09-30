@@ -22,7 +22,6 @@ from pcapi.core.external_bookings.models import Ticket
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
-from . import constants
 from . import serializers as cds_serializers
 
 
@@ -159,16 +158,6 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"Cinema internet_sale_gauge_active not found in Cine Digital Service API "
             f"for cinemaId={self.cinema_id} & url={self.base_url}"
         )
-
-    @external_bookings_models.cache_external_call(
-        key_template=constants.CDS_SHOWTIMES_STOCKS_CACHE_KEY, expire=cds_constants.CDS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
-    )
-    def get_shows_remaining_places(self, show_ids: list[int]) -> str:
-        data = self._authenticated_get(f"{self.base_url}shows")
-        shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
-        if self.get_internet_sale_gauge_active():
-            return json.dumps({show.id: show.internet_remaining_place for show in shows if show.id in show_ids})
-        return json.dumps({show.id: show.remaining_place for show in shows if show.id in show_ids})
 
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = self._authenticated_get(f"{self.base_url}shows")

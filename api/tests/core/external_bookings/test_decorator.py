@@ -28,9 +28,6 @@ class FakeExternalBookingClientAPI(external_bookings_models.ExternalBookingsClie
     def cancel_booking(self, barcodes):
         pass
 
-    def get_shows_remaining_places(self, shows_id):
-        return {}
-
 
 class FakeClass:
     @catch_cinema_provider_request_timeout
