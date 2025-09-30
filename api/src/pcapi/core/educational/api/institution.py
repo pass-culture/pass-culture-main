@@ -69,6 +69,32 @@ def import_deposit_institution_csv(
     except exceptions.EducationalYearNotFound:
         raise ValueError(f"Educational year not found for year {year}")
 
+    data = get_import_deposit_data(path)
+
+    logger.info("Finished reading data from csv, starting deposit import")
+    total_amount = import_deposit_institution_data(
+        data=data,
+        educational_year=educational_year,
+        ministry=models.Ministry[ministry],
+        conflict=conflict,
+        final=final,
+    )
+
+    if program_name is not None:
+        educational_program = db.session.query(models.EducationalInstitutionProgram).filter_by(name=program_name).one()
+        logger.info("Updating institutions with program %s", program_name)
+        _update_institutions_educational_program(
+            educational_program=educational_program, uais=data.keys(), start=educational_year.beginningDate
+        )
+
+    return total_amount
+
+
+def get_import_deposit_data(path: str) -> dict[str, Decimal]:
+    """
+    Extract total amount by UAI from the csv file
+    """
+
     with open(path, "r", encoding="utf-8") as csv_file:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
@@ -95,25 +121,7 @@ def import_deposit_institution_csv(
             else:
                 data[uai] = amount
 
-        logger.info("Finished reading data from csv, starting deposit import")
-        total_amount = import_deposit_institution_data(
-            data=data,
-            educational_year=educational_year,
-            ministry=models.Ministry[ministry],
-            conflict=conflict,
-            final=final,
-        )
-
-        if program_name is not None:
-            educational_program = (
-                db.session.query(models.EducationalInstitutionProgram).filter_by(name=program_name).one()
-            )
-            logger.info("Updating institutions with program %s", program_name)
-            _update_institutions_educational_program(
-                educational_program=educational_program, uais=data.keys(), start=educational_year.beginningDate
-            )
-
-        return total_amount
+    return data
 
 
 def import_deposit_institution_data(

@@ -1,11 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from tempfile import NamedTemporaryFile
 
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.api.institution import import_deposit_institution_csv
 from pcapi.core.educational.api.institution import import_deposit_institution_data
 from pcapi.models import db
 
@@ -187,3 +189,76 @@ class ImportDepositInstitutionDataTest:
         assert deposit.amount == Decimal(1250)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.AGRICULTURE
+
+    def test_import_csv(self) -> None:
+        ansco = educational_factories.EducationalYearFactory()
+        uai = "0470010E"
+        new_uai = "0470009E"
+        educational_factories.EducationalInstitutionFactory(institutionId=uai)
+
+        content = f"""UAI;Crédits de dépenses
+        {uai};1250
+        {new_uai};1500"""
+
+        with NamedTemporaryFile(mode="w") as tmp:
+            tmp.write(content)
+            tmp.flush()
+
+            with open(tmp.name) as f:
+                import_deposit_institution_csv(
+                    path=f.name,
+                    year=ansco.beginningDate.year,
+                    ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+                    final=False,
+                    conflict="replace",
+                    program_name=None,
+                )
+
+        institution = db.session.query(educational_models.EducationalInstitution).filter_by(institutionId=uai).one()
+        new_institution = (
+            db.session.query(educational_models.EducationalInstitution).filter_by(institutionId=new_uai).one()
+        )
+        deposit = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalYear == ansco,
+                educational_models.EducationalDeposit.educationalInstitution == institution,
+            )
+            .one()
+        )
+        deposit_new_uai = (
+            db.session.query(educational_models.EducationalDeposit)
+            .filter(
+                educational_models.EducationalDeposit.educationalYear == ansco,
+                educational_models.EducationalDeposit.educationalInstitution == new_institution,
+            )
+            .one()
+        )
+
+        assert institution.institutionId == uai
+        assert institution.institutionType == "COLLEGE"
+        assert institution.name == "Balamb Garden"
+        assert institution.city == "Balamb"
+        assert institution.postalCode == "75001"
+        assert institution.email == "contact+squall@example.com"
+        assert institution.phoneNumber == "0600000000"
+        assert institution.isActive is True
+
+        assert new_institution.institutionId == new_uai
+        assert new_institution.institutionType == "COLLEGE"
+        assert new_institution.name == "DE LA TOUR0"
+        assert new_institution.city == "PARIS"
+        assert new_institution.postalCode == "75000"
+        assert new_institution.email == "contact+collegelatour@example.com"
+        assert new_institution.phoneNumber == "0600000000"
+        assert new_institution.isActive is True
+
+        assert deposit.amount == Decimal(1250)
+        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.isFinal is False
+        assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
+
+        assert deposit_new_uai.amount == Decimal(1500)
+        assert deposit_new_uai.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit_new_uai.isFinal is False
+        assert deposit_new_uai.ministry == educational_models.Ministry.EDUCATION_NATIONALE
