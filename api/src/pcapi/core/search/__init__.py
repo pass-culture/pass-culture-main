@@ -134,6 +134,7 @@ def async_index_collective_offer_template_ids(
 def async_index_artist_ids(
     artist_ids: abc.Collection[str],
     reason: IndexationReason,
+    from_unindexation: bool,
     log_extra: dict | None = None,
 ) -> None:
     """Ask for an asynchronous reindexation of the given list of
@@ -145,7 +146,10 @@ def async_index_artist_ids(
     _log_async_request("artists", artist_ids, reason, log_extra)
     backend = _get_backend()
     try:
-        backend.enqueue_artist_ids(artist_ids)
+        if from_unindexation:
+            backend.enqueue_artist_ids_from_offer_unindexation(artist_ids)
+        else:
+            backend.enqueue_artist_ids(artist_ids)
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
@@ -323,6 +327,25 @@ def index_artists_in_queue(from_error_queue: bool = False) -> None:
             if not artist_ids:
                 return
             reindex_artist_ids(artist_ids, from_error_queue)
+
+    except Exception as exc:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not index artists from queue", extra={"exc": str(exc)})
+
+
+def index_artists_from_unindexation_in_queue(from_error_queue: bool = False) -> None:
+    """Pop artists from indexation queue and reindex them."""
+    backend = _get_backend()
+    try:
+        chunk_size = settings.REDIS_ARTIST_IDS_CHUNK_SIZE
+        with backend.pop_artist_ids_from_unindexation_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        ) as artist_ids:
+            if not artist_ids:
+                return
+            reindex_artist_ids(artist_ids, from_error_queue, from_unindexation=True)
 
     except Exception as exc:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
@@ -651,20 +674,21 @@ def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Of
     return default_dict
 
 
-def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool = False) -> None:
+def reindex_artist_ids(
+    artist_ids: abc.Collection[str], from_error_queue: bool = False, from_unindexation: bool = False
+) -> None:
     backend = _get_backend()
     logger.info("Starting to index artists", extra={"count": len(artist_ids)})
-    artists = (
-        db.session.query(artist_models.Artist)
-        .options(
-            sa_orm.load_only(
-                artist_models.Artist.computed_image,
-                artist_models.Artist.description,
-                artist_models.Artist.image,
-                artist_models.Artist.name,
-            )
+    artists = db.session.query(artist_models.Artist).options(
+        sa_orm.load_only(
+            artist_models.Artist.computed_image,
+            artist_models.Artist.description,
+            artist_models.Artist.image,
+            artist_models.Artist.name,
         )
-        .options(
+    )
+    if from_unindexation:
+        artists = artists.options(
             sa_orm.joinedload(artist_models.Artist.products)
             .load_only()
             .joinedload(offers_models.Product.offers)
@@ -694,13 +718,14 @@ def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool =
                 )
             )
         )
-    ).filter(artist_models.Artist.id.in_(artist_ids))
+
+    artists = artists.filter(artist_models.Artist.id.in_(artist_ids))
 
     to_add = []
     to_delete_ids = []
 
     for artist in artists:
-        if artist.is_eligible_for_search:
+        if not from_unindexation or artist.is_eligible_for_search:
             to_add.append(artist)
         else:
             to_delete_ids.append(artist.id)
@@ -792,7 +817,8 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    _reindex_artists_from_offers([offer.id for offer in to_add])
+    _reindex_artists_from_offers(to_delete_ids, from_unindexation=True)
 
 
 def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
@@ -807,7 +833,7 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    _reindex_artists_from_offers(offer_ids, from_unindexation=True)
 
 
 def unindex_all_offers() -> None:
@@ -822,7 +848,7 @@ def unindex_all_offers() -> None:
         logger.exception("Could not unindex all offers")
 
 
-def _reindex_artists_from_offers(offer_ids: abc.Collection[int]) -> None:
+def _reindex_artists_from_offers(offer_ids: abc.Collection[int], from_unindexation: bool = False) -> None:
     """
     Get the offers' artists ids and reindex them
     """
@@ -839,7 +865,7 @@ def _reindex_artists_from_offers(offer_ids: abc.Collection[int]) -> None:
     artist_ids = [row[0] for row in db.session.execute(query)]
 
     logger.info("Starting to reindex artists from offers", extra={"artists_count": len(artist_ids)})
-    async_index_artist_ids(artist_ids, reason=IndexationReason.OFFER_REINDEXATION)
+    async_index_artist_ids(artist_ids, IndexationReason.OFFER_REINDEXATION, from_unindexation)
 
 
 def _reindex_venues_from_offers(offer_ids: abc.Collection[int]) -> None:

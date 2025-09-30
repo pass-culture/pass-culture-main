@@ -17,8 +17,11 @@ REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:set"
 
 REDIS_ARTIST_IDS_FOR_OFFERS_NAME = "search:algolia:artist-ids-for-offers:set"
 REDIS_ARTIST_IDS_TO_INDEX = "search:algolia:artist-ids-to-index:set"
+REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_TO_INDEX = "search:algolia:artist-ids-from-unindexation-to-index:set"
 REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX = "search:algolia:artist-ids-in-error-to-index:set"
-
+REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_IN_ERROR_TO_INDEX = (
+    "search:algolia:artist-ids-from-unindexation-in-error-to-index:set"
+)
 REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:set"
 REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:set"
 REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:set"
@@ -32,7 +35,9 @@ QUEUES = (
     REDIS_OFFER_IDS_IN_ERROR_NAME,
     REDIS_ARTIST_IDS_FOR_OFFERS_NAME,
     REDIS_ARTIST_IDS_TO_INDEX,
+    REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_TO_INDEX,
     REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX,
+    REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_IN_ERROR_TO_INDEX,
     REDIS_VENUE_IDS_FOR_OFFERS_NAME,
     REDIS_VENUE_IDS_TO_INDEX,
     REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
@@ -101,6 +106,12 @@ class AlgoliaIndexingQueuesMixin:
     def enqueue_artist_ids_in_error(self, artist_ids: abc.Collection[str]) -> None:
         return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX)
 
+    def enqueue_artist_ids_from_offer_unindexation(self, artist_ids: abc.Collection[str]) -> None:
+        return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_TO_INDEX)
+
+    def enqueue_artist_ids_from_offer_unindexation_in_error(self, artist_ids: abc.Collection[str]) -> None:
+        return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_IN_ERROR_TO_INDEX)
+
     def enqueue_artist_ids_for_offers(self, artist_ids: abc.Collection[str]) -> None:
         return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_FOR_OFFERS_NAME)
 
@@ -142,6 +153,17 @@ class AlgoliaIndexingQueuesMixin:
             queue = REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX
         else:
             queue = REDIS_ARTIST_IDS_TO_INDEX
+        return self._pop_ids_from_queue(queue, count, cast_to_int=False)
+
+    def pop_artist_ids_from_unindexation_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
+        if from_error_queue:
+            queue = REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_IN_ERROR_TO_INDEX
+        else:
+            queue = REDIS_ARTIST_IDS_FROM_OFFER_UNINDEXATION_TO_INDEX
         return self._pop_ids_from_queue(queue, count, cast_to_int=False)
 
     def pop_venue_ids_from_queue(

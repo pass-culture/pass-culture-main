@@ -107,6 +107,22 @@ def index_artists_in_error() -> None:
     search.index_artists_in_queue(from_error_queue=True)
 
 
+@blueprint.cli.command("index_artists_from_offer_unindexation")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_artists_from_offer_unindexation() -> None:
+    """Pop artists from indexation queue and reindex them."""
+    search.index_artists_from_unindexation_in_queue()
+
+
+@blueprint.cli.command("index_artists_from_offer_unindexation_in_error")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_artists_from_offer_unindexation_in_error() -> None:
+    """Pop artists from the error queue and reindex them."""
+    search.index_artists_from_unindexation_in_queue(from_error_queue=True)
+
+
 @blueprint.cli.command("index_venues")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
