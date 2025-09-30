@@ -23,7 +23,6 @@ from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
-from . import exceptions
 from . import serializers
 
 
@@ -310,7 +309,13 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         showtime = self.get_showtime(show_id)
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
         if not pcu_pricing:
-            raise exceptions.BoostAPIException(f"pass Culture pricing not found for show {show_id}")
+            logger.warning(
+                "[Boost] pass Culture pricing not found",
+                extra={"show_id": show_id, "user_id": beneficiary.id},
+            )
+            # not a totally appropriate exception, we raise it to set the stock quantity to 0
+            # as a beneficiary cannot book a show if there is no pass Culture pricing
+            raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
 
         basket_items = [serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
         sale_body = serializers.SaleRequest(
