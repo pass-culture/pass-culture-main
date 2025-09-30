@@ -25,6 +25,7 @@ export const AppRouter = (): JSX.Element => {
         path: '/',
         element: <App />,
         errorElement: <ErrorBoundary />,
+        hydrateFallbackElement: <></>,
         children: [
           ...activeRoutes,
           ...redirectedRoutes,
