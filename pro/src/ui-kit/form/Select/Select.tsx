@@ -2,8 +2,9 @@ import classNames from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './Select.module.scss'
 
@@ -13,7 +14,7 @@ type SelectProps<T extends number | string = string> = {
   className?: string
   required?: boolean
   disabled?: boolean
-  label: string | React.ReactNode
+  label: string
   onChange?: React.InputHTMLAttributes<HTMLSelectElement>['onChange']
   onBlur?: React.FocusEventHandler<HTMLSelectElement>
   /** Option displayed if no option of the option list is selected */
@@ -33,7 +34,7 @@ export const Select = forwardRef(
       defaultOption = null,
       options,
       className,
-      required,
+      required = false,
       disabled,
       label,
       onChange,
@@ -45,16 +46,18 @@ export const Select = forwardRef(
     }: SelectProps<string | number>,
     ref: ForwardedRef<HTMLSelectElement>
   ): JSX.Element => {
-    const labelId = useId()
+    const fieldId = useId()
     const errorId = useId()
 
     return (
       <div className={classNames(styles['select'], className)}>
         <div className={styles['select-field']}>
-          <label htmlFor={labelId} className={styles['label']}>
-            {label}
-            {required && asterisk ? ' *' : ''}
-          </label>
+          <FieldHeader
+            label={label}
+            inputId={fieldId}
+            required={required}
+            asterisk={asterisk}
+          />
           <SelectInput
             disabled={disabled}
             hasError={Boolean(error)}
@@ -65,19 +68,13 @@ export const Select = forwardRef(
             onChange={onChange}
             name={name}
             value={value}
-            aria-describedby={errorId}
+            aria-describedby={error ? errorId : undefined}
             ref={ref}
-            id={labelId}
+            id={fieldId}
             aria-label={ariaLabel}
           />
         </div>
-        <div role="alert" id={errorId}>
-          {error && (
-            <FieldError name={name} className={styles['error']}>
-              {error}
-            </FieldError>
-          )}
-        </div>
+        <FieldFooter error={error} errorId={errorId} />
       </div>
     )
   }

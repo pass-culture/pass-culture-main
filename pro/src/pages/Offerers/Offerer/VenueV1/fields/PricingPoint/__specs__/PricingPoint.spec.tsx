@@ -57,7 +57,7 @@ describe('PricingPoint', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Structure avec SIRET utilisée pour le calcul de votre barème de remboursement *'
+        /Structure avec SIRET utilisée pour le calcul de votre barème de remboursement/
       ),
       '1'
     )
@@ -92,7 +92,7 @@ describe('PricingPoint', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText(
-        'Structure avec SIRET utilisée pour le calcul de votre barème de remboursement *'
+        /Structure avec SIRET utilisée pour le calcul de votre barème de remboursement/
       ),
       '1'
     )

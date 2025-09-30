@@ -88,7 +88,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should render activity form', async () => {
     renderActivityForm(initialValues, props, contextValue)
 
-    expect(screen.getByLabelText('Activité principale *')).toHaveValue('')
+    expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
       await screen.findByRole('button', { name: 'Ajouter un lien' })
@@ -196,7 +196,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   it('should change venueType', async () => {
     renderActivityForm(initialValues, props, contextValue)
 
-    const venueTypeSelect = screen.getByLabelText('Activité principale *')
+    const venueTypeSelect = screen.getByLabelText(/Activité principale/)
     expect(venueTypeSelect).toHaveValue('')
 
     await userEvent.click(venueTypeSelect)

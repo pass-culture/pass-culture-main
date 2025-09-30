@@ -80,7 +80,7 @@ describe('screens | OfferEducational : accessibility step', () => {
     })
     renderComponent(props)
 
-    const venuesSelect = await screen.findByLabelText('Structure *')
+    const venuesSelect = await screen.findByLabelText(/Structure/)
     await userEvent.selectOptions(venuesSelect, ['43'])
 
     const accessibilityCheckboxes = screen.queryAllByRole('checkbox', {

@@ -9,7 +9,7 @@ import {
 } from 'react'
 
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 
 import { SelectedValuesTags } from '../../SelectedValuesTags/SelectedValuesTags'
 import styles from './MultiSelect.module.scss'
@@ -141,6 +141,7 @@ export const MultiSelect = forwardRef(
 
     const containerRef = useRef<HTMLDivElement>(null)
     const id = useId()
+    const errorId = useId()
 
     const toggleDropdown = () => setIsOpen((prev) => !prev)
 
@@ -219,6 +220,7 @@ export const MultiSelect = forwardRef(
               selectedCount={selectedItems.length}
               disabled={disabled}
               error={error}
+              errorId={errorId}
             />
 
             {isOpen && (
@@ -238,13 +240,7 @@ export const MultiSelect = forwardRef(
               />
             )}
           </div>
-          <div role="alert" id={`error-details-${name}`}>
-            {error && (
-              <FieldError name={name} className={styles['field-error']}>
-                {error}
-              </FieldError>
-            )}
-          </div>
+          <FieldFooter error={error} errorId={errorId} />
         </div>
 
         <SelectedValuesTags

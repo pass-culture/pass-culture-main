@@ -43,7 +43,7 @@ describe('Select', () => {
       />
     )
 
-    expect(screen.getByLabelText('select label *')).toBeInTheDocument()
+    expect(screen.getByLabelText(/select label/)).toBeInTheDocument()
   })
 
   it('should display a select input without an asterisk if it is required but we chose not to display it', () => {

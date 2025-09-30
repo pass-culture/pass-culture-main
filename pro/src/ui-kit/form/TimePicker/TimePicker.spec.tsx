@@ -46,7 +46,7 @@ describe('TimePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label *'))
+    expect(screen.getByLabelText(/input label/))
   })
 
   it('should not display an asterisk if the picker is required but we chose to hide it', () => {

@@ -55,7 +55,7 @@ export const WithinAGroupInError: Story = {
     tooltipContent: 'Lundi',
     name: 'myField',
     checked: false,
-    error: 'error',
+    hasError: true,
     displayErrorMessage: false,
     onChange: () => {
       //  Control the result here with e.target.checked

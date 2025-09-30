@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 import React, { type ForwardedRef, useId } from 'react'
 
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePicker'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './DatePicker.module.scss'
 
@@ -41,20 +41,20 @@ export const DatePicker = React.forwardRef(
     }: DatePickerProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
-    const labelId = useId()
+    const inputId = useId()
     const errorId = useId()
 
     return (
       <div className={classNames(styles['date-picker'], className)}>
-        <div className={styles['date-picker-field']}>
-          <label htmlFor={labelId} className={styles['label']}>
+        <div>
+          <label htmlFor={inputId} className={styles['label']}>
             {label}
             {required && asterisk ? ' *' : ''}
           </label>
           <BaseDatePicker
             data-testid={name}
             name={name}
-            id={labelId}
+            id={inputId}
             hasError={Boolean(error)}
             disabled={disabled}
             maxDate={maxDate}
@@ -67,13 +67,7 @@ export const DatePicker = React.forwardRef(
             ref={ref}
           />
         </div>
-        <div role="alert" id={errorId}>
-          {error && (
-            <FieldError name={name} className={styles['error']}>
-              {error}
-            </FieldError>
-          )}
-        </div>
+        <FieldFooter error={error} errorId={errorId} />
       </div>
     )
   }

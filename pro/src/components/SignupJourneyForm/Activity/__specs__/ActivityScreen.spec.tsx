@@ -81,7 +81,7 @@ describe('screens:SignupJourney::Activity', () => {
     expect(
       screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Activité principale *')).toHaveValue('')
+    expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(
       await screen.findByRole('button', { name: 'Ajouter un lien' })

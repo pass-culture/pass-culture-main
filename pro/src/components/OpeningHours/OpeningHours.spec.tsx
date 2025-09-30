@@ -54,7 +54,7 @@ describe('OpeningHours', () => {
     expect(screen.getAllByRole('group')).toHaveLength(7)
   })
 
-  it('should show a dat input for each timespan', () => {
+  it('should show a date input for each timespan', () => {
     renderOpeningHours()
 
     expect(screen.getAllByLabelText('Ouvre à')).toHaveLength(5)

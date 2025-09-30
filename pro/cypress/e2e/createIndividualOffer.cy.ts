@@ -63,10 +63,10 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
-    cy.findByLabelText('Catégorie *').select('Spectacle vivant')
-    cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
-    cy.findByLabelText('Type de spectacle *').select('Théâtre')
-    cy.findByLabelText('Sous-type *').select('Comédie')
+    cy.findByLabelText(/Catégorie/).select('Spectacle vivant')
+    cy.findByLabelText(/Sous-catégorie/).select('Spectacle, représentation')
+    cy.findByLabelText(/Type de spectacle/).select('Théâtre')
+    cy.findByLabelText(/Sous-type/).select('Comédie')
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
@@ -174,29 +174,29 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.findByLabelText('Dimanche').click()
     cy.findByLabelText('Du *').type('2030-05-01')
     cy.findByLabelText('Au *').type('2030-09-30')
-    cy.findByLabelText('Horaire 1 *').type('18:30')
+    cy.findByLabelText(/Horaire 1/).type('18:30')
     cy.findByText('Ajouter un créneau').click()
-    cy.findByLabelText('Horaire 2 *').type('21:00')
+    cy.findByLabelText(/Horaire 2/).type('21:00')
     cy.findByText('Ajouter d’autres places et tarifs').click()
     cy.findByText('Ajouter d’autres places et tarifs').click()
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.0').within(() => {
       // trouve la première liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('0,00\xa0€ - Fosse Sceptique')
+      cy.findByLabelText(/Tarif/).select('0,00\xa0€ - Fosse Sceptique')
     })
 
     cy.findAllByLabelText('Nombre de places').eq(0).type('100')
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
       // trouve la euxième liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('10,00\xa0€ - Fosse Debout')
+      cy.findByLabelText(/Tarif/).select('10,00\xa0€ - Fosse Debout')
     })
 
     cy.findAllByLabelText('Nombre de places').eq(1).type('20')
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
       // trouve la troisième liste déroulante avec le label:
-      cy.findByLabelText('Tarif *').select('100,00\xa0€ - Carré Or')
+      cy.findByLabelText(/Tarif/).select('100,00\xa0€ - Carré Or')
     })
 
     // manque un data-testid ou un placeholder ou un label accessible
@@ -267,8 +267,8 @@ describe('Create individual offers', { testIsolation: false }, () => {
       Math.floor(1000000000000 + Math.random() * 9000000000000)
     )
     cy.wrap(ean).as('ean')
-    cy.findByLabelText('Catégorie *').select('Livre')
-    cy.findByLabelText('Sous-catégorie *').select('Livre papier')
+    cy.findByLabelText(/Catégorie/).select('Livre')
+    cy.findByLabelText(/Sous-catégorie/).select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
 

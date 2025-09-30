@@ -60,7 +60,7 @@ describe('Create collective offers', () => {
   const fillBasicOfferForm = () => {
     cy.findByText('Étape suivante').click()
     cy.wait('@getDomains')
-    cy.findByLabelText('Structure *').select(venueName)
+    cy.findByLabelText(/Structure/).select(venueName)
     cy.findByLabelText('Domaines artistiques').click()
     cy.findByLabelText('Architecture').click()
     cy.findByText('Quel est le type de votre offre ?').click()

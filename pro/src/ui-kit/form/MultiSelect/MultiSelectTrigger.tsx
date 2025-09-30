@@ -14,6 +14,7 @@ type MultiSelectTriggerProps = {
   buttonLabel: string
   disabled?: boolean
   error?: string
+  errorId?: string
 }
 
 export const MultiSelectTrigger = ({
@@ -24,6 +25,7 @@ export const MultiSelectTrigger = ({
   buttonLabel,
   disabled,
   error,
+  errorId,
 }: MultiSelectTriggerProps): JSX.Element => {
   return (
     <button
@@ -38,6 +40,7 @@ export const MultiSelectTrigger = ({
       aria-controls={id}
       disabled={disabled}
       data-error={!!error}
+      aria-describedby={errorId}
     >
       <div className={styles['trigger-content']}>
         {selectedCount > 0 && (

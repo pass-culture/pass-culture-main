@@ -1,11 +1,12 @@
 import classNames from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
 import {
   BaseTimePicker,
   type SuggestedTimeList,
 } from '@/ui-kit/form/shared/BaseTimePicker/BaseTimePicker'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 
 import styles from './TimePicker.module.scss'
 
@@ -19,7 +20,7 @@ type TimePickerProps = {
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
-  label?: string | React.ReactNode
+  label: string
   required?: boolean
   error?: string
   suggestedTimeList?: SuggestedTimeList
@@ -33,53 +34,48 @@ export const TimePicker = forwardRef(
       className,
       disabled,
       label,
-      required,
+      required = false,
       asterisk = true,
       error,
       value,
       onChange,
       onBlur,
       suggestedTimeList,
-      isLabelHidden = false,
+      isLabelHidden,
     }: TimePickerProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
-    const labelId = useId()
+    const inputId = useId()
     const errorId = useId()
 
     return (
-      <div className={classNames(styles['time-picker'], className)}>
-        <div className={styles['time-picker-field']}>
-          <label
-            htmlFor={labelId}
-            className={classNames(styles['label'], {
-              [styles['visually-hidden']]: isLabelHidden,
-            })}
-          >
-            {label}
-            {required && asterisk ? ' *' : ''}
-          </label>
-          <BaseTimePicker
-            hasError={Boolean(error)}
-            disabled={disabled}
-            aria-required={required}
-            value={value}
-            ref={ref}
-            onChange={onChange}
-            onBlur={onBlur}
-            name={name}
-            id={labelId}
-            aria-describedby={errorId}
-            suggestedTimeList={suggestedTimeList}
+      <div className={className}>
+        <div
+          className={classNames({
+            [styles['visually-hidden']]: isLabelHidden,
+          })}
+        >
+          <FieldHeader
+            inputId={inputId}
+            label={label}
+            required={required}
+            asterisk={asterisk}
           />
         </div>
-        <div role="alert" id={errorId}>
-          {error && (
-            <FieldError name={name} className={styles['error']}>
-              {error}
-            </FieldError>
-          )}
-        </div>
+        <BaseTimePicker
+          hasError={Boolean(error)}
+          disabled={disabled}
+          aria-required={required}
+          value={value}
+          ref={ref}
+          onChange={onChange}
+          onBlur={onBlur}
+          name={name}
+          id={inputId}
+          aria-describedby={errorId}
+          suggestedTimeList={suggestedTimeList}
+        />
+        <FieldFooter error={error} errorId={errorId} />
       </div>
     )
   }

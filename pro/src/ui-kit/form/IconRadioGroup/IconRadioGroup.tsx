@@ -1,8 +1,8 @@
 import { useId } from 'react'
 
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { IconRadio } from '@/ui-kit/form/IconRadio/IconRadio'
 
-import { FieldError } from '../shared/FieldError/FieldError'
 import styles from './IconRadioGroup.module.scss'
 
 export type IconRadioGroupValues = {
@@ -90,13 +90,7 @@ export const IconRadioGroup = ({
             ))}
           </div>
         )}
-        <div role="alert" id={errorId}>
-          {error && (
-            <FieldError name={name} className={styles['error']}>
-              {error}
-            </FieldError>
-          )}
-        </div>
+        <FieldFooter error={error} errorId={errorId} />
       </div>
     </fieldset>
   )

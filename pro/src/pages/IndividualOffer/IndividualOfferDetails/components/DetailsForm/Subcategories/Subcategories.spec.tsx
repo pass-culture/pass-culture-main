@@ -69,23 +69,23 @@ const renderSubCategories = (options?: {
 describe('<Subcategories />', () => {
   it('renders the category select', () => {
     renderSubCategories()
-    expect(screen.getByLabelText('Catégorie *')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()
   })
 
   it('renders subcategory select only after selecting a category', async () => {
     renderSubCategories()
 
-    expect(screen.queryByLabelText('Sous-catégorie *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/Sous-catégorie/)).not.toBeInTheDocument()
 
-    const categorySelect = screen.getByLabelText('Catégorie *')
+    const categorySelect = screen.getByLabelText(/Catégorie/)
     await userEvent.selectOptions(categorySelect, 'A')
 
-    expect(await screen.findByLabelText('Sous-catégorie *')).toBeInTheDocument()
+    expect(await screen.findByLabelText(/Sous-catégorie/)).toBeInTheDocument()
   })
 
   it('disables selects when readOnlyFields is set', () => {
     renderSubCategories({ readOnlyFields: ['categoryId', 'subcategoryId'] })
-    expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
+    expect(screen.getByLabelText(/Catégorie/)).toBeDisabled()
   })
 
   // NRT https://passculture.atlassian.net/browse/PC-37537
@@ -97,10 +97,10 @@ describe('<Subcategories />', () => {
       },
     })
 
-    const categorySelect = screen.getByLabelText('Catégorie *')
+    const categorySelect = screen.getByLabelText(/Catégorie/)
 
     await userEvent.selectOptions(categorySelect, 'A')
-    await screen.findByLabelText('Sous-catégorie *')
+    await screen.findByLabelText(/Sous-catégorie/)
 
     // -------------------------------------------------------------------------
     // Case 1: Select default category after having selected a non-default category
@@ -110,7 +110,7 @@ describe('<Subcategories />', () => {
       DEFAULT_DETAILS_FORM_VALUES.categoryId
     )
 
-    expect(screen.queryByLabelText('Sous-catégorie *')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/Sous-catégorie/)).not.toBeInTheDocument()
     await waitFor(() => {
       expect(formActions.getValues('categoryId')).toBe('')
       expect(formActions.getValues('subcategoryId')).toBe('')
@@ -121,7 +121,7 @@ describe('<Subcategories />', () => {
     // Case 2: Select default subcategory after having selected a non-default subcategory
 
     await userEvent.selectOptions(categorySelect, 'A')
-    const subcategorySelect2 = await screen.findByLabelText('Sous-catégorie *')
+    const subcategorySelect2 = await screen.findByLabelText(/Sous-catégorie/)
     await userEvent.selectOptions(subcategorySelect2, 'sub-A')
 
     await waitFor(() => {

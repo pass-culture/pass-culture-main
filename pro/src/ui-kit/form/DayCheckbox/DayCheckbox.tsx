@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 import { Tooltip, type TooltipProps } from '@/ui-kit/Tooltip/Tooltip'
 
 import styles from './DayCheckbox.module.scss'
@@ -11,7 +10,7 @@ type DayCheckboxProps = {
   name: string
   className?: string
   /** Error text for the checkbox */
-  error?: string
+  hasError?: boolean
   /** Whether or not to display the error message. If false, the field has the error styles but no message */
   displayErrorMessage?: boolean
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
@@ -27,9 +26,8 @@ export const DayCheckbox = forwardRef(
     {
       name,
       className,
-      error,
       label,
-      displayErrorMessage = true,
+      hasError,
       onChange,
       onBlur,
       checked,
@@ -38,15 +36,16 @@ export const DayCheckbox = forwardRef(
     }: DayCheckboxProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
-    const errorId = useId()
-
     const inputId = useId()
 
     return (
       <div
         className={classNames(
           styles['checkbox'],
-          { [styles['disabled']]: disabled, [styles['error']]: Boolean(error) },
+          {
+            [styles['disabled']]: disabled,
+            [styles['error']]: Boolean(hasError),
+          },
           className
         )}
       >
@@ -60,9 +59,9 @@ export const DayCheckbox = forwardRef(
             type="checkbox"
             className={styles['checkbox-input']}
             aria-labelledby={`${name}-label`}
+            aria-invalid={hasError}
             name={name}
             ref={ref}
-            aria-describedby={errorId}
             onChange={onChange}
             onBlur={onBlur}
             checked={checked}
@@ -70,14 +69,6 @@ export const DayCheckbox = forwardRef(
             id={inputId}
           />
         </Tooltip>
-
-        <div role="alert" id={errorId}>
-          {error && displayErrorMessage && (
-            <FieldError name={name} className={styles['error']}>
-              {error}
-            </FieldError>
-          )}
-        </div>
       </div>
     )
   }

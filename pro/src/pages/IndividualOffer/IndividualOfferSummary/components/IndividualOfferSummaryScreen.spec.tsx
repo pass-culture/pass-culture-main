@@ -55,7 +55,6 @@ const LABELS = {
   publicationModeNowRadio: /Publier maintenant/,
   publicationModeLaterRadio: /Publier plus tard/,
   publicationDateInput: 'Date *',
-  publicationTimeSelect: 'Heure *',
   submitInstantOfferButton: 'Publier l’offre',
   submitScheduledOfferButton: 'Programmer l’offre',
 }
@@ -405,7 +404,7 @@ describe('IndividualOfferSummaryScreen', () => {
       )
 
       await userEvent.type(screen.getByLabelText('Date *'), publicationDate)
-      await userEvent.selectOptions(screen.getByLabelText('Heure *'), '11:00')
+      await userEvent.selectOptions(screen.getByLabelText(/Heure/), '11:00')
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Programmer l’offre' })
@@ -463,7 +462,7 @@ describe('IndividualOfferSummaryScreen', () => {
       )
 
       await userEvent.type(screen.getByLabelText('Date *'), bookingAllowedDate)
-      await userEvent.selectOptions(screen.getByLabelText('Heure *'), '11:00')
+      await userEvent.selectOptions(screen.getByLabelText(/Heure/), '11:00')
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Publier l’offre' })
@@ -777,9 +776,7 @@ describe('IndividualOfferSummaryScreen', () => {
       const publicationDateInput = screen.getByLabelText(
         LABELS.publicationDateInput
       )
-      const publicationTimeSelect = screen.getByLabelText(
-        LABELS.publicationTimeSelect
-      )
+      const publicationTimeSelect = screen.getByLabelText(/Heure/)
 
       await userEvent.type(
         publicationDateInput,
@@ -833,9 +830,7 @@ describe('IndividualOfferSummaryScreen', () => {
       const publicationDateInput = screen.getByLabelText(
         LABELS.publicationDateInput
       )
-      const publicationTimeSelect = screen.getByLabelText(
-        LABELS.publicationTimeSelect
-      )
+      const publicationTimeSelect = screen.getByLabelText(/Heure/)
 
       const yesterday = set(sub(new Date(), { days: 1 }), {
         hours: 10,
@@ -892,9 +887,7 @@ describe('IndividualOfferSummaryScreen', () => {
       const publicationDateInput = screen.getByLabelText(
         LABELS.publicationDateInput
       )
-      const publicationTimeSelect = screen.getByLabelText(
-        LABELS.publicationTimeSelect
-      )
+      const publicationTimeSelect = screen.getByLabelText(/Heure/)
 
       const inMoreThanTwoYears = set(add(new Date(), { months: 25 }), {
         hours: 10,
