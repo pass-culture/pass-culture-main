@@ -10,6 +10,7 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import models as chronicles_models
@@ -1146,6 +1147,19 @@ def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
         .order_by(models.Offer.id)
         .offset((page - 1) * batch_size)  # first page is 1, not 0
         .limit(batch_size)
+    )
+    return [offer_id for (offer_id,) in query]
+
+
+def get_paginated_offer_ids_by_artist_id(artist_id: str, limit: int, page: int = 0) -> list[int]:
+    query = (
+        db.session.query(models.Offer)
+        .with_entities(models.Offer.id)
+        .join(artist_models.ArtistProductLink, models.Offer.productId == artist_models.ArtistProductLink.product_id)
+        .filter(artist_models.ArtistProductLink.artist_id == artist_id)
+        .order_by(models.Offer.id)
+        .offset(page * limit)  # first page is 0
+        .limit(limit)
     )
     return [offer_id for (offer_id,) in query]
 

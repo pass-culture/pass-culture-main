@@ -166,6 +166,12 @@ class AlgoliaIndexingQueuesMixin:
             queue = REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_TO_INDEX
         return self._pop_ids_from_queue(queue, count)
 
+    def pop_artist_ids_for_offers_from_queue(
+        self,
+        count: int,
+    ) -> contextlib.AbstractContextManager:
+        return self._pop_ids_from_queue(REDIS_ARTIST_IDS_FOR_OFFERS_NAME, count, cast_to_int=False)
+
     def pop_venue_ids_for_offers_from_queue(
         self,
         count: int,

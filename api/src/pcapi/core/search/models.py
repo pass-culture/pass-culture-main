@@ -2,6 +2,8 @@ import enum
 
 
 class IndexationReason(enum.Enum):
+    ARTIST_CREATION = "artist-creation"
+    ARTIST_UPDATE = "artist-update"
     BOOKING_CANCELLATION = "booking-cancellation"
     BOOKING_COUNT_CHANGE = "booking-count-change"
     BOOKING_CREATION = "booking-creation"
