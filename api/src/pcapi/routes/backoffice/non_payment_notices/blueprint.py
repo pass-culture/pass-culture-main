@@ -354,7 +354,7 @@ def close(notice_id: int) -> utils.BackofficeResponse:
 
     notice.status = offerers_models.NoticeStatus.CLOSED
     notice.motivation = offerers_models.NoticeStatusMotivation[form.motivation.data]
-    notice.batchId = str(form.batch.data[0]) if form.batch.data else None
+    notice.batchId = int(form.batch.data[0]) if form.batch.data else None
     db.session.add(notice)
     db.session.flush()
     db.session.refresh(notice)
