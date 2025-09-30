@@ -2169,8 +2169,22 @@ class BatchOfferValidateTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.batch_validate_offers"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    def test_batch_validate_offers(self, legit_user, authenticated_client):
-        offers = offers_factories.OfferFactory.create_batch(3, validation=offers_models.OfferValidationStatus.DRAFT)
+    @pytest.mark.parametrize(
+        "venue_email, pro_email, expected_recipient, additional_query_count",
+        [
+            ("venue@example.com", "pro.user@example.com", "venue@example.com", 0),
+            (None, "pro.user@example.com", "pro.user@example.com", 3),
+        ],
+    )
+    def test_batch_validate_offers(
+        self, legit_user, authenticated_client, venue_email, pro_email, expected_recipient, additional_query_count
+    ):
+        user_offerer = offerers_factories.UserOffererFactory(user__email=pro_email)
+        offerers_factories.NewUserOffererFactory(offerer=user_offerer.offerer)  # not attached
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bookingEmail=venue_email)
+        offers = offers_factories.OfferFactory.create_batch(
+            3, validation=offers_models.OfferValidationStatus.DRAFT, venue=venue
+        )
         for offer in offers:
             offers_factories.StockFactory(offer=offer, price=10.1)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
@@ -2182,7 +2196,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # fetch the venues for AO label if needed (3 in 1 query)
         # re-fetch updated offers to render updated rows
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=6
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=6 + additional_query_count
         )
 
         assert response.status_code == 200
@@ -2198,6 +2212,12 @@ class BatchOfferValidateTest(PostEndpointHelper):
             assert offer.validation is offers_models.OfferValidationStatus.APPROVED
             assert offer.lastValidationAuthor == legit_user
             assert offer.lastValidationPrice == decimal.Decimal("10.1")
+
+        assert len(mails_testing.outbox) == 3
+        for email_data in mails_testing.outbox:
+            assert email_data["To"] == expected_recipient
+            assert email_data["template"] == dataclasses.asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value)
+            assert email_data["params"]["VENUE_NAME"] == venue.name
 
 
 class BatchOfferRejectTest(PostEndpointHelper):
