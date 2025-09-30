@@ -2388,7 +2388,8 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
     if movie.visa:
         extra_data["visa"] = movie.visa
 
-    product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)
+    filtered_updates = {key: value for key, value in extra_data.items() if value is not None}
+    product.extraData.update(typing.cast(offers_models.OfferExtraData, filtered_updates))
 
 
 def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> None:
