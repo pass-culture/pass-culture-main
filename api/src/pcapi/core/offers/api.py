@@ -347,11 +347,17 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
 
-    # - An URL must be provided if the offer has an online subcategory and had no URL before.
-    # - The offer URL must not be removed if the offer has an online subcategory.
-    if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
-        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if offer.url and "url" in body.__fields_set__ and body.url is None:
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    else:
+        # - An URL must be provided if the offer has an online subcategory and had no URL before.
+        # - The offer URL must not be removed if the offer has an online subcategory.
+        if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
+            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
@@ -1913,15 +1919,15 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
         .group_by(models.Stock.offerId)
         .one_or_none()
     )
-    try:
-        return StocksStats(*data)
-    except TypeError:
+    if data is None:
         raise ApiErrors(
             errors={
                 "global": ["L'offre en cours de création ne possède aucun Stock"],
             },
             status_code=404,
         )
+
+    return StocksStats(*data)
 
 
 def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
@@ -2382,7 +2388,7 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
     if movie.visa:
         extra_data["visa"] = movie.visa
 
-    product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
+    product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)
 
 
 def delete_offers_stocks_related_objects(offer_ids: typing.Collection[int]) -> None:

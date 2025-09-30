@@ -1425,6 +1425,63 @@ class UpdateDraftOfferTest:
         assert offer.name == "Name"
         assert offer.description == "description"
 
+    def test_cannot_update_digital_offer_without_setting_url_when_not_yet_set(self):
+        """When the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should raise an error."""
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+        )
+
+        body = offers_schemas.PatchDraftOfferBodyModel(url=None)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer(offer, body)
+
+        assert offer.url == None
+        assert error.value.errors["url"] == [
+            'Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'
+        ]
+
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_can_update_digital_offer_without_setting_url_if_not_yet_set_under_ff(self):
+        """Under FF, when the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should pass."""
+        offer = factories.OfferFactory(
+            name="Old Name",
+            subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+        )
+
+        body = offers_schemas.PatchDraftOfferBodyModel(name="New Name", url=None)
+
+        api.update_draft_offer(offer, body)
+        db.session.flush()
+        db.session.refresh(offer)
+
+        assert offer.name == "New Name"
+        assert offer.url == None
+
+    def _test_cannot_remove_digital_offer_url(self):
+        """Removing the URL of a digital offer should raise an error."""
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            url="https://example.com",
+        )
+
+        body = offers_schemas.PatchDraftOfferBodyModel(url=None)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer(offer, body)
+
+        assert offer.url == "https://example.com"
+        assert error.value.errors["url"] == [
+            'Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'
+        ]
+
+    def test_cannot_remove_digital_offer_url(self):
+        self._test_cannot_remove_digital_offer_url()
+
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    def test_cannot_remove_digital_offer_url_under_ff(self):
+        self._test_cannot_remove_digital_offer_url()
+
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
