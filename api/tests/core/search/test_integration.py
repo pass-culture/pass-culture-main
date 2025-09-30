@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.artist.factories as artist_factories
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -44,6 +45,28 @@ def test_offer_indexation_on_venue_cycle(app):
 
     search.index_offers_of_venues_in_queue()
     assert offer.id in search_testing.search_store["offers"]
+
+
+def test_artist_indexation_on_offer_cycle(app):
+    beneficiary = users_factories.BeneficiaryGrant18Factory()
+    artist = artist_factories.ArtistFactory()
+    product = offers_factories.ProductFactory()
+    artist_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
+    stock = offers_factories.StockFactory(quantity=1, offer__product=product)
+    offer = stock.offer
+    assert search_testing.search_store["artists"] == {}
+
+    search.async_index_offer_ids([offer.id], reason=IndexationReason.OFFER_UPDATE)
+    search.index_offers_in_queue()
+    search.index_artists_in_queue()
+
+    assert artist.id in search_testing.search_store["artists"]
+
+    bookings_api.book_offer(beneficiary, stock.id, quantity=1)
+    search.index_offers_in_queue()
+    search.index_artists_in_queue()
+
+    assert search_testing.search_store["artists"] == {}
 
 
 def test_venue_indexation_cycle(app):

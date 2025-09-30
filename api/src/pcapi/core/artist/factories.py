@@ -15,7 +15,7 @@ some_artist_images = [
 ]
 
 
-class ArtistFactory(BaseFactory):
+class ArtistFactory(BaseFactory[models.Artist]):
     class Meta:
         model = models.Artist
 

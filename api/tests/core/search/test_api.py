@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+import pcapi.core.artist.factories as artists_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
@@ -207,8 +208,8 @@ class ReindexOfferIdsTest:
         num_queries = 1  # base query for indexation
         num_queries += 1  # FF
         num_queries += 1  # last30DaysBookings
-
         num_queries += 1  # venues from offers
+        num_queries += 1  # artists from offers
         with assert_num_queries(num_queries):
             with assert_no_duplicated_queries():
                 search.reindex_offer_ids(offer_ids)
@@ -239,6 +240,21 @@ class ReindexOfferIdsTest:
         assert offer.id in search_testing.search_store["offers"]
         error_queue = redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
+
+    def test_reindex_artists_after_reindexing_offers(self, app):
+        offer = make_bookable_offer()
+        artist = artists_factories.ArtistFactory()
+        offer.product = offers_factories.ProductFactory()
+        offer.product.artists.append(artist)
+
+        assert search_testing.search_store["offers"] == {}
+
+        search.reindex_offer_ids([offer.id])
+        assert offer.id in search_testing.search_store["offers"]
+
+        artist_queue = redis_queues.REDIS_ARTIST_IDS_TO_INDEX
+        artist_ids = app.redis_client.smembers(artist_queue)
+        assert artist_ids == {artist.id for artist in offer.product.artists}
 
     @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app):
@@ -294,6 +310,31 @@ class ReindexOfferIdsTest:
         assert search_testing.search_store["offers"] == {}
         search.reindex_offer_ids([offer_id])
         assert offer_id in search_testing.search_store["offers"]
+
+
+class ReindexArtistIdsTest:
+    def test_index_new_artists(self):
+        uneligible_artist = artists_factories.ArtistFactory()
+        eligible_artist = artists_factories.ArtistFactory()
+        product = offers_factories.ProductFactory()
+        artists_factories.ArtistProductLinkFactory(artist_id=eligible_artist.id, product_id=product.id)
+        offers_factories.StockFactory(offer__product=product)
+
+        assert search_testing.search_store["artists"] == {}
+
+        artist_ids = [uneligible_artist.id, eligible_artist.id]
+        with assert_num_queries(1):
+            search.reindex_artist_ids(artist_ids)
+
+        assert search_testing.search_store["artists"].keys() == {eligible_artist.id}
+
+    def test_unindex_ineligible_artists(self):
+        artist = artists_factories.ArtistFactory()
+
+        search_testing.search_store["artists"][artist.id] = "dummy"
+
+        search.reindex_artist_ids([artist.id])
+        assert search_testing.search_store["artists"] == {}
 
 
 class ReindexVenueIdsTest:

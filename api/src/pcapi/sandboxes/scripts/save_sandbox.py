@@ -63,7 +63,7 @@ def _index_all_artists() -> None:
     logger.info("Reindexing artists")
 
     query = db.session.query(artists_models.Artist).with_entities(artists_models.Artist.id)
-    search.index_artist_ids([artist_id for (artist_id,) in query])
+    search.reindex_artist_ids([artist_id for (artist_id,) in query])
 
     logger.info("Reindexing done")
 
