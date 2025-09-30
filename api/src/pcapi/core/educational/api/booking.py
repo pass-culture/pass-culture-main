@@ -24,7 +24,6 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -162,13 +161,6 @@ def _check_institution_fund(collective_booking: educational_models.CollectiveBoo
         booking_date=collective_booking.collectiveStock.endDatetime,
         deposit=deposit,
     )
-    if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
-        validation.check_ministry_fund(
-            educational_year_id=educational_year_id,
-            booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
-            booking_date=collective_booking.collectiveStock.startDatetime,
-            ministry=deposit.ministry,
-        )
 
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:

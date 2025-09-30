@@ -70,8 +70,6 @@ def confirm_collective_booking(booking_id: int) -> None:
         booking_api.confirm_collective_booking(booking_id)
     except exceptions.InsufficientFund:
         raise ForbiddenError({"code": "INSUFFICIENT_FUND"})
-    except exceptions.InsufficientMinistryFund:
-        raise ForbiddenError({"code": "INSUFFICIENT_MINISTRY_FUND"})
     except exceptions.InsufficientTemporaryFund:
         raise ForbiddenError({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"})
     except exceptions.InsufficientFundFirstPeriod:

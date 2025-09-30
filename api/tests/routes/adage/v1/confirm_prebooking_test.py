@@ -32,9 +32,8 @@ class Returns200Test:
     # 1. select booking
     # 2. select deposit
     # 3. select stock.price sum
-    # 4. select FF
-    # 5. update booking
-    expected_num_queries = 5
+    # 4. update booking
+    expected_num_queries = 4
 
     @time_machine.travel("2021-10-15 09:00:00", tick=False)
     def test_confirm_collective_prebooking(self, client, caplog) -> None:
@@ -110,56 +109,6 @@ class Returns200Test:
             **expected_serialized_prebooking(booking),
             "address": offer.offererAddress.address.fullAddress,
         }
-
-    @time_machine.travel("2021-10-15 09:00:00")
-    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
-    def test_insufficient_ministry_fund_other_ministry(self, client) -> None:
-        educational_institution = EducationalInstitutionFactory()
-        educational_institution2 = EducationalInstitutionFactory()
-        educational_institution3 = EducationalInstitutionFactory()
-
-        educational_year = EducationalYearFactory(adageId="1")
-        EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            amount=Decimal(2000.00),
-            isFinal=True,
-        )
-        EducationalDepositFactory(
-            educationalInstitution=educational_institution2,
-            educationalYear=educational_year,
-            amount=Decimal(10000.00),
-            isFinal=True,
-        )
-        EducationalDepositFactory(
-            educationalInstitution=educational_institution3,
-            educationalYear=educational_year,
-            amount=Decimal(10000.00),
-            isFinal=True,
-            ministry=Ministry.AGRICULTURE,
-        )
-        CollectiveBookingFactory(
-            collectiveStock__price=Decimal(4800.00),
-            educationalInstitution=educational_institution2,
-            educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
-            confirmationLimitDate=datetime(2021, 10, 21, 10),
-        )
-        booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
-            educationalInstitution=educational_institution3,
-            educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
-            confirmationLimitDate=datetime(2021, 10, 15, 10),
-        )
-
-        client = client.with_eac_token()
-        booking_id = booking.id
-        expected_num_queries = self.expected_num_queries + 1  # select stock.price sum for ministry check
-        expected_num_queries += 1  # select ministry deposit
-        with testing.assert_num_queries(expected_num_queries):
-            response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
-        assert response.status_code == 200
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_sufficient_ministry_fund(self, client) -> None:
@@ -340,45 +289,6 @@ class ReturnsErrorTest:
 
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND"}
-
-    @time_machine.travel("2021-10-15 09:00:00")
-    @pytest.mark.features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
-    def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:
-        educational_institution = EducationalInstitutionFactory()
-        educational_institution2 = EducationalInstitutionFactory()
-
-        educational_year = EducationalYearFactory(adageId="1")
-        EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            amount=Decimal(2000.00),
-            isFinal=True,
-        )
-        EducationalDepositFactory(
-            educationalInstitution=educational_institution2,
-            educationalYear=educational_year,
-            amount=Decimal(13000.00),
-            isFinal=True,
-        )
-        CollectiveBookingFactory(
-            collectiveStock__price=Decimal(4800.00),
-            educationalInstitution=educational_institution2,
-            educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
-            confirmationLimitDate=datetime(2021, 10, 21, 10),
-        )
-        booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(300.00),
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
-            confirmationLimitDate=datetime(2021, 10, 15, 10),
-        )
-
-        client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
-        assert response.status_code == 422
-        assert response.json == {"code": "INSUFFICIENT_MINISTRY_FUND"}
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_insufficient_temporary_fund_for_collective_bookings(self, client) -> None:
