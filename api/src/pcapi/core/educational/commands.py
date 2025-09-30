@@ -205,30 +205,30 @@ def synchronise_institutions_geolocation(adage_year_id: str | None, not_dry: boo
 
 
 @blueprint.cli.command("synchronise_rurality_level")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronise_rurality_level() -> None:
     institution_api.synchronise_rurality_level()
 
 
 @blueprint.cli.command("synchronise_collective_classroom_playlist")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronise_collective_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.CLASSROOM)
 
 
 @blueprint.cli.command("synchronise_collective_new_offer_playlist")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronise_collective_new_offer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFER)
 
 
 @blueprint.cli.command("synchronise_collective_local_offerers_playlist")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronise_collective_local_offerer_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.LOCAL_OFFERER)
 
 
 @blueprint.cli.command("synchronise_collective_new_offerers_playlist")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronise_collective_new_offerers_playlist() -> None:
     playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFERER)
