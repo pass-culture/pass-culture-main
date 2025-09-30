@@ -82,6 +82,13 @@ def import_deposit_csv(
         db.session.commit()
 
 
+@blueprint.cli.command("check_deposit_csv")
+@click.option("--path", type=str, required=True, help="Path to the CSV to check.")
+def check_deposit_csv(path: str) -> None:
+    data = institution_api.get_import_deposit_data(path)
+    logger.info("CSV is valid, found %s UAIs for a total amount of %s", len(data.keys()), sum(data.values()))
+
+
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 @click.option(
     "--debug",
