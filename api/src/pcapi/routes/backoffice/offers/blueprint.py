@@ -1076,6 +1076,8 @@ def reject_offer(offer_id: int) -> utils.BackofficeResponse:
 def _batch_validate_offers(offer_ids: list[int]) -> None:
     new_validation = offers_models.OfferValidationStatus.APPROVED
 
+    aliased_venue = sa_orm.aliased(offerers_models.Venue)
+
     max_price_subquery = (
         sa.select(sa.func.max(offers_models.Stock.price))
         .select_from(offers_models.Stock)
@@ -1093,8 +1095,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         )
         .filter(offers_models.Offer.id.in_(offer_ids))
         .options(
-            sa_orm.joinedload(offers_models.Offer.venue).load_only(
-                offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
+            sa_orm.joinedload(offers_models.Offer.venue.of_type(aliased_venue)).load_only(
+                aliased_venue.bookingEmail, aliased_venue.name, aliased_venue.publicName
             ),
             sa_orm.joinedload(offers_models.Offer.offererAddress).options(
                 sa_orm.joinedload(offerers_models.OffererAddress.address),
