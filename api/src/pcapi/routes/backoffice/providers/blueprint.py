@@ -1,6 +1,7 @@
 from secrets import token_urlsafe
 
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -129,15 +130,23 @@ def create_provider() -> utils.BackofficeResponse:
         api_key, clear_secret = offerers_api.generate_provider_api_key(provider)
         db.session.add_all([provider, offerer, offerer_provider, api_key])
 
-        history_api.add_action(
-            history_models.ActionType.OFFERER_NEW,
-            author=current_user,
+        if is_offerer_new:
+            history_api.add_action(
+                history_models.ActionType.OFFERER_VALIDATED,
+                author=current_user,
+                offerer=offerer,
+                comment="Création et validation automatique via création de partenaire",
+            )
+
+        offerers_api.update_fraud_info(
             offerer=offerer,
-            comment="Création automatique via création de partenaire",
+            author_user=current_user,
+            confidence_level=offerers_models.OffererConfidenceLevel.MANUAL_REVIEW,
+            comment="Entité juridique de provider créée manuellement depuis le BO",
         )
 
         db.session.flush()
-    except sa.exc.IntegrityError:
+    except sa_exc.IntegrityError:
         mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
@@ -170,6 +179,8 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
             postalCode=form.postal_code.data,
             validationStatus=ValidationStatus.VALIDATED,
         )
+    elif not offerer.isValidated:
+        offerers_api.validate_offerer(offerer=offerer, author_user=current_user)
     return offerer, is_offerer_new
 
 
@@ -329,7 +340,7 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
         db.session.flush()
         if not form.is_active.data:
             providers_api.disable_offers_linked_to_provider(provider_id, current_user)
-    except sa.exc.IntegrityError:
+    except sa_exc.IntegrityError:
         mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
