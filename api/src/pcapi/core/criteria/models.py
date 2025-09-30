@@ -1,10 +1,15 @@
 import datetime
+import typing
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offerer.models import Venue
 
 
 class CriterionCategoryMapping(PcObject, Model):
@@ -27,6 +32,9 @@ class Criterion(PcObject, Model):
     startDateTime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     endDateTime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
+    venue_criteria: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
+        "Venue", back_populates="criteria", lazy="dynamic", secondary="venue_criterion"
+    )
     categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
     )

@@ -1086,7 +1086,7 @@ def is_user_offerer_already_exist(user: users_models.User, siren: str) -> bool:
 
 
 def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
-    return ", ".join(sorted(tag.label for tag in tags))
+    return ", ".join(sorted(tag.label for tag in tags if tag.label))
 
 
 def update_offerer(
@@ -3145,6 +3145,7 @@ def _internal_update_fraud_info(
                 offerers_models.OffererConfidenceRule(offerer=offerer, venue=venue, confidenceLevel=confidence_level)
             )
         else:
+            assert offerer_or_venue.confidenceRule
             query = db.session.query(offerers_models.OffererConfidenceRule).filter_by(
                 id=offerer_or_venue.confidenceRule.id
             )

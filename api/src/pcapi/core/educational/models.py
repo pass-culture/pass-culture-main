@@ -2041,6 +2041,13 @@ class CollectiveDmsApplication(PcObject, models.Model):
     processingDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     userDeletionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
+        "Venue",
+        back_populates="collectiveDmsApplications",
+        primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
+        uselist=False,
+    )
+
     @hybrid_property
     def siren(self) -> str:
         return self.siret[:SIREN_LENGTH]

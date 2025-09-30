@@ -49,6 +49,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.fraud.models import BeneficiaryFraudCheck
     from pcapi.core.fraud.models import BeneficiaryFraudReview
     from pcapi.core.history.models import ActionHistory
+    from pcapi.core.offerers.models import OffererInvitation
     from pcapi.core.offerers.models import UserOfferer
     from pcapi.core.offers.models import Offer
     from pcapi.core.permissions.models import BackOfficeUserProfile
@@ -175,7 +176,6 @@ class UserTagMapping(PcObject, Model):
 
 class User(PcObject, Model, DeactivableMixin):
     __tablename__ = "user"
-
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="user")
     action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
         "ActionHistory",
@@ -230,6 +230,9 @@ class User(PcObject, Model, DeactivableMixin):
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}""",
+    )
+    OffererInvitations: sa_orm.Mapped[list["OffererInvitation"]] = sa_orm.relationship(
+        "OffererInvitation", back_populates="user"
     )
     password: sa_orm.Mapped[bytes | None] = sa_orm.mapped_column(sa.LargeBinary(60), nullable=True)
     _phoneNumber = sa_orm.mapped_column(sa.String(20), nullable=True, index=True, name="phoneNumber")
