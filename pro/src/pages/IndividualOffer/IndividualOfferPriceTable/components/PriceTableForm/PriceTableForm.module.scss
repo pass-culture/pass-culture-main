@@ -23,41 +23,54 @@ $icon-button-height: rem.torem(32px);
     }
   }
 
-  >.input-booking-limit-datetime {
+  > .input-booking-limit-datetime {
     width: rem.torem(224px);
   }
 
-  >.input-activation-codes-expiration-datetime {
+  > .input-activation-codes-expiration-datetime {
     width: rem.torem(160px);
   }
 }
-
 
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
     gap: rem.torem(16px);
 
-    >.input-readonly {
+    > .input-readonly {
+      max-width: rem.torem(120px);
+
       &--first {
         margin-left: rem.torem(16px);
       }
 
       &,
       &--first {
-        >span {
+        > span {
           margin-top: rem.torem(7.5px);
         }
       }
     }
 
     .button-action {
-      margin-top: rem.torem(37px);
+      margin-top: calc(
+        #{var(--typography-body-line-height)} +
+          #{forms.$label-space-before-ds-input} +
+          (#{size.$input-min-height} - $icon-button-height) / 2
+      );
     }
   }
 
-
   .row.event .input-price {
     margin-top: var(--typography-body-xs-line-height);
+  }
+
+  .row.event .button-action {
+    margin-top: calc(
+      #{var(--typography-body-line-height)} +
+        #{forms.$label-space-before-ds-input} +
+        #{var(--typography-body-xs-line-height)} +
+        (#{size.$input-min-height} - $icon-button-height) / 2
+    );
   }
 }
