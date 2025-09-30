@@ -41,16 +41,22 @@ class SearchBackend:
     def unindex_all_offers(self) -> None:
         raise NotImplementedError()
 
+    def unindex_artist_ids(self, artist_ids: abc.Collection[str]) -> None:
+        raise NotImplementedError()
+
+    def unindex_all_artists(self) -> None:
+        raise NotImplementedError()
+
     def unindex_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
+        raise NotImplementedError()
+
+    def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
     def unindex_all_collective_offer_templates(self) -> None:
         raise NotImplementedError()
 
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
-        raise NotImplementedError()
-
-    def unindex_all_venues(self) -> None:
         raise NotImplementedError()
 
     def clean_processing_queues(self) -> None:

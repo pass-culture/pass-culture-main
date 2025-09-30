@@ -130,10 +130,21 @@ class AlgoliaBackend(
         self.clear_objects(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.remove_all_offers_from_store()
 
+    def unindex_artist_ids(self, artist_ids: abc.Collection[str]) -> None:
+        if not artist_ids:
+            return
+        self.delete_objects(settings.ALGOLIA_ARTISTS_INDEX_NAME, artist_ids)
+
+    def unindex_all_artists(self) -> None:
+        self.clear_objects(settings.ALGOLIA_ARTISTS_INDEX_NAME)
+
     def unindex_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         if not venue_ids:
             return
         self.delete_objects(settings.ALGOLIA_VENUES_INDEX_NAME, venue_ids)
+
+    def unindex_all_venues(self) -> None:
+        self.clear_objects(settings.ALGOLIA_VENUES_INDEX_NAME)
 
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: abc.Collection[int]) -> None:
         if not collective_offer_template_ids:
@@ -145,9 +156,6 @@ class AlgoliaBackend(
                 for collective_offer_template_id in collective_offer_template_ids
             ],
         )
-
-    def unindex_all_venues(self) -> None:
-        self.clear_objects(settings.ALGOLIA_VENUES_INDEX_NAME)
 
     def unindex_all_collective_offer_templates(self) -> None:
         self.clear_objects(settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME)

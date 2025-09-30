@@ -28,7 +28,7 @@ class ArtistType(enum.Enum):
 class ArtistProductLink(PcObject, Model):
     __tablename__ = "artist_product_link"
 
-    artist_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
+    artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
     product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -80,6 +80,18 @@ class Artist(Model):
             },
         ),
     )
+
+    @property
+    def is_eligible_for_search(self) -> bool:
+        if self.is_blacklisted:
+            return False
+
+        for product in self.products:
+            for offer in product.offers:
+                if offer.is_eligible_for_search:
+                    return True
+
+        return False
 
     @property
     def thumbUrl(self) -> str | None:

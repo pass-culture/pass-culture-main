@@ -37,7 +37,7 @@ def _get_backend() -> algolia.AlgoliaBackend:
 
 def _log_async_request(
     resource_type: str,
-    ids: abc.Collection[int],
+    ids: abc.Collection[int | str],
     reason: IndexationReason,
     extra: dict | None,
 ) -> None:
@@ -57,7 +57,7 @@ def _log_async_request(
 
 def _log_indexation_error(
     resource_type: str,
-    ids: abc.Collection[int],
+    ids: abc.Collection[int | str],
     exc: Exception,
     from_error_queue: bool,
 ) -> None:
@@ -129,6 +129,27 @@ def async_index_collective_offer_template_ids(
                 "collective_offer_template_ids": collective_offer_template_ids,
             },
         )
+
+
+def async_index_artist_ids(
+    artist_ids: abc.Collection[str],
+    reason: IndexationReason,
+    log_extra: dict | None = None,
+) -> None:
+    """Ask for an asynchronous reindexation of the given list of
+    ``Artist`` ids.
+
+    This function returns quickly. The "real" reindexation will be
+    done later through a cron job.
+    """
+    _log_async_request("artists", artist_ids, reason, log_extra)
+    backend = _get_backend()
+    try:
+        backend.enqueue_artist_ids(artist_ids)
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not enqueue artist ids to index", extra={"artists": artist_ids})
 
 
 def async_index_venue_ids(
@@ -264,6 +285,25 @@ def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not index collective offers template from queue", extra={"exc": str(exc)})
+
+
+def index_artists_in_queue(from_error_queue: bool = False) -> None:
+    """Pop artists from indexation queue and reindex them."""
+    backend = _get_backend()
+    try:
+        chunk_size = settings.REDIS_ARTIST_IDS_CHUNK_SIZE
+        with backend.pop_artist_ids_from_queue(
+            count=chunk_size,
+            from_error_queue=from_error_queue,
+        ) as artist_ids:
+            if not artist_ids:
+                return
+            reindex_artist_ids(backend, artist_ids, from_error_queue)
+
+    except Exception as exc:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not index artists from queue", extra={"exc": str(exc)})
 
 
 def index_venues_in_queue(from_error_queue: bool = False) -> None:
@@ -560,10 +600,83 @@ def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Of
     return default_dict
 
 
-def index_artist_ids(artist_ids: abc.Collection[str]) -> None:
+def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool = False) -> None:
     backend = _get_backend()
-    artists = db.session.query(artist_models.Artist).filter(artist_models.Artist.id.in_(artist_ids)).all()
-    backend.index_artists(artists)
+    logger.info("Starting to index artists", extra={"count": len(artist_ids)})
+    artists = (
+        db.session.query(artist_models.Artist)
+        .options(
+            sa_orm.load_only(
+                artist_models.Artist.computed_image,
+                artist_models.Artist.description,
+                artist_models.Artist.image,
+                artist_models.Artist.name,
+            )
+        )
+        .options(
+            sa_orm.joinedload(artist_models.Artist.products)
+            .load_only()
+            .joinedload(offers_models.Product.offers)
+            .load_only(
+                offers_models.Offer.publicationDatetime,
+                offers_models.Offer.validation,
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.stocks).load_only(
+                    offers_models.Stock.beginningDatetime,
+                    offers_models.Stock.bookingLimitDatetime,
+                    offers_models.Stock.dnBookedQuantity,
+                    offers_models.Stock.isSoftDeleted,
+                    offers_models.Stock.offerId,
+                    offers_models.Stock.quantity,
+                )
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.venue)
+                .load_only()
+                .joinedload(offerers_models.Venue.managingOfferer)
+                .load_only(
+                    offerers_models.Offerer.isActive,
+                    offerers_models.Offerer.postalCode,
+                    offerers_models.Offerer.siren,
+                    offerers_models.Offerer.validationStatus,
+                )
+            )
+        )
+    ).filter(artist_models.Artist.id.in_(artist_ids))
+
+    to_add = []
+    to_delete_ids = []
+
+    for artist in artists:
+        if artist.is_eligible_for_search:
+            to_add.append(artist)
+        else:
+            to_delete_ids.append(artist.id)
+
+    to_add_ids = [artist.id for artist in to_add]
+
+    logger.info(
+        "Finished sorting artists: starting to index",
+        extra={"count_to_add": len(to_add), "count_to_delete": len(to_delete_ids)},
+    )
+
+    try:
+        backend.index_artists(to_add)
+    except Exception as exc:
+        backend.enqueue_artist_ids_in_error(to_add_ids)
+        _log_indexation_error(
+            "artists",
+            ids=to_add_ids,
+            exc=exc,
+            from_error_queue=from_error_queue,
+        )
+    else:
+        logger.info("Finished indexing artists", extra={"count": len(to_add)})
+
+    if to_delete_ids:
+        unindex_artist_ids(to_delete_ids)
+        logger.info("Finished unindexing artists", extra={"count": len(to_delete_ids)})
 
 
 def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = False) -> None:
@@ -627,6 +740,8 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
 
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
+    # some offers changes might make some artists ineligible for search
+    _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
@@ -640,6 +755,8 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
 
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
+    # some offers changes might make some artists ineligible for search
+    _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_all_offers() -> None:
@@ -652,6 +769,26 @@ def unindex_all_offers() -> None:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex all offers")
+
+
+def _reindex_artists_from_offers(offer_ids: abc.Collection[int]) -> None:
+    """
+    Get the offers' artists ids and reindex them
+    """
+
+    query = (
+        sa.select(artist_models.ArtistProductLink.artist_id)
+        .select_from(offers_models.Offer)
+        .join(
+            artist_models.ArtistProductLink, artist_models.ArtistProductLink.product_id == offers_models.Offer.productId
+        )
+        .where(offers_models.Offer.id.in_(offer_ids))
+        .distinct()
+    )
+    artist_ids = [row[0] for row in db.session.execute(query)]
+
+    logger.info("Starting to reindex artists from offers", extra={"artists_count": len(artist_ids)})
+    async_index_artist_ids(artist_ids, reason=IndexationReason.OFFER_REINDEXATION)
 
 
 def _reindex_venues_from_offers(offer_ids: abc.Collection[int]) -> None:
@@ -689,6 +826,18 @@ def reindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not reindex venues", extra={"venues": venue_ids})
+
+
+def unindex_artist_ids(artist_ids: abc.Collection[str]) -> None:
+    if not artist_ids:
+        return
+    backend = _get_backend()
+    try:
+        backend.unindex_artist_ids(artist_ids)
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not unindex artists", extra={"artists": artist_ids})
 
 
 def unindex_venue_ids(venue_ids: abc.Collection[int]) -> None:

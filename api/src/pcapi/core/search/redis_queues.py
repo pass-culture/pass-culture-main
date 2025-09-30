@@ -14,8 +14,12 @@ logger = logging.getLogger(__name__)
 
 REDIS_OFFER_IDS_NAME = "search:algolia:offer-ids:set"
 REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:set"
-REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:set"
 
+REDIS_ARTIST_IDS_FOR_OFFERS_NAME = "search:algolia:artist-ids-for-offers:set"
+REDIS_ARTIST_IDS_TO_INDEX = "search:algolia:artist-ids-to-index:set"
+REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX = "search:algolia:artist-ids-in-error-to-index:set"
+
+REDIS_VENUE_IDS_FOR_OFFERS_NAME = "search:algolia:venue-ids-for-offers:set"
 REDIS_VENUE_IDS_TO_INDEX = "search:algolia:venue-ids-to-index:set"
 REDIS_VENUE_IDS_IN_ERROR_TO_INDEX = "search:algolia:venue-ids-in-error-to-index:set"
 
@@ -26,6 +30,9 @@ REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX = (
 QUEUES = (
     REDIS_OFFER_IDS_NAME,
     REDIS_OFFER_IDS_IN_ERROR_NAME,
+    REDIS_ARTIST_IDS_FOR_OFFERS_NAME,
+    REDIS_ARTIST_IDS_TO_INDEX,
+    REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX,
     REDIS_VENUE_IDS_FOR_OFFERS_NAME,
     REDIS_VENUE_IDS_TO_INDEX,
     REDIS_VENUE_IDS_IN_ERROR_TO_INDEX,
@@ -88,6 +95,15 @@ class AlgoliaIndexingQueuesMixin:
             REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_IN_ERROR_TO_INDEX,
         )
 
+    def enqueue_artist_ids(self, artist_ids: abc.Collection[str]) -> None:
+        return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_TO_INDEX)
+
+    def enqueue_artist_ids_in_error(self, artist_ids: abc.Collection[str]) -> None:
+        return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX)
+
+    def enqueue_artist_ids_for_offers(self, artist_ids: abc.Collection[str]) -> None:
+        return self._enqueue_ids(artist_ids, REDIS_ARTIST_IDS_FOR_OFFERS_NAME)
+
     def enqueue_venue_ids(self, venue_ids: abc.Collection[int]) -> None:
         return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_TO_INDEX)
 
@@ -97,7 +113,7 @@ class AlgoliaIndexingQueuesMixin:
     def enqueue_venue_ids_for_offers(self, venue_ids: abc.Collection[int]) -> None:
         return self._enqueue_ids(venue_ids, REDIS_VENUE_IDS_FOR_OFFERS_NAME)
 
-    def _enqueue_ids(self, ids: abc.Collection[int], queue: str) -> None:
+    def _enqueue_ids(self, ids: abc.Collection[int | str], queue: str) -> None:
         if not ids:
             return
 
@@ -116,6 +132,17 @@ class AlgoliaIndexingQueuesMixin:
         else:
             queue = REDIS_OFFER_IDS_NAME
         return self._pop_ids_from_queue(queue, count)
+
+    def pop_artist_ids_from_queue(
+        self,
+        count: int,
+        from_error_queue: bool = False,
+    ) -> contextlib.AbstractContextManager:
+        if from_error_queue:
+            queue = REDIS_ARTIST_IDS_IN_ERROR_TO_INDEX
+        else:
+            queue = REDIS_ARTIST_IDS_TO_INDEX
+        return self._pop_ids_from_queue(queue, count, cast_to_int=False)
 
     def pop_venue_ids_from_queue(
         self,
@@ -150,7 +177,8 @@ class AlgoliaIndexingQueuesMixin:
         self,
         queue: str,
         count: int,
-    ) -> abc.Generator[set[int], None, None]:
+        cast_to_int: bool = True,
+    ) -> abc.Generator[set, None, None]:
         """Return a set of int identifiers from the queue, as a
         context manager.
 
@@ -186,7 +214,7 @@ class AlgoliaIndexingQueuesMixin:
                 for id_ in ids:
                     pipeline.smove(queue, processing_queue, id_)
                 pipeline.execute()
-                batch = {int(id_) for id_ in ids}  # str -> int
+                batch = {int(id_) if cast_to_int else id_ for id_ in ids}  # str -> int
                 logger.info(
                     "Moved batch of object ids to index to processing queue",
                     extra={
