@@ -48,10 +48,6 @@ type FieldLayoutBaseProps = {
    */
   classNameFooter?: string
   classNameInput?: string
-  /**
-   * A flag to display a smaller label.
-   */
-  smallLabel?: boolean
 
   inline?: boolean
   clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -84,7 +80,6 @@ export const FieldLayout = ({
   maxLength = undefined,
   isOptional = false,
   hideAsterisk = false,
-  smallLabel,
   inline = false,
   classNameLabel,
   classNameFooter,
@@ -107,7 +102,6 @@ export const FieldLayout = ({
       className={cn(
         styles['field-layout'],
         {
-          [styles['field-layout-small-label']]: smallLabel,
           [styles['field-layout-inline']]: inline,
         },
         className
