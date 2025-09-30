@@ -423,6 +423,11 @@ export const routes: CustomRouteObject[] = [
     title: 'Collaborateurs',
   },
   {
+    lazy: () => import('@/pages/NonAttached/NonAttached'),
+    path: '/non-attached',
+    title: 'Rattachement en cours de traitement',
+  },
+  {
     lazy: () =>
       import(
         '@/pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
