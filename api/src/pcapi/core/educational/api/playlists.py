@@ -11,7 +11,7 @@ from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.core.educational import repository
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.utils.repository import transaction
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -137,29 +137,48 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
     ctx = QUERY_DESC[playlist_type]
     institution = None
     institution_rows: BigQueryPlaylistModels = []
+    has_error = False
+
     for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
         current_institution_id = int(getattr(row, "institution_id"))
         if institution is None:
             institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
+
         assert institution  # helps mypy
+
+        # BigQuery items are ordered by institution_id
+        # if current_institution_id is different than institution.id, it means we have stored all rows related to institution in institution_rows
+        # we can now synchronize the playlist for this institution and reset institution_rows
         if institution.id != current_institution_id:
             try:
-                with transaction():
+                with atomic():
                     synchronize_institution_playlist(playlist_type, institution, institution_rows)
             except Exception:
-                logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
-                db.session.rollback()
+                # call logger exception on the first error only to avoid Sentry overload
+                message = "Failed to synchronize institution %s playlist from BigQuery"
+                if has_error:
+                    logger.info(message, institution.id)
+                else:
+                    logger.exception(message, institution.id)
+
+                has_error = True
+
             institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
             institution_rows = []
+
         institution_rows.append(row)
+
     # Don't forget to synchronize the latest institution
     if institution and institution_rows:
         try:
-            with transaction():
+            with atomic():
                 synchronize_institution_playlist(playlist_type, institution, institution_rows)
         except Exception:
-            logger.exception("Failed to synchronize institution %s playlist from BigQuery", institution.id)
-            db.session.rollback()
+            message = "Failed to synchronize institution %s playlist from BigQuery"
+            if has_error:
+                logger.info(message, institution.id)
+            else:
+                logger.exception(message, institution.id)
 
 
 def get_playlist_items(
