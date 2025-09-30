@@ -141,9 +141,6 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             extra={"barcodes": [ticket.barcode for ticket in tickets]},
         )
 
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
-        raise NotImplementedError()
-
     @external_bookings_models.cache_external_call(
         key_template=constants.EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )

@@ -216,9 +216,6 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             self._annulation_pass_culture(barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
-        raise NotImplementedError
-
     def get_movie_poster_from_api(self, image_url: str) -> bytes:
         api_response = requests.get(image_url)
 

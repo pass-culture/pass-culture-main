@@ -32,11 +32,6 @@ class ExternalBookingsClientAPI:
         self.cinema_id = cinema_id
         self.request_timeout = request_timeout
 
-    # Fixme (yacine, 2022-12-19) remove this method from ExternalBookingsClientAPI. Unlike CDS, on Boost API
-    #  we can't get shows remaining places from list of shows ids
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[str, int]:
-        raise NotImplementedError("Should be implemented in subclass (abstract method)")
-
     def get_film_showtimes_stocks(self, film_id: str) -> dict[str, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 

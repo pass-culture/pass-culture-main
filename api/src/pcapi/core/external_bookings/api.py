@@ -49,16 +49,6 @@ EXTERNAL_BOOKINGS_FF = (
 EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS = settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
 
 
-def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[str, int]:
-    client = _instantiate_cinema_api_client(venue_id)
-    return client.get_shows_remaining_places(shows_id)
-
-
-def get_movie_stocks(venue_id: int, movie_id: str) -> dict[str, int]:
-    client = _instantiate_cinema_api_client(venue_id)
-    return client.get_film_showtimes_stocks(movie_id)
-
-
 def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
     client = _instantiate_cinema_api_client(venue_id)
     client.cancel_booking(barcodes)
