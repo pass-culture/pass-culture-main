@@ -1,21 +1,28 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { useState } from 'react'
 
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
 import { useAccessibilityOptions } from '../useAccessibilityOptions'
 
 const mockSetFieldValue = vi.fn()
 
 function TestCheckboxGroup() {
-  const group = useAccessibilityOptions(
-    mockSetFieldValue,
+  const { options, onChange, toCheckboxGroupValues } =
+    useAccessibilityOptions(mockSetFieldValue)
+  const [value, _] = useState<AccessibilityFormValues>(
     {} as AccessibilityFormValues
   )
 
   return (
-    <CheckboxGroup group={group} name="accessibility" legend="accessibility" />
+    <CheckboxGroup
+      options={options}
+      value={toCheckboxGroupValues(value)}
+      label="accessibility"
+      onChange={onChange}
+    />
   )
 }
 

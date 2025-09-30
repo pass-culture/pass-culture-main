@@ -10,10 +10,10 @@ import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { getIsOfferSubcategoryOnline } from '@/pages/IndividualOffer/commons/getIsOfferSubcategoryOnline'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -68,9 +68,15 @@ export const UsefulInformationForm = ({
   const receiveNotificationEmails = watch('receiveNotificationEmails')
   const accessibility = watch('accessibility')
 
-  const accessibilityOptionsGroups = useAccessibilityOptions(
-    setValue,
-    accessibility
+  const {
+    options: accessibilityOptions,
+    onChange: onAccessibilityCheckboxGroupChange,
+    toCheckboxGroupValues: toAccessibilityCheckboxGroupValues,
+  } = useAccessibilityOptions(
+    async (_: string, value: UsefulInformationFormValues['accessibility']) => {
+      setValue('accessibility', value)
+      await trigger('accessibility')
+    }
   )
 
   const { offer, subCategories } = useIndividualOfferContext()
@@ -233,16 +239,15 @@ export const UsefulInformationForm = ({
           />
         </FormLayout.Row>
       </FormLayout.Section>
-      {accessibilityOptionsGroups && (
+      {accessibilityOptions && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup
-              name="accessibility"
-              group={accessibilityOptionsGroups}
+              value={toAccessibilityCheckboxGroupValues(accessibility)}
+              options={accessibilityOptions}
               disabled={readOnlyFields.includes('accessibility')}
-              legend="Cette offre est accessible au public en situation de handicap :"
-              onChange={() => trigger('accessibility')}
-              required
+              label="Cette offre est accessible au public en situation de handicap : *"
+              onChange={onAccessibilityCheckboxGroupChange}
               error={errors.accessibility?.message}
             />
           </FormLayout.Row>

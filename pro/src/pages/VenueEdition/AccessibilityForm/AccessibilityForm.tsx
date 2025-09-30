@@ -6,9 +6,9 @@ import { isEqual } from '@/commons/utils/isEqual'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { AccessibilityCallout } from '@/pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'
 
@@ -25,15 +25,20 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { watch, setValue, formState } =
+  const { watch, setValue, formState, trigger } =
     useFormContext<VenueEditionFormValues>()
 
   const values = watch()
 
-  const checkboxGroup = useAccessibilityOptions(
-    (name: string, value: boolean) =>
-      setValue(name as keyof VenueEditionFormValues, value),
-    values.accessibility
+  const {
+    options: accessibilityOptions,
+    onChange: onAccessibilityCheckboxGroupChange,
+    toCheckboxGroupValues: toAccessibilityCheckboxGroupValues,
+  } = useAccessibilityOptions(
+    async (_: string, value: VenueEditionFormValues['accessibility']) => {
+      setValue('accessibility', value)
+      await trigger('accessibility')
+    }
   )
 
   const hasChangedSinceLastSubmit = !isEqual(
@@ -61,11 +66,11 @@ export const AccessibilityForm = ({
         <>
           <FormLayout.Row>
             <CheckboxGroup
-              name="accessibility"
-              group={checkboxGroup}
-              required
-              legend="Votre établissement est accessible au public en situation de handicap :"
+              options={accessibilityOptions}
+              value={toAccessibilityCheckboxGroupValues(values.accessibility)}
+              label="Votre établissement est accessible au public en situation de handicap :"
               error={formState.errors.accessibility?.message}
+              onChange={onAccessibilityCheckboxGroupChange}
             />
           </FormLayout.Row>
           {hasChangedSinceLastSubmit && (

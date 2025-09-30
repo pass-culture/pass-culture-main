@@ -1,41 +1,32 @@
 import type { UseFormSetValue } from 'react-hook-form'
 
-import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { AccessibilityEnum } from '@/commons/core/shared/types'
+import {
+  AccessibilityEnum,
+  type AccessibilityFormValues,
+} from '@/commons/core/shared/types'
+import type { CheckboxGroupOption } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
-import type { CheckboxGroupProps } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 type SetFieldValue =
-  | ((field: string, value: any) => void)
-  | UseFormSetValue<any>
+  | ((field: string, value: AccessibilityFormValues) => void)
+  | UseFormSetValue<{ accessibility: AccessibilityFormValues }>
 
-// Hooks can't be called conditionally, so we need to use a polymorphic signature to handle the `undefined` case
-function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility']
-): CheckboxGroupProps['group']
-function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: undefined
-): undefined
-function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
-): CheckboxGroupProps['group'] | undefined
+type AccessibilityOptions = {
+  options: CheckboxGroupOption[]
+  onChange: (value: string[]) => void
+  toCheckboxGroupValues: (
+    accessibilityValues?: AccessibilityFormValues
+  ) => string[]
+}
 
 function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
-): CheckboxGroupProps['group'] | undefined {
-  if (!accessibilityValues) {
-    return undefined
-  }
-
-  const onNoneOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
+  setFieldValue: SetFieldValue
+): AccessibilityOptions {
+  const onChange = (values: string[]) => {
+    if (values.at(-1) === AccessibilityEnum.NONE) {
       setFieldValue('accessibility', {
         none: true,
         visual: false,
@@ -44,60 +35,74 @@ function useAccessibilityOptions(
         audio: false,
       })
     } else {
-      setFieldValue('accessibility.none', false)
+      const accessibilityValues = Object.values(AccessibilityEnum)
+        .filter((value) => value !== AccessibilityEnum.NONE)
+        .reduce(
+          (acc, value) => {
+            acc[value as keyof AccessibilityFormValues] = values.includes(value)
+            return acc
+          },
+          { none: false } as AccessibilityFormValues
+        )
+      setFieldValue(`accessibility`, accessibilityValues)
     }
   }
-  const onNormalOptionChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: AccessibilityEnum
-  ) => {
-    if (event.target.checked) {
-      setFieldValue(`accessibility.none`, false)
-    }
 
-    setFieldValue(`accessibility.${name}`, event.target.checked)
-  }
-
-  return [
+  const options = [
     {
       label: 'Visuel',
-      icon: strokeAccessibilityEyeIcon,
+      name: 'accessibility',
+      value: AccessibilityEnum.VISUAL,
+      variant: 'detailed',
+      asset: { variant: 'icon', src: strokeAccessibilityEyeIcon },
       sizing: 'fill',
-      checked: accessibilityValues.visual,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        onNormalOptionChange(e, AccessibilityEnum.VISUAL),
     },
     {
       label: 'Psychique ou cognitif',
-      icon: strokeAccessibilityBrainIcon,
+      name: 'accessibility',
+      value: AccessibilityEnum.MENTAL,
+      variant: 'detailed',
+      asset: { variant: 'icon', src: strokeAccessibilityBrainIcon },
       sizing: 'fill',
-      checked: accessibilityValues.mental,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        onNormalOptionChange(e, AccessibilityEnum.MENTAL),
     },
     {
       label: 'Moteur',
-      icon: strokeAccessibilityLegIcon,
+      name: 'accessibility',
+      value: AccessibilityEnum.MOTOR,
+      variant: 'detailed',
+      asset: { variant: 'icon', src: strokeAccessibilityLegIcon },
       sizing: 'fill',
-      checked: accessibilityValues.motor,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        onNormalOptionChange(e, AccessibilityEnum.MOTOR),
     },
     {
       label: 'Auditif',
-      icon: strokeAccessibilityEarIcon,
+      name: 'accessibility',
+      value: AccessibilityEnum.AUDIO,
+      variant: 'detailed',
+      asset: { variant: 'icon', src: strokeAccessibilityEarIcon },
       sizing: 'fill',
-      checked: accessibilityValues.audio,
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-        onNormalOptionChange(e, AccessibilityEnum.AUDIO),
     },
     {
       label: 'Non accessible',
+      name: 'accessibility',
+      value: AccessibilityEnum.NONE,
+      variant: 'detailed',
       sizing: 'fill',
-      checked: accessibilityValues.none,
-      onChange: onNoneOptionChange,
     },
-  ] satisfies CheckboxGroupProps['group']
+  ] satisfies CheckboxGroupOption[]
+
+  const toCheckboxGroupValues = (
+    accessibilityValues?: AccessibilityFormValues
+  ) => {
+    return Object.entries(accessibilityValues || {})
+      .filter(([, value]) => value)
+      .map(([key]) => key)
+  }
+
+  return {
+    options,
+    onChange,
+    toCheckboxGroupValues,
+  }
 }
 
 export { useAccessibilityOptions }

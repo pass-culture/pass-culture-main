@@ -1,8 +1,9 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
 import styles from './FormAccessibility.module.scss'
 
@@ -16,23 +17,28 @@ export const FormAccessibility = ({
   const { setValue, watch, getFieldState, trigger } =
     useFormContext<OfferEducationalFormValues>()
 
+  const { options, onChange, toCheckboxGroupValues } = useAccessibilityOptions(
+    async (name: string, value: AccessibilityFormValues) => {
+      setValue(
+        name as keyof Pick<OfferEducationalFormValues, 'accessibility'>,
+        value
+      )
+      await trigger('accessibility')
+    }
+  )
+
   return (
     <div className={styles['container']}>
       <CheckboxGroup
-        group={useAccessibilityOptions(async (name: string, value: string) => {
-          setValue(name as keyof OfferEducationalFormValues, value)
-          await trigger('accessibility')
-        }, watch('accessibility'))}
-        legend={
-          <h2 className={styles['subtitle']}>
-            À quel type de handicap votre offre est-elle accessible ? *
-          </h2>
-        }
-        name="accessibility"
+        label="À quel type de handicap votre offre est-elle accessible ? *"
+        labelTag="h2"
+        options={options}
+        value={toCheckboxGroupValues(watch('accessibility'))}
+        display="vertical"
+        variant="detailed"
         error={getFieldState('accessibility').error?.message}
         disabled={disableForm}
-        required
-        asterisk={false}
+        onChange={onChange}
       />
     </div>
   )

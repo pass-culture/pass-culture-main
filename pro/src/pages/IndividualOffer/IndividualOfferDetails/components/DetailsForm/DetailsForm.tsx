@@ -6,11 +6,13 @@ import type {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
+import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -18,7 +20,6 @@ import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferD
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -66,9 +67,15 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
   const showAddVenueBanner = venuesOptions.length === 0
 
-  const accessibilityOptionsGroups = useAccessibilityOptions(
-    setValue,
-    accessibility
+  const {
+    options: accessibilityOptions,
+    onChange: onAccessibilityCheckboxGroupChange,
+    toCheckboxGroupValues: toAccessibilityCheckboxGroupValues,
+  } = useAccessibilityOptions(
+    async (_: string, value: AccessibilityFormValues) => {
+      setValue('accessibility', value)
+      await trigger('accessibility')
+    }
   )
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
@@ -197,17 +204,16 @@ export const DetailsForm = ({
           readOnlyFields={readOnlyFields}
         />
       )}
-      {isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
+      {isNewOfferCreationFlowFeatureActive && accessibilityOptions && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup
-              name="accessibility"
-              group={accessibilityOptionsGroups}
+              options={accessibilityOptions}
+              value={toAccessibilityCheckboxGroupValues(accessibility)}
               disabled={readOnlyFields.includes('accessibility')}
-              legend="Cette offre est accessible au public en situation de handicap :"
-              onChange={() => trigger('accessibility')}
-              required
+              label="Cette offre est accessible au public en situation de handicap : *"
               error={errors.accessibility?.message}
+              onChange={onAccessibilityCheckboxGroupChange}
             />
           </FormLayout.Row>
         </FormLayout.Section>
