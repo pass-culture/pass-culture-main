@@ -96,7 +96,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should display venues by alphabeticall order', async () => {
       renderOfferEducational(props)
-      const venueSelect = await screen.findByLabelText('Structure *')
+      const venueSelect = await screen.findByLabelText(/Structure/)
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner une structure')
       expect(venuesOptions[1].textContent).toEqual('A - Venue 3')

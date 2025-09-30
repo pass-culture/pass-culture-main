@@ -191,9 +191,9 @@ describe('StocksCalendar', () => {
       addDays(new Date(), 1).toISOString().split('T')[0]
     )
 
-    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '22:22')
+    await userEvent.type(screen.getByLabelText(/Horaire 1/), '22:22')
 
-    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '1')
+    await userEvent.selectOptions(screen.getByLabelText(/Tarif/), '1')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
@@ -302,9 +302,9 @@ describe('StocksCalendar', () => {
       new Date().toISOString().split('T')[0]
     )
 
-    await userEvent.type(screen.getByLabelText('Horaire 1 *'), '00:00')
+    await userEvent.type(screen.getByLabelText(/Horaire 1/), '00:00')
 
-    await userEvent.selectOptions(screen.getByLabelText('Tarif *'), '1')
+    await userEvent.selectOptions(screen.getByLabelText(/Tarif/), '1')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 
@@ -371,7 +371,7 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Modifier la date' })
     )
 
-    await userEvent.type(screen.getByLabelText('Tarif *'), '1')
+    await userEvent.type(screen.getAllByLabelText(/Tarif/)[1], '1')
 
     await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
 

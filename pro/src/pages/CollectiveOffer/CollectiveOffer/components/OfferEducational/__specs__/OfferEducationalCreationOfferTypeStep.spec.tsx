@@ -74,9 +74,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(descriptionTextArea).toBeEnabled()
     expect(descriptionTextArea).toHaveValue('')
 
-    expect(await screen.findByTestId('counter-description')).toHaveTextContent(
-      '0/1500'
-    )
+    expect(screen.getByText('0/1500')).toBeInTheDocument()
 
     const durationInput = screen.getByLabelText(
       /Indiquez la durée de l’évènement/
@@ -214,9 +212,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
         /Décrivez ici votre projet et son interêt pédagogique */
       )
       expect(description).toHaveValue('')
-      expect(screen.getByTestId('counter-description')).toHaveTextContent(
-        `0/${descMaxLength}`
-      )
+      expect(screen.getByText(`0/${descMaxLength}`)).toBeInTheDocument()
 
       const descriptionString =
         'my description that is valid' +
@@ -228,9 +224,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
       expect(descriptionString).toContain(description.textContent)
 
-      expect(screen.getByTestId('counter-description')).toHaveTextContent(
-        `${descMaxLength}/${descMaxLength}`
-      )
+      expect(
+        screen.getByText(`${descMaxLength}/${descMaxLength}`)
+      ).toBeInTheDocument()
 
       expect(description.textContent).toHaveLength(descMaxLength)
     })

@@ -351,11 +351,11 @@ describe('IndividualOfferDetailsScreen', () => {
 
   it('should display the full form when categories, and subcategories has been selected', async () => {
     renderDetailsScreen({ contextValue })
-    const categoriesInput = await screen.findByLabelText('Catégorie *')
+    const categoriesInput = await screen.findByLabelText(/Catégorie/)
     expect(categoriesInput).toBeEnabled()
     await userEvent.selectOptions(categoriesInput, 'A')
 
-    const subcategoriesInput = await screen.findByLabelText('Sous-catégorie *')
+    const subcategoriesInput = await screen.findByLabelText(/Sous-catégorie/)
     expect(subcategoriesInput).toBeEnabled()
     await userEvent.selectOptions(subcategoriesInput, 'physical')
 
@@ -384,7 +384,7 @@ describe('IndividualOfferDetailsScreen', () => {
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
+      await screen.findByLabelText(/Catégorie/),
       'A'
     )
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
@@ -393,7 +393,7 @@ describe('IndividualOfferDetailsScreen', () => {
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
+      await screen.findByLabelText(/Sous-catégorie/),
       'physical'
     )
 
@@ -422,7 +422,7 @@ describe('IndividualOfferDetailsScreen', () => {
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
+      await screen.findByLabelText(/Catégorie/),
       'A'
     )
 
@@ -433,7 +433,7 @@ describe('IndividualOfferDetailsScreen', () => {
     ).toBeInTheDocument()
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
+      await screen.findByLabelText(/Sous-catégorie/),
       'physical'
     )
 
@@ -458,11 +458,11 @@ describe('IndividualOfferDetailsScreen', () => {
     )
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
+      await screen.findByLabelText(/Catégorie/),
       'A'
     )
     await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
+      await screen.findByLabelText(/Sous-catégorie/),
       'physical'
     )
     await userEvent.type(
@@ -472,11 +472,11 @@ describe('IndividualOfferDetailsScreen', () => {
       'Mon super spectacle'
     )
     await userEvent.selectOptions(
-      await screen.findByLabelText('Type de spectacle *'),
+      await screen.findByLabelText(/Type de spectacle/),
       'Cirque'
     )
     await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-type *'),
+      await screen.findByLabelText(/Sous-type/),
       'Mentaliste'
     )
 
@@ -530,12 +530,12 @@ describe('IndividualOfferDetailsScreen', () => {
     )
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
+      await screen.findByLabelText(/Catégorie/),
       'A'
     )
 
     await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
+      await screen.findByLabelText(/Sous-catégorie/),
       'physical'
     )
 
@@ -983,8 +983,8 @@ describe('IndividualOfferDetailsScreen', () => {
         mode: OFFER_WIZARD_MODE.EDITION,
       })
 
-      expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
-      expect(screen.getByLabelText('Sous-catégorie *')).toBeDisabled()
+      expect(screen.getByLabelText(/Catégorie/)).toBeDisabled()
+      expect(screen.getByLabelText(/Sous-catégorie/)).toBeDisabled()
     })
   })
 

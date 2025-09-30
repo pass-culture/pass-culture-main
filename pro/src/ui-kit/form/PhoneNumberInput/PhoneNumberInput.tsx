@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react'
 
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import {
@@ -57,6 +57,7 @@ export const PhoneNumberInput = forwardRef<
   ) => {
     const formatId = useId()
     const inputId = useId()
+    const errorId = useId()
 
     const defaultPrefix = PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
 
@@ -175,16 +176,10 @@ export const PhoneNumberInput = forwardRef<
             })}
             autoComplete="tel-national"
             maxLength={maxLength}
-            aria-describedby={formatId}
+            aria-describedby={`${formatId} ${error ? errorId : ''}`}
             {...props}
           />
-          <div className={styles['phone-number-input-footer']}>
-            {error && (
-              <div className={styles['phone-number-input-error']}>
-                <FieldError name={name}>{error}</FieldError>
-              </div>
-            )}
-          </div>
+          <FieldFooter error={error} errorId={errorId} />
         </div>
       </fieldset>
     )

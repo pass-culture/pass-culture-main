@@ -1,4 +1,4 @@
-import { default as classNames, default as cn } from 'classnames'
+import classNames, { default as cn } from 'classnames'
 import type React from 'react'
 import {
   type ForwardedRef,
@@ -10,9 +10,8 @@ import {
   useState,
 } from 'react'
 
+import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { Button } from '@/ui-kit/Button/Button'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
-import { FieldLayoutCharacterCount } from '@/ui-kit/form/shared/FieldLayout/FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 import styles from './TextArea.module.scss'
 
@@ -66,10 +65,6 @@ export type TextAreaProps = {
   onChange?: (e: { target: { value: string; name?: string } }) => void
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   value?: string
-  /**
-   * Count of characters typed in the field. If `undefined`, the counter is not displayed.
-   */
-  count?: boolean
 } & (
   | {
       /**
@@ -124,7 +119,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       onChange,
       onBlur,
       value,
-      count = true,
     }: TextAreaProps,
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
@@ -134,6 +128,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     const fieldId = useId()
     const descriptionId = useId()
+    const charactersCountId = useId()
     const errorId = useId()
 
     const countValue = textValue?.length ?? 0
@@ -160,7 +155,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     }, [textValue])
 
     // Constructing aria-describedby attribute
-    const describedBy = [`field-characters-count-description-${name}`, errorId]
+    const describedBy = [charactersCountId, errorId]
 
     if (description) {
       describedBy.unshift(descriptionId)
@@ -240,19 +235,12 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             </Button>
           )}
         </div>
-        <div className={styles['footer']}>
-          <div role="alert" className={styles['error']} id={errorId}>
-            {error && <FieldError name={name}>{error}</FieldError>}
-          </div>
-
-          {count && (
-            <FieldLayoutCharacterCount
-              count={countValue}
-              maxLength={maxLength}
-              name={name}
-            />
-          )}
-        </div>
+        <FieldFooter
+          error={error}
+          errorId={errorId}
+          charactersCount={{ current: countValue, max: maxLength }}
+          charactersCountId={charactersCountId}
+        />
       </div>
     )
   }

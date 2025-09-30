@@ -53,10 +53,10 @@ describe('Create individual offers with OA', () => {
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
-    cy.findByLabelText('Catégorie *').select('Spectacle vivant')
-    cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
-    cy.findByLabelText('Type de spectacle *').select('Théâtre')
-    cy.findByLabelText('Sous-type *').select('Comédie')
+    cy.findByLabelText(/Catégorie/).select('Spectacle vivant')
+    cy.findByLabelText(/Sous-catégorie/).select('Spectacle, représentation')
+    cy.findByLabelText(/Type de spectacle/).select('Théâtre')
+    cy.findByLabelText(/Sous-type/).select('Comédie')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     // field image label is not seen
     cy.checkA11y(
@@ -158,8 +158,8 @@ describe('Create individual offers with OA', () => {
     cy.findByText('Tous les jours').click()
     cy.findByLabelText('Du *').type(fromDateStr)
     cy.findByLabelText('Au *').type(toDateStr)
-    cy.findByLabelText('Horaire 1 *').type('18:30')
-    cy.findByLabelText('Tarif *').select('100,00\xa0€ - Tarif unique')
+    cy.findByLabelText(/Horaire 1/).type('18:30')
+    cy.findByLabelText(/Tarif/).select('100,00\xa0€ - Tarif unique')
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     // FIX ME: day selector has no visible label
@@ -248,8 +248,8 @@ describe('Create individual offers with OA', () => {
       Math.floor(1000000000000 + Math.random() * 9000000000000)
     )
     cy.wrap(ean).as('ean')
-    cy.findByLabelText('Catégorie *').select('Livre')
-    cy.findByLabelText('Sous-catégorie *').select('Livre papier')
+    cy.findByLabelText(/Catégorie/).select('Livre')
+    cy.findByLabelText(/Sous-catégorie/).select('Livre papier')
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
 

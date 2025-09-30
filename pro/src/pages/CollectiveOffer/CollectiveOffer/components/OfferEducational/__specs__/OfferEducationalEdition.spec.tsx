@@ -18,7 +18,6 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
-import { STRUCTURE_LABEL } from '../constants/labels'
 import {
   OfferEducational,
   type OfferEducationalProps,
@@ -61,7 +60,7 @@ describe('screens | OfferEducational: edition', () => {
       mode: Mode.READ_ONLY,
     }
     renderWithProviders(<OfferEducational {...props} />)
-    await screen.findByLabelText(`${STRUCTURE_LABEL} *`)
+    await screen.findByLabelText(/Structure/)
 
     const inputs = [
       screen.getByLabelText(`Formats`),
@@ -69,7 +68,7 @@ describe('screens | OfferEducational: edition', () => {
       screen.getByLabelText('Indiquez la durée de l’évènement', {
         exact: false,
       }),
-      screen.getByLabelText(`${STRUCTURE_LABEL} *`),
+      screen.getByLabelText(/Structure/),
       screen.getByLabelText('Collège'), // one of every option
       screen.getByLabelText('Visuel'), // one of every option
       screen.getByLabelText('Téléphone', { exact: false }),

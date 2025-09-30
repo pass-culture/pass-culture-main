@@ -65,7 +65,7 @@ describe('StocksCalendarTableEditStock', () => {
     })
 
     expect(screen.getAllByLabelText('Date *')[0]).toHaveValue(beginningDate)
-    expect(screen.getByLabelText('Tarif *')).toHaveValue(
+    expect(screen.getByLabelText(/Tarif/)).toHaveValue(
       priceCategoryId.toString()
     )
     expect(screen.getByLabelText('Places restantes')).toHaveValue(

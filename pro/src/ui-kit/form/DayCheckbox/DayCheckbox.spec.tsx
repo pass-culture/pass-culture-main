@@ -17,17 +17,4 @@ describe('DayCheckbox', () => {
 
     expect(screen.getByLabelText('Lundi')).toBeInTheDocument()
   })
-
-  it('should display an error message', () => {
-    render(
-      <DayCheckbox
-        name="field"
-        label="L"
-        tooltipContent="Lundi"
-        error="error message"
-      />
-    )
-
-    expect(screen.getByText('error message')).toBeInTheDocument()
-  })
 })

@@ -90,7 +90,7 @@ describe('OfferPublicationEditionForm', () => {
     })
 
     expect(screen.getByLabelText('Date *')).toHaveValue()
-    expect(screen.getByLabelText('Heure *')).toHaveValue()
+    expect(screen.getByLabelText(/Heure/)).toHaveValue()
   })
 
   it('should pre-fill the booking allowed date', async () => {
@@ -116,6 +116,6 @@ describe('OfferPublicationEditionForm', () => {
     })
 
     expect(screen.getByLabelText('Date *')).toHaveValue()
-    expect(screen.getByLabelText('Heure *')).toHaveValue()
+    expect(screen.getByLabelText(/Heure/)).toHaveValue()
   })
 })

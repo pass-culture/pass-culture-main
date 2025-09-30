@@ -163,7 +163,7 @@ describe('RequestFormDialog', () => {
 
     const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
     await userEvent.type(
-      screen.getByLabelText('Que souhaitez vous organiser ? *'),
+      screen.getByLabelText(/Que souhaitez vous organiser ?/),
       'Test description'
     )
     await userEvent.type(
@@ -200,7 +200,7 @@ describe('RequestFormDialog', () => {
     renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
-      'Que souhaitez vous organiser ? *'
+      /Que souhaitez vous organiser ?/
     )
     await userEvent.type(descriptionField, 'Test description')
 
@@ -258,7 +258,7 @@ describe('RequestFormDialog', () => {
     renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(
-      'Que souhaitez vous organiser ? *'
+      /Que souhaitez vous organiser ?/
     )
     await userEvent.type(descriptionField, 'Test description')
 
