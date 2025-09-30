@@ -113,7 +113,7 @@ class AlgoliaSerializationMixin:
         return {
             "objectID": artist.id,
             "description": artist.description,
-            "image": artist.image,
+            "image": artist.thumbUrl,
             "name": artist.name,
         }
 
