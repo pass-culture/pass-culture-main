@@ -28,7 +28,7 @@ class GetVideoMetadataTest:
         }
         mock_requests_get.return_value = mock_response
 
-        metadata = youtube.get_video_metadata("test_video_id")
+        metadata = youtube.YoutubeBackend().get_video_metadata("test_video_id")
 
         assert metadata.id == "test_video_id"
         assert metadata.title == "Test Video"
@@ -47,7 +47,7 @@ class GetVideoMetadataTest:
     def test_get_video_metadata_api_error(self, mock_requests_get):
         mock_requests_get.side_effect = requests.exceptions.RequestException
         with pytest.raises(requests.ExternalAPIException):
-            youtube.get_video_metadata("test_video_id")
+            youtube.YoutubeBackend().get_video_metadata("test_video_id")
 
     @mock.patch("pcapi.connectors.youtube.requests.get")
     def test_get_video_metadata_no_items(self, mock_requests_get):
@@ -56,7 +56,7 @@ class GetVideoMetadataTest:
         mock_response.json.return_value = {"items": []}
         mock_requests_get.return_value = mock_response
 
-        metadata = youtube.get_video_metadata("test_video_id")
+        metadata = youtube.YoutubeBackend().get_video_metadata("test_video_id")
         assert metadata is None
 
     @mock.patch("pcapi.connectors.youtube.requests.get")
@@ -67,7 +67,7 @@ class GetVideoMetadataTest:
         mock_requests_get.return_value = mock_response
 
         with pytest.raises(requests.ExternalAPIException):
-            youtube.get_video_metadata("test_video_id")
+            youtube.YoutubeBackend().get_video_metadata("test_video_id")
 
 
 class SerializerTest:

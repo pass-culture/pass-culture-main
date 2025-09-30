@@ -633,6 +633,7 @@ TYPEFORM_IMPORT_CHUNK_SIZE = int(os.environ.get("TYPEFORM_IMPORT_CHUNK_SIZE", "5
 # YOUTUBE
 YOUTUBE_API_KEY = secrets_utils.get("YOUTUBE_API_KEY")
 YOUTUBE_API_URL = os.environ.get("YOUTUBE_API_URL", "https://www.googleapis.com/youtube/v3/videos")
+YOUTUBE_API_BACKEND = os.environ.get("YOUTUBE_API_BACKEND", "pcapi.connectors.youtube.YoutubeBackend")
 
 # CLICKHOUSE
 CLICKHOUSE_BACKEND = os.environ.get(

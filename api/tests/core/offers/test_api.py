@@ -15,7 +15,6 @@ import pytest
 import sqlalchemy as sa
 import time_machine
 from factory.faker import faker
-from pydantic.v1 import ValidationError
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -39,7 +38,6 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.connectors import youtube
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-from pcapi.connectors.serialization.youtube_serializers import YoutubeApiResponse
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
@@ -1290,16 +1288,15 @@ class CreateDraftOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetVideoMetadataFromCacheTest:
+    VIDEO_ID = "WtM4OW2qVjY"
+
     def test_get_video_metadata_from_cache_no_video_id(self):
         video_metadata = api.get_video_metadata_from_cache(None)
         assert video_metadata is None
 
-    @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_get_video_metadata_from_cache_with_data_in_cache(self, mock_requests_get, app):
-        mock_requests_get.raiseError.side_effect = AssertionError(
-            "Call to external service should not have been performed"
-        )
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
+    def test_get_video_metadata_from_cache_with_data_in_cache(self, app):
+        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
         video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
             f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
@@ -1317,36 +1314,18 @@ class GetVideoMetadataFromCacheTest:
         assert video_metadata.thumbnail_url == "thumbnail url"
         assert video_metadata.duration == 100
 
-    @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_get_video_metadata_from_cache_without_data_in_cache(self, mock_requests_get):
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {
-            "items": [
-                {
-                    "id": "test_video_id",
-                    "snippet": {
-                        "title": "Test Video",
-                        "thumbnails": {
-                            "high": {"url": "https://example.com/high.jpg"},
-                        },
-                    },
-                    "contentDetails": {"duration": "PT1M40S"},
-                }
-            ]
-        }
-        mock_requests_get.return_value = mock_response
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
+    def test_get_video_metadata_from_cache_without_data_in_cache(self):
+        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
 
         video_metadata = api.get_video_metadata_from_cache(video_url)
-        assert video_metadata.id == "test_video_id"
-        assert video_metadata.title == "Test Video"
-        assert video_metadata.thumbnail_url == "https://example.com/high.jpg"
-        assert video_metadata.duration == 100
+        assert video_metadata.id == self.VIDEO_ID
+        assert video_metadata.title == "Mock Video Title"
+        assert video_metadata.thumbnail_url == f"https://example.com/vi/{self.VIDEO_ID}/default.jpg"
+        assert video_metadata.duration == 300
 
-    @mock.patch("pcapi.connectors.youtube.requests.get")
-    def test_get_video_metadata_from_cache_without_data_in_cache_connector_raise_error(self, mock_requests_get):
-        mock_requests_get.raiseError.side_effect = ValidationError("bad data", YoutubeApiResponse)
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
+    def test_get_video_metadata_from_cache_without_data_in_cache_connector_raise_error(self):
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
 
         with pytest.raises(ExternalAPIException):
