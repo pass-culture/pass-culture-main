@@ -157,7 +157,7 @@ def _partially_index(
             break
         indexation_callback_arguments = [ids]
         if "backend" in indexation_callback.__annotations__:
-            indexation_callback_arguments.insert(0, search._get_backend())
+            indexation_callback_arguments.insert(0, search.get_backend())
         indexation_callback(*indexation_callback_arguments)
         logger.info("Indexed %d %s from page %d", len(ids), what, page)
         page += 1

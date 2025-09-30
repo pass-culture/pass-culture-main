@@ -6,6 +6,7 @@ from datetime import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core import search
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
@@ -86,9 +87,10 @@ class Artist(Model):
         if self.is_blacklisted:
             return False
 
+        search_backend = search.get_backend()
         for product in self.products:
             for offer in product.offers:
-                if offer.is_eligible_for_search:
+                if search.check_offer_id_is_index(offer.id, search_backend):
                     return True
 
         return False

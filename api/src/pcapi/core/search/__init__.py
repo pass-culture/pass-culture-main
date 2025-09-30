@@ -30,7 +30,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 logger = logging.getLogger(__name__)
 
 
-def _get_backend() -> algolia.AlgoliaBackend:
+def get_backend() -> algolia.AlgoliaBackend:
     backend_class = import_string(settings.SEARCH_BACKEND)
     return backend_class()
 
@@ -96,7 +96,7 @@ def async_index_offer_ids(
     done later through a cron job.
     """
     _log_async_request("offers", offer_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.enqueue_offer_ids(offer_ids)
     except Exception:
@@ -117,7 +117,7 @@ def async_index_collective_offer_template_ids(
     done later through a cron job.
     """
     _log_async_request("collective offer templates", collective_offer_template_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.enqueue_collective_offer_template_ids(collective_offer_template_ids)
     except Exception:
@@ -144,7 +144,7 @@ def async_index_artist_ids(
     done later through a cron job.
     """
     _log_async_request("artists", artist_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         if from_unindexation:
             backend.enqueue_artist_ids_from_offer_unindexation(artist_ids)
@@ -168,7 +168,7 @@ def async_index_venue_ids(
     done later through a cron job.
     """
     _log_async_request("venues", venue_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.enqueue_venue_ids(venue_ids)
     except Exception:
@@ -189,7 +189,7 @@ def async_index_offers_of_artist_ids(
     done later through a cron job.
     """
     _log_async_request("offers of artists", artist_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.enqueue_artist_ids_for_offers(artist_ids)
     except Exception:
@@ -213,7 +213,7 @@ def async_index_offers_of_venue_ids(
     done later through a cron job.
     """
     _log_async_request("offers of venues", venue_ids, reason, log_extra)
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.enqueue_venue_ids_for_offers(venue_ids)
     except Exception:
@@ -243,7 +243,7 @@ def index_offers_in_queue(from_error_queue: bool = False, max_batches_to_process
     the queue is empty.
     """
 
-    backend = _get_backend()
+    backend = get_backend()
     n_batches = 1
     while True:
         with backend.pop_offer_ids_from_queue(
@@ -282,7 +282,7 @@ def index_offers_in_queue(from_error_queue: bool = False, max_batches_to_process
 
 def index_all_collective_offers_and_templates() -> None:
     """Force reindexation of all collective offers and templates."""
-    backend = _get_backend()
+    backend = get_backend()
 
     collective_offer_templates = (
         db.session.query(educational_models.CollectiveOfferTemplate)
@@ -298,7 +298,7 @@ def index_all_collective_offers_and_templates() -> None:
 
 def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -> None:
     """Pop collective offers template from indexation queue and reindex them."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         chunk_size = settings.REDIS_COLLECTIVE_OFFER_TEMPLATE_IDS_CHUNK_SIZE
         with backend.pop_collective_offer_template_ids_from_queue(
@@ -317,7 +317,7 @@ def index_collective_offers_templates_in_queue(from_error_queue: bool = False) -
 
 def index_artists_in_queue(from_error_queue: bool = False) -> None:
     """Pop artists from indexation queue and reindex them."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         chunk_size = settings.REDIS_ARTIST_IDS_CHUNK_SIZE
         with backend.pop_artist_ids_from_queue(
@@ -336,7 +336,7 @@ def index_artists_in_queue(from_error_queue: bool = False) -> None:
 
 def index_artists_from_unindexation_in_queue(from_error_queue: bool = False) -> None:
     """Pop artists from indexation queue and reindex them."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         chunk_size = settings.REDIS_ARTIST_IDS_CHUNK_SIZE
         with backend.pop_artist_ids_from_unindexation_from_queue(
@@ -355,7 +355,7 @@ def index_artists_from_unindexation_in_queue(from_error_queue: bool = False) -> 
 
 def index_venues_in_queue(from_error_queue: bool = False) -> None:
     """Pop venues from indexation queue and reindex them."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         chunk_size = settings.REDIS_VENUE_IDS_CHUNK_SIZE
         with backend.pop_venue_ids_from_queue(
@@ -467,7 +467,7 @@ def _reindex_collective_offer_template_ids(
 
 def index_offers_of_artists_in_queue() -> None:
     """Pop artists from indexation queue and reindex their offers."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         with backend.pop_artist_ids_for_offers_from_queue(
             count=settings.REDIS_ARTIST_IDS_FOR_OFFERS_CHUNK_SIZE,
@@ -494,7 +494,7 @@ def index_offers_of_artists_in_queue() -> None:
 
 def index_offers_of_venues_in_queue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
-    backend = _get_backend()
+    backend = get_backend()
     try:
         with backend.pop_venue_ids_for_offers_from_queue(
             count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE,
@@ -677,47 +677,17 @@ def get_last_x_days_booking_count_by_offer(offers: abc.Iterable[offers_models.Of
 def reindex_artist_ids(
     artist_ids: abc.Collection[str], from_error_queue: bool = False, from_unindexation: bool = False
 ) -> None:
-    backend = _get_backend()
+    backend = get_backend()
     logger.info("Starting to index artists", extra={"count": len(artist_ids)})
     artists = db.session.query(artist_models.Artist).options(
         sa_orm.load_only(
             artist_models.Artist.computed_image,
             artist_models.Artist.description,
             artist_models.Artist.image,
+            artist_models.Artist.is_blacklisted,
             artist_models.Artist.name,
         )
     )
-    if from_unindexation:
-        artists = artists.options(
-            sa_orm.joinedload(artist_models.Artist.products)
-            .load_only()
-            .joinedload(offers_models.Product.offers)
-            .load_only(
-                offers_models.Offer.publicationDatetime,
-                offers_models.Offer.validation,
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Offer.stocks).load_only(
-                    offers_models.Stock.beginningDatetime,
-                    offers_models.Stock.bookingLimitDatetime,
-                    offers_models.Stock.dnBookedQuantity,
-                    offers_models.Stock.isSoftDeleted,
-                    offers_models.Stock.offerId,
-                    offers_models.Stock.quantity,
-                )
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Offer.venue)
-                .load_only()
-                .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(
-                    offerers_models.Offerer.isActive,
-                    offerers_models.Offerer.postalCode,
-                    offerers_models.Offerer.siren,
-                    offerers_models.Offerer.validationStatus,
-                )
-            )
-        )
 
     artists = artists.filter(artist_models.Artist.id.in_(artist_ids))
 
@@ -764,7 +734,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     be slow. It should not be called by usual code. You should rather
     call `async_index_offer_ids()` instead to return quickly.
     """
-    backend = _get_backend()
+    backend = get_backend()
 
     to_add = []
     to_delete_ids = []
@@ -822,7 +792,7 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
 
 
 def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_offer_ids(offer_ids)
     except Exception:
@@ -839,7 +809,7 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
 def unindex_all_offers() -> None:
     if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all offers on this environment")
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_all_offers()
     except Exception:
@@ -896,7 +866,7 @@ def reindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     be slow. It should not be called by usual code. You should rather
     call `async_index_venue_ids()` instead to return quickly.
     """
-    backend = _get_backend()
+    backend = get_backend()
     try:
         _reindex_venue_ids(backend, venue_ids, from_error_queue=False)
     except Exception:
@@ -908,7 +878,7 @@ def reindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
 def unindex_artist_ids(artist_ids: abc.Collection[str]) -> None:
     if not artist_ids:
         return
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_artist_ids(artist_ids)
     except Exception:
@@ -920,7 +890,7 @@ def unindex_artist_ids(artist_ids: abc.Collection[str]) -> None:
 def unindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
     if not venue_ids:
         return
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_venue_ids(venue_ids)
     except Exception:
@@ -932,7 +902,7 @@ def unindex_venue_ids(venue_ids: abc.Collection[int]) -> None:
 def unindex_all_collective_offer_templates() -> None:
     if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all collective offer templates on this environment")
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_all_collective_offer_templates()
     except Exception:
@@ -944,7 +914,7 @@ def unindex_all_collective_offer_templates() -> None:
 def unindex_collective_offer_template_ids(collective_offer_template_ids: abc.Collection[int]) -> None:
     if not collective_offer_template_ids:
         return
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_collective_offer_template_ids(collective_offer_template_ids)
     except Exception:
@@ -959,7 +929,7 @@ def unindex_collective_offer_template_ids(collective_offer_template_ids: abc.Col
 def unindex_all_venues() -> None:
     if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all venues on this environment")
-    backend = _get_backend()
+    backend = get_backend()
     try:
         backend.unindex_all_venues()
     except Exception:
@@ -969,7 +939,7 @@ def unindex_all_venues() -> None:
 
 
 def search_offer_ids(query: str = "", count: int = 20, **params: typing.Any) -> list[int]:
-    backend = _get_backend()
+    backend = get_backend()
     return backend.search_offer_ids(query, count=count, **params)
 
 
@@ -1094,5 +1064,12 @@ def update_booking_count_by_product() -> list[offers_models.Product]:
 
 
 def clean_processing_queues() -> None:
-    backend = _get_backend()
+    backend = get_backend()
     backend.clean_processing_queues()
+
+
+def check_offer_id_is_index(offer_id: int, backend: algolia.AlgoliaBackend | None = None) -> bool:
+    if not backend:
+        backend = get_backend()
+
+    return backend.check_offer_id_is_indexed(offer_id)

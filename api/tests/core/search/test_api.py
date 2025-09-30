@@ -318,13 +318,14 @@ class ReindexArtistIdsTest:
         eligible_artist = artists_factories.ArtistFactory()
         product = offers_factories.ProductFactory()
         artists_factories.ArtistProductLinkFactory(artist_id=eligible_artist.id, product_id=product.id)
-        offers_factories.StockFactory(offer__product=product)
+        offer = offers_factories.StockFactory(offer__product=product).offer
+        search.reindex_offer_ids([offer.id])
 
         assert search_testing.search_store["artists"] == {}
 
         artist_ids = [uneligible_artist.id, eligible_artist.id]
         with assert_num_queries(1):
-            search.reindex_artist_ids(artist_ids)
+            search.reindex_artist_ids(artist_ids, from_unindexation=True)
 
         assert search_testing.search_store["artists"].keys() == {eligible_artist.id}
 
@@ -333,7 +334,7 @@ class ReindexArtistIdsTest:
 
         search_testing.search_store["artists"][artist.id] = "dummy"
 
-        search.reindex_artist_ids([artist.id])
+        search.reindex_artist_ids([artist.id], from_unindexation=True)
         assert search_testing.search_store["artists"] == {}
 
 
