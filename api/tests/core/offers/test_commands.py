@@ -20,7 +20,7 @@ class OfferCommandsTest:
     @pytest.mark.features(ENABLE_OFFERS_AUTO_CLEANUP=False)
     @pytest.mark.usefixtures("clean_database")
     def test_feature_flag_stops_deletion(self, app):
-        a_year_ago = datetime.date.today() - timedelta(days=366)
+        a_year_ago = datetime.datetime.now(datetime.UTC) - timedelta(days=366)
         offer_id = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago).id
 
         run_command(app, "delete_unbookable_unbooked_old_offers", "0", f"{offer_id * 2}")
@@ -30,7 +30,7 @@ class OfferCommandsTest:
     @pytest.mark.features(ENABLE_OFFERS_AUTO_CLEANUP=True)
     @pytest.mark.usefixtures("clean_database")
     def test_command_deletes_unbookable_unbooked_old_offers(self, app):
-        a_year_ago = datetime.date.today() - timedelta(days=366)
+        a_year_ago = datetime.datetime.now(datetime.UTC) - timedelta(days=366)
         offer = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago)
         offer_id = offer.id
 

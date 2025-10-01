@@ -2101,7 +2101,7 @@ def test_handles_offer_creation_while_product_merging(delete_mock):
 class GetUnbookableUnbookedOldOfferIdsTest:
     @property
     def a_year_ago(self):
-        return datetime.date.today() - datetime.timedelta(days=366)
+        return datetime.datetime.now(datetime.UTC) - datetime.timedelta(days=366)
 
     def test_get_unbookable_unbooked_old_offer_id(self):
         offer = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago)

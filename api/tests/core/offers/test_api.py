@@ -3,6 +3,7 @@ import decimal
 import logging
 import os
 import pathlib
+from datetime import UTC
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -5207,7 +5208,7 @@ class DeleteOffersAndAllRelatedObjectsTest:
 class DeleteUnbookableUnusedOldOffersTest:
     @property
     def a_year_ago(self):
-        return date.today() - timedelta(days=366)
+        return datetime.now(UTC) - timedelta(days=366)
 
     def test_old_offer_without_any_stock_id_deleted(self):
         offer_id = factories.OfferFactory(dateCreated=self.a_year_ago, dateUpdated=self.a_year_ago).id
