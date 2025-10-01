@@ -815,7 +815,9 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
     offerers_api.delete_offerer_attachment(user_offerer, current_user, form.comment.data)
 
     flash(
-        f"Le rattachement de {user_email} à l'entité juridique {offerer_name} a été supprimé",
+        Markup(
+            "Le rattachement de <b>{user_email}</b> à l'entité juridique <b>{offerer_name}</b> a été supprimé"
+        ).format(user_email=user_email, offerer_name=offerer_name),
         "success",
     )
     return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
@@ -846,6 +848,30 @@ def invite_user(offerer_id: int) -> utils.BackofficeResponse:
         flash(Markup("L'invitation a été envoyée à <b>{email}</b>").format(email=form.email.data), "info")
 
     return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
+
+
+@offerer_blueprint.route("/invitation/<int:invitation_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeResponse:
+    invitation = (
+        db.session.query(offerers_models.OffererInvitation)
+        .filter(
+            offerers_models.OffererInvitation.id == invitation_id,
+            offerers_models.OffererInvitation.offererId == offerer_id,
+            offerers_models.OffererInvitation.status == offerers_models.InvitationStatus.PENDING,
+        )
+        .one_or_none()
+    )
+    if not invitation:
+        raise NotFound()
+
+    email = invitation.email
+
+    db.session.delete(invitation)
+    db.session.flush()
+
+    flash(Markup("L'invitation de <b>{email}</b> a été supprimée").format(email=email), "success")
+    return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
 
 
 @offerer_blueprint.route("/venues", methods=["GET"])
