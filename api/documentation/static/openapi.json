@@ -2768,6 +2768,16 @@
                         "example": "2025-07-24T14:00:00+02:00",
                         "nullable": true,
                         "title": "Publicationdatetime"
+                    },
+                    "videoUrl": {
+                        "description": "Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
+                        "example": "https://www.youtube.com/watch?v=0R5PZxOgoz8",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Videourl",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -3005,6 +3015,16 @@
                         "example": "2025-07-24T14:00:00+02:00",
                         "nullable": true,
                         "title": "Publicationdatetime"
+                    },
+                    "videoUrl": {
+                        "description": "Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
+                        "example": "https://www.youtube.com/watch?v=0R5PZxOgoz8",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Videourl",
+                        "type": "string"
                     }
                 },
                 "title": "EventOfferEdition",
@@ -3275,6 +3295,16 @@
                         ],
                         "description": "\n**Offer status:**\n\n- `ACTIVE`: offer is validated and active. \n\n\n- `DRAFT`: offer is still a draft and not yet submitted for validation. This status is not applicable to offers created via this API.\n\n\n- `EXPIRED`: offer is validated but the booking limit datetime has passed.\n\n\n- `INACTIVE`: offer is not active and cannot be booked.\n\n\n- `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n\n- `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n\n- `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.\nIn the case of a collective offer, there is stock for only one booking.\n",
                         "example": "ACTIVE"
+                    },
+                    "videoUrl": {
+                        "description": "Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
+                        "example": "https://www.youtube.com/watch?v=0R5PZxOgoz8",
+                        "format": "uri",
+                        "maxLength": 2083,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Videourl",
+                        "type": "string"
                     }
                 },
                 "required": [

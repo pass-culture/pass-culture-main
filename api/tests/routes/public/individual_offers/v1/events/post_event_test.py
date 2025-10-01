@@ -5,11 +5,13 @@ import pathlib
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+from unittest import mock
 
 import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors import youtube
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -24,6 +26,8 @@ import tests
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
+
+logger = logging.getLogger(__name__)
 
 ACCESSIBILITY_FIELDS = {
     "audioDisabilityCompliant": True,
@@ -255,7 +259,9 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingAllowedDatetime == expected_booking_allowed_datetime
 
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
-    def test_event_creation_with_full_body(self, clear_tests_assets_bucket):
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
+    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    def test_event_creation_with_full_body(self, get_video_metadata_from_cache_mock, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = {
@@ -282,6 +288,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "credit": "Jean-Crédit Photo",
                 "file": image_data.GOOD_IMAGE,
             },
+            "videoUrl": "https://www.youtube.com/watch?v=YPCOQslGx-I",
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
             "location": {"type": "physical", "venueId": venue_provider.venueId},
             "name": "Nicolas Jaar dans ton salon",
@@ -289,6 +296,13 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "hasTicket": True,
             "idAtProvider": "T'as un bel id tu sais",
         }
+
+        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
+            id="YPCOQslGx-I",
+            title="Prince - I wanna be your lover",
+            thumbnail_url="/mon/thumnail/url.jpg",
+            duration=548,
+        )
 
         response = self.make_request(plain_api_key, json_body=payload)
 
@@ -377,6 +391,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 }
             ],
             "hasTicket": True,
+            "videoUrl": "https://www.youtube.com/watch?v=YPCOQslGx-I",
         }
 
     def test_event_creation_with_titelive_type(self, clear_tests_assets_bucket):
@@ -741,6 +756,15 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                     "hasTicket": True,
                 },
                 {"offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]},
+            ),
+            # errors on videoUrl
+            (
+                {"videoUrl": "https://www.youtube.com/shorts/watch?v=WXFgNutNTN8"},
+                {
+                    "videoUrl": [
+                        "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
+                    ]
+                },
             ),
             # additional properties not allowed
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),

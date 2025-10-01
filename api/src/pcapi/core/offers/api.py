@@ -268,10 +268,26 @@ def create_draft_offer(
     return offer
 
 
-def remove_video_data_from_offer_metadata(offer_meta_data: offers_models.OfferMetaData) -> None:
+def remove_video_data_from_offer_metadata(
+    offer_meta_data: offers_models.OfferMetaData,
+    offer_id: int,
+    venue_id: int,
+    video_url: str,
+    provider_id: int | None = None,
+) -> None:
     video_metadata_fields = ["videoDuration", "videoExternalId", "videoThumbnailUrl", "videoTitle", "videoUrl"]
     for field in video_metadata_fields:
         setattr(offer_meta_data, field, None)
+    logger.info(
+        "Video has been deleted from offer",
+        extra={
+            "offer_id": offer_id,
+            "venue_id": venue_id,
+            "video_url": video_url,
+            "provider_id": provider_id,
+        },
+        technical_message_id="offer.video.deleted",
+    )
 
 
 def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
@@ -303,7 +319,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     return video_metadata
 
 
-def update_video_and_metadata(video_url: str, offer: offers_models.Offer) -> None:
+def update_video_and_metadata(video_url: str, offer: offers_models.Offer, provider_id: int | None = None) -> None:
     video_metadata = get_video_metadata_from_cache(video_url)
     video_id = extract_youtube_video_id(video_url)
     if video_metadata is not None:
@@ -311,19 +327,34 @@ def update_video_and_metadata(video_url: str, offer: offers_models.Offer) -> Non
             offer.metaData = models.OfferMetaData(offer=offer)
             logger.info(
                 "Video has been added to offer",
-                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                extra={
+                    "offer_id": offer.id,
+                    "venue_id": offer.venueId,
+                    "video_url": video_url,
+                    "provider_id": provider_id,
+                },
                 technical_message_id="offer.video.added",
             )
         elif offer.metaData.videoUrl is None:
             logger.info(
                 "Video has been added to offer",
-                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                extra={
+                    "offer_id": offer.id,
+                    "venue_id": offer.venueId,
+                    "video_url": video_url,
+                    "provider_id": provider_id,
+                },
                 technical_message_id="offer.video.added",
             )
         else:
             logger.info(
                 "Video has been updated on offer",
-                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                extra={
+                    "offer_id": offer.id,
+                    "venue_id": offer.venueId,
+                    "video_url": video_url,
+                    "provider_id": provider_id,
+                },
                 technical_message_id="offer.video.updated",
             )
         offer.metaData.videoExternalId = video_id
@@ -341,13 +372,8 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     if "videoUrl" in fields:
         if new_video_url := fields.pop("videoUrl", None):
             update_video_and_metadata(new_video_url, offer)
-        elif offer.metaData:
-            remove_video_data_from_offer_metadata(offer.metaData)
-            logger.info(
-                "Video has been deleted from offer",
-                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
-                technical_message_id="offer.video.deleted",
-            )
+        elif offer.metaData and offer.metaData.videoUrl:
+            remove_video_data_from_offer_metadata(offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl)
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:

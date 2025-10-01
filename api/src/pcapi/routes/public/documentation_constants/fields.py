@@ -240,6 +240,10 @@ class _FIELDS:
     EVENT_CONDITIONAL_FIELDS = Field(
         description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
     )
+    VIDEO_URL = Field(
+        description="Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
+        example="https://www.youtube.com/watch?v=0R5PZxOgoz8",
+    )
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")

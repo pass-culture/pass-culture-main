@@ -103,6 +103,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "priceCategories": [],
             "publicationDatetime": "2025-06-25T12:25:00Z",
             "idAtProvider": "Oh le bel id <3",
+            "videoUrl": None,
         }
 
     def test_get_future_event(self):
@@ -188,3 +189,40 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             assert response.status_code == 200
 
         assert response.json["hasTicket"] == False
+
+    def test_get_offer_with_video(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            extraData=None,
+            venue=venue_provider.venue,
+        )
+        offer_id = offer.id
+        offers_factories.OfferMetaDataFactory(
+            offer=offer,
+            videoDuration=262,
+            videoExternalId="lm20v6ASSFI",
+            videoThumbnailUrl="/mocked/thumbnail/lm20v6ASSFI.jpg",
+            videoTitle="WILDFLOWER",
+            videoUrl="https://www.youtube.com/watch?v=lm20v6ASSFI",
+        )
+
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
+            assert response.status_code == 200
+        assert response.json["videoUrl"] == "https://www.youtube.com/watch?v=lm20v6ASSFI"
+
+    def test_get_offer_with_empty_video_metadata(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = offers_factories.EventOfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            extraData=None,
+            venue=venue_provider.venue,
+        )
+        offer_id = offer.id
+        offers_factories.OfferMetaDataFactory(offer=offer, videoUrl=None)
+
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
+            assert response.status_code == 200
+        assert response.json["videoUrl"] == None

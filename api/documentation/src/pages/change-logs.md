@@ -16,6 +16,9 @@ You will have two dates at your disposal :
 - a `publicationDatetime` that indicates the date and time when the offer becomes visible in the beneficiary application
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
 :::
+## October 2025
+
+- You can now add a `videoUrl` that comes from Youtube on your offers (endpoints : [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer), [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
 
 ## September 2025
 
