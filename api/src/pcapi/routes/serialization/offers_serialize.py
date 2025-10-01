@@ -133,8 +133,8 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicationDatetime: datetime.datetime | NOW_LITERAL | None
     bookingAllowedDatetime: datetime.datetime | None
 
-    _validation_bookings_allowed_datetime = validate_datetime("bookingAllowedDatetime")
     _validation_publication_datetime = validate_timezoned_datetime("publicationDatetime")
+    _validation_bookings_allowed_datetime = validate_timezoned_datetime("bookingAllowedDatetime")
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:

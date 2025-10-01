@@ -108,6 +108,8 @@ class TimezonedDatetime(sa_types.TypeDecorator):
     def process_bind_param(
         self, value: datetime.datetime | None, dialect: sa.engine.Dialect
     ) -> datetime.datetime | None:
+        if value and not value.tzinfo:
+            return value.replace(tzinfo=datetime.UTC)
         return value
 
     def process_result_value(
