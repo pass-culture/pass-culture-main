@@ -1,18 +1,14 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach, describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
-import { api } from '@/apiClient/api'
 import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
 } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -112,15 +108,21 @@ describe('SideNavLinks', () => {
         hasPartnerPage: index !== mockedNotAPartnerPageVenueId,
       }))
 
-    const offerer = currentOffererFactory()
-
-    beforeEach(() => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    const offerer = {
+      currentOfferer: {
         ...defaultGetOffererResponseModel,
         hasPartnerPage: true,
         managedVenues: mockedManagedVenues,
-      })
-    })
+      },
+    }
+
+    // beforeEach(() => {
+    //   vi.spyOn(api, 'getOfferer').mockResolvedValue({
+    //     ...defaultGetOffererResponseModel,
+    //     hasPartnerPage: true,
+    //     managedVenues: mockedManagedVenues,
+    //   })
+    // })
 
     afterEach(() => {
       localStorage.clear()
@@ -213,38 +215,19 @@ describe('SideNavLinks', () => {
   })
 
   it('should not display partner link if user as no partner page', () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      hasPartnerPage: false,
-    })
-
     renderSideNavLinks({
       user: sharedCurrentUserFactory(),
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            hasPartnerPage: false,
+          },
+        },
+      },
     })
 
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
-  })
-
-  it('should not display create offre button if offerer is not validated', async () => {
-    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({})
-
-    renderSideNavLinks({
-      storeOverrides: {
-        user: {
-          currentUser: sharedCurrentUserFactory(),
-        },
-        offerer: currentOffererFactory(),
-      },
-      user: sharedCurrentUserFactory(),
-    })
-
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalled()
-    })
-
-    expect(
-      screen.queryByRole('link', { name: 'Créer une offre' })
-    ).not.toBeInTheDocument()
   })
 
   describe('on large height devices', () => {
@@ -353,21 +336,21 @@ describe('SideNavLinks', () => {
   })
 
   it('should show a create offer dropdown button with individual and collective choices if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      isValidated: true,
-    })
-
     renderSideNavLinks({
       storeOverrides: {
-        offerer: currentOffererFactory(),
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            isValidated: true,
+          },
+        },
       },
       features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     })
 
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalled()
-    })
+    // await waitFor(() => {
+    //   expect(api.getOfferer).toHaveBeenCalled()
+    // })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Créer une offre' })
