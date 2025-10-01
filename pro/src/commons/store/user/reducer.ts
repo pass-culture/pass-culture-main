@@ -4,10 +4,12 @@ import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
+  isUnAttached: null | boolean
 }
 
 export const initialState: UserState = {
   currentUser: null,
+  isUnAttached: null,
 }
 
 const userSlice = createSlice({
@@ -15,14 +17,17 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     updateUser: (
-      state: UserState,
+      state,
       action: PayloadAction<SharedCurrentUserResponseModel | null>
     ) => {
       state.currentUser = action.payload
+    },
+    setIsUnAttached: (state, action: PayloadAction<boolean>) => {
+      state.isUnAttached = action.payload
     },
   },
 })
 
 export const userReducer = userSlice.reducer
 
-export const { updateUser } = userSlice.actions
+export const { updateUser, setIsUnAttached } = userSlice.actions

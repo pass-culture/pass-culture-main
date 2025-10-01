@@ -14,13 +14,9 @@ import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
-import {
-  selectCurrentOffererId,
-  selectCurrentOffererIsOnboarded,
-} from '@/commons/store/offerer/selectors'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -39,10 +35,8 @@ export const App = (): JSX.Element | null => {
   const location = useLocation()
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
-  const isOffererOnboarded = useSelector(selectCurrentOffererIsOnboarded)
   const dispatch = useDispatch()
   const notify = useNotification()
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
   // Main hooks
   useLoadFeatureFlags()
@@ -57,11 +51,7 @@ export const App = (): JSX.Element | null => {
     ? Number(searchParams.get('structure'))
     : selectedOffererId
 
-  const {
-    data: offerer,
-    error: offererApiError,
-    isValidating: isOffererValidating,
-  } = useOfferer(offererId)
+  const { data: offerer } = useOfferer(offererId)
 
   useEffect(() => {
     if (searchParams.get('from-bo') && offerer) {
@@ -83,9 +73,8 @@ export const App = (): JSX.Element | null => {
   useLogNavigation()
   useLogExtraProData()
 
-  const isAwaitingRattachment = !isOffererValidating && offererApiError
-
   const currentRoute = findCurrentRoute(location)
+
   if (currentRoute && !currentRoute.meta?.public && currentUser === null) {
     const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
 
@@ -95,35 +84,6 @@ export const App = (): JSX.Element | null => {
     return <Navigate to={loginUrl} replace />
   }
 
-  if (isDidacticOnboardingEnabled) {
-    if (
-      location.pathname.includes('accueil') &&
-      isOffererOnboarded === false &&
-      !isAwaitingRattachment
-    ) {
-      return <Navigate to="/onboarding" replace />
-    }
-    if (
-      location.pathname.includes('onboarding') &&
-      isOffererOnboarded &&
-      !searchParams.get('userHasJustOnBoarded')
-    ) {
-      return <Navigate to="/accueil" replace />
-    }
-  }
-
-  if (location.pathname.includes('accueil') && isAwaitingRattachment) {
-    return <Navigate to="/non-attached" replace />
-  }
-
-  if (
-    !currentRoute?.meta?.public &&
-    !currentRoute?.path.includes('/inscription/structure') &&
-    !!currentUser &&
-    !currentUser.hasUserOfferer
-  ) {
-    return <Navigate to="/inscription/structure/recherche" replace />
-  }
   return (
     <>
       <SWRConfig
