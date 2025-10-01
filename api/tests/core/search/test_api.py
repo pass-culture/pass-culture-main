@@ -313,7 +313,8 @@ class ReindexOfferIdsTest:
 
 
 class ReindexArtistIdsTest:
-    def test_index_new_artists(self):
+    @mock.patch("pcapi.core.search.async_index_offers_of_artist_ids")
+    def test_index_new_artists(self, mock_async_index_offers_of_artist_ids):
         uneligible_artist = artists_factories.ArtistFactory()
         eligible_artist = artists_factories.ArtistFactory()
         product = offers_factories.ProductFactory()
@@ -322,11 +323,15 @@ class ReindexArtistIdsTest:
 
         assert search_testing.search_store["artists"] == {}
 
-        artist_ids = [uneligible_artist.id, eligible_artist.id]
-        with assert_num_queries(1):
+        artist_ids = [eligible_artist.id, uneligible_artist.id]
+        expected_num_queries = 1  # artists
+        with assert_num_queries(expected_num_queries):
             search.reindex_artist_ids(artist_ids)
 
         assert search_testing.search_store["artists"].keys() == {eligible_artist.id}
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
+            artist_ids, reason=IndexationReason.ARTIST_REINDEXATION
+        )
 
     def test_unindex_ineligible_artists(self):
         artist = artists_factories.ArtistFactory()

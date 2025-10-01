@@ -729,6 +729,8 @@ def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool =
         unindex_artist_ids(to_delete_ids)
         logger.info("Finished unindexing artists", extra={"count": len(to_delete_ids)})
 
+    async_index_offers_of_artist_ids(to_add_ids + to_delete_ids, reason=IndexationReason.ARTIST_REINDEXATION)
+
 
 def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = False) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
