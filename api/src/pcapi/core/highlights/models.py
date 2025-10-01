@@ -35,6 +35,12 @@ class Highlight(PcObject, Model):
         sa.CheckConstraint('length("name") <= 200'),
         sa.CheckConstraint('length("mediation_uuid") <= 100'),
         sa.CheckConstraint('length("description") <= 2000'),
+        sa.Index(
+            "ix_highlight_unaccent_name",
+            sa.func.immutable_unaccent("name"),
+            postgresql_using="gin",
+            postgresql_ops={"description": "gin_trgm_ops"},
+        ),
     )
 
     @property
@@ -44,7 +50,7 @@ class Highlight(PcObject, Model):
 
     @property
     def mediation_url(self) -> str:
-        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
+        return f"{settings.OBJECT_STORAGE_URL}/highlights/{self.mediation_uuid}"
 
 
 class HighlightRequest(PcObject, Model):

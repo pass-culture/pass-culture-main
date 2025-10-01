@@ -137,6 +137,11 @@ MENU_SECTIONS = [
                 permissions=["READ_TAGS"],
             ),
             MenuItem(
+                label="Temps forts",
+                url_name="backoffice_web.highlights.list_highlights",
+                permissions=["READ_HIGHLIGHT"],
+            ),
+            MenuItem(
                 label="Actions sur les partenaires culturels",
                 url_name="backoffice_web.venue.list_venues",
                 permissions=["READ_PRO_ENTITY", "MANAGE_PRO_ENTITY"],

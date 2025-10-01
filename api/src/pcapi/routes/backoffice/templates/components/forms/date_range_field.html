@@ -3,7 +3,9 @@
   <input type="text"
          id="date-range-field-{{ date_range_field_id }}"
          name="{{ field.name }}"
+         autocomplete="off"
          data-original-name="{{ field.name }}"
+         {% if field.flags.required %}required{% endif %}
          {% if field.max_date %}data-max-date="{{ field.max_date|format_date }}"{% endif %}
          {% if field.reset_to_blank %}data-reset-to-blank="true"{% endif %}
          {% if field.calendar_start_date %}data-calendar-start-date="{{ field.calendar_start_date|format_date }}"{% endif %}
@@ -12,5 +14,5 @@
          value="{{ field.data|format_date_range if field.data else "" }}" />
   <label class="label-element-form"
          data-original-name="{{ field.name }}"
-         for="date-range-field-{{ date_field_id }}">{{ field.label.text }}</label>
+         for="date-range-field-{{ date_range_field_id }}">{{ field.label.text }}</label>
 </div>

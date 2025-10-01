@@ -45,6 +45,11 @@ input {
       margin-right: .5rem;
     }
   }
+
+  &[type=file]::file-selector-button {
+    background: $primary;
+    color: white;
+  }
 }
 
 .pc-search-inline{
