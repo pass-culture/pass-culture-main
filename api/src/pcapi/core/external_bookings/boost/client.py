@@ -401,15 +401,6 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         showtime_details = parse_obj_as(serializers.ShowTimeDetails, data)
         return showtime_details.data
 
-    def get_movie_poster(self, image_url: str) -> bytes:
-        api_response = requests.get(image_url)
-
-        if api_response.status_code != 200:
-            logger.info("Could not fetch movie poster", extra={"provider": "boost", "url": image_url})
-            return bytes()
-
-        return api_response.content
-
     def get_cinemas_attributs(self) -> list[serializers.CinemaAttribut]:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
         attributs = parse_obj_as(serializers.CinemaAttributCollection, data)

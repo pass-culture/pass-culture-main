@@ -189,15 +189,6 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_rating(self) -> dict:  # method used by BO to check authentication is working
         return self._authenticated_get(f"{self.base_url}rating")
 
-    def get_movie_poster(self, image_url: str) -> bytes:
-        api_response = requests.get(image_url)
-
-        if api_response.status_code != 200:
-            logger.info("Could not fetch movie poster", extra={"provider": "cds", "url": image_url})
-            return bytes()
-
-        return api_response.content
-
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = self._authenticated_get(f"{self.base_url}paiementtype")
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)

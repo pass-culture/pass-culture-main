@@ -58,6 +58,30 @@ class AbstractEMSConnector:
             message = response.content
         return message
 
+    def get_movie_poster(self, image_url: str) -> bytes:
+        """
+        Try to fetch the image
+
+        If the request fails (timeout or invalid response) this function logs a warning
+        and returns an empty bytes object
+        """
+        try:
+            api_response = requests.get(image_url)  # can timeout
+
+            if api_response.status_code != 200:  # response is not a success
+                raise Exception()
+        except Exception:
+            logger.warning(
+                "Could not fetch movie poster",
+                extra={
+                    "client": self.__class__.__name__,
+                    "url": image_url,
+                },
+            )
+            return bytes()
+
+        return api_response.content
+
 
 class EMSScheduleConnector(AbstractEMSConnector):
     def build_url(self) -> str:
@@ -83,16 +107,6 @@ class EMSScheduleConnector(AbstractEMSConnector):
 
         self._check_response_is_ok(response)
         return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
-
-    def get_movie_poster_from_api(self, image_url: str) -> bytes:
-        api_response = requests.get(image_url, timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
-
-        if api_response.status_code != 200:
-            raise EMSAPIException(
-                f"Error getting EMS API movie poster {image_url} with code {api_response.status_code}"
-            )
-
-        return api_response.content
 
 
 class EMSSitesConnector(AbstractEMSConnector):

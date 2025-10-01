@@ -97,17 +97,9 @@ class EMSStocks:
             if not poster_url:
                 continue
             poster_url = poster_url.replace("/120/", "/600/")
-            try:
-                thumb = self.connector.get_movie_poster_from_api(poster_url)
-            except ems_connector.EMSAPIException:
-                logger.info(
-                    "Could not fetch movie poster",
-                    extra={
-                        "provider": "ems",
-                        "url": poster_url,
-                    },
-                )
-                thumb = None
+
+            thumb = self.connector.get_movie_poster(poster_url)
+
             if not thumb:
                 continue
 

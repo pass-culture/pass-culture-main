@@ -1,4 +1,5 @@
 import json
+import logging
 import typing
 from dataclasses import dataclass
 from functools import partial
@@ -6,7 +7,11 @@ from functools import wraps
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.users.models as users_models
+from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -42,6 +47,30 @@ class ExternalBookingsClientAPI:
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
     ) -> list[Ticket]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
+
+    def get_movie_poster(self, image_url: str) -> bytes:
+        """
+        Try to fetch the image
+
+        If the request fails (timeout or invalid response) this function logs a warning
+        and returns an empty bytes object
+        """
+        try:
+            api_response = requests.get(image_url)  # can timeout
+
+            if api_response.status_code != 200:  # response is not a success
+                raise Exception()
+        except Exception:
+            logger.warning(
+                "Could not fetch movie poster",
+                extra={
+                    "client": self.__class__.__name__,
+                    "url": image_url,
+                },
+            )
+            return bytes()
+
+        return api_response.content
 
 
 def cache_external_call(key_template: str, expire: int | None = None) -> typing.Callable:

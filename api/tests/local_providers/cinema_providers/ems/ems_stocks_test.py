@@ -1,4 +1,5 @@
 import datetime
+import logging
 from base64 import b64decode
 from decimal import Decimal
 from pathlib import Path
@@ -20,6 +21,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.models import db
+from pcapi.utils.requests import exceptions as requests_exception
 
 import tests
 from tests.local_providers.provider_test_utils import create_finance_event_to_update
@@ -250,23 +252,44 @@ class EMSStocksTest:
         created_offer = db.session.query(offers_models.Offer).one()
         assert len(created_offer.mediations) == 0
 
-    def test_handle_error_on_movie_poster(self, requests_mock):
+    @pytest.mark.parametrize(
+        "get_adapter_error_params",
+        [
+            # invalid responses
+            {"status_code": 404},
+            {"status_code": 502},
+            # unexpected errors
+            {"exc": requests_exception.ReadTimeout},
+            {"exc": requests_exception.ConnectTimeout},
+        ],
+    )
+    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
-        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", status_code=404)
+        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", **get_adapter_error_params)
 
-        ems_stocks = EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[1],
-        )
-        ems_stocks.synchronize()
+        with caplog.at_level(logging.WARNING):
+            ems_stocks = EMSStocks(
+                connector=connector,
+                venue_provider=venue_provider,
+                site=connector.get_schedules().sites[1],
+            )
+            ems_stocks.synchronize()
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.image is None
+
+        assert len(caplog.records) >= 1
+
+        last_record = caplog.records.pop()
+        assert last_record.message == "Could not fetch movie poster"
+        assert last_record.extra == {
+            "client": "EMSScheduleConnector",
+            "url": "https://example.com/FR/poster/982D31BE/600/CDFG5.jpg",
+        }
 
     @time_machine.travel(datetime.datetime(2023, 2, 12), tick=False)
     def test_successive_version_syncs(self, requests_mock):

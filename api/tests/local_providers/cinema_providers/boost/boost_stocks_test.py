@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import logging
 from pathlib import Path
 from unittest import mock
 from unittest.mock import patch
@@ -23,6 +24,7 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import BoostStocks
 from pcapi.models import db
+from pcapi.utils.requests import exceptions as requests_exception
 
 import tests
 from tests.local_providers.provider_test_utils import create_finance_event_to_update
@@ -534,7 +536,18 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    def test_handle_error_on_movie_poster(self, requests_mock):
+    @pytest.mark.parametrize(
+        "get_adapter_error_params",
+        [
+            # invalid responses
+            {"status_code": 404},
+            {"status_code": 502},
+            # unexpected errors
+            {"exc": requests_exception.ReadTimeout},
+            {"exc": requests_exception.ConnectTimeout},
+        ],
+    )
+    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -552,13 +565,20 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        requests_mock.get("http://example.com/images/158026.jpg", status_code=404)
+        requests_mock.get("http://example.com/images/158026.jpg", **get_adapter_error_params)
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        with caplog.at_level(logging.WARNING, logger="pcapi.core.external_bookings.models"):
+            boost_stocks = BoostStocks(venue_provider=venue_provider)
+            boost_stocks.updateObjects()
 
         created_offer = db.session.query(Offer).one()
         assert created_offer.thumbUrl is None
+
+        assert len(caplog.records) >= 1
+
+        last_record = caplog.records.pop()
+        assert last_record.message == "Could not fetch movie poster"
+        assert last_record.extra == {"client": "BoostClientAPI", "url": "http://example.com/images/158026.jpg"}
 
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
