@@ -30,9 +30,9 @@ class QueryCtx:
 
 
 def format_collective_offer_id(collective_offer_id: str) -> int:
-    # template ids have the form 'template-95710'
+    # template ids may have the form 'template-95710' or '95710'
 
-    return int(collective_offer_id.split("-")[1])
+    return int(collective_offer_id.split("-")[-1])
 
 
 QUERY_DESC = {

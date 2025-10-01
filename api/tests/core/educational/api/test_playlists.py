@@ -18,13 +18,13 @@ def _get_offer_id(offer_id: int) -> str:
 
 class SynchronizePlaylistsTest:
     @pytest.mark.parametrize(
-        "playlist_type",
+        "playlist_type,id_formatter",
         (
-            educational_models.PlaylistType.CLASSROOM,
-            educational_models.PlaylistType.NEW_OFFER,
+            (educational_models.PlaylistType.CLASSROOM, lambda i: i),
+            (educational_models.PlaylistType.NEW_OFFER, _get_offer_id),
         ),
     )
-    def test_synchronize_collective_playlist(self, playlist_type):
+    def test_synchronize_collective_playlist(self, playlist_type, id_formatter):
         initial_distance = 5.001234
         updated_distance = 10.001234
         institution = educational_factories.EducationalInstitutionFactory()
@@ -48,23 +48,23 @@ class SynchronizePlaylistsTest:
             mock_run_query.return_value = [
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": _get_offer_id(offers[0].id),
+                    "collective_offer_id": id_formatter(offers[0].id),
                     "distance_in_km": initial_distance,
                 },
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": _get_offer_id(offers[1].id),
+                    "collective_offer_id": id_formatter(offers[1].id),
                     "distance_in_km": updated_distance,
                 },
                 {
                     "institution_id": str(institution.id),
-                    "collective_offer_id": _get_offer_id(offers[3].id),
+                    "collective_offer_id": id_formatter(offers[3].id),
                     "distance_in_km": updated_distance,
                 },
                 {
                     "institution_id": str(institution.id),
                     # offer which does not exist: has been deleted
-                    "collective_offer_id": _get_offer_id(offers[-1].id + 100),
+                    "collective_offer_id": id_formatter(offers[-1].id + 100),
                     "distance_in_km": updated_distance,
                 },
             ]
