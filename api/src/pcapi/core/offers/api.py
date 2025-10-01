@@ -302,47 +302,51 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     return video_metadata
 
 
+def update_video_and_metadata(video_url: str, offer: offers_models.Offer) -> None:
+    video_metadata = get_video_metadata_from_cache(video_url)
+    video_id = extract_youtube_video_id(video_url)
+    if video_metadata is not None:
+        if offer.metaData is None:
+            offer.metaData = models.OfferMetaData(offer=offer)
+            logger.info(
+                "Video has been added to offer",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                technical_message_id="offer.video.added",
+            )
+        elif offer.metaData.videoUrl is None:
+            logger.info(
+                "Video has been added to offer",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                technical_message_id="offer.video.added",
+            )
+        else:
+            logger.info(
+                "Video has been updated on offer",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": video_url},
+                technical_message_id="offer.video.updated",
+            )
+        offer.metaData.videoExternalId = video_id
+        offer.metaData.videoTitle = video_metadata.title
+        offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
+        offer.metaData.videoDuration = video_metadata.duration
+        offer.metaData.videoUrl = video_url
+        db.session.add(offer.metaData)
+
+
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    new_video_url = fields.pop("videoUrl", None)
-    if new_video_url:
-        video_metadata = get_video_metadata_from_cache(new_video_url)
-        video_id = extract_youtube_video_id(new_video_url)
-        if video_metadata is not None:
-            if offer.metaData is None:
-                offer.metaData = models.OfferMetaData(offer=offer)
-                logger.info(
-                    "Video has been added to offer",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
-                    technical_message_id="offer.video.added",
-                )
-            elif offer.metaData.videoUrl is None:
-                logger.info(
-                    "Video has been added to offer",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
-                    technical_message_id="offer.video.added",
-                )
-            else:
-                logger.info(
-                    "Video has been updated on offer",
-                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": new_video_url},
-                    technical_message_id="offer.video.updated",
-                )
-            offer.metaData.videoExternalId = video_id
-            offer.metaData.videoTitle = video_metadata.title
-            offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
-            offer.metaData.videoDuration = video_metadata.duration
-            offer.metaData.videoUrl = new_video_url
-            db.session.add(offer.metaData)
-    elif offer.metaData:
-        remove_video_data_from_offer_metadata(offer.metaData)
-        logger.info(
-            "Video has been deleted from offer",
-            extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
-            technical_message_id="offer.video.deleted",
-        )
+    if "videoUrl" in fields:
+        if new_video_url := fields.pop("videoUrl", None):
+            update_video_and_metadata(new_video_url, offer)
+        elif offer.metaData:
+            remove_video_data_from_offer_metadata(offer.metaData)
+            logger.info(
+                "Video has been deleted from offer",
+                extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+                technical_message_id="offer.video.deleted",
+            )
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
