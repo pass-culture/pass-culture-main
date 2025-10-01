@@ -117,6 +117,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
 
     action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
         "ActionHistory",
+        foreign_keys="ActionHistory.chronicleId",
         back_populates="chronicle",
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,

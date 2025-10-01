@@ -158,7 +158,7 @@ class Booking(PcObject, Model):
     )
 
     activationCode: sa_orm.Mapped["offers_models.ActivationCode"] = sa_orm.relationship(
-        "ActivationCode", uselist=False, back_populates="booking"
+        "ActivationCode", foreign_keys="ActivationCode.bookingId", uselist=False, back_populates="booking"
     )
 
     amount: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
@@ -181,7 +181,7 @@ class Booking(PcObject, Model):
     )
 
     externalBookings: sa_orm.Mapped[list[ExternalBooking]] = sa_orm.relationship(
-        ExternalBooking, back_populates="booking"
+        ExternalBooking, foreign_keys="ExternalBooking.bookingId", back_populates="booking"
     )
 
     cancellationUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -214,18 +214,24 @@ class Booking(PcObject, Model):
     )
 
     fraudulentBookingTag: sa_orm.Mapped["FraudulentBookingTag | None"] = sa_orm.relationship(
-        "FraudulentBookingTag", back_populates="booking", uselist=False
+        "FraudulentBookingTag", foreign_keys="FraudulentBookingTag.bookingId", back_populates="booking", uselist=False
     )
 
-    achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="booking")
+    achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship(
+        "Achievement", foreign_keys="Achievement.bookingId", back_populates="booking"
+    )
     finance_events: sa_orm.Mapped[list["finance_models.FinanceEvent"]] = sa_orm.relationship(
-        "FinanceEvent", back_populates="booking"
+        "FinanceEvent", foreign_keys="FinanceEvent.bookingId", back_populates="booking"
     )
-    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship("Pricing", back_populates="booking")
+    pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship(
+        "Pricing", foreign_keys="Pricing.bookingId", back_populates="booking"
+    )
     incidents: sa_orm.Mapped[list["finance_models.BookingFinanceIncident"]] = sa_orm.relationship(
-        "BookingFinanceIncident", back_populates="booking"
+        "BookingFinanceIncident", foreign_keys="BookingFinanceIncident.bookingId", back_populates="booking"
     )
-    payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship("Payment", back_populates="booking")
+    payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship(
+        "Payment", foreign_keys="Payment.bookingId", back_populates="booking"
+    )
 
     __table_args__ = (
         sa.Index("ix_booking_date_created", dateCreated),

@@ -207,7 +207,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
     venueProviders: sa_orm.Mapped[list["providers_models.VenueProvider"]] = sa_orm.relationship(
-        "VenueProvider", back_populates="venue"
+        "VenueProvider", foreign_keys="VenueProvider.venueId", back_populates="venue"
     )
 
     managingOffererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -258,11 +258,11 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     collectiveOffers: sa_orm.Mapped[list[educational_models.CollectiveOffer]] = sa_orm.relationship(
-        "CollectiveOffer", back_populates="venue"
+        "CollectiveOffer", foreign_keys="CollectiveOffer.venueId", back_populates="venue"
     )
 
     collectiveOfferTemplates: sa_orm.Mapped[list[educational_models.CollectiveOfferTemplate]] = sa_orm.relationship(
-        "CollectiveOfferTemplate", back_populates="venue"
+        "CollectiveOfferTemplate", foreign_keys="CollectiveOfferTemplate.venueId", back_populates="venue"
     )
 
     venueTypeCode: sa_orm.Mapped[VenueTypeCode] = sa_orm.mapped_column(
@@ -281,7 +281,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     contact: sa_orm.Mapped["VenueContact | None"] = sa_orm.relationship(
-        "VenueContact", back_populates="venue", uselist=False
+        "VenueContact", foreign_keys="VenueContact.venueId", back_populates="venue", uselist=False
     )
 
     # _bannerUrl should provide a safe way to retrieve the banner,
@@ -289,7 +289,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     # helpful like image type, author, etc. that can change over time.
     _bannerUrl: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, name="bannerUrl")
     googlePlacesInfo: sa_orm.Mapped["GooglePlacesInfo | None"] = sa_orm.relationship(
-        "GooglePlacesInfo", back_populates="venue", uselist=False
+        "GooglePlacesInfo", foreign_keys="GooglePlacesInfo.venueId", back_populates="venue", uselist=False
     )
 
     _bannerMeta: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
@@ -349,27 +349,30 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     collectiveEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     collective_playlists: sa_orm.Mapped[list[educational_models.CollectivePlaylist]] = sa_orm.relationship(
-        "CollectivePlaylist", back_populates="venue"
+        "CollectivePlaylist", foreign_keys="CollectivePlaylist.venueId", back_populates="venue"
     )
 
     priceCategoriesLabel: sa_orm.Mapped[list["offers_models.PriceCategoryLabel"]] = sa_orm.relationship(
-        "PriceCategoryLabel", back_populates="venue"
+        "PriceCategoryLabel", foreign_keys="PriceCategoryLabel.venueId", back_populates="venue"
     )
 
     registration: sa_orm.Mapped["VenueRegistration | None"] = sa_orm.relationship(
-        "VenueRegistration", back_populates="venue", uselist=False
+        "VenueRegistration", foreign_keys="VenueRegistration.venueId", back_populates="venue", uselist=False
     )
 
     bankAccountLinks: sa_orm.Mapped[list["VenueBankAccountLink"]] = sa_orm.relationship(
-        "VenueBankAccountLink", back_populates="venue", passive_deletes=True
+        "VenueBankAccountLink",
+        foreign_keys="VenueBankAccountLink.venueId",
+        back_populates="venue",
+        passive_deletes=True,
     )
 
     accessibilityProvider: sa_orm.Mapped["AccessibilityProvider | None"] = sa_orm.relationship(
-        "AccessibilityProvider", back_populates="venue", uselist=False
+        "AccessibilityProvider", foreign_keys="AccessibilityProvider.venueId", back_populates="venue", uselist=False
     )
 
     openingHours: sa_orm.Mapped[list["OpeningHours"]] = sa_orm.relationship(
-        "OpeningHours", back_populates="venue", passive_deletes=True
+        "OpeningHours", foreign_keys="OpeningHours.venueId", back_populates="venue", passive_deletes=True
     )
 
     offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -380,33 +383,36 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     cinemaProviderPivot: sa_orm.Mapped["providers_models.CinemaProviderPivot | None"] = sa_orm.relationship(
-        "CinemaProviderPivot", back_populates="venue", uselist=False
+        "CinemaProviderPivot", foreign_keys="CinemaProviderPivot.venueId", back_populates="venue", uselist=False
     )
     allocinePivot: sa_orm.Mapped["providers_models.AllocinePivot | None"] = sa_orm.relationship(
-        "AllocinePivot", back_populates="venue", uselist=False
+        "AllocinePivot", foreign_keys="AllocinePivot.venueId", back_populates="venue", uselist=False
     )
 
     headlineOffers: sa_orm.Mapped[list["offers_models.HeadlineOffer"]] = sa_orm.relationship(
-        "HeadlineOffer", back_populates="venue"
+        "HeadlineOffer", foreign_keys="HeadlineOffer.venueId", back_populates="venue"
     )
     finance_incidents: sa_orm.Mapped[list["finance_models.FinanceIncident"]] = sa_orm.relationship(
-        "FinanceIncident", back_populates="venue"
+        "FinanceIncident", foreign_keys="FinanceIncident.venueId", back_populates="venue"
     )
     custom_reimbursement_rules: sa_orm.Mapped[list["finance_models.CustomReimbursementRule"]] = sa_orm.relationship(
-        "CustomReimbursementRule", back_populates="venue"
+        "CustomReimbursementRule", foreign_keys="CustomReimbursementRule.venueId", back_populates="venue"
     )
 
-    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="venue")
+    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship(
+        "Booking", foreign_keys="Booking.venueId", back_populates="venue"
+    )
 
     action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
         "ActionHistory",
+        foreign_keys="ActionHistory.venueId",
         back_populates="venue",
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,
     )
 
     confidenceRule: sa_orm.Mapped["OffererConfidenceRule | None"] = sa_orm.relationship(
-        "OffererConfidenceRule", back_populates="venue", uselist=False
+        "OffererConfidenceRule", foreign_keys="OffererConfidenceRule.venueId", back_populates="venue", uselist=False
     )
 
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
@@ -1045,7 +1051,7 @@ class VenueEducationalStatus(Model):
     id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(256), nullable=False)
     venues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship(
-        Venue, back_populates="venueEducationalStatus", uselist=True
+        Venue, foreign_keys="Venue.venueEducationalStatusId", back_populates="venueEducationalStatus", uselist=True
     )
 
 
@@ -1092,7 +1098,7 @@ class Offerer(
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
     UserOfferers: sa_orm.Mapped[list["UserOfferer"]] = sa_orm.relationship(
-        "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
+        "UserOfferer", foreign_keys="UserOfferer.offererId", order_by="UserOfferer.id", back_populates="offerer"
     )
 
     siren: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(9), nullable=False, unique=True)
@@ -1102,17 +1108,21 @@ class Offerer(
     tags: sa_orm.Mapped[list["OffererTag"]] = sa_orm.relationship("OffererTag", secondary=OffererTagMapping.__table__)
 
     offererProviders: sa_orm.Mapped[list["OffererProvider"]] = sa_orm.relationship(
-        "OffererProvider", back_populates="offerer"
+        "OffererProvider", foreign_keys="OffererProvider.offererId", back_populates="offerer"
     )
 
     bankAccounts: sa_orm.Mapped[list[finance_models.BankAccount]] = sa_orm.relationship(
         finance_models.BankAccount,
+        foreign_keys="BankAccount.offererId",
         back_populates="offerer",
         passive_deletes=True,
     )
 
     individualSubscription: sa_orm.Mapped["IndividualOffererSubscription | None"] = sa_orm.relationship(
-        "IndividualOffererSubscription", back_populates="offerer", uselist=False
+        "IndividualOffererSubscription",
+        foreign_keys="IndividualOffererSubscription.offererId",
+        back_populates="offerer",
+        uselist=False,
     )
 
     allowedOnAdage: sa_orm.Mapped[bool] = sa_orm.mapped_column(
@@ -1121,6 +1131,7 @@ class Offerer(
 
     action_history: sa_orm.Mapped[list["history_models.ActionHistory"]] = sa_orm.relationship(
         "ActionHistory",
+        foreign_keys="ActionHistory.offererId",
         back_populates="offerer",
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,
@@ -1128,16 +1139,20 @@ class Offerer(
 
     _street = sa_orm.mapped_column("street", sa.Text(), nullable=True)
 
-    managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship("Venue", back_populates="managingOfferer")
+    managedVenues: sa_orm.Mapped[list[Venue]] = sa_orm.relationship(
+        "Venue", foreign_keys="Venue.managingOffererId", back_populates="managingOfferer"
+    )
 
-    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship("Booking", back_populates="offerer")
+    bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship(
+        "Booking", foreign_keys="Booking.offererId", back_populates="offerer"
+    )
 
     confidenceRule: sa_orm.Mapped["OffererConfidenceRule | None"] = sa_orm.relationship(
-        "OffererConfidenceRule", back_populates="offerer", uselist=False
+        "OffererConfidenceRule", foreign_keys="OffererConfidenceRule.offererId", back_populates="offerer", uselist=False
     )
 
     custom_reimbursement_rules: sa_orm.Mapped[list["finance_models.CustomReimbursementRule"]] = sa_orm.relationship(
-        "CustomReimbursementRule", back_populates="offerer"
+        "CustomReimbursementRule", foreign_keys="CustomReimbursementRule.offererId", back_populates="offerer"
     )
 
     # use an expression instead of joinedload(tags) to avoid multiple SQL rows returned
@@ -1461,7 +1476,9 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
-    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship("Venue", back_populates="offererAddress")
+    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
+        "Venue", foreign_keys="Venue.offererAddressId", back_populates="offererAddress"
+    )
 
     _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 

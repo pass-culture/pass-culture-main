@@ -608,7 +608,9 @@ class BeneficiaryFraudCheck(PcObject, Model):
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
     )
-    user: sa_orm.Mapped[users_models.User] = sa_orm.relationship("User", back_populates="beneficiaryFraudChecks")
+    user: sa_orm.Mapped[users_models.User] = sa_orm.relationship(
+        "User", foreign_keys=[userId], back_populates="beneficiaryFraudChecks"
+    )
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
