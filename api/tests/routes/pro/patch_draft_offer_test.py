@@ -482,6 +482,44 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
 
+    def test_no_video_url_in_payload_should_not_remove_offer_video(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer_with_video = offers_factories.OfferFactory(venue=venue)
+
+        offers_factories.OfferMetaDataFactory(
+            offer=offer_with_video, videoUrl="https://www.youtube.com/watch?v=fXBIHHOXwAM"
+        )
+
+        data = {
+            "name": "Aucun rapport avec la vidéo",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer_with_video.id}", json=data)
+
+        assert response.status_code == 200, response.json
+
+        updated_offer = db.session.get(Offer, offer_with_video.id)
+        assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=fXBIHHOXwAM"
+
+    def test_empty_video_url_in_payload_should_remove_offer_video(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer_with_video = offers_factories.OfferFactory(venue=venue)
+
+        offers_factories.OfferMetaDataFactory(
+            offer=offer_with_video, videoUrl="https://www.youtube.com/watch?v=fXBIHHOXwAM"
+        )
+
+        data = {
+            "videoUrl": "",
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer_with_video.id}", json=data)
+
+        assert response.status_code == 200, response.json
+        updated_offer = db.session.get(Offer, offer_with_video.id)
+        assert not updated_offer.metaData.videoUrl
+        assert not updated_offer.metaData.videoTitle
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
