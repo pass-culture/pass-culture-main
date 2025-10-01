@@ -24,7 +24,7 @@ class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, institution: EducationalInstitution) -> "CollectiveOffersEducationalInstitutionResponseModel":
-        institution.uai = institution.institutionId
+        institution.uai = institution.institutionId  # type: ignore [attr-defined]
         return super().from_orm(institution)
 
 

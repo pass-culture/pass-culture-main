@@ -36,7 +36,7 @@ def update_chunk(chunk_to_update: dict[str, Model]) -> None:
         values_to_update_in_chunk = _extract_dict_values_from_chunk(matching_tuples_in_chunk)
         model_to_update = MODELS[model_in_chunk]
 
-        db.session.bulk_update_mappings(model_to_update, values_to_update_in_chunk)
+        db.session.bulk_update_mappings(model_to_update, values_to_update_in_chunk)  # type: ignore [arg-type]
     db.session.commit()
 
 

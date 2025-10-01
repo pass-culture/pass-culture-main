@@ -36,30 +36,30 @@ def _fill_offer_price(
     min_price: decimal.Decimal,
     max_price: decimal.Decimal,
 ) -> None:
-    offer.price = None
-    offer.startPrice = None
+    offer.price = None  # type: ignore [attr-defined]
+    offer.startPrice = None  # type: ignore [attr-defined]
     if min_price == max_price:
-        offer.price = min_price
+        offer.price = min_price  # type: ignore [attr-defined]
     else:
-        offer.startPrice = min_price
+        offer.startPrice = min_price  # type: ignore [attr-defined]
 
 
 def _fill_offer_date(
     offer: Offer, min_beginning_datetime: datetime.datetime, max_beginning_datetime: datetime.datetime
 ) -> None:
-    offer.date = None
-    offer.startDate = None
+    offer.date = None  # type: ignore [attr-defined]
+    offer.startDate = None  # type: ignore [attr-defined]
     if min_beginning_datetime == max_beginning_datetime:
-        offer.date = min_beginning_datetime
+        offer.date = min_beginning_datetime  # type: ignore [attr-defined]
     else:
-        offer.startDate = min_beginning_datetime
+        offer.startDate = min_beginning_datetime  # type: ignore [attr-defined]
 
 
 def _fill_offer_expired(offer: Offer, non_expired_count: int, active_count: int) -> None:
     if active_count and not non_expired_count:
-        offer.isExpired = True
+        offer.isExpired = True  # type: ignore [attr-defined]
     else:
-        offer.isExpired = False
+        offer.isExpired = False  # type: ignore [attr-defined]
 
 
 def _fill_favorite_offer(

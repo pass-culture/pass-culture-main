@@ -101,7 +101,7 @@ class CDSStocks(LocalProvider):
 
         return providable_information_list
 
-    def get_existing_object(
+    def get_existing_object(  # type: ignore [override]
         self,
         model_type: type[offers_models.Product | offers_models.Offer | offers_models.Stock],
         id_at_providers: str,

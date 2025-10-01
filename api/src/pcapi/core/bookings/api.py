@@ -193,7 +193,7 @@ def classify_and_sort_bookings(
             ended_bookings.append(booking)
         else:
             ongoing_bookings.append(booking)
-            booking.qrCodeData = utils.get_qr_code_data(booking.token)
+            booking.qrCodeData = utils.get_qr_code_data(booking.token)  # type: ignore [attr-defined]
 
     sorted_ended_bookings = sorted(
         ended_bookings,

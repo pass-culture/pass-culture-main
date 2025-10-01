@@ -115,7 +115,7 @@ class OfferVenueResponse(BaseModel):
                 latitude=venue.offererAddress.address.latitude,
                 longitude=venue.offererAddress.address.longitude,
             ),
-            managingOfferer=venue.managingOfferer,
+            managingOfferer=venue.managingOfferer,  # type: ignore [arg-type]
             adageId=venue.adageId,
             imgUrl=venue.bannerUrl,
         )
@@ -192,20 +192,20 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             id=offer.id,
             description=offer.description,
             name=offer.name,
-            stock=offer.collectiveStock,
-            venue=offer.venue,
+            stock=offer.collectiveStock,  # type: ignore [arg-type]
+            venue=offer.venue,  # type: ignore [arg-type]
             students=offer.students,
             location=get_collective_offer_location_model(offer),
             contactEmail=offer.contactEmail,
             contactPhone=offer.contactPhone,
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
-            domains=offer.domains,
-            educationalInstitution=offer.institution,
+            domains=offer.domains,  # type: ignore [arg-type]
+            educationalInstitution=offer.institution,  # type: ignore [arg-type]
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
-            teacher=offer.teacher,
-            nationalProgram=offer.nationalProgram,
+            teacher=offer.teacher,  # type: ignore [arg-type]
+            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
             motorDisabilityCompliant=offer.motorDisabilityCompliant,
@@ -243,15 +243,15 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             id=offer.id,
             description=offer.description,
             name=offer.name,
-            venue=offer.venue,
+            venue=offer.venue,  # type: ignore [arg-type]
             students=offer.students,
             location=get_collective_offer_location_model(offer),
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.priceDetail,
-            domains=offer.domains,
+            domains=offer.domains,  # type: ignore [arg-type]
             interventionArea=offer.interventionArea,
             imageUrl=offer.imageUrl,
-            nationalProgram=offer.nationalProgram,
+            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             isFavorite=is_favorite,
             audioDisabilityCompliant=offer.audioDisabilityCompliant,
             mentalDisabilityCompliant=offer.mentalDisabilityCompliant,

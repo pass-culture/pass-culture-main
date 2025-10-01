@@ -68,9 +68,9 @@ class GetOffererVenueResponseModel(BaseModel):
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: Iterable[int] = (),
     ) -> "GetOffererVenueResponseModel":
-        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
-        venue.hasAdageId = bool(venue.adageId)
-        venue.hasVenueProviders = bool(venue.venueProviders)
+        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers  # type: ignore [attr-defined]
+        venue.hasAdageId = bool(venue.adageId)  # type: ignore [attr-defined]
+        venue.hasVenueProviders = bool(venue.venueProviders)  # type: ignore [attr-defined]
         return super().from_orm(venue)
 
     class Config:
@@ -117,23 +117,23 @@ class GetOffererResponseModel(BaseModel):
             .all()
         )
 
-        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
+        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(  # type: ignore [attr-defined]
             offerer.id
         )
-        offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)
-        offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
+        offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)  # type: ignore [attr-defined]
+        offerer.venuesWithNonFreeOffersWithoutBankAccounts = (  # type: ignore [attr-defined]
             offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
         )
-        offerer.hasValidBankAccount = row.hasValidBankAccount
-        offerer.hasPendingBankAccount = row.hasPendingBankAccount
-        offerer.hasNonFreeOffer = row.hasNonFreeOffer
-        offerer.hasActiveOffer = row.hasActiveOffer
-        offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections
-        offerer.isOnboarded = row.isOnboarded
-        offerer.hasHeadlineOffer = row.hasHeadlineOffer
-        offerer.hasPartnerPage = row.hasPartnerPage
-        offerer.isCaledonian = offerer.is_caledonian
-        offerer.canDisplayHighlights = row.canDisplayHighlights
+        offerer.hasValidBankAccount = row.hasValidBankAccount  # type: ignore [attr-defined]
+        offerer.hasPendingBankAccount = row.hasPendingBankAccount  # type: ignore [attr-defined]
+        offerer.hasNonFreeOffer = row.hasNonFreeOffer  # type: ignore [attr-defined]
+        offerer.hasActiveOffer = row.hasActiveOffer  # type: ignore [attr-defined]
+        offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections  # type: ignore [attr-defined]
+        offerer.isOnboarded = row.isOnboarded  # type: ignore [attr-defined]
+        offerer.hasHeadlineOffer = row.hasHeadlineOffer  # type: ignore [attr-defined]
+        offerer.hasPartnerPage = row.hasPartnerPage  # type: ignore [attr-defined]
+        offerer.isCaledonian = offerer.is_caledonian  # type: ignore [attr-defined]
+        offerer.canDisplayHighlights = row.canDisplayHighlights  # type: ignore [attr-defined]
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
         # `Offerer.managedVenues` relationship which does not

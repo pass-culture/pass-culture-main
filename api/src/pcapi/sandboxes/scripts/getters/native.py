@@ -55,7 +55,7 @@ def _get_price_category_label(venue: offerers_models.Venue) -> offers_models.Pri
         .filter(offers_models.PriceCategoryLabel.label == "Tarif unique")
         .all()
     )
-    return labels[0] if len(labels) > 0 else offers_factories.PriceCategoryLabelFactory(venue=venue)
+    return labels[0] if len(labels) > 0 else offers_factories.PriceCategoryLabelFactory.create(venue=venue)
 
 
 def _create_cinema_offer(venue: offerers_models.Venue) -> offers_models.Offer:
