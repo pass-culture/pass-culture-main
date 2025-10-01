@@ -26,8 +26,8 @@ from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class BookedCollectiveOffer(ConfiguredBaseModel):
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -87,7 +87,7 @@ def confirm_collective_booking(booking_id: int) -> None:
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -130,7 +130,7 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
 @blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -177,7 +177,7 @@ def use_collective_booking(booking_id: int) -> None:
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/pending", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -232,7 +232,7 @@ def reset_collective_booking(booking_id: int) -> None:
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/reimburse", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -277,7 +277,7 @@ def reimburse_collective_booking(booking_id: int) -> None:
 @blueprints.public_api.route("/v2/collective/adage_mock/offer/<int:offer_id>/book", methods=["POST"])
 @atomic()
 @utils.exclude_prod_environment
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=200,

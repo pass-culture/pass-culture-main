@@ -30,8 +30,8 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 from . import serialization
 from . import utils
@@ -52,7 +52,7 @@ def _deserialize_has_ticket(
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -169,7 +169,7 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -202,7 +202,7 @@ def get_event(event_id: int) -> events_serializers.EventOfferResponse:
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -237,7 +237,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> events_serializers.
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -324,7 +324,7 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -391,7 +391,7 @@ def post_event_price_categories(
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -436,7 +436,7 @@ def get_event_price_categories(
     "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
 )
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -496,7 +496,7 @@ def patch_event_price_category(
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -580,7 +580,7 @@ def post_event_stocks(
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -641,7 +641,7 @@ def get_event_stocks(
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -682,7 +682,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -768,7 +768,7 @@ def patch_event_stock(
         )
     ),
 )
-@provider_api_key_required
+@api_key_required
 def get_event_categories() -> events_serializers.GetEventCategoriesResponse:
     """
     Get Event Categories
