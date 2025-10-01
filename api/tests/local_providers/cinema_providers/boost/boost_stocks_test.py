@@ -12,7 +12,9 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import ProductMediationFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
@@ -485,6 +487,34 @@ class BoostStocksTest:
         assert boost_stocks.createdThumbs == 1
         assert boost_stocks.erroredThumbs == 0
         assert get_cinema_attr_adapter.call_count == 1
+
+    def test_should_not_create_product_mediation(self, requests_mock):
+        venue_provider = self._create_cinema_and_pivot()
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+
+        product = EventProductFactory(
+            name=fixtures.FILM_207["titleCnc"],
+            extraData=offers_models.OfferExtraData(
+                allocineId=fixtures.FILM_207["idFilmAllocine"],
+                visa=fixtures.FILM_207["numVisa"],
+            ),
+        )
+        ProductMediationFactory(product=product, imageType=offers_models.ImageType.POSTER)
+
+        get_image_adapter = requests_mock.get("http://example.com/images/158026.jpg")
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        assert boost_stocks.createdThumbs == 0
+
+        assert not get_image_adapter.last_request
 
     def should_create_offer_even_if_incorrect_thumb(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()

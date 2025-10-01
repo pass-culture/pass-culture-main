@@ -230,6 +230,30 @@ class EMSStocksTest:
 
         assert created_offer.image.url == created_offer.product.productMediations[0].url
 
+    def test_should_not_create_product_mediation(self, requests_mock):
+        connector = EMSScheduleConnector()
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+
+        product = offers_factories.EventProductFactory(
+            name="Mon voisin Totoro",
+            extraData=offers_models.OfferExtraData(allocineId=269976),
+        )
+        offers_factories.ProductMediationFactory(product=product, imageType=offers_models.ImageType.POSTER)
+
+        get_image_adapter = requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg")
+
+        ems_stocks = EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[1],
+        )
+        ems_stocks.synchronize()
+
+        assert get_image_adapter.last_request == None
+
     def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)

@@ -1196,6 +1196,28 @@ def delete_stock(stock: models.Stock, author_id: int | None = None, user_connect
     _delete_stock(stock, author_id, user_connect_as)
 
 
+def create_movie_poster(product: models.Product, provider: providers_models.Provider, image: bytes) -> None:
+    """
+    Create a product mediation of type poster for a cinema product (ie. a movie)
+    """
+    image_id = str(uuid.uuid4())
+    mediation = models.ProductMediation(
+        productId=product.id,
+        lastProvider=provider,
+        imageType=offers_models.ImageType.POSTER,
+        uuid=image_id,
+    )
+    db.session.add(mediation)
+    thumb_storage.create_thumb(
+        product,
+        image,
+        storage_id_suffix_str="",
+        keep_ratio=True,
+        object_id=image_id,
+    )
+    db.session.flush()
+
+
 def create_mediation(
     user: users_models.User | None,
     offer: models.Offer,

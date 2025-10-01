@@ -561,6 +561,37 @@ class CGRStocksTest:
         assert created_offer.image.url == created_offer.product.productMediations[0].url
         assert cgr_stocks.createdThumbs == 1
 
+    def test_should_not_create_product_mediation(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+        product = offers_factories.EventProductFactory(
+            name=fixtures.FILM_138473["Titre"],
+            extraData=offers_models.OfferExtraData(
+                allocineId=fixtures.FILM_138473["IDFilmAlloCine"],
+                visa=fixtures.FILM_138473["NumVisa"],
+            ),
+        )
+        offers_factories.ProductMediationFactory(product=product, imageType=offers_models.ImageType.POSTER)
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+
+        get_image_adapter = requests_mock.get("https://example.com/149341.jpg", content=bytes())
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        assert get_image_adapter.last_request == None
+        assert cgr_stocks.createdThumbs == 0
+
     def should_create_product_even_if_thumb_is_incorrect(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 

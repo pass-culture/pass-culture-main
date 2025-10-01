@@ -1,13 +1,11 @@
 import datetime
 import decimal
 import logging
-import uuid
 
 import PIL
 
 import pcapi.connectors.ems as ems_connector
 import pcapi.utils.date as utils_date
-from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core import search
 from pcapi.core.categories import subcategories
@@ -98,31 +96,22 @@ class EMSStocks:
                 continue
             poster_url = poster_url.replace("/120/", "/600/")
 
-            thumb = self.connector.get_movie_poster(poster_url)
+            product_needs_poster = offer.product and not offer.product.productMediations
 
-            if not thumb:
+            if not product_needs_poster:
                 continue
 
-            if offer.product and not offer.product.productMediations:
-                try:
-                    image_id = str(uuid.uuid4())
-                    mediation = offers_models.ProductMediation(
-                        productId=offer.product.id,
-                        lastProvider=self.provider,
-                        imageType=offers_models.ImageType.POSTER,
-                        uuid=image_id,
-                    )
-                    db.session.add(mediation)
-                    thumb_storage.create_thumb(
-                        offer.product,
-                        thumb,
-                        storage_id_suffix_str="",
-                        keep_ratio=True,
-                        object_id=image_id,
-                    )
-                    db.session.commit()
-                except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
-                    logger.warning("Error: Offer image could not be created. Reason: %s", e)
+            image = self.connector.get_movie_poster(poster_url)
+
+            if not image:
+                continue
+
+            try:
+                assert offer.product  # helps mypy
+                offers_api.create_movie_poster(offer.product, self.provider, image)
+                db.session.commit()
+            except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
+                logger.warning("Error: Offer image could not be created. Reason: %s", e)
 
         offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(

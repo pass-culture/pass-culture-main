@@ -1,7 +1,6 @@
 import datetime
 import decimal
 import logging
-import uuid
 from typing import Iterator
 
 import PIL
@@ -12,7 +11,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi import settings
-from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
@@ -126,26 +124,11 @@ class CGRStocks(LocalProvider):
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.date.today():
-            if self.film_infos.Affiche:
+            if self.product and not self.product.productMediations and self.film_infos.Affiche:
                 image = self.cgr_client_api.get_movie_poster(self.film_infos.Affiche)
-                if image and self.product and not self.product.productMediations:
+                if image:
                     try:
-                        image_id = str(uuid.uuid4())
-                        mediation = offers_models.ProductMediation(
-                            productId=self.product.id,
-                            lastProvider=self.provider,
-                            imageType=offers_models.ImageType.POSTER,
-                            uuid=image_id,
-                        )
-                        db.session.add(mediation)
-                        thumb_storage.create_thumb(
-                            self.product,
-                            image,
-                            storage_id_suffix_str="",
-                            keep_ratio=True,
-                            object_id=image_id,
-                        )
-                        db.session.flush()
+                        offers_api.create_movie_poster(self.product, self.provider, image)
                         self.createdThumbs += 1
                     except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
                         self.erroredThumbs += 1

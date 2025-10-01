@@ -1,12 +1,10 @@
 import decimal
 import logging
-import uuid
 from datetime import datetime
 
 import PIL
 
 import pcapi.core.providers.models as providers_models
-from pcapi.connectors import thumb_storage
 from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
@@ -119,33 +117,19 @@ class AllocineStocks(LocalProvider):
 
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
-            image = self.get_object_thumb()
-            if image and not self.product.productMediations:
-                try:
-                    image_id = str(uuid.uuid4())
-                    mediation = offers_models.ProductMediation(
-                        productId=self.product.id,
-                        lastProvider=self.provider,
-                        imageType=offers_models.ImageType.POSTER,
-                        uuid=image_id,
-                    )
-                    db.session.add(mediation)
-                    thumb_storage.create_thumb(
-                        self.product,
-                        image,
-                        storage_id_suffix_str="",
-                        keep_ratio=True,
-                        object_id=image_id,
-                    )
-                    db.session.flush()
-                    self.createdThumbs += 1
-                except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
-                    self.erroredThumbs += 1
-                    logger.warning(
-                        "Error: Offer image could not be created. Reason: %s",
-                        e,
-                        extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
-                    )
+            if not self.product.productMediations:
+                image = self.get_object_thumb()
+                if image:
+                    try:
+                        offers_api.create_movie_poster(self.product, self.provider, image)
+                        self.createdThumbs += 1
+                    except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
+                        self.erroredThumbs += 1
+                        logger.warning(
+                            "Error: Offer image could not be created. Reason: %s",
+                            e,
+                            extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
+                        )
 
         self.last_offer = offer
 
