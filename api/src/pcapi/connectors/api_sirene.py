@@ -10,6 +10,7 @@ Use Enterprise API instead to find:
 import datetime
 import json
 import logging
+from typing import TypedDict
 
 from pcapi import settings
 from pcapi.utils import cache as cache_utils
@@ -54,21 +55,31 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
-    """Returns the list of SIREN which closure has been declared on the given date.
-    Closure date may be the same day, in the past or in the future.
+class SirenClosureInfo(TypedDict):
+    siren: str
+    closure_date: datetime.date
+
+
+def get_siren_closed_at_date(date_closed: datetime.date) -> list[SirenClosureInfo]:
+    """Returns the list of SIREN :
+    -which closure has been declared on the given date. Closure date may be the same day or in the past.
+    -which closure date is on the given date (even if closure has been declared in the past).
     """
     return _get_backend().get_siren_closed_at_date(date_closed)
 
 
 class BaseBackend:
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
-        return ["000099002", "900099003", "109599001"]
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
+        return [
+            {"siren": "000099002", "closure_date": date_closed - datetime.timedelta(days=5)},
+            {"siren": "900099003", "closure_date": date_closed - datetime.timedelta(days=10)},
+            {"siren": "109599001", "closure_date": date_closed - datetime.timedelta(days=15)},
+        ]
 
 
 class InseeBackend(BaseBackend):
@@ -113,34 +124,37 @@ class InseeBackend(BaseBackend):
         assert isinstance(cached, str)  # help mypy
         return json.loads(cached)
 
-    def _get_closure_date_from_siren_data(self, siren_data: dict) -> datetime.date | None:
+    def _get_closure_date_from_siren_data(self, siren_data: dict, date_closed: datetime.date) -> datetime.date | None:
         # Several "periodesUniteLegale" can be closed.
-        # This method may return a date in the future, when active is still True.
         closure_date = None
         sorted_periodes = sorted(
             siren_data["periodesUniteLegale"], key=lambda periode: periode["dateDebut"], reverse=True
         )
         for periode in sorted_periodes:
-            if periode["etatAdministratifUniteLegale"] != "C":
+            if (
+                periode["etatAdministratifUniteLegale"] != "C"
+                or datetime.date.fromisoformat(periode["dateDebut"]) > date_closed
+            ):
                 break
             closure_date = periode["dateDebut"]
         return datetime.date.fromisoformat(closure_date) if closure_date else None
 
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         results = []
         cursor = "*"
         while True:
             subpath = (
-                f"/siren?q=dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
-                "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)"
+                f"/siren?q=(dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
+                "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true))"
+                f"+OR+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true+AND+dateDebut:{date_closed.isoformat()})"
                 "&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale"
                 f"&curseur={cursor}&nombre=1000"
             )
             data = self._cached_get(subpath)
             for item in data["unitesLegales"]:
-                closure_date = self._get_closure_date_from_siren_data(item)
+                closure_date = self._get_closure_date_from_siren_data(item, date_closed)
                 if closure_date is not None:
-                    results.append(item["siren"])
+                    results.append(SirenClosureInfo(siren=item["siren"], closure_date=closure_date))
             if (
                 data["header"]["nombre"] == data["header"]["total"]
                 or data["header"]["curseurSuivant"] == data["header"]["curseur"]
