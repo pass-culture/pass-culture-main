@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { fromZonedTime } from 'date-fns-tz'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { AdageHeaderLink } from '@/apiClient/adage/models/AdageHeaderLink'
@@ -206,9 +207,11 @@ describe('AdageHeader', () => {
   })
 
   it('should not display the budget if the date is before 2025-10-01', async () => {
-    vi.spyOn(Date, 'now').mockReturnValue(
-      new Date('2025-09-30T23:59:00').getTime()
+    const parisDate = fromZonedTime(
+      new Date('2025-10-01 07:59:59'),
+      'Europe/Paris'
     )
+    vi.spyOn(Date, 'now').mockReturnValue(parisDate.getTime())
     renderAdageHeader(user)
     await waitFor(() =>
       expect(screen.queryByText('Solde prévisionnel')).not.toBeInTheDocument()
@@ -217,9 +220,11 @@ describe('AdageHeader', () => {
   })
 
   it('should display the budget if the date is after 2025-10-01', async () => {
-    vi.spyOn(Date, 'now').mockReturnValue(
-      new Date('2025-10-01T00:01:00').getTime()
+    const parisDate = fromZonedTime(
+      new Date('2025-10-01 08:00:00'),
+      'Europe/Paris'
     )
+    vi.spyOn(Date, 'now').mockReturnValue(parisDate.getTime())
     renderAdageHeader(user)
     await waitFor(() =>
       expect(screen.queryByText('Solde prévisionnel')).toBeInTheDocument()
