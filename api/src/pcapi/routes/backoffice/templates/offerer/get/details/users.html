@@ -63,6 +63,13 @@
                          data-bs-target="#delete-modal-{{ user_offerer.id }}">Supprimer</a>
                     </li>
                   {% elif row.OffererInvitation %}
+                    <form action="{{ url_for('backoffice_web.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
+                          name="{{ url_for('backoffice_web.offerer.resend_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
+                          method="post">
+                      {{ csrf_token }}
+                      <button type="submit"
+                              class="btn btn-sm d-block w-100 text-start px-3">Renvoyer l'email</button>
+                    </form>
                     <form action="{{ url_for('backoffice_web.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) }}"
                           name="{{ url_for('backoffice_web.offerer.delete_invitation', offerer_id=row.OffererInvitation.offererId, invitation_id=row.OffererInvitation.id) | action_to_name }}"
                           method="post">

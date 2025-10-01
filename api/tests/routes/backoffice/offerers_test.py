@@ -3868,6 +3868,62 @@ class InviteUserTest(PostEndpointHelper):
         assert db.session.query(offerers_models.OffererInvitation).count() == 0
 
 
+class ResendInvitationTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.resend_invitation"
+    endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_resend_invitation(self, legit_user, authenticated_client, offerer):
+        invitation = offerers_factories.OffererInvitationFactory(offerer=offerer)
+        offerers_factories.OffererInvitationFactory(offerer=offerer)
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation a été renvoyée à {invitation.email}"
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == invitation.email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
+        )
+
+    def test_resend_invitation_with_matching_user(self, legit_user, authenticated_client, offerer):
+        invited_email = "someone@example.com"
+        users_factories.ProFactory(email=invited_email)
+        invitation = offerers_factories.OffererInvitationFactory(offerer=offerer, email=invited_email)
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation a été renvoyée à {invited_email}"
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == invited_email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.__dict__
+        )
+
+    def test_can_not_resend_accepted_invitation(self, authenticated_client, offerer):
+        invitation = offerers_factories.OffererInvitationFactory(
+            offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation de {invitation.email} est déjà acceptée"
+        assert not mails_testing.outbox
+
+
 class DeleteInvitationTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer.delete_invitation"
     endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
