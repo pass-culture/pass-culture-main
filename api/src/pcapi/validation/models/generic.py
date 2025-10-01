@@ -27,8 +27,8 @@ def validate_generic(model: Model) -> ApiErrors:
 
         if (
             not getattr(column.expression, "nullable", False)
-            and not column.expression.foreign_keys
-            and not column.expression.primary_key
+            and not column.expression.foreign_keys  # type: ignore [attr-defined]
+            and not column.expression.primary_key  # type: ignore [attr-defined]
             and getattr(column.expression, "default", ...) is None
             and getattr(column.expression, "server_default", ...) is None
             and value is None
@@ -39,24 +39,24 @@ def validate_generic(model: Model) -> ApiErrors:
             continue
 
         if (
-            isinstance(column.expression.type, (sa.String, sa.CHAR))
-            and not isinstance(column.expression.type, sa.Enum)
+            isinstance(column.expression.type, (sa.String, sa.CHAR))  # type: ignore [attr-defined]
+            and not isinstance(column.expression.type, sa.Enum)  # type: ignore [attr-defined]
             and not isinstance(value, str)
         ):
             api_errors.add_error(key, "doit être une chaîne de caractères")
 
         if (
-            isinstance(column.expression.type, (sa.String, sa.CHAR))
+            isinstance(column.expression.type, (sa.String, sa.CHAR))  # type: ignore [attr-defined]
             and isinstance(value, str)
-            and column.expression.type.length
-            and len(value) > column.expression.type.length
+            and column.expression.type.length  # type: ignore [attr-defined]
+            and len(value) > column.expression.type.length  # type: ignore [attr-defined]
         ):
-            api_errors.add_error(key, f"Vous devez saisir moins de {str(column.expression.type.length)} caractères")
+            api_errors.add_error(key, f"Vous devez saisir moins de {str(column.expression.type.length)} caractères")  # type: ignore [attr-defined]
 
-        if isinstance(column.expression.type, sa.Integer) and not isinstance(value, int):
+        if isinstance(column.expression.type, sa.Integer) and not isinstance(value, int):  # type: ignore [attr-defined]
             api_errors.add_error(key, "doit être un entier")
 
-        if isinstance(column.expression.type, sa.Float) and not isinstance(value, float):
+        if isinstance(column.expression.type, sa.Float) and not isinstance(value, float):  # type: ignore [attr-defined]
             api_errors.add_error(key, "doit être un nombre")
 
     return api_errors

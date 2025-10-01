@@ -71,7 +71,7 @@ class DMSApplicationForEAC(BaseModel):
     def from_orm(  # type: ignore[override]
         cls, collective_dms_application: educational_models.CollectiveDmsApplication, venue_id: int
     ) -> "DMSApplicationForEAC":
-        collective_dms_application.venueId = venue_id
+        collective_dms_application.venueId = venue_id  # type: ignore [attr-defined]
         return super().from_orm(collective_dms_application)
 
 
@@ -150,7 +150,7 @@ class GetVenuePricingPointResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
-        venue.venueName = venue.publicName
+        venue.venueName = venue.publicName  # type: ignore [attr-defined]
         return super().from_orm(venue)
 
 
@@ -395,7 +395,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveVenueResponseModel":
-        venue.collectiveLegalStatus = venue.venueEducationalStatus
+        venue.collectiveLegalStatus = venue.venueEducationalStatus  # type: ignore [attr-defined]
         return super().from_orm(venue)
 
 

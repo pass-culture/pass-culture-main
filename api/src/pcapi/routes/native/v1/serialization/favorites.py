@@ -55,13 +55,13 @@ class FavoriteOfferResponse(BaseModel):
 
         if offer.offererAddress:
             address = offer.offererAddress.address
-            offer.venueName = offer.offererAddress.label or default_venue_name
+            offer.venueName = offer.offererAddress.label or default_venue_name  # type: ignore [attr-defined]
         else:
             address = offer.venue.offererAddress.address
-            offer.venueName = default_venue_name
+            offer.venueName = default_venue_name  # type: ignore [attr-defined]
 
-        offer.coordinates = {"latitude": address.latitude, "longitude": address.longitude}
-        offer.expenseDomains = get_expense_domains(offer)
+        offer.coordinates = {"latitude": address.latitude, "longitude": address.longitude}  # type: ignore [attr-defined]
+        offer.expenseDomains = get_expense_domains(offer)  # type: ignore [attr-defined]
         return super().from_orm(offer)
 
 

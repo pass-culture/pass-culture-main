@@ -354,13 +354,13 @@ class GetOfferStockResponseModel(BaseModel):
         # but it should be more efficient than loading all activationCodes of all stocks
         if stock.canHaveActivationCodes:
             available_activation_code = offers_repository.get_available_activation_code(stock)
-            stock.hasActivationCode = available_activation_code is not None
-            stock.activationCodesExpirationDatetime = (
+            stock.hasActivationCode = available_activation_code is not None  # type: ignore [attr-defined]
+            stock.activationCodesExpirationDatetime = (  # type: ignore [attr-defined]
                 available_activation_code.expirationDate if available_activation_code else None
             )
         else:
-            stock.hasActivationCode = False
-            stock.activationCodesExpirationDatetime = None
+            stock.hasActivationCode = False  # type: ignore [attr-defined]
+            stock.activationCodesExpirationDatetime = None  # type: ignore [attr-defined]
         return super().from_orm(stock)
 
     class Config:
@@ -658,9 +658,9 @@ class GetProductInformations(BaseModel):
 
     @classmethod
     def from_orm(cls, product: offers_models.Product) -> "GetProductInformations":
-        product.gtl_id = product.extraData.get("gtl_id", "") if product.extraData else ""
-        product.author = product.extraData.get("author", "") if product.extraData else ""
-        product.performer = product.extraData.get("performer", "") if product.extraData else ""
+        product.gtl_id = product.extraData.get("gtl_id", "") if product.extraData else ""  # type: ignore [attr-defined]
+        product.author = product.extraData.get("author", "") if product.extraData else ""  # type: ignore [attr-defined]
+        product.performer = product.extraData.get("performer", "") if product.extraData else ""  # type: ignore [attr-defined]
         return super().from_orm(product)
 
     class Config:

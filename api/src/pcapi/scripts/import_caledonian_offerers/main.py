@@ -258,7 +258,7 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
             offererId=offerer.id,
             addressId=address.id,
             type=offerers_models.LocationType.VENUE_LOCATION,
-            label=address.label or None,
+            label=None,
             venueId=venue.id,
         )
         db.session.add(offerer_address)

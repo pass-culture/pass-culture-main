@@ -88,7 +88,7 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     row = repository.get_offerer_and_extradata(offerer_id)
     if not row:
         raise ResourceNotFoundError()
-    return offerers_serialize.GetOffererResponseModel.from_orm(row)
+    return offerers_serialize.GetOffererResponseModel.from_orm(row)  # type: ignore [arg-type]
 
 
 @private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])

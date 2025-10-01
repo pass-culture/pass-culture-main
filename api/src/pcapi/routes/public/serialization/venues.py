@@ -100,7 +100,7 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
     @classmethod
     def _serialize_offerer_venues(cls, row: OffererVenues) -> GetOffererVenuesResponse:
         venues = [VenueResponse.build_model(venue) for venue in row.venues]
-        return GetOffererVenuesResponse(offerer=row.offerer, venues=venues)
+        return GetOffererVenuesResponse(offerer=row.offerer, venues=venues)  # type: ignore [arg-type]
 
     @classmethod
     def serialize_offerers_venues(

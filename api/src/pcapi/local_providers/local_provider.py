@@ -114,8 +114,8 @@ class LocalProvider(Iterator):
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
         assert self.provider  # helps mypy
         pc_object = providable_info.type()
-        pc_object.idAtProviders = providable_info.id_at_providers
-        pc_object.idAtProvider = providable_info.new_id_at_provider
+        pc_object.idAtProviders = providable_info.id_at_providers  # type: ignore [union-attr]
+        pc_object.idAtProvider = providable_info.new_id_at_provider  # type: ignore [union-attr]
         pc_object.lastProviderId = self.provider.id
 
         self.fill_object_attributes(pc_object)
@@ -135,8 +135,8 @@ class LocalProvider(Iterator):
         self.fill_object_attributes(pc_object)
 
         assert self.provider  # helps mypy
-        pc_object.lastProviderId = self.provider.id
-        pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
+        pc_object.lastProviderId = self.provider.id  # type: ignore [attr-defined]
+        pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider  # type: ignore [attr-defined]
 
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
@@ -202,7 +202,7 @@ class LocalProvider(Iterator):
         if object_in_current_chunk is None:
             return self.get_existing_object(providable_info.type, providable_info.id_at_providers)
 
-        return object_in_current_chunk
+        return object_in_current_chunk  # type: ignore [return-value]
 
     def updateObjects(self, limit: int | None = None) -> None:
         if self.venue_provider and not self.venue_provider.isActive:
@@ -240,8 +240,8 @@ class LocalProvider(Iterator):
                         continue
 
                     try:
-                        pc_object = self._create_object(providable_info)
-                        chunk_to_insert[chunk_key] = pc_object
+                        pc_object = self._create_object(providable_info)  # type: ignore [assignment]
+                        chunk_to_insert[chunk_key] = pc_object  # type: ignore [assignment]
                     except ApiErrors:
                         continue
                 else:
@@ -300,7 +300,7 @@ class LocalProvider(Iterator):
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
                     save_chunks(chunk_to_insert, chunk_to_update)
                     _reindex_offers(
-                        list(chunk_to_insert.values()) + list(chunk_to_update.values()),
+                        list(chunk_to_insert.values()) + list(chunk_to_update.values()),  # type: ignore [arg-type]
                         self.venue_provider,
                     )
                     chunk_to_insert = {}
@@ -309,7 +309,7 @@ class LocalProvider(Iterator):
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             save_chunks(chunk_to_insert, chunk_to_update)
             _reindex_offers(
-                list(chunk_to_insert.values()) + list(chunk_to_update.values()),
+                list(chunk_to_insert.values()) + list(chunk_to_update.values()),  # type: ignore [arg-type]
                 self.venue_provider,
             )
 

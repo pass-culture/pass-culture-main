@@ -30,7 +30,7 @@ class VenueLabelModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue_label: VenueLabel) -> "VenueLabelModel":
-        venue_label.name = venue_label.label
+        venue_label.name = venue_label.label  # type: ignore [attr-defined]
         return super().from_orm(venue_label)
 
     class Config:
@@ -118,14 +118,14 @@ class VenueModel(BaseModel):
             mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
             motorDisabilityCompliant=venue.motorDisabilityCompliant,
             visualDisabilityCompliant=venue.visualDisabilityCompliant,
-            domains=venue.collectiveDomains,
+            domains=venue.collectiveDomains,  # type: ignore [arg-type]
             interventionArea=intervention_area,
             network=venue.collectiveNetwork,
             statusId=venue.venueEducationalStatusId,
-            label=venue.venueLabel,
+            label=venue.venueLabel,  # type: ignore [arg-type]
             siren=venue.managingOfferer.siren,
             isPermanent=venue.isPermanent,
-            offerer=venue.managingOfferer,
+            offerer=venue.managingOfferer,  # type: ignore [arg-type]
             bannerUrl=venue.bannerUrl,
             bannerMeta=venue.bannerMeta,
         )

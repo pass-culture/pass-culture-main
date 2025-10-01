@@ -190,7 +190,7 @@ class CollectiveOffersResponseModel(BaseModel):
             endDatetime=offer.collectiveStock.endDatetime.replace(microsecond=0).isoformat(),
             offerStatus=offer.displayedStatus.value,
             venueId=offer.venueId,
-            bookings=offer.collectiveStock.collectiveBookings,
+            bookings=offer.collectiveStock.collectiveBookings,  # type: ignore [arg-type]
         )
 
 
@@ -396,8 +396,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             location=location,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
-            bookings=offer.collectiveStock.collectiveBookings,
-            nationalProgram=offer.nationalProgram,
+            bookings=offer.collectiveStock.collectiveBookings,  # type: ignore [arg-type]
+            nationalProgram=offer.nationalProgram,  # type: ignore [arg-type]
             formats=offer.formats,
         )
 
