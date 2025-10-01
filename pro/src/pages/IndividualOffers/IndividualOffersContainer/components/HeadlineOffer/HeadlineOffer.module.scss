@@ -7,7 +7,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  margin: rem.torem(32px) 0;
+  margin: var(--size-spacing-xxl) 0;
   width: 100%;
 }
 
@@ -16,16 +16,16 @@
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .headline-offer-block {
   display: flex;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
   align-items: center;
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   width: 100%;
 }
 
@@ -45,7 +45,7 @@
   .headline-offer-title-container {
     flex-direction: row;
     align-items: end;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 
   .headline-offer-container {

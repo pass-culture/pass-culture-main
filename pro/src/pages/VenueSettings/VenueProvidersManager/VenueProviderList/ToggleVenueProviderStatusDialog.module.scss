@@ -12,7 +12,7 @@
 
     ul {
       list-style: disc;
-      margin-left: rem.torem(32px);
+      margin-left: var(--size-spacing-xxl);
     }
   }
 }

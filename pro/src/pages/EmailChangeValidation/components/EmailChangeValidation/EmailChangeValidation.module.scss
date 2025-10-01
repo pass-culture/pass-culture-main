@@ -1,7 +1,4 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_size.scss" as size;
 
 .title {
   @include fonts.title1;
@@ -10,9 +7,9 @@
 .subtitle {
   @include fonts.title4;
 
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .subtitle:last-of-type {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }

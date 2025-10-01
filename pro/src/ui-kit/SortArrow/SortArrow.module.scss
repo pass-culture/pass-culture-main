@@ -3,7 +3,7 @@
 
 .sorting-icons {
   display: inline-block;
-  margin-left: rem.torem(4px);
+  margin-left: var(--size-spacing-xs);
   position: relative;
   vertical-align: middle;
   width: rem.torem(18px);

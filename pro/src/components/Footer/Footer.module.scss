@@ -10,7 +10,7 @@
   &-layout-sticky-basic,
   &-layout-sticky-onboarding {
     margin-bottom: size.$action-bar-sticky-height;
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
   }
 
   &-layout-onboarding {
@@ -32,20 +32,20 @@
       max-width: rem.torem(640px);
 
       @media (min-width: size.$laptop) {
-        margin: rem.torem(16px);
+        margin: var(--size-spacing-l);
         max-width: initial;
       }
     }
 
     .footer-list-item {
-      margin: rem.torem(4px) 0;
+      margin: var(--size-spacing-xs) 0;
     }
   }
 
   .footer-list {
     display: flex;
     flex-flow: row wrap;
-    margin: rem.torem(24px);
+    margin: var(--size-spacing-xl);
     gap: 0 rem.torem(16px);
     justify-content: flex-start;
   }
@@ -64,7 +64,7 @@
 
       .footer-list {
         justify-content: space-around;
-        margin: rem.torem(8px);
+        margin: var(--size-spacing-s);
       }
     }
   }

@@ -6,7 +6,7 @@
   display: flex;
   justify-content: left;
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
 
   &-info {
     background-color: var(--color-background-info);
@@ -44,7 +44,7 @@
     height: var(--typography-body-line-height);
     min-width: rem.torem(20px);
     align-self: start;
-    margin-right: rem.torem(16px);
+    margin-right: var(--size-spacing-l);
   }
 
   .close-icon {
@@ -53,7 +53,7 @@
     align-self: start;
     cursor: pointer;
     min-width: rem.torem(20px);
-    margin-left: rem.torem(16px);
+    margin-left: var(--size-spacing-l);
     color: var(--color-icon-default);
   }
 }
@@ -63,7 +63,7 @@
 
   > div,
   .bi-link-item:not(:last-child) {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
   }
 
   .title {

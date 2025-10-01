@@ -3,18 +3,18 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .survey-satisfaction {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
   background-image: url("./assets/survey.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(32px) rem.torem(24px);
+  padding: var(--size-spacing-xxl) var(--size-spacing-xl);
 
   &-infos {
     display: flex;
     flex-direction: column;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
 
     &-head {
       display: flex;
@@ -37,7 +37,7 @@
 .survey-actions {
   display: flex;
   align-items: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   flex-wrap: wrap;
 }
 

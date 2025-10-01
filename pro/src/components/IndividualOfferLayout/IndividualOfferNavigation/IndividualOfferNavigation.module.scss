@@ -2,9 +2,9 @@
 @use "styles/mixins/_size.scss" as size;
 
 .stepper {
-  margin: rem.torem(32px) 0 rem.torem(48px);
+  margin: var(--size-spacing-xxl) 0 rem.torem(48px);
 }
 
 .tabs {
-  margin: rem.torem(32px) 0;
+  margin: var(--size-spacing-xxl) 0;
 }

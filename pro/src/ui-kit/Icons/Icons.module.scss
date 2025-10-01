@@ -8,22 +8,22 @@
 .icon-stories {
   border-radius: var(--size-border-radius-m);
   box-shadow: var(--shadow-overlay);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
 }
 
 .icon-list {
   display: flex;
   flex-flow: wrap;
   flex-direction: row;
-  margin-top: rem.torem(16px);
-  margin-bottom: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .search-input-container {
   display: flex;
-  gap: rem.torem(8px);
-  margin: rem.torem(16px) 0;
-  margin-top: rem.torem(8px);
+  gap: var(--size-spacing-s);
+  margin: var(--size-spacing-l) 0;
+  margin-top: var(--size-spacing-s);
 }
 
 .color-input {
@@ -39,8 +39,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: rem.torem(8px);
-  margin: rem.torem(4px);
+  padding: var(--size-spacing-s);
+  margin: var(--size-spacing-xs);
   box-shadow: var(--shadow-overlay);
   border-radius: var(--size-border-radius-s);
   width: rem.torem(120px);

@@ -4,7 +4,7 @@
 
 .income {
   &-box {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-input {
@@ -15,13 +15,13 @@
     display: flex;
     flex-direction: column;
     margin-bottom: rem.torem(20px);
-    row-gap: rem.torem(24px);
+    row-gap: var(--size-spacing-xl);
 
     &-by-year {
       display: flex;
       flex-flow: row wrap;
       flex-direction: row;
-      gap: rem.torem(8px);
+      gap: var(--size-spacing-s);
 
       &-button {
         display: flex;
@@ -51,7 +51,7 @@
             height: rem.torem(8px);
             background-color: var(--color-icon-brand-primary);
             border-radius: var(--size-border-radius-pill);
-            margin-right: rem.torem(8px);
+            margin-right: var(--size-spacing-s);
           }
         }
       }

@@ -1,18 +1,17 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
 
 .subtitle {
   @include fonts.title3;
 
-  margin-bottom: rem.torem(12px);
+  margin-bottom: var(--size-spacing-m);
 }
 
 .signup-offerer-authentication-form {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .warning-callout {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 
   &-text {
     @include fonts.body;

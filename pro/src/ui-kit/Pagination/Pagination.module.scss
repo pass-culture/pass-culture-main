@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 
   @include fonts.body-accent-xs;
 }

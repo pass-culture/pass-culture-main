@@ -20,17 +20,17 @@
   border-spacing: 0 rem.torem(24px);
 
   &-cell {
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
     text-align: left;
     border-top: 1px solid var(--color-border-subtle);
     border-bottom: 1px solid var(--color-border-subtle);
-  
+
     &:first-child {
       border-left: 1px solid var(--color-border-subtle);
       border-top-left-radius: var(--size-border-radius-m, 8px);
       border-bottom-left-radius: var(--size-border-radius-m, 8px);
     }
-  
+
     &:last-child {
       border-right: 1px solid var(--color-border-subtle);
       border-top-right-radius: var(--size-border-radius-m, 8px);
@@ -48,13 +48,13 @@
   }
 
   &-cell {
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
     text-align: left;
   }
 }
 
 .table-row {
- border-bottom: 1px solid var(--color-background-subtle);
+  border-bottom: 1px solid var(--color-background-subtle);
 }
 
 .table-header {
@@ -70,17 +70,17 @@
 
   &-th {
     text-align: left;
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
     white-space: nowrap;
 
     &:first-child {
       border-top-left-radius: var(--size-border-radius-m);
-      padding-left: rem.torem(16px);
+      padding-left: var(--size-spacing-l);
     }
 
     &:last-child {
       border-top-right-radius: var(--size-border-radius-m);
-      padding-right: rem.torem(16px);
+      padding-right: var(--size-spacing-l);
     }
   }
 
@@ -92,8 +92,8 @@
 
 .table-select-all {
   display: flex;
-  margin: rem.torem(16px) 0;
-  gap: rem.torem(8px);
+  margin: var(--size-spacing-l) 0;
+  gap: var(--size-spacing-s);
 }
 
 .table-checkbox-label {
@@ -116,29 +116,29 @@
   }
 
   .table-select-all {
-    margin: rem.torem(8px) 0;
+    margin: var(--size-spacing-s) 0;
   }
 
   .table-row {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     border: 1px solid var(--color-background-subtle);
-    margin-top: rem.torem(8px);
+    margin-top: var(--size-spacing-s);
   }
 
   .table-collapse-cell {
     display: flex;
     justify-content: space-between;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
     align-items: center;
     border: 1px solid var(--color-background-subtle);
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
 
     &:first-child {
       border: none;
       border-radius: none;
     }
-  
+
     &:last-child {
       border: none;
       border-radius: none;

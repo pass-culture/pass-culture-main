@@ -1,4 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .prebooking-button {
@@ -7,7 +6,7 @@
   &-booking-limit {
     @include fonts.body-accent-xs;
 
-    margin-top: rem.torem(8px);
+    margin-top: var(--size-spacing-s);
   }
 
   &-limit-date {

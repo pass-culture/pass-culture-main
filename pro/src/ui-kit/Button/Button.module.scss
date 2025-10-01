@@ -40,13 +40,13 @@
 
   &.button-left {
     .button-icon:not(.button-icon-arrow, .has-tooltip) {
-      margin-right: rem.torem(8px);
+      margin-right: var(--size-spacing-s);
     }
   }
 
   &.button-right {
     .button-icon:not(.button-icon-arrow, .has-tooltip) {
-      margin-left: rem.torem(8px);
+      margin-left: var(--size-spacing-s);
     }
   }
 
@@ -162,7 +162,7 @@
     .button-icon:not(.has-tooltip) {
       height: var(--typography-body-line-height);
       width: rem.torem(20px);
-      margin-right: rem.torem(8px);
+      margin-right: var(--size-spacing-s);
     }
 
     &.button-center {
@@ -182,23 +182,23 @@
     .button-icon:not(.has-tooltip) {
       height: var(--typography-body-xs-line-height);
       width: rem.torem(16px);
-      margin-right: rem.torem(4px);
+      margin-right: var(--size-spacing-xs);
     }
 
     &.button-left {
       .button-icon:not(.button-icon-arrow, .has-tooltip) {
-        margin-right: rem.torem(4px);
+        margin-right: var(--size-spacing-xs);
       }
     }
 
     &.button-right {
       .button-icon:not(.button-icon-arrow, .has-tooltip) {
-        margin-left: rem.torem(4px);
+        margin-left: var(--size-spacing-xs);
       }
     }
 
     &:focus-visible {
-      padding: rem.torem(2px) rem.torem(4px);
+      padding: var(--size-spacing-xxs) rem.torem(4px);
     }
   }
 
@@ -206,7 +206,7 @@
     background-color: var(--color-background-default);
     justify-content: flex-start;
     width: 100%;
-    padding: rem.torem(12px) rem.torem(8px);
+    padding: var(--size-spacing-m) var(--size-spacing-s);
     border: rem.torem(1px) solid var(--color-border-default);
     border-radius: var(--size-border-radius-m);
     max-width: rem.torem(400px);
@@ -236,7 +236,7 @@
 .spinner-icon {
   height: rem.torem(20px);
   width: rem.torem(20px);
-  margin-right: rem.torem(8px);
+  margin-right: var(--size-spacing-s);
 }
 
 .loading-spinner {

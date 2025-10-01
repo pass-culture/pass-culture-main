@@ -1,4 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .heading2 {
@@ -14,19 +13,19 @@
 .paragraph,
 .downlist-item,
 .list-item {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .list-item {
   list-style: disc;
-  margin-left: rem.torem(16px);
+  margin-left: var(--size-spacing-l);
 }
 
 .downlist-item {
   list-style: circle;
-  margin-left: rem.torem(32px);
+  margin-left: var(--size-spacing-xxl);
 }
 
 .back-link {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }

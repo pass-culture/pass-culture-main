@@ -7,14 +7,14 @@
 }
 
 .banner {
-  padding: rem.torem(8px);
+  padding: var(--size-spacing-s);
   border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 
   &.banner-expires-soon {
     background-color: var(--color-background-warning);
@@ -23,7 +23,7 @@
   &-expiration {
     display: flex;
     align-items: center;
-    gap: rem.torem(4px);
+    gap: var(--size-spacing-xs);
     flex-wrap: wrap;
 
     &-waiting {
@@ -31,7 +31,7 @@
 
       display: flex;
       align-items: center;
-      gap: rem.torem(4px);
+      gap: var(--size-spacing-xs);
     }
 
     &-days-badge {
@@ -39,17 +39,17 @@
 
       display: flex;
       align-items: center;
-      gap: rem.torem(4px);
+      gap: var(--size-spacing-xs);
     }
   }
 }
 
 @media (min-width: size.$tablet) {
   .banner {
-    margin-left: rem.torem(8px);
+    margin-left: var(--size-spacing-s);
   }
 
   .banner-expiration {
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }

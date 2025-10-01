@@ -7,8 +7,8 @@ $icon-button-height: rem.torem(32px);
 .row {
   align-items: flex-start;
   display: flex;
-  margin-top: rem.torem(16px);
-  gap: rem.torem(8px);
+  margin-top: var(--size-spacing-l);
+  gap: var(--size-spacing-s);
   flex-flow: column wrap;
 
   .input-stock {
@@ -35,13 +35,13 @@ $icon-button-height: rem.torem(32px);
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
 
     > .input-readonly {
       max-width: rem.torem(120px);
 
       &--first {
-        margin-left: rem.torem(16px);
+        margin-left: var(--size-spacing-l);
       }
 
       &,

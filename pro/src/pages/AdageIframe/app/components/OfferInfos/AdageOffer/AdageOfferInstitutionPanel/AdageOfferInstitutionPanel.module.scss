@@ -5,12 +5,12 @@
   width: 100%;
   border-radius: var(--size-border-radius-l);
   box-shadow: var(--shadow-overlay);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
 
   &-header {
     display: flex;
     align-items: center;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
 
     &-title {
       @include fonts.title2;
@@ -18,15 +18,15 @@
   }
 
   &-info {
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
     background-color: var(--color-background-info);
     border-radius: var(--size-border-radius-m);
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
   }
 
   &-prebooking {
     text-align: center;
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     &-icon {
       margin-right: rem.torem(10px);
@@ -35,7 +35,7 @@
     &-date {
       @include fonts.body-accent-xs;
 
-      margin-bottom: rem.torem(8px);
+      margin-bottom: var(--size-spacing-s);
 
       &-emphasis {
         color: var(--color-text-brand-primary);

@@ -16,7 +16,7 @@
 }
 
 .button-group {
-  margin: rem.torem(32px) 0;
+  margin: var(--size-spacing-xxl) 0;
   position: relative;
 
   &-separator {

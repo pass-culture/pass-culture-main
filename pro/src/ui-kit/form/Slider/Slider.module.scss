@@ -38,7 +38,7 @@
   align-items: center;
   justify-content: space-between;
   gap: rem.torem(10px);
-  margin-bottom: rem.torem(12px);
+  margin-bottom: var(--size-spacing-m);
 
   .input-value {
     @include fonts.body-accent;

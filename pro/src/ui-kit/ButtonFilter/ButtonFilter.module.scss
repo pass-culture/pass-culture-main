@@ -22,7 +22,7 @@
     width: size.$button-icon-size;
     flex-shrink: 0;
     vertical-align: text-bottom;
-    margin: rem.torem(2px) 0 0 rem.torem(8px);
+    margin: var(--size-spacing-xxs) 0 0 var(--size-spacing-s);
   }
 
   &-active {
@@ -34,7 +34,7 @@
       width: rem.torem(8px);
       height: rem.torem(8px);
       border-radius: var(--size-border-radius-pill);
-      margin-right: rem.torem(8px);
+      margin-right: var(--size-spacing-s);
       background-color: var(--color-icon-brand-primary);
     }
   }

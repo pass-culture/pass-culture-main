@@ -1,7 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .select-page-partenaire {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
   max-width: rem.torem(405px);
 }
 
@@ -10,5 +10,5 @@
   height: 2px;
   background: var(--separator-color-subtle);
   border: none;
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }

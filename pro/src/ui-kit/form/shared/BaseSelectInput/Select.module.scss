@@ -27,7 +27,8 @@
     @include fonts.body;
 
     color: var(--color-text-default);
-    padding: rem.torem(8px) rem.torem(28px) rem.torem(8px) rem.torem(12px);
+    padding: var(--size-spacing-s) rem.torem(28px) rem.torem(8px)
+      rem.torem(12px);
     height: rem.torem(42px);
     border-radius: var(--size-border-radius-m);
     cursor: pointer;
@@ -51,7 +52,7 @@
   &.has-description {
     display: inline-block;
     width: auto;
-    margin-right: rem.torem(8px);
+    margin-right: var(--size-spacing-s);
   }
 
   &.has-error {

@@ -11,7 +11,7 @@
   max-width: rem.torem(42px);
 
   &-text {
-    margin-top: rem.torem(4px);
+    margin-top: var(--size-spacing-xs);
     display: block;
 
     @include fonts.body-accent;

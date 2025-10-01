@@ -7,15 +7,15 @@
 .menu-list {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(32px);
-  gap: rem.torem(16px);
+  margin-bottom: var(--size-spacing-xxl);
+  gap: var(--size-spacing-l);
 
   &-item {
     @include fonts.body-accent;
 
     font-size: rem.torem(16px);
     border-bottom: rem.torem(2px) solid transparent;
-    padding-bottom: rem.torem(8px);
+    padding-bottom: var(--size-spacing-s);
 
     &:hover {
       border-bottom: rem.torem(2px) solid var(--color-border-default);
@@ -36,7 +36,7 @@
 @media (min-width: size.$tablet) {
   .menu-list {
     flex-direction: row;
-    gap: rem.torem(32px);
+    gap: var(--size-spacing-xxl);
   }
 }
 

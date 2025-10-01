@@ -20,12 +20,12 @@
 
   &-infobox {
     border-radius: var(--size-border-radius-s);
-    padding: rem.torem(16px);
+    padding: var(--size-spacing-l);
     background-color: var(--color-background-info);
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     &-text {
-      margin-bottom: rem.torem(16px);
+      margin-bottom: var(--size-spacing-l);
     }
 
     &-accent {
@@ -36,7 +36,7 @@
   &-added-in-adage {
     display: flex;
     align-items: center;
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
     gap: rem.torem(10px);
 
     &-icon {

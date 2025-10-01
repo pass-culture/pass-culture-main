@@ -6,8 +6,8 @@
 }
 
 .data-displaying {
-  margin-top: rem.torem(8px);
-  padding: rem.torem(16px);
+  margin-top: var(--size-spacing-s);
+  padding: var(--size-spacing-l);
   background: var(--color-background-subtle);
   color: var(--color-text-default);
   border-radius: var(--size-border-radius-m);
@@ -15,7 +15,7 @@
   .data-line {
     @include fonts.body;
 
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
     overflow-wrap: break-word;
 
     &:last-child {
@@ -25,14 +25,14 @@
 }
 
 .validation-screen {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 
   section:nth-child(even) {
     margin-bottom: rem.torem(52px);
   }
 
   &-subtitle {
-    margin-top: rem.torem(32px);
+    margin-top: var(--size-spacing-xxl);
     display: flex;
     justify-content: space-between;
     align-items: center;

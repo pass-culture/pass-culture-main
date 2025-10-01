@@ -3,7 +3,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .image-preview-previews {
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
 
@@ -16,7 +16,7 @@
     flex-direction: column;
     place-items: center center;
     gap: rem.torem(30px);
-    margin: rem.torem(24px) 0;
+    margin: var(--size-spacing-xl) 0;
   }
 
   &-shell {

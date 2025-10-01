@@ -1,5 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .layout {
   margin: unset;
   display: flex;
@@ -11,6 +9,6 @@
 }
 
 .back-to-signin-button {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
   justify-content: flex-start;
 }

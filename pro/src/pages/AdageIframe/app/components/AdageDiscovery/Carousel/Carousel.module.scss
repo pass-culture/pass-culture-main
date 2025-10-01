@@ -17,7 +17,7 @@
       white-space: nowrap;
 
       button:first-child {
-        margin-right: rem.torem(16px);
+        margin-right: var(--size-spacing-l);
       }
     }
   }
@@ -27,9 +27,9 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
     scroll-behavior: smooth;
-    padding: rem.torem(20px) rem.torem(24px);
+    padding: rem.torem(20px) var(--size-spacing-xl);
   }
 
   &-loading {

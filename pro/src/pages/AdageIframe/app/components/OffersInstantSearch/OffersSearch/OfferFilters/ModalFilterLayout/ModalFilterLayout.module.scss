@@ -1,13 +1,13 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .modal-content {
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
   min-width: rem.torem(416px);
   color: var(--color-text-default);
 
   &-title {
     color: var(--color-text-subtle);
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-children {
@@ -16,7 +16,7 @@
 
   &-separator {
     border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-footer {

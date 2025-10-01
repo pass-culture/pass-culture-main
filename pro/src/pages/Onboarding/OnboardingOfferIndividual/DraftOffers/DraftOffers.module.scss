@@ -5,10 +5,10 @@
   @include fonts.title3;
 
   margin-top: rem.torem(64px);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .offer {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
   max-width: rem.torem(565px);
 }

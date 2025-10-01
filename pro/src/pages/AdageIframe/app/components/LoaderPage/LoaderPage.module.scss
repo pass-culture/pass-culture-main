@@ -1,12 +1,10 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .loader-page {
   align-items: center;
   display: flex;
   grid-column-start: col-main;
   grid-row-start: row-main;
   justify-content: center;
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
 }
 
 .loading-spinner {

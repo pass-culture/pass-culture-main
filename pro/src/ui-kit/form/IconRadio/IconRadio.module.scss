@@ -26,7 +26,7 @@
   justify-content: center;
 
   &-icon {
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
   }
 
   &:hover {

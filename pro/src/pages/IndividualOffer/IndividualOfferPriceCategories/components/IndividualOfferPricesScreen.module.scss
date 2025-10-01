@@ -13,8 +13,8 @@
 }
 
 .duo-section {
-  margin-top: rem.torem(12px);
-  margin-bottom: rem.torem(40px);
+  margin-top: var(--size-spacing-m);
+  margin-bottom: var(--size-spacing-xxxl);
 }
 
 .free-checkbox {
@@ -38,7 +38,7 @@
 
 .form-layout-row-price-category {
   border-radius: var(--size-border-radius-s);
-  padding-bottom: rem.torem(24px);
+  padding-bottom: var(--size-spacing-xl);
 }
 
 .visually-hidden {

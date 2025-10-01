@@ -20,7 +20,7 @@
   .title {
     @include fonts.title1;
 
-    margin: rem.torem(32px) 0 rem.torem(16px);
+    margin: var(--size-spacing-xxl) 0 var(--size-spacing-l);
   }
 
   .description {
@@ -32,6 +32,6 @@
   }
 
   .nm-redirection-link {
-    margin: rem.torem(40px) auto;
+    margin: var(--size-spacing-xxxl) auto;
   }
 }

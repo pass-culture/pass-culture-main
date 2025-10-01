@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
 
     &-with-subtitle {
       align-items: flex-end;
@@ -25,10 +25,10 @@
   }
 
   &-back-to-nav-link {
-    margin-left: rem.torem(16px);
+    margin-left: var(--size-spacing-l);
 
     &-with-subtitle {
-      margin-bottom: rem.torem(4px);
+      margin-bottom: var(--size-spacing-xs);
     }
   }
 }

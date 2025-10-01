@@ -10,7 +10,7 @@
 
   svg {
     height: rem.torem(16px);
-    margin-right: rem.torem(4px);
+    margin-right: var(--size-spacing-xs);
     width: rem.torem(16px);
     min-width: 1rem;
   }

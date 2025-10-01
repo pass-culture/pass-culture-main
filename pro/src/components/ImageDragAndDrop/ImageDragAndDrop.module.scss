@@ -11,11 +11,11 @@
 .image-drag-and-drop {
   display: flex;
   height: rem.torem(240px);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   align-self: stretch;
   position: relative;
   border-radius: var(--size-border-radius-s);
@@ -88,7 +88,7 @@
   &-description {
     @include fonts.body-accent-s;
 
-    margin-top: rem.torem(8px);
+    margin-top: var(--size-spacing-s);
     color: var(--color-text-default);
     display: flex;
     flex-direction: column;

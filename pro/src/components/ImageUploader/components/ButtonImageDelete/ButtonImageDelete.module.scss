@@ -2,7 +2,7 @@
 
 .button-image-delete {
   &-icon {
-    margin-right: rem.torem(8px);
+    margin-right: var(--size-spacing-s);
     width: rem.torem(20px);
   }
 }

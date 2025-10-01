@@ -1,14 +1,12 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .stocks-provider-form {
-  margin-top: rem.torem(1em);
+  margin-top: var(--size-spacing-l);
 }
 
 .aide-stock-button {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
   color: var(--color-text-default);
 }
 
 .account-section {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }

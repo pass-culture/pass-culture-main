@@ -88,7 +88,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   z-index: zIndex.$venues-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   background-color: var(--color-background-default);
   margin-top: calc((100vh - var(--radix-popper-available-height)) * -1);
   overflow-y: scroll;
@@ -104,7 +104,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     width: rem.torem(320px);
     margin-left: 0;
     margin-top: 0;
-    padding: rem.torem(8px) rem.torem(16px);
+    padding: var(--size-spacing-s) var(--size-spacing-l);
     border-radius: var(--size-border-radius-m);
     border: solid rem.torem(1px) var(--color-border-subtle);
   }
@@ -114,7 +114,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   width: 100%;
   height: auto;
   z-index: 17;
@@ -125,7 +125,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     color: var(--color-text-subtle);
 
     &.tablet-only {
-      margin-top: rem.torem(8px);
+      margin-top: var(--size-spacing-s);
     }
   }
 }
@@ -134,8 +134,9 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(8px);
-  padding: rem.torem(32px) rem.torem(16px) rem.torem(8px) rem.torem(16px);
+  gap: var(--size-spacing-s);
+  padding: var(--size-spacing-xxl) var(--size-spacing-l) var(--size-spacing-s)
+    var(--size-spacing-l);
   width: 100%;
   height: 100%;
   background-color: var(--color-background-default);
@@ -153,14 +154,14 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   }
 
   &-title {
-    margin-top: rem.torem(8px);
+    margin-top: var(--size-spacing-s);
 
     @include fonts.body-accent-xs;
 
     color: var(--color-text-subtle);
 
     &.tablet-only {
-      margin-top: rem.torem(8px);
+      margin-top: var(--size-spacing-s);
     }
   }
 }
@@ -173,7 +174,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   outline: none;
   border: none;
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(8px);
+  padding: var(--size-spacing-s);
   max-width: rem.torem($button-width);
   height: $profil-button-size;
   text-align: left;
@@ -181,7 +182,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   flex-direction: row;
   place-content: center flex-start;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 
   &-name {
     text-overflow: ellipsis;
@@ -251,7 +252,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 
   &-sub {
     justify-content: space-between;
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
 
     &[data-state="checked"] {
       border-radius: var(--size-border-radius-s);

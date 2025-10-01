@@ -9,9 +9,13 @@ $icon-padding-left: rem.torem(16px);
 $space-icon-text: rem.torem(8px);
 $focus-border-width: rem.torem(2px);
 $base-border-width: rem.torem(1px);
-$input-height: calc(#{size.$input-min-height} - (2 * #{size.$input-border-width}));
+$input-height: calc(
+  #{size.$input-min-height} - (2 * #{size.$input-border-width})
+);
 $input-width: rem.torem(88px);
-$text-padding-left: calc(#{$icon-width} + #{$icon-padding-left} + #{$space-icon-text});
+$text-padding-left: calc(
+  #{$icon-width} + #{$icon-padding-left} + #{$space-icon-text}
+);
 
 .select-input-wrapper {
   position: relative;
@@ -45,7 +49,7 @@ $text-padding-left: calc(#{$icon-width} + #{$icon-padding-left} + #{$space-icon-
   @include fonts.body-accent;
 
   padding-left: $text-padding-left;
-  padding-right: rem.torem(8px);
+  padding-right: var(--size-spacing-s);
   width: $input-width;
   height: $input-height;
   min-height: $input-height;

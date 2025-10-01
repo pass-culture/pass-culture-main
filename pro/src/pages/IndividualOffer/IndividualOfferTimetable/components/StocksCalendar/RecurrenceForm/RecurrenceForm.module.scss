@@ -5,7 +5,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .section {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .legend {
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   gap: rem.torem(10px);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 
   &-icon {
     width: rem.torem(20px);
@@ -25,23 +25,23 @@
 
 .radio-group {
   display: flex;
-  gap: rem.torem(8px);
-  margin-bottom: rem.torem(16px);
+  gap: var(--size-spacing-s);
+  margin-bottom: var(--size-spacing-l);
   flex-wrap: wrap;
 }
 
 .action-buttons {
   display: flex;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .day-inputs {
   display: flex;
-  margin-bottom: rem.torem(16px);
-  gap: rem.torem(2px);
+  margin-bottom: var(--size-spacing-l);
+  gap: var(--size-spacing-xxs);
 
   @media (min-width: size.$tablet) {
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }
 
@@ -49,14 +49,14 @@
   @include formsM.field-layout-footer;
 
   justify-content: initial;
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .beginning-time-list {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: rem.torem(8px);
-  gap: rem.torem(16px);
+  margin-bottom: var(--size-spacing-s);
+  gap: var(--size-spacing-l);
   max-width: rem.torem(576px);
 }
 
@@ -87,7 +87,7 @@
   @include fonts.body-accent-xs;
 
   color: var(--color-text-subtle);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .form {
@@ -101,7 +101,7 @@
 }
 
 .recurrence-section {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .time-picker-container {

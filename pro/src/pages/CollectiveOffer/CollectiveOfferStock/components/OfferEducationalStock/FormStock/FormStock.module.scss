@@ -27,7 +27,7 @@
 .label-container {
   display: flex;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 }
 
 .help-button {
@@ -36,7 +36,7 @@
   cursor: pointer;
   padding: 0;
   min-height: 0;
-  margin-left: rem.torem(4px);
+  margin-left: var(--size-spacing-xs);
   margin-top: 0;
   width: 1.6rem;
   height: 1.6rem;

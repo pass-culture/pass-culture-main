@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .callout-area {
@@ -14,14 +14,14 @@
 }
 
 .callout-area-margin {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .button-actions {
   display: flex;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   flex-direction: column;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .button-action {
@@ -31,7 +31,7 @@
 @media (min-width: size.$tablet) {
   .row {
     flex-direction: row;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
     align-items: flex-start;
   }
 
@@ -53,6 +53,6 @@
 
   .button-actions {
     flex-direction: row;
-    margin-top: rem.torem(40px);
+    margin-top: var(--size-spacing-xxxl);
   }
 }

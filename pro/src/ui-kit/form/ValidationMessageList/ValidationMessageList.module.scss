@@ -1,6 +1,4 @@
 @use "styles/mixins/_forms.scss" as forms;
-@use "styles/mixins/rem.scss" as rem;
-@use "styles/mixins/_size.scss" as size;
 
 .password-footer {
   @include forms.field-layout-footer;
@@ -8,10 +6,10 @@
   min-height: initial;
   flex-flow: row wrap;
   justify-content: flex-start;
-  gap: rem.torem(8px) rem.torem(12px);
+  gap: var(--size-spacing-s) var(--size-spacing-m);
 
   &:not(:empty) {
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 }
 

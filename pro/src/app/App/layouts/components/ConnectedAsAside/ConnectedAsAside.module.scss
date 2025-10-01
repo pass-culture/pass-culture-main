@@ -6,7 +6,7 @@ $connect-as-header-height: rem.torem(52px);
   height: $connect-as-header-height;
   background-color: var(--color-background-subtle);
   display: flex;
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   min-width: 100%;
 
   &-icon {

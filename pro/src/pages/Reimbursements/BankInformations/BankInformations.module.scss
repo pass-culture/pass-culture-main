@@ -4,9 +4,9 @@
 .information {
   display: flex;
   flex-wrap: wrap;
-  gap: rem.torem(8px);
-  margin-top: rem.torem(16px);
-  margin-bottom: rem.torem(24px);
+  gap: var(--size-spacing-s);
+  margin-top: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .information-link-button {
@@ -16,14 +16,14 @@
 .add-bank-account-button,
 .spinner,
 .select-offerer-section {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .select-offerer-input {
   width: rem.torem(433px);
 
   &-label {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
     width: rem.torem(433px);
   }
 }
@@ -31,6 +31,6 @@
 .bank-accounts {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
-  margin-top: rem.torem(24px);
+  gap: var(--size-spacing-l);
+  margin-top: var(--size-spacing-xl);
 }

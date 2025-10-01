@@ -2,7 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .description-text {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 
   &-example {
     @include fonts.body-xs;
@@ -18,15 +18,15 @@
 }
 
 .price-details {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .offer-educational-stock-form-layout .offer-educational-stock-banner {
-  margin: rem.torem(24px) 0;
+  margin: var(--size-spacing-xl) 0;
 }
 
 .banner-space {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .input-date {

@@ -3,7 +3,7 @@
 
 .container {
   width: 100%;
-  padding: rem.torem(32px) 0;
+  padding: var(--size-spacing-xxl) 0;
 }
 
 .title {
@@ -17,19 +17,19 @@
 .header {
   display: flex;
   align-items: center;
-  gap: rem.torem(32px);
+  gap: var(--size-spacing-xxl);
   flex-wrap: wrap;
 }
 
 .no-stocks-content {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(40px);
+  gap: var(--size-spacing-xxxl);
   align-items: center;
-  padding: rem.torem(40px) rem.torem(24px);
+  padding: var(--size-spacing-xxxl) var(--size-spacing-xl);
   border: 2px dashed var(--color-border-brand-primary);
   border-radius: var(--size-border-radius-m);
-  margin-top: rem.torem(24px);
+  margin-top: var(--size-spacing-xl);
 }
 
 .icon {
@@ -41,17 +41,17 @@
 }
 
 .pagination {
-  margin: rem.torem(24px) 0;
+  margin: var(--size-spacing-xl) 0;
 }
 
 .filters {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .count {
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .cancel-banner {
-  margin-top: rem.torem(24px);
+  margin-top: var(--size-spacing-xl);
 }

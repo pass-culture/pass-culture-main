@@ -23,7 +23,7 @@
 
 .document-type-content {
   display: flex;
-  gap: rem.torem(4px);
+  gap: var(--size-spacing-xs);
 }
 
 .visually-hidden {

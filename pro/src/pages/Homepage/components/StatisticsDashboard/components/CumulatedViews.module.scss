@@ -5,7 +5,7 @@
 .cumulated-views {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .block-title {
@@ -35,7 +35,7 @@
 .chart {
   flex-grow: 1;
   min-height: rem.torem(300px);
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 
   /* Protect the chart from being too tall
   InvalidStateError: CanvasRenderingContext2D.setTransform: Canvas exceeds max size. */

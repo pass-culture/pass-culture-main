@@ -22,8 +22,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: rem.torem(4px);
-  padding: rem.torem(8px) rem.torem(16px);
+  gap: var(--size-spacing-xs);
+  padding: var(--size-spacing-s) var(--size-spacing-l);
   background-color: var(--color-background-default);
   border: 1px solid var(--color-border-default);
   cursor: pointer;

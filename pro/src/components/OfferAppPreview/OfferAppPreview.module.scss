@@ -8,7 +8,7 @@
   height: fit-content;
   width: 100%;
   max-width: rem.torem(256px);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .offer-img-container {
@@ -32,7 +32,7 @@
 
 .offer-data-container {
   border-radius: var(--size-border-radius-s);
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 
   .offer-title {
     @include fonts.title4;

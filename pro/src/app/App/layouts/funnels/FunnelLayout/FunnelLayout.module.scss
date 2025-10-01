@@ -53,8 +53,8 @@ $connect-as-header-height: rem.torem(52px);
           size.$action-bar-sticky-height
       )
   );
-  margin: rem.torem(32px) auto 0 auto;
-  padding: rem.torem(24px);
+  margin: var(--size-spacing-xxl) auto 0 auto;
+  padding: var(--size-spacing-xl);
   max-width: size.$signup-content-width;
 
   @media screen and (min-width: size.$tablet) {

@@ -1,5 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .banner {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }

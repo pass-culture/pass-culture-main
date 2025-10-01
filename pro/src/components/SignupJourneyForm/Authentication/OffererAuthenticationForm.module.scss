@@ -1,8 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
 
 .open-to-public-toggle {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .disabled-row {
@@ -10,7 +9,7 @@
   place-content: center space-between;
   flex-wrap: wrap;
   align-items: center;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
 
   & > div {
     flex-grow: 1;

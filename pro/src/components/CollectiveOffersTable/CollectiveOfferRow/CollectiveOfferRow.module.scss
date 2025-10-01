@@ -14,7 +14,7 @@
     ". location location"
     ". stock-or-institution stock-or-institution"
     ". status actions";
-  gap: rem.torem(8px) rem.torem(16px);
+  gap: var(--size-spacing-s) var(--size-spacing-l);
   border-bottom: rem.torem(1px) solid var(--color-border-subtle);
 
   &:last-child {
@@ -28,8 +28,8 @@
 
 .collective-cell {
   &-checkbox {
-    padding-left: rem.torem(16px);
-    padding-top: rem.torem(16px);
+    padding-left: var(--size-spacing-l);
+    padding-top: var(--size-spacing-l);
   }
 
   &-name,
@@ -60,7 +60,7 @@
 
   .collective-cell {
     &-checkbox {
-      padding-left: rem.torem(16px);
+      padding-left: var(--size-spacing-l);
     }
 
     &-name,

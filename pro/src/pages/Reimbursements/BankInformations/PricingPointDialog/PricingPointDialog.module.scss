@@ -16,14 +16,14 @@
 
   &-actions {
     display: flex;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }
 
 .callout {
-  margin: rem.torem(16px) 0 rem.torem(32px) 0;
+  margin: var(--size-spacing-l) 0 var(--size-spacing-xxl) 0;
 }
 
 .venues-select {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
