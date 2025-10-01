@@ -23,6 +23,8 @@ from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkMode
 from pcapi.core.artist import api as artist_api
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
+from pcapi.core.search import async_index_artist_ids
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.chunks import get_chunks
@@ -78,11 +80,15 @@ def compute_artists_most_relevant_image() -> None:
         db.session.query(artist_models.Artist).filter(artist_models.Artist.image.is_(None)).yield_per(BATCH_SIZE)
     )
     for artists_batch in get_chunks(artists_query, chunk_size=BATCH_SIZE):
+        updated_artist_ids = []
         for artist in artists_batch:
             most_relevant_image = artist_api.get_artist_image_url(artist)
-            artist.computed_image = most_relevant_image
+            if most_relevant_image and most_relevant_image != artist.computed_image:
+                artist.computed_image = most_relevant_image
+                updated_artist_ids.append(artist.id)
 
         db.session.commit()
+        async_index_artist_ids(updated_artist_ids, reason=IndexationReason.ARTIST_IMAGE_UPDATE)
 
 
 @blueprint.cli.command("import_all_artists_data")
