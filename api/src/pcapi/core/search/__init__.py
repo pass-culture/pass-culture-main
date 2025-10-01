@@ -751,7 +751,8 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+        _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
@@ -766,7 +767,8 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+        _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_all_artists() -> None:

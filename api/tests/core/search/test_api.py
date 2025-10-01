@@ -321,8 +321,9 @@ class ReindexArtistIdsTest:
 
         assert search_testing.search_store["artists"] == {}
 
-        artist_ids = [uneligible_artist.id, eligible_artist.id]
-        with assert_num_queries(1):
+        artist_ids = [eligible_artist.id, uneligible_artist.id]
+        expected_num_queries = 1  # artists
+        with assert_num_queries(expected_num_queries):
             search.reindex_artist_ids(artist_ids)
 
         assert search_testing.search_store["artists"].keys() == {eligible_artist.id}

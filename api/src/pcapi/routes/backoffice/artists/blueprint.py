@@ -458,13 +458,13 @@ def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResp
     )
 
     if link:
+        async_index_artist_ids([link.artist_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         offer_ids = [
             row[0]
             for row in db.session.query(offers_models.Offer)
             .filter(offers_models.Offer.productId == product_id)
             .with_entities(offers_models.Offer.id)
         ]
-        async_index_artist_ids([link.artist_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         async_index_offer_ids(offer_ids, reason=IndexationReason.ARTIST_LINKS_UPDATE)
         db.session.delete(link)
 
