@@ -115,7 +115,7 @@ class GetUserRecommendationsTest:
     )
     def test_get_user_recommendations(self, _get_playlist_mock, client):
         user_id = UserFactory(id=1).id
-        product = ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         ProductMediationFactory(product=product, uuid="12345678", imageType=ImageType.RECTO)
         OfferFactory(id=1, product=product)
         offer_2 = OfferFactory(id=2)

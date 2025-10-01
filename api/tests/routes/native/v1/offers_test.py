@@ -279,7 +279,8 @@ class OffersTest:
         assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1)
+        product = offers_factories.ProductFactory()
+        offers_factories.ProductMediationFactory(product=product)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -430,7 +431,7 @@ class OffersTest:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "1"
         product_mediation = offers_factories.ProductMediationFactory(
             product=product, uuid=uuid, imageType=ImageType.RECTO
@@ -451,7 +452,7 @@ class OffersTest:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "recto"
         product_mediation = offers_factories.ProductMediationFactory(
             product=product, uuid=uuid, imageType=ImageType.RECTO
@@ -473,7 +474,8 @@ class OffersTest:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(id=111, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offers_factories.ProductMediationFactory(product=product)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -485,12 +487,12 @@ class OffersTest:
 
         assert response.status_code == 200
         assert response.json["image"] == {
-            "url": "http://localhost/storage/thumbs/products/N4",
+            "url": f"http://localhost/storage/thumbs/{product.productMediations[0].uuid}",
             "credit": None,
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
@@ -747,7 +749,7 @@ class OffersV2Test:
         assert response.json["bookingAllowedDatetime"] == None
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -904,7 +906,7 @@ class OffersV2Test:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         uuid = "11111111"
         offers_factories.ProductMediationFactory(product=product, uuid=uuid, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
@@ -925,7 +927,7 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         first_uuid = "11111111"
         second_uuid = "22222222"
         offers_factories.ProductMediationFactory(product=product, uuid=first_uuid, imageType=ImageType.RECTO)
@@ -952,7 +954,8 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(id=111, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offers_factories.ProductMediationFactory(product=product)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
@@ -965,13 +968,13 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["images"] == {
             "recto": {
-                "url": "http://localhost/storage/thumbs/products/N4",
+                "url": f"http://localhost/storage/thumbs/{product.productMediations[0].uuid}",
                 "credit": None,
             }
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(product=product, imageType=ImageType.RECTO)
         offer = offers_factories.OfferFactory(
             product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
@@ -1049,7 +1052,7 @@ class OffersV2Test:
         self, features, client, provider_class, ff_name, ff_value, booking_disabled
     ):
         provider = get_provider_by_local_class(provider_class)
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.SEANCE_CINE.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offer = offers_factories.OfferFactory(
             product=product,
             venue__isPermanent=True,
@@ -1124,7 +1127,6 @@ class OffersV2Test:
     def test_offer_extra_data_book_format_from_product(self, client):
         extra_data = {"bookFormat": BookFormat.POCHE}
         product = offers_factories.ProductFactory(
-            thumbCount=1,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData=extra_data,
         )

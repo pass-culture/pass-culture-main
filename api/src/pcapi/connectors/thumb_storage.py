@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core import object_storage
+from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.utils.image_conversion import CropParams
@@ -9,7 +10,7 @@ from pcapi.utils.image_conversion import standardize_image
 
 
 def create_thumb(
-    model_with_thumb: HasThumbMixin,
+    model_with_thumb: HasThumbMixin | offers_models.Product,
     image_as_bytes: bytes,
     *,
     storage_id_suffix_str: str = "",
@@ -23,8 +24,12 @@ def create_thumb(
         image_as_bytes = process_original_image(image_as_bytes)
     else:
         image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
+
     if object_id is None:
+        if isinstance(model_with_thumb, offers_models.Product):
+            raise ValueError("object_id must be provided when model_with_thumb is a Product")
         model_with_thumb.thumbCount += 1
+
     object_storage.store_public_object(
         folder=settings.THUMBS_FOLDER_NAME,
         object_id=model_with_thumb.get_thumb_storage_id(storage_id_suffix_str) if object_id is None else object_id,

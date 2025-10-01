@@ -156,10 +156,7 @@ def get_capped_offers_for_filters(
         )
         .options(
             sa_orm.joinedload(models.Offer.product)
-            .load_only(
-                models.Product.id,
-                models.Product.thumbCount,
-            )
+            .load_only(models.Product.id)
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
@@ -251,10 +248,7 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
         )
         .options(
             sa_orm.joinedload(models.Offer.product)
-            .load_only(
-                models.Product.id,
-                models.Product.thumbCount,
-            )
+            .load_only(models.Product.id)
             .joinedload(models.Product.productMediations)
         )
         .filter(models.Offer.id.in_(offer_data_by_id.keys()))
@@ -355,7 +349,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
                 models.Product.description,
                 models.Product.extraData,
                 models.Product.last_30_days_booking,
-                models.Product.thumbCount,
                 models.Product.durationMinutes,
                 models.Product.chroniclesCount,
                 models.Product.likesCount,

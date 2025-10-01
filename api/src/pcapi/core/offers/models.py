@@ -171,7 +171,7 @@ class ProductIdentifierType(enum.Enum):
     VISA = "VISA"
 
 
-class Product(PcObject, Model, HasThumbMixin):
+class Product(PcObject, Model):
     __tablename__ = "product"
 
     dateModifiedAtLastProvider = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
@@ -193,7 +193,6 @@ class Product(PcObject, Model, HasThumbMixin):
     lastProvider: sa_orm.Mapped["Provider|None"] = sa_orm.relationship("Provider", foreign_keys=[lastProviderId])
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
-    thumb_path_component = "products"
     reactions: sa_orm.Mapped[list["Reaction"]] = sa_orm.relationship("Reaction", back_populates="product", uselist=True)
     chronicles: sa_orm.Mapped[list["Chronicle"]] = sa_orm.relationship(
         "Chronicle", back_populates="products", secondary="product_chronicle"
@@ -268,7 +267,7 @@ class Product(PcObject, Model, HasThumbMixin):
     def images(self) -> dict[str, str | None]:
         if self.productMediations:
             return {pm.imageType.value: pm.url for pm in self.productMediations if pm.imageType in ImageType}
-        return {ImageType.RECTO.value: self.thumbUrl}
+        return {ImageType.RECTO.value: None}
 
     @property
     def identifierType(self) -> ProductIdentifierType:

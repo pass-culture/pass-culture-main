@@ -96,16 +96,6 @@ class GetThumbStorageIdTest:
 
         assert mediation.get_thumb_storage_id() == "mediations/PM"
 
-    def test_product(self):
-        product = offers_factories.ProductFactory(id=123, thumbCount=1)
-
-        assert product.get_thumb_storage_id() == "products/PM"
-
-    def test_product_with_4_thumbs(self):
-        product_with_4_thumbs = offers_factories.ProductFactory(id=123, thumbCount=4)
-
-        assert product_with_4_thumbs.get_thumb_storage_id() == "products/PM_3"
-
     def test_venue_custom_suffix_str(self):
         venue = offerers_factories.VenueFactory(id=123, thumbCount=1)
 
@@ -115,9 +105,3 @@ class GetThumbStorageIdTest:
         venue = offerers_factories.VenueFactory(id=123, thumbCount=5)
 
         assert venue.get_thumb_storage_id(suffix_str="", ignore_thumb_count=True) == "venues/PM"
-
-    def test_no_thumb(self):
-        product_with_no_thumb = offers_factories.ProductFactory(id=123)
-
-        with pytest.raises(ValueError):
-            product_with_no_thumb.get_thumb_storage_id()
