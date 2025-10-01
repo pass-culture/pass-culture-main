@@ -491,7 +491,7 @@ def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: offe
         db.session.query(models.Offer.id, models.Offer.idAtProvider)
         .filter(
             models.Offer.idAtProvider.in_(id_at_provider_list),
-            models.Offer.venue == venue,
+            models.Offer.venueId == venue.id,
         )
         .all()
     ):
