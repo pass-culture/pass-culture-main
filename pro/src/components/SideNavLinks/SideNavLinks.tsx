@@ -9,7 +9,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
@@ -25,7 +24,10 @@ import {
   selectIsIndividualSectionOpen,
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -75,16 +77,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOfferer = useSelector(selectCurrentOfferer)
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
   const isCaledonian = useIsCaledonian()
-
-  const { data: selectedOfferer, error: offererApiError } = useOfferer(
-    selectedOffererId,
-    true
-  )
-  const isUserOffererValidated = !offererApiError
 
   const permanentVenues =
     selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
@@ -142,7 +139,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      {selectedOfferer && isUserOffererValidated && (
+      {selectedOfferer && (
         <div className={styles['nav-links-group']}>
           <div className={styles['nav-links-create-offer-wrapper']}>
             {isNewOfferCreationFlowFFEnabled && (
