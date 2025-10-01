@@ -48,6 +48,7 @@ class FeatureToggle(enum.Enum):
     EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
     ENABLE_ALL_CRON = "Si faux, aucune cron ne sera lancé"
     ENABLE_RECURRENT_CRON = "Si faux, aucune cron de synchronization, indexation et pricing ne sera lancé"
+    ENABLE_ARTIST_INDEXATION = "Activer l'indexation des artistes depuis les offres et des offres depuis les artistes"
     ENABLE_AUTO_CLOSE_CLOSED_OFFERERS = "Fermer automatiquement les entités juridiques cessées à l'INSEE"
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"

@@ -366,6 +366,7 @@ class ReindexArtistIdsTest:
 
         artist_ids = [eligible_artist.id, uneligible_artist.id]
         expected_num_queries = 1  # artists
+        expected_num_queries += 1  # feature
         with assert_num_queries(expected_num_queries):
             search.reindex_artist_ids(artist_ids)
 

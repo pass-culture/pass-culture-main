@@ -695,7 +695,7 @@ def reindex_artist_ids(
         unindex_artist_ids(to_delete_ids)
         logger.info("Finished unindexing artists", extra={"count": len(to_delete_ids)})
 
-    if reindex_attached_offers:
+    if reindex_attached_offers and FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
         async_index_offers_of_artist_ids(to_add_ids + to_delete_ids, reason=IndexationReason.ARTIST_REINDEXATION)
 
 
@@ -762,7 +762,8 @@ def reindex_offer_ids(
 
     # some offers changes might make some venue and artists ineligible for search
     _reindex_venues_from_offers(offer_ids)
-    if reindex_attached_artists:
+    # some offers changes might make some artists ineligible for search
+    if reindex_attached_artists and FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
         _reindex_artists_from_offers(offer_ids)
 
 
@@ -778,7 +779,8 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+        _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_all_artists() -> None:

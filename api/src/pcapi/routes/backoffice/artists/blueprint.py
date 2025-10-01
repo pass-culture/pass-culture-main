@@ -20,6 +20,7 @@ from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search import async_index_offer_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -458,14 +459,15 @@ def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResp
     )
 
     if link:
-        offer_ids = [
-            row[0]
-            for row in db.session.query(offers_models.Offer)
-            .filter(offers_models.Offer.productId == product_id)
-            .with_entities(offers_models.Offer.id)
-        ]
         async_index_artist_ids([link.artist_id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
-        async_index_offer_ids(offer_ids, reason=IndexationReason.ARTIST_LINKS_UPDATE)
+        if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+            offer_ids = [
+                row[0]
+                for row in db.session.query(offers_models.Offer)
+                .filter(offers_models.Offer.productId == product_id)
+                .with_entities(offers_models.Offer.id)
+            ]
+            async_index_offer_ids(offer_ids, reason=IndexationReason.ARTIST_LINKS_UPDATE)
         db.session.delete(link)
 
         flash("Le lien avec le produit a été supprimé.", "success")
