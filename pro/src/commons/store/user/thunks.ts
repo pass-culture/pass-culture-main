@@ -8,7 +8,7 @@ import {
   updateCurrentOfferer,
   updateOffererNames,
 } from '@/commons/store/offerer/reducer'
-import { updateUser } from '@/commons/store/user/reducer'
+import { setIsUnAttached, updateUser } from '@/commons/store/user/reducer'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export const initializeUserThunk = createAsyncThunk(
@@ -22,11 +22,14 @@ export const initializeUserThunk = createAsyncThunk(
         try {
           const response = await api.getOfferer(offererId)
           dispatch(updateCurrentOfferer(response))
+          dispatch(setIsUnAttached(false))
         } catch (e: unknown) {
           if (isErrorAPIError(e) && e.status === 403) {
             // Do nothing at this point,
             // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
             // But we must let him sign in
+            dispatch(setIsUnAttached(true))
+
             return
           }
           // Else it's another error we should handle here at sign in
