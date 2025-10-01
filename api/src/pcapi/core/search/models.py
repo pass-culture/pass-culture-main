@@ -7,6 +7,7 @@ class IndexationReason(enum.Enum):
     ARTIST_DELETION = "artist-deletion"
     ARTIST_EDITION = "artist-edition"
     ARTIST_LINKS_UPDATE = "artist-links-update"
+    ARTIST_REINDEXATION = "artist-reindexation"
     ARTIST_UNBLACKLISTING = "artist-unblacklisting"
     BOOKING_CANCELLATION = "booking-cancellation"
     BOOKING_COUNT_CHANGE = "booking-count-change"

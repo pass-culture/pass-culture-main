@@ -76,6 +76,20 @@ def fail(*args, **kwargs):
     raise ValueError("It does not work")
 
 
+def test_async_index_artist_ids_without_attached_offers(app):
+    search.async_index_artist_ids({"ab", "cd"}, reason=IndexationReason.ARTIST_CREATION, reindex_attached_offers=False)
+
+    assert app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {"ab", "cd"}
+    assert app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_FOR_OFFERS_NAME) == set()
+
+
+def test_async_index_artist_ids_and_attached_offers(app):
+    search.async_index_artist_ids({"ab", "cd"}, reason=IndexationReason.ARTIST_CREATION, reindex_attached_offers=True)
+
+    assert app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {"ab", "cd"}
+    assert app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_FOR_OFFERS_NAME) == {"ab", "cd"}
+
+
 def test_async_index_offer_ids(app, clear_redis):
     search.async_index_offer_ids({1, 2}, reason=IndexationReason.OFFER_UPDATE)
     queue = redis_queues.REDIS_OFFER_IDS_NAME
@@ -310,9 +324,38 @@ class ReindexOfferIdsTest:
         search.reindex_offer_ids([offer_id])
         assert offer_id in search_testing.search_store["offers"]
 
+    @pytest.mark.features(ENABLE_ARTIST_INDEXATION=True)
+    def test_reindex_attached_artist_when_ff_enabled(self, app):
+        product = offers_factories.ProductFactory()
+        offer_id = offers_factories.OfferFactory(product=product).id
+
+        artist_1 = artists_factories.ArtistFactory()
+        artists_factories.ArtistProductLinkFactory(artist_id=artist_1.id, product_id=product.id)
+        search.reindex_offer_ids([offer_id], reindex_attached_artists=True)
+
+        assert artist_1.id in app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX)
+
+        artist_2 = artists_factories.ArtistFactory()
+        artists_factories.ArtistProductLinkFactory(artist_id=artist_2.id, product_id=product.id)
+        search.reindex_offer_ids([offer_id], reindex_attached_artists=False)
+
+        assert artist_2.id not in app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX)
+
+    @pytest.mark.features(ENABLE_ARTIST_INDEXATION=False)
+    def test_reindex_attached_artist_when_ff_disabled(self, app):
+        product = offers_factories.ProductFactory()
+        offer_id = offers_factories.OfferFactory(product=product).id
+
+        artist = artists_factories.ArtistFactory()
+        artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
+        search.reindex_offer_ids([offer_id], reindex_attached_artists=True)
+
+        assert artist.id not in app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX)
+
 
 class ReindexArtistIdsTest:
-    def test_index_new_artists(self):
+    @mock.patch("pcapi.core.search.async_index_offers_of_artist_ids")
+    def test_index_new_artists(self, mock_async_index_offers_of_artist_ids):
         uneligible_artist = artists_factories.ArtistFactory()
         eligible_artist = artists_factories.ArtistFactory()
         product = offers_factories.ProductFactory()
@@ -321,11 +364,15 @@ class ReindexArtistIdsTest:
 
         assert search_testing.search_store["artists"] == {}
 
-        artist_ids = [uneligible_artist.id, eligible_artist.id]
-        with assert_num_queries(1):
+        artist_ids = [eligible_artist.id, uneligible_artist.id]
+        expected_num_queries = 1  # artists
+        with assert_num_queries(expected_num_queries):
             search.reindex_artist_ids(artist_ids)
 
         assert search_testing.search_store["artists"].keys() == {eligible_artist.id}
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
+            artist_ids, reason=IndexationReason.ARTIST_REINDEXATION
+        )
 
     def test_unindex_blacklisted_artists(self):
         artist = artists_factories.ArtistFactory(is_blacklisted=True)
