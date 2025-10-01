@@ -7,6 +7,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
@@ -50,6 +51,7 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
     price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
     publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
+    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
     @pydantic_v1.root_validator(pre=True)
     def check_publication_date_and_publication_datetime_are_not_both_set(cls, values: dict) -> dict:
@@ -86,12 +88,35 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
 
         return price_categories
 
+    @pydantic_v1.validator("video_url")
+    def check_video_is_from_youtube(
+        cls,
+        video_url: pydantic_v1.HttpUrl | None,
+    ) -> pydantic_v1.HttpUrl | None:
+        if video_url and not offers_api.extract_youtube_video_id(video_url):
+            raise ValueError(
+                "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
+            )
+        return video_url
+
 
 class EventOfferEdition(v1_serialization.OfferEditionBase):
     category_related_fields: v1_serialization.event_category_edition_fields | None = (
         fields.EVENT_CATEGORIES_RELATED_FIELDS
     )
     event_duration: int | None = fields.EVENT_DURATION
+    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
+
+    @pydantic_v1.validator("video_url")
+    def check_video_is_from_youtube(
+        cls,
+        video_url: pydantic_v1.HttpUrl | None,
+    ) -> pydantic_v1.HttpUrl | None:
+        if video_url and not offers_api.extract_youtube_video_id(video_url):
+            raise ValueError(
+                "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
+            )
+        return video_url
 
 
 class EventStockEdition(v1_serialization.BaseStockEdition):
@@ -142,6 +167,7 @@ class EventOfferResponse(v1_serialization.OfferResponse, PriceCategoriesResponse
     event_duration: int | None = fields.EVENT_DURATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
     publication_datetime: datetime.datetime | None = fields.OFFER_PUBLICATION_DATETIME
+    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":
@@ -153,6 +179,7 @@ class EventOfferResponse(v1_serialization.OfferResponse, PriceCategoriesResponse
             price_categories=[
                 PriceCategoryResponse.from_orm(price_category) for price_category in offer.priceCategories
             ],
+            video_url=typing.cast(pydantic_v1.HttpUrl, offer.metaData.videoUrl) if offer.metaData else None,
             **base_offer_response.dict(),
         )
 

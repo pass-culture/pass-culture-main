@@ -507,7 +507,12 @@ class Returns200Test:
         offer_with_video = offers_factories.OfferFactory(venue=venue)
 
         offers_factories.OfferMetaDataFactory(
-            offer=offer_with_video, videoUrl="https://www.youtube.com/watch?v=fXBIHHOXwAM"
+            offer=offer_with_video,
+            videoDuration=208,
+            videoExternalId="fXBIHHOXwAM",
+            videoThumbnailUrl="/mocked/thumbnail/fXBIHHOXwAM.jpg",
+            videoTitle="Planète Boum Boum",
+            videoUrl="https://www.youtube.com/watch?v=fXBIHHOXwAM",
         )
 
         data = {
@@ -517,8 +522,11 @@ class Returns200Test:
 
         assert response.status_code == 200, response.json
         updated_offer = db.session.get(Offer, offer_with_video.id)
-        assert not updated_offer.metaData.videoUrl
+        assert not updated_offer.metaData.videoDuration
+        assert not updated_offer.metaData.videoExternalId
+        assert not updated_offer.metaData.videoThumbnailUrl
         assert not updated_offer.metaData.videoTitle
+        assert not updated_offer.metaData.videoUrl
 
 
 @pytest.mark.usefixtures("db_session")
