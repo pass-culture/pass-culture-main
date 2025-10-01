@@ -68,7 +68,9 @@ class Artist(Model):
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", back_populates="artists", secondary=ArtistProductLink.__table__
     )
-    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship("ArtistAlias", back_populates="artist")
+    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
+        "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
+    )
 
     __table_args__ = (
         sa.Index(
