@@ -9,6 +9,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.utils.db as db_utils
+from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
@@ -17,7 +18,6 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.utils import human_ids
 from pcapi.utils import repository
 
 
@@ -25,15 +25,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class ProductModelTest:
-    def test_thumb_url(self):
-        product = factories.ProductFactory(thumbCount=1)
-        human_id = human_ids.humanize(product.id)
-        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{human_id}"
-
-    def test_no_thumb_url(self):
-        product = models.Product(thumbCount=0)
-        assert product.thumbUrl is None
-
     @pytest.mark.parametrize(
         "gcu_compatible, can_be_synchronized, product_count",
         [
@@ -155,10 +146,11 @@ class OfferThumbUrlTest:
         assert offer.thumbUrl == mediation.thumbUrl
 
     def test_use_product(self):
-        product = factories.ProductFactory(thumbCount=1)
+        product = factories.ProductFactory()
+        factories.ProductMediationFactory(product=product)
         offer = factories.OfferFactory(product=product)
         assert offer.thumbUrl.startswith("http")
-        assert offer.thumbUrl == product.thumbUrl
+        assert offer.thumbUrl == f"{settings.OBJECT_STORAGE_URL}/thumbs/{product.productMediations[0].uuid}"
 
     def test_defaults_to_none(self):
         offer = models.Offer()

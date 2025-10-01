@@ -26,7 +26,6 @@ from pcapi.core.search import get_base_query_for_offer_indexation
 from pcapi.core.search import serialization
 from pcapi.core.search.backends import algolia
 from pcapi.models import db
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -345,10 +344,11 @@ def test_serialize_default_position():
 
 
 def test_serialize_offer_thumb_url():
-    product = offers_factories.ProductFactory(thumbCount=1)
+    product = offers_factories.ProductFactory()
+    offers_factories.ProductMediationFactory(product=product)
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
-    assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
+    assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/{offer.product.productMediations[0].uuid}"
 
 
 def test_serialize_offer_gtl():

@@ -325,7 +325,6 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.thumbCount == int(article.get("image", 0))
         assert product.extraData == {
             "rayon": "Littérature française Récits, Aventures, Voyages",
             "author": "Jean-Christophe Rufin",
@@ -379,7 +378,6 @@ class PostImportProductFromTiteliveTest(PostEndpointHelper):
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.thumbCount == int(article.get("image", 0))
         assert product.extraData == {
             "rayon": "Littérature française Récits, Aventures, Voyages",
             "author": "Jean-Christophe Rufin",
