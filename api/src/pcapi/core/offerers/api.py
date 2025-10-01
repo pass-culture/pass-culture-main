@@ -94,6 +94,7 @@ from . import models
 from . import repository as offerers_repository
 from . import schemas as offerers_schemas
 from . import validation
+from .tasks import CLOSED_OFFERER_TAG_NAME
 
 
 logger = logging.getLogger(__name__)
@@ -1553,6 +1554,47 @@ def _cancel_collective_bookings_on_offerer_closure(offerer_id: int, author_id: i
             )
 
     db.session.flush()
+
+
+def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: date | None) -> None:
+    action_kwargs: dict[str, typing.Any] = {
+        "comment": "L'entité juridique est détectée comme fermée "
+        + (closure_date.strftime("le %d/%m/%Y ") if closure_date else "")
+        + "au répertoire Sirene (INSEE)"
+    }
+    with transaction():
+        logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
+        # Offerer may have been tagged in the past, but not closed
+        if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
+            # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
+            tag = (
+                db.session.query(offerers_models.OffererTag)
+                .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
+                .one()
+            )
+            action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
+            db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+        if offerer.isWaitingForValidation:
+            reject_offerer(
+                offerer=offerer,
+                author_user=None,
+                rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
+                **action_kwargs,
+            )
+        elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
+            close_offerer(
+                offerer,
+                closure_date=closure_date,
+                author_user=None,
+                **action_kwargs,
+            )
+        elif "modified_info" in action_kwargs:
+            history_api.add_action(
+                history_models.ActionType.INFO_MODIFIED,
+                author=None,
+                offerer=offerer,
+                **action_kwargs,
+            )
 
 
 def set_offerer_pending(

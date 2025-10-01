@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 from unittest.mock import patch
 
@@ -7,14 +6,17 @@ import pytest
 import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import tasks as offerers_tasks
-from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
 from tests.test_utils import run_command
 
 
 pytestmark = pytest.mark.usefixtures("clean_database")
+
+
+@pytest.fixture(name="siren_caduc_tag")
+def siren_caduc_tag_fixture():
+    return offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
 
 
 class CheckActiveOfferersTest:
@@ -41,70 +43,51 @@ class CheckActiveOfferersTest:
 
 
 class CheckClosedOfferersTest:
-    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
     @patch(
         "pcapi.connectors.api_sirene.get_siren_closed_at_date",
-        return_value=["222222226", "333333334", "444444442", "666666664"],
+        return_value=[
+            {"siren": "109599001", "closure_date": datetime.date(2025, 1, 16)},
+            {"siren": "109599002", "closure_date": datetime.date(2025, 1, 11)},
+            {"siren": "109599003", "closure_date": datetime.date(2023, 1, 16)},
+            {"siren": "909599004", "closure_date": datetime.date(2025, 1, 12)},  # non-diffusible
+        ],
     )
-    def test_check_closed_offerers(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
-        offerers_factories.OffererFactory(siren="111111118")
-        offerers_factories.OffererFactory(siren="222222226")
-        offerers_factories.OffererFactory(siren="333333334", isActive=False)
-        offerers_factories.RejectedOffererFactory(siren="555555556")
-        offerers_factories.NewOffererFactory(siren="666666664")
-        db.session.flush()
-        db.session.commit()
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_multiple_inactive_offerers(
+        self,
+        mock_siren_closed_at_date,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer1 = offerers_factories.OffererFactory(siren="109599001")
+        offerer2 = offerers_factories.OffererFactory(siren="109599002")
+        offerer3 = offerers_factories.OffererFactory(siren="109599003")
+        offerer4 = offerers_factories.OffererFactory(siren="909599004")  # non-diffusible
 
         run_command(app, "check_closed_offerers")
 
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        assert offerer1.tags == offerer2.tags == offerer3.tags == offerer4.tags == [siren_caduc_tag]
 
-        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
-        mock_check_offerer_siren_task.delay.assert_called()
-        assert mock_check_offerer_siren_task.delay.call_count == 2
-        assert sorted(
-            [item.args[0] for item in mock_check_offerer_siren_task.delay.call_args_list], key=lambda r: r.siren
-        ) == [
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="222222226", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="666666664", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-        ]
+        mock_close_offerer.call_count == 4
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
         "pcapi.connectors.api_sirene.get_siren_closed_at_date",
-        return_value=["222222226", "333333334"],
+        return_value=[
+            {"siren": "222222226", "closure_date": datetime.date(2025, 1, 16)},
+            {"siren": "333333334", "closure_date": datetime.date(2025, 1, 16)},
+        ],
     )
     def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
+        offerer = offerers_factories.OffererFactory(siren="111111112")
         run_command(app, "check_closed_offerers")
         mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
-        mock_check_offerer_siren_task.assert_not_called()
-
-    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
-    @patch("flask.current_app.redis_client.get", return_value=json.dumps(["111222337"]))
-    @patch("pcapi.connectors.api_sirene.get_siren_closed_at_date", return_value=[])
-    def test_check_scheduled_offerers(
-        self, mock_get_siren_closed_at_date, mock_redis_client_get, mock_check_offerer_siren_task, app
-    ):
-        offerers_factories.OffererFactory(siren="111222337")
-
-        run_command(app, "check_closed_offerers")
-
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
-        mock_redis_client_get.assert_called_once_with(
-            f"check_closed_offerers:scheduled:{datetime.date.today().isoformat()}"
-        )
-
-        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
-        mock_check_offerer_siren_task.delay.assert_called_once()
-        assert mock_check_offerer_siren_task.delay.call_args.args == (
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="111222337", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-        )
+        assert offerer.tags == []
 
 
 class DeleteUserOfferersOnClosedOfferersTest:
