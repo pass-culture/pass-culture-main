@@ -23,6 +23,7 @@ from pcapi.core.artist.models import ArtistAlias
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 
 from . import fixtures
@@ -283,14 +284,42 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(Artist).count() == initial_artist_count
 
 
-def test_compute_artists_most_relevant_image():
-    artist_with_image = ArtistFactory(image="http://example.com/image.jpg", computed_image=None)
-    artist_without_image = ArtistFactory(image=None, computed_image=None)
-    product_mediation = offers_factories.ProductMediationFactory()
-    ArtistProductLinkFactory(artist_id=artist_without_image.id, product_id=product_mediation.product.id)
+class ComputeArtistsMostRelevantImageTest:
+    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    def test_compute_artists_most_relevant_image_if_no_image_set(self, mock_async_index_artist):
+        artist = ArtistFactory(image=None, computed_image=None)
+        product_mediation = offers_factories.ProductMediationFactory()
+        ArtistProductLinkFactory(artist_id=artist.id, product_id=product_mediation.product.id)
 
-    commands.compute_artists_most_relevant_image()
+        commands.compute_artists_most_relevant_image()
 
-    assert artist_with_image.image == "http://example.com/image.jpg"
-    assert artist_with_image.computed_image is None
-    assert artist_without_image.computed_image == product_mediation.url
+        assert artist.computed_image == product_mediation.url
+        mock_async_index_artist.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_IMAGE_UPDATE)
+
+    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    def test_update_artists_computed_image_only_if_changed(self, mock_async_index_artist):
+        product_mediation = offers_factories.ProductMediationFactory()
+        artist_with_update = ArtistFactory(image=None, computed_image="http://another.url.com")
+        artist_without_update = ArtistFactory(image=None, computed_image=product_mediation.url)
+        ArtistProductLinkFactory(artist_id=artist_with_update.id, product_id=product_mediation.product.id)
+        ArtistProductLinkFactory(artist_id=artist_without_update.id, product_id=product_mediation.product.id)
+
+        commands.compute_artists_most_relevant_image()
+
+        assert artist_with_update.computed_image == product_mediation.url
+        assert artist_without_update.computed_image == product_mediation.url
+        mock_async_index_artist.assert_called_once_with(
+            [artist_with_update.id], reason=IndexationReason.ARTIST_IMAGE_UPDATE
+        )
+
+    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    def test_does_nothing_if_image_set(self, mock_async_index_artist):
+        artist = ArtistFactory(image="http://example.com")
+        product_mediation = offers_factories.ProductMediationFactory()
+        ArtistProductLinkFactory(artist_id=artist.id, product_id=product_mediation.product.id)
+
+        commands.compute_artists_most_relevant_image()
+
+        assert artist.computed_image is None
+        assert artist.image == "http://example.com"
+        mock_async_index_artist.assert_not_called()
