@@ -62,10 +62,8 @@ export const HeaderDropdown = () => {
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/inscription/structure'
   )
-  const IN_UNATACHED_CREATION_FUNNEL = pathname.startsWith('/non-attached')
   const hideProfile =
-    (IN_STRUCTURE_CREATION_FUNNEL || IN_UNATACHED_CREATION_FUNNEL) &&
-    offererOptions.length === 0
+    IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
   const selectedOffererId =
     currentOffererId ??
