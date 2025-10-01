@@ -1374,10 +1374,6 @@ def close_offerer(
     if offerer.isClosed:
         raise exceptions.OffererAlreadyClosedException()
 
-    if closure_date is not None and closure_date > date.today():
-        # Future closure currently not supported because transactional email tells "cessé depuis le XXX à l'INSEE"
-        raise exceptions.FutureClosureDate()
-
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.CLOSED
     db.session.add(offerer)

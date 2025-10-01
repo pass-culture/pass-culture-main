@@ -2,7 +2,7 @@ RESPONSE_CLOSED_SIREN_PAGE1 = {
     "header": {
         "statut": 200,
         "message": "OK",
-        "total": 5,
+        "total": 6,
         "debut": 0,
         "nombre": 3,
         "curseur": "*",
@@ -40,9 +40,9 @@ RESPONSE_CLOSED_SIREN_PAGE2 = {
     "header": {
         "statut": 200,
         "message": "OK",
-        "total": 5,
+        "total": 6,
         "debut": 3,
-        "nombre": 2,
+        "nombre": 3,
         "curseur": "AoEpODg5Mjg4Mzc5",
         "curseurSuivant": "AoEpODg5Mjg4Mzc5",
     },
@@ -62,6 +62,15 @@ RESPONSE_CLOSED_SIREN_PAGE2 = {
             "dateDernierTraitementUniteLegale": "2025-01-26T12:34:56.789",
             "periodesUniteLegale": [
                 {"dateFin": None, "dateDebut": "2025-01-17", "etatAdministratifUniteLegale": "C"},
+                {"dateFin": "2025-01-16", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "C"},
+                {"dateFin": "2024-12-30", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "A"},
+            ],
+        },
+        {
+            "siren": "666666667",
+            "dateDernierTraitementUniteLegale": "2025-01-26T12:34:56.789",
+            "periodesUniteLegale": [
+                {"dateFin": None, "dateDebut": "2025-01-21", "etatAdministratifUniteLegale": "C"},
                 {"dateFin": "2025-01-16", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "C"},
                 {"dateFin": "2024-12-30", "dateDebut": "2024-01-01", "etatAdministratifUniteLegale": "A"},
             ],
