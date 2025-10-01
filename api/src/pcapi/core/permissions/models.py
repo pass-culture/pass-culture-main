@@ -39,6 +39,8 @@ class Permissions(enum.Enum):
     ANONYMIZE_PUBLIC_ACCOUNT = "anonymiser un compte grand public"
     READ_CHRONICLE = "visualiser les chroniques"
     MANAGE_CHRONICLE = "gérer les chroniques"
+    READ_HIGHLIGHT = "visualiser temps forts"
+    MANAGE_HIGHLIGHT = "gérer les temps forts"
     READ_USER_PROFILE_REFRESH_CAMPAIGN = (
         "visualiser les campagnes de mise à jour des profils bénéficiaires/grand public"
     )
