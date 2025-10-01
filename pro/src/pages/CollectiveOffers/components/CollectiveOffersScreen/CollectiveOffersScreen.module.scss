@@ -1,7 +1,5 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .offers-pagination {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .offer-multiselect-status {

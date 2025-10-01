@@ -21,17 +21,17 @@
     display: flex;
     justify-content: center;
     flex-direction: column-reverse;
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     .left {
       display: flex;
       align-items: center;
       margin: 1rem;
-      gap: rem.torem(16px);
+      gap: var(--size-spacing-l);
       width: 100%;
       flex-direction: column-reverse;
 
-      >* {
+      > * {
         width: 100%;
       }
     }
@@ -41,10 +41,10 @@
       align-items: center;
       flex-flow: column wrap;
       justify-content: center;
-      gap: rem.torem(16px);
+      gap: var(--size-spacing-l);
       width: 100%;
 
-      >* {
+      > * {
         width: 100%;
       }
     }
@@ -95,7 +95,7 @@
         width: unset;
         flex-direction: row;
 
-        >* {
+        > * {
           width: unset;
         }
       }
@@ -105,7 +105,7 @@
         width: unset;
         flex-direction: row;
 
-        >* {
+        > * {
           width: unset;
         }
       }
@@ -116,7 +116,7 @@
 .draft-saved-icon {
   color: var(--color-icon-success);
   vertical-align: middle;
-  margin-right: rem.torem(4px);
+  margin-right: var(--size-spacing-xs);
 }
 
 $not-saved-size: rem.torem(16px);
@@ -124,7 +124,7 @@ $not-saved-size: rem.torem(16px);
 .draft-not-saved-icon {
   display: inline-block;
   vertical-align: middle;
-  margin-right: rem.torem(4px);
+  margin-right: var(--size-spacing-xs);
   width: $not-saved-size;
   height: $not-saved-size;
   border-radius: var(--size-border-radius-pill);
@@ -133,6 +133,6 @@ $not-saved-size: rem.torem(16px);
 
 @media (min-width: size.$tablet) {
   .draft-indicator {
-    margin-right: rem.torem(32px);
+    margin-right: var(--size-spacing-xxl);
   }
 }

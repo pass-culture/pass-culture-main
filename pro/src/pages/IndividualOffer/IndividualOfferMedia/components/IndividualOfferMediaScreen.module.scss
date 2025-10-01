@@ -1,11 +1,10 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
 .media-row {
   gap: 0 !important;
 
   @media screen and (min-width: size.$laptop) {
-    gap: rem.torem(40px) !important;
+    gap: var(--size-spacing-xxxl) !important;
   }
 }
 
@@ -18,5 +17,5 @@
 }
 
 .video-section-input {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }

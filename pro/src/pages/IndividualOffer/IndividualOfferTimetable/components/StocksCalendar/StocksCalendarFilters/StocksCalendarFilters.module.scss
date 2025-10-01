@@ -3,7 +3,7 @@
 .container {
   display: flex;
   flex-wrap: wrap;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   align-items: center;
 }
 

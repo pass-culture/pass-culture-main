@@ -4,7 +4,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .onboarding-offer-container {
-  margin: rem.torem(32px) auto 0 auto;
+  margin: var(--size-spacing-xxl) auto 0 auto;
   padding: 0 rem.torem(32px);
   display: flex;
   flex-direction: column;
@@ -15,12 +15,12 @@
 .offers-subtitle {
   @include fonts.title3;
 
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .offer-choices {
   display: flex;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
   flex-direction: column;
   justify-content: center;
   align-items: stretch;

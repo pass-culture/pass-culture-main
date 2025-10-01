@@ -20,7 +20,7 @@
 
     &-highlight {
       color: var(--color-text-brand-primary);
-      padding: rem.torem(2px);
+      padding: var(--size-spacing-xxs);
       background-color: var(--color-background-default);
       border-radius: var(--size-border-radius-m);
       white-space: nowrap;
@@ -56,7 +56,7 @@
   .discovery-banner {
     &-title {
       &-highlight {
-        padding: rem.torem(4px);
+        padding: var(--size-spacing-xs);
       }
     }
   }

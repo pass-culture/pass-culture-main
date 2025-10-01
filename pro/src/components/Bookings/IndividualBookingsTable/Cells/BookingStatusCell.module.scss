@@ -18,6 +18,6 @@
   width: rem.torem(17px);
   height: rem.torem(17px);
   color: var(--color-text-inverted);
-  padding-right: rem.torem(4px);
+  padding-right: var(--size-spacing-xs);
   vertical-align: middle;
 }

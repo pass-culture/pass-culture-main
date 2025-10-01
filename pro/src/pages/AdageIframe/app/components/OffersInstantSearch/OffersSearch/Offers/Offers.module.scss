@@ -6,31 +6,31 @@
 .offers-view {
   display: flex;
   justify-content: space-between;
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .offers-stats {
   @include fonts.body-accent-xs;
 
-  margin-top: rem.torem(24px);
+  margin-top: var(--size-spacing-xl);
 
   &-grid {
-    margin-left: rem.torem(16px);
+    margin-left: var(--size-spacing-l);
   }
 }
 
 .offers-list {
   display: grid;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   padding: 0;
-  margin: rem.torem(8px) 0 rem.torem(24px) 0;
+  margin: var(--size-spacing-s) 0 var(--size-spacing-xl) 0;
 }
 
 .offers-grid {
   display: grid;
-  gap: rem.torem(48px) rem.torem(16px);
+  gap: var(--size-spacing-xxxxl) var(--size-spacing-l);
   padding: 0;
-  margin: rem.torem(8px) 0 rem.torem(24px) 0;
+  margin: var(--size-spacing-s) 0 var(--size-spacing-xl) 0;
   grid-template-columns: repeat(auto-fill, minmax(rem.torem(216px), 0fr));
   justify-content: space-around;
 }
@@ -66,9 +66,9 @@
   right: rem.torem(16px);
   bottom: rem.torem(16px);
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   background-color: var(--color-background-subtle);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   border-radius: var(--size-border-radius-xl);
   box-shadow: var(--shadow-overlay);
   cursor: pointer;
@@ -95,7 +95,7 @@
 }
 
 .pagination {
-  margin: rem.torem(24px) 0;
+  margin: var(--size-spacing-xl) 0;
 }
 
 .banner {

@@ -1,17 +1,15 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .opening-hours-subsubsection {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 
   &-address-input {
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 
   &-callout {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 }
 
 .opening-hours {
-  margin: rem.torem(24px) 0;
+  margin: var(--size-spacing-xl) 0;
 }

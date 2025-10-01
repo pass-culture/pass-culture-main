@@ -8,16 +8,16 @@
     color: var(--color-icon-subtle);
     width: rem.torem(128px);
     height: rem.torem(100px);
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   flex-wrap: wrap;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 
   &-title {
     @include fonts.title2;

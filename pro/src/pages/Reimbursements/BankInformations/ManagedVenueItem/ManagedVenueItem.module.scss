@@ -1,10 +1,8 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .dialog-checkbox-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 
   &:last-child {
     margin-bottom: 0;

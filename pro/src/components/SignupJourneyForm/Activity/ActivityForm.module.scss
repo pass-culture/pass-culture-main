@@ -1,15 +1,10 @@
-@use "styles/variables/_forms.scss" as forms;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_size.scss" as size;
-
 .delete-button {
   display: flex;
   align-content: center;
 }
 
 .target-customer-row {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .url-list {

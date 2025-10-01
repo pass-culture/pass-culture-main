@@ -9,7 +9,7 @@
   position: relative;
 
   // Direction: horizontal (default)
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
@@ -59,7 +59,7 @@
     @include fonts.body-xs;
 
     color: var(--color-text-subtle);
-    margin-top: rem.torem(4px);
+    margin-top: var(--size-spacing-xs);
   }
 
   // Other states
@@ -86,7 +86,8 @@
 
   // Vertical state
   @mixin cardlink-vertical-styles {
-    padding: rem.torem(40px) rem.torem(16px) rem.torem(32px);
+    padding: var(--size-spacing-xxxl) var(--size-spacing-l)
+      var(--size-spacing-xxl);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -101,7 +102,7 @@
     .cardlink-icon {
       width: rem.torem(40px);
       height: rem.torem(40px);
-      margin-bottom: rem.torem(12px);
+      margin-bottom: var(--size-spacing-m);
       margin-right: 0;
     }
 

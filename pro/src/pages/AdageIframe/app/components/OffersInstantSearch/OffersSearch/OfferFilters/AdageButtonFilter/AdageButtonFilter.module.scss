@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   background-color: var(--color-background-default);
-  padding: rem.torem(8px) rem.torem(12px);
+  padding: var(--size-spacing-s) var(--size-spacing-m);
   border-radius: var(--size-border-radius-m);
   border: rem.torem(1px) solid var(--color-border-default);
   height: rem.torem(40px);
@@ -57,6 +57,6 @@
   }
 
   &-dropdown {
-    margin-left: rem.torem(8px);
+    margin-left: var(--size-spacing-s);
   }
 }

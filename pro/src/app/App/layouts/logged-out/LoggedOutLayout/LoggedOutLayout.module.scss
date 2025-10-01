@@ -70,7 +70,7 @@
   margin: 0;
 
   &-logged-out {
-    padding: rem.torem(24px);
+    padding: var(--size-spacing-xl);
     margin: auto;
     display: flex;
     flex-direction: column;

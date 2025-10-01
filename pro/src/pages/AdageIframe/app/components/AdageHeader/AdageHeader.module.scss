@@ -5,7 +5,7 @@
 .adage-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 
   &-discovery {
     margin-bottom: 0;
@@ -16,8 +16,8 @@
     flex-wrap: wrap;
     background-color: var(--color-background-subtle);
     justify-content: center;
-    padding: rem.torem(16px);
-    gap: rem.torem(16px);
+    padding: var(--size-spacing-l);
+    gap: var(--size-spacing-l);
   }
 
   &-nav {
@@ -39,7 +39,7 @@
 
 @media (min-width: size.$laptop) {
   .adage-header-nav {
-    padding: 0 rem.torem(16px);
+    padding: 0 var(--size-spacing-l);
 
     &-brand {
       display: block;

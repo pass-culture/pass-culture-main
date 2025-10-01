@@ -4,7 +4,7 @@
 
 .contact-detail {
   display: flex;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   align-items: center;
 
   &-icon {
@@ -15,7 +15,7 @@
   }
 
   &:first-child {
-    margin-bottom: rem.torem(4px);
+    margin-bottom: var(--size-spacing-xs);
   }
 
   &:last-child {
@@ -24,8 +24,8 @@
 }
 
 .contact-container {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
   display: flex;
   flex-direction: column;
-  gap: rem.torem(4px);
+  gap: var(--size-spacing-xs);
 }

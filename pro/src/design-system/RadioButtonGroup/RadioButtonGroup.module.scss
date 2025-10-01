@@ -35,16 +35,16 @@
 
 .radio-button-group-description {
   color: var(--color-text-subtle);
-  margin-top: rem.torem(4px);
+  margin-top: var(--size-spacing-xs);
 }
 
 .radio-button-group-error {
   @include fonts.body-accent-s;
 
-  margin-top: rem.torem(4px);
+  margin-top: var(--size-spacing-xs);
   display: flex;
   align-items: center;
-  gap: rem.torem(4px);
+  gap: var(--size-spacing-xs);
   color: var(--color-text-error);
 
   &-icon {
@@ -58,8 +58,8 @@
 .radio-button-group-options {
   display: flex;
   flex-wrap: wrap;
-  margin-top: rem.torem(8px);
-  gap: rem.torem(16px);
+  margin-top: var(--size-spacing-s);
+  gap: var(--size-spacing-l);
   width: 100%;
 
   &.display-horizontal.sizing-fill .radio-button-group-option {
@@ -68,14 +68,14 @@
   }
 
   &.display-vertical {
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
 
     .radio-button-group-option {
       width: 100%;
     }
 
     &.variant-detailed {
-      gap: rem.torem(8px);
+      gap: var(--size-spacing-s);
     }
   }
 }

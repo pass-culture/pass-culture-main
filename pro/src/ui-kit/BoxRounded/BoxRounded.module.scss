@@ -5,12 +5,12 @@
 .expandable-box-container {
   border-radius: var(--size-border-radius-m);
   border: rem.torem(1px) solid var(--color-border-subtle);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
 }
 
 .modify-button-container {
   svg {
-    margin-right: 8px;
+    margin-right: var(--size-spacing-s);
   }
 }
 

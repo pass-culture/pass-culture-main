@@ -4,7 +4,7 @@
 .banner-content {
   display: flex;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 }
 
 .provider-logo {
@@ -12,5 +12,5 @@
 }
 
 .provider-text {
-  margin: 0 rem.torem(16px);
+  margin: 0 var(--size-spacing-l);
 }

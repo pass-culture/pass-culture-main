@@ -3,10 +3,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .venue-list {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .header-row {
@@ -14,7 +14,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  gap: rem.torem(12px);
+  gap: var(--size-spacing-m);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
@@ -44,7 +44,7 @@
 .toggle-icon {
   height: rem.torem(12px);
   width: rem.torem(12px);
-  margin-right: rem.torem(8px);
+  margin-right: var(--size-spacing-s);
 }
 
 .needs-payment-icon {
@@ -53,22 +53,22 @@
 }
 
 .api-tag {
-  margin-left: rem.torem(16px);
+  margin-left: var(--size-spacing-l);
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   flex-shrink: 0;
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
     align-items: stretch;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }
 
 .offer-steps {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }

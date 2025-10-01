@@ -1,11 +1,9 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .description {
-  padding-top: rem.torem(8px);
+  padding-top: var(--size-spacing-s);
 }
 
 .spinner {
-  margin: rem.torem(32px);
+  margin: var(--size-spacing-xxl);
 }
 
 .collective-data-edition {
@@ -13,11 +11,11 @@
 }
 
 .mandatory {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .timeline {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .separator {
@@ -25,6 +23,6 @@
   height: 2px;
   background: var(--separator-color-subtle);
   border: none;
-  margin-top: rem.torem(32px);
-  margin-bottom: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-xxl);
 }

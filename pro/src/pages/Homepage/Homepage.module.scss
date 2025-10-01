@@ -1,21 +1,20 @@
 @use "styles/mixins/_size.scss" as size;
-@use "styles/mixins/_rem.scss" as rem;
 
 .section {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .newsletter {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .step-section {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .reimbursements-banners {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: rem.torem(16px);
+  gap: var(--size-spacing-l);
+  margin-top: var(--size-spacing-l);
 }

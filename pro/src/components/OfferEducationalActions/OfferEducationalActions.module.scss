@@ -3,7 +3,7 @@
 .actions {
   display: flex;
   justify-content: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   margin: rem.torem(6px) 0;
 }
 

@@ -56,7 +56,7 @@
   width: rem.torem(20px);
   height: rem.torem(20px);
   flex-shrink: 0;
-  margin-right: rem.torem(8px);
+  margin-right: var(--size-spacing-s);
 
   path {
     fill: var(--color-icon-default);

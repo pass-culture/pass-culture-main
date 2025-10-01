@@ -6,7 +6,7 @@
   align-items: center;
 
   .icon {
-    margin-right: rem.torem(8px);
+    margin-right: var(--size-spacing-s);
     width: rem.torem(24px);
     color: var(--color-icon-default);
   }

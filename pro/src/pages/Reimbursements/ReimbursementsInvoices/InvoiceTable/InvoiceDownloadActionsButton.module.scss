@@ -1,18 +1,15 @@
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
-@use "styles/mixins/_a11y.scss" as a11y;
 
 .download-actions {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
-@media (min-width: size.$tablet) {  
+@media (min-width: size.$tablet) {
   .download-actions {
     flex-direction: row;
-    gap: rem.torem(16px);
-    margin-bottom: rem.torem(32px);
+    gap: var(--size-spacing-l);
+    margin-bottom: var(--size-spacing-xxl);
   }
 }

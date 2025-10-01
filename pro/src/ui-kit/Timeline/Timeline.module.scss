@@ -19,7 +19,7 @@ $vertical-offset-icon-from-step: calc(
   align-items: center;
   width: rem.torem(20px);
   height: auto;
-  margin-top: rem.torem(2px);
+  margin-top: var(--size-spacing-xxs);
 }
 
 .icon-container {
@@ -29,8 +29,8 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .line {
-  margin-top: rem.torem(4px);
-  margin-bottom: rem.torem(4px);
+  margin-top: var(--size-spacing-xs);
+  margin-bottom: var(--size-spacing-xs);
   width: rem.torem(2px);
   height: 100%;
   background-image: radial-gradient(
@@ -50,7 +50,10 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .line-success {
-  background-image: radial-gradient(var(--color-icon-success) 100%, transparent 100%);
+  background-image: radial-gradient(
+    var(--color-icon-success) 100%,
+    transparent 100%
+  );
   border-radius: var(--size-border-radius-s);
 }
 
@@ -82,14 +85,14 @@ $vertical-offset-icon-from-step: calc(
 .icon-waiting {
   width: rem.torem(12px);
   height: rem.torem(12px);
-  margin: rem.torem(4px) auto;
+  margin: var(--size-spacing-xs) auto;
 }
 
 .icon-disabled {
   width: rem.torem(12px);
   height: rem.torem(12px);
   color: var(--color-icon-disabled);
-  margin: rem.torem(4px) auto;
+  margin: var(--size-spacing-xs) auto;
 }
 
 .icon-wrong {
@@ -106,8 +109,8 @@ $vertical-offset-icon-from-step: calc(
 }
 
 .step-content {
-  margin-left: rem.torem(16px);
-  margin-bottom: rem.torem(32px);
+  margin-left: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xxl);
   width: 100%;
 }
 

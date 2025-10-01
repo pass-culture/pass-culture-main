@@ -5,15 +5,15 @@
 .card-container {
   display: flex;
   flex-wrap: wrap;
-  gap: rem.torem(24px);
-  margin: rem.torem(2px) 0 rem.torem(22px);
+  gap: var(--size-spacing-xl);
+  margin: var(--size-spacing-xxs) 0 rem.torem(22px);
   justify-content: center;
   width: 100%;
 }
 
 .card {
   max-width: rem.torem(383px);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
   border-radius: var(--size-border-radius-m);
   border: 1px solid var(--color-border-subtle);
 
@@ -35,7 +35,7 @@
 .card-title {
   @include fonts.title3;
 
-  margin: rem.torem(8px) 0;
+  margin: var(--size-spacing-s) 0;
 }
 
 .card-description {
@@ -50,7 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .button-getting-started {

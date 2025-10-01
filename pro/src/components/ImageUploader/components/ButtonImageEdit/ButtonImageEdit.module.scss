@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   border: none;
   background-color: var(--color-background-subtle);
   color: var(--color-text-default);

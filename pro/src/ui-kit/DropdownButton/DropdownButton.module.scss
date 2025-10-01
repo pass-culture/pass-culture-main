@@ -3,45 +3,45 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .trigger-button {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 
-    &-name {
-        flex: 1;
-    }
+  &-name {
+    flex: 1;
+  }
 }
 
 .trigger-icon {
-    width: rem.torem(16px);
-    margin-left: rem.torem(8px);
-    display: flex;
-    align-items: center;
+  width: rem.torem(16px);
+  margin-left: var(--size-spacing-s);
+  display: flex;
+  align-items: center;
 }
 
 .panel {
-    background: var(--color-background-default);
-    border-radius: var(--size-border-radius-m);
-    border: rem.torem(1px) solid var(--color-border-subtle);
-    box-shadow: var(--shadow-overlay);
-    display: inline-block;
-    padding: rem.torem(12px) 0;
-    width: rem.torem(297px);
-    z-index: zIndex.$dropdown-button-z-index;
+  background: var(--color-background-default);
+  border-radius: var(--size-border-radius-m);
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  box-shadow: var(--shadow-overlay);
+  display: inline-block;
+  padding: var(--size-spacing-m) 0;
+  width: rem.torem(297px);
+  z-index: zIndex.$dropdown-button-z-index;
 }
 
 .option {
-    @include fonts.body-accent;
+  @include fonts.body-accent;
 
-    border: none;
-    display: flex;
-    justify-content: flex-start;
-    padding: rem.torem(10px);
-    width: 100%;
-    border-radius: 0;
+  border: none;
+  display: flex;
+  justify-content: flex-start;
+  padding: rem.torem(10px);
+  width: 100%;
+  border-radius: 0;
 
-    &:hover,
-    &:focus {
-        background: var(--color-background-subtle);
-        outline: none;
-    }
+  &:hover,
+  &:focus {
+    background: var(--color-background-subtle);
+    outline: none;
+  }
 }

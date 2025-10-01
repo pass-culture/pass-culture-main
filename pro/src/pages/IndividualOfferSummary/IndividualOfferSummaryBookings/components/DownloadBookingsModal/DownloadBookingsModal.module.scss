@@ -7,8 +7,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(32px);
-  margin-top: rem.torem(16px);
+  gap: var(--size-spacing-xxl);
+  margin-top: var(--size-spacing-l);
 }
 
 .one-booking-date-section {
@@ -31,25 +31,25 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   width: 100%;
 }
 
 .bookings-radio-buttons {
   &-validated {
-    margin: rem.torem(16px) 0;
+    margin: var(--size-spacing-l) 0;
   }
 }
 
 .bookings-date-count {
-  margin: rem.torem(32px) 0;
+  margin: var(--size-spacing-xxl) 0;
 
   @include fonts.body-accent-xs;
 }
 
 .date-select-table {
   width: 100%;
-  margin: rem.torem(8px) 0;
+  margin: var(--size-spacing-s) 0;
   text-align: left;
   max-height: rem.torem(276px);
   overflow: scroll;
@@ -60,7 +60,7 @@
 }
 
 .table-column {
-  padding: rem.torem(8px) 0;
+  padding: var(--size-spacing-s) 0;
 }
 
 .table-header {

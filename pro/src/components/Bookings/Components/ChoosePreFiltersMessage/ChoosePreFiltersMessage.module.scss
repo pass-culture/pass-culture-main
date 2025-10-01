@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: rem.torem(32px);
+  gap: var(--size-spacing-xxl);
 
   &-icon {
     color: var(--color-icon-subtle);

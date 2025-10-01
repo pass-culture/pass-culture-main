@@ -14,7 +14,7 @@ $number-size: rem.torem(30px);
   flex-direction: column;
   justify-content: space-between;
   padding-bottom: $step-label-height;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 
   .step-container {
     display: flex;
@@ -33,7 +33,7 @@ $number-size: rem.torem(30px);
     }
 
     .number {
-      padding-right: rem.torem(8px);
+      padding-right: var(--size-spacing-s);
 
       .inner {
         @include fonts.body-accent-xs;

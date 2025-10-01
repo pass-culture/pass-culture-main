@@ -5,38 +5,38 @@
 
 .onboarding-collective-modal {
   max-width: rem.torem(910px);
-  padding: rem.torem(16px);
+  padding: var(--size-spacing-l);
 }
 
 .onboarding-collective-title {
   @include fonts.title1;
 
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .onboarding-collective-text {
   @include fonts.body;
 
   line-height: var(--line-height-m);
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .onboarding-collective-steps {
   display: grid;
   grid-template-columns: 1fr;
   justify-items: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   margin-bottom: rem.torem(46px);
 
   @media (min-width: size.$tablet) {
     grid-template-columns: repeat(2, rem.torem(177px));
     justify-content: center;
-    gap: rem.torem(32px);
+    gap: var(--size-spacing-xxl);
   }
 
   @media (min-width: size.$laptop) {
     grid-template-columns: repeat(4, rem.torem(177px));
-    gap: rem.torem(32px);
+    gap: var(--size-spacing-xxl);
   }
 }
 
@@ -62,7 +62,7 @@
 }
 
 .onboarding-collective-button {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .error-message {

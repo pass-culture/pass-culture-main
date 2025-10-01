@@ -5,18 +5,18 @@
 .adage-header-budget {
   border-left: none;
   border-top: 1px solid var(--color-border-subtle);
-  padding: rem.torem(8px);
+  padding: var(--size-spacing-s);
   width: 100%;
 
   &-link {
     @include fonts.body-accent-xs;
 
     display: block;
-    margin-bottom: rem.torem(4px);
+    margin-bottom: var(--size-spacing-xs);
   }
 
   &-icon {
-    margin-right: rem.torem(4px);
+    margin-right: var(--size-spacing-xs);
   }
 
   &-value {
@@ -32,7 +32,7 @@
   .adage-header-budget {
     border-left: 1px solid var(--color-border-subtle);
     border-top: none;
-    padding: 0 0 0 rem.torem(32px);
+    padding: 0 0 0 var(--size-spacing-xxl);
     width: unset;
 
     &-link {

@@ -1,6 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-
 .cinema-provider-form-dialog {
   display: flex;
   flex-direction: column;
@@ -8,5 +5,5 @@
 }
 
 .explanation {
-  margin: rem.torem(8px) 0 rem.torem(32px) 0;
+  margin: var(--size-spacing-s) 0 var(--size-spacing-xxl) 0;
 }

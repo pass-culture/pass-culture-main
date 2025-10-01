@@ -12,7 +12,7 @@
 
 .actions {
   display: flex;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
 }
 
 .date-picker {
@@ -25,10 +25,10 @@
 
 .inputs-row {
   display: flex;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
 }
 
 .group,
 .toggle {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }

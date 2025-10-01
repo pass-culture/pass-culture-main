@@ -11,16 +11,16 @@
   &-label {
     @include fonts.body;
 
-    padding-top: rem.torem(24px);
+    padding-top: var(--size-spacing-xl);
   }
 
   &-scale {
     width: 100%;
     display: flex;
     align-items: center;
-    padding: rem.torem(8px) rem.torem(16px);
+    padding: var(--size-spacing-s) var(--size-spacing-l);
     justify-content: center;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
 
     &-label {
       @include fonts.body-accent-xs;

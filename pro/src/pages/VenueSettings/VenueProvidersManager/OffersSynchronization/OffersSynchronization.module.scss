@@ -2,7 +2,7 @@
 
 .venue-providers {
   display: flex;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   flex-flow: row wrap;
   margin-bottom: rem.torem(20px);
 }

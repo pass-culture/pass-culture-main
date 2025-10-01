@@ -6,7 +6,7 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 
   &-content {
     flex-grow: 1;
@@ -20,12 +20,12 @@
     width: rem.torem(231px);
     min-width: rem.torem(231px);
     margin: 0 auto;
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
   }
 
   &-section {
-    margin-top: rem.torem(8px);
-    margin-bottom: rem.torem(40px);
+    margin-top: var(--size-spacing-s);
+    margin-bottom: var(--size-spacing-xxxl);
 
     &-with-divider {
       margin: 0;
@@ -35,11 +35,11 @@
       display: flex;
       flex-direction: row;
       align-items: top;
-      margin-bottom: rem.torem(24px);
+      margin-bottom: var(--size-spacing-xl);
 
       &-edit-link {
         height: unset;
-        padding-left: rem.torem(16px);
+        padding-left: var(--size-spacing-l);
       }
 
       @media (min-width: size.$tablet) {
@@ -49,27 +49,27 @@
   }
 
   &-sub-section {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
 
     &-title {
       @include fonts.title3;
 
-      margin-bottom: rem.torem(8px);
+      margin-bottom: var(--size-spacing-s);
     }
   }
 
   &-sub-sub-section {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
 
     &-title {
       @include fonts.title4;
 
-      margin-bottom: rem.torem(24px);
+      margin-bottom: var(--size-spacing-xl);
     }
   }
 
   &-row {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
     max-width: 100%;
 
     &-title {
@@ -101,7 +101,7 @@
 .section-title {
   @include fonts.title2;
 
-  padding-right: rem.torem(16px);
+  padding-right: var(--size-spacing-l);
 
   &.section-title-editable {
     border-right: rem.torem(1px) solid var(--color-border-subtle);

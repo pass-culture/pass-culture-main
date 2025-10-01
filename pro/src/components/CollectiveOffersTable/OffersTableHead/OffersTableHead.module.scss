@@ -19,7 +19,7 @@
     &-checkbox {
       @include a11y.visually-hidden-reset;
 
-      padding: rem.torem(8px) rem.torem(16px);
+      padding: var(--size-spacing-s) var(--size-spacing-l);
     }
 
     &-actions {
@@ -33,7 +33,7 @@
     &-th {
       @include a11y.visually-hidden-reset;
 
-      padding: rem.torem(8px);
+      padding: var(--size-spacing-s);
 
       &-checkbox {
         &-input {
@@ -47,12 +47,12 @@
 
       &:first-child {
         border-top-left-radius: rem.torem(8px);
-        padding-left: rem.torem(16px);
+        padding-left: var(--size-spacing-l);
       }
 
       &:last-child {
         border-top-right-radius: rem.torem(8px);
-        padding-right: rem.torem(16px);
+        padding-right: var(--size-spacing-l);
       }
     }
   }

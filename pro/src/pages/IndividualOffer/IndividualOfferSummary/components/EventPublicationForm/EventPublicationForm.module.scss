@@ -1,14 +1,14 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .form {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .publish-later {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
-.date-picker{
+.date-picker {
   width: rem.torem(180px);
 }
 

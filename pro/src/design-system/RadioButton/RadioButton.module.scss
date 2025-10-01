@@ -22,7 +22,7 @@
     display: inline-flex;
     align-items: center;
     flex-grow: 1;
-    gap: rem.torem(12px);
+    gap: var(--size-spacing-m);
     cursor: pointer;
     color: var(--color-text-default);
 
@@ -44,7 +44,7 @@
       flex: 1;
       display: flex;
       align-items: center;
-      gap: rem.torem(12px);
+      gap: var(--size-spacing-m);
     }
   }
 
@@ -164,7 +164,7 @@
     border-radius: var(--size-border-radius-m);
 
     > .radio-button-label {
-      padding: rem.torem(16px);
+      padding: var(--size-spacing-l);
 
       .description {
         @include fonts.body-xs;
@@ -357,6 +357,6 @@
   }
 
   .collapsed {
-    padding: 0 rem.torem(16px) rem.torem(16px);
+    padding: 0 var(--size-spacing-l) var(--size-spacing-l);
   }
 }

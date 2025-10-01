@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .no-results {
-  margin: rem.torem(40px) 0;
+  margin: var(--size-spacing-xxxl) 0;
 
   &-text {
     @include fonts.title2;
@@ -21,7 +21,7 @@
   }
 
   &-suggestion {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
   }
 
   &-icon {

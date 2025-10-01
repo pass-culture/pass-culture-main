@@ -5,7 +5,7 @@
   border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
   overflow: hidden;
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 
   .soft-deleted-offerer-warning-inner {
     align-items: center;
@@ -15,7 +15,7 @@
     min-height: rem.torem(205px);
     border-left: rem.torem(8px) solid var(--color-border-subtle);
     height: 100%;
-    padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
+    padding: var(--size-spacing-l) var(--size-spacing-l) var(--size-spacing-xl);
     width: 100%;
 
     p {
@@ -24,7 +24,7 @@
 
     div {
       a:first-child {
-        margin-right: rem.torem(16px);
+        margin-right: var(--size-spacing-l);
       }
     }
   }

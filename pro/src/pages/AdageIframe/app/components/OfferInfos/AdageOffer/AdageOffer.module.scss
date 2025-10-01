@@ -17,28 +17,28 @@
   }
 
   &-header {
-    padding: 0 rem.torem(24px) rem.torem(24px);
+    padding: 0 var(--size-spacing-xl) var(--size-spacing-xl);
     border-bottom: rem.torem(7px) solid var(--color-background-info);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
     position: relative;
     z-index: 1;
   }
 
   &-body {
-    padding: rem.torem(24px);
+    padding: var(--size-spacing-xl);
     display: flex;
     flex-direction: column;
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
   }
 
   &-main {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
-    gap: rem.torem(32px);
+    gap: var(--size-spacing-xxl);
   }
 
   &-side {
@@ -52,8 +52,8 @@
   &-header {
     display: flex;
     align-items: center;
-    gap: rem.torem(8px);
-    margin-bottom: rem.torem(16px);
+    gap: var(--size-spacing-s);
+    margin-bottom: var(--size-spacing-l);
 
     &-title {
       @include fonts.title2;
@@ -63,7 +63,7 @@
   &-group {
     display: flex;
     flex-direction: column;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
     overflow-wrap: anywhere;
 
     &-item {
@@ -71,7 +71,7 @@
         @include fonts.body-accent-xs;
 
         color: var(--color-text-subtle);
-        margin-bottom: rem.torem(8px);
+        margin-bottom: var(--size-spacing-s);
       }
 
       &-description {
@@ -83,7 +83,7 @@
     &-list {
       display: flex;
       flex-wrap: wrap;
-      gap: rem.torem(8px);
+      gap: var(--size-spacing-s);
 
       &-pipe {
         color: var(--separator-color-subtle);
@@ -115,5 +115,5 @@
 }
 
 .disabled-prebook-callout {
-  margin: 0 rem.torem(24px) rem.torem(24px) rem.torem(24px);
+  margin: 0 var(--size-spacing-xl) var(--size-spacing-xl) var(--size-spacing-xl);
 }

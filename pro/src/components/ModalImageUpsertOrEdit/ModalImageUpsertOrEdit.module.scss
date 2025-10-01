@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   flex-grow: 1;
 
   &-content {
@@ -16,7 +16,7 @@
   &-subwrapper {
     display: flex;
     flex-direction: column;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
 
     @media (min-width: size.$tablet) {
       min-width: calc(rem.torem(size.$tablet) - size.$dialog-box-padding * 2);
@@ -38,31 +38,32 @@
   }
 
   &-callout {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     &-list {
       list-style-type: disc;
-      padding-left: rem.torem(24px);
+      padding-left: var(--size-spacing-xl);
     }
   }
 
   &-actions {
     display: flex;
     flex-direction: column;
-    gap: rem.torem(16px);
-    padding: rem.torem(24px) rem.torem(16px) rem.torem(16px) rem.torem(16px);
+    gap: var(--size-spacing-l);
+    padding: var(--size-spacing-xl) rem.torem(16px) rem.torem(16px)
+      rem.torem(16px);
     align-items: flex-start;
   }
 
   &-right {
     @include fonts.body-s;
 
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 
   &-credit {
     max-width: 410px;
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
 
     &-loading {
       visibility: hidden;
@@ -73,7 +74,7 @@
     display: flex;
     justify-content: flex-start;
     padding-left: rem.torem(6px);
-    padding-right: rem.torem(12px);
-    gap: rem.torem(16px);
+    padding-right: var(--size-spacing-m);
+    gap: var(--size-spacing-l);
   }
 }

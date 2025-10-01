@@ -1,4 +1,3 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .title {
@@ -6,7 +5,7 @@
 }
 
 .no-results {
-  padding-bottom: rem.torem(32px);
+  padding-bottom: var(--size-spacing-xxl);
   text-align: center;
 
   &-svg {
@@ -16,23 +15,23 @@
   .no-results-title {
     @include fonts.title2;
 
-    margin: rem.torem(40px) 0 rem.torem(32px) 0;
+    margin: var(--size-spacing-xxxl) 0 var(--size-spacing-xxl) 0;
   }
 }
 
 .my-institution-callout {
   white-space: pre-wrap;
-  margin-top: rem.torem(16px);
-  margin-bottom: rem.torem(32px);
+  margin-top: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .callout-text {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .offers-list {
-  padding-bottom: rem.torem(32px);
+  padding-bottom: var(--size-spacing-xxl);
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }

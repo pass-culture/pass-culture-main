@@ -2,7 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .filters-wrapper {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .bs-filter {
@@ -13,7 +13,7 @@
     @include fonts.body-accent-xs;
 
     color: var(--color-text-subtle);
-    padding-bottom: rem.torem(8px);
+    padding-bottom: var(--size-spacing-s);
     white-space: nowrap;
   }
 
@@ -22,8 +22,8 @@
     border-radius: var(--size-border-radius-s);
     box-shadow: var(--shadow-overlay);
     right: 0;
-    margin-top: rem.torem(8px);
-    padding: rem.torem(16px);
+    margin-top: var(--size-spacing-s);
+    padding: var(--size-spacing-l);
     position: absolute;
     z-index: 1;
   }
@@ -72,5 +72,5 @@
 .bs-filter-checkboxes {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }

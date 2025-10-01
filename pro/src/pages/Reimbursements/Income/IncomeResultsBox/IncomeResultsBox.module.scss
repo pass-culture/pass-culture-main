@@ -53,7 +53,7 @@
   gap: rem.torem(20px);
 
   &:first-child {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-subbox {

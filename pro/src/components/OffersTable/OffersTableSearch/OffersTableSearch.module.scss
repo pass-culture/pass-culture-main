@@ -4,23 +4,22 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .offers-table-search {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 
   &-name-and-toggle-row {
     display: flex;
     align-items: flex-end;
     flex-flow: row nowrap;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 
   &-input-wrapper {
     width: rem.torem(500px);
     max-width: 100%;
-
   }
 
   &-filters {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     &-collapsed {
       display: none;
@@ -28,7 +27,7 @@
   }
 
   &-reset-wrapper {
-    margin-top: rem.torem(8px);
+    margin-top: var(--size-spacing-s);
   }
 
   &-separator {

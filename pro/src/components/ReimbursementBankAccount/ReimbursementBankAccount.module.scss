@@ -4,7 +4,7 @@
 
 .bank-account {
   display: grid;
-  padding: rem.torem(16px) rem.torem(24px);
+  padding: var(--size-spacing-l) rem.torem(24px);
   grid-template-columns: 1fr;
   grid-template-rows: repeat(2);
   border: rem.torem(1px) solid var(--color-border-subtle);
@@ -17,13 +17,13 @@
 
 .informations-section,
 .linked-venues-section {
-  padding: rem.torem(8px) 0;
+  padding: var(--size-spacing-s) 0;
 }
 
 .informations-section {
   border-bottom: rem.torem(1px) solid var(--color-border-subtle);
-  padding-bottom: rem.torem(24px);
-  margin-bottom: rem.torem(16px);
+  padding-bottom: var(--size-spacing-xl);
+  margin-bottom: var(--size-spacing-l);
 
   @media (min-width: size.$tablet) {
     border-bottom: none;
@@ -33,13 +33,13 @@
   &-title {
     @include fonts.title4;
 
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 
   &-content {
     display: flex;
     flex-direction: column;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 }
 
@@ -48,18 +48,18 @@
   flex-direction: column;
 
   @media (min-width: size.$tablet) {
-    margin-left: rem.torem(24px);
+    margin-left: var(--size-spacing-xl);
   }
 
   &-title {
     @include fonts.body-accent;
 
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
     display: inline-flex;
 
     .error-icon {
       color: var(--color-icon-error);
-      margin-left: rem.torem(8px);
+      margin-left: var(--size-spacing-s);
     }
   }
 
@@ -67,30 +67,30 @@
     @include fonts.body-accent-xs;
 
     color: var(--color-text-error);
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 
   .linked-venues {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
     display: flex;
     flex-direction: column;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 
   .linked-venue {
     width: 100%;
     background-color: var(--color-background-subtle);
     border-radius: var(--size-border-radius-m);
-    padding: rem.torem(12px) rem.torem(16px);
+    padding: var(--size-spacing-m) var(--size-spacing-l);
   }
 }
 
 .pending-account {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
-  padding: rem.torem(16px);
-  margin-left: rem.torem(24px);
+  gap: var(--size-spacing-l);
+  padding: var(--size-spacing-l);
+  margin-left: var(--size-spacing-xl);
   border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-subtle);
   color: var(color-black);

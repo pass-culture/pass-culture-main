@@ -1,7 +1,5 @@
-@use "styles/mixins/_rem.scss" as rem;
-
 .description {
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .icon {
@@ -9,5 +7,5 @@
 }
 
 .desk-callout {
-  margin-top: rem.torem(24px);
+  margin-top: var(--size-spacing-xl);
 }

@@ -6,12 +6,12 @@
   width: 100%;
   border-radius: var(--size-border-radius-l);
   box-shadow: var(--shadow-overlay);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
 
   &-header {
     display: flex;
     align-items: center;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
 
     &-title {
       @include fonts.title2;
@@ -19,9 +19,9 @@
   }
 
   &-info {
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
     display: flex;
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
 
     &-image-fallback,
     &-image {
@@ -45,18 +45,18 @@
 
   &-info-name {
     display: block;
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
   }
 
   &-location {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
   }
 
   &-contact {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
 
     &-icon {
-      margin-right: rem.torem(8px);
+      margin-right: var(--size-spacing-s);
     }
   }
 }

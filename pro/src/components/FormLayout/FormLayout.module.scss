@@ -33,7 +33,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-section {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
 
     &-title {
       @include fonts.title2;
@@ -41,33 +41,33 @@ $info-box-margin-left: rem.torem(24px);
 
     // Legend spacing variant when no description follows
     &-legend--spaced {
-      margin-bottom: rem.torem(16px);
+      margin-bottom: var(--size-spacing-l);
     }
 
     &-header {
-      margin-bottom: rem.torem(16px);
+      margin-bottom: var(--size-spacing-l);
     }
 
     &-description {
       &-container {
         margin-top: rem.torem(45px);
-        margin-bottom: rem.torem(32px);
+        margin-bottom: var(--size-spacing-xxl);
       }
 
       &-content {
-        margin-top: rem.torem(8px);
+        margin-top: var(--size-spacing-s);
       }
     }
   }
 
   &-sub-section {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
 
     &-title-wrapper {
       display: flex;
       align-items: center;
-      gap: rem.torem(8px);
-      margin-bottom: rem.torem(16px);
+      gap: var(--size-spacing-s);
+      margin-bottom: var(--size-spacing-l);
     }
 
     &-title {
@@ -76,10 +76,10 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-sub-sub-section {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
 
     &-title {
-      margin-bottom: rem.torem(16px);
+      margin-bottom: var(--size-spacing-l);
 
       @include fonts.title4;
     }
@@ -89,18 +89,18 @@ $info-box-margin-left: rem.torem(24px);
     max-width: 100%;
 
     &.small-space-after {
-      margin-bottom: rem.torem(4px);
+      margin-bottom: var(--size-spacing-xs);
     }
 
     &.medium-space-after {
-      margin-bottom: rem.torem(16px);
+      margin-bottom: var(--size-spacing-l);
     }
 
     &.inline-group {
       display: flex;
       flex-flow: row wrap;
       flex-direction: row;
-      gap: rem.torem(16px);
+      gap: var(--size-spacing-l);
     }
   }
 
@@ -109,7 +109,7 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-action {
-    margin-left: rem.torem(24px);
+    margin-left: var(--size-spacing-xl);
     text-align: center;
 
     @media (min-width: size.$tablet) {
@@ -129,7 +129,7 @@ $info-box-margin-left: rem.torem(24px);
     }
 
     &-info {
-      margin: rem.torem(8px) 0 rem.torem(16px) 0;
+      margin: var(--size-spacing-s) 0 var(--size-spacing-l) 0;
       width: 100%;
     }
   }
@@ -138,7 +138,7 @@ $info-box-margin-left: rem.torem(24px);
 .mandatory-info {
   @include fonts.body-xs;
 
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
   color: var(--color-text-subtle);
 }
 

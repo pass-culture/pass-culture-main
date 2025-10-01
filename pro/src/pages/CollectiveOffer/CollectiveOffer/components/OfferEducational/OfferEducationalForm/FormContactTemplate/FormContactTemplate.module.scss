@@ -1,18 +1,17 @@
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .contact-checkbox {
   &:not(:last-child) {
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 }
 
 .container {
-  margin: rem.torem(48px) 0;
+  margin: var(--size-spacing-xxxxl) 0;
 }
 
 .subtitle {
   @include fonts.title2;
 
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }

@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 
   &-icon {
     width: rem.torem(88px);
@@ -32,17 +32,17 @@
   &-th {
     @include fonts.body-accent-xs;
 
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
     text-align: left;
 
     &:first-child {
       border-top-left-radius: rem.torem(8px);
-      padding-left: rem.torem(16px);
+      padding-left: var(--size-spacing-l);
     }
 
     &:last-child {
       border-top-right-radius: rem.torem(8px);
-      padding-right: rem.torem(16px);
+      padding-right: var(--size-spacing-l);
       text-align: right;
     }
   }
@@ -50,20 +50,20 @@
 
 .tbody {
   &-td {
-    padding: rem.torem(8px);
+    padding: var(--size-spacing-s);
 
     &-date {
-      margin-left: rem.torem(8px);
+      margin-left: var(--size-spacing-s);
     }
 
     &-actions {
       display: flex;
-      gap: rem.torem(8px);
+      gap: var(--size-spacing-s);
       justify-content: flex-end;
     }
 
     &:first-of-type {
-      padding-left: rem.torem(16px);
+      padding-left: var(--size-spacing-l);
 
       .tbody-td-date {
         margin-left: 0;
@@ -72,7 +72,7 @@
 
     &:last-of-type {
       text-align: right;
-      padding-right: rem.torem(16px);
+      padding-right: var(--size-spacing-l);
     }
   }
 }
@@ -82,9 +82,9 @@
 }
 
 .select-all {
-  margin: rem.torem(16px) 0;
+  margin: var(--size-spacing-l) 0;
 }
 
 .delete-warning-block {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }

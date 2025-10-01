@@ -18,7 +18,7 @@
       align-items: center;
       justify-content: center;
       z-index: 2;
-      padding: 0 rem.torem(16px);
+      padding: 0 var(--size-spacing-l);
     }
 
     &-input {
@@ -68,11 +68,11 @@
   border-radius: var(--size-border-radius-m);
   z-index: 1;
   bottom: rem.torem(64px);
-  padding-top: rem.torem(40px);
+  padding-top: var(--size-spacing-xxxl);
 
   &-panel {
-    margin-top: rem.torem(24px);
-    padding: rem.torem(8px) rem.torem(40px) rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
+    padding: var(--size-spacing-s) rem.torem(40px) rem.torem(24px);
 
     &-autocomplete {
       &-text {
@@ -81,13 +81,13 @@
         color: var(--color-text-subtle);
         display: flex;
         align-items: center;
-        margin-top: rem.torem(16px);
-        margin-bottom: rem.torem(12px);
+        margin-top: var(--size-spacing-l);
+        margin-bottom: var(--size-spacing-m);
 
         &-clean {
           @include fonts.body-accent-xs;
 
-          margin-left: rem.torem(8px);
+          margin-left: var(--size-spacing-s);
           text-decoration: none;
           display: flex;
           align-items: center;
@@ -103,12 +103,12 @@
         @include fonts.body;
 
         display: flex;
-        gap: rem.torem(8px);
+        gap: var(--size-spacing-s);
         align-items: center;
         cursor: pointer;
         overflow-wrap: anywhere;
         width: 100%;
-        padding: rem.torem(8px);
+        padding: var(--size-spacing-s);
 
         &:hover,
         &:focus-within,
@@ -144,7 +144,7 @@
 .panel-footer {
   @include fonts.body-accent-xs;
 
-  padding: rem.torem(12px) rem.torem(16px);
+  padding: var(--size-spacing-m) rem.torem(16px);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -153,12 +153,12 @@
   &-link {
     @include fonts.body-accent-xs;
 
-    margin-left: rem.torem(8px);
+    margin-left: var(--size-spacing-s);
   }
 
   svg {
     max-width: rem.torem(16px);
-    margin-right: rem.torem(4px) !important;
+    margin-right: var(--size-spacing-xs) !important;
   }
 }
 

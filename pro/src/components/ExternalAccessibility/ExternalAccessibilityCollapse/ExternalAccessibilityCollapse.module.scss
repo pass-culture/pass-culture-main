@@ -5,7 +5,7 @@
 .header {
   display: flex;
   align-items: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .main-icon-container {
@@ -33,7 +33,7 @@
 .title-container {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   flex-grow: 1;
 }
 
@@ -72,7 +72,7 @@
 
 .content {
   display: none;
-  margin: rem.torem(16px) 0;
+  margin: var(--size-spacing-l) 0;
 
   &.open {
     display: block;

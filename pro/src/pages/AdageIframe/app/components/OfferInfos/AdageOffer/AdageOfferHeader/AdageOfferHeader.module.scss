@@ -34,7 +34,7 @@
 .offer-header-title-container {
   display: flex;
   flex-direction: column-reverse;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   justify-content: space-between;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .offer-header-details-structure {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 
   &-name {
     @include fonts.body-accent;
@@ -51,7 +51,7 @@
 }
 
 .offer-header-details-institution {
-  margin-top: rem.torem(8px);
+  margin-top: var(--size-spacing-s);
 
   &-name {
     @include fonts.body-accent;
@@ -59,23 +59,23 @@
 }
 
 .offer-header-details-infos {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
   display: flex;
   flex-direction: column;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 }
 
 .offer-header-details-info {
   display: flex;
   align-items: center;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 }
 
 .offer-header-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: rem.torem(24px);
+  gap: var(--size-spacing-xl);
 }
 
 .offer-header-action {
@@ -96,7 +96,7 @@
 
   .offer-header-actions {
     justify-content: unset;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 }
 

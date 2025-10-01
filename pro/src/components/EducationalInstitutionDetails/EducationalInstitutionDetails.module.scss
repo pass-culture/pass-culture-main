@@ -5,13 +5,13 @@
 .contact-details-title-oldlayout {
   @include fonts.body-accent;
 
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .contact-details-title-newlayout {
   @include fonts.title2;
 
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .contact-details-container-oldlayout,
@@ -29,7 +29,7 @@
 
 .contact-detail {
   display: flex;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   align-items: center;
 
   &-icon {
@@ -40,7 +40,7 @@
   }
 
   &:first-child {
-    margin-bottom: rem.torem(4px);
+    margin-bottom: var(--size-spacing-xs);
   }
 
   &:last-child {
@@ -50,14 +50,14 @@
 
 .contact-details-newlayout {
   background-color: var(--color-background-subtle);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
   border-radius: var(--size-border-radius-m);
 }
 
 @media (min-width: size.$tablet) {
   .contact-details-container-oldlayout {
     width: rem.torem(315px);
-    padding: rem.torem(16px);
+    padding: var(--size-spacing-l);
   }
 
   .contact-details-container-newlayout {

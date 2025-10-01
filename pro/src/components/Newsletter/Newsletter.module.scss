@@ -28,8 +28,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding-left: rem.torem(16px);
-    padding-right: rem.torem(16px);
+    padding-left: var(--size-spacing-l);
+    padding-right: var(--size-spacing-l);
     min-height: rem.torem(53px);
 
     @media (min-width: size.$tablet) {

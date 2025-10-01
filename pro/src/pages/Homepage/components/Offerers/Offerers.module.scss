@@ -4,7 +4,7 @@
 .title {
   @include fonts.title2;
 
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .loader-container {

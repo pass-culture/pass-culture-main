@@ -7,13 +7,13 @@
   top: 0;
   right: 0;
   display: flex;
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
   justify-content: space-between;
   align-items: center;
 
   @media (max-width: size.$tablet) {
     flex-direction: column;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
     align-items: unset;
   }
 
@@ -28,11 +28,11 @@
   display: flex;
   border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
 
   @media (max-width: size.$tablet) {
     flex-direction: column;
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
   }
 
   &-info {
@@ -42,7 +42,7 @@
 
     @media (max-width: size.$tablet) {
       flex-direction: column;
-      gap: rem.torem(32px);
+      gap: var(--size-spacing-xxl);
     }
   }
 }
@@ -54,11 +54,11 @@
 .header-actions {
   display: flex;
   flex-direction: column;
-  margin-right: rem.torem(16px);
-  margin-left: rem.torem(16px);
+  margin-right: var(--size-spacing-l);
+  margin-left: var(--size-spacing-l);
 
   li {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
 
     &:last-child {
       margin-bottom: 0;
@@ -69,7 +69,7 @@
     @include fonts.body-accent-s;
 
     color: var(--color-text-subtle);
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 }
 
@@ -78,7 +78,7 @@
   aspect-ratio: 2 / 3;
   border-radius: var(--size-border-radius-m);
   box-shadow: var(--shadow-overlay);
-  margin-right: rem.torem(24px);
+  margin-right: var(--size-spacing-xl);
 }
 
 .default-preview {
@@ -101,17 +101,17 @@
 }
 
 .banner-container {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .offer-details {
   display: flex;
   flex-direction: row;
-  gap: rem.torem(24px);
-  margin-top: rem.torem(32px);
+  gap: var(--size-spacing-xl);
+  margin-top: var(--size-spacing-xxl);
 
   @media (max-width: size.$tablet) {
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
     flex-direction: column;
   }
 }
@@ -127,5 +127,5 @@
 .container {
   display: flex;
   flex-direction: row;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }

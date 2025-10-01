@@ -17,10 +17,10 @@
 
   &-actions {
     max-width: rem.torem(486px);
-    margin: rem.torem(40px) auto 0;
+    margin: var(--size-spacing-xxxl) auto 0;
     display: flex;
     flex-wrap: wrap;
-    gap: rem.torem(24px);
+    gap: var(--size-spacing-xl);
     justify-content: center;
   }
 

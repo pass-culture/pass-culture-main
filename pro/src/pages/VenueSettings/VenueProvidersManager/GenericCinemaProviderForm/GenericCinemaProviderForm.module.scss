@@ -13,7 +13,7 @@
   &-buttons {
     display: flex;
     align-items: center;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }
 
@@ -21,8 +21,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: rem.torem(24px);
-  margin-bottom: rem.torem(16px);
+  gap: var(--size-spacing-xl);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .price-input,
@@ -31,5 +31,5 @@
 }
 
 .allocine-provider-form-banner {
-  margin: rem.torem(32px) 0;
+  margin: var(--size-spacing-xxl) 0;
 }

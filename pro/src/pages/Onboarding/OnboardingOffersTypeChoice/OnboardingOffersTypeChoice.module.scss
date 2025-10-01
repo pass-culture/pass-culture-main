@@ -1,11 +1,9 @@
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .onboarding-offer-container {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(32px);
+  gap: var(--size-spacing-xxl);
   align-items: flex-start;
   justify-content: flex-start;
 }

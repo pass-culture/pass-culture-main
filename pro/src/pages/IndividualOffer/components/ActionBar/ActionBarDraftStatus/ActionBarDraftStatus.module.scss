@@ -2,23 +2,23 @@
 @use "styles/mixins/_size.scss" as size;
 
 .draft-saved-icon {
-    color: var(--color-icon-success);
-    vertical-align: middle;
+  color: var(--color-icon-success);
+  vertical-align: middle;
 }
 
 $not-saved-size: rem.torem(16px);
 
 .draft-not-saved-icon {
-    display: inline-block;
-    vertical-align: middle;
-    width: $not-saved-size;
-    height: $not-saved-size;
-    border-radius: var(--size-border-radius-pill);
-    background-color: var(--color-icon-warning);
+  display: inline-block;
+  vertical-align: middle;
+  width: $not-saved-size;
+  height: $not-saved-size;
+  border-radius: var(--size-border-radius-pill);
+  background-color: var(--color-icon-warning);
 }
 
 .draft-indicator {
-    display: flex;
-    align-items: center;
-    gap: rem.torem(8px);
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-s);
 }

@@ -6,9 +6,9 @@
 .buttons-field {
   display: flex;
   flex-direction: column-reverse;
-  gap: rem.torem(24px);
-  margin-top: rem.torem(32px);
-  padding-bottom: rem.torem(32px);
+  gap: var(--size-spacing-xl);
+  margin-top: var(--size-spacing-xxl);
+  padding-bottom: var(--size-spacing-xxl);
 
   @media (min-width: size.$desktop) {
     flex-direction: row;
@@ -27,7 +27,7 @@
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 
   .no-account-text {
@@ -42,5 +42,5 @@
 }
 
 .text-input {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }

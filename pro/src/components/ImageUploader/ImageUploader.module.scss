@@ -3,12 +3,12 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .explanatory-text {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .image-uploader-image-container {
   display: flex;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .image-uploader-actions-container {
@@ -16,7 +16,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
-  margin-left: rem.torem(32px);
+  margin-left: var(--size-spacing-xxl);
 
   .actions-wrapper {
     height: rem.torem(108px);

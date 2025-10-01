@@ -4,7 +4,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .block-title {
@@ -18,20 +18,20 @@
 .top-offers {
   display: flex;
   flex-direction: column;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 }
 
 .top-offer {
   display: flex;
   align-items: center;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
 
   &-title {
     @include fonts.body-accent-xs;
   }
 
   &-headline-tag {
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
   }
 
   &-rank {
@@ -44,7 +44,7 @@
     flex-shrink: 0;
 
     &-placeholder {
-      padding: rem.torem(8px);
+      padding: var(--size-spacing-s);
     }
   }
 

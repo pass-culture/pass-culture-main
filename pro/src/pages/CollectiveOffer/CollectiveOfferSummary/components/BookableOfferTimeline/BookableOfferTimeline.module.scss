@@ -6,13 +6,13 @@
 .title {
   @include fonts.title2;
 
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }
 
 .timeline-container {
   border: rem.torem(1px) solid var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
-  padding: rem.torem(24px);
+  padding: var(--size-spacing-xl);
 }
 
 .status {
@@ -37,7 +37,7 @@
 }
 
 .callout {
-  margin-top: rem.torem(8px);
+  margin-top: var(--size-spacing-s);
 
   &-accent {
     @include fonts.body-accent;
@@ -48,6 +48,6 @@
   }
 
   &-space {
-    margin-top: rem.torem(24px);
+    margin-top: var(--size-spacing-xl);
   }
 }

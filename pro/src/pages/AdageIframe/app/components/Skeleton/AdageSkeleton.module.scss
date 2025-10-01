@@ -7,7 +7,7 @@
   border-radius: var(--size-border-radius-l);
   animation: pulse 1.5s infinite alternate;
   width: 100%;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 
   &-image {
     width: rem.torem(175px);
@@ -25,7 +25,7 @@
     width: 75%;
     height: rem.torem(32px);
     background-color: var(--color-background-subtle);
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-tag {
@@ -38,8 +38,8 @@
   &-info {
     width: 100%;
     display: flex;
-    gap: rem.torem(16px);
-    margin-bottom: rem.torem(24px);
+    gap: var(--size-spacing-l);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-header {
@@ -49,7 +49,7 @@
 
   &-actions {
     display: flex;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 
   &-button {
@@ -74,8 +74,8 @@
   &-info {
     width: 100%;
     display: flex;
-    gap: rem.torem(16px);
-    margin: rem.torem(16px) 0;
+    gap: var(--size-spacing-l);
+    margin: var(--size-spacing-l) 0;
   }
 
   &-tag {
@@ -89,7 +89,7 @@
     width: 100%;
     height: rem.torem(32px);
     background-color: var(--color-background-subtle);
-    margin-bottom: rem.torem(16px);
+    margin-bottom: var(--size-spacing-l);
   }
 }
 
@@ -97,13 +97,13 @@
   width: 100%;
   height: rem.torem(15px);
   background-color: var(--color-background-subtle);
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 
   &-25 {
     width: 25%;
     height: rem.torem(15px);
     background-color: var(--color-background-subtle);
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-50 {
@@ -116,7 +116,7 @@
     width: 100%;
     height: rem.torem(15px);
     background-color: var(--color-background-subtle);
-    margin-bottom: rem.torem(8px);
+    margin-bottom: var(--size-spacing-s);
   }
 }
 

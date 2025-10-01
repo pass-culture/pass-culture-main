@@ -4,7 +4,7 @@
 @use "styles/mixins/_size.scss" as size;
 
 .dialog {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -16,17 +16,17 @@
   }
 
   &-callout {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: var(--size-spacing-xxl);
   }
 
   &-subtitle {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
   }
 
   &-checkboxes {
     height: rem.torem(200px);
     overflow-y: auto;
-    margin-bottom: rem.torem(24px);
+    margin-bottom: var(--size-spacing-xl);
     flex-grow: 1;
   }
 
@@ -34,8 +34,8 @@
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid var(--separator-color-subtle);
-    padding-bottom: rem.torem(16px);
-    margin-bottom: rem.torem(16px);
+    padding-bottom: var(--size-spacing-l);
+    margin-bottom: var(--size-spacing-l);
     align-items: center;
 
     &-count {
@@ -45,6 +45,6 @@
 
   &-actions {
     display: flex;
-    gap: rem.torem(16px);
+    gap: var(--size-spacing-l);
   }
 }

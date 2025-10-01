@@ -34,21 +34,21 @@
       &-items {
         display: flex;
         flex-flow: row wrap;
-        gap: rem.torem(16px);
+        gap: var(--size-spacing-l);
         align-items: center;
       }
     }
   }
 
   &-button-clear {
-    margin-top: rem.torem(16px);
+    margin-top: var(--size-spacing-l);
   }
 }
 
 .geoloc-slider {
-  margin: rem.torem(24px) 0;
+  margin: var(--size-spacing-xl) 0;
 }
 
 .localisation-list-button:not(:last-child) {
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }

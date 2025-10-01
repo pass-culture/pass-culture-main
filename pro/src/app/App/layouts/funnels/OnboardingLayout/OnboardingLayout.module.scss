@@ -74,7 +74,7 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .onboarding-layout {
-  margin: rem.torem(32px) auto 0 auto;
+  margin: var(--size-spacing-xxl) auto 0 auto;
   padding: 0 rem.torem(32px);
   display: flex;
   flex-direction: column;
@@ -84,7 +84,7 @@ $connect-as-header-height: rem.torem(52px);
   justify-content: flex-start;
 
   &.vertically-centered {
-    margin-top: rem.torem(32px);
+    margin-top: var(--size-spacing-xxl);
 
     @media (min-width: size.$laptop) {
       margin-top: 15vh;

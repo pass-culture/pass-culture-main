@@ -3,11 +3,11 @@
 
 .container {
   display: flex;
-  gap: rem.torem(16px);
+  gap: var(--size-spacing-l);
   flex-wrap: wrap;
   width: rem.torem(1020px);
   max-width: 100%;
-  margin: rem.torem(32px) auto rem.torem(32px);
+  margin: var(--size-spacing-xxl) auto rem.torem(32px);
   align-items: center;
 }
 
@@ -17,10 +17,10 @@
   background-color: var(--color-background-info);
   color: var(--color-text-default);
   border: none;
-  padding: rem.torem(8px) rem.torem(12px);
+  padding: var(--size-spacing-s) var(--size-spacing-m);
   border-radius: var(--size-border-radius-m);
   display: flex;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
   align-items: center;
   cursor: pointer;
 

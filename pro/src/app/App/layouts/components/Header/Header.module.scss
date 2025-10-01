@@ -59,7 +59,7 @@
     }
 
     @media (min-width: size.$laptop) {
-      margin-left: rem.torem(16px);
+      margin-left: var(--size-spacing-l);
     }
 
     &:focus-visible {
@@ -69,7 +69,7 @@
     }
 
     &-link-disabled {
-      margin-left: rem.torem(16px);
+      margin-left: var(--size-spacing-l);
     }
   }
 }
@@ -77,14 +77,14 @@
 .top-right-menu {
   display: flex;
   align-items: center;
-  gap: rem.torem(32px);
+  gap: var(--size-spacing-xxl);
 
   &-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    column-gap: rem.torem(32px);
+    column-gap: var(--size-spacing-xxl);
   }
 }
 

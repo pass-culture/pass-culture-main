@@ -6,12 +6,12 @@
 $icon-size: rem.torem(20px);
 
 .details-ean-search {
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
   position: relative;
 }
 
 .details-ean-search-callout {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .clear-button {

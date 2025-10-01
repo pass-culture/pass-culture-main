@@ -5,13 +5,13 @@
 .title {
   @include fonts.title3;
 
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: rem.torem(8px);
+  gap: var(--size-spacing-s);
 
   @media (min-width: size.$tablet) {
     grid-template-columns: 1fr 1fr;
@@ -34,14 +34,14 @@
 
 .stat-block {
   display: flex;
-  padding: rem.torem(16px) rem.torem(8px);
+  padding: var(--size-spacing-l) var(--size-spacing-s);
   border-radius: var(--size-border-radius-m);
 
   &-icon {
     width: rem.torem(48px);
     height: rem.torem(48px);
     color: var(--color-icon-brand-primary);
-    margin-right: rem.torem(8px);
+    margin-right: var(--size-spacing-s);
   }
 
   &-count {
@@ -53,5 +53,5 @@
 }
 
 .pending-offers {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }

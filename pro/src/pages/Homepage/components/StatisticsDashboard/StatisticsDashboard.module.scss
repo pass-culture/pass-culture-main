@@ -3,18 +3,18 @@
 @use "styles/mixins/_size.scss" as size;
 
 .section {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 .offer-stats {
-  margin-top: rem.torem(16px);
+  margin-top: var(--size-spacing-l);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: rem.torem(16px);
+  margin-bottom: var(--size-spacing-l);
 }
 
 .title {
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: rem.torem(16px) 0;
+  margin: var(--size-spacing-l) 0;
 
   &-icon {
     width: rem.torem(42px);
@@ -36,9 +36,9 @@
 
 .data-container {
   display: grid;
-  gap: rem.torem(32px);
+  gap: var(--size-spacing-xxl);
   grid-template-columns: 1fr;
-  margin-top: rem.torem(8px);
+  margin-top: var(--size-spacing-s);
 
   &.has-top-offers {
     @media (min-width: size.$tablet) {
@@ -51,5 +51,5 @@
   @include fonts.body-accent-xs;
 
   text-align: end;
-  margin-top: rem.torem(8px);
+  margin-top: var(--size-spacing-s);
 }

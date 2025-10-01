@@ -175,12 +175,12 @@
     color: var(--color-text-brand-primary);
     max-width: rem.torem(135px);
     align-self: center;
-    margin-top: rem.torem(32px);
+    margin-top: var(--size-spacing-xxl);
 
     @media (min-width: size.$laptop) {
       align-self: flex-start;
-      margin-left: rem.torem(40px);
-      margin-top: rem.torem(40px);
+      margin-left: var(--size-spacing-xxxl);
+      margin-top: var(--size-spacing-xxxl);
       flex-shrink: 0;
     }
   }
@@ -190,7 +190,7 @@
     max-width: rem.torem(640px);
     align-self: center;
     margin: auto;
-    padding-bottom: rem.torem(48px);
+    padding-bottom: var(--size-spacing-xxxxl);
 
     /* For ultra-wide screens, makes content little bit more larger */
     @media (min-width: rem.torem(2600px)) {
@@ -206,10 +206,10 @@
   margin: 0;
 
   &-sign-up {
-    padding: rem.torem(16px);
+    padding: var(--size-spacing-l);
 
     @media (min-width: size.$laptop) {
-      padding: rem.torem(24px);
+      padding: var(--size-spacing-xl);
     }
   }
 }

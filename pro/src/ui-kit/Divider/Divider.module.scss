@@ -2,11 +2,11 @@
 
 .divider {
   &.divider-medium {
-    margin: rem.torem(16px) 0 rem.torem(16px) 0;
+    margin: var(--size-spacing-l) 0 var(--size-spacing-l) 0;
   }
 
   &.divider-large {
-    margin: rem.torem(24px) 0 rem.torem(24px) 0;
+    margin: var(--size-spacing-xl) 0 var(--size-spacing-xl) 0;
   }
 
   &.horizontal {

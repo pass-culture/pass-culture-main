@@ -6,7 +6,7 @@
   bottom: 0;
   left: 0;
   display: flex;
-  padding: rem.torem(8px) rem.torem(24px);
+  padding: var(--size-spacing-s) var(--size-spacing-xl);
   position: fixed;
   text-align: center;
   visibility: hidden;
@@ -75,7 +75,7 @@
 
   .icon {
     flex: 0 0 rem.torem(40px);
-    padding-right: rem.torem(8px);
+    padding-right: var(--size-spacing-s);
     width: rem.torem(40px);
     color: var(--color-icon-default);
   }

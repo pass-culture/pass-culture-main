@@ -9,7 +9,7 @@
   align-items: flex-start;
   border-radius: var(--size-border-radius-m);
   border: 1px solid var(--color-border-subtle);
-  padding: rem.torem(16px) rem.torem(24px) rem.torem(8px);
+  padding: var(--size-spacing-l) var(--size-spacing-xl) var(--size-spacing-s);
   width: 100%;
   gap: rem.torem(20px);
   max-width: rem.torem(486px);
@@ -35,7 +35,7 @@
 
 .provider-logo {
   height: rem.torem(40px);
-  margin-right: rem.torem(16px);
+  margin-right: var(--size-spacing-l);
 }
 
 .provider-name {
@@ -51,14 +51,14 @@
 }
 
 .venue-provider-account-info {
-  margin-bottom: rem.torem(8px);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .provider-actions-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(12px);
+  gap: var(--size-spacing-m);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
@@ -73,12 +73,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: rem.torem(12px);
+  gap: var(--size-spacing-m);
 
   @media (min-width: size.$tablet) {
     flex-direction: row;
     align-items: center;
-    gap: rem.torem(8px);
+    gap: var(--size-spacing-s);
   }
 }
 
@@ -86,8 +86,8 @@
   display: flex;
   flex-direction: column;
   color: var(--color-text-subtle);
-  margin-top: rem.torem(8px);
-  gap: rem.torem(8px);
+  margin-top: var(--size-spacing-s);
+  gap: var(--size-spacing-s);
 }
 
 .last-synchronisation {
@@ -97,7 +97,7 @@
     content: "";
     display: inline-block;
     height: rem.torem(8px);
-    margin-right: rem.torem(8px);
+    margin-right: var(--size-spacing-s);
     width: rem.torem(8px);
   }
 }

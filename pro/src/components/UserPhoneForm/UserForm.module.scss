@@ -3,17 +3,17 @@
 
 .profile-form-field {
   max-width: rem.torem(400px);
-  margin-bottom: rem.torem(32px);
+  margin-bottom: var(--size-spacing-xxl);
 }
 
 .buttons-field {
-  margin-top: rem.torem(24px);
+  margin-top: var(--size-spacing-xl);
 
   & > button:nth-child(2) {
-    margin-left: rem.torem(8px);
+    margin-left: var(--size-spacing-s);
   }
 }
 
 .text-input {
-  margin-bottom: rem.torem(24px);
+  margin-bottom: var(--size-spacing-xl);
 }

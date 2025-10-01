@@ -1,5 +1,4 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
 .subtitle {
@@ -7,7 +6,7 @@
 }
 
 .input-siret {
-  margin-top: rem.torem(32px);
+  margin-top: var(--size-spacing-xxl);
 }
 
 @media screen and (min-width: size.$tablet) {
