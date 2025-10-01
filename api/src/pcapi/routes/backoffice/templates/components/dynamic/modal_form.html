@@ -1,9 +1,11 @@
 <div class="modal-content"
      {% if modal_content_id %}id="{{ modal_content_id }}"{% endif %}>
   {% if form %}
+    {% set has_file_field = form | map(attribute="is_file_field") | any %}
     <form name="{{ dst | action_to_name }}"
           method="{% if form.method %}form.method{% else %}post{% endif %}"
           {% if (ajax_submit is not defined) or ajax_submit %} hx-target="{{ target_id }}" hx-post="{{ dst }}" hx-swap="outerHTML" hx-trigger="submit" {% endif %}
+          {% if has_file_field %}enctype="multipart/form-data"{% endif %}
           action="{{ dst }}">
       {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
     {% endif %}

@@ -4,6 +4,7 @@
             data-original-name="{{ field.name }}"
             class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %}"
             rows="{{ field.rows }}"
+            id="{{ textarea_field_id }}"
             {% if field.flags.required %}required {% endif +%}
             {% if field.flags.readonly %}readonly {% endif +%}
             {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
