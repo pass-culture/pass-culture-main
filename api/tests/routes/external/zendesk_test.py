@@ -12,20 +12,27 @@ from pcapi.core.users import constants as user_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
+from pcapi.utils import postal_code as postal_code_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class ZendeskWebhookTest:
     @pytest.mark.parametrize(
-        "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]
+        "phone_number,postal_code,expected_additional_tags",
+        [
+            ("0612345678", "55270", ["département_55"]),
+            ("06 12 34 56 78", None, []),
+            ("+33612345678", "97600", ["département_976"]),
+        ],
     )
-    def test_webhook_update_user_by_email(self, client, caplog, phone_number, postal_code):
+    def test_webhook_update_user_by_email(self, client, caplog, phone_number, postal_code, expected_additional_tags):
         birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
 
         user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(birth_year, 1, 2),
             phoneNumber=phone_number,
             postalCode=postal_code,
+            departementCode=postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
 
@@ -50,7 +57,7 @@ class ZendeskWebhookTest:
             "user": {
                 "email": user.email,
                 "phone": "+33612345678",
-                "tags": ["BENEFICIARY", "actif", "id_check_terminé", "éligible"],
+                "tags": ["BENEFICIARY", "actif", "id_check_terminé", "éligible"] + expected_additional_tags,
                 "user_fields": {
                     "backoffice_url": expected_bo_url,
                     "user_id": user.id,
