@@ -16,7 +16,6 @@ from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
-from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 from pcapi.core.offers import api as offers_api
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -128,18 +127,7 @@ class CGRStocks(LocalProvider):
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.date.today():
             if self.film_infos.Affiche:
-                image_url = self.film_infos.Affiche
-                try:
-                    image = self.cgr_client_api.get_movie_poster_from_api(image_url)
-                except CGRAPIException:
-                    image = None
-                    logger.info(
-                        "Could not fetch movie poster",
-                        extra={
-                            "provider": "cgr",
-                            "url": image_url,
-                        },
-                    )
+                image = self.cgr_client_api.get_movie_poster(self.film_infos.Affiche)
                 if image and self.product and not self.product.productMediations:
                     try:
                         image_id = str(uuid.uuid4())

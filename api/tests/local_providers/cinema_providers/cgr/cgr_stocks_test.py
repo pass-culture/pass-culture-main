@@ -16,6 +16,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import CGRStocks
 from pcapi.models import db
+from pcapi.utils.requests import exceptions as requests_exception
 
 import tests
 from tests.connectors.cgr import soap_definitions
@@ -615,7 +616,18 @@ class CGRStocksTest:
 
         assert get_poster_adapter.call_count == 1
 
-    def test_handle_error_on_movie_poster(self, requests_mock):
+    @pytest.mark.parametrize(
+        "get_adapter_error_params",
+        [
+            # invalid responses
+            {"status_code": 404},
+            {"status_code": 502},
+            # unexpected errors
+            {"exc": requests_exception.ReadTimeout},
+            {"exc": requests_exception.ConnectTimeout},
+        ],
+    )
+    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
         cgr_provider = get_provider_by_local_class("CGRStocks")
@@ -630,15 +642,20 @@ class CGRStocksTest:
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
         )
+        requests_mock.get("https://example.com/149341.jpg", **get_adapter_error_params)
 
-        requests_mock.get("https://example.com/149341.jpg", status_code=404)
-
-        cgr_stocks = CGRStocks(venue_provider=venue_provider)
-        cgr_stocks.updateObjects()
+        with caplog.at_level(logging.WARNING, logger="pcapi.core.external_bookings.models"):
+            cgr_stocks = CGRStocks(venue_provider=venue_provider)
+            cgr_stocks.updateObjects()
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.image is None
         assert created_offer.activeMediation is None
+
+        assert len(caplog.records) >= 1
+        last_record = caplog.records.pop()
+        assert last_record.message == "Could not fetch movie poster"
+        assert last_record.extra == {"client": "CGRClientAPI", "url": "https://example.com/149341.jpg"}
 
     def should_link_offer_with_known_visa_to_product(self, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
