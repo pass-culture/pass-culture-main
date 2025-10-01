@@ -8,12 +8,12 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.cache import cached_view
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprints.public_api.route("/v2/collective/educational-domains", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],

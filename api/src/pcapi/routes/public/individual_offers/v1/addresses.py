@@ -13,7 +13,7 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
+from pcapi.validation.routes.users_authentifications import api_key_required
 
 from .serializers.addresses import AddressModel
 from .serializers.addresses import AddressResponse
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 @blueprints.public_api.route("/public/offers/v1/addresses/<int:address_id>", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.ADDRESSES],
@@ -57,7 +57,7 @@ def get_address(
 
 @blueprints.public_api.route("/public/offers/v1/addresses/search", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.ADDRESSES],
@@ -115,7 +115,7 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
 
 @blueprints.public_api.route("/public/offers/v1/addresses", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.ADDRESSES],

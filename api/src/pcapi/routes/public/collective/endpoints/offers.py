@@ -20,8 +20,8 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 PATCH_NON_NULLABLE_FIELDS = (
@@ -50,7 +50,7 @@ PATCH_NON_NULLABLE_FIELDS = (
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -90,7 +90,7 @@ def get_collective_offers_public(
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -129,7 +129,7 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -254,7 +254,7 @@ def post_collective_offer_public(
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -506,7 +506,7 @@ def patch_collective_offer_public(
 
 @blueprints.public_api.route("/v2/collective/offers/archive", methods=["POST"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -546,7 +546,7 @@ def archive_collective_offers(
 
 @blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],

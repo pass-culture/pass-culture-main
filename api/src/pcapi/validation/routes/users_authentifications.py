@@ -45,12 +45,9 @@ def brevo_webhook(route_function: typing.Callable) -> typing.Callable:
     return wrapper
 
 
-def provider_api_key_required(route_function: typing.Callable) -> typing.Callable:
+def api_key_required(route_function: typing.Callable) -> typing.Callable:
     """
-    Require the user to be authenticated as a provider using an API key.
-
-    Prevent old API key (that authenticates an offerer) bearer to access routes requiring an
-    authenticated provider.
+    Require the user to be authenticated as a provider using an API key
     """
     add_security_scheme(route_function, API_KEY_AUTH_NAME)
 
@@ -59,7 +56,7 @@ def provider_api_key_required(route_function: typing.Callable) -> typing.Callabl
         _fill_current_api_key()
         public_utils.setup_public_api_log_extra(route_function)
 
-        if not g.current_api_key or not g.current_api_key.provider:
+        if not g.current_api_key:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
 
         sentry_sdk.set_tag("provider-name", g.current_api_key.provider.name)

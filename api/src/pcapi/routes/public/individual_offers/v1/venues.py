@@ -17,8 +17,8 @@ from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.siren import SIRET_OR_RIDET_RE
 from pcapi.utils.siren import is_siret_or_ridet
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 @blueprints.public_api.route("/public/offers/v1/offerer_venues", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.VENUES],
@@ -53,7 +53,7 @@ def get_offerer_venues(
 
 @blueprints.public_api.route("/public/offers/v1/venues/<siret>", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.VENUES],

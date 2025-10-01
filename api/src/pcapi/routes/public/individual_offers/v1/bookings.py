@@ -20,8 +20,8 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
-from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 from . import bookings_serialization as serialization
 
@@ -100,7 +100,7 @@ def _get_paginated_and_filtered_bookings(
 
 @blueprints.public_api.route("/public/bookings/v1/bookings", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
@@ -160,7 +160,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 
 @blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
@@ -203,7 +203,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 
 @blueprints.public_api.route("/public/bookings/v1/use/token/<token>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -251,7 +251,7 @@ def validate_booking_by_token(token: str) -> None:
 
 @blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -299,7 +299,7 @@ def cancel_booking_validation_by_token(token: str) -> None:
 
 @blueprints.public_api.route("/public/bookings/v1/cancel/token/<token>", methods=["PATCH"])
 @atomic()
-@provider_api_key_required
+@api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
