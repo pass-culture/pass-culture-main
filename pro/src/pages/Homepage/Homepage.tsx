@@ -2,9 +2,10 @@ import { useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
@@ -37,17 +38,7 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  // TODO: this may need to be in the store, as it is loaded in the header dropdown
-  const {
-    data: selectedOfferer,
-    error: offererApiError,
-    isLoading: isOffererLoading,
-    isValidating: isOffererValidating,
-  } = useOfferer(selectedOffererId, true)
-
-  const isUserOffererValidated = !offererApiError
+  const selectedOfferer = useSelector(selectCurrentOfferer)
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -69,12 +60,7 @@ export const Homepage = (): JSX.Element => {
             <LinkVenueCallout offerer={selectedOfferer} />
             <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
           </div>
-          {!isOffererValidating && (selectedOfferer || offererApiError) && (
-            <OffererBanners
-              isUserOffererValidated={isUserOffererValidated}
-              offerer={selectedOfferer}
-            />
-          )}
+          {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
 
           {selectedOfferer?.isValidated && selectedOfferer.isActive && (
             <section className={styles.section}>
@@ -85,22 +71,18 @@ export const Homepage = (): JSX.Element => {
           <section className={styles.section} ref={offerersRef}>
             <Offerers
               selectedOfferer={selectedOfferer}
-              isLoading={isOffererLoading}
               offererOptions={offererOptions}
-              isUserOffererValidated={isUserOffererValidated}
             />
           </section>
 
-          {isUserOffererValidated &&
-            hasNoVenueVisible &&
-            selectedOfferer !== null && (
-              <section className={styles['step-section']}>
-                <VenueOfferSteps
-                  hasVenue={!hasNoVenueVisible}
-                  offerer={selectedOfferer}
-                />
-              </section>
-            )}
+          {hasNoVenueVisible && selectedOfferer !== null && (
+            <section className={styles['step-section']}>
+              <VenueOfferSteps
+                hasVenue={!hasNoVenueVisible}
+                offerer={selectedOfferer}
+              />
+            </section>
+          )}
 
           <section className={styles.section} ref={profileRef}>
             <div className={styles.newsletter}>
