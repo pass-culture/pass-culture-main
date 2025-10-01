@@ -9,7 +9,7 @@ import {
   updateOffererNames,
 } from '@/commons/store/offerer/reducer'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
+import { setIsUnAttached, updateUser } from '@/commons/store/user/reducer'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -66,6 +66,7 @@ export const StoreProvider = ({
           )
           dispatch(updateCurrentOfferer(offererObj))
           dispatch(updateOffererNames(response.offerersNames))
+          dispatch(setIsUnAttached(false))
         } catch {
           dispatch(
             // TODO: Find a better way with the Product team to handle this behavior
@@ -74,6 +75,7 @@ export const StoreProvider = ({
               id: offererIdToUse,
             })
           )
+          dispatch(setIsUnAttached(true))
         }
       } catch {
         // In any other case, it's a normal error
