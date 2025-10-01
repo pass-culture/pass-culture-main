@@ -256,3 +256,15 @@ class HighlightNotFoundException(HighlightException):
 class UnavailableHighlightException(HighlightException):
     def __init__(self) -> None:
         super().__init__("highlight", "Highlight is unavailable")
+
+
+class VideoValidationError(Exception):
+    pass
+
+
+class VideoMustBeFromYoutubeError(VideoValidationError):
+    def __init__(self) -> None:
+        super().__init__(
+            "videoUrl",
+            "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile",
+        )

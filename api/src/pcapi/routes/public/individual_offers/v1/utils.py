@@ -1,3 +1,4 @@
+import logging
 import typing
 
 import sqlalchemy as sa
@@ -20,6 +21,9 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 from . import constants
 from . import serialization
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
@@ -166,6 +170,26 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
     except image_conversion.ImageRatioError as error:
         raise api_errors.ApiErrors(
             errors={"imageFile": f"Bad image ratio: expected {str(error.expected)[:4]}, found {str(error.found)[:4]}"}
+        )
+
+
+def save_video(video_url: str | None, offer: offers_models.Offer) -> None:
+    if video_url:
+        if not offers_api.extract_youtube_video_id(video_url):
+            raise api_errors.ApiErrors(
+                {
+                    "videoUrl": [
+                        "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
+                    ]
+                }
+            )
+        offers_api.update_video_and_metadata(video_url, offer)
+    elif offer.metaData:
+        offers_api.remove_video_data_from_offer_metadata(offer.metaData)
+        logger.info(
+            "Video has been deleted from offer",
+            extra={"offer_id": offer.id, "venue_id": offer.venueId, "video_url": offer.metaData.videoUrl},
+            technical_message_id="offer.video.deleted",
         )
 
 

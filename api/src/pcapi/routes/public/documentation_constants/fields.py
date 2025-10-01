@@ -240,6 +240,10 @@ class _FIELDS:
     EVENT_CONDITIONAL_FIELDS = Field(
         description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
     )
+    VIDEO_URL = Field(
+        description="Video URL, must be from the Youtube plateform, it should be public and should not be a short nor a user's profile. To remove video from an offer, set to `null` ",
+        example="https://www.youtube.com/watch?v=0R5PZxOgoz8",
+    )
 
     # Booking fields
     BOOKING_STATUS = Field(description=descriptions.BOOKING_STATUS_DESCRIPTION, example="CONFIRMED")
@@ -402,6 +406,7 @@ class _FIELDS:
         description="Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
         example="https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
     )
+
     ALLOWED_ON_ADAGE = Field(
         description="Can the offerer create collective offers?",
         example=True,
