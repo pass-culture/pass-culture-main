@@ -72,6 +72,12 @@ def upsert_product_stock(
     )
 
 
+def _ensure_timezone_exists(dt: datetime.datetime | None) -> datetime.datetime | None:
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=datetime.UTC)
+    return dt
+
+
 def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,
