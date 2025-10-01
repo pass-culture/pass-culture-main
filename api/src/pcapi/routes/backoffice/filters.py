@@ -1838,8 +1838,6 @@ def format_collective_location_type(location_type: educational_models.Collective
             return "À l’adresse"
         case educational_models.CollectiveLocationType.TO_BE_DEFINED:
             return "À déterminer"
-        case _:
-            return location_type.value
 
 
 def format_legal_category_code(code: int | str) -> str:

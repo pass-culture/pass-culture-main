@@ -291,7 +291,7 @@ def _validate_location(location: typing.Any) -> None:
             raise ValueError(f"Les valeurs autorisées pour le champ type sont {', '.join(allowed_types)}")
 
 
-def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation | None:
+def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> CollectiveOfferLocation:
     match offer.locationType:
         case CollectiveLocationType.SCHOOL:
             return CollectiveOfferLocationSchoolModel(type=CollectiveLocationType.SCHOOL.value)
@@ -314,8 +314,6 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
                     addressLabel=offer.offererAddress.label,
                     addressId=offer.offererAddress.addressId,
                 )
-        case _:
-            return None
 
 
 class GetPublicCollectiveOfferResponseModel(BaseModel):
@@ -345,7 +343,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     priceDetail: str | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_PRICE_DETAIL
     educationalInstitution: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     educationalInstitutionId: int | None = fields.EDUCATIONAL_INSTITUTION_ID
-    location: CollectiveOfferLocation | None = fields.COLLECTIVE_OFFER_LOCATION
+    location: CollectiveOfferLocation = fields.COLLECTIVE_OFFER_LOCATION
     imageCredit: str | None = fields.IMAGE_CREDIT
     imageUrl: str | None = fields.IMAGE_URL
     bookings: typing.Sequence[CollectiveBookingResponseModel]
@@ -358,7 +356,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
         allow_population_by_field_name = True
 
     @classmethod
-    def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
+    def from_orm(
+        cls: type["GetPublicCollectiveOfferResponseModel"], offer: CollectiveOffer
+    ) -> "GetPublicCollectiveOfferResponseModel":
         location = get_collective_offer_location_from_offer(offer)
 
         return cls(

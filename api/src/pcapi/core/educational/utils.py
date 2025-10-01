@@ -99,7 +99,7 @@ def get_non_empty_date_time_range(start: datetime, end: datetime) -> DateTimeRan
     return DateTimeRange(start, new_end)
 
 
-def get_collective_offer_full_address(offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> str | None:
+def get_collective_offer_full_address(offer: models.CollectiveOffer | models.CollectiveOfferTemplate) -> str:
     match offer.locationType:
         case models.CollectiveLocationType.SCHOOL:
             return "En établissement scolaire"
@@ -121,9 +121,6 @@ def get_collective_offer_full_address(offer: models.CollectiveOffer | models.Col
 
         case models.CollectiveLocationType.TO_BE_DEFINED:
             return "À déterminer avec l'enseignant"
-
-        case _:
-            return None
 
 
 def format_collective_offer_displayed_status(

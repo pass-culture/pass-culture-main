@@ -625,8 +625,8 @@ class CollectiveOffer(
     # locationType = SCHOOL -> the offer is located at school - offererAddressId and locationComment are None
     # locationType = ADDRESS -> the offer is located at a specific address - offererAddressId is filled and locationComment is None
     # locationType = TO_BE_DEFINED -> the offer location is not precisely defined - offererAddressId is None and locationComment may be filled
-    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+    locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CollectiveLocationType), nullable=False
     )
     sa.Index("ix_collective_offer_locationType_offererAddressId", locationType, offererAddressId)
 
@@ -1136,8 +1136,8 @@ class CollectiveOfferTemplate(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
-    locationType: sa_orm.Mapped[CollectiveLocationType | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveLocationType), nullable=True, server_default=None, default=None
+    locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
+        db_utils.MagicEnum(CollectiveLocationType), nullable=False
     )
     sa.Index("ix_collective_offer_template_locationType_offererAddressId", locationType, offererAddressId)
 

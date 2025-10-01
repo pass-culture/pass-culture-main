@@ -23,7 +23,7 @@ export type CollectiveOfferResponseModel = {
   isActive: boolean;
   isEducational: boolean;
   isShowcase: boolean;
-  location?: GetCollectiveOfferLocationModel | null;
+  location: GetCollectiveOfferLocationModel;
   name: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   venue: ListOffersVenueResponseModel;

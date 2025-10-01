@@ -830,6 +830,16 @@ class CollectiveOfferTemplateHasEndDatePassedTest:
         assert {o.id for o in not_passed_offers} == {offer_without_range.id, offer_with_range.id}
 
 
+class CollectiveOfferConstraintsTest:
+    def test_collective_offer_location_type(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.CollectiveOfferFactory(locationType=None)
+
+    def test_collective_offer_template_location_type(self):
+        with pytest.raises(sa_exc.IntegrityError):
+            factories.CollectiveOfferTemplateFactory(locationType=None)
+
+
 class CollectiveBookingTest:
     @pytest.mark.parametrize("status", set(CollectiveBookingStatus) - {CollectiveBookingStatus.CANCELLED})
     def test_uncancel_booking_raise(self, status):
