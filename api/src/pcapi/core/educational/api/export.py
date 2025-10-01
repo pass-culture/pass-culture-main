@@ -49,7 +49,6 @@ def _format_export_datetime(date_time: datetime.datetime, timezone: str | None) 
 
 
 FORMAT_LOCATION_TYPE = {
-    None: "",  # TODO: remove this when locationType is not nullable
     models.CollectiveLocationType.SCHOOL: "En établissement scolaire",
     models.CollectiveLocationType.ADDRESS: "À une adresse précise",
     models.CollectiveLocationType.TO_BE_DEFINED: "À déterminer avec l'enseignant",

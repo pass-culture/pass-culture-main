@@ -158,7 +158,7 @@ class CollectiveOfferResponseModel(BaseModel):
     educationalInstitution: EducationalInstitutionResponseModel | None
     imageUrl: str | None
     dates: TemplateDatesModel | None
-    location: GetCollectiveOfferLocationModel | None
+    location: GetCollectiveOfferLocationModel
 
     class Config:
         alias_generator = to_camel
@@ -375,10 +375,7 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> GetCollectiveOfferLocationModel | None:
-    if offer.locationType is None:
-        return None
-
+) -> GetCollectiveOfferLocationModel:
     address = None
     oa = offer.offererAddress
     if oa is not None:
@@ -410,7 +407,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     description: str
     durationMinutes: int | None
     students: list[educational_models.StudentLevels]
-    location: GetCollectiveOfferLocationModel | None
+    location: GetCollectiveOfferLocationModel
     contactEmail: str | None
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool

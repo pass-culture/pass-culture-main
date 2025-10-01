@@ -37,7 +37,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   isCancellable: boolean;
   isNonFreeOffer?: boolean | null;
   isTemplate?: boolean;
-  location?: GetCollectiveOfferLocationModel | null;
+  location: GetCollectiveOfferLocationModel;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

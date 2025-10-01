@@ -103,9 +103,6 @@ def get_collective_offer_address(offer: models.CollectiveOffer) -> str:
         case models.CollectiveLocationType.TO_BE_DEFINED:
             return offer.locationComment or ""
 
-        case _:
-            return ""
-
 
 class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):
     uai: str

@@ -45,7 +45,7 @@ export type GetCollectiveOfferResponseModel = {
   isNonFreeOffer?: boolean | null;
   isPublicApi: boolean;
   isTemplate?: boolean;
-  location?: GetCollectiveOfferLocationModel | null;
+  location: GetCollectiveOfferLocationModel;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

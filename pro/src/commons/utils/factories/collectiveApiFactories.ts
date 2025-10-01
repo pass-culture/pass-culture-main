@@ -63,6 +63,11 @@ export const collectiveOfferFactory = (
     ],
     isShowcase: false,
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+    location: {
+      locationType: CollectiveLocationType.SCHOOL,
+      address: null,
+      locationComment: null,
+    },
     ...customCollectiveOffer,
   }
 }
@@ -103,6 +108,11 @@ const sharedCollectiveOfferData = {
   },
   provider: null,
   formats: [EacFormat.ATELIER_DE_PRATIQUE],
+  location: {
+    locationType: CollectiveLocationType.SCHOOL,
+    address: null,
+    locationComment: null,
+  },
 }
 
 export const getCollectiveOfferFactory = (
@@ -117,9 +127,6 @@ export const getCollectiveOfferFactory = (
     isTemplate: false,
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
-    location: {
-      locationType: CollectiveLocationType.ADDRESS,
-    },
     history: {
       future: [
         CollectiveOfferDisplayedStatus.BOOKED,

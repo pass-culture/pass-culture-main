@@ -4434,7 +4434,6 @@
                             }
                         ],
                         "description": "\nIndicates where the collective offer will take place - [see this page](/docs/understanding-our-api/resources/collective-offers#offers-location).\n\nYou have **three options** for the location:\n\n- `\"SCHOOL\"`: Use this if the offer takes place in the school.\n- `\"ADDRESS\"`: Use this if the offer takes place in a specified address.\n- `\"TO_BE_DEFINED\"`: Use this if the offer location is not precisely defined.\n",
-                        "nullable": true,
                         "title": "ADDRESS"
                     },
                     "mentalDisabilityCompliant": {
@@ -4528,6 +4527,7 @@
                     "bookingLimitDatetime",
                     "totalPrice",
                     "numberOfTickets",
+                    "location",
                     "bookings",
                     "formats"
                 ],
