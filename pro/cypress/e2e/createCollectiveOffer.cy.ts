@@ -1,8 +1,13 @@
 import { addDays, format } from 'date-fns'
 
-import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
+import {
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
+  MOCKED_BACK_ADDRESS_LABEL,
+} from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
+  interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -55,6 +60,7 @@ describe('Create collective offers', () => {
     cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
       'educationalOfferers'
     )
+    interceptSearch5Adresses()
   })
 
   const fillBasicOfferForm = () => {
@@ -184,12 +190,13 @@ describe('Create collective offers', () => {
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
-    cy.findByLabelText(/Adresse postale/).type('10 Rue')
-    cy.get('[data-testid="list"] li').first().click()
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     fillOfferDetails()
     fillDatesAndPrice()
     fillInstitution()
-    cy.contains('Adresse : 10 Rue, 53210, Argentré')
+    cy.contains('Adresse : 3 RUE DE VALOIS, 75008, Paris')
     verifyAndPublishOffer()
   })
 
@@ -352,11 +359,12 @@ describe('Create collective offers', () => {
     cy.findByLabelText('Intitulé de la localisation')
       .clear()
       .type('Libellé de mon adresse custom')
-    cy.findByLabelText(/Adresse postale/).type('10 Rue')
-    cy.get('[data-testid="list"] li').first().click()
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Intitulé : Libellé de mon adresse custom')
-    cy.contains('Adresse : 10 Rue, 53210, Argentré')
+    cy.contains('Adresse : 3 RUE DE VALOIS, 75008, Paris')
   })
 
   it('Create an offer with draft status and publish it', () => {
@@ -364,8 +372,9 @@ describe('Create collective offers', () => {
     cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
-    cy.findByLabelText(/Adresse postale/).type('10 Rue')
-    cy.get('[data-testid="list"] li').first().click()
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     fillOfferDetails()
     fillDatesAndPrice()
     fillInstitution()
