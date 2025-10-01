@@ -3868,6 +3868,39 @@ class InviteUserTest(PostEndpointHelper):
         assert db.session.query(offerers_models.OffererInvitation).count() == 0
 
 
+class DeleteInvitationTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.delete_invitation"
+    endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_delete_invitation(self, legit_user, authenticated_client, offerer):
+        invitation_1_id = offerers_factories.OffererInvitationFactory(offerer=offerer, email="invite@example.com").id
+        invitation_2_id = offerers_factories.OffererInvitationFactory(offerer=offerer).id
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation_1_id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "L'invitation de invite@example.com a été supprimée"
+
+        assert db.session.query(offerers_models.OffererInvitation).with_entities(
+            offerers_models.OffererInvitation.id
+        ).all() == [(invitation_2_id,)]
+
+    def test_can_not_delete_accepted_invitation(self, authenticated_client, offerer):
+        invitation_id = offerers_factories.OffererInvitationFactory(
+            offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
+        ).id
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation_id, follow_redirects=True
+        )
+
+        assert response.status_code == 404  # no pending invitation (menu item is not available)
+        assert db.session.query(offerers_models.OffererInvitation).count() == 1
+
+
 class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
