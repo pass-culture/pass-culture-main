@@ -71,6 +71,12 @@ def check_product_counts_consistency(batch_size: int) -> None:
         logger.error("Inconsistent product counts found", extra={"product_ids": product_ids})
 
 
+@blueprint.cli.command("update_product_counts")
+@click.argument("batch_size", required=False, type=int, default=10_000)
+def update_product_counts(batch_size: int) -> None:
+    offers_api.update_product_counts(batch_size)
+
+
 @blueprint.cli.command("check_stock_quantity_consistency")
 @cron_decorators.log_cron_with_transaction
 def check_stock_quantity_consistency() -> None:
