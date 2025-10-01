@@ -1,7 +1,6 @@
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFoundForNewTable,
-  interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -26,7 +25,6 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
-    interceptSearch5Adresses()
   })
 
   after(() => {
