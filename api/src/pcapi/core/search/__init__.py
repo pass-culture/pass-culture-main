@@ -810,6 +810,16 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     _reindex_artists_from_offers(offer_ids)
 
 
+def unindex_all_artists() -> None:
+    backend = _get_backend()
+    try:
+        backend.unindex_all_artists()
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not unindex all artists")
+
+
 def unindex_all_offers() -> None:
     if not settings.ENABLE_UNINDEXING_ALL:
         raise ValueError("It is forbidden to unindex all offers on this environment")
