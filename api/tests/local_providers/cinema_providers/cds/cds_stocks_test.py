@@ -11,8 +11,10 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferExtraData
 from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
@@ -682,6 +684,39 @@ class CDSStocksTest:
         assert cds_stocks.createdThumbs == 2
         assert cds_stocks.erroredObjects == 0
         assert cds_stocks.erroredThumbs == 0
+
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def test_should_not_create_product_mediation(
+        self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
+    ):
+        _, venue_provider = setup_cinema()
+        requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+        mocked_movies = [fixtures.MOVIE_1]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        mocked_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"},
+        ]
+        mock_get_shows.return_value = mocked_shows
+
+        product = offers_factories.EventProductFactory(
+            name=fixtures.MOVIE_1.title,
+            extraData=OfferExtraData(allocineId=fixtures.MOVIE_1.allocineid, visa=fixtures.MOVIE_1.visanumber),
+        )
+        offers_factories.ProductMediationFactory(product=product, imageType=ImageType.POSTER)
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks.updateObjects()
+
+        assert cds_stocks.createdThumbs == 0
+        mocked_get_movie_poster.assert_not_called()
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
