@@ -4,8 +4,7 @@ import typing
 
 import flask_sqlalchemy
 import pydantic.v1 as pydantic_v1
-import sqlalchemy as sa
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 
 from pcapi import settings
 
@@ -57,14 +56,19 @@ if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
 
-db = flask_sqlalchemy.SQLAlchemy(engine_options=_engine_options)
+class Base(DeclarativeBase):
+    pass
+
+
+db = flask_sqlalchemy.SQLAlchemy(engine_options=_engine_options, model_class=Base)
 
 # This is a workaround for a limitation of mypy.  Check if it's still
 # necessary when we migrate to flask_sqlalchemy >= 3.0.1, which
 # exports better typing.
 if typing.TYPE_CHECKING:
+    from flask_sqlalchemy.model import Model as FSQLAModel
 
-    class Model(flask_sqlalchemy.Model):
+    class Model(FSQLAModel, Base):
         pass
 else:
     Model = db.Model
