@@ -1,3 +1,5 @@
+import { fromZonedTime } from 'date-fns-tz'
+
 import { AdageHeaderLink } from '@/apiClient/adage'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -14,7 +16,10 @@ export const AdageHeaderBudget = ({
   institutionBudget,
 }: AdageHeaderBudgetProps) => {
   // TODO (nizac, 2025-09-22): To remove after the 2025-10-01
-  const limitDate = new Date('2025-10-01T00:00:00')
+  const limitDate = fromZonedTime(
+    new Date('2025-10-01T08:00:00'),
+    'Europe/Paris'
+  )
 
   if (Date.now() < limitDate.getTime()) {
     return
