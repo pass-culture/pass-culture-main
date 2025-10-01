@@ -150,6 +150,7 @@ class AllocineStocks(LocalProvider):
         self.last_offer = offer
 
     def fill_stock_attributes(self, allocine_stock: offers_models.Stock) -> None:
+        assert allocine_stock.idAtProviders
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
         showtime = _find_showtime_by_showtime_uuid(self.showtimes, showtime_uuid)
         if not showtime:

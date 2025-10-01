@@ -186,7 +186,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
             .all()
         )
 
-        products_by_ean: dict[str, offers_models.Product] = {p.ean: p for p in products}
+        products_by_ean: dict[str, offers_models.Product] = {p.ean: p for p in products if p.ean}
         for titelive_search_result in titelive_page:
             products_by_ean = self.upsert_titelive_result_in_dict(titelive_search_result, products_by_ean)
 

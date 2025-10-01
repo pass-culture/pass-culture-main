@@ -51,7 +51,9 @@ if typing.TYPE_CHECKING:
     from pcapi.core.history.models import ActionHistory
     from pcapi.core.offerers.models import OffererInvitation
     from pcapi.core.offerers.models import UserOfferer
+    from pcapi.core.offers.models import Mediation
     from pcapi.core.offers.models import Offer
+    from pcapi.core.offers.models import OfferReport
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
 
@@ -224,6 +226,9 @@ class User(PcObject, Model, DeactivableMixin):
     lastConnectionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     lastName = sa_orm.mapped_column(sa.String(128), nullable=True)
     married_name = sa_orm.mapped_column(sa.String(128), nullable=True)
+    mediations: sa_orm.Mapped[list["Mediation"]] = sa_orm.relationship(
+        "Mediation", foreign_keys="Mediation.authorId", back_populates="author"
+    )
     needsToFillCulturalSurvey = sa_orm.mapped_column(sa.Boolean, server_default=expression.true(), default=True)
     notificationSubscriptions: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         MutableDict.as_mutable(postgresql.json.JSONB),
@@ -234,6 +239,9 @@ class User(PcObject, Model, DeactivableMixin):
     OffererInvitations: sa_orm.Mapped[list["OffererInvitation"]] = sa_orm.relationship(
         "OffererInvitation", back_populates="user"
     )
+    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
+        "Offer", back_populates="author", foreign_keys="Offer.authorId"
+    )
     password: sa_orm.Mapped[bytes | None] = sa_orm.mapped_column(sa.LargeBinary(60), nullable=True)
     _phoneNumber = sa_orm.mapped_column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa_orm.mapped_column(
@@ -241,6 +249,9 @@ class User(PcObject, Model, DeactivableMixin):
     )
     postalCode = sa_orm.mapped_column(sa.String(5), nullable=True)
     recreditAmountToShow = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
+    reported_offers: sa_orm.Mapped[list["OfferReport"]] = sa_orm.relationship(
+        "OfferReport", foreign_keys="OfferReport.userId", back_populates="user"
+    )
     roles: sa_orm.Mapped[list[UserRole]] = sa_orm.mapped_column(
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,

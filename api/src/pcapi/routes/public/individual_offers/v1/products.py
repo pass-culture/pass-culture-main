@@ -486,6 +486,7 @@ def check_eans_availability(
     available_eans = []
 
     for product in existing_products:
+        assert product.ean
         product_ean = product.ean
         eans_to_check.remove(product_ean)
 

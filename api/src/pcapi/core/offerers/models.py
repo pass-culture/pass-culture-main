@@ -410,6 +410,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,
     )
+    offers: sa_orm.Mapped[list["offers_models.Offer"]] = sa_orm.relationship(
+        "Offer", foreign_keys="Offer.venueId", back_populates="venue"
+    )
 
     confidenceRule: sa_orm.Mapped["OffererConfidenceRule | None"] = sa_orm.relationship(
         "OffererConfidenceRule", foreign_keys="OffererConfidenceRule.venueId", back_populates="venue", uselist=False

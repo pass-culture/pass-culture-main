@@ -256,7 +256,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_product_synchronize_with_titelive_form(product_id: int) -> utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
-    if not product:
+    if not (product and product.ean):
         raise NotFound()
 
     try:
@@ -295,7 +295,7 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> utils.Backoff
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def synchronize_product_with_titelive(product_id: int) -> utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
-    if not product:
+    if not (product and product.ean):
         raise NotFound()
 
     try:
@@ -366,7 +366,7 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def blacklist_product(product_id: int) -> utils.BackofficeResponse:
     product = db.session.query(offers_models.Product).filter_by(id=product_id).one_or_none()
-    if not product:
+    if not (product and product.ean):
         raise NotFound()
 
     if offers_api.reject_inappropriate_products([product.ean], current_user, rejected_by_fraud_action=True):

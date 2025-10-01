@@ -10,6 +10,7 @@ from pcapi.models.pc_object import PcObject
 
 if typing.TYPE_CHECKING:
     from pcapi.core.offerer.models import Venue
+    from pcapi.core.offers.models import Offer
 
 
 class CriterionCategoryMapping(PcObject, Model):
@@ -34,6 +35,9 @@ class Criterion(PcObject, Model):
 
     venue_criteria: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", back_populates="criteria", lazy="dynamic", secondary="venue_criterion"
+    )
+    offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
+        "Offer", back_populates="criteria", lazy="dynamic", secondary="offer_criterion"
     )
     categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
