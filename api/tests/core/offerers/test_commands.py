@@ -1,13 +1,17 @@
 import datetime
-import json
 import logging
+from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
 import time_machine
 
+from pcapi import settings
+from pcapi.core.history import models as history_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import tasks as offerers_tasks
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import siren as siren_utils
 
@@ -15,6 +19,11 @@ from tests.test_utils import run_command
 
 
 pytestmark = pytest.mark.usefixtures("clean_database")
+
+
+@pytest.fixture(name="siren_caduc_tag")
+def siren_caduc_tag_fixture():
+    return offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
 
 
 class CheckActiveOfferersTest:
@@ -40,71 +49,266 @@ class CheckActiveOfferersTest:
         mock_get_siren.assert_called_once_with(offerer.siren, with_address=False)
 
 
+# TODO bulle test no siren closed
 class CheckClosedOfferersTest:
-    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True, ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
     @patch(
         "pcapi.connectors.api_sirene.get_siren_closed_at_date",
-        return_value=["222222226", "333333334", "444444442", "666666664"],
+        return_value=[
+            {"siren": "109599001", "closure_date": datetime.date(2025, 1, 16)},
+            {"siren": "109599002", "closure_date": datetime.date(2025, 1, 11)},
+            {"siren": "109599003", "closure_date": datetime.date(2023, 1, 16)},
+            {"siren": "909599004", "closure_date": datetime.date(2025, 1, 12)},  # non-diffusible
+        ],
     )
-    def test_check_closed_offerers(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
-        offerers_factories.OffererFactory(siren="111111118")
-        offerers_factories.OffererFactory(siren="222222226")
-        offerers_factories.OffererFactory(siren="333333334", isActive=False)
-        offerers_factories.RejectedOffererFactory(siren="555555556")
-        offerers_factories.NewOffererFactory(siren="666666664")
-        db.session.flush()
-        db.session.commit()
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_multiple_inactive_offerers(
+        self,
+        mock_siren_closed_at_date,
+        mock_search_file,
+        mock_append_to_spreadsheet,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer1 = offerers_factories.OffererFactory(siren="109599001")
+        offerer2 = offerers_factories.OffererFactory(siren="109599002")
+        offerer3 = offerers_factories.OffererFactory(siren="109599003")
+        offerer4 = offerers_factories.OffererFactory(siren="909599004")  # non-diffusible
 
         run_command(app, "check_closed_offerers")
 
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
+        assert offerer1.tags == offerer2.tags == offerer3.tags == offerer4.tags == [siren_caduc_tag]
 
-        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
-        mock_check_offerer_siren_task.delay.assert_called()
-        assert mock_check_offerer_siren_task.delay.call_count == 2
-        assert sorted(
-            [item.args[0] for item in mock_check_offerer_siren_task.delay.call_args_list], key=lambda r: r.siren
-        ) == [
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="222222226", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="666666664", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-        ]
+        mock_search_file.call_count == 4
+        mock_append_to_spreadsheet.call_count == 4
+        mock_close_offerer.call_count == 4
+
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=False, ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    @patch(
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
+        return_value=[{"siren": "109599001", "closure_date": datetime.date(2025, 1, 16)}],
+    )
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_no_report(
+        self,
+        mock_siren_closed_at_date,
+        mock_search_file,
+        mock_append_to_spreadsheet,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
+        run_command(app, "check_closed_offerers")
+
+        assert offerer.tags == [siren_caduc_tag]
+
+        mock_close_offerer.assert_called_once_with(
+            offerer,
+            closure_date=datetime.date(2025, 1, 16),
+            author_user=None,
+            comment="L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Entreprise (données INSEE)",
+            modified_info={"tags": {"new_info": "SIREN caduc"}},
+        )
+        mock_search_file.assert_not_called()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    @patch(
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
+        return_value=[{"siren": "109599001", "closure_date": datetime.date(2025, 1, 16)}],
+    )
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_tag_inactive_offerer_no_delete(
+        self,
+        mock_siren_closed_at_date,
+        mock_search_file,
+        mock_append_to_spreadsheet,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
+
+        run_command(app, "check_closed_offerers")
+
+        assert offerer.tags == [siren_caduc_tag]
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId is None
+        assert action.offererId == offerer.id
+        assert (
+            action.comment
+            == "L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Entreprise (données INSEE)"
+        )
+        assert action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
+
+        mock_search_file.assert_called_once()
+        mock_append_to_spreadsheet.assert_called_once_with(
+            "report-file-id",
+            [
+                [
+                    datetime.date.today().strftime("%d/%m/%Y"),
+                    offerer.siren,
+                    "MINISTERE DE LA CULTURE",
+                    "Non",
+                    "REFUS",
+                    "REFUS",
+                    "Société à responsabilité limitée (sans autre indication)",
+                    0,
+                    0.0,
+                    f"{settings.BACKOFFICE_URL}/pro/offerer/{offerer.id}",
+                ]
+            ],
+        )
+        mock_close_offerer.assert_not_called()
+
+    @pytest.mark.features(ENABLE_CODIR_OFFERERS_REPORT=True, ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @patch(
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
+        return_value=[{"siren": "109599001", "closure_date": datetime.date(2025, 1, 16)}],
+    )
+    def test_inactive_offerer_already_tagged(
+        self,
+        mock_siren_closed_at_date,
+        mock_close_offerer,
+        mock_search_file,
+        mock_append_to_spreadsheet,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+
+        run_command(app, "check_closed_offerers")
+
+        assert offerer.tags == [siren_caduc_tag]
+        assert db.session.query(history_models.ActionHistory).count() == 0  # tag already set, no change made
+        mock_search_file.assert_called_once()
+        mock_append_to_spreadsheet.assert_called_once()
+        mock_close_offerer.assert_not_called()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True, ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("time.sleep")
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @patch(
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
+        return_value=[{"siren": "109599001", "closure_date": datetime.date(2025, 3, 5)}],
+    )
+    @time_machine.travel("2025-03-10 12:00:00")
+    def test_close_inactive_offerer_already_tagged(
+        self, mock_siren_closed_at_date, mock_close_offerer, mock_sleep, client, siren_caduc_tag, app
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        run_command(app, "check_closed_offerers")
+        assert offerer.tags == [siren_caduc_tag]
+        mock_close_offerer.assert_called_once_with(
+            offerer,
+            closure_date=datetime.date(2025, 3, 5),
+            author_user=None,
+            comment="L'entité juridique est détectée comme fermée le 05/03/2025 via l'API Entreprise (données INSEE)",
+        )
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True, ENABLE_CODIR_OFFERERS_REPORT=True)
+    @patch("time.sleep")
+    @patch("pcapi.connectors.googledrive.TestingBackend.append_to_spreadsheet", return_value=1)
+    @patch("pcapi.connectors.googledrive.TestingBackend.search_file", return_value="report-file-id")
+    @patch(
+        "pcapi.connectors.api_sirene.get_siren_closed_at_date",
+        return_value=[{"siren": "100099001", "closure_date": datetime.date(2025, 1, 16)}],
+    )
+    def test_reject_inactive_offerer_waiting_for_validation(
+        self,
+        mock_siren_closed_at_date,
+        mock_search_file,
+        mock_append_to_spreadsheet,
+        mock_sleep,
+        client,
+        siren_caduc_tag,
+        app,
+    ):
+        offerer = offerers_factories.PendingOffererFactory(siren="100099001")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
+
+        run_command(app, "check_closed_offerers")
+
+        assert offerer.isRejected
+        assert offerer.tags == [siren_caduc_tag]
+
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .one()
+        )
+        assert offerer_action.actionDate is not None
+        assert offerer_action.authorUserId is None
+        assert offerer_action.userId == user_offerer.user.id
+        assert offerer_action.offererId == offerer.id
+        assert offerer_action.extraData == {
+            "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
+            "rejection_reason": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
+        }
+
+        user_offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .one()
+        )
+        assert user_offerer_action.actionDate is not None
+        assert user_offerer_action.authorUserId is None
+        assert user_offerer_action.userId == user_offerer.user.id
+        assert user_offerer_action.offererId == offerer.id
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFERER_NAME": offerer.name,
+            "REJECTION_REASON": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
+        }
+
+        # Offerers report should only list validated offerers, not rejected
+        mock_search_file.assert_not_called()
+        mock_append_to_spreadsheet.assert_not_called()
 
     @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
     @patch(
         "pcapi.connectors.api_sirene.get_siren_closed_at_date",
-        return_value=["222222226", "333333334"],
+        return_value=[
+            {"siren": "222222226", "closure_date": datetime.date(2025, 1, 16)},
+            {"siren": "333333334", "closure_date": datetime.date(2025, 1, 16)},
+        ],
     )
     def test_no_known_siren(self, mock_get_siren_closed_at_date, mock_check_offerer_siren_task, app):
+        offerer = offerers_factories.OffererFactory(siren="111111112")
         run_command(app, "check_closed_offerers")
         mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
-        mock_check_offerer_siren_task.assert_not_called()
-
-    @patch("pcapi.core.offerers.tasks.check_offerer_siren_task")
-    @patch("flask.current_app.redis_client.get", return_value=json.dumps(["111222337"]))
-    @patch("pcapi.connectors.api_sirene.get_siren_closed_at_date", return_value=[])
-    def test_check_scheduled_offerers(
-        self, mock_get_siren_closed_at_date, mock_redis_client_get, mock_check_offerer_siren_task, app
-    ):
-        offerers_factories.OffererFactory(siren="111222337")
-
-        run_command(app, "check_closed_offerers")
-
-        mock_get_siren_closed_at_date.assert_called_once_with(datetime.date.today() - datetime.timedelta(days=2))
-        mock_redis_client_get.assert_called_once_with(
-            f"check_closed_offerers:scheduled:{datetime.date.today().isoformat()}"
-        )
-
-        # Only check that the task is called; its behavior is tested in offerers/test_tasks.py
-        mock_check_offerer_siren_task.delay.assert_called_once()
-        assert mock_check_offerer_siren_task.delay.call_args.args == (
-            offerers_tasks.CheckOffererSirenRequest(
-                siren="111222337", close_or_tag_when_inactive=True, fill_in_codir_report=False
-            ),
-        )
+        assert offerer.tags == []
 
 
 class DeleteUserOfferersOnClosedOfferersTest:
