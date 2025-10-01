@@ -53,9 +53,9 @@ Once you have your API key, add it in your request headers to authenticate your 
 # Example of an authenticated request using curl
 # Fetch event categories on the integration test environment
 
-curl --location 'https://backend.integration.passculture.team/public/offers/v1/events/categories' \
+curl --location 'https://backend.integration.passculture.pro/public/offers/v1/events/categories' \
 --header 'Accept: application/json' \
---header 'Authorization: Bearer {you-api-key}'
+--header 'Authorization: Bearer {your-api-key}'
 ```
 
 
@@ -93,19 +93,19 @@ If the venue exists in our database and your provider is linked to this venue, t
 # Example requests with curl
 
 # Return all the venues linked to your provider account
-curl --location 'https://backend.integration.passculture.team/public/offers/v1/offerer_venues' \
+curl --location 'https://backend.integration.passculture.pro/public/offers/v1/offerer_venues' \
 --header 'Accept: application/json' \
---header 'Authorization: Bearer {you-api-key}'
+--header 'Authorization: Bearer {your-api-key}'
 
 # Return all the venues linked to your provider account and belonging to the offerer whose siren is 123456789
-curl --location 'https://backend.integration.passculture.team/public/offers/v1/offerer_venues?siren=123456789' \
+curl --location 'https://backend.integration.passculture.pro/public/offers/v1/offerer_venues?siren=123456789' \
 --header 'Accept: application/json' \
---header 'Authorization: Bearer {you-api-key}'
+--header 'Authorization: Bearer {your-api-key}'
 
 # Return a venue linked to your provider account and whose siret is 12345678900001
-curl --location 'https://backend.integration.passculture.team/public/offers/v1/venues/12345678900001' \
+curl --location 'https://backend.integration.passculture.pro/public/offers/v1/venues/12345678900001' \
 --header 'Accept: application/json' \
---header 'Authorization: Bearer {you-api-key}'
+--header 'Authorization: Bearer {your-api-key}'
 ```
 :::
 
