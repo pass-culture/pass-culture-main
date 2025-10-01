@@ -104,6 +104,8 @@ def _format_user_attributes(email: str, attributes: attributes_models.UserAttrib
         tags.append(ZENDESK_TAG_ID_CHECK_COMPLETED)
     if attributes.is_eligible:
         tags.append(ZENDESK_TAG_ELIGIBLE)
+    if attributes.departement_code:
+        tags.append(ZENDESK_TAG_DEPARTMENT_CODE_PREFIX + attributes.departement_code)
 
     return {
         "email": email,
