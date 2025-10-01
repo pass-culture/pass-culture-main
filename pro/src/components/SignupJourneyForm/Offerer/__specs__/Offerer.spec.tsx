@@ -439,13 +439,13 @@ describe('Offerer', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Il semblerait que tu ne sois pas')
+        screen.getByText('Êtes-vous un professionnel de la culture ?')
       ).toBeInTheDocument()
     })
 
     expect(
       screen.getByText(
-        /Tu essayes de t’inscrire sur l’espace pass Culture Pro dédié aux professionnels de la culture./
+        /Seuls les professionnels sont habilités à rejoindre l’espace pass Culture Pro/
       )
     ).toBeInTheDocument()
 
@@ -478,13 +478,15 @@ describe('Offerer', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('Il semblerait que tu ne sois pas')
+        screen.getByText(
+          "Travaillez-vous pour un établissement d'enseignement supérieur ?"
+        )
       ).toBeInTheDocument()
     })
 
     expect(
       screen.getByText(
-        /Vous vous apprêtez à rejoindre l’espace pass Culture pro d’un établissement d’enseignement supérieur./
+        /Seuls les professionnels sont habilités à rejoindre l’espace pass Culture Pro/
       )
     ).toBeInTheDocument()
   })
