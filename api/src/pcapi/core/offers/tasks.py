@@ -122,6 +122,17 @@ def upsert_product_stock(
     )
 
 
+def _ensure_timezone_exists(dt: datetime.datetime | None) -> datetime.datetime | None:
+    # TODO(jbaudet-pass - 12/2025): this utility can be removed once we
+    # can be 100% sure that incoming data used to create products, offers
+    # and stocks will always have a timezone.
+    # Until then, please keep this function: removing it because it
+    # SHOULD be ok might be a little bit risky.
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=datetime.UTC)
+    return dt
+
+
 def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,

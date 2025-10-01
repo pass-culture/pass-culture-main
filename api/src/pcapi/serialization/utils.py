@@ -147,12 +147,28 @@ def without_timezone(d: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
 
 
+def check_date_in_future(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
+    if not value:
+        return None
+    if value == "now":
+        return datetime.datetime.now(datetime.UTC)
+
+    assert isinstance(value, datetime.datetime)  # to make mypy happy
+    if value.tzinfo is None:
+        raise ValueError("The datetime must be timezone-aware.")
+    no_tz_value = as_utc_without_timezone(value)
+    if no_tz_value < datetime.datetime.now(datetime.UTC).replace(tzinfo=None):
+        raise ValueError("The datetime must be in the future.")
+    return value
+
+
+# TODO(jbaudet-09/2025) remove once database models uses timezone
+# aware columns. Migrate to `check_date_in_future`.
 def check_date_in_future_and_remove_timezone(
     value: datetime.datetime | NOW_LITERAL | None,
     pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
 ) -> datetime.datetime | None:
     ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
-
     if not value:
         return None
 
@@ -173,3 +189,7 @@ def validate_datetime(field_name: str, always: bool = False) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(
         partial(check_date_in_future_and_remove_timezone, pydantic_version="v1")
     )
+
+
+def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(check_date_in_future)
