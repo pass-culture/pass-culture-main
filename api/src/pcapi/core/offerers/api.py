@@ -2505,7 +2505,15 @@ def invite_member_again(offerer: models.Offerer, email: str) -> None:
     if not existing_invited_email or existing_invited_email.status == models.InvitationStatus.ACCEPTED:
         raise exceptions.InviteAgainImpossibleException()
 
-    transactional_mails.send_offerer_attachment_invitation([email], offerer)
+    existing_user = (
+        db.session.query(users_models.User)
+        .filter(users_models.User.email == email)
+        .outerjoin(users_models.User.UserOfferers)
+        .options(sa_orm.joinedload(users_models.User.UserOfferers).load_only(models.UserOfferer.offererId))
+        .one_or_none()
+    )
+
+    transactional_mails.send_offerer_attachment_invitation([email], offerer, user=existing_user)
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[tuple[str, OffererMemberStatus]]:
