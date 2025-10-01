@@ -203,7 +203,6 @@ def get_new_product_from_ean13(ean: str) -> TiteliveProductData:
         name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",
         ean=ean,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        thumbCount=article.get("image", 0),  # 0 or 1
         extraData=offers_models.OfferExtraData(
             author=oeuvre.get("auteurs", ""),
             prix_livre=article["prix"],

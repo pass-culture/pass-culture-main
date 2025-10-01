@@ -7,7 +7,6 @@ from datetime import datetime
 import pcapi.core.finance.api as finance_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
-from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search.models import IndexationReason
@@ -18,7 +17,6 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.validation.models import entity_validator
@@ -93,23 +91,6 @@ class LocalProvider(Iterator):
     @abstractmethod
     def name(self) -> str:
         pass
-
-    def _handle_thumb(self, pc_object: HasThumbMixin) -> None:
-        if not self.shall_synchronize_thumbs():
-            return
-        self.checkedThumbs += 1
-
-        new_thumb = self.get_object_thumb()
-        if not new_thumb:
-            return
-
-        _upload_thumb(
-            pc_object=pc_object,
-            image_as_bytes=new_thumb,
-            keep_poster_ratio=self.get_keep_poster_ratio(),
-        )
-
-        self.createdThumbs += 1
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
         assert self.provider  # helps mypy
@@ -260,26 +241,6 @@ class LocalProvider(Iterator):
                         except ApiErrors:
                             continue
 
-                if isinstance(pc_object, HasThumbMixin) and (
-                    not last_update_for_current_provider
-                    or last_update_for_current_provider.date() != datetime.today().date()
-                ):
-                    initial_thumb_count = pc_object.thumbCount
-                    try:
-                        self._handle_thumb(pc_object)
-                    except Exception as e:
-                        self.log_provider_event(providers_models.LocalProviderEventType.SyncError, e.__class__.__name__)
-                        self.erroredThumbs += 1
-                        logger.info("ERROR during handle thumb: %s", e, exc_info=True)
-                    pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
-                    if pc_object_has_new_thumbs:
-                        errors = entity_validator.validate(pc_object)
-                        if errors and len(errors.errors) > 0:
-                            self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "ApiErrors")
-                            continue
-
-                        chunk_to_update[chunk_key] = pc_object
-
                 self.checkedObjects += 1
 
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
@@ -307,21 +268,6 @@ class LocalProvider(Iterator):
 
     def postTreatment(self) -> None:
         pass
-
-
-def _upload_thumb(
-    pc_object: HasThumbMixin,
-    image_as_bytes: bytes,
-    keep_poster_ratio: bool = False,
-) -> None:
-    if pc_object.thumbCount is None:
-        pc_object.thumbCount = 0
-
-    create_thumb(
-        model_with_thumb=pc_object,
-        image_as_bytes=image_as_bytes,
-        keep_ratio=keep_poster_ratio,
-    )
 
 
 def _reindex_offers(

@@ -62,7 +62,6 @@ class TiteliveTest:
 
         assert product.ean == ean
         assert product.description == html.unescape(article["resume"])
-        assert product.thumbCount == article["image"]
         assert product.name == oeuvre["titre"]
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProvider.name == providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME

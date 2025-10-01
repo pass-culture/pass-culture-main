@@ -125,10 +125,7 @@ def _get_booking_options() -> list[ExecutableOption]:
             )
             .options(
                 sa_orm.joinedload(offers_models.Offer.product)
-                .load_only(
-                    offers_models.Product.id,
-                    offers_models.Product.thumbCount,
-                )
+                .load_only(offers_models.Product.id)
                 .joinedload(offers_models.Product.productMediations),
                 sa_orm.joinedload(offers_models.Offer.venue)
                 .load_only(

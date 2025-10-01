@@ -688,7 +688,6 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
                 models.Product.name,
                 models.Product.description,
                 models.Product.subcategoryId,
-                models.Product.thumbCount,
             )
         )
         .options(sa_orm.joinedload(models.Product.productMediations))
