@@ -9,7 +9,6 @@ export type GetOffererVenueResponseModel = {
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
-  city?: string | null;
   collectiveDmsApplications: Array<DMSApplicationForEAC>;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
@@ -19,10 +18,8 @@ export type GetOffererVenueResponseModel = {
   isPermanent: boolean;
   isVirtual: boolean;
   name: string;
-  postalCode?: string | null;
   publicName?: string | null;
   siret?: string | null;
-  street?: string | null;
   venueTypeCode: VenueTypeCode;
   withdrawalDetails?: string | null;
 };

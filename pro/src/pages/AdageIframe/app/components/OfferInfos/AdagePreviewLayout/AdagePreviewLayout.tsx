@@ -52,12 +52,15 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
     contactEmail: offer.contactEmail,
     venue: {
       ...offer.venue,
-      coordinates: { latitude: venue.latitude, longitude: venue.longitude },
+      coordinates: {
+        latitude: venue.address?.latitude,
+        longitude: venue.address?.longitude,
+      },
       publicName: venue.publicName,
-      postalCode: venue.postalCode,
-      city: venue.city,
-      address: venue.street,
-      departmentCode: venue.departementCode,
+      postalCode: venue.address?.postalCode,
+      city: venue.address?.city,
+      address: venue.address?.street,
+      departmentCode: venue.address?.departmentCode,
     },
     isTemplate: !isCollectiveOffer(offer),
   }

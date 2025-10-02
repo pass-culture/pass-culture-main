@@ -62,6 +62,14 @@ class VenueContactModel(offerers_schemas.VenueContactModel):
 class VenueResponse(base.BaseVenueResponse):
     id: int
     address: str | None
+    # TODO (tcoudray-pass, 02/10/25): CLEAN_OA Delete when we are sure the
+    # beneficiary app does not use this data
+    street: str | None
+    city: str | None
+    latitude: float | None
+    longitude: float | None
+    postalCode: str | None
+
     accessibility: VenueAccessibilityModel
     venueTypeCode: offerers_schemas.VenueTypeCodeKey
     bannerMeta: offerers_schemas.BannerMetaModel | None

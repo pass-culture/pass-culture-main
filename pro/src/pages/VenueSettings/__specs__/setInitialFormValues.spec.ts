@@ -10,12 +10,6 @@ describe('setInitialFormValues', () => {
     venue = {
       ...defaultGetVenue,
       publicName: 'Adresse de la venue',
-      street: '3 Rue de Valois',
-      postalCode: '75001',
-      city: 'Paris',
-      latitude: 48.85332,
-      longitude: 2.348979,
-      banId: '35288_7283_00001',
     }
   })
 

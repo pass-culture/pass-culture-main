@@ -272,9 +272,9 @@ class Returns200Test:
         assert response.status_code == 200
 
         response = client_http.get(f"/venues/{venue.id}")
-        assert response.json["street"] == response.json["address"]["street"] == "11 Rue Jean Jaurès"
-        assert response.json["city"] == response.json["address"]["city"] == "Lavelanet"
-        assert response.json["postalCode"] == response.json["address"]["postalCode"] == "09300"
+        assert response.json["address"]["street"] == "11 Rue Jean Jaurès"
+        assert response.json["address"]["city"] == "Lavelanet"
+        assert response.json["address"]["postalCode"] == "09300"
 
     def test_update_venue_location_with_manual_edition(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()

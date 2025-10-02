@@ -32,7 +32,6 @@ describe('AdagePreviewLayout', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
-      city: 'Montpellier',
     })
   })
 
