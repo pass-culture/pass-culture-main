@@ -61,9 +61,9 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "Private API.testing_route_with_common_errors",
     "Private API.testing_route_with_validation_errors",
     "pro_private_api.check_activation_token_exists",  # → response.status_code = 404
-    "pro_private_api.connect_as",  # → response.status_code = 403
+    "Private API.connect_as",  # → response.status_code = 403
     "pro_private_api.openapi_pro",  # → response.status_code = 200
-    "pro_private_api.validate_user",  # → response.status_code = 404 (PATCH)
+    "Private API.validate_user",  # → response.status_code = 404 (PATCH)
     "Public API.apple_app_site_association",  # → response.status_code = 200
     "Public API.asset_links",  # → response.status_code = 200
     "Public API.get_offers_by_tag",  # → response.status_code = 200

@@ -19,6 +19,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import bookings as serialization_bookings
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import BookingsExportStatusFilter
@@ -36,7 +37,7 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 from . import blueprint
 
 
-@blueprint.pro_private_api.route("/bookings/pro", methods=["GET"])
+@private_api.route("/bookings/pro", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel, api=blueprint.pro_private_schema)
@@ -77,7 +78,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     )
 
 
-@blueprint.pro_private_api.route("/bookings/pro/userHasBookings", methods=["GET"])
+@private_api.route("/bookings/pro/userHasBookings", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
@@ -86,7 +87,7 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     return UserHasBookingResponse(hasBookings=booking_repository.user_has_bookings(user))
 
 
-@blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/csv", methods=["GET"])
+@private_api.route("/bookings/offer/<int:offer_id>/csv", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -119,7 +120,7 @@ def export_bookings_for_offer_as_csv(offer_id: int, query: BookingsExportQueryMo
     ).encode("utf-8-sig")
 
 
-@blueprint.pro_private_api.route("/bookings/offer/<int:offer_id>/excel", methods=["GET"])
+@private_api.route("/bookings/offer/<int:offer_id>/excel", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -152,7 +153,7 @@ def export_bookings_for_offer_as_excel(offer_id: int, query: BookingsExportQuery
     )
 
 
-@blueprint.pro_private_api.route("/bookings/csv", methods=["GET"])
+@private_api.route("/bookings/csv", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -167,7 +168,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.CSV)
 
 
-@blueprint.pro_private_api.route("/bookings/excel", methods=["GET"])
+@private_api.route("/bookings/excel", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -182,7 +183,7 @@ def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
     return _create_booking_export_file(query, BookingExportType.EXCEL)
 
 
-@blueprint.pro_private_api.route("/bookings/dates/<int:offer_id>", methods=["GET"])
+@private_api.route("/bookings/dates/<int:offer_id>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(response_model=EventDatesInfos, api=blueprint.pro_private_schema)
@@ -285,7 +286,7 @@ _BASE_CODE_DESCRIPTIONS = {
 }
 
 
-@blueprint.pro_private_api.route("/bookings/token/<token>", methods=["GET"])
+@private_api.route("/bookings/token/<token>", methods=["GET"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -307,7 +308,7 @@ def get_booking_by_token(token: str) -> serialization_bookings.GetBookingRespons
     return serialization_bookings.get_booking_response(booking)
 
 
-@blueprint.pro_private_api.route("/bookings/use/token/<token>", methods=["PATCH"])
+@private_api.route("/bookings/use/token/<token>", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(
@@ -328,7 +329,7 @@ def patch_booking_use_by_token(token: str) -> None:
     bookings_api.mark_as_used(booking, bookings_models.BookingValidationAuthorType.OFFERER)
 
 
-@blueprint.pro_private_api.route("/bookings/keep/token/<token>", methods=["PATCH"])
+@private_api.route("/bookings/keep/token/<token>", methods=["PATCH"])
 @atomic()
 @login_required
 @spectree_serialize(

@@ -83,7 +83,7 @@ def get_collective_booking_by_id(booking_id: int) -> collective_bookings_seriali
     return collective_bookings_serialize.CollectiveBookingByIdResponseModel.from_orm(booking)
 
 
-@blueprint.pro_private_api.route("/collective/bookings/csv", methods=["GET"])
+@private_api.route("/collective/bookings/csv", methods=["GET"])
 @login_required
 @spectree_serialize(
     json_format=False,
@@ -100,7 +100,7 @@ def get_collective_bookings_csv(
     return _create_collective_bookings_export_file(query, BookingExportType.CSV)
 
 
-@blueprint.pro_private_api.route("/collective/bookings/excel", methods=["GET"])
+@private_api.route("/collective/bookings/excel", methods=["GET"])
 @login_required
 @spectree_serialize(
     json_format=False,
@@ -143,7 +143,7 @@ def _create_collective_bookings_export_file(
     return cast(bytes, export_data)
 
 
-@blueprint.pro_private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
+@private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
 @atomic()
