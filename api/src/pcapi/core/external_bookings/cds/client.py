@@ -162,12 +162,11 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = self._authenticated_get(f"{self.base_url}shows")
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
-        if shows:
-            return shows
 
-        raise cds_exceptions.CineDigitalServiceAPIException(
-            f"Shows not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
-        )
+        if not shows:
+            logger.warning("[CDS] Api call returned no show", extra={"cinemaId": self.cinema_id, "url": self.base_url})
+
+        return shows
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
         """

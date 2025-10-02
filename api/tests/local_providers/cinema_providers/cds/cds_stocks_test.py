@@ -415,6 +415,27 @@ class CDSStocksTest:
 
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def test_synchronization_shouldnt_not_fail_if_api_returns_no_show(self, mock_get_venue_movies, requests_mock):
+        _, venue_provider = setup_cinema()
+        requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_FALSE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        requests_mock.get("https://account_id.fakeurl/shows?api_token=token", json=[])
+        requests_mock.get(
+            "https://account_id.fakeurl/vouchertype?api_token=token",
+            json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
+        )
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks.updateObjects()
+
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_synchronization_do_not_duplicate_stocks_when_beginning_datetime_changed(
         self, mock_get_venue_movies, requests_mock
     ):

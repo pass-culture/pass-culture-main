@@ -170,10 +170,11 @@ class CineDigitalServiceGetShowTest:
 
         assert show.id == 2
 
-    def test_should_raise_exception_if_show_not_found(self, caplog, requests_mock):
+    @pytest.mark.parametrize("response_json", [ONE_SHOW_RESPONSE_JSON, []])
+    def test_should_raise_exception_if_show_not_found(self, response_json, requests_mock):
         requests_mock.get(
             "https://accountid_test.apiUrl_test/shows?api_token=token_test",
-            json=ONE_SHOW_RESPONSE_JSON,
+            json=response_json,
         )
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id",
@@ -181,18 +182,8 @@ class CineDigitalServiceGetShowTest:
             cinema_api_token="token_test",
         )
 
-        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cds.client"):
-            with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
-                cine_digital_service.get_show(4)
-
-        assert len(caplog.records) == 1
-        assert caplog.records[0].message == "[CINEMA] Call to external API"
-        assert caplog.records[0].extra == {
-            "api_client": "CineDigitalServiceAPI",
-            "method": "GET https://accountid_test.apiUrl_test/shows",
-            "cinema_id": "test_id",
-            "response": ONE_SHOW_RESPONSE_JSON,
-        }
+        with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
+            cine_digital_service.get_show(4)
 
     @pytest.mark.parametrize(
         "seatmap, expected_result",
