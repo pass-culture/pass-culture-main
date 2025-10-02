@@ -211,3 +211,15 @@ def acceslibre_matching(
     offerers_api.acceslibre_matching(
         batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
     )
+
+
+@blueprint.cli.command("clean_offerer_invitations")
+@click.option("--dry-run", is_flag=True)
+def clean_offerer_invitations(dry_run: bool = False) -> None:
+    offerers_api.delete_expired_offerer_invitations()
+
+    if dry_run:
+        db.session.rollback()
+        logger.info("clean_offerer_invitations was a dry-run -- rollback")
+    else:
+        db.session.commit()
