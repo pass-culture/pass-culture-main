@@ -534,20 +534,24 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)
         tag1_id = tag1.id
         tag2_id = tag2.id
-        user_with_tag1 = users_factories.BeneficiaryGrant18Factory(tags=[tag1])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag1])
         user_with_tag1_and_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag1, tag2])
-        user_with_tag2 = users_factories.BeneficiaryGrant18Factory(tags=[tag2])
+        users_factories.BeneficiaryGrant18Factory(tags=[tag2])
         users_factories.BeneficiaryGrant18Factory(tags=[tag3])  # user with tag3
         users_factories.BeneficiaryGrant18Factory(tags=[])  # user with no tags
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, tag=[tag1_id, tag2_id]))
-            assert response.status_code == 200
+            assert response.status_code == 303
 
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert len(cards_text) == 3
-        user_ids = {user_id_from_card(card_text) for card_text in cards_text}
-        assert user_ids == {str(user_with_tag1.id), str(user_with_tag1_and_tag2.id), str(user_with_tag2.id)}
+        assert_response_location(
+            response,
+            "backoffice_web.public_accounts.get_public_account",
+            user_id=user_with_tag1_and_tag2.id,
+            tag=[tag1_id, tag2_id],
+            search_rank=1,
+            total_items=1,
+        )
 
     def test_can_search_public_account_having_mulitple_tags(self, authenticated_client):
         tag1, tag2, tag3 = users_factories.UserTagFactory.create_batch(3)

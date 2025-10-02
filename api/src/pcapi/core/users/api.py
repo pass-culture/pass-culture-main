@@ -1395,7 +1395,10 @@ def notify_users_before_deletion_of_suspended_account() -> None:
 
 
 def apply_filter_on_beneficiary_tag(query: sa_orm.Query, tag_ids: list[int]) -> sa_orm.Query:
-    return query.join(models.User.tags).filter(models.UserTag.id.in_(tag_ids)) if tag_ids else query
+    for tag_id in tag_ids:
+        tag_table = sa_orm.aliased(models.UserTag, name=f"pc_aliased_for_tag{tag_id}")
+        query = query.join(tag_table, models.User.tags).filter(tag_table.id == tag_id)
+    return query
 
 
 def has_profile_expired(user: models.User) -> bool:
