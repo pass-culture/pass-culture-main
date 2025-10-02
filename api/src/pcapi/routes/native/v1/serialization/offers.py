@@ -467,6 +467,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     extraData: OfferExtraDataResponse | None
     isExpired: bool
     isExternalBookingsDisabled: bool
+    isEvent: bool
     isHeadline: bool
     is_forbidden_to_underage: bool
     isReleased: bool
