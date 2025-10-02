@@ -644,7 +644,6 @@ def _get_offers_by_ids(
                     offerers_models.Venue.id,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
-                    offerers_models.Venue.departementCode,
                 ),
                 sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
                     sa_orm.load_only(
@@ -667,7 +666,10 @@ def _get_offers_by_ids(
             sa_orm.joinedload(offers_models.Offer.offererAddress)
             .load_only()
             .joinedload(offerers_models.OffererAddress.address)
-            .load_only(geography_models.Address.timezone),
+            .load_only(
+                geography_models.Address.departmentCode,
+                geography_models.Address.timezone,
+            ),
         )
     )
 

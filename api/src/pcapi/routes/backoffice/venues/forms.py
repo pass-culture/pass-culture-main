@@ -64,7 +64,7 @@ class EditVenueForm(EditVirtualVenueForm):
             ),
         ),
     )
-    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
+    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Address.postalCode case
     city = fields.PCHiddenField(
         "Ville",
         validators=(

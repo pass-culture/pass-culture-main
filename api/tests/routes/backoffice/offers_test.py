@@ -183,7 +183,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == ""
-        assert rows[0]["Dép."] == offers[0].venue.departementCode
+        assert rows[0]["Dép."] == offers[0].offererAddress.address.departmentCode
         assert rows[0]["Entité juridique"] == offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == offers[0].venue.name
         assert rows[0]["Date(s) de l'évènement"] == ""
@@ -246,7 +246,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["État"] == "• Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == "22/02/2022"
-        assert rows[0]["Dép."] == offers[1].venue.departementCode
+        assert rows[0]["Dép."] == offers[1].offererAddress.address.departmentCode
         assert rows[0]["Entité juridique"] == offers[1].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == offers[1].venue.name
         assert rows[1]["ID"] == str(offers[2].id)
@@ -1565,7 +1565,7 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[16] == "• Validée"  # État
         assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_edit.venue.departementCode  # Département
+        assert cells[19] == offer_to_edit.offererAddress.address.departmentCode  # Département
         assert cells[20] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
         assert cells[21] == offer_to_edit.venue.name  # Partenaire culturel
         assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
@@ -2027,7 +2027,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert cells[16] == "• Validée"  # État
         assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[19] == offer_to_validate.venue.departementCode  # Département
+        assert cells[19] == offer_to_validate.offererAddress.address.departmentCode  # Département
         assert cells[20] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
         assert cells[21] == offer_to_validate.venue.name  # Partenaire culturel
         assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
@@ -2142,7 +2142,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert cells[16] == "• Rejetée"  # État
         assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[19] == offer_to_reject.venue.departementCode  # Département
+        assert cells[19] == offer_to_reject.offererAddress.address.departmentCode  # Département
         assert cells[20] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
         assert cells[21] == offer_to_reject.venue.name  # Partenaire culturel
         assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
@@ -3421,7 +3421,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert cells[16] == "• Validée"  # État
         assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_activate.venue.departementCode  # Département
+        assert cells[19] == offer_to_activate.offererAddress.address.departmentCode  # Département
         assert cells[20] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
         assert cells[21] == offer_to_activate.venue.name  # Partenaire culturel
         assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
@@ -3514,7 +3514,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[16] == "• Validée"  # État
         assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
         assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_deactivate.venue.departementCode  # Département
+        assert cells[19] == offer_to_deactivate.offererAddress.address.departmentCode  # Département
         assert cells[20] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
         assert cells[21] == offer_to_deactivate.venue.name  # Partenaire culturel
         assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
