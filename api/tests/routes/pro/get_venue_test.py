@@ -96,11 +96,8 @@ class Returns200Test:
         )
         offers_factories.EventStockFactory(offer__venue=venue)
         expected_serialized_venue = {
-            "street": venue.street,
-            "banId": venue.banId,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bookingEmail": venue.bookingEmail,
-            "city": venue.city,
             "contact": {
                 "email": venue.contact.email,
                 "website": venue.contact.website,
@@ -114,7 +111,6 @@ class Returns200Test:
                 "siret": venue_currently_used_for_pricing.siret,
             },
             "dateCreated": format_into_utc_date(venue.dateCreated),
-            "departementCode": venue.departementCode,
             "description": venue.description,
             "dmsToken": "PRO-" + venue.dmsToken,
             "externalAccessibilityData": {
@@ -148,8 +144,6 @@ class Returns200Test:
             "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
             "isVirtual": venue.isVirtual,
-            "latitude": float(venue.latitude),
-            "longitude": float(venue.longitude),
             "managingOfferer": {
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
@@ -165,10 +159,8 @@ class Returns200Test:
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "name": venue.name,
             "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
-            "postalCode": venue.postalCode,
             "publicName": venue.publicName,
             "siret": venue.siret,
-            "timezone": venue.timezone,
             "venueLabelId": venue.venueLabelId,
             "venueTypeCode": venue.venueTypeCode.name,
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,

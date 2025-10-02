@@ -71,11 +71,9 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
-                    "street": venue.street,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,
-                    "city": venue.city,
                     "collectiveDmsApplications": [
                         {
                             "venueId": a.venue.id,
@@ -102,7 +100,6 @@ class GetOffererTest:
                     "hasPartnerPage": False,
                     "hasVenueProviders": False,
                     "name": venue.name,
-                    "postalCode": venue.postalCode,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
                     "venueTypeCode": venue.venueTypeCode.name,

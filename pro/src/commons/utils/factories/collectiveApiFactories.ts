@@ -350,7 +350,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   mentalDisabilityCompliant: true,
   motorDisabilityCompliant: false,
   name: 'Lieu de test',
-  timezone: 'Europe/Paris',
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
   visualDisabilityCompliant: true,
   openingHours: null,

@@ -226,15 +226,12 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dateCreated: datetime
     id: int
     bannerMeta: BannerMetaModel | None
-    banId: str | None
     bookingEmail: str | None
     comment: str | None
-    departementCode: str | None
     dmsToken: str
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
     siret: str | None
-    timezone: str
     venueLabelId: int | None
     venueTypeCode: offerers_models.VenueTypeCode
     collectiveDescription: str | None

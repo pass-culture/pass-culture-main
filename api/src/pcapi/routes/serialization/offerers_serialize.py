@@ -39,15 +39,12 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
 
 
 class GetOffererVenueResponseModel(BaseModel):
-    street: str | None
     bookingEmail: str | None
-    city: str | None
     hasCreatedOffer: bool
     hasAdageId: bool
     isVirtual: bool
     name: str
     id: int
-    postalCode: str | None
     publicName: str | None
     siret: str | None
     venueTypeCode: offerers_models.VenueTypeCode

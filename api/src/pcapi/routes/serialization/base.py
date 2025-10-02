@@ -33,20 +33,14 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
 class BaseVenueResponse(BaseModel):
     isVirtual: bool
     name: str
-
-    street: str | None
     bannerUrl: str | None
     contact: offerers_schemas.VenueContactModel | None
-    city: str | None
     description: offerers_schemas.VenueDescription | None
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     externalAccessibilityUrl: str | None
     externalAccessibilityId: str | None
     isOpenToPublic: bool
     isPermanent: bool | None
-    latitude: float | None
-    longitude: float | None
-    postalCode: str | None
     publicName: str | None
     withdrawalDetails: str | None
 
