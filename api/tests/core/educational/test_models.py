@@ -278,7 +278,7 @@ class CollectiveOfferIsArchiveTest:
         offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
-        results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived).all()
+        results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived.is_(True)).all()
         results_ids = {id for (id,) in results}
 
         assert len(results) == 1

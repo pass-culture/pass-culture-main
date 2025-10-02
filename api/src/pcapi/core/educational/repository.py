@@ -421,7 +421,7 @@ def get_expired_or_archived_collective_offers_template() -> sa_orm.Query:
         .filter(
             sa.or_(
                 models.CollectiveOfferTemplate.hasEndDatePassed.is_(True),  # type: ignore[attr-defined]
-                models.CollectiveOfferTemplate.isArchived.is_(True),  # type: ignore[attr-defined]
+                models.CollectiveOfferTemplate.isArchived.is_(True),
             )
         )
     )
@@ -651,7 +651,6 @@ def filter_collective_offers_by_statuses(
     Returns:
       sa_orm.Query: The modified query with applied filters.
     """
-    typed_offer_is_archived = typing.cast(sa_orm.Mapped[bool], models.CollectiveOffer.isArchived)
     typed_offer_has_booking_datetime_passed = typing.cast(
         sa_orm.Mapped[bool], models.CollectiveOffer.hasBookingLimitDatetimesPassed
     )
@@ -659,8 +658,6 @@ def filter_collective_offers_by_statuses(
     typed_offer_has_start_datetime_passed = typing.cast(
         sa_orm.Mapped[bool], models.CollectiveOffer.hasStartDatetimePassed
     )
-
-    models.CollectiveOffer.hasEndDatetimePassed
 
     on_collective_offer_filters: list = []
     on_booking_status_filter: list = []
@@ -672,13 +669,13 @@ def filter_collective_offers_by_statuses(
     offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
 
     if models.CollectiveOfferDisplayedStatus.ARCHIVED in statuses:
-        on_collective_offer_filters.append(typed_offer_is_archived == True)
+        on_collective_offer_filters.append(models.CollectiveOffer.isArchived.is_(True))
 
     if models.CollectiveOfferDisplayedStatus.DRAFT in statuses:
         on_collective_offer_filters.append(
             sa.and_(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.DRAFT,
-                typed_offer_is_archived == False,
+                models.CollectiveOffer.isArchived.is_(False),
             )
         )
 
@@ -686,7 +683,7 @@ def filter_collective_offers_by_statuses(
         on_collective_offer_filters.append(
             sa.and_(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
-                typed_offer_is_archived == False,
+                models.CollectiveOffer.isArchived.is_(False),
             )
         )
 
@@ -694,7 +691,7 @@ def filter_collective_offers_by_statuses(
         on_collective_offer_filters.append(
             sa.and_(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED,
-                typed_offer_is_archived == False,
+                models.CollectiveOffer.isArchived.is_(False),
             )
         )
 
@@ -1398,11 +1395,10 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> models.Colle
 
 
 def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> sa_orm.Query:
-    typed_template_is_archived = typing.cast(sa_orm.Mapped[bool], models.CollectiveOfferTemplate.isArchived)
     typed_template_has_end_passed = typing.cast(sa_orm.Mapped[bool], models.CollectiveOfferTemplate.hasEndDatePassed)
     query = _get_collective_offer_template_by_id_for_adage_base_query()
     # Filter out the archived offers
-    query = query.filter(typed_template_is_archived == False)
+    query = query.filter(models.CollectiveOfferTemplate.isArchived.is_(False))
     # Filter out the offers not displayed on adage
     query = query.filter(
         models.CollectiveOfferTemplate.isActive == True,
@@ -1715,7 +1711,6 @@ def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool 
 
 
 def get_offers_for_my_institution(uai: str) -> sa_orm.Query[models.CollectiveOffer]:
-    typed_offer_is_archived = typing.cast(sa_orm.Mapped[bool], models.CollectiveOffer.isArchived)
     return (
         db.session.query(models.CollectiveOffer)
         .join(models.EducationalInstitution, models.CollectiveOffer.institution)
@@ -1738,7 +1733,7 @@ def get_offers_for_my_institution(uai: str) -> sa_orm.Query[models.CollectiveOff
         )
         .filter(
             models.EducationalInstitution.institutionId == uai,
-            typed_offer_is_archived == False,
+            models.CollectiveOffer.isArchived.is_(False),
         )
         .populate_existing()
     )

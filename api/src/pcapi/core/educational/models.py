@@ -700,8 +700,9 @@ class CollectiveOffer(
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
-    @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> sa.Boolean:
+    @isArchived.inplace.expression
+    @classmethod
+    def _isArchivedExpression(cls) -> sa.BinaryExpression[bool]:
         return cls.dateArchived.is_not(sa.null())
 
     @property
@@ -1299,8 +1300,9 @@ class CollectiveOfferTemplate(
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
-    @isArchived.expression  # type: ignore[no-redef]
-    def isArchived(cls) -> sa.Boolean:
+    @isArchived.inplace.expression
+    @classmethod
+    def _isArchivedExpression(cls) -> sa.BinaryExpression[bool]:
         return cls.dateArchived.is_not(sa.null())
 
     @hybrid_property
