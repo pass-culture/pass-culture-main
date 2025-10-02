@@ -1,5 +1,3 @@
-{% import "components/links.html" as links with context %}
-<turbo-frame id="user_activity_frame">
 {% if activity %}
   <table class="table mb-4 get-details-activity-view">
     <thead>
@@ -22,4 +20,3 @@
 {% else %}
   <p class="m-5">Aucune activité à ce jour</p>
 {% endif %}
-</turbo-frame>
