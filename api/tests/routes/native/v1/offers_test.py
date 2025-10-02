@@ -277,6 +277,7 @@ class OffersTest:
         assert response.json["withdrawalDetails"] == "modalité de retrait"
         assert response.json["publicationDate"] == None
         assert response.json["bookingAllowedDatetime"] == None
+        assert response.json["isEvent"] is True
 
     def test_get_offer_with_unlimited_stock(self, client):
         product = offers_factories.ProductFactory(thumbCount=1)
@@ -322,6 +323,7 @@ class OffersTest:
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]
         assert response.json["stocks"][0]["features"] == []
+        assert response.json["isEvent"] is False
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
         stock = offers_factories.StockWithActivationCodesFactory()

@@ -3057,6 +3057,10 @@
                         "title": "Iseducational",
                         "type": "boolean"
                     },
+                    "isEvent": {
+                        "title": "Isevent",
+                        "type": "boolean"
+                    },
                     "isExpired": {
                         "title": "Isexpired",
                         "type": "boolean"
@@ -3148,6 +3152,7 @@
                     "expenseDomains",
                     "isExpired",
                     "isExternalBookingsDisabled",
+                    "isEvent",
                     "isHeadline",
                     "isForbiddenToUnderage",
                     "isReleased",
@@ -3253,6 +3258,10 @@
                         "title": "Iseducational",
                         "type": "boolean"
                     },
+                    "isEvent": {
+                        "title": "Isevent",
+                        "type": "boolean"
+                    },
                     "isExpired": {
                         "title": "Isexpired",
                         "type": "boolean"
@@ -3344,6 +3353,7 @@
                     "expenseDomains",
                     "isExpired",
                     "isExternalBookingsDisabled",
+                    "isEvent",
                     "isHeadline",
                     "isForbiddenToUnderage",
                     "isReleased",
