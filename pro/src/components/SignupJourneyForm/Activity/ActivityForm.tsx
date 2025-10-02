@@ -2,13 +2,13 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { buildVenueTypesOptions } from '@/pages/VenueEdition/buildVenueTypesOptions'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
@@ -122,8 +122,9 @@ export const ActivityForm = ({
 
       <FormLayout.Row className={styles['target-customer-row']}>
         <CheckboxGroup
-          name="targetCustomer"
-          group={[
+          label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
+          description="Sélectionnez au moins un élément"
+          options={[
             {
               label: 'Au grand public',
               sizing: 'fill',
@@ -143,9 +144,8 @@ export const ActivityForm = ({
               },
             },
           ]}
-          legend="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
+          variant="detailed"
           error={formState.errors.targetCustomer?.message}
-          required
         />
       </FormLayout.Row>
     </FormLayout.Section>

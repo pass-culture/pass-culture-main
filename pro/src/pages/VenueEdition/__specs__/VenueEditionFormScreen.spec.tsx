@@ -596,8 +596,11 @@ describe('VenueEditionFormScreen', () => {
           ).toBeInTheDocument()
           expect(
             screen.getByText(
-              'Votre établissement est accessible au public en situation de handicap : *'
+              'Votre établissement est accessible au public en situation de handicap :'
             )
+          ).toBeInTheDocument()
+          expect(
+            screen.getByText('Sélectionnez au moins un critère d’accessibilité')
           ).toBeInTheDocument()
         })
       })

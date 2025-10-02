@@ -2,21 +2,19 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
 import { useAccessibilityOptions } from '../useAccessibilityOptions'
 
 const mockSetFieldValue = vi.fn()
 
 function TestCheckboxGroup() {
-  const group = useAccessibilityOptions(
+  const options = useAccessibilityOptions(
     mockSetFieldValue,
     {} as AccessibilityFormValues
   )
 
-  return (
-    <CheckboxGroup group={group} name="accessibility" legend="accessibility" />
-  )
+  return <CheckboxGroup options={options} label="accessibility" />
 }
 
 const renderUseAccessibilityOptions = () => {
@@ -54,10 +52,17 @@ describe('useAccessibilityOptions', () => {
     const noneCheckbox = screen.getByRole('checkbox', {
       name: 'Non accessible',
     })
-    await userEvent.click(noneCheckbox)
-    await userEvent.click(noneCheckbox)
+    await userEvent.click(noneCheckbox) // checked
+    await userEvent.click(noneCheckbox) // not checked
     expect(mockSetFieldValue).toHaveBeenCalledTimes(2)
-    expect(mockSetFieldValue).toHaveBeenNthCalledWith(2, 'accessibility', {
+    expect(mockSetFieldValue).toHaveBeenNthCalledWith(
+      2,
+      'accessibility.none',
+      false
+    )
+    await userEvent.click(noneCheckbox) // checked
+    expect(mockSetFieldValue).toHaveBeenCalledTimes(3)
+    expect(mockSetFieldValue).toHaveBeenNthCalledWith(3, 'accessibility', {
       none: true,
       visual: false,
       mental: false,

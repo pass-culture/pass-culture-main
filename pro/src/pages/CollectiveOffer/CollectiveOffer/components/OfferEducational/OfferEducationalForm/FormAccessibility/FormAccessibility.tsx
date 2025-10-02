@@ -1,7 +1,10 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
+import {
+  type SetAccessibilityFieldValue,
+  useAccessibilityOptions,
+} from '@/commons/hooks/useAccessibilityOptions'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
 import styles from './FormAccessibility.module.scss'
@@ -16,16 +19,19 @@ export const FormAccessibility = ({
   const { setValue, watch, getFieldState, trigger } =
     useFormContext<OfferEducationalFormValues>()
 
+  const setAccessibilityValue: SetAccessibilityFieldValue = (name, value) => {
+    setValue(name, value)
+    trigger('accessibility')
+  }
+  const options = useAccessibilityOptions(
+    setAccessibilityValue,
+    watch('accessibility')
+  )
+
   return (
     <div className={styles['container']}>
       <CheckboxGroup
-        options={useAccessibilityOptions(
-          async (name: string, value: string) => {
-            setValue(name as keyof OfferEducationalFormValues, value)
-            await trigger('accessibility')
-          },
-          watch('accessibility')
-        )}
+        options={options}
         description="Sélectionnez au moins un critère d’accessibilité"
         label="À quel type de handicap votre offre est-elle accessible ?"
         labelTag="h2"
