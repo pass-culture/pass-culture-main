@@ -6,8 +6,6 @@ from typing import Iterable
 
 import click
 import schwifty
-from click_option_group import RequiredMutuallyExclusiveOptionGroup
-from click_option_group import optgroup
 from flask import Blueprint
 
 from pcapi import settings
@@ -325,17 +323,15 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
 
 
 @blueprint.cli.command("import_test_users")
-@optgroup.group("User data sources", cls=RequiredMutuallyExclusiveOptionGroup)
-@optgroup.option(
-    "-d",
-    "--default",
-    is_flag=True,
-    help="Import from default Google document set in IMPORT_USERS_GOOGLE_DOCUMENT_ID",
+@click.option(
+    "-f",
+    "--filename",
+    type=str,
+    required=False,
+    help="Optional path to the CSV file to import (default is from Google Drive)",
 )
-@optgroup.option("-f", "--filename", help="Path to the CSV file to import")
-@optgroup.option("-g", "--google", "google_id", help="Google document id")  # type: ignore [arg-type]
 @click.option("-u", "--update", help="Update users which already exist", is_flag=True)
-def import_test_users(default: bool, filename: str, google_id: str, update: bool) -> None:
+def import_test_users(filename: str, update: bool) -> None:
     """Creates or updates users listed in a Google Sheet or CSV file"""
 
     if filename:
@@ -343,12 +339,9 @@ def import_test_users(default: bool, filename: str, google_id: str, update: bool
         with open(source, encoding="utf-8") as fp:
             new_users = create_users_from_csv(fp)
     else:
-        if google_id:
-            source = google_id
-        else:
-            source = settings.IMPORT_USERS_GOOGLE_DOCUMENT_ID
-            if not source:
-                raise ValueError("IMPORT_USERS_GOOGLE_DOCUMENT_ID is not configured")
+        source = settings.IMPORT_USERS_GOOGLE_DOCUMENT_ID
+        if not source:
+            raise ValueError("IMPORT_USERS_GOOGLE_DOCUMENT_ID is not configured")
         new_users = create_users_from_google_sheet(source, update)
 
     logger.info("Created or updated %d users from %s", len(new_users), source)
