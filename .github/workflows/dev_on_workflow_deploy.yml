@@ -60,7 +60,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -136,7 +136,7 @@ jobs:
           echo "PCAPI_SECRETS=$PCAPI_SECRETS" | tee -a "$GITHUB_OUTPUT"
 
       # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: pass-culture/pass-culture-deployment
           token: ${{ steps.github-token.outputs.token }}
@@ -214,7 +214,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -302,7 +302,7 @@ jobs:
       contents: read
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:

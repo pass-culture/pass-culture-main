@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ github.event.pull_request.user.login != 'dependabot[bot]' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: 'google-github-actions/auth@v2'
