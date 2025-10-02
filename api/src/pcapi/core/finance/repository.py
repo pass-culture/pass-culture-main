@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 import pytz
 import sqlalchemy as sa
@@ -190,7 +191,7 @@ def _get_sent_pricings_for_collective_bookings(
         educational_models.CollectiveOffer.name.label("offer_name"),
         sa.true().label("offer_is_educational"),
         offerers_models.Venue.name.label("venue_name"),
-        offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venue_common_name"),
         geography_models.Address.street.label("venue_address"),
         geography_models.Address.postalCode.label("venue_postal_code"),
         geography_models.Address.city.label("venue_city"),
@@ -260,7 +261,7 @@ def _get_sent_pricings_for_individual_bookings(
         bookings_models.Booking.amount.label("booking_amount"),
         offers_models.Offer.name.label("offer_name"),
         offerers_models.Venue.name.label("venue_name"),
-        offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venue_common_name"),
         offerers_models.Venue.siret.label("venue_siret"),
         # See note about `amount` in `core/finance/models.py`.
         (-models.Pricing.amount).label("amount"),
@@ -396,7 +397,7 @@ def _get_collective_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
             educational_models.CollectiveStock.startDatetime.label("event_date"),
             educational_models.CollectiveOffer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
-            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+            offerers_models.Venue.common_name.label("venue_common_name"),
             offerers_models.Venue.siret.label("venue_siret"),
             geography_models.Address.street.label("venue_address"),
             geography_models.Address.postalCode.label("venue_postal_code"),
@@ -437,7 +438,7 @@ def _get_collective_reimbursement_details_from_invoices(invoice_ids: list[int]) 
 
 
 def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tuple]:
-    columns = [
+    columns: list[typing.Any] = [
         bookings_models.Booking.token.label("booking_token"),
         _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
         bookings_models.Booking.quantity.label("booking_quantity"),
@@ -445,7 +446,7 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
         bookings_models.Booking.amount.label("booking_amount"),
         offers_models.Offer.name.label("offer_name"),
         offerers_models.Venue.name.label("venue_name"),
-        offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venue_common_name"),
         offerers_models.Venue.siret.label("venue_siret"),
         # See note about `amount` in `core/finance/models.py`.
         (-models.Pricing.amount).label("amount"),

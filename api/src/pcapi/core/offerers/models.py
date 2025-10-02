@@ -23,6 +23,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.selectable import Exists
+from sqlalchemy.sql.selectable import ScalarSelect
 from sqlalchemy.sql.sqltypes import LargeBinary
 
 import pcapi.core.finance.models as finance_models
@@ -446,20 +447,21 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
-            self.street = street  # type: ignore[method-assign]
+            self.street = street
         super().__init__(**kwargs)
 
     @hybrid_property
     def street(self) -> str | None:
         return self._address
 
-    @street.setter  # type: ignore[no-redef]
-    def street(self, value: str | None) -> None:
+    @street.inplace.setter
+    def _street_setter(self, value: str | None) -> None:
         self._address = value
         self._street = value
 
-    @street.expression  # type: ignore[no-redef]
-    def street(cls):
+    @street.inplace.expression
+    @classmethod
+    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._address
 
     def _get_type_banner_url(self) -> str | None:
@@ -526,8 +528,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .all()
         )
 
-    @hasOffers.expression  # type: ignore[no-redef]
-    def hasOffers(cls) -> Exists:
+    @hasOffers.inplace.expression
+    @classmethod
+    def _hasOffersExpression(cls) -> Exists:
         import pcapi.core.offers.models as offers_models
 
         return sa.exists().where(offers_models.Offer.venueId == cls.id)
@@ -585,8 +588,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     def dms_adage_status(self) -> str | None:
         return self.last_collective_dms_application.state if self.last_collective_dms_application else None
 
-    @dms_adage_status.expression  # type: ignore[no-redef]
-    def dms_adage_status(cls) -> str | None:
+    @dms_adage_status.inplace.expression
+    @classmethod
+    def _dms_adage_status_expression(cls) -> ScalarSelect:
         return (
             db.session.query(educational_models.CollectiveDmsApplication.state)
             .select_from(educational_models.CollectiveDmsApplication)
@@ -735,8 +739,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     def common_name(self) -> str:
         return self.publicName or self.name
 
-    @common_name.expression  # type: ignore[no-redef]
-    def common_name(cls) -> str:
+    @common_name.inplace.expression
+    @classmethod
+    def _common_name_expression(cls) -> sa_func.coalesce:
         return sa_func.coalesce(sa.func.nullif(cls.publicName, ""), cls.name)
 
     @property
@@ -822,8 +827,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         ).scalar()
 
-    @has_partner_page.expression  # type: ignore[no-redef]
-    def has_partner_page(cls):
+    @has_partner_page.inplace.expression
+    @classmethod
+    def _has_partner_page_expression(cls) -> Exists:
         from pcapi.core.offers.models import Offer
 
         AliasedVenue = sa_orm.aliased(Venue)
@@ -1168,15 +1174,16 @@ class Offerer(
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
-            self.street = street  # type: ignore[method-assign]
+            self.street = street
         super().__init__(**kwargs)
 
     @hybrid_property
     def is_top_acteur(self) -> bool:
         return any(tag.name == constants.TOP_ACTEUR_TAG_NAME for tag in self.tags)
 
-    @is_top_acteur.expression  # type: ignore[no-redef]
-    def is_top_acteur(cls) -> sa.sql.elements.BooleanClauseList:
+    @is_top_acteur.inplace.expression
+    @classmethod
+    def _is_top_acteur_expression(cls) -> Exists:
         return (
             sa.select(1)
             .select_from(OffererTagMapping)
@@ -1190,21 +1197,23 @@ class Offerer(
     def street(self) -> str | None:
         return self._address
 
-    @street.setter  # type: ignore[no-redef]
-    def street(self, value: str | None) -> None:
+    @street.inplace.setter
+    def _street_setter(self, value: str | None) -> None:
         self._address = value
         self._street = value
 
-    @street.expression  # type: ignore[no-redef]
-    def street(cls):
+    @street.inplace.expression
+    @classmethod
+    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._address
 
     @hybrid_property
     def departementCode(self) -> str:
         return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
 
-    @departementCode.expression  # type: ignore[no-redef]
-    def departementCode(cls) -> Case:
+    @departementCode.inplace.expression
+    @classmethod
+    def _departementCodeExpression(cls) -> sa.Function:
         return sa.func.postal_code_to_department_code(cls.postalCode)
 
     @hybrid_property
@@ -1213,8 +1222,9 @@ class Offerer(
             return siren_utils.siren_to_rid7(self.siren)
         return None
 
-    @rid7.expression  # type: ignore[no-redef]
-    def rid7(cls) -> Case:
+    @rid7.inplace.expression
+    @classmethod
+    def _rid7_expression(cls) -> Case:
         return sa.case(
             (cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"), sa.func.substring(cls.siren, 3, 7)),
             else_=None,
@@ -1233,8 +1243,9 @@ class Offerer(
             return True
         return False
 
-    @is_caledonian.expression  # type: ignore[no-redef]
-    def is_caledonian(cls) -> BinaryExpression:
+    @is_caledonian.inplace.expression
+    @classmethod
+    def _is_caledonian_expression(cls) -> sa.ColumnElement[bool]:
         return sa.or_(
             cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"),
             cls.postalCode.ilike(f"{regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE}%"),
@@ -1436,8 +1447,9 @@ class IndividualOffererSubscription(PcObject, Model):
     def isReminderEmailSent(self) -> bool:
         return self.dateReminderEmailSent is not None
 
-    @isReminderEmailSent.expression  # type: ignore[no-redef]
-    def isReminderEmailSent(cls) -> sa.Boolean:
+    @isReminderEmailSent.inplace.expression
+    @classmethod
+    def _isReminderEmailSentExpression(cls) -> BinaryExpression[bool]:
         return cls.dateReminderEmailSent.is_not(sa.null())
 
 
@@ -1491,8 +1503,9 @@ class OffererAddress(PcObject, Model):
     def isLinkedToVenue(self) -> bool:
         return db.session.query(sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
 
-    @isLinkedToVenue.expression  # type: ignore[no-redef]
-    def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:
+    @isLinkedToVenue.inplace.expression
+    @classmethod
+    def _isLinkedToVenueExpression(cls) -> Exists:
         aliased_venue = sa_orm.aliased(Venue)
 
         return sa.select(1).where(aliased_venue.offererAddressId == cls.id).exists()

@@ -108,7 +108,7 @@ def get_collective_offer_full_address(offer: models.CollectiveOffer | models.Col
             assert offer.offererAddress is not None
 
             address = offer.offererAddress.address.fullAddress
-
+            label: str | None
             if offer.offererAddressId == offer.venue.offererAddressId:
                 label = offer.venue.common_name
             else:

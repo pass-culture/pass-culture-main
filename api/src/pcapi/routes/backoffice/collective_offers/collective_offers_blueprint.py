@@ -863,7 +863,7 @@ def get_collective_offer_details(collective_offer_id: int) -> utils.BackofficeRe
                     ),
                     sa_orm.with_expression(
                         offerers_models.Offerer.isTopActeur,
-                        offerers_models.Offerer.is_top_acteur.expression,  # type: ignore[attr-defined]
+                        offerers_models.Offerer.is_top_acteur.expression,
                     ),
                 ),
             ),

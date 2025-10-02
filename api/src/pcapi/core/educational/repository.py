@@ -1117,7 +1117,7 @@ def get_filtered_collective_booking_report(
     venue_id: int | None = None,
 ) -> sa_orm.Query:
     with_entities: tuple[typing.Any, ...] = (
-        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venueName"),
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         models.CollectiveOffer.name.label("offerName"),
         models.CollectiveStock.price,
@@ -1760,7 +1760,7 @@ def _get_collective_offer_template_address_joinedload_with_expression() -> tuple
         ),
         sa_orm.joinedload(models.CollectiveOfferTemplate.offererAddress).with_expression(
             offerers_models.OffererAddress._isLinkedToVenue,
-            offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+            offerers_models.OffererAddress.isLinkedToVenue.expression,
         ),
     )
 
@@ -1774,7 +1774,7 @@ def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.i
         sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
         sa_orm.joinedload(models.CollectiveOffer.offererAddress).with_expression(
             offerers_models.OffererAddress._isLinkedToVenue,
-            offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+            offerers_models.OffererAddress.isLinkedToVenue.expression,
         ),
     )
 

@@ -450,7 +450,7 @@ def create_venue(
         setattr(venue, key, value)
     # FIXME (dramelet, 05-12-2024) Until those columns are dropped
     # we still have to maintain the historic behavior
-    venue.street = data["address"]["street"]  # type: ignore [method-assign]
+    venue.street = data["address"]["street"]
     venue.city = data["address"]["city"]
     venue.postalCode = data["address"]["postalCode"]
     venue.latitude = data["address"]["latitude"]
@@ -1020,7 +1020,7 @@ def create_offerer(
     else:
         is_new = True
         offerer = models.Offerer()
-        offerer.street = offerer_informations.street  # type: ignore[method-assign]
+        offerer.street = offerer_informations.street
         offerer.city = offerer_informations.city
         offerer.name = offerer_informations.name
         offerer.postalCode = offerer_informations.postalCode
@@ -1112,7 +1112,7 @@ def update_offerer(
         offerer.postalCode = postal_code
     if street is not offerers_constants.UNCHANGED and offerer.street != street:
         modified_info["street"] = {"old_info": offerer.street, "new_info": street}
-        offerer.street = street  # type: ignore[method-assign]
+        offerer.street = street
     if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {
@@ -1811,7 +1811,7 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         return offerers.filter(sa.false())
 
     if departments:
-        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore[attr-defined]
+        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))
 
     if search_query.isnumeric():
         numeric_filter = models.Offerer.id == int(search_query)

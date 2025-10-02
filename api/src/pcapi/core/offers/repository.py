@@ -132,7 +132,7 @@ def get_capped_offers_for_filters(
             .joinedload(offerers_models.Venue.offererAddress)
             .with_expression(
                 offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                offerers_models.OffererAddress.isLinkedToVenue.expression,
             ),
         )
         .options(
@@ -167,7 +167,7 @@ def get_capped_offers_for_filters(
             sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(models.Offer.offererAddress).with_expression(
                 offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                offerers_models.OffererAddress.isLinkedToVenue.expression,
             ),
         )
         .limit(offers_limit)
@@ -944,7 +944,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
                 sa_orm.joinedload(models.Offer.offererAddress).with_expression(
                     offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                    offerers_models.OffererAddress.isLinkedToVenue.expression,
                 ),
                 sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
@@ -953,7 +953,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 .joinedload(offerers_models.Venue.offererAddress)
                 .with_expression(
                     offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,  # type: ignore [attr-defined]
+                    offerers_models.OffererAddress.isLinkedToVenue.expression,
                 ),
             )
         if "pending_bookings" in load_options:
