@@ -475,7 +475,6 @@ def _get_collective_offers(
                     offerers_models.Venue.managingOffererId,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
-                    offerers_models.Venue.departementCode,
                 ),
                 sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
                     sa_orm.load_only(

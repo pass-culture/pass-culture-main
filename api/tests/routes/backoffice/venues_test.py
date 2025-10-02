@@ -993,16 +993,16 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.name == data["name"]
         assert venue.publicName == data["public_name"]
         assert venue.siret == data["siret"]
-        assert venue.city == address.city == data["city"]
-        assert venue.postalCode == address.postalCode == data["postal_code"]
-        assert venue.street == address.street == data["street"]
-        assert venue.banId == address.banId == data["ban_id"]
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
-        assert venue.latitude == address.latitude == expected_latitude
-        assert venue.longitude == address.longitude == expected_longitude
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
+        assert address.city == data["city"]
+        assert address.postalCode == data["postal_code"]
+        assert address.street == data["street"]
+        assert address.banId == data["ban_id"]
+        assert address.latitude == expected_latitude
+        assert address.longitude == expected_longitude
         assert address.inseeCode == "75101"
         assert address.isManualEdition is False
         assert venue.offererAddressId == offerer_address.id

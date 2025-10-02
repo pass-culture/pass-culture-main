@@ -3,6 +3,7 @@
 {% from "components/connect_as.html" import build_connect_as_link %}
 {% for row in rows %}
   {% set offer = row.Offer %}
+  {% set address = offer.offererAddress.address if offer.offererAddress else none %}
   <tr id="offer-row-{{ offer.id }}">
     <td>
       <input type="checkbox"
@@ -130,7 +131,6 @@
     {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges }}</td>{% endif %}
     <td>
       {% if row.offer_event_datetimes|length > 0 %}
-        {% set address = offer.offererAddress.address if offer.offererAddress else none %}
         {% set min_date = row.offer_event_datetimes[0] | format_date("%d/%m/%Y", address) %}
         {% set max_date = row.offer_event_datetimes[-1] | format_date("%d/%m/%Y", address) %}
         {{ min_date }}
@@ -139,7 +139,6 @@
     </td>
     <td>
       {% if row.offer_booking_limit_datetimes|length > 0 %}
-        {% set address = offer.offererAddress.address if offer.offererAddress else none %}
         {% set min_date = row.offer_booking_limit_datetimes[0] | format_date("%d/%m/%Y", address) %}
         {% set max_date = row.offer_booking_limit_datetimes[-1] | format_date("%d/%m/%Y", address) %}
         {{ min_date }}
@@ -151,7 +150,9 @@
     <td>{{ offer.validation | format_offer_validation_status(with_badge=True) }}</td>
     <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
     <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
-    <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
+    <td>
+      {% if address %}{{ address.departmentCode }}{% endif %}
+    </td>
     <td>
       {{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}
       {% call badges.badges_container() %}

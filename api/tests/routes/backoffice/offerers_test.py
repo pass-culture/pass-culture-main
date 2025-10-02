@@ -5138,18 +5138,8 @@ class CreateVenueTest(PostEndpointHelper):
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
         assert new_venue.venueTypeCode == venue.venueTypeCode
-        assert new_venue.street == venue.street
-        assert new_venue.departementCode == venue.departementCode
-        assert new_venue.postalCode == venue.postalCode
-        assert new_venue.city == venue.city
-        assert new_venue.latitude == venue.latitude
-        assert new_venue.longitude == venue.longitude
         assert new_venue.isOpenToPublic is False
         assert new_venue.isPermanent is True
-
-        assert new_venue.street == venue.street
-        assert new_venue.city.lower() == venue.city.lower()
-        assert new_venue.postalCode == venue.postalCode
         assert new_venue.offererAddress.address == venue.offererAddress.address
         assert new_venue.offererAddressId != venue.offererAddressId
 
