@@ -18,8 +18,11 @@ export const AppRouter = (): JSX.Element => {
   const currentUser = useSelector(selectCurrentUser)
   const isUnAttached = useSelector((store: any) => store.user.isUnAttached)
 
+  const publicRoutes = routes.filter((route) => route?.meta?.public)
   const activeRoutes = routes.filter(
-    (route) => !route.featureName || activeFeatures.includes(route.featureName)
+    (route) =>
+      !route?.meta?.public &&
+      (!route.featureName || activeFeatures.includes(route.featureName))
   )
 
   const isUnAttachedRoute = [
@@ -62,7 +65,7 @@ export const AppRouter = (): JSX.Element => {
         element: <App />,
         errorElement: <ErrorBoundary />,
         hydrateFallbackElement: <></>,
-        children,
+        children: [...publicRoutes, ...children],
       },
     ],
     {
