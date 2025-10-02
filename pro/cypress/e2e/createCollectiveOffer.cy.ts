@@ -363,8 +363,8 @@ describe('Create collective offers', () => {
     cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
     cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     cy.findByText('Enregistrer et continuer').click()
-    cy.contains('Intitulé : Libellé de mon adresse custom')
-    cy.contains('Adresse : 3 RUE DE VALOIS, 75008, Paris')
+    cy.contains('Libellé de mon adresse custom')
+    cy.contains('3 RUE DE VALOIS, 75008, Paris')
   })
 
   it('Create an offer with draft status and publish it', () => {

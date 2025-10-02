@@ -6,7 +6,6 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
@@ -65,9 +64,6 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isNewCollectiveOfferDetailPageActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
-  )
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -110,14 +106,7 @@ export const CollectiveEditionOfferNavigation = ({
     location.pathname.includes('edition')
 
   const canPreviewOffer = () => {
-    if (isTemplate) {
-      return true
-    }
-
-    if (isNewCollectiveOfferDetailPageActive) {
-      return false
-    }
-    return offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
+    return isTemplate
   }
 
   const canArchiveOffer = () => {
@@ -125,17 +114,13 @@ export const CollectiveEditionOfferNavigation = ({
       return false
     }
 
-    const archiveAction = isTemplate
-      ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
-      : CollectiveOfferAllowedAction.CAN_ARCHIVE
-
-    if (isNewCollectiveOfferDetailPageActive) {
-      return (
-        isTemplate && isActionAllowedOnCollectiveOffer(offer, archiveAction)
+    return (
+      isTemplate &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
       )
-    }
-
-    return isActionAllowedOnCollectiveOffer(offer, archiveAction)
+    )
   }
 
   const canDuplicateOffer = () => {
@@ -143,17 +128,13 @@ export const CollectiveEditionOfferNavigation = ({
       return false
     }
 
-    const duplicateAction = isTemplate
-      ? CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE
-      : CollectiveOfferAllowedAction.CAN_DUPLICATE
-
-    if (isNewCollectiveOfferDetailPageActive) {
-      return (
-        isTemplate && isActionAllowedOnCollectiveOffer(offer, duplicateAction)
+    return (
+      isTemplate &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE
       )
-    }
-
-    return isActionAllowedOnCollectiveOffer(offer, duplicateAction)
+    )
   }
 
   const canCreateBookableOffer =
