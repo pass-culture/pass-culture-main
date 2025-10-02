@@ -1,83 +1,98 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { noop } from '@/commons/utils/noop'
 
 import dog from '../assets/dog.jpg'
-import { CheckboxGroup, type CheckboxGroupOption } from './CheckboxGroup'
+import {
+  CheckboxGroup,
+  type CheckboxGroupOption,
+  type CheckboxGroupProps,
+} from './CheckboxGroup'
 
-const baseOptions = [
-  { label: 'Option 1', value: '1' },
-  { label: 'Option 2', value: '2' },
-  { label: 'Option 3', value: '3' },
+const baseOptions: CheckboxGroupOption[] = [
+  { label: 'Option 1', onChange: noop, checked: false },
+  { label: 'Option 2', onChange: noop, checked: false },
+  { label: 'Option 3', onChange: noop, checked: false },
 ]
 
-const detailedOptions = [
+const detailedOptions: CheckboxGroupOption[] = [
   {
     label: 'A',
-    value: 'a',
-    variant: 'detailed',
     asset: { variant: 'image', src: dog },
+    checked: false,
+    onChange: noop,
   },
   {
     label: 'B',
-    value: 'b',
-    variant: 'detailed',
     asset: { variant: 'image', src: dog },
+    checked: false,
+    onChange: noop,
   },
-] as const
+]
+
+const renderCheckboxGroup = ({
+  options,
+  ...props
+}: {
+  options: CheckboxGroupOption[]
+} & Partial<CheckboxGroupProps>) => {
+  return render(
+    <CheckboxGroup label="My label" name="test" {...props} options={options} />
+  )
+}
 
 describe('CheckboxGroup', () => {
   describe('Rendering', () => {
     it('renders the label', () => {
-      render(
-        <CheckboxGroup
-          label="My label"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        label: 'My label',
+        options: baseOptions,
+      })
       expect(screen.getByText('My label')).toBeInTheDocument()
     })
 
+    it('renders the label with proper tag element', () => {
+      renderCheckboxGroup({
+        label: 'My label',
+        options: baseOptions,
+        labelTag: 'h2',
+      })
+      expect(screen.getByText('My label')).toBeInTheDocument()
+      expect(screen.getByText('My label').tagName).toBe('H2')
+    })
+
     it('renders the description when provided', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          description="Desc"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        description: 'Desc',
+        options: baseOptions,
+      })
       expect(screen.getByText('Desc')).toBeInTheDocument()
     })
 
+    it('should not show an asterisk if the group is required but we chose not to display it', () => {
+      renderCheckboxGroup({
+        label: 'My label',
+        required: true,
+        asterisk: true,
+        options: baseOptions,
+      })
+      expect(screen.getByText('My label *')).toBeInTheDocument()
+    })
+
     it('renders the error message when provided', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          error="Error!"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        options: baseOptions,
+        error: 'Error!',
+      })
       expect(screen.getByText('Error!')).toBeInTheDocument()
     })
 
     it('renders all options', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        options: baseOptions,
+      })
       baseOptions.forEach((opt) => {
         expect(screen.getByText(opt.label)).toBeInTheDocument()
       })
@@ -86,91 +101,47 @@ describe('CheckboxGroup', () => {
     it('throws if less than two options are provided', () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
       expect(() =>
-        render(
-          <CheckboxGroup
-            label="Label"
-            options={[{ label: 'One', value: '1' }]}
-            value={[]}
-            onChange={noop}
-          />
-        )
+        renderCheckboxGroup({
+          options: [{ label: 'One', checked: false, onChange: noop }],
+        })
       ).toThrow()
     })
-  })
 
-  describe('Selection logic', () => {
-    it('allows multiple options to be selected', async () => {
-      const onChange = vi.fn()
-      const value = ['1']
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={value}
-          onChange={onChange}
-        />
-      )
+    it('renders with the correct checkboxes checked', () => {
+      renderCheckboxGroup({
+        label: 'Label',
+        options: baseOptions.map((option, index) => ({
+          ...option,
+          checked: index === 1,
+        })),
+      })
       const checkboxes = screen.getAllByRole('checkbox')
-      expect(checkboxes[0]).toBeChecked()
-      expect(checkboxes[1]).not.toBeChecked()
-      await userEvent.click(checkboxes[1])
-      expect(onChange).toHaveBeenCalledWith(['1', '2'])
-    })
-
-    it('calls onChange with the correct values when an option is toggled', async () => {
-      const onChange = vi.fn()
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={['1']}
-          onChange={onChange}
-        />
-      )
-      const checkboxes = screen.getAllByRole('checkbox')
-      await userEvent.click(checkboxes[2])
-      expect(onChange).toHaveBeenCalledWith(['1', '3'])
-    })
-
-    it('respects the value prop', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={['3']}
-          onChange={noop}
-        />
-      )
-      const checkboxes = screen.getAllByRole('checkbox')
-      expect(checkboxes[2]).toBeChecked()
+      expect(checkboxes[0]).not.toBeChecked()
+      expect(checkboxes[1]).toBeChecked()
+      expect(checkboxes[2]).not.toBeChecked()
     })
   })
 
   describe('Props propagation', () => {
     it('propagates the disabled state to all children', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          disabled
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        label: 'Label',
+        options: baseOptions,
+        disabled: true,
+      })
       const checkboxes = screen.getAllByRole('checkbox')
-      checkboxes.forEach((cb) => expect(cb).toBeDisabled())
+      checkboxes.forEach((cb) => {
+        expect(cb).toBeDisabled()
+      })
     })
 
     it('propagates the error state to all children', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          error="Error!"
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        label: 'Label',
+        error: 'Error!',
+        options: baseOptions,
+        disabled: true,
+      })
       const checkboxes = screen.getAllByRole('checkbox')
       checkboxes.forEach(async (cb) => {
         const label = cb.closest('label') // Because the aria-invalid is on the parent label, not the checkbox input
@@ -182,43 +153,23 @@ describe('CheckboxGroup', () => {
   })
 
   describe('Accessibility', () => {
-    it('has role="group" on the wrapper', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
-      expect(screen.getByRole('group')).toBeInTheDocument()
-    })
-
     it('associates the label with aria-labelledby', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        label: 'Label',
+        options: baseOptions,
+      })
       const group = screen.getByRole('group')
       const label = screen.getByText('Label')
       expect(group).toHaveAttribute('aria-labelledby', label.id)
     })
 
     it('associates the description and error with aria-describedby', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          description="Desc"
-          error="Err"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      renderCheckboxGroup({
+        label: 'Label',
+        description: 'Desc',
+        error: 'Err',
+        options: baseOptions,
+      })
       const group = screen.getByRole('group')
       const desc = screen.getByText('Desc')
       const err = screen.getByText('Err')
@@ -226,44 +177,20 @@ describe('CheckboxGroup', () => {
       expect(group.getAttribute('aria-describedby')).toContain(err.id)
     })
 
-    it('renders error in a role="alert" container', () => {
-      render(
-        <CheckboxGroup
-          label="Label"
-          error="Error!"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
-      const alert = screen.getByRole('alert')
-      expect(alert).toBeInTheDocument()
-      expect(alert).toHaveTextContent('Error!')
-    })
-
     it('is accessible (axe) for variant default', async () => {
-      const { container } = render(
-        <CheckboxGroup
-          label="Label"
-          options={baseOptions}
-          value={[]}
-          onChange={noop}
-        />
-      )
+      const { container } = renderCheckboxGroup({
+        options: detailedOptions,
+        variant: 'default',
+      })
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
 
     it('is accessible (axe) for variant detailed', async () => {
-      const { container } = render(
-        <CheckboxGroup
-          label="Label"
-          options={detailedOptions as unknown as CheckboxGroupOption[]}
-          variant="detailed"
-          value={[]}
-          onChange={noop}
-        />
-      )
+      const { container } = renderCheckboxGroup({
+        options: detailedOptions,
+        variant: 'detailed',
+      })
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })

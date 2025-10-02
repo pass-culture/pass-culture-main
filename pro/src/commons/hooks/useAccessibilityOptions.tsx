@@ -2,11 +2,11 @@ import type { UseFormSetValue } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
+import type { CheckboxGroupOption } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
-import type { CheckboxGroupProps } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 type SetFieldValue =
   | ((field: string, value: any) => void)
@@ -16,7 +16,7 @@ type SetFieldValue =
 function useAccessibilityOptions(
   setFieldValue: SetFieldValue,
   accessibilityValues: OfferEducationalFormValues['accessibility']
-): CheckboxGroupProps['group']
+): CheckboxGroupOption[]
 function useAccessibilityOptions(
   setFieldValue: SetFieldValue,
   accessibilityValues: undefined
@@ -24,12 +24,12 @@ function useAccessibilityOptions(
 function useAccessibilityOptions(
   setFieldValue: SetFieldValue,
   accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
-): CheckboxGroupProps['group'] | undefined
+): CheckboxGroupOption[] | undefined
 
 function useAccessibilityOptions(
   setFieldValue: SetFieldValue,
   accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
-): CheckboxGroupProps['group'] | undefined {
+): CheckboxGroupOption[] | undefined {
   if (!accessibilityValues) {
     return undefined
   }
@@ -61,7 +61,7 @@ function useAccessibilityOptions(
   return [
     {
       label: 'Visuel',
-      icon: strokeAccessibilityEyeIcon,
+      asset: { variant: 'icon', src: strokeAccessibilityEyeIcon },
       sizing: 'fill',
       checked: accessibilityValues.visual,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -69,7 +69,7 @@ function useAccessibilityOptions(
     },
     {
       label: 'Psychique ou cognitif',
-      icon: strokeAccessibilityBrainIcon,
+      asset: { variant: 'icon', src: strokeAccessibilityBrainIcon },
       sizing: 'fill',
       checked: accessibilityValues.mental,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -77,7 +77,7 @@ function useAccessibilityOptions(
     },
     {
       label: 'Moteur',
-      icon: strokeAccessibilityLegIcon,
+      asset: { variant: 'icon', src: strokeAccessibilityLegIcon },
       sizing: 'fill',
       checked: accessibilityValues.motor,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -85,7 +85,7 @@ function useAccessibilityOptions(
     },
     {
       label: 'Auditif',
-      icon: strokeAccessibilityEarIcon,
+      asset: { variant: 'icon', src: strokeAccessibilityEarIcon },
       sizing: 'fill',
       checked: accessibilityValues.audio,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -97,7 +97,7 @@ function useAccessibilityOptions(
       checked: accessibilityValues.none,
       onChange: onNoneOptionChange,
     },
-  ] satisfies CheckboxGroupProps['group']
+  ] satisfies CheckboxGroupOption[]
 }
 
 export { useAccessibilityOptions }
