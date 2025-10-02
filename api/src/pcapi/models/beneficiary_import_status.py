@@ -49,16 +49,14 @@ class BeneficiaryImportStatus(PcObject, Model):
         sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
     )
 
-    detail = sa_orm.mapped_column(sa.String(255), nullable=True)
+    detail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
 
     beneficiaryImportId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("beneficiary_import.id"), index=True, nullable=False
     )
-
     beneficiaryImport: sa_orm.Mapped["BeneficiaryImport"] = relationship(
-        "BeneficiaryImport", foreign_keys=[beneficiaryImportId], backref="statuses"
+        "BeneficiaryImport", foreign_keys=[beneficiaryImportId], back_populates="statuses"
     )
 
-    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-
+    authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     author: sa_orm.Mapped["users_models.User | None"] = relationship("User", foreign_keys=[authorId])
