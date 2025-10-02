@@ -26,11 +26,14 @@ class SpecialEvent(PcObject, Model):
     offererId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True
     )
-    offerer: sa_orm.Mapped[offerers_models.Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    offerer: sa_orm.Mapped[offerers_models.Offerer | None] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="SET NULL"), nullable=True
     )
-    venue: sa_orm.Mapped[offerers_models.Venue] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+    venue: sa_orm.Mapped[offerers_models.Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+    questions: sa_orm.Mapped[list["SpecialEventQuestion"]] = sa_orm.relationship(
+        "SpecialEventQuestion", foreign_keys="SpecialEventQuestion.eventId", back_populates="event"
+    )
 
     @property
     def isFinished(self) -> bool:
@@ -43,7 +46,7 @@ class SpecialEventQuestion(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("special_event.id"), index=True, nullable=False
     )
     event: sa_orm.Mapped[SpecialEvent] = sa_orm.relationship(
-        "SpecialEvent", foreign_keys=[eventId], backref=sa_orm.backref("questions")
+        "SpecialEvent", foreign_keys=[eventId], back_populates="questions"
     )
     externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), index=True, unique=True, nullable=False)
     title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)

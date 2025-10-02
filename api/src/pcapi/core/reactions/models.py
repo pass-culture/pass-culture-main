@@ -21,19 +21,23 @@ class ReactionTypeEnum(enum.Enum):
 
 class Reaction(PcObject, Model):
     __tablename__ = "reaction"
-    reactionType = sa_orm.mapped_column(MagicEnum(ReactionTypeEnum), nullable=False)
+    reactionType: sa_orm.Mapped[ReactionTypeEnum] = sa_orm.mapped_column(MagicEnum(ReactionTypeEnum), nullable=False)
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", back_populates="reactions")
-    offerId = sa_orm.mapped_column(
+    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="reactions")
+    offerId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=True, index=True
     )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", back_populates="reactions")
-    productId = sa_orm.mapped_column(
+    offer: sa_orm.Mapped["Offer | None"] = sa_orm.relationship(
+        "Offer", foreign_keys=[offerId], back_populates="reactions"
+    )
+    productId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=True, index=True
     )
-    product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="reactions")
+    product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
+        "Product", foreign_keys=[productId], back_populates="reactions"
+    )
 
     __table_args__ = (
         # A reaction is linked to either an offer or a product
