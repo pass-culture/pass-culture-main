@@ -33,15 +33,13 @@ class BeneficiaryImport(PcObject, Model):
     """
 
     __tablename__ = "beneficiary_import"
-    applicationId = sa_orm.mapped_column(sa.BigInteger, nullable=True)
+    applicationId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, nullable=True)
 
-    beneficiaryId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
-
-    sourceId = sa_orm.mapped_column(sa.Integer, nullable=True)
+    sourceId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     source: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
 
-    thirdPartyId = sa_orm.mapped_column(sa.TEXT, nullable=True, index=True)
+    thirdPartyId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.TEXT, nullable=True, index=True)
 
     eligibilityType: sa_orm.Mapped[EligibilityType] = sa_orm.mapped_column(
         sa.Enum(EligibilityType, create_constraint=False),
@@ -49,8 +47,18 @@ class BeneficiaryImport(PcObject, Model):
         default=EligibilityType.AGE18,
         server_default=sa.text(EligibilityType.AGE18.name),
     )
-    beneficiary: sa_orm.Mapped["User"] = relationship(
-        "User", foreign_keys=[beneficiaryId], backref="beneficiaryImports"
+
+    beneficiaryId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
+    )
+    beneficiary: sa_orm.Mapped["User | None"] = relationship(
+        "User", foreign_keys=[beneficiaryId], back_populates="beneficiaryImports"
+    )
+
+    statuses: sa_orm.Mapped[list["BeneficiaryImportStatus"]] = relationship(
+        "BeneficiaryImportStatus",
+        foreign_keys="BeneficiaryImportStatus.beneficiaryImportId",
+        back_populates="beneficiaryImport",
     )
 
     @hybrid_property

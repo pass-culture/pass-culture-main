@@ -57,6 +57,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.reminders.models import OfferReminder
+    from pcapi.models.beneficiary_import import BeneficiaryImport
 
 
 VOID_FIRST_NAME = ""
@@ -195,6 +196,9 @@ class User(PcObject, Model, DeactivableMixin):
     )
     beneficiaryFraudReviews: sa_orm.Mapped[list["BeneficiaryFraudReview"]] = sa_orm.relationship(
         "BeneficiaryFraudReview", foreign_keys="BeneficiaryFraudReview.userId", back_populates="user"
+    )
+    beneficiaryImports: sa_orm.Mapped[list["BeneficiaryImport"]] = sa_orm.relationship(
+        "BeneficiaryImport", foreign_keys="BeneficiaryImport.beneficiaryId", back_populates="beneficiary"
     )
     birthPlace = sa_orm.mapped_column(sa.Text, nullable=True)
     city = sa_orm.mapped_column(sa.String(100), nullable=True)
