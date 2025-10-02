@@ -36,7 +36,7 @@ class AppsFlyerMissingError(Exception):
 
 
 def _send_apps_flyer_event(user: User, event_name: str, event_value: Dict[str, Any], error_context: str) -> None:
-    if "apps_flyer" not in user.externalIds:
+    if (not user.externalIds) or ("apps_flyer" not in user.externalIds):
         raise AppsFlyerMissingError("user has no apps flyer information")
 
     user_apps_flyer = user.externalIds["apps_flyer"]
@@ -77,6 +77,7 @@ def _send_apps_flyer_event(user: User, event_name: str, event_value: Dict[str, A
 
 
 def log_user_event(user: User, event_name: str) -> None:
+    assert user.externalIds is not None
     user_firebase_pseudo_id = user.externalIds.get("firebase_pseudo_id", "")
     event_value = {
         "af_user_id": str(user.id),

@@ -63,6 +63,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Venue
     from pcapi.core.reactions.models import Reaction
     from pcapi.core.reminders.models import OfferReminder
+    from pcapi.core.users.models import Favorite
     from pcapi.core.users.models import User
 
 
@@ -896,6 +897,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     )
     stocks: sa_orm.Mapped[list["Stock"]] = sa_orm.relationship(
         "Stock", foreign_keys="Stock.offerId", back_populates="offer"
+    )
+    favorites: sa_orm.Mapped[list["Favorite"]] = sa_orm.relationship(
+        "Favorite", foreign_keys="Favorite.offerId", back_populates="offer"
     )
 
     offer_reminders: sa_orm.Mapped[list["OfferReminder"]] = sa_orm.relationship(

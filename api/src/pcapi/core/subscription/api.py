@@ -121,7 +121,7 @@ def activate_beneficiary_for_eligibility(
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)
 
-    if "apps_flyer" in user.externalIds:
+    if user.externalIds and "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
 
     return user

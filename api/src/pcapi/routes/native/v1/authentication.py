@@ -154,7 +154,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     repository.save(user)
     external_attributes_api.update_external_user(user)
 
-    if "apps_flyer" in user.externalIds:
+    if user.externalIds and "apps_flyer" in user.externalIds:
         apps_flyer_job.log_user_registration_event_job.delay(user.id)
 
     try:

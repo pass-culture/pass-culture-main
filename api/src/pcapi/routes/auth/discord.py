@@ -132,7 +132,7 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     if discord_user is None:
         discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
 
-    discord_user.hasAccess = user.is_beneficiary and user.age and user.age >= 17
+    discord_user.hasAccess = bool(user.is_beneficiary and user.age and user.age >= 17)
     logger.info("Discord user %s has access: %s", discord_user.discordId, discord_user.hasAccess)
     db.session.add(discord_user)
     db.session.flush()

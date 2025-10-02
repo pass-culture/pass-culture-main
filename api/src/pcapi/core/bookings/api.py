@@ -367,7 +367,7 @@ def book_offer(
         db.session.commit()
         raise
 
-    if "apps_flyer" in beneficiary.externalIds:
+    if beneficiary.externalIds and "apps_flyer" in beneficiary.externalIds:
         apps_flyer_job.log_user_booked_offer_event_job.delay(booking.id)
 
     logger.info(

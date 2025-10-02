@@ -401,8 +401,16 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         snapshot = users_api.update_user_info(
             user,
             author=current_user,
-            first_name=(update_request.newFirstName if update_request.has_first_name_update else users_api.UNCHANGED),
-            last_name=(update_request.newLastName if update_request.has_last_name_update else users_api.UNCHANGED),
+            first_name=(
+                update_request.newFirstName
+                if update_request.newFirstName and update_request.has_first_name_update
+                else users_api.UNCHANGED
+            ),
+            last_name=(
+                update_request.newLastName
+                if update_request.newLastName and update_request.has_last_name_update
+                else users_api.UNCHANGED
+            ),
             phone_number=(
                 update_request.newPhoneNumber if update_request.has_phone_number_update else users_api.UNCHANGED
             ),
@@ -441,6 +449,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
             )
             email_update.clear_email_by_admin(duplicate_user)
 
+        assert update_request.newEmail  # helps mypy
         # EmailExistsError should not happen because of duplicate check above
         email_update.full_email_update_by_admin(user, update_request.newEmail)
         db.session.flush()
