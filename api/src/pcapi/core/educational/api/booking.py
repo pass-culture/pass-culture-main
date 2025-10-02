@@ -158,7 +158,6 @@ def _check_institution_fund(collective_booking: educational_models.CollectiveBoo
         educational_institution_id=educational_institution_id,
         educational_year_id=educational_year_id,
         booking_amount=collective_booking.collectiveStock.price,
-        booking_date=collective_booking.collectiveStock.endDatetime,
         deposit=deposit,
     )
 

@@ -1584,15 +1584,6 @@ class EducationalDeposit(PcObject, models.Model):
 
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
-    creditRatio: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
-        sa.Numeric(10, 3),
-        sa.CheckConstraint(
-            '"creditRatio" IS NULL OR ("creditRatio" BETWEEN 0 AND 1)',
-            name="check_credit_ratio_is_a_percentage",
-        ),
-        nullable=True,
-    )
-
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
     )
@@ -1621,18 +1612,6 @@ class EducationalDeposit(PcObject, models.Model):
 
             if temporary_fund < total_amount_after_booking:
                 raise exceptions.InsufficientTemporaryFund()
-
-    def check_has_enough_fund_with_ratio(self, total_amount_after_booking: decimal.Decimal) -> None:
-        """
-        Check that the total amount of bookings won't exceed the deposit amount with creditRatio applied, if present
-        """
-        if self.creditRatio is None:
-            return
-
-        available_amount = round(self.amount * self.creditRatio, 2)
-
-        if available_amount < total_amount_after_booking:
-            raise exceptions.InsufficientFundFirstPeriod()
 
 
 class EducationalRedactor(PcObject, models.Model):

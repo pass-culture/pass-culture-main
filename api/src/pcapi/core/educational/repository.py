@@ -108,12 +108,7 @@ def get_and_lock_educational_deposit(
     return educational_deposit
 
 
-def get_confirmed_collective_bookings_amount(
-    educational_institution_id: int,
-    educational_year_id: str,
-    min_end_month: int | None = None,
-    max_end_month: int | None = None,
-) -> Decimal:
+def get_confirmed_collective_bookings_amount(educational_institution_id: int, educational_year_id: str) -> Decimal:
     query = db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
     query = query.join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
     query = query.filter(
@@ -123,12 +118,6 @@ def get_confirmed_collective_bookings_amount(
             [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
         ),
     )
-
-    if min_end_month is not None:
-        query = query.filter(min_end_month <= sa.extract("month", models.CollectiveStock.endDatetime))
-
-    if max_end_month is not None:
-        query = query.filter(sa.extract("month", models.CollectiveStock.endDatetime) <= max_end_month)
 
     result = query.first()
     return result.amount if (result and result.amount) else Decimal(0)
