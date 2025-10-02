@@ -218,3 +218,15 @@ def clean_unused_offerer_address(dry_run: bool = False) -> None:
         db.session.rollback()
     else:
         db.session.commit()
+
+
+@blueprint.cli.command("clean_offerer_invitations")
+@click.option("--dry-run", is_flag=True)
+def clean_offerer_invitations(dry_run: bool = False) -> None:
+    offerers_api.delete_expired_offerer_invitations()
+
+    if dry_run:
+        db.session.rollback()
+        logger.info("clean_offerer_invitations was a dry-run -- rollback")
+    else:
+        db.session.commit()
