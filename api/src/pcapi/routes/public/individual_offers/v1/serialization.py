@@ -63,6 +63,9 @@ ALLOWED_PRODUCT_SUBCATEGORIES = [
 ]
 
 
+# The following enum seems to be unused in the codebase.
+# However, it is still needed to read some data from historical offers in the database.
+# It should be removed **if and when** we will have migrated all offers to Titelive music types.
 MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
     "MusicTypeEnum (deprecated)",
     {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music.MUSIC_SUB_TYPES_BY_SLUG},
@@ -736,11 +739,6 @@ class GetShowTypesResponse(serialization.ConfiguredBaseModel):
     __root__: list[ShowTypeResponse]
 
 
-class MusicTypeResponse(serialization.ConfiguredBaseModel):
-    id: MusicTypeEnum  # type: ignore[valid-type]
-    label: str
-
-
 class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
     id: TiteliveMusicTypeEnum  # type: ignore[valid-type]
     label: str
@@ -749,10 +747,6 @@ class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
 class TiteliveEventMusicTypeResponse(serialization.ConfiguredBaseModel):
     id: TiteliveEventMusicTypeEnum  # type: ignore[valid-type]
     label: str
-
-
-class GetMusicTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[MusicTypeResponse]
 
 
 class GetTiteliveMusicTypesResponse(serialization.ConfiguredBaseModel):
