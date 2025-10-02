@@ -15,10 +15,9 @@ def create_industrial_draft_offers(offerers_by_name: dict[str, offerers_models.O
     logger.info("create_industrial_individual_draft_offers")
     index = 0
     for offerer in offerers_by_name.values():
-        venues = [venue for venue in offerer.managedVenues if not venue.isVirtual]
-        if not venues:
+        if not offerer.managedVenues:
             continue
-        venue = venues[0]
+        venue = offerer.managedVenues[0]
 
         offers_factories.OfferFactory.create(
             venue=venue, name="Mon offre brouillon", validation=OfferValidationStatus.DRAFT

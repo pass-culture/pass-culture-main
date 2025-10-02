@@ -63,7 +63,6 @@ describe('Homepage', () => {
       id: 1,
       name: 'Structure 1',
       isActive: true,
-      hasDigitalVenueAtLeastOneOffer: true,
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,
