@@ -1,13 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .checkbox-group {
-  &-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-xs);
-    margin-bottom: var(--size-spacing-s);
-  }
-
   &-label {
     &-h1 {
       @include fonts.title1;
@@ -37,6 +30,9 @@
   }
 
   &-description {
+    margin-top: var(--size-spacing-xs);
+    color: var(--color-text-subtle);
+
     &.has-label {
       &-span {
         @include fonts.body-s;
@@ -50,8 +46,6 @@
       }
     }
 
-    color: var(--color-text-subtle);
-
     &.disabled {
       color: var(--color-text-disabled);
     }
@@ -60,6 +54,7 @@
   &-error {
     @include fonts.body-accent-s;
 
+    margin-top: var(--size-spacing-xs);
     color: var(--color-text-error);
 
     &-icon {
@@ -72,7 +67,7 @@
   &-options {
     display: flex;
     flex-wrap: wrap;
-    margin: 0;
+    margin-top: var(--size-spacing-s);
     padding: 0;
     list-style: none;
   }
