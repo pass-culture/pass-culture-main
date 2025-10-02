@@ -529,7 +529,6 @@ def update_state(
 
     for key, value in _get_updated_data(node).items():
         setattr(user_request, key, value)
-    assert instructor  # helps mypy
     user_request.lastInstructor = instructor
     db.session.add(user_request)
     db.session.flush()

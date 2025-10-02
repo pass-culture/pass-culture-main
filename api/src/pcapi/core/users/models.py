@@ -1118,7 +1118,7 @@ class UserAccountUpdateRequest(PcObject, Model):
     lastInstructorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True
     )
-    lastInstructor: sa_orm.Mapped[User] = sa_orm.relationship(User, foreign_keys=[lastInstructorId])
+    lastInstructor: sa_orm.Mapped[User | None] = sa_orm.relationship(User, foreign_keys=[lastInstructorId])
     dateLastUserMessage: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     dateLastInstructorMessage: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # Additional information to filter and/or show icons, badges...
