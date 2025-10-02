@@ -34,6 +34,7 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
+from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -48,7 +49,7 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@blueprint.pro_private_api.route("/users/signup", methods=["POST"])
+@private_api.route("/users/signup", methods=["POST"])
 @atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
@@ -73,7 +74,7 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
         raise ApiErrors(errors={"email": ["l'email existe déjà"]})
 
 
-@blueprint.pro_private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
+@private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
     try:
@@ -89,7 +90,7 @@ def validate_user(token: str) -> None:
     users_api.update_last_connection_date(user)
 
 
-@blueprint.pro_private_api.route("/users/tuto-seen", methods=["PATCH"])
+@private_api.route("/users/tuto-seen", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_user_tuto_seen() -> None:
@@ -97,7 +98,7 @@ def patch_user_tuto_seen() -> None:
     users_api.set_pro_tuto_as_seen(user)
 
 
-@blueprint.pro_private_api.route("/users/rgs-seen", methods=["PATCH"])
+@private_api.route("/users/rgs-seen", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_pro_user_rgs_seen() -> None:
@@ -105,7 +106,7 @@ def patch_pro_user_rgs_seen() -> None:
     users_api.set_pro_rgs_as_seen(user)
 
 
-@blueprint.pro_private_api.route("/users/current", methods=["GET"])
+@private_api.route("/users/current", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=users_serializers.SharedCurrentUserResponseModel, api=blueprint.pro_private_schema)
 def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
@@ -113,7 +114,7 @@ def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
     return users_serializers.SharedCurrentUserResponseModel.from_orm(user)
 
 
-@blueprint.pro_private_api.route("/users/identity", methods=["PATCH"])
+@private_api.route("/users/identity", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=users_serializers.UserIdentityResponseModel, api=blueprint.pro_private_schema)
 def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_serializers.UserIdentityResponseModel:
@@ -130,7 +131,7 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
     return users_serializers.UserIdentityResponseModel.from_orm(user)
 
 
-@blueprint.pro_private_api.route("/users/phone", methods=["PATCH"])
+@private_api.route("/users/phone", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=users_serializers.UserPhoneResponseModel, api=blueprint.pro_private_schema)
 def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serializers.UserPhoneResponseModel:
@@ -147,7 +148,7 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
     return users_serializers.UserPhoneResponseModel.from_orm(user)
 
 
-@blueprint.pro_private_api.route("/users/validate_email", methods=["PATCH"])
+@private_api.route("/users/validate_email", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
     errors = ApiErrors()
@@ -167,7 +168,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
         pass
 
 
-@blueprint.pro_private_api.route("/users/email", methods=["POST"])
+@private_api.route("/users/email", methods=["POST"])
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
@@ -198,7 +199,7 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
         raise errors from exc
 
 
-@blueprint.pro_private_api.route("/users/email_pending_validation", methods=["GET"])
+@private_api.route("/users/email_pending_validation", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=users_serializers.UserEmailValidationResponseModel, api=blueprint.pro_private_schema)
 def get_user_email_pending_validation() -> users_serializers.UserEmailValidationResponseModel:
@@ -207,7 +208,7 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
     return users_serializers.UserEmailValidationResponseModel.from_orm(pending_validation)
 
 
-@blueprint.pro_private_api.route("/users/password", methods=["POST"])
+@private_api.route("/users/password", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
@@ -227,7 +228,7 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
     transactional_mails.send_reset_password_email_to_connected_pro(user)
 
 
-@blueprint.pro_private_api.route("/users/signin", methods=["POST"])
+@private_api.route("/users/signin", methods=["POST"])
 @spectree_serialize(response_model=users_serializers.SharedLoginUserResponseModel, api=blueprint.pro_private_schema)
 def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.SharedLoginUserResponseModel:
     if not body.captcha_token:
@@ -265,7 +266,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     return users_serializers.SharedLoginUserResponseModel.from_orm(user)
 
 
-@blueprint.pro_private_api.route("/users/signout", methods=["GET"])
+@private_api.route("/users/signout", methods=["GET"])
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def signout() -> None:
@@ -273,7 +274,7 @@ def signout() -> None:
     logout_user()
 
 
-@blueprint.pro_private_api.route("/users/cookies", methods=["POST"])
+@private_api.route("/users/cookies", methods=["POST"])
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def cookies_consent(body: CookieConsentRequest) -> None:
     logger.info(
@@ -283,7 +284,7 @@ def cookies_consent(body: CookieConsentRequest) -> None:
     )
 
 
-@blueprint.pro_private_api.route("/users/connect-as/<token>", methods=["GET"])
+@private_api.route("/users/connect-as/<token>", methods=["GET"])
 @spectree_serialize(api=blueprint.pro_private_schema, raw_response=True, json_format=False)
 def connect_as(token: str) -> Response:
     # This route is not used by PRO but it is used by the Backoffice
@@ -347,7 +348,7 @@ def connect_as(token: str) -> Response:
     return flask.redirect(token_data.redirect_link, code=302)
 
 
-@blueprint.pro_private_api.route("/users/log-user-review", methods=["POST"])
+@private_api.route("/users/log-user-review", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None:
