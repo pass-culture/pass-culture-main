@@ -1928,13 +1928,13 @@ export class DefaultService {
    * patch_draft_offer <PATCH>
    * @param offerId
    * @param requestBody
-   * @returns GetIndividualOfferResponseModel OK
+   * @returns GetIndividualOfferWithAddressResponseModel OK
    * @throws ApiError
    */
   public patchDraftOffer(
     offerId: number,
-    requestBody: PatchDraftOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    requestBody?: PatchDraftOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/draft/{offer_id}',
@@ -2071,13 +2071,13 @@ export class DefaultService {
    * patch_offer <PATCH>
    * @param offerId
    * @param requestBody
-   * @returns GetIndividualOfferResponseModel OK
+   * @returns GetIndividualOfferWithAddressResponseModel OK
    * @throws ApiError
    */
   public patchOffer(
     offerId: number,
-    requestBody: PatchOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    requestBody?: PatchOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}',

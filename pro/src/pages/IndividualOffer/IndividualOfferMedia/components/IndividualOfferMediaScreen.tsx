@@ -161,13 +161,7 @@ export const IndividualOfferMediaScreen = ({
             api.patchDraftOffer(offer.id, {
               videoUrl: formValues.videoUrl,
             }),
-            {
-              // FIXME: patchDraftOffer lacks a proper return type,
-              // we cant use it to update the cache - its not a quick fix
-              // on backend side and will be tackled in https://passculture.atlassian.net/browse/PC-38009.
-              // revalidate: false when fixed.
-              revalidate: true,
-            }
+            { revalidate: false }
           )
         }
       }
