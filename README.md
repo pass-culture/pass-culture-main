@@ -35,12 +35,14 @@ Le repo `main` contient les 4 projets suivants :
   - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
   - Lancer `nvm install` dans `/pro`
+- [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain)
+  - `npm i @aikidosec/safe-chain`
+  - `safe-chain setup`
+  - Redémarrer le terminal
 - [Yarn](https://classic.yarnpkg.com/en/)
   - `npm install --global yarn` (NPM)
   - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
-- GPG (outil de (dé)chiffrement)
-  - [GPG Suite](https://gpgtools.org/) (MacOS)
-  - `sudo apt install gpg` (Linux)
+
 - [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
   - `pip install -U commitizen` ou `brew install commitizen`
 
