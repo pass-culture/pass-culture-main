@@ -74,6 +74,12 @@ def upsert_product_stock(
     )
 
 
+def _ensure_timezone_exists(dt: datetime.datetime | None) -> datetime.datetime | None:
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=datetime.UTC)
+    return dt
+
+
 def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,
@@ -95,8 +101,8 @@ def _create_offer_from_product(
     offer.motorDisabilityCompliant = venue.motorDisabilityCompliant
     offer.visualDisabilityCompliant = venue.visualDisabilityCompliant
 
-    offer.publicationDatetime = publicationDatetime
-    offer.bookingAllowedDatetime = bookingAllowedDatetime
+    offer.publicationDatetime = _ensure_timezone_exists(publicationDatetime)
+    offer.bookingAllowedDatetime = _ensure_timezone_exists(bookingAllowedDatetime)
     offer.lastValidationDate = utils_date.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
@@ -293,7 +299,7 @@ def _create_or_update_ean_offers(
         for offer in offers_to_update:
             try:
                 offer.lastProvider = provider
-                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc)
                 offer.offererAddress = offerer_address
 
                 ean = offer.ean

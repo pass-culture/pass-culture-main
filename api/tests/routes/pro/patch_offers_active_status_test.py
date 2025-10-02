@@ -1,4 +1,5 @@
 import math
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -38,10 +39,10 @@ class Returns204Test:
         offer_1 = db.session.get(Offer, offer1.id)
         offer_2 = db.session.get(Offer, offer2.id)
         assert offer_1.isActive
-        assert offer1.publicationDatetime == now_datetime_without_tz
+        assert offer1.publicationDatetime == now_datetime_with_tz
         assert not offer1.bookingAllowedDatetime
         assert offer_2.isActive
-        assert offer_2.publicationDatetime == now_datetime_without_tz
+        assert offer_2.publicationDatetime == now_datetime_with_tz
         assert not offer_2.bookingAllowedDatetime
 
     def when_deactivating_existing_offers(self, client):
@@ -65,10 +66,13 @@ class Returns204Test:
 
         assert response.status_code == 204
         first_offer = db.session.get(Offer, offer.id)
-        assert first_offer.finalizationDatetime == finalization_datetime.replace(tzinfo=None)
+        assert first_offer.finalizationDatetime == finalization_datetime
         assert not first_offer.isActive
         assert not first_offer.publicationDatetime
-        assert first_offer.bookingAllowedDatetime == finalization_datetime.replace(tzinfo=None)
+        # TODO(jbaudet - 09/2025) remove call to replace() when
+        # Offer.bookingAllowedDatetime has been migrated to new custom
+        # datetime type that always return a timezone-aware object
+        assert first_offer.bookingAllowedDatetime.replace(tzinfo=UTC) == finalization_datetime
         assert not db.session.get(Offer, synchronized_offer.id).isActive
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
@@ -89,7 +93,7 @@ class Returns204Test:
 
         assert response.status_code == 204
         assert approved_offer.isActive
-        assert approved_offer.publicationDatetime == now_datetime_without_tz
+        assert approved_offer.publicationDatetime == now_datetime_with_tz
         assert not pending_offer.isActive
         assert not pending_offer.publicationDatetime
         assert not rejected_offer.isActive
@@ -121,7 +125,7 @@ class Returns204Test:
         assert not offer_that_should_stay_deactivated.isActive
         assert not offer_that_should_stay_deactivated.publicationDatetime
         assert offer.isActive
-        assert offer.publicationDatetime == now_datetime_without_tz
+        assert offer.publicationDatetime == now_datetime_with_tz
 
 
 def is_around_now(dt: datetime) -> bool:
