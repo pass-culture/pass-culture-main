@@ -56,6 +56,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.offers.models import OfferReport
     from pcapi.core.permissions.models import BackOfficeUserProfile
     from pcapi.core.reactions.models import Reaction
+    from pcapi.core.reminders.models import OfferReminder
 
 
 VOID_FIRST_NAME = ""
@@ -178,6 +179,7 @@ class UserTagMapping(PcObject, Model):
 
 class User(PcObject, Model, DeactivableMixin):
     __tablename__ = "user"
+
     achievements: sa_orm.Mapped[list["Achievement"]] = sa_orm.relationship("Achievement", back_populates="user")
     action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
         "ActionHistory",
@@ -235,6 +237,9 @@ class User(PcObject, Model, DeactivableMixin):
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true, "subscribed_themes": []}""",
+    )
+    offer_reminders: sa_orm.Mapped[list["OfferReminder"]] = sa_orm.relationship(
+        "OfferReminder", foreign_keys="OfferReminder.userId", back_populates="user"
     )
     OffererInvitations: sa_orm.Mapped[list["OffererInvitation"]] = sa_orm.relationship(
         "OffererInvitation", back_populates="user"

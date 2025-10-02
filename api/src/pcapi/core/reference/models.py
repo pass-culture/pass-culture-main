@@ -51,9 +51,9 @@ class ReferenceScheme(Model):
     #   - debit_note.reference: A
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     prefix: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    year = sa_orm.mapped_column(sa.Integer)
-    nextNumber = sa_orm.mapped_column(sa.Integer, default=1)
-    numberPadding = sa_orm.mapped_column(sa.Integer, default=7)
+    year: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
+    nextNumber: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, default=1, nullable=True)
+    numberPadding: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, default=7, nullable=True)
 
     __table_args__ = (
         sa.UniqueConstraint(
