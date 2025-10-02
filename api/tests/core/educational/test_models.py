@@ -49,45 +49,6 @@ class EducationalDepositTest:
         with pytest.raises(exceptions.InsufficientTemporaryFund):
             educational_deposit.check_has_enough_fund(Decimal(900.00))
 
-    def test_credit_ratio(self):
-        deposit = factories.EducationalDepositFactory(creditRatio=None)
-        assert deposit.creditRatio is None
-
-        deposit = factories.EducationalDepositFactory(creditRatio=0)
-        assert deposit.creditRatio == 0
-
-        deposit = factories.EducationalDepositFactory(creditRatio=0.525)
-        assert deposit.creditRatio == Decimal("0.525")
-
-        deposit = factories.EducationalDepositFactory(creditRatio=0.52522)
-        assert deposit.creditRatio == Decimal("0.525")  # scale is 3
-
-        deposit = factories.EducationalDepositFactory(creditRatio=1)
-        assert deposit.creditRatio == 1
-
-    def test_credit_ratio_check_error_too_low(self):
-        with pytest.raises(sa_exc.IntegrityError):
-            factories.EducationalDepositFactory(creditRatio=-0.5)
-
-    def test_credit_ratio_check_error_too_high(self):
-        with pytest.raises(sa_exc.IntegrityError):
-            factories.EducationalDepositFactory(creditRatio=1.5)
-
-    def test_check_has_enough_fund_with_ratio(self):
-        educational_deposit = EducationalDeposit(amount=Decimal(1000), creditRatio=Decimal(0.25))
-
-        educational_deposit.check_has_enough_fund_with_ratio(Decimal(249))
-        educational_deposit.check_has_enough_fund_with_ratio(Decimal(250))
-
-        with pytest.raises(exceptions.InsufficientFundFirstPeriod):
-            educational_deposit.check_has_enough_fund_with_ratio(Decimal(251))
-
-    def test_check_has_enough_fund_with_ratio_none(self):
-        educational_deposit = EducationalDeposit(amount=Decimal(1000), creditRatio=None)
-
-        educational_deposit.check_has_enough_fund_with_ratio(Decimal(999))
-        educational_deposit.check_has_enough_fund_with_ratio(Decimal(1001))
-
 
 class CollectiveStockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self) -> None:

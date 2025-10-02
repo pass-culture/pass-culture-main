@@ -4471,7 +4471,6 @@ class ValidateFinanceIncidentTest:
                 educational_institution_id=booking.educationalInstitution.id,
                 educational_year_id=booking.educationalYearId,
                 booking_amount=Decimal(7800.00),
-                booking_date=datetime.datetime.utcnow(),
                 deposit=deposit,
             )
 
@@ -4487,7 +4486,6 @@ class ValidateFinanceIncidentTest:
             educational_institution_id=booking.educationalInstitution.id,
             educational_year_id=booking.educationalYearId,
             booking_amount=Decimal(700.00),
-            booking_date=datetime.datetime.utcnow(),
             deposit=deposit,
         )
 

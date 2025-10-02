@@ -27,5 +27,6 @@ def downgrade() -> None:
         constraint_name="check_credit_ratio_is_a_percentage",
         table_name="educational_deposit",
         type_="check",
+        if_exists=True,
     )
     op.drop_column("educational_deposit", "creditRatio")

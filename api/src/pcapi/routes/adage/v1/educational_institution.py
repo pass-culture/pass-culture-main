@@ -40,7 +40,6 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
 
     return EducationalInstitutionResponse(
         credit=educational_deposit.amount if educational_deposit else 0,  # type: ignore[arg-type]
-        creditRatio=educational_deposit.creditRatio if educational_deposit else None,
         isFinal=educational_deposit.isFinal if educational_deposit else False,
         prebookings=prebookings,
     )
