@@ -3302,6 +3302,25 @@ class AcceptOffererInvitationTest:
         assert db.session.query(history_models.ActionHistory).count() == 0
 
 
+class DeleteExpiredOffererInvitationsTest:
+    def test_delete_expired_offerer_invitations(self):
+        not_expired_pending_invitation_id = offerers_factories.OffererInvitationFactory(
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=29, hours=23)
+        ).id
+        _expired_pending_invitation_id = offerers_factories.OffererInvitationFactory(
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=31)
+        ).id
+        accepted_invitation_id = offerers_factories.OffererInvitationFactory(
+            status=offerers_models.InvitationStatus.ACCEPTED,
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
+        ).id
+
+        offerers_api.delete_expired_offerer_invitations()
+
+        remaining_invitation_ids = {id_ for (id_,) in db.session.query(offerers_models.OffererInvitation.id).all()}
+        assert remaining_invitation_ids == {not_expired_pending_invitation_id, accepted_invitation_id}
+
+
 class AccessibilityProviderTest:
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(

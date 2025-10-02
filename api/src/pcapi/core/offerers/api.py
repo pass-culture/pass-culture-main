@@ -2582,6 +2582,19 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
 
 
+def delete_expired_offerer_invitations() -> None:
+    count = (
+        db.session.query(offerers_models.OffererInvitation)
+        .filter(
+            offerers_models.OffererInvitation.status == offerers_models.InvitationStatus.PENDING,
+            offerers_models.OffererInvitation.dateCreated
+            < date_utils.get_naive_utc_now() - timedelta(days=settings.OFFERER_INVITATION_EXPIRATION_DELAY),
+        )
+        .delete(synchronize_session=False)
+    )
+    logger.info("%s offerer invitations deleted", count)
+
+
 @dataclasses.dataclass
 class OffererVenues:
     offerer: offerers_models.Offerer
