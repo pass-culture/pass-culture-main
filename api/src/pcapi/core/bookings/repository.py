@@ -283,7 +283,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
 
     with_entities: tuple[typing.Any, ...] = (
         models.Booking.id.label("id"),
-        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venueName"),
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         offers_models.Offer.name.label("offerName"),
         offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
@@ -654,7 +654,7 @@ def _get_filtered_booking_report(
     VenueAddress = sa_orm.aliased(Address)
 
     with_entities: tuple[typing.Any, ...] = (
-        offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        offerers_models.Venue.common_name.label("venueName"),
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         offers_models.Offer.name.label("offerName"),
         offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),

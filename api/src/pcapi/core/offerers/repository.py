@@ -1005,7 +1005,7 @@ def get_offerer_addresses(
             models.OffererAddress.id,
             geography_models.Address.id.label("addressId"),
             models.OffererAddress.label,
-            typing.cast(sa_orm.Mapped[str], models.Venue.common_name),
+            models.Venue.common_name,
             models.Venue.id.label("venueId"),
             geography_models.Address.street,
             geography_models.Address.postalCode,

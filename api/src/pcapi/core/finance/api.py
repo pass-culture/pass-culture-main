@@ -1440,7 +1440,6 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     ]
 
     def get_individual_data(query: sa_orm.Query) -> sa_orm.Query:
-        typed_is_caledonian = typing.cast(sa_orm.Mapped[bool], offerers_models.Offerer.is_caledonian)
         individual_data_query = (
             query.filter(bookings_models.Booking.amount != 0)
             .join(bookings_models.Booking.deposit)
@@ -1461,11 +1460,11 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 sa.case(
-                    (typed_is_caledonian == True, offerers_models.Offerer.rid7),
+                    (offerers_models.Offerer.is_caledonian == True, offerers_models.Offerer.rid7),
                     else_=offerers_models.Offerer.siren,
                 ).label("offerer_siren"),
                 ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
-                sa.case((typed_is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
+                sa.case((offerers_models.Offerer.is_caledonian == True, "NC"), else_=None).label("caledonian_label"),
                 sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
@@ -1941,7 +1940,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.PricingLine.category.label("pricing_line_category"),
                 ORIGIN_OF_CREDIT_CASE.label("origin_of_credit"),
                 sa.case(
-                    (typing.cast(sa_orm.Mapped[bool], offerers_models.Offerer.is_caledonian) == True, "NC"),
+                    (offerers_models.Offerer.is_caledonian == True, "NC"),
                     else_=None,
                 ).label("ministry"),
                 sa_func.sum(models.PricingLine.amount).label("pricing_line_amount"),

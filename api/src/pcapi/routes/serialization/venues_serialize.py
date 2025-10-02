@@ -386,7 +386,7 @@ class VenueListItemResponseGetterDict(GetterDict):
             offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
-            data = {
+            data: dict[str, typing.Any] = {
                 "id": offerer_address.addressId,
                 "id_oa": offerer_address.id,
                 "banId": offerer_address.address.banId,

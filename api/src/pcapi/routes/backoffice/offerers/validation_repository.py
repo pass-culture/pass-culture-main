@@ -3,7 +3,6 @@
 """
 
 import re
-import typing
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -92,7 +91,7 @@ def _apply_query_filters(
         department_codes: list[str] = []
         for region in regions:
             department_codes += get_department_codes_for_region(region)
-        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))  # type: ignore[attr-defined]
+        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))
 
     if q:
         sanitized_q = email_utils.sanitize_email(q)
@@ -110,9 +109,7 @@ def _apply_query_filters(
             elif num_digits == 5:
                 query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
             elif num_digits in (2, 3):
-                query = query.filter(
-                    typing.cast(sa_orm.Mapped[str], offerers_models.Offerer.departementCode) == sanitized_q,
-                )
+                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
             else:
                 raise ApiErrors(
                     {
