@@ -61,6 +61,7 @@ def send_email_for_each_ongoing_booking(offer: offers_models.Offer) -> None:
         bookers=[],
     )
     for booking in ongoing_bookings:
+        assert booking.user.firstName  #  helps mypy
         mails_request.bookers.append(
             WithdrawalChangedMailBookingDetail(
                 recipients=[booking.user.email],
