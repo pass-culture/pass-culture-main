@@ -338,8 +338,8 @@ def test_serialize_default_position():
     offer = offers_factories.DigitalOfferFactory()
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["_geoloc"] == {
-        "lat": serialization.DEFAULT_LATITUDE,
-        "lng": serialization.DEFAULT_LONGITUDE,
+        "lng": float(offer.venue.offererAddress.address.longitude),
+        "lat": float(offer.venue.offererAddress.address.latitude),
     }
 
 
@@ -696,19 +696,6 @@ def test_serialize_collective_offer_template_location_to_be_defined():
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
     assert serialized["offer"]["locationType"] == "TO_BE_DEFINED"
     assert serialized["_geoloc"] == {"lat": 45, "lng": 3}
-
-
-def test_serialize_collective_offer_template_virtual_venue():
-    # TODO(OA): remove this test when all venues have an address
-    # this should not happen, collective offers should be linked to physical venues
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=None, venue__isVirtual=True, venue__siret=None, venue__comment=None
-    )
-
-    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
-    assert serialized["venue"]["departmentCode"] is None
-    assert serialized["venue"]["academy"] is None
-    assert serialized["_geoloc"] == {"lat": serialization.DEFAULT_LATITUDE, "lng": serialization.DEFAULT_LONGITUDE}
 
 
 def test_serialize_collective_offer_template_legacy():

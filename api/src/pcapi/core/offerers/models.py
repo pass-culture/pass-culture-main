@@ -375,10 +375,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OpeningHours", foreign_keys="OpeningHours.venueId", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
+    offererAddressId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=False, index=True
     )
-    offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
@@ -421,10 +421,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     __table_args__ = (
-        sa.CheckConstraint(
-            '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
-            name="check_physical_venue_has_offerer_address",
-        ),
+        # sa.CheckConstraint(
+        #     '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
+        #     name="check_physical_venue_has_offerer_address",
+        # ),
         sa.Index(
             "ix_venue_trgm_unaccent_public_name",
             sa.func.immutable_unaccent("publicName"),

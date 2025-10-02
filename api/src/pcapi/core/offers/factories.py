@@ -241,10 +241,6 @@ class OfferFactory(BaseFactory[models.Offer]):
                 kwargs["extraData"] = build_extra_data_from_subcategory(
                     subcategory_id, kwargs.pop("set_all_fields", False)
                 )
-        if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
-            venue = kwargs.get("venue")
-            if venue:
-                kwargs["offererAddress"] = venue.offererAddress
 
         kwargs.pop("isActive", None)
         return super()._create(model_class, *args, **kwargs)
