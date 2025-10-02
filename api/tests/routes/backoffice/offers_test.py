@@ -26,6 +26,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import factories as perm_factories
@@ -646,6 +647,21 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+
+    def test_list_offers_by_venue_type(self, authenticated_client):
+        offer = offers_factories.OfferFactory(venue__venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
+        offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "VENUE_TYPE",
+            "search-0-operator": "IN",
+            "search-0-venue_type": offer.venue.venueTypeCode.name,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offer.id}
 
     def test_list_offers_by_address(self, authenticated_client, offers):
         for offer in offers[:3]:

@@ -266,7 +266,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     venueTypeCode: sa_orm.Mapped[VenueTypeCode] = sa_orm.mapped_column(
-        sa.Enum(VenueTypeCode, create_constraint=False), nullable=False, default=VenueTypeCode.OTHER
+        sa.Enum(VenueTypeCode, create_constraint=False), index=True, nullable=False, default=VenueTypeCode.OTHER
     )
 
     venueLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(

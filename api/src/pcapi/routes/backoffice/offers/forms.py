@@ -41,6 +41,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     PRODUCT = "ID d'une offre sur le même produit"
     MEDIATION = "Image"
     VENUE = "Partenaire culturel"
+    VENUE_TYPE = "Activité principale du partenaire"
     ADDRESS = "Adresse de l'offre"
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
@@ -87,6 +88,7 @@ form_field_configuration = {
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
+    "VENUE_TYPE": {"field": "venue_type", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "PRICE": {
@@ -171,6 +173,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "status",
                 "subcategory",
                 "venue",
+                "venue_type",
                 "validation",
                 "show_type",
                 "price",
@@ -293,6 +296,12 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    venue_type = fields.PCSelectMultipleField(
+        "Activité principale du partenaire",
+        choices=forms_utils.choices_from_enum(offerers_models.VenueTypeCode),
         search_inline=True,
         field_list_compatibility=True,
     )

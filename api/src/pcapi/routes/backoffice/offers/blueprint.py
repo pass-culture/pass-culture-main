@@ -203,6 +203,11 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "facet": "venue.id",
         "column": offers_models.Offer.venueId,
     },
+    "VENUE_TYPE": {
+        "field": "venue_type",
+        "column": offerers_models.Venue.venueTypeCode,
+        "inner_join": "venue",
+    },
     "VALIDATED_OFFERER": {
         "field": "boolean",
         "special": lambda x: x == "true",
