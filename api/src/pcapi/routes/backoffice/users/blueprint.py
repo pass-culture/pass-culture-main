@@ -157,14 +157,15 @@ def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
 
 def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(".batch_suspend_users"),
-        div_id="batch-suspend-users-form",
+        target_id="#batch-suspend-users-modal-content",
+        modal_content_id="batch-suspend-users-modal-content",
+        close_on_validation=False,
         title="Suspendre des utilisateurs en masse",
         information="Ajouter tous les ID d'utilisateurs à suspendre séparés par des virgules",
         button_text="Continuer",
-        data_turbo="true",
     )
 
 
