@@ -36,7 +36,7 @@ Le repo `main` contient les 4 projets suivants :
 - [Node](https://nodejs.org/en/download/)
   - Lancer `nvm install` dans `/pro`
 - [safe-chain](https://www.npmjs.com/package/@aikidosec/safe-chain)
-  - `npm i @aikidosec/safe-chain`
+  - `npm i -g @aikidosec/safe-chain`
   - `safe-chain setup`
   - Redémarrer le terminal
 - [Yarn](https://classic.yarnpkg.com/en/)
