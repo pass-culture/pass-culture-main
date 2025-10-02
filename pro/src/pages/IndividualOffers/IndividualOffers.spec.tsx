@@ -56,6 +56,12 @@ const proVenues = [
   }),
 ]
 
+const selectCurrentOfferer = vi.hoisted(() => vi.fn())
+vi.mock('@/commons/store/offerer/selectors', async (importOriginal) => ({
+  ...(await importOriginal()),
+  selectCurrentOfferer,
+}))
+
 const offererAddress: GetOffererAddressResponseModel[] = [
   offererAddressFactory({
     label: 'Label',
