@@ -117,6 +117,19 @@ describe('CollectiveOfferRow', () => {
         `/offre/${props.offer.id}/collectif/recapitulatif`
       )
     })
+
+    it('should contain a link with the offer name and details link when offer is template', () => {
+      renderOfferItem({ ...props, offer: { ...props.offer, isShowcase: true } })
+
+      const offerTitle = screen.getByRole('link', {
+        name: `Offre vitrine ${props.offer.name}`,
+      })
+      expect(offerTitle).toBeInTheDocument()
+      expect(offerTitle).toHaveAttribute(
+        'href',
+        `/offre/T-${props.offer.id}/collectif/recapitulatif`
+      )
+    })
   })
 
   describe('venue name', () => {
@@ -605,20 +618,6 @@ describe('CollectiveOfferRow', () => {
         screen.queryByText('En attente de préréservation par l’enseignant')
       ).not.toBeInTheDocument()
     })
-  })
-
-  it('should use the new collective offer detail URL when WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE is active', () => {
-    renderOfferItem(props, {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
-    })
-
-    const offerTitle = screen.getByRole('link', {
-      name: props.offer.name,
-    })
-    expect(offerTitle).toHaveAttribute(
-      'href',
-      `/offre/${props.offer.id}/collectif/recapitulatif`
-    )
   })
 
   it('should use the creation edit URL when offer is a draft', () => {

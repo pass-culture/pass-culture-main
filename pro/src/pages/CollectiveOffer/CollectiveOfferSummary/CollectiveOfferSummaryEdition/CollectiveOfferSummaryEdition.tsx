@@ -5,7 +5,6 @@ import type {
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { withCollectiveOfferFromParams } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
@@ -38,11 +37,7 @@ export const CollectiveOfferSummaryEdition = ({
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
-  const isNewCollectiveOfferDetailPageActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
-  )
-
-  if (isNewCollectiveOfferDetailPageActive && isCollectiveOffer(offer)) {
+  if (isCollectiveOffer(offer)) {
     return <BookableOfferSummary offer={offer} />
   }
 
