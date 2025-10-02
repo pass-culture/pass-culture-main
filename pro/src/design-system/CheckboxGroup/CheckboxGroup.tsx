@@ -6,29 +6,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Checkbox, type CheckboxProps } from '../Checkbox/Checkbox'
 import styles from './CheckboxGroup.module.scss'
 
-type CheckboxGroupOptionSimple = Omit<
-  CheckboxProps,
-  'checked' | 'onChange' | 'hasError' | 'disabled' | 'variant' | 'asset'
-> & {
-  label: string
-  value: string
-  variant?: 'default'
-  asset?: never
-}
-
-type CheckboxGroupOptionDetailed = Omit<
-  CheckboxProps,
-  'checked' | 'onChange' | 'hasError' | 'disabled' | 'variant'
-> & {
-  label: string
-  value: string
-  variant: 'detailed'
-  asset?: CheckboxProps['asset']
-}
-
-export type CheckboxGroupOption =
-  | CheckboxGroupOptionSimple
-  | CheckboxGroupOptionDetailed
+export type CheckboxGroupOption = Omit<CheckboxProps, 'variant'>
 
 type CheckboxGroupProps = {
   /** Label for the checkbox group */
@@ -42,9 +20,6 @@ type CheckboxGroupProps = {
   /** List of options as checkboxes */
   options: CheckboxGroupOption[]
   /** Controlled selected values */
-  value: string[]
-  /** Event handler called with the new array of selected values */
-  onChange: (value: string[]) => void
   /** Display style of the checkbox group, defaults to 'vertical' */
   display?: 'vertical' | 'horizontal'
   /** Variant of the checkboxes (applied to all), defaults to 'default' */
@@ -59,117 +34,85 @@ export const CheckboxGroup = ({
   description,
   error,
   options,
-  value,
-  onChange,
   display = 'vertical',
   variant = 'default',
   disabled = false,
 }: CheckboxGroupProps) => {
-  if (options.length < 2) {
-    throw new Error('CheckboxGroup requires at least two options.')
-  }
-
-  const labelId = useId()
   const errorId = useId()
   const descriptionId = useId()
-  const describedBy = [
-    error ? errorId : null,
-    description ? descriptionId : null,
-  ]
-    .filter(Boolean)
-    .join(' ')
-
-  const selectedValues = value ?? []
-
-  const handleChange = (option: CheckboxGroupOption) => {
-    let newValues: string[]
-    if (selectedValues.includes(option.value)) {
-      newValues = selectedValues.filter((v) => v !== option.value)
-    } else {
-      newValues = [...selectedValues, option.value]
-    }
-    onChange?.(newValues)
-  }
+  const describedBy = `${error ? errorId : ''} ${description ? descriptionId : ''}`
 
   return (
-    <div
-      role="group"
-      aria-labelledby={labelId}
+    <fieldset
       aria-describedby={describedBy}
       className={classNames(
         styles['checkbox-group'],
         styles[`display-${display}`],
         styles[`variant-${variant}`],
-        { [styles['disabled']]: disabled }
+        {
+          [styles['disabled']]: disabled,
+        }
       )}
     >
-      <div className={styles['checkbox-group-header']}>
+      <legend className={styles['checkbox-group-legend']}>
         <LabelTag
-          id={labelId}
           className={classNames(styles[`checkbox-group-label-${LabelTag}`], {
             [styles['disabled']]: disabled,
           })}
         >
           {label}
         </LabelTag>
-        {description && (
-          <span
-            id={descriptionId}
-            className={classNames(styles['checkbox-group-description'], {
-              [styles['disabled']]: disabled,
-              [styles[`has-label-${LabelTag}`]]: LabelTag,
-            })}
-          >
-            {description}
-          </span>
+      </legend>
+      {description && (
+        <p
+          id={descriptionId}
+          className={classNames(styles['checkbox-group-description'], {
+            [styles['disabled']]: disabled,
+            [styles[`has-label-${LabelTag}`]]: LabelTag,
+          })}
+        >
+          {description}
+        </p>
+      )}
+      <div role="alert">
+        {error && (
+          <div id={errorId}>
+            <SvgIcon
+              src={fullError}
+              alt=""
+              width="16"
+              className={styles['checkbox-group-error-icon']}
+            />
+            <span className={styles['checkbox-group-error']}>{error}</span>
+          </div>
         )}
-        <div role="alert" id={errorId}>
-          {error && (
-            <>
-              <SvgIcon
-                src={fullError}
-                alt=""
-                width="16"
-                className={styles['checkbox-group-error-icon']}
-              />
-              <span className={styles['checkbox-group-error']}>{error}</span>
-            </>
-          )}
-        </div>
       </div>
       <div className={styles['checkbox-group-options']}>
         {options.map((option) => {
-          const checked = selectedValues.includes(option.value)
-
-          const detailedProps: Record<string, any> =
-            option.variant === 'detailed'
-              ? {
-                  description: option.description,
-                  asset: option.asset,
-                  collapsed: option.collapsed,
-                }
-              : {}
-
           return (
-            <Checkbox
-              key={option.value}
-              label={option.label}
-              checked={checked}
-              onChange={() => handleChange(option)}
-              hasError={!!error}
-              disabled={disabled}
-              sizing={option.sizing}
-              indeterminate={option.indeterminate}
-              name={option.name}
-              required={option.required}
-              asterisk={option.asterisk}
-              onBlur={option.onBlur}
-              variant={option.variant}
-              {...detailedProps}
-            />
+            <div className={styles['checkbox-group-item']} key={option.label}>
+              {variant === 'default' ? (
+                <Checkbox
+                  {...option}
+                  description={undefined}
+                  asset={undefined}
+                  collapsed={undefined}
+                  hasError={!!error}
+                  disabled={disabled || option.disabled}
+                  variant="default"
+                />
+              ) : (
+                <Checkbox
+                  {...option}
+                  hasError={!!error}
+                  disabled={disabled || option.disabled}
+                  variant="detailed"
+                />
+              )}
+            </div>
           )
         })}
       </div>
-    </div>
+    </fieldset>
   )
 }
