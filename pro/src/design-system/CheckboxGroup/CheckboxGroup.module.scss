@@ -1,6 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .checkbox-group {
+  &-legend {
+    margin-bottom: var(--size-spacing-s);
+  }
+
   &-header {
     display: flex;
     flex-direction: column;
