@@ -11,6 +11,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -18,7 +19,6 @@ import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferD
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -52,7 +52,7 @@ export const DetailsForm = ({
     formState: { errors },
     register,
     setValue,
-    trigger,
+    // trigger,
     watch,
   } = useFormContext<DetailsFormValues>()
 
@@ -66,10 +66,7 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
   const showAddVenueBanner = venuesOptions.length === 0
 
-  const accessibilityOptionsGroups = useAccessibilityOptions(
-    setValue,
-    accessibility
-  )
+  const accessibilityOptions = useAccessibilityOptions(setValue, accessibility)
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
   const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -197,16 +194,15 @@ export const DetailsForm = ({
           readOnlyFields={readOnlyFields}
         />
       )}
-      {isNewOfferCreationFlowFeatureActive && accessibilityOptionsGroups && (
+      {isNewOfferCreationFlowFeatureActive && accessibilityOptions && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup
-              name="accessibility"
-              group={accessibilityOptionsGroups}
+              options={accessibilityOptions}
               disabled={readOnlyFields.includes('accessibility')}
-              legend="Cette offre est accessible au public en situation de handicap :"
-              onChange={() => trigger('accessibility')}
-              required
+              label="Cette offre est accessible au public en situation de handicap :"
+              description="Sélectionnez au moins un critère d’accessibilité"
+              variant="detailed"
               error={errors.accessibility?.message}
             />
           </FormLayout.Row>

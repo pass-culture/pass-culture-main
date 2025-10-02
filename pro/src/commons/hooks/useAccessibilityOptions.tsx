@@ -1,34 +1,41 @@
 import type { UseFormSetValue } from 'react-hook-form'
 
-import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import { AccessibilityEnum } from '@/commons/core/shared/types'
+import {
+  AccessibilityEnum,
+  type AccessibilityFormValues,
+} from '@/commons/core/shared/types'
 import type { CheckboxGroupProps } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import strokeAccessibilityBrainIcon from '@/icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
 
-type SetFieldValue =
-  | ((field: string, value: any) => void)
-  | UseFormSetValue<any>
+type SetValueFn = UseFormSetValue<{
+  accessibility: AccessibilityFormValues
+}>
+
+export type SetAccessibilityFieldValue = (
+  name: Parameters<SetValueFn>[0],
+  value: Parameters<SetValueFn>[1]
+) => void
 
 // Hooks can't be called conditionally, so we need to use a polymorphic signature to handle the `undefined` case
 function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility']
+  setFieldValue: SetAccessibilityFieldValue,
+  accessibilityValues: AccessibilityFormValues
 ): CheckboxGroupProps['options']
 function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
+  setFieldValue: SetAccessibilityFieldValue,
   accessibilityValues: undefined
 ): undefined
 function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
+  setFieldValue: SetAccessibilityFieldValue,
+  accessibilityValues: AccessibilityFormValues | undefined
 ): CheckboxGroupProps['options'] | undefined
 
 function useAccessibilityOptions(
-  setFieldValue: SetFieldValue,
-  accessibilityValues: OfferEducationalFormValues['accessibility'] | undefined
+  setFieldValue: SetAccessibilityFieldValue,
+  accessibilityValues: AccessibilityFormValues | undefined
 ): CheckboxGroupProps['options'] | undefined {
   if (!accessibilityValues) {
     return undefined

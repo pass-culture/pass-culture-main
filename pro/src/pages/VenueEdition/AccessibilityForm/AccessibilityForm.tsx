@@ -1,14 +1,17 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
+import {
+  type SetAccessibilityFieldValue,
+  useAccessibilityOptions,
+} from '@/commons/hooks/useAccessibilityOptions'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { AccessibilityCallout } from '@/pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'
 
@@ -25,14 +28,18 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { watch, setValue, formState } =
+  const { watch, setValue, formState, trigger } =
     useFormContext<VenueEditionFormValues>()
 
   const values = watch()
 
+  const setAccessibilityValue: SetAccessibilityFieldValue = (name, value) => {
+    setValue(name, value)
+    trigger('accessibility')
+  }
+
   const checkboxGroup = useAccessibilityOptions(
-    (name: string, value: boolean) =>
-      setValue(name as keyof VenueEditionFormValues, value),
+    setAccessibilityValue,
     values.accessibility
   )
 
@@ -61,10 +68,11 @@ export const AccessibilityForm = ({
         <>
           <FormLayout.Row>
             <CheckboxGroup
-              name="accessibility"
-              group={checkboxGroup}
-              required
-              legend="Votre établissement est accessible au public en situation de handicap :"
+              options={checkboxGroup}
+              label="Votre établissement est accessible au public en situation de handicap :"
+              description="Sélectionnez au moins un critère d’accessibilité"
+              labelTag="h2"
+              variant="detailed"
               error={formState.errors.accessibility?.message}
             />
           </FormLayout.Row>
