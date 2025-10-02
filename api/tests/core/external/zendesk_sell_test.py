@@ -104,9 +104,9 @@ def test_create_venue():
     assert posted_json["data"]["email"] == venue.bookingEmail
     assert posted_json["data"]["phone"] == venue.contact.phone_number
     assert posted_json["data"]["address"] == {
-        "line1": venue.street,
-        "city": venue.city,
-        "postal_code": venue.postalCode,
+        "line1": venue.offererAddress.address.street,
+        "city": venue.offererAddress.address.city,
+        "postal_code": venue.offererAddress.address.postalCode,
     }
     assert posted_json["data"]["custom_fields"]["Département"] == "976"
     assert posted_json["data"]["custom_fields"]["Région"] == "MAYOTTE"
@@ -153,9 +153,9 @@ def test_update_venue():
     assert put_json["data"]["email"] == venue.bookingEmail
     assert put_json["data"]["phone"] is None
     assert put_json["data"]["address"] == {
-        "line1": venue.street,
-        "city": venue.city,
-        "postal_code": venue.postalCode,
+        "line1": venue.offererAddress.address.street,
+        "city": venue.offererAddress.address.city,
+        "postal_code": venue.offererAddress.address.postalCode,
     }
     assert put_json["data"]["custom_fields"]["Département"] == "986"
     assert put_json["data"]["custom_fields"]["Région"] == "WALLIS ET FUTUNA"
@@ -203,9 +203,9 @@ def test_create_venue_without_parent_offerer():
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
     assert posted_venue_json["data"]["address"] == {
-        "line1": venue.street,
-        "city": venue.city,
-        "postal_code": venue.postalCode,
+        "line1": venue.offererAddress.address.street,
+        "city": venue.offererAddress.address.city,
+        "postal_code": venue.offererAddress.address.postalCode,
     }
     assert posted_venue_json["data"]["custom_fields"]["Département"] == "972"
     assert posted_venue_json["data"]["custom_fields"]["Région"] == "MARTINIQUE"
@@ -269,9 +269,9 @@ def test_create_venue_and_parent_offerer():
     assert posted_venue_json["data"]["email"] == venue.bookingEmail
     assert posted_venue_json["data"]["phone"] == venue.contact.phone_number
     assert posted_venue_json["data"]["address"] == {
-        "line1": venue.street,
-        "city": venue.city,
-        "postal_code": venue.postalCode,
+        "line1": venue.offererAddress.address.street,
+        "city": venue.offererAddress.address.city,
+        "postal_code": venue.offererAddress.address.postalCode,
     }
     assert posted_venue_json["data"]["custom_fields"]["Département"] == "972"
     assert posted_venue_json["data"]["custom_fields"]["Région"] == "MARTINIQUE"

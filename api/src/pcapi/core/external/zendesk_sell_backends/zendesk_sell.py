@@ -363,6 +363,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             pc_pro_status = "Acteur en cours d'inscription"
 
         social_medias = getattr(venue.contact, "social_medias", {})
+        # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` `if venue.offererAddress else None` when non nullable
         department_code = venue.offererAddress.address.departmentCode if venue.offererAddress else None
         params: dict = {
             "data": {
@@ -377,9 +378,10 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 "twitter": social_medias.get("twitter", ""),
                 "facebook": social_medias.get("facebook", ""),
                 "address": {
-                    "line1": venue.street,
-                    "city": venue.city,
-                    "postal_code": venue.postalCode,
+                    # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` `if venue.offererAddress else None` when non nullable
+                    "line1": venue.offererAddress.address.street if venue.offererAddress else None,
+                    "city": venue.offererAddress.address.city if venue.offererAddress else None,
+                    "postal_code": venue.offererAddress.address.postalCode if venue.offererAddress else None,
                 },
                 "custom_fields": {
                     ZendeskCustomFieldsNames.DEPARTEMENT.value: department_code,
