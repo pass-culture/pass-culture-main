@@ -6,7 +6,7 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import ColumnElement
 
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offers.models import Offer
@@ -129,8 +129,9 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     def isPublished(self) -> bool:
         return self.isActive and self.isSocialMediaDiffusible
 
-    @isPublished.expression  # type: ignore[no-redef]
-    def isPublished(cls) -> BinaryExpression:
+    @isPublished.inplace.expression
+    @classmethod
+    def _isPublishedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
 
     @property

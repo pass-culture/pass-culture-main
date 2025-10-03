@@ -153,13 +153,9 @@ def _get_individual_bookings(
 
     if form.has_incident.data and len(form.has_incident.data) == 1:
         if form.has_incident.data[0] == "true":
-            base_query = base_query.filter(
-                typing.cast(sa_orm.Mapped[int | None], bookings_models.Booking.validated_incident_id) != None,
-            )
+            base_query = base_query.filter(bookings_models.Booking.validated_incident_id != None)
         else:
-            base_query = base_query.filter(
-                typing.cast(sa_orm.Mapped[int | None], bookings_models.Booking.validated_incident_id) == None,
-            )
+            base_query = base_query.filter(bookings_models.Booking.validated_incident_id == None)
 
     or_filters = []
     if form.q.data:

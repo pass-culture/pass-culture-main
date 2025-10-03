@@ -9,9 +9,9 @@ import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.elements import Label
+from sqlalchemy.sql.selectable import ScalarSelect
 
 import pcapi.core.finance.models as finance_models
 from pcapi.core.bookings import exceptions
@@ -294,7 +294,7 @@ class Booking(PcObject, Model):
             return self.dateCreated + BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
-    @hybrid_property
+    @property
     def total_amount(self) -> Decimal:
         return self.amount * self.quantity
 
@@ -326,32 +326,36 @@ class Booking(PcObject, Model):
     def isConfirmed(self) -> bool:
         return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
 
-    @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> BooleanClauseList:
+    @isConfirmed.inplace.expression
+    @classmethod
+    def _isConfirmedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= sa.func.now())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> BinaryExpression:
+    @is_used_or_reimbursed.inplace.expression
+    @classmethod
+    def _is_used_or_reimbursed_expression(cls) -> ColumnElement[bool]:
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @hybrid_property
     def isReimbursed(self) -> bool:
         return self.status == BookingStatus.REIMBURSED
 
-    @isReimbursed.expression  # type: ignore[no-redef]
-    def isReimbursed(cls) -> BinaryExpression:
+    @isReimbursed.inplace.expression
+    @classmethod
+    def _isReimbursedExpression(cls) -> ColumnElement[bool]:
         return cls.status == BookingStatus.REIMBURSED
 
     @hybrid_property
     def isCancelled(self) -> bool:
         return self.status == BookingStatus.CANCELLED
 
-    @isCancelled.expression  # type: ignore[no-redef]
-    def isCancelled(cls) -> BinaryExpression:
+    @isCancelled.inplace.expression
+    @classmethod
+    def _isCancelledExpression(cls) -> ColumnElement[bool]:
         return cls.status == BookingStatus.CANCELLED
 
     @property
@@ -374,8 +378,9 @@ class Booking(PcObject, Model):
     def isExternal(self) -> bool:
         return any(externalBooking.id for externalBooking in self.externalBookings)
 
-    @isExternal.expression  # type: ignore[no-redef]
-    def isExternal(cls) -> Label:
+    @isExternal.inplace.expression
+    @classmethod
+    def _isExternalExpression(cls) -> Label:
         return sa.select(
             sa.case(
                 (sa.exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True),
@@ -390,8 +395,9 @@ class Booking(PcObject, Model):
                 return booking_incident.incident.id
         return None
 
-    @validated_incident_id.expression  # type: ignore[no-redef]
-    def validated_incident_id(cls) -> int | None:
+    @validated_incident_id.inplace.expression
+    @classmethod
+    def _validated_incident_id_expression(cls) -> ScalarSelect:
         return (
             sa.select(finance_models.FinanceIncident.id)
             .select_from(finance_models.FinanceIncident)
@@ -466,8 +472,9 @@ class Booking(PcObject, Model):
             self.stock.offer.subcategoryId in offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES and self.amount == 0
         )
 
-    @display_even_if_used.expression  # type: ignore[no-redef]
-    def display_even_if_used(cls) -> BooleanClauseList:
+    @display_even_if_used.inplace.expression
+    @classmethod
+    def _display_even_if_used_expression(cls) -> ColumnElement[bool]:
         return sa.and_(
             offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
             cls.amount == 0,
