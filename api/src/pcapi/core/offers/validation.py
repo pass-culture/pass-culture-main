@@ -814,10 +814,10 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
     offer: models.Offer,
     booking_limit_datetime: datetime.datetime,
 ) -> None:
-    """
-    :booking_limit_datetime: /!\ must be a naive utc datetime
-    """
     errors = []
+
+    if booking_limit_datetime.tzinfo is not None:
+        booking_limit_datetime = booking_limit_datetime.replace(tzinfo=None)
 
     if offer.publicationDatetime and booking_limit_datetime < offer.publicationDatetime:
         errors += [
