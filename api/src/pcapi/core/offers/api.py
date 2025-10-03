@@ -1096,7 +1096,7 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
             offer,
             activation_codes=stock_input["activation_codes"],
             activation_codes_expiration_datetime=stock_input["activation_codes_expiration_datetime"],
-            booking_limit_datetime=_to_naive_utc(stock_input["booking_limit_datetime"]),
+            booking_limit_datetime=stock_input["booking_limit_datetime"],
             price=stock_input["price"],
             quantity=stock_input["quantity"],
         )
@@ -1106,7 +1106,7 @@ def upsert_offer_thing_stocks(offer: models.Offer, inputs: list[offers_schemas.T
         stock_to_edit = existing_stocks[stock_input["id"]]
         edit_stock(
             stock_to_edit,
-            booking_limit_datetime=_to_naive_utc(stock_input["booking_limit_datetime"]),
+            booking_limit_datetime=stock_input["booking_limit_datetime"],
             price=stock_input["price"],
             quantity=stock_input["quantity"],
         )
@@ -2897,12 +2897,3 @@ def upsert_highlight_requests(
 
     db.session.flush()
     return highlight_requests
-
-
-def _to_naive_utc(dt: datetime.datetime | None) -> datetime.datetime | None:
-    if dt is None:
-        return None
-    if dt.tzinfo is None:
-        return dt
-
-    return dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)

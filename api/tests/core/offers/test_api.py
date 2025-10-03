@@ -1180,8 +1180,7 @@ class UpsertOfferThingStocksTest:
 
         updated_stock = db.session.get(models.Stock, stock.id)
         assert updated_stock.bookingLimitDatetime is not None
-        assert updated_stock.bookingLimitDatetime.tzinfo is None  # naive
-        assert updated_stock.bookingLimitDatetime == booking_limit_datetime.replace(tzinfo=None)
+        assert updated_stock.bookingLimitDatetime == booking_limit_datetime
 
     def test_create_with_activation_codes_sets_quantity(self):
         offer = factories.DigitalOfferFactory()
