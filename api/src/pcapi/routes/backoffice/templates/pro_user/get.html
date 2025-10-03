@@ -85,9 +85,11 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame data-turbo="false" id="pro_user_details_frame" src="{{ url_for('backoffice_web.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history') ) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        <div id="pro_user_details_frame"
+             hx-trigger="load"
+             hx-get="{{ url_for('backoffice_web.pro_user.get_details', user_id=user.id, active_tab=request.args.get('active_tab', 'history') ) }}">
+          {{ build_loading_spinner() }}
+        </div>
       </div>
     </div>
   </div>

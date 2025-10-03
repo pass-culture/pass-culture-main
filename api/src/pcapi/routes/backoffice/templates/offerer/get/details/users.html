@@ -3,7 +3,6 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/connect_as.html" import build_connect_as_link %}
-<turbo-frame id="offerer_users_frame">
 {% if invite_user_form %}
   {{ build_modal_form("invite-email", invite_user_dst, invite_user_form, "Inviter un collaborateur", "Inviter un collaborateur", "Inviter", "Vous pouvez inviter des collaborateurs à rejoindre cette entité juridique. Une invitation leur sera envoyée par email. Vous serez notifié quand ils auront rejoint l’espace.") }}
 {% endif %}
@@ -108,4 +107,3 @@
     "delete-modal-" + user_offerer.id|string) }}
   {% endif %}
 {% endfor %}
-</turbo-frame>

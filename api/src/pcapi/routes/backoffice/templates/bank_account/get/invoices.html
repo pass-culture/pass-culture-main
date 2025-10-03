@@ -1,5 +1,3 @@
-{% import "components/links.html" as links with context %}
-<turbo-frame id="bank_account_invoices_frame">
 {% if invoices %}
   <div class="btn-group btn-group-sm"
        data-toggle="pc-batch-confirm-btn-group"
@@ -53,4 +51,3 @@
 {% else %}
   <div class="text-center mx-4 my-4">Aucun remboursement à ce jour</div>
 {% endif %}
-</turbo-frame>

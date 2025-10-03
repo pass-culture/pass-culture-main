@@ -241,9 +241,9 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame id="total_revenue_frame" src="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        <div id="total_revenue_frame"
+             hx-trigger="load"
+             hx-get="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
@@ -265,52 +265,64 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
-            <turbo-frame data-turbo="false" id="offerer_history_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="offerer_history_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
           {% endcall %}
           {% if show_subscription_tab %}
             {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
-              <turbo-frame data-turbo="false" id="offerer_subscription_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="offerer_subscription_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
           {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
-              <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="offerer_entreprise_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
           {% call build_details_tab_content("pro-users", active_tab == 'users') %}
-            <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="offerer_users_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
           {% endcall %}
           {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
-            <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="offerer_venues_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+            </div>
           {% endcall %}
           {% if has_offerer_address %}
             {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
-              <turbo-frame data-turbo="false" id="offerer_addresses_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="offerer_addresses_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
           {% if not offerer.is_caledonian %}
             {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-              <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="offerer_collective_dms_applications_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
           {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
-            <turbo-frame data-turbo="false" id="offerer_bank_accounts_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="offerer_bank_accounts_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+            </div>
           {% endcall %}
         {% endcall %}
       </div>
