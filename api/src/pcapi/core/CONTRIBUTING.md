@@ -9,6 +9,21 @@ Chaque sous-package peut contenir les fichiers suivants :
 - repository.py : méthodes qui accèdent à la base de données
 - validation.py : méthodes de validation des données
 
+## Les fichiers `models`
+
+### Standards
+
+- Chaque modèle hérite de `pcapi.models.pc_object.PcObject` et `pcapi.models.Model`
+- On définit l'attribut `__tablename__` explicitement
+- Chaque colonne est définie avec `mapped_column` et on précise le type avec `Mapped[str | None]` par exemple pour une colonne `String` ou `Text` nullable
+- On précise le champ de chaque colonne `nullable=True/False` explicitement
+- On suit cet ordre de déclaration dans le modèle :
+  - `__tablename__`
+  - colonnes
+  - `__table_args__`
+  - propriétés
+- Quand on définit une `hybrid_property`, on écrit une version compatible avec la PEP-484 : voir la doc SQLA [ici](https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html#using-inplace-to-create-pep-484-compliant-hybrid-properties)
+- Dans les `relationship`, on précise les champs `back_populates` et `foreign_keys` explicitement
 
 ## Les fichiers `repository`
 
