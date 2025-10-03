@@ -31,7 +31,6 @@ const renderPartnerPages = (
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       context="partnerPage"
       {...props}
     />,
@@ -39,6 +38,9 @@ const renderPartnerPages = (
       storeOverrides: {
         user: { currentUser: sharedCurrentUserFactory() },
         offerer: currentOffererFactory(),
+        venueTypes: {
+          venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
+        },
       },
       ...options,
     }

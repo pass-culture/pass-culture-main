@@ -7,6 +7,7 @@ import { userReducer } from '@/commons/store/user/reducer'
 
 import { adageFilterReducer } from './adageFilter/reducer'
 import { navReducer } from './nav/reducer'
+import { venueTypesReducer } from './venuesTypes/reducer'
 
 export const rootReducer = combineReducers({
   features: featuresReducer,
@@ -15,6 +16,7 @@ export const rootReducer = combineReducers({
   nav: navReducer,
   adageFilter: adageFilterReducer,
   offerer: offererReducer,
+  venueTypes: venueTypesReducer,
 })
 
 export type RootState = ReturnType<typeof rootReducer>

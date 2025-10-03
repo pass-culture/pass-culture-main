@@ -18,7 +18,6 @@ const renderOfferers = (
       selectedOfferer={defaultGetOffererResponseModel}
       isLoading={false}
       isUserOffererValidated
-      venueTypes={[]}
       {...props}
     />,
     options

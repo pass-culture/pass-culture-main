@@ -16,11 +16,7 @@ import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
 import { Button } from '@/ui-kit/Button/Button'
 
-import {
-  ActivityForm,
-  type ActivityFormProps,
-  type ActivityFormValues,
-} from '../ActivityForm'
+import { ActivityForm, type ActivityFormValues } from '../ActivityForm'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -37,7 +33,6 @@ const onSubmit = vi.fn()
 
 function renderActivityForm(
   initialValues: Partial<ActivityFormValues>,
-  props: ActivityFormProps,
   contextValue: SignupJourneyContextValues
 ) {
   const Wrapper = () => {
@@ -47,7 +42,7 @@ function renderActivityForm(
     return (
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <ActivityForm {...props} />
+          <ActivityForm />
           <Button type="submit" isLoading={false}>
             Étape suivante
           </Button>
@@ -59,21 +54,18 @@ function renderActivityForm(
   renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Wrapper />
-    </SignupJourneyContext.Provider>
+    </SignupJourneyContext.Provider>,
+    { storeOverrides: { venueTypes: { venueTypes } } }
   )
 }
 
 describe('screens:SignupJourney::ActivityForm', () => {
   let activity: ActivityContext
   let contextValue: SignupJourneyContextValues
-  let props: ActivityFormProps
   let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {
     activity = DEFAULT_ACTIVITY_VALUES
     initialValues = defaultActivityFormValues
-    props = {
-      venueTypes: venueTypes,
-    }
     contextValue = {
       activity: activity,
       offerer: null,
@@ -86,7 +78,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should render activity form', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
@@ -115,7 +107,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       targetCustomer: { individual: false, educational: false },
     }
 
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(
       screen.getByText('Cours et pratique artistiques')
@@ -134,7 +126,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should not navigate to the next step if activity form is not valid', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -144,7 +136,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should add social url input on click add url button', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     await userEvent.click(screen.getByText('Ajouter un lien'))
@@ -156,7 +148,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       { url: 'https://example.com' },
       { url: 'https://exampleTwo.fr' },
     ]
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
 
@@ -173,7 +165,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change targetCustomer value on click', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     const publicTarget = screen.getByLabelText('Au grand public')
     const schoolTarget = screen.getByLabelText('À des groupes scolaires')
@@ -194,7 +186,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change venueType', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     const venueTypeSelect = screen.getByLabelText(/Activité principale/)
     expect(venueTypeSelect).toHaveValue('')

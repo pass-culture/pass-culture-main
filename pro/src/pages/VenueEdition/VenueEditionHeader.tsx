@@ -8,13 +8,13 @@ import type {
   BannerMetaModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
@@ -35,7 +35,6 @@ import styles from './VenueEditionHeader.module.scss'
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   context: 'collective' | 'partnerPage' | 'address'
 }
 
@@ -64,7 +63,6 @@ export const buildInitialValues = (
 export const VenueEditionHeader = ({
   venue,
   offerer,
-  venueTypes,
   context,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
@@ -72,6 +70,7 @@ export const VenueEditionHeader = ({
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
+  const venueTypes = useSelector(selectVenueTypes)
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )

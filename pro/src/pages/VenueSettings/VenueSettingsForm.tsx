@@ -1,12 +1,13 @@
 import { useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -31,14 +32,12 @@ import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 interface VenueFormProps {
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
 export const VenueSettingsForm = ({
   offerer,
-  venueTypes,
   venueProviders,
   venue,
 }: VenueFormProps) => {
@@ -52,6 +51,7 @@ export const VenueSettingsForm = ({
   } = methods
 
   const location = useLocation()
+  const venueTypes = useSelector(selectVenueTypes)
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const manuallySetAddress = watch('manuallySetAddress')
 

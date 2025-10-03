@@ -22,9 +22,15 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
     <PartnerPages
       venues={[defaultGetOffererVenueResponseModel]}
       offerer={mockOfferer}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
-    />
+    />,
+    {
+      storeOverrides: {
+        venueTypes: {
+          venueTypes: [{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }],
+        },
+      },
+    }
   )
 }
 
