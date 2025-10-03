@@ -7,7 +7,6 @@ import pytest
 import requests_mock
 import time_machine
 
-from pcapi import settings
 from pcapi.connectors.entreprise import api
 from pcapi.connectors.entreprise import exceptions
 
@@ -204,14 +203,6 @@ def test_get_siren_invalid_parameter():
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
-def test_get_siren_pass_culture():
-    siren = settings.PASS_CULTURE_SIRET[:9]
-    with pytest.raises(exceptions.EntrepriseException) as error:
-        api.get_siren(siren)
-    assert str(error.value) == "Pass Culture"
-
-
-@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_invalid_siren():
     siren = "111111111"
 
@@ -355,14 +346,6 @@ def test_get_siret_closing_in_the_future():
         siret_info = api.get_siret_open_data(siret)
         assert siret_info.siret == siret
         assert siret_info.active is True
-
-
-@pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
-def test_get_siret_pass_culture():
-    siren = settings.PASS_CULTURE_SIRET
-    with pytest.raises(exceptions.EntrepriseException) as error:
-        api.get_siret(siren)
-    assert str(error.value) == "Pass Culture"
 
 
 @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")

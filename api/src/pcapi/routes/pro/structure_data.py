@@ -27,8 +27,6 @@ logger = logging.getLogger(__name__)
 def get_structure_data(search_input: str) -> sirene_serializers.StructureDataBodyModel:
     if not api_entreprise.is_valid_siret(search_input):
         raise sirene_exceptions.InvalidFormatException()
-    if api_entreprise.is_pass_culture_siret(search_input):
-        raise ApiErrors(errors={"global": ["Ce SIRET est déjà inscrit sur le pass Culture."]})
     try:
         data = offerers_api.find_structure_data(search_input)
         address = offerers_api.find_ban_address_from_insee_address(data.diffusible, data.address)

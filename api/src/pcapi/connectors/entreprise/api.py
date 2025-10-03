@@ -83,7 +83,3 @@ def is_valid_siret(search_input: str | int) -> bool:
         and (isinstance(search_input, int) or search_input.isnumeric())
         and len(str(search_input)) == 14
     )
-
-
-def is_pass_culture_siret(search_input: str | int) -> bool:
-    return str(search_input) == settings.PASS_CULTURE_SIRET
