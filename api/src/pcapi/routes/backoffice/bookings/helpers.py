@@ -92,7 +92,7 @@ def get_bookings(
                 elif status == BookingStatus.BOOKED.name:
                     status_filters.append(
                         sa.and_(
-                            ~booking_class.isConfirmed,  # type: ignore[operator]
+                            ~booking_class.isConfirmed,
                             booking_class.status == BookingStatus.CONFIRMED.name,
                         )
                     )

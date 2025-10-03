@@ -10,6 +10,7 @@ from psycopg2.extras import DateTimeRange
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
+from sqlalchemy.ext.hybrid import _HybridClassLevelAccessor
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import elements as sa_elements
 from sqlalchemy.sql import selectable as sa_selectable
@@ -321,9 +322,10 @@ class HasImageMixin:
     def hasImage(self) -> bool:
         return self.imageId is not None
 
-    @hasImage.expression  # type: ignore[no-redef]
-    def hasImage(cls) -> sa_elements.BinaryExpression:
-        return cls.imageId is not None
+    @hasImage.inplace.expression
+    @classmethod
+    def hasImageExpression(cls) -> sa_elements.BinaryExpression[bool]:
+        return cls.imageId.is_not(sa.null())
 
     def _get_image_storage_id(self, original: bool = False) -> str:
         original_suffix = "_original" if original else ""
@@ -675,8 +677,9 @@ class CollectiveOffer(
     def hasEndDatePassed(self) -> bool:
         return False
 
-    @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> sa_elements.False_:
+    @hasEndDatePassed.inplace.expression
+    @classmethod
+    def hasEndDatePassedExpression(cls) -> sa_elements.False_:
         return sa.sql.expression.false()
 
     @hybrid_property
@@ -685,8 +688,8 @@ class CollectiveOffer(
             return self.collectiveStock.isSoldOut
         return True
 
-    @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> sa_selectable.Exists:
+    @isSoldOut.inplace.expression
+    def isSoldOutExpression(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         aliased_collective_booking = sa_orm.aliased(CollectiveBooking)
         return (
@@ -746,8 +749,8 @@ class CollectiveOffer(
             return False
         return self.collectiveStock.hasStartDatetimePassed
 
-    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_selectable.Exists:
+    @hasStartDatetimePassed.inplace.expression
+    def hasStartDatetimePassedExpression(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -755,6 +758,7 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasStartDatetimePassed.is_(True))
         )
 
+    # TODO: remove this property to use the hybrid below
     @property
     def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
@@ -767,8 +771,8 @@ class CollectiveOffer(
             return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> sa_selectable.Exists:
+    @hasBookingLimitDatetimesPassed.inplace.expression
+    def hasBookingLimitDatetimesPassedExpression(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -782,8 +786,9 @@ class CollectiveOffer(
             return False
         return self.collectiveStock.hasEndDatetimePassed
 
-    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_selectable.Exists:
+    @hasEndDatetimePassed.inplace.expression
+    @classmethod
+    def hasEndDatetimePassedExpression(cls) -> sa_selectable.Exists:
         aliased_collective_stock = sa_orm.aliased(CollectiveStock)
         return (
             sa.exists()
@@ -981,8 +986,9 @@ class CollectiveOffer(
     def is_expired(self) -> bool:
         return self.hasStartDatetimePassed
 
-    @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> sa_elements.UnaryExpression:
+    @is_expired.inplace.expression
+    @classmethod
+    def is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
         return cls.hasStartDatetimePassed
 
     def is_two_days_past_end(self) -> bool:
@@ -1106,7 +1112,7 @@ class CollectiveOfferTemplate(
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
-    dateRange: sa_orm.Mapped[DateTimeRange] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
+    dateRange: sa_orm.Mapped[DateTimeRange | None] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
 
     formats: sa_orm.Mapped[list[EacFormat]] = sa_orm.mapped_column(
         postgresql.ARRAY(sa.Enum(EacFormat, create_constraint=False, native_enum=False)), nullable=False
@@ -1207,8 +1213,9 @@ class CollectiveOfferTemplate(
 
         return CollectiveOfferDisplayedStatus.PUBLISHED
 
-    @displayedStatus.expression  # type: ignore[no-redef]
-    def displayedStatus(cls) -> sa.sql.elements.Case:
+    @displayedStatus.inplace.expression
+    @classmethod
+    def displayedStatusExpression(cls) -> sa_elements.Case:
         return sa.case(
             (
                 cls.isArchived.is_(True),
@@ -1259,8 +1266,9 @@ class CollectiveOfferTemplate(
             return False
         return self.end < datetime.datetime.utcnow()
 
-    @hasEndDatePassed.expression  # type: ignore[no-redef]
-    def hasEndDatePassed(cls) -> sa_elements.BooleanClauseList:
+    @hasEndDatePassed.inplace.expression
+    @classmethod
+    def hasEndDatePassedExpression(cls) -> sa.ColumnElement[bool]:
         return sa.and_(
             cls.dateRange.is_not(None),
             sa.func.upper(cls.dateRange) < sa.func.now(),
@@ -1271,8 +1279,9 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return False
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> sa_elements.False_:
+    @hasBookingLimitDatetimesPassed.inplace.expression
+    @classmethod
+    def hasBookingLimitDatetimesPassedExpression(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1281,8 +1290,9 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return False
 
-    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_elements.False_:
+    @hasStartDatetimePassed.inplace.expression
+    @classmethod
+    def hasStartDatetimePassedExpression(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1291,8 +1301,9 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return False
 
-    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_elements.False_:
+    @hasEndDatetimePassed.inplace.expression
+    @classmethod
+    def hasEndDatetimePassedExpression(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1310,8 +1321,9 @@ class CollectiveOfferTemplate(
         # this property is here for compatibility reasons
         return False
 
-    @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> sa_elements.False_:
+    @isSoldOut.inplace.expression
+    @classmethod
+    def isSoldOutExpression(cls) -> sa_elements.False_:
         # this property is here for compatibility reasons
         return sa.sql.expression.false()
 
@@ -1349,9 +1361,10 @@ class CollectiveOfferTemplate(
     def is_expired(self) -> bool:
         return self.hasStartDatetimePassed
 
-    @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> sa_elements.UnaryExpression:
-        return cls.hasStartDatetimePassed
+    @is_expired.inplace.expression
+    @classmethod
+    def is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
+        return cls.hasStartDatetimePassedExpression
 
 
 class CollectiveStock(PcObject, models.Model):
@@ -1415,32 +1428,36 @@ class CollectiveStock(PcObject, models.Model):
     def hasBookingLimitDatetimePassed(self) -> bool:
         return self.bookingLimitDatetime <= datetime.datetime.utcnow()
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls) -> sa_elements.BinaryExpression:
+    @hasBookingLimitDatetimePassed.inplace.expression
+    @classmethod
+    def hasBookingLimitDatetimePassedExpression(cls) -> sa.ColumnElement[bool]:
         return cls.bookingLimitDatetime <= sa.func.now()
 
     @hybrid_property
     def hasStartDatetimePassed(self) -> bool:
         return self.startDatetime <= datetime.datetime.utcnow()
 
-    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
-    def hasStartDatetimePassed(cls) -> sa_elements.BinaryExpression:
+    @hasStartDatetimePassed.inplace.expression
+    @classmethod
+    def hasStartDatetimePassedExpression(cls) -> sa.ColumnElement[bool]:
         return cls.startDatetime <= sa.func.now()
 
     @hybrid_property
     def hasEndDatetimePassed(self) -> bool:
         return self.endDatetime <= datetime.datetime.utcnow()
 
-    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
-    def hasEndDatetimePassed(cls) -> sa_elements.BinaryExpression:
+    @hasEndDatetimePassed.inplace.expression
+    @classmethod
+    def hasEndDatetimePassedExpression(cls) -> sa.ColumnElement[bool]:
         return cls.endDatetime <= sa.func.now()
 
     @hybrid_property
     def isEventExpired(self) -> bool:
         return self.startDatetime <= datetime.datetime.utcnow()
 
-    @isEventExpired.expression  # type: ignore[no-redef]
-    def isEventExpired(cls):
+    @isEventExpired.inplace.expression
+    @classmethod
+    def isEventExpiredExpression(cls) -> sa.ColumnElement[bool]:
         return cls.startDatetime <= sa.func.now()
 
     @property
@@ -1552,8 +1569,9 @@ class EducationalYear(PcObject, models.Model):
     def displayed_year(self) -> str:
         return f"{self.beginningDate.year}-{self.expirationDate.year}"
 
-    @displayed_year.expression  # type: ignore[no-redef]
-    def displayed_year(cls) -> str:
+    @displayed_year.inplace.expression
+    @classmethod
+    def displayed_year_expression(cls) -> sa.ColumnElement[str]:
         return (
             sa.func.extract("year", cls.beginningDate).cast(sa.String)
             + "-"
@@ -1800,32 +1818,36 @@ class CollectiveBooking(PcObject, models.Model):
     def isConfirmed(self) -> bool:
         return self.cancellationLimitDate <= datetime.datetime.utcnow()
 
-    @isConfirmed.expression  # type: ignore[no-redef]
-    def isConfirmed(cls) -> sa_elements.BinaryExpression:
+    @isConfirmed.inplace.expression
+    @classmethod
+    def isConfirmedExpression(cls) -> sa.ColumnElement[bool]:
         return cls.cancellationLimitDate <= datetime.datetime.utcnow()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
         return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
 
-    @is_used_or_reimbursed.expression  # type: ignore[no-redef]
-    def is_used_or_reimbursed(cls) -> sa_elements.BinaryExpression:
+    @is_used_or_reimbursed.inplace.expression
+    @classmethod
+    def is_used_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
     def isReimbursed(self) -> bool:
         return self.status == CollectiveBookingStatus.REIMBURSED
 
-    @isReimbursed.expression  # type: ignore[no-redef]
-    def isReimbursed(cls) -> sa_elements.BinaryExpression:
+    @isReimbursed.inplace.expression
+    @classmethod
+    def isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
         return cls.status == CollectiveBookingStatus.REIMBURSED
 
     @hybrid_property
     def isCancelled(self) -> bool:
         return self.status == CollectiveBookingStatus.CANCELLED
 
-    @isCancelled.expression  # type: ignore[no-redef]
-    def isCancelled(cls) -> sa_elements.BinaryExpression:
+    @isCancelled.inplace.expression
+    @classmethod
+    def isCancelledExpression(cls) -> sa.ColumnElement[bool]:
         return cls.status == CollectiveBookingStatus.CANCELLED
 
     @property
@@ -1869,8 +1891,9 @@ class CollectiveBooking(PcObject, models.Model):
                 return booking_incident.incident.id
         return None
 
-    @validated_incident_id.expression  # type: ignore[no-redef]
-    def validated_incident_id(cls) -> int | None:
+    @validated_incident_id.inplace.expression
+    @classmethod
+    def validated_incident_id_expression(cls) -> sa.ScalarSelect[int]:
         return (
             sa.select(finance_models.FinanceIncident.id)
             .select_from(finance_models.FinanceIncident)
@@ -2033,8 +2056,9 @@ class CollectiveDmsApplication(PcObject, models.Model):
     def siren(self) -> str:
         return self.siret[:SIREN_LENGTH]
 
-    @siren.expression  # type: ignore[no-redef]
-    def siren(cls) -> sa.String:
+    @siren.inplace.expression
+    @classmethod
+    def siren_expression(cls) -> sa.Function:
         return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
 
     # Search application related to an offerer should use siren expression to use take benefit from the index
@@ -2114,15 +2138,16 @@ class CollectiveOfferRequest(PcObject, models.Model):
     def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
-    @phoneNumber.setter  # type: ignore[no-redef]
-    def phoneNumber(self, value: str | None) -> None:
+    @phoneNumber.inplace.setter
+    def phoneNumberSetter(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
-    @phoneNumber.expression  # type: ignore[no-redef]
-    def phoneNumber(cls) -> str | None:
+    @phoneNumber.inplace.expression
+    @classmethod
+    def phoneNumberExpression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._phoneNumber
 
 
