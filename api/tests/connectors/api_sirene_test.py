@@ -57,4 +57,9 @@ def test_get_siren_closed_at_date():
         )
         siren_list = api_sirene.get_siren_closed_at_date(datetime.date(2025, 1, 21))
 
-    assert siren_list == ["111111118", "222222226", "333333334", "555555556"]
+    assert siren_list == [
+        {"siren": "111111118", "closure_date": "2025-01-24"},
+        {"siren": "222222226", "closure_date": "2024-12-30"},
+        {"siren": "333333334", "closure_date": "2032-12-30"},
+        {"siren": "555555556", "closure_date": "2024-12-30"},
+    ]

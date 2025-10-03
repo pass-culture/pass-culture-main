@@ -10,6 +10,7 @@ Use Enterprise API instead to find:
 import datetime
 import json
 import logging
+from typing import Any
 
 from pcapi import settings
 from pcapi.utils import cache as cache_utils
@@ -54,7 +55,7 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
+def get_siren_closed_at_date(date_closed: datetime.date) -> list[dict[str, Any]]:
     """Returns the list of SIREN which closure has been declared on the given date.
     Closure date may be the same day, in the past or in the future.
     """
@@ -62,13 +63,17 @@ def get_siren_closed_at_date(date_closed: datetime.date) -> list[str]:
 
 
 class BaseBackend:
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
-        return ["000099002", "900099003", "109599001"]
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
+        return [
+            {"siren": "000099002", "closure_date": date_closed - datetime.timedelta(days=5)},
+            {"siren": "900099003", "closure_date": date_closed - datetime.timedelta(days=10)},
+            {"siren": "109599001", "closure_date": date_closed - datetime.timedelta(days=15)},
+        ]
 
 
 class InseeBackend(BaseBackend):
@@ -126,13 +131,14 @@ class InseeBackend(BaseBackend):
             closure_date = periode["dateDebut"]
         return datetime.date.fromisoformat(closure_date) if closure_date else None
 
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[str]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
         results = []
         cursor = "*"
         while True:
             subpath = (
-                f"/siren?q=dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
-                "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true)"
+                f"/siren?q=(dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
+                "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true))"
+                f"+OR+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true+AND+dateDebut:{date_closed.isoformat()})"
                 "&champs=siren,dateDebut,dateFin,etatAdministratifUniteLegale"
                 f"&curseur={cursor}&nombre=1000"
             )
@@ -140,7 +146,7 @@ class InseeBackend(BaseBackend):
             for item in data["unitesLegales"]:
                 closure_date = self._get_closure_date_from_siren_data(item)
                 if closure_date is not None:
-                    results.append(item["siren"])
+                    results.append({"siren": item["siren"], "closure_date": closure_date})
             if (
                 data["header"]["nombre"] == data["header"]["total"]
                 or data["header"]["curseurSuivant"] == data["header"]["curseur"]

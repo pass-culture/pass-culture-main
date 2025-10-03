@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 import click
 import sqlalchemy as sa
@@ -7,16 +8,23 @@ import sqlalchemy.orm as sa_orm
 
 import pcapi.utils.cron as cron_decorators
 from pcapi.connectors import api_sirene
+from pcapi.connectors.entreprise import api as entreprise_api
+from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.core.external.automations import venue as venue_automations
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.offerers import update_offerer_stats as offerers_stats
+from pcapi.core.offerers.tasks import CLOSED_OFFERER_TAG_NAME
+from pcapi.core.offerers.tasks import fill_in_codir_report
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.repository import transaction
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -53,26 +61,35 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
     logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
-    _create_check_offerer_tasks(
-        [offerer.siren for offerer in offerers], dry_run=dry_run, fill_in_codir_report=codir_report_is_enabled
-    )
-
-
-def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in_codir_report: bool = False) -> None:
-    # Do not flood Sirene API (max. 30 per minute for the whole product)
-    for siren in siren_list:
+    for offerer in offerers:
         payload = offerers_tasks.CheckOffererSirenRequest(
-            siren=siren,
-            close_or_tag_when_inactive=not dry_run,
-            fill_in_codir_report=fill_in_codir_report,
+            siren=offerer.siren,
+            must_fill_in_codir_report=codir_report_is_enabled,
         )
         offerers_tasks.check_offerer_siren_task.delay(payload)
+        # Do not flood Sirene API (max. 30 per minute for the whole product)
+
+
+"""données de test existe dans des data pour test ca, donc modifier pour inclure les nouveaux cas
+(1 dit maintenant que ferme y a lgt
+2 dit qu'il ferme now
+3 annonce qu'il ferme dans lgt)
+
+
+essayer de vider les cles redis existantes?
+
+dans api entreprise status avec A ou F, avant basé la dessus,
+changé pour prendre aussi date de fermeture car si declare ajd que femre dans futur
+api entreprise te passe a F meme si fermeture pas effective.
+
+faire gaffe aux tests car pas meme comportement maintenant"""
 
 
 @blueprint.cli.command("check_closed_offerers")
 @click.option("--dry-run", is_flag=True)
 @click.option("--date-closed", type=str, required=False, default=None)
 def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None) -> None:
+    close_or_tag_when_inactive = not dry_run
     if date_closed:
         query_date = datetime.date.fromisoformat(date_closed)
     else:
@@ -83,40 +100,86 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         siren_list = api_sirene.get_siren_closed_at_date(query_date)
     except api_sirene.InseeException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
-    else:
-        known_siren_list = [
-            siren
-            for (siren,) in db.session.query(offerers_models.Offerer)
-            .filter(
-                offerers_models.Offerer.siren.in_(siren_list),
-                offerers_models.Offerer.isActive,
-                sa.not_(offerers_models.Offerer.isRejected),
-            )
-            .with_entities(offerers_models.Offerer.siren)
-            .all()
-        ]
-
-        logger.info(
-            "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
-            len(known_siren_list),
-            query_date.isoformat(),
-            extra={"siren": known_siren_list},
+        return
+    known_siren_list = [
+        x
+        for (x,) in db.session.query(offerers_models.Offerer)
+        .filter(
+            offerers_models.Offerer.siren.in_([elem["siren"] for elem in siren_list]),
+            offerers_models.Offerer.isActive,
+            sa.not_(offerers_models.Offerer.isRejected),
         )
+        .with_entities(offerers_models.Offerer.siren)
+        .all()
+    ]
+    for elem in siren_list:
+        if elem["siren"] not in known_siren_list:
+            siren_list.remove(elem)
 
-        _create_check_offerer_tasks(known_siren_list, dry_run=dry_run)
-
-    # Scheduled SIREN
-    scheduled_siren_list = offerers_tasks.get_scheduled_siren_to_check(
-        query_date if date_closed else datetime.date.today()
+    logger.info(
+        "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
+        len(siren_list),
+        query_date.isoformat(),
+        extra={"siren": [elem["siren"] for elem in siren_list]},
     )
-    if scheduled_siren_list:
-        logger.info(
-            "check_closed_offerers found %s scheduled SIREN to check on %s",
-            len(scheduled_siren_list),
-            query_date.isoformat(),
-            extra={"siren": scheduled_siren_list},
+
+    for elem in siren_list:
+        offerer = (
+            db.session.query(offerers_models.Offerer)
+            .filter_by(siren=elem["siren"])
+            .options(
+                sa_orm.joinedload(offerers_models.Offerer.tags).load_only(
+                    offerers_models.OffererTag.id, offerers_models.OffererTag.name
+                )
+            )
+            .one()
         )
-        _create_check_offerer_tasks(scheduled_siren_list, dry_run=dry_run)
+        if close_or_tag_when_inactive:
+            with transaction():
+                action_kwargs: dict[str, typing.Any] = {
+                    "comment": "L'entité juridique est détectée comme fermée "
+                    + (elem["closure_date"].strftime("le %d/%m/%Y ") if elem["closure_date"] else "")
+                    + "via l'API Entreprise (données INSEE)"
+                }
+                logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
+                # Offerer may have been tagged in the past, but not closed
+                if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
+                    # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
+                    tag = (
+                        db.session.query(offerers_models.OffererTag)
+                        .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
+                        .one()
+                    )
+                    action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
+                    db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+                if offerer.isWaitingForValidation:
+                    offerers_api.reject_offerer(
+                        offerer=offerer,
+                        author_user=None,
+                        rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
+                        **action_kwargs,
+                    )
+                elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
+                    offerers_api.close_offerer(
+                        offerer,
+                        closure_date=elem["closure_date"],
+                        author_user=None,
+                        **action_kwargs,
+                    )
+                elif "modified_info" in action_kwargs:
+                    history_api.add_action(
+                        history_models.ActionType.INFO_MODIFIED,
+                        author=None,
+                        offerer=offerer,
+                        **action_kwargs,
+                    )
+        if offerer.isValidated and FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():
+            try:
+                siren_info = entreprise_api.get_siren_open_data(offerer.siren, with_address=False)
+            except entreprise_exceptions.EntrepriseException as exc:
+                logger.info("Could not fetch info from Entreprise API", extra={"siren": offerer.siren, "exc": exc})
+                return
+            fill_in_codir_report(offerer, siren_info)
 
 
 @blueprint.cli.command("delete_user_offerers_on_closed_offerers")
