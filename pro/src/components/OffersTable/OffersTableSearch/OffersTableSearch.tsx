@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import strokeSearchIcon from 'icons/stroke-search.svg'
 import { useId, useState } from 'react'
 
 import {
@@ -7,7 +6,7 @@ import {
   getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTable/OffersTableSearch/utils'
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -59,9 +58,7 @@ export const OffersTableSearch = ({
     <form onSubmit={onSubmit} className={styles['offers-table-search']}>
       <div className={styles['offers-table-search-name-and-toggle-row']}>
         <div className={styles['offers-table-search-input-wrapper']}>
-          <TextInput
-            type="search"
-            icon={strokeSearchIcon}
+          <SearchInput
             label={nameInputProps.label}
             disabled={nameInputProps.disabled}
             name="offre"

@@ -2,8 +2,7 @@ import { useCombobox } from 'downshift'
 import { useEffect, useId, useState } from 'react'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { TextInput } from '@/design-system/TextInput/TextInput'
-import strokeSearch from '@/icons/stroke-search.svg'
+import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 
 import styles from './AdageMultiselect.module.scss'
 
@@ -157,12 +156,10 @@ export const AdageMultiselect = ({
   return (
     <div className={styles['container']}>
       <div className={styles['search-input']}>
-        <TextInput
+        <SearchInput
           {...getInputProps()}
-          type="search"
           value={inputValue}
           aria-describedby={indicationId}
-          icon={strokeSearch}
           label={label}
         />
       </div>

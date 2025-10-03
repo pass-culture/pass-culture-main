@@ -1,12 +1,11 @@
 import cn from 'classnames'
-import strokeSearchIcon from 'icons/stroke-search.svg'
 import { type ChangeEvent, useId } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 
 import type { BookingsFilters } from '../types'
@@ -104,35 +103,35 @@ export const FilterByOmniSearch = ({
         Rechercher dans les réservations
       </legend>
 
-      <div>
-        <label
-          className={styles['omnisearch-criteria-label']}
-          htmlFor={criteriaSelectId}
-        >
-          Critère
-        </label>
-        <SelectInput
-          name="omnisearch-criteria"
-          className={styles['omnisearch-filter-select']}
-          disabled={isDisabled}
-          id={criteriaSelectId}
-          onBlur={handleOmniSearchCriteriaChange}
-          onChange={handleOmniSearchCriteriaChange}
-          value={selectedOmniSearchCriteria}
-          options={omnisearchFiltersOptions}
-        />
-      </div>
+      <div className={styles['omnisearch-row']}>
+        <div>
+          <label
+            className={styles['omnisearch-criteria-label']}
+            htmlFor={criteriaSelectId}
+          >
+            Critère
+          </label>
+          <SelectInput
+            name="omnisearch-criteria"
+            className={styles['omnisearch-filter-select']}
+            disabled={isDisabled}
+            id={criteriaSelectId}
+            onBlur={handleOmniSearchCriteriaChange}
+            onChange={handleOmniSearchCriteriaChange}
+            value={selectedOmniSearchCriteria}
+            options={omnisearchFiltersOptions}
+          />
+        </div>
 
-      <div className={styles['omnisearch-search-input']}>
-        <TextInput
-          type="search"
-          name="search"
-          label="Recherche"
-          icon={strokeSearchIcon}
-          disabled={isDisabled}
-          onChange={handleOmniSearchChange}
-          value={keywords}
-        />
+        <div className={styles['omnisearch-search-input']}>
+          <SearchInput
+            name="search"
+            label="Recherche"
+            disabled={isDisabled}
+            onChange={handleOmniSearchChange}
+            value={keywords}
+          />
+        </div>
       </div>
     </fieldset>
   )

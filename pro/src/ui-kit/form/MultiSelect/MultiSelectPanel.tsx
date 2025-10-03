@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { TextInput } from '@/design-system/TextInput/TextInput'
-import strokeSearch from '@/icons/stroke-search.svg'
+import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 
 import type { Option } from './MultiSelect'
 import styles from './MultiSelect.module.scss'
@@ -44,13 +43,10 @@ export const MultiSelectPanel = ({
     <div id={id} className={styles['panel']}>
       {hasSearch && (
         <div className={styles['search-input']}>
-          <TextInput
-            type="search"
+          <SearchInput
             name="search"
-            icon={strokeSearch}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            autoComplete="off"
             label={searchLabel || 'Rechercher'}
           />
         </div>
