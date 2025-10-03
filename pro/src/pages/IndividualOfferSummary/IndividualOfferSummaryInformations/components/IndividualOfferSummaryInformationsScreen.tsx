@@ -59,7 +59,7 @@ export function IndividualOfferSummaryInformationsScreen({
             step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
-          aria-label="Modifier les détails de l’offre"
+          aria-label="Modifier les informations de l’offre"
         >
           {!offer.isDigital && (
             <SummarySubSection title="Localisation de l’offre">

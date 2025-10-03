@@ -32,7 +32,7 @@ export const MediaSection = ({
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
         mode: OFFER_WIZARD_MODE.EDITION,
       })}
-      aria-label="Modifier les détails de l’offre"
+      aria-label="Modifier l’image et la vidéo de l’offre"
       shouldShowDivider
     >
       {!shouldImageBeHidden && (
