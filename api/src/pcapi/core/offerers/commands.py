@@ -6,6 +6,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 import pcapi.utils.cron as cron_decorators
+from pcapi.celery_tasks import offerers as celery_tasks_offerers
 from pcapi.connectors import api_sirene
 from pcapi.core.external.automations import venue as venue_automations
 from pcapi.core.offerers import api as offerers_api
@@ -66,7 +67,10 @@ def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in
             close_or_tag_when_inactive=not dry_run,
             fill_in_codir_report=fill_in_codir_report,
         )
-        offerers_tasks.check_offerer_siren_task.delay(payload)
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_TASKS_OFFERERS.is_active():
+            celery_tasks_offerers.check_offerer_siren_task_celery.delay(payload.dict())
+        else:
+            offerers_tasks.check_offerer_siren_task.delay(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
@@ -207,3 +211,15 @@ def acceslibre_matching(
     offerers_api.acceslibre_matching(
         batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
     )
+
+
+@blueprint.cli.command("clean_offerer_invitations")
+@click.option("--dry-run", is_flag=True)
+def clean_offerer_invitations(dry_run: bool = False) -> None:
+    offerers_api.delete_expired_offerer_invitations()
+
+    if dry_run:
+        db.session.rollback()
+        logger.info("clean_offerer_invitations was a dry-run -- rollback")
+    else:
+        db.session.commit()
