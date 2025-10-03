@@ -3,7 +3,7 @@ import * as yup from 'yup'
 
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
-import { openingHoursSchema } from '@/pages/VenueEdition/validationSchema'
+import { openingHoursSchemaShape } from '@/pages/VenueEdition/validationSchema'
 
 import type { QuantityPerPriceCategoryForm } from '../components/StocksCalendar/form/types'
 import { quantityPerPriceCategoriesSchema } from '../components/StocksCalendar/form/validationSchema'
@@ -51,7 +51,10 @@ export const validationSchema: ObjectSchema<IndividualOfferTimetableFormValues> 
       .when('timetableType', {
         is: 'openingHours',
         then: () =>
-          openingHoursSchema
+          yup
+            .object()
+            .nullable()
+            .shape(openingHoursSchemaShape)
             .required('Les horaires d’ouverture sont obligatoires')
             .test(
               'has-at-least-one-day',

@@ -65,7 +65,7 @@ const openingHoursDaySchema = yup
       value[0][1] < value[1][0]
   )
 
-export const openingHoursSchema = yup.object().nullable().shape({
+export const openingHoursSchemaShape = {
   MONDAY: openingHoursDaySchema,
   TUESDAY: openingHoursDaySchema,
   WEDNESDAY: openingHoursDaySchema,
@@ -73,7 +73,7 @@ export const openingHoursSchema = yup.object().nullable().shape({
   FRIDAY: openingHoursDaySchema,
   SATURDAY: openingHoursDaySchema,
   SUNDAY: openingHoursDaySchema,
-})
+}
 
 export const validationSchema = yup.object().shape({
   accessibility: yup.object().when('isOpenToPublic', {
@@ -102,5 +102,11 @@ export const validationSchema = yup.object().shape({
     .string()
     .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
     .nullable(),
-  openingHours: openingHoursSchema,
+  openingHours: yup
+    .object()
+    .nullable()
+    .when('isOpenToPublic', {
+      is: 'true',
+      then: (schema) => schema.shape(openingHoursSchemaShape),
+    }),
 })
