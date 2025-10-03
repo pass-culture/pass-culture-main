@@ -48,9 +48,6 @@ export const CollectiveOfferRow = ({
   isTemplateTable,
 }: CollectiveOfferRowProps) => {
   const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
-  const isNewCollectiveOfferDetailPageActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'
-  )
   const isNewCollectiveOffersStructureActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -61,10 +58,7 @@ export const CollectiveOfferRow = ({
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${id}/creation`
 
-  const offerLink =
-    isNewCollectiveOfferDetailPageActive && !offer.isShowcase
-      ? `/offre/${id}/collectif/recapitulatif`
-      : isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+  const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`
 
   const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
 

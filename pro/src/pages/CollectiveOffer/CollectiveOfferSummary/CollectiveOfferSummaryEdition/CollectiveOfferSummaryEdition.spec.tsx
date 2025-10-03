@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
@@ -76,21 +76,10 @@ describe('CollectiveOfferSummary', () => {
     })
     expect(desactivateOffer).toBeInTheDocument()
   })
-  it('should display new component for new collective offer detail page when offer is bookable and FF is enabled', async () => {
-    renderCollectiveOfferSummaryEdition(getCollectiveOfferFactory(), {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
-    })
+
+  it('should display bookable offer detail page when offer is bookable', async () => {
+    renderCollectiveOfferSummaryEdition(getCollectiveOfferFactory())
 
     expect(await screen.findByText('n°2')).toBeInTheDocument()
-  })
-
-  it('should not display new component for new collective offer detail page when offer is template and FF is enabled', async () => {
-    renderCollectiveOfferSummaryEdition(getCollectiveOfferTemplateFactory(), {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFER_DETAIL_PAGE'],
-    })
-
-    await waitFor(() =>
-      expect(screen.queryByText('n°2')).not.toBeInTheDocument()
-    )
   })
 })
