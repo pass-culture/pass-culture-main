@@ -2,11 +2,14 @@ import logging
 import typing
 from datetime import date
 
+import pydantic.v1 as pydantic_v1
 from pydantic.v1.class_validators import validator
 
 from pcapi import settings
+from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
+from pcapi.core.offers.models import OfferExtraData
 
 
 logger = logging.getLogger(__name__)
@@ -75,3 +78,33 @@ class ProductsToSyncQuery(BaseQuery):
 
         logger.info(f"Executing BigQuery query: {query}")
         return query
+
+
+class ProductModel(pydantic_v1.BaseModel):
+    name: str
+    description: str | None = None
+    ean: str | None = None
+    subcategoryId: str
+    extraData: OfferExtraData | None = None
+
+
+class ProductDeltaModel(ProductModel):
+    action: DeltaAction
+
+
+class ProductDeltaQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            product_id AS id,
+            name,
+            description,
+            duration_minutes AS durationMinutes,
+            ean,
+            subcategory_id AS subcategoryId,
+            extra_data AS extraData,
+            action
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.product_delta`
+    """
+
+    model = ProductDeltaModel
