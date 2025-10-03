@@ -303,7 +303,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         models.Booking.dateUsed.label("usedAt"),
         models.Booking.reimbursementDate.label("reimbursedAt"),
         models.Booking.cancellationDate.label("cancelledAt"),
-        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isExternal.label("isExternal"),
         models.Booking.isConfirmed,
         offerers_models.Offerer.is_caledonian,
         # `get_batch` function needs a field called exactly `id` to work,
@@ -354,7 +354,7 @@ def export_validated_bookings_by_offer_id(
     offer_validated_bookings_query = _create_export_query(offer_id, event_beginning_date)
     offer_validated_bookings_query = offer_validated_bookings_query.filter(
         sa.or_(
-            sa.and_(models.Booking.isConfirmed.is_(True), models.Booking.status != models.BookingStatus.CANCELLED),  # type: ignore[attr-defined]
+            sa.and_(models.Booking.isConfirmed.is_(True), models.Booking.status != models.BookingStatus.CANCELLED),
             models.Booking.status == models.BookingStatus.USED,
         )
     )
@@ -675,7 +675,7 @@ def _get_filtered_booking_report(
         models.Booking.dateUsed.label("usedAt"),
         models.Booking.reimbursementDate.label("reimbursedAt"),
         models.Booking.cancellationDate.label("cancelledAt"),
-        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isExternal.label("isExternal"),
         models.Booking.isConfirmed,
         offerers_models.Offerer.is_caledonian,
         # `get_batch` function needs a field called exactly `id` to work,
@@ -743,7 +743,7 @@ def _get_filtered_booking_pro(
         models.Booking.cancellationLimitDate,
         models.Booking.status,
         models.Booking.reimbursementDate.label("reimbursedAt"),
-        models.Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        models.Booking.isExternal.label("isExternal"),
         models.Booking.isConfirmed,
         offers_models.Offer.name.label("offerName"),
         offers_models.Offer.id.label("offerId"),

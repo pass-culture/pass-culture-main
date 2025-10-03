@@ -553,14 +553,6 @@ class Pricing(PcObject, Model):
 
         return self.cashflows[0]
 
-    @hybrid_property
-    def xpf_amount(self) -> int:
-        return utils.euros_to_xpf(self.amount)
-
-    @xpf_amount.expression  # type: ignore[no-redef]
-    def xpf_amount(cls) -> int:
-        return sa.cast(sa.func.round(cls.amount * utils.EUR_TO_XPF_RATE), sa.Integer)
-
 
 class PricingLine(PcObject, Model):
     __tablename__ = "pricing_line"
@@ -1188,8 +1180,9 @@ class FinanceIncident(PcObject, Model):
     def relates_to_collective_bookings(self) -> bool:
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
 
-    @relates_to_collective_bookings.expression  # type: ignore[no-redef]
-    def relates_to_collective_bookings(cls) -> sa.sql.elements.UnaryExpression:
+    @relates_to_collective_bookings.inplace.expression
+    @classmethod
+    def _relates_to_collective_bookings_expression(cls) -> Exists:
         aliased_booking_finance_incident = sa_orm.aliased(BookingFinanceIncident)
         return sa.exists().where(
             aliased_booking_finance_incident.incidentId == cls.id,
@@ -1233,8 +1226,9 @@ class FinanceIncident(PcObject, Model):
             for booking_incident in self.booking_finance_incidents
         )
 
-    @isClosed.expression  # type: ignore[no-redef]
-    def isClosed(cls) -> Exists:
+    @isClosed.inplace.expression
+    @classmethod
+    def _isClosedExpression(cls) -> Exists:
         return (
             sa.exists()
             .where(BookingFinanceIncident.incidentId == cls.id)
