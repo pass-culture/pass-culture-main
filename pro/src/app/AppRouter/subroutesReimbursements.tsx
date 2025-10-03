@@ -13,7 +13,7 @@ export const routesReimbursements: CustomRouteObject[] = [
   {
     element: <ReimbursementsInvoices />,
     path: '/remboursements',
-    title: 'Gestion financière',
+    title: 'Gestion financière - justificatifs',
   },
   // We keep a redirection here in case this link is still used in mail
   {

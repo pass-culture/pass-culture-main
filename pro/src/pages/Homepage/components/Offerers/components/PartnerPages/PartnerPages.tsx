@@ -60,9 +60,9 @@ export const PartnerPages = ({
 
   return (
     <section className={styles['section']}>
-      <h3 className={styles['title']}>
+      <h2 className={styles['title']}>
         {venues.length === 1 ? 'Votre page partenaire' : 'Vos pages partenaire'}
-      </h3>
+      </h2>
 
       <p className={styles['description']}>
         Complétez vos informations pour présenter votre activité au grand public

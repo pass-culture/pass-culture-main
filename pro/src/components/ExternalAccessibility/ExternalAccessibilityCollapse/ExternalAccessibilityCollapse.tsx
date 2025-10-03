@@ -49,7 +49,7 @@ export const ExternalAccessibilityCollapse = ({
           />
         </div>
         <div className={styles['title-container']}>
-          <h5 className={styles['title']}>{title}</h5>
+          <p className={styles['title']}>{title}</p>
           <div className={styles['accessibility-label']}>
             {isAccessible ? 'Accessible' : 'Non accessible'}
           </div>
