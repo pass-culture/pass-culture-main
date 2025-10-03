@@ -1,6 +1,5 @@
 {% import "components/links.html" as links with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
-<turbo-frame id="offerer_entreprise_frame">
 <div class="card my-1 border-0">
   <div class="card-body my-2">
     {% if is_invalid_siren %}
@@ -81,35 +80,40 @@
     <div class="card-body my-2">
       <h5 class="card-title">Données RCS (Infogreffe)</h5>
       <div class="card-body">
-        <turbo-frame data-turbo="false" id="offerer_rcs_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_rcs_info', offerer_id=offerer.id) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        <div id="offerer_rcs_frame"
+             hx-trigger="intersect once"
+             hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_rcs_info', offerer_id=offerer.id) }}">
+          {{ build_loading_spinner() }}
+        </div>
       </div>
     </div>
     {% if has_permission("READ_PRO_SENSITIVE_INFO") %}
       <div class="card-body my-2">
         <h5 class="card-title">Données URSSAF</h5>
         <div class="card-body">
-          <turbo-frame data-turbo="true" id="offerer_urssaf_frame">
-          <a href="{{ url_for('backoffice_web.offerer.get_entreprise_urssaf_info', offerer_id=offerer.id) }}"
-             class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
-          <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
-          </turbo-frame>
+          <div id="offerer_urssaf_frame">
+            <a hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_urssaf_info', offerer_id=offerer.id) }}"
+               hx-target="#offerer_urssaf_frame"
+               hx-trigger="click"
+               class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
+            <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
+          </div>
         </div>
       </div>
       {% if show_dgfip_card %}
         <div class="card-body my-2">
           <h5 class="card-title">Données DGFIP</h5>
           <div class="card-body">
-            <turbo-frame data-turbo="true" id="offerer_dgfip_frame">
-            <a href="{{ url_for('backoffice_web.offerer.get_entreprise_dgfip_info', offerer_id=offerer.id) }}"
-               class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
-            <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
-            </turbo-frame>
+            <div id="offerer_dgfip_frame">
+              <a hx-target="#offerer_dgfip_frame"
+                 hx-trigger="click"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_dgfip_info', offerer_id=offerer.id) }}"
+                 class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
+              <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
+            </div>
           </div>
         </div>
       {% endif %}
     {% endif %}
   {% endif %}
 </div>
-</turbo-frame>

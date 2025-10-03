@@ -354,9 +354,9 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame data-turbo="false" id="venue_total_revenue_frame" src="{{ url_for('backoffice_web.venue.get_stats', venue_id=venue.id) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        <div id="venue_total_revenue_frame"
+             hx-trigger="load"
+             hx-get="{{ url_for('backoffice_web.venue.get_stats', venue_id=venue.id) }}">{{ build_loading_spinner() }}</div>
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
@@ -370,22 +370,27 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
-            <turbo-frame data-turbo="false" id="venue_history_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_history', venue_id=venue.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="venue_history_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.venue.get_history', venue_id=venue.id) }}">{{ build_loading_spinner() }}</div>
           {% endcall %}
           {% if venue.siret and not venue.ridet and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
-              <turbo-frame data-turbo="false" id="venue_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_entreprise_info', venue_id=venue.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="venue_entreprise_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.venue.get_entreprise_info', venue_id=venue.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
           {% if venue.siret and not venue.managingOfferer.is_caledonian %}
             {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-              <turbo-frame data-turbo="false" id="venue_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_collective_dms_applications', venue_id=venue.id) }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div data-turbo="false"
+                   id="venue_collective_dms_applications_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.venue.get_collective_dms_applications', venue_id=venue.id) }}">
+                {{ build_loading_spinner() }}
+              </div>
             {% endcall %}
           {% endif %}
         {% endcall %}

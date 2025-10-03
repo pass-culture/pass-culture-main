@@ -32,8 +32,11 @@
     {% endcall %}
   {% endif %}
   {% call build_details_tab_content("activity", active_tab == 'activity') %}
-    <turbo-frame data-turbo="false" id="user_activity_frame" loading="lazy" src="{{ url_for('backoffice_web.public_accounts.get_public_account_activity', user_id=user.id) }}">
-    {{ build_loading_spinner() }}
-    </turbo-frame>
-  {% endcall %}
+    <div hx-trigger="intersect once"
+         id="user_activity_frame"
+         hx-get="{{ url_for('backoffice_web.public_accounts.get_public_account_activity', user_id=user.id) }}">
+      {{ build_loading_spinner() }}
+    </div>
+  </div>
+{% endcall %}
 {% endcall %}
