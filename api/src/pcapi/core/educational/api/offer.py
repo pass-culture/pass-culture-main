@@ -171,7 +171,6 @@ def create_collective_offer_template(
         contactPhone=offer_data.contact_phone,
         contactUrl=offer_data.contact_url,
         contactForm=offer_data.contact_form,
-        offerVenue={},
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -242,7 +241,6 @@ def create_collective_offer(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
-        offerVenue={},
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
         mentalDisabilityCompliant=offer_data.mental_disability_compliant,
@@ -427,7 +425,6 @@ def create_collective_offer_public(
         locationType=location.location_type,
         locationComment=location.location_comment,
         offererAddressId=location.offerer_address.id if location.offerer_address else None,
-        offerVenue={},
     )
 
     collective_stock = models.CollectiveStock(
@@ -723,7 +720,6 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
         students=original_offer.students,
         contactEmail=original_offer.contactEmail,
         contactPhone=original_offer.contactPhone,
-        offerVenue=original_offer.offerVenue,
         interventionArea=original_offer.interventionArea,
         domains=original_offer.domains,
         template=original_offer.template,
