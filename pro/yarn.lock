@@ -4190,10 +4190,10 @@ known-css-properties@^0.37.0:
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.37.0.tgz#10ebe49b9dbb6638860ff8a002fb65a053f4aec5"
   integrity sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==
 
-libphonenumber-js@1.12.22:
-  version "1.12.22"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.22.tgz#2a56f633173cdb91bd173f5984ec23198eebe5d0"
-  integrity sha512-nzdkDyqlcLV754o1RrOJxh8kycG+63odJVUqnK4dxhw7buNkdTqJc/a/CE0h599dTJgFbzvr6GEOemFBSBryAA==
+libphonenumber-js@1.12.23:
+  version "1.12.23"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.23.tgz#b838c1e93907ca200395bdb6b06e123c6558f0fd"
+  integrity sha512-RN3q3gImZ91BvRDYjWp7ICz3gRn81mW5L4SW+2afzNCC0I/nkXstBgZThQGTE3S/9q5J90FH4dP+TXx8NhdZKg==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
