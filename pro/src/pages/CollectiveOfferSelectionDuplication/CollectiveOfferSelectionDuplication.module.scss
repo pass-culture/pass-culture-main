@@ -16,15 +16,6 @@
   @include fonts.title4;
 }
 
-.search-input input {
-  border-radius: var(--size-border-radius-m) 0 0 var(--size-border-radius-m);
-}
-
-.search-button {
-  margin-left: rem.torem(-16px);
-  border-radius: 0 var(--size-border-radius-xl) var(--size-border-radius-xl) 0;
-}
-
 .search-no-results {
   color: var(--color-text-subtle);
   text-align: center;

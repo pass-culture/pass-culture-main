@@ -1,6 +1,4 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/_a11y.scss" as a11y;
 
 .container {
@@ -20,18 +18,6 @@
   li:last-child {
     margin-bottom: rem.torem(20px);
   }
-}
-
-input[type="search"]::-webkit-search-cancel-button {
-  appearance: none;
-  width: rem.torem(20px);
-  height: rem.torem(20px);
-  background-image: url("../../../icons/full-clear.svg");
-  background-size: rem.torem(20px);
-  background-repeat: no-repeat;
-  color: var(--color-icon-subtle);
-  fill: var(--color-icon-subtle);
-  cursor: pointer;
 }
 
 .visually-hidden {

@@ -21,7 +21,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { pluralize } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -135,12 +135,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               })}
             >
               <div className={styles['search-input']}>
-                <TextInput
+                <SearchInput
                   label="Rechercher l’offre vitrine à dupliquer"
-                  icon={strokeSearchIcon}
                   {...form.register('searchQuery')}
-                  type="search"
-                  autoComplete="off"
                   extension={
                     <Button
                       type="submit"
