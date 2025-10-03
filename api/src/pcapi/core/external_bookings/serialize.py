@@ -44,6 +44,8 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
         booking: bookings_models.Booking,
         user: users_models.User,
     ) -> "ExternalEventBookingRequest":
+        if user.birth_date is None:
+            raise ValueError("birth_date is None")
         if user.firstName is None:
             raise ValueError("firstName is None")
         if user.lastName is None:

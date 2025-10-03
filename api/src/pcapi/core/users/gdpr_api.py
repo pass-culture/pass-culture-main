@@ -62,7 +62,7 @@ def has_unprocessed_extract(user: models.User) -> bool:
 
 
 def is_suspended_for_less_than_five_years(user: models.User) -> bool:
-    if user.suspension_reason in constants.FRAUD_SUSPENSION_REASONS:
+    if user.suspension_reason in constants.FRAUD_SUSPENSION_REASONS and user.suspension_date:
         return user.suspension_date > datetime.datetime.utcnow() - relativedelta(years=5)
     return False
 
@@ -131,7 +131,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
     user.lastName = None
     user.married_name = None
     user.postalCode = None
-    user.phoneNumber = None  # type: ignore[method-assign]
+    user.phoneNumber = None
     user.dateOfBirth = user.dateOfBirth.replace(day=1, month=1) if user.dateOfBirth else None
     user.address = None
     user.city = None
@@ -187,12 +187,11 @@ def anonymize_non_pro_non_beneficiary_users() -> None:
             finance_models.Deposit.userId.is_(None),  # no deposit
             models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
             sa.or_(
-                models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
-                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_reason.is_(None),
+                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
-                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    typing.cast(sa_orm.Mapped[datetime.datetime], models.User.suspension_date)
-                    < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
+                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -254,7 +253,6 @@ def anonymize_beneficiary_users() -> None:
     years, and whose deposit has been expired for at least 5 years and if they have been suspended
     it was at least 5 years ago.
     """
-    typed_user_suspension_date = typing.cast(sa_orm.Mapped[datetime.datetime], models.User.suspension_date)
     beneficiaries = (
         db.session.query(models.User)
         .outerjoin(
@@ -266,11 +264,11 @@ def anonymize_beneficiary_users() -> None:
             models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
             finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
             sa.or_(
-                models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
-                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_reason.is_(None),
+                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
-                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    typed_user_suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
+                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -282,11 +280,11 @@ def anonymize_beneficiary_users() -> None:
         .filter(
             models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21),
             sa.or_(
-                models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
-                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_reason.is_(None),
+                ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
-                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
-                    typed_user_suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
+                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
                 ),
             ),
         )
@@ -469,10 +467,7 @@ def clean_gdpr_extracts() -> None:
 
     extracts_to_delete = (
         db.session.query(models.GdprUserDataExtract)
-        .filter(
-            typing.cast(sa_orm.Mapped[datetime.datetime], models.GdprUserDataExtract.expirationDate)
-            < datetime.datetime.utcnow(),
-        )
+        .filter(models.GdprUserDataExtract.expirationDate < datetime.datetime.utcnow())
         .with_entities(models.GdprUserDataExtract.id)
     )
     for extract in extracts_to_delete:
@@ -845,7 +840,6 @@ def _release_extract_beneficiary_data_lock() -> None:
 
 
 def extract_beneficiary_data_command() -> bool:
-    typed_expiration_date = typing.cast(sa_orm.Mapped[datetime.datetime], models.GdprUserDataExtract.expirationDate)
     counter = ExtractBeneficiaryDataCounter(
         key=constants.GDPR_EXTRACT_DATA_COUNTER, max_value=settings.GDPR_MAX_EXTRACT_PER_DAY
     )
@@ -862,7 +856,7 @@ def extract_beneficiary_data_command() -> bool:
         db.session.query(models.GdprUserDataExtract)
         .filter(
             models.GdprUserDataExtract.dateProcessed.is_(None),
-            typed_expiration_date > datetime.datetime.utcnow(),
+            models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),
         )
         .options(
             sa_orm.joinedload(models.GdprUserDataExtract.user),

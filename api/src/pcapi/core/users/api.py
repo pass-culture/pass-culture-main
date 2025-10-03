@@ -657,10 +657,10 @@ def update_user_info(
     if needs_to_fill_cultural_survey is not UNCHANGED:
         user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
-        user_phone_number = typing.cast(str, user.phoneNumber)
+        user_phone_number = user.phoneNumber
         if user_phone_number != phone_number:
             snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
-        user.phoneNumber = phone_number  # type: ignore[method-assign]
+        user.phoneNumber = phone_number
     if phone_validation_status is not UNCHANGED:
         if user.phoneValidationStatus != phone_validation_status:
             snapshot.set("phoneValidationStatus", old=user.phoneValidationStatus, new=phone_validation_status)
@@ -974,7 +974,7 @@ def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Qu
     except phone_validation_exceptions.InvalidPhoneNumber:
         pass  # term can't be a phone number
     else:
-        term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore[arg-type]
+        term_filters.append(models.User.phoneNumber == term_as_phone_number)
 
     split_terms = [email_utils.sanitize_email(term) for term in re.split(r"[,;\s]+", search_term) if term]
 
@@ -1103,8 +1103,8 @@ def search_pro_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
     )
 
     return _filter_user_accounts(pro_accounts, search_query).options(
-        sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),
+        sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),
         sa_orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
         sa_orm.contains_eager(models.User.deposits),
     )
@@ -1122,8 +1122,8 @@ def search_backoffice_accounts(search_query: str) -> sa_orm.Query:
         db.session.query(models.User)
         .join(models.User.backoffice_profile)
         .options(
-            sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-            sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
+            sa_orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),
+            sa_orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),
         )
     )
 

@@ -148,7 +148,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             has_offerer_address_query.label("has_offerer_address"),
             has_fraudulent_booking_query.label("has_fraudulent_booking"),
             adage_query.label("adage_information"),
-            users_models.User.phoneNumber.label("creator_phone_number"),  # type: ignore[attr-defined]
+            users_models.User.phoneNumber.label("creator_phone_number"),
         )
         .filter(offerers_models.Offerer.id == offerer_id)
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id_query)
@@ -651,7 +651,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
 
     rows = (
         db.session.query(
-            users_models.User.id,  # type: ignore [call-overload]
+            users_models.User.id,
             users_models.User.firstName,
             users_models.User.lastName,
             users_models.User.full_name,

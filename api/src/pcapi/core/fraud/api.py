@@ -2,9 +2,6 @@ import datetime
 import itertools
 import logging
 import re
-import typing
-
-from sqlalchemy import orm as sa_orm
 
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
@@ -392,7 +389,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
     orig_user_id = (
         db.session.query(users_models.User)
         .filter(
-            typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number,
+            users_models.User.phoneNumber == phone_number,
             users_models.User.is_phone_validated,
         )
         .one()
