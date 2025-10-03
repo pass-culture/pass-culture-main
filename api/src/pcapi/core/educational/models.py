@@ -86,12 +86,6 @@ class CollectiveOfferExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class OfferVenueDictStr(typing.TypedDict):
-    addressType: typing.Literal["offererVenue"] | typing.Literal["school"] | typing.Literal["other"]
-    venueId: int | None
-    otherAddress: str
-
-
 class CollectiveBookingCancellationReasons(enum.Enum):
     OFFERER = "OFFERER"
     BENEFICIARY = "BENEFICIARY"
@@ -496,7 +490,7 @@ class CollectiveOffer(
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     # the venueId is the billing address.
-    # To find where the offer takes place, check offerVenue.
+    # To find where the offer takes place, check locationType / offererAddress
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
     )
@@ -540,18 +534,6 @@ class CollectiveOffer(
     contactEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
 
     contactPhone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-
-    # Where the offer takes place
-    # There are three types:
-    #   1. within an educational institution;
-    #   2. within the offerer's place;
-    #   3. in some random place.
-    # Each object should have the same three keys: one for the venue
-    # type, one for the venueId (filled when 1.) and one for the random
-    # place (filled when 3.)
-    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa_orm.mapped_column(
-        sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
-    )
 
     interventionArea: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}"
@@ -1062,10 +1044,6 @@ class CollectiveOfferTemplate(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
         nullable=False,
         server_default="{}",
-    )
-
-    offerVenue: sa_orm.Mapped[OfferVenueDictStr] = sa_orm.mapped_column(
-        sa_mutable.MutableDict.as_mutable(postgresql.json.JSONB), nullable=False
     )
 
     interventionArea: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(

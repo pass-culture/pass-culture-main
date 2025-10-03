@@ -238,7 +238,7 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
             ),
             sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
-            .load_only(educational_models.CollectiveOffer.offerVenue, educational_models.CollectiveOffer.students),
+            .load_only(educational_models.CollectiveOffer.students),
             sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
                 educational_models.EducationalRedactor.id,
                 educational_models.EducationalRedactor.email,

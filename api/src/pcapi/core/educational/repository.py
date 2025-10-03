@@ -197,7 +197,6 @@ def _get_bookings_for_adage_base_query() -> "sa_orm.Query[models.CollectiveBooki
             models.CollectiveOffer.mentalDisabilityCompliant,
             models.CollectiveOffer.motorDisabilityCompliant,
             models.CollectiveOffer.visualDisabilityCompliant,
-            models.CollectiveOffer.offerVenue,
             models.CollectiveOffer.contactEmail,
             models.CollectiveOffer.contactPhone,
             models.CollectiveOffer.description,

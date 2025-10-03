@@ -598,13 +598,13 @@ def test_serialize_future_offer():
     assert serialized["offer"]["bookingAllowedDatetime"] == booking_allowed_dt.timestamp()
 
 
-def test_serialize_collective_offer_template_offerer_venue():
+def test_serialize_collective_offer_template_other_venue_location():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
 
-    # offer.offerVenue
-    offer_venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
-    offer_venue = offerers_factories.VenueFactory(offererAddress=offer_venue_offerer_address)
+    # location venue
+    other_venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
+    other_venue = offerers_factories.VenueFactory(offererAddress=other_venue_offerer_address)
 
     # offer.venue
     venue_offerer_address = offerers_factories.OffererAddressFactory(
@@ -623,13 +623,8 @@ def test_serialize_collective_offer_template_offerer_venue():
         venue__adageId="123456",
         educational_domains=[domain1, domain2],
         interventionArea=None,
-        offerVenue={
-            "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
-            "venueId": offer_venue.id,
-            "otherAddress": "",
-        },
         locationType=educational_models.CollectiveLocationType.ADDRESS,
-        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(offer_venue),
+        offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(other_venue),
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -655,7 +650,7 @@ def test_serialize_collective_offer_template_offerer_venue():
             "publicName": "La Moyenne Librairie",
             "adageId": collective_offer_template.venue.adageId,
         },
-        "_geoloc": {"lat": 45, "lng": 3},  # values are extracted from offer.offerVenue (and not offer.venue)
+        "_geoloc": {"lat": 45, "lng": 3},
         "isTemplate": True,
         "formats": [format.value for format in collective_offer_template.formats],
     }
@@ -731,11 +726,6 @@ def test_serialize_collective_offer_template_legacy():
         venue__adageId="123456",
         educational_domains=[domain1, domain2],
         interventionArea=None,
-        offerVenue={
-            "addressType": educational_models.OfferAddressType.OFFERER_VENUE,
-            "venueId": venue.id,
-            "otherAddress": "",
-        },
         locationType=educational_models.CollectiveLocationType.ADDRESS,
         offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
     )
