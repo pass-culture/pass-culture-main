@@ -1,18 +1,16 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
 import { Target } from '@/apiClient/v1'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   type ActivityContext,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Activity.module.scss'
@@ -23,11 +21,7 @@ import { validationSchema } from './validationSchema'
 export const Activity = (): JSX.Element => {
   const navigate = useNavigate()
   const { activity, setActivity } = useSignupJourneyContext()
-
-  const { data: venueTypes, isLoading } = useSWR(
-    [GET_VENUE_TYPES_QUERY_KEY],
-    () => api.getVenueTypes()
-  )
+  const venueTypes = useSelector(selectVenueTypes)
 
   const serializeActivityContext = (
     activity: ActivityContext
@@ -84,14 +78,6 @@ export const Activity = (): JSX.Element => {
   const handlePreviousStep = () => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/inscription/structure/identification')
-  }
-
-  if (isLoading) {
-    return <Spinner />
-  }
-
-  if (!venueTypes) {
-    return <></>
   }
 
   return (

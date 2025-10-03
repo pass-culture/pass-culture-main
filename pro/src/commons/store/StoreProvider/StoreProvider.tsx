@@ -14,6 +14,7 @@ import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { updateVenueTypes } from '../venuesTypes/reducer'
 import styles from './StoreProvider.module.scss'
 
 interface StoreProviderProps {
@@ -29,79 +30,92 @@ export const StoreProvider = ({
   const [isStoreInitialized, setIsStoreInitialized] = useState(false)
   const currentOfferer = useSelector(selectCurrentOfferer)
 
+  const initializeUser = async () => {
+    if (isAdageIframe) {
+      return
+    }
+    try {
+      const response = await api.getProfile()
+      dispatch(updateUser(response))
+    } catch {
+      dispatch(updateUser(null))
+    }
+  }
+
+  const initializeUserOfferer = async () => {
+    if (isAdageIframe) {
+      return
+    }
+    try {
+      const response = await api.listOfferersNames()
+      const firstOffererId = response.offerersNames[0].id
+
+      let offererIdToUse = firstOffererId
+      if (storageAvailable('localStorage')) {
+        const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
+        offererIdToUse = savedOffererId
+          ? Number(savedOffererId)
+          : firstOffererId
+      }
+
+      try {
+        const offererObj = await getOffererData(
+          offererIdToUse,
+          currentOfferer,
+          () => api.getOfferer(offererIdToUse)
+        )
+        dispatch(updateCurrentOfferer(offererObj))
+        dispatch(updateOffererNames(response.offerersNames))
+      } catch {
+        dispatch(
+          // TODO: Find a better way with the Product team to handle this behavior
+          // @ts-expect-error: This is because updateCurrentOfferer() expects its argument to be a full offerer object (which we can't have here because the API will returns a 404 for an offerer awaiting rattachment)
+          updateCurrentOfferer({
+            id: offererIdToUse,
+          })
+        )
+      }
+    } catch {
+      // In any other case, it's a normal error
+      dispatch(updateCurrentOfferer(null))
+    }
+  }
+
+  const initializeVenueTypes = async () => {
+    try {
+      const response = await api.getVenueTypes()
+      dispatch(updateVenueTypes(response))
+    } catch {
+      dispatch(updateVenueTypes([]))
+    }
+  }
+
+  const initializeFeatures = async () => {
+    try {
+      const response = await api.listFeatures()
+      dispatch(updateFeatures(response))
+    } catch {
+      dispatch(updateFeatures([]))
+    }
+  }
+
+  const getStoreInitialState = async () => {
+    await Promise.all([
+      initializeUser(),
+      initializeFeatures(),
+      initializeVenueTypes(),
+      initializeUserOfferer(),
+    ])
+    setIsStoreInitialized(true)
+  }
+
   useEffect(() => {
-    const initializeUser = async () => {
-      if (isAdageIframe) {
-        return
-      }
-      try {
-        const response = await api.getProfile()
-        dispatch(updateUser(response))
-      } catch {
-        dispatch(updateUser(null))
-      }
-    }
-
-    const initializeUserOfferer = async () => {
-      if (isAdageIframe) {
-        return
-      }
-      try {
-        const response = await api.listOfferersNames()
-        const firstOffererId = response.offerersNames[0].id
-
-        let offererIdToUse = firstOffererId
-        if (storageAvailable('localStorage')) {
-          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-          offererIdToUse = savedOffererId
-            ? Number(savedOffererId)
-            : firstOffererId
-        }
-
-        try {
-          const offererObj = await getOffererData(
-            offererIdToUse,
-            currentOfferer,
-            () => api.getOfferer(offererIdToUse)
-          )
-          dispatch(updateCurrentOfferer(offererObj))
-          dispatch(updateOffererNames(response.offerersNames))
-        } catch {
-          dispatch(
-            // TODO: Find a better way with the Product team to handle this behavior
-            // @ts-expect-error: This is because updateCurrentOfferer() expects its argument to be a full offerer object (which we can't have here because the API will returns a 404 for an offerer awaiting rattachment)
-            updateCurrentOfferer({
-              id: offererIdToUse,
-            })
-          )
-        }
-      } catch {
-        // In any other case, it's a normal error
-        dispatch(updateCurrentOfferer(null))
-      }
-    }
-
-    const initializeFeatures = async () => {
-      try {
-        const response = await api.listFeatures()
-        dispatch(updateFeatures(response))
-      } catch {
-        dispatch(updateFeatures([]))
-      }
-    }
-
-    const getStoreInitialState = async () => {
-      await Promise.all([
-        initializeUser(),
-        initializeFeatures(),
-        initializeUserOfferer(),
-      ])
-      setIsStoreInitialized(true)
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getStoreInitialState()
-  }, [isAdageIframe, dispatch])
+  }, [
+    isAdageIframe,
+    dispatch, // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  ])
 
   if (!isStoreInitialized) {
     return (

@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
-import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -28,6 +26,7 @@ import {
   selectCurrentOffererId,
 } from '@/commons/store/offerer/selectors'
 import { updateUser } from '@/commons/store/user/reducer'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
@@ -38,12 +37,11 @@ import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
-export const Validation = (): JSX.Element => {
+export const Validation = (): JSX.Element | null => {
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -52,10 +50,7 @@ export const Validation = (): JSX.Element => {
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
+  const venueTypes = useSelector(selectVenueTypes)
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
@@ -83,16 +78,8 @@ export const Validation = (): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer])
 
-  if (venueTypesQuery.isLoading) {
-    return <Spinner />
-  }
-
-  if (!venueTypes) {
-    return <></>
-  }
-
   if (activity === null || offerer === null) {
-    return <></>
+    return null
   }
 
   const onSubmit = async () => {

@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
@@ -82,6 +78,14 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/confirmation'],
+      storeOverrides: {
+        venueTypes: {
+          venueTypes: [
+            { id: 'MUSEUM', label: 'first venue label' },
+            { id: 'venue2', label: 'second venue label' },
+          ],
+        },
+      },
     }
   )
 }
@@ -146,7 +150,7 @@ describe('ValidationScreen', () => {
         ...addressInformations,
       },
     })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
     expect(await screen.findByText('first venue label')).toBeInTheDocument()
     expect(screen.getByText('url1')).toBeInTheDocument()
     expect(screen.getByText('url2')).toBeInTheDocument()
@@ -183,7 +187,6 @@ describe('ValidationScreen', () => {
 
     it('should navigate to activity page with the previous step button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       await userEvent.click(screen.getByText('Étape précédente'))
       expect(screen.getByText('Activite')).toBeInTheDocument()
@@ -191,7 +194,7 @@ describe('ValidationScreen', () => {
 
     it('should navigate to authentification page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getAllByText('Modifier')[0])
 
       expect(screen.getByText('Authentification')).toBeInTheDocument()
@@ -199,7 +202,7 @@ describe('ValidationScreen', () => {
 
     it('should navigate to activite page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getAllByText('Modifier')[1])
 
       expect(screen.getByText('Activite')).toBeInTheDocument()
@@ -222,9 +225,7 @@ describe('ValidationScreen', () => {
       it("should redirect to home after submit if user doesn't have access to onBoarding", async () => {
         useHasAccessToDidacticOnboarding.mockReturnValue(false)
         renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
+
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         expect(await screen.findByText('accueil')).toBeInTheDocument()
       })
@@ -233,9 +234,7 @@ describe('ValidationScreen', () => {
         useHasAccessToDidacticOnboarding.mockReturnValue(true)
         selectCurrentOffererId.mockReturnValue(null)
         renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
+
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         expect(await screen.findByText('onboarding')).toBeInTheDocument()
       })
@@ -248,9 +247,7 @@ describe('ValidationScreen', () => {
         } as GetOffererResponseModel)
 
         renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
+
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         expect(await screen.findByText('accueil')).toBeInTheDocument()
       })
@@ -263,9 +260,7 @@ describe('ValidationScreen', () => {
         } as GetOffererResponseModel)
 
         renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
+
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         expect(await screen.findByText('onboarding')).toBeInTheDocument()
       })
@@ -309,7 +304,7 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         publicName: 'nom public',
@@ -346,8 +341,9 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
+
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
         publicName: null,
         siret: '123123123',
@@ -373,7 +369,7 @@ describe('ValidationScreen', () => {
 
     it('should see the data from the previous forms for validation without public name', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       expect(await screen.findByText('first venue label')).toBeInTheDocument()
       expect(screen.getByText('nom')).toBeInTheDocument()
     })
@@ -410,17 +406,17 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
         await screen.findByText('Erreur lors de la création de votre structure')
       ).toBeInTheDocument()
     })
 
-    it('should not render on venue types api error', async () => {
+    it('should not render on venue types api error', () => {
       vi.spyOn(api, 'getVenueTypes').mockRejectedValue({})
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
       expect(
         screen.queryByText('Informations structure')
       ).not.toBeInTheDocument()

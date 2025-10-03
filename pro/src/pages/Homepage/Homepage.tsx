@@ -1,13 +1,11 @@
 import { useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
@@ -33,10 +31,7 @@ export const Homepage = (): JSX.Element => {
 
   const offererNames = offererNamesQuery.data?.offerersNames
 
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
+  const venueTypes = useSelector(selectVenueTypes)
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({
@@ -64,11 +59,7 @@ export const Homepage = (): JSX.Element => {
     return physicalVenues.length === 0 && !virtualVenue
   }, [selectedOfferer])
 
-  const isNotReady =
-    offererNamesQuery.isLoading ||
-    venueTypesQuery.isLoading ||
-    !offererNames ||
-    !venueTypes
+  const isNotReady = offererNamesQuery.isLoading || !offererNames
 
   return (
     <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">

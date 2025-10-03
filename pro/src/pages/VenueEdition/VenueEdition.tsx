@@ -5,14 +5,12 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import {
-  GET_VENUE_QUERY_KEY,
-  GET_VENUE_TYPES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -47,10 +45,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
 
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
+  const venueTypes = useSelector(selectVenueTypes)
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -107,12 +102,7 @@ export const VenueEdition = (): JSX.Element | null => {
   }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
 
   const isNotReady =
-    venueQuery.isLoading ||
-    venueTypesQuery.isLoading ||
-    isOffererLoading ||
-    !venue ||
-    !offerer ||
-    !venueTypes
+    venueQuery.isLoading || isOffererLoading || !venue || !offerer
 
   const tabs: NavLinkItem[] = [
     {
