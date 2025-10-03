@@ -2,7 +2,6 @@
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
-<turbo-frame id="offerer_venues_frame">
 {% if has_permission("CREATE_PRO_ENTITY") %}
   <button class="btn btn-outline-primary-subtle-bg mt-2"
           data-bs-toggle="modal"
@@ -86,4 +85,3 @@
     {% endfor %}
   </tbody>
 </table>
-</turbo-frame>
