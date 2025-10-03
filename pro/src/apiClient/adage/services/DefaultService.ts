@@ -49,7 +49,7 @@ export class DefaultService {
       url: '/adage-iframe/authenticate',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -64,7 +64,7 @@ export class DefaultService {
       url: '/adage-iframe/collective/academies',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -75,7 +75,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public bookCollectiveOffer(
-    requestBody: BookCollectiveOfferRequest,
+    requestBody?: BookCollectiveOfferRequest,
   ): CancelablePromise<BookCollectiveOfferResponse> {
     return this.httpRequest.request({
       method: 'POST',
@@ -85,7 +85,7 @@ export class DefaultService {
       errors: {
         400: `Bad Request`,
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -100,7 +100,7 @@ export class DefaultService {
       url: '/adage-iframe/collective/favorites',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -115,7 +115,7 @@ export class DefaultService {
       url: '/adage-iframe/collective/institution',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -137,7 +137,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -159,7 +159,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -172,7 +172,7 @@ export class DefaultService {
    */
   public createCollectiveRequest(
     offerId: number,
-    requestBody: PostCollectiveRequestBodyModel,
+    requestBody?: PostCollectiveRequestBodyModel,
   ): CancelablePromise<CollectiveRequestResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -185,7 +185,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -200,7 +200,7 @@ export class DefaultService {
       url: '/adage-iframe/collective/offers/my_institution',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -222,7 +222,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -243,7 +243,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -264,7 +264,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -280,7 +280,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -291,7 +291,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logBookingModalButtonClick(
-    requestBody: StockIdBody,
+    requestBody?: StockIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -301,7 +301,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -312,7 +312,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logCatalogView(
-    requestBody: CatalogViewBody,
+    requestBody?: CatalogViewBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -322,7 +322,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -333,7 +333,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logConsultPlaylistElement(
-    requestBody: PlaylistBody,
+    requestBody?: PlaylistBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -343,7 +343,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -354,7 +354,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logContactModalButtonClick(
-    requestBody: OfferBody,
+    requestBody?: OfferBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -364,7 +364,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -375,7 +375,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logContactUrlClick(
-    requestBody: OfferIdBody,
+    requestBody?: OfferIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -385,7 +385,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -396,7 +396,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logFavOfferButtonClick(
-    requestBody: OfferFavoriteBody,
+    requestBody?: OfferFavoriteBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -406,7 +406,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -417,7 +417,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHasSeenWholePlaylist(
-    requestBody: PlaylistBody,
+    requestBody?: PlaylistBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -427,7 +427,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -438,7 +438,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHeaderLinkClick(
-    requestBody: AdageHeaderLogBody,
+    requestBody?: AdageHeaderLogBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -448,7 +448,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -459,7 +459,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOpenHighlightBanner(
-    requestBody: HighlightBannerBody,
+    requestBody?: HighlightBannerBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -469,7 +469,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -480,7 +480,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferDetailsButtonClick(
-    requestBody: StockIdBody,
+    requestBody?: StockIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -490,7 +490,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -501,7 +501,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferListViewSwitch(
-    requestBody: OfferListSwitch,
+    requestBody?: OfferListSwitch,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -511,7 +511,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -522,7 +522,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferTemplateDetailsButtonClick(
-    requestBody: OfferIdBody,
+    requestBody?: OfferIdBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -532,7 +532,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -543,7 +543,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHasSeenAllPlaylist(
-    requestBody: AdageBaseModel,
+    requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -553,7 +553,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -564,7 +564,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logRequestFormPopinDismiss(
-    requestBody: CollectiveRequestBody,
+    requestBody?: CollectiveRequestBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -574,7 +574,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -585,7 +585,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOpenSatisfactionSurvey(
-    requestBody: AdageBaseModel,
+    requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -595,7 +595,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -606,7 +606,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logSearchButtonClick(
-    requestBody: SearchBody,
+    requestBody?: SearchBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -616,7 +616,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -627,7 +627,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logSearchShowMore(
-    requestBody: TrackingShowMoreBody,
+    requestBody?: TrackingShowMoreBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -637,7 +637,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -648,7 +648,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingAutocompleteSuggestionClick(
-    requestBody: TrackingAutocompleteSuggestionBody,
+    requestBody?: TrackingAutocompleteSuggestionBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -658,7 +658,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -669,7 +669,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingCtaShare(
-    requestBody: TrackingCTAShareBody,
+    requestBody?: TrackingCTAShareBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -679,7 +679,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -690,7 +690,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingFilter(
-    requestBody: TrackingFilterBody,
+    requestBody?: TrackingFilterBody,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -700,7 +700,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -711,7 +711,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingMap(
-    requestBody: AdageBaseModel,
+    requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -721,7 +721,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -736,7 +736,7 @@ export class DefaultService {
       url: '/adage-iframe/playlists/classroom',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -751,7 +751,7 @@ export class DefaultService {
       url: '/adage-iframe/playlists/local-offerers',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -766,7 +766,7 @@ export class DefaultService {
       url: '/adage-iframe/playlists/new_offerers',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -782,7 +782,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -793,7 +793,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public saveRedactorPreferences(
-    requestBody: RedactorPreferences,
+    requestBody?: RedactorPreferences,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -802,7 +802,7 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -818,7 +818,7 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -844,7 +844,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }
@@ -870,7 +870,7 @@ export class DefaultService {
       },
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Content`,
+        422: `Unprocessable Entity`,
       },
     });
   }

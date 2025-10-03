@@ -32,6 +32,8 @@ from pcapi.serialization.utils import validate_datetime
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
+from . import deprecated  # noqa: F401
+
 
 class SubcategoryGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
@@ -73,44 +75,6 @@ class CategoryResponseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         orm_mode = True
-
-
-class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel | None
-    audio_disability_compliant: bool
-    booking_contact: EmailStr | None
-    booking_email: EmailStr | None
-    description: str | None
-    duration_minutes: int | None
-    external_ticket_office_url: HttpUrl | None
-    extra_data: dict[str, typing.Any] | None
-    is_duo: bool | None
-    is_national: bool | None
-    mental_disability_compliant: bool
-    motor_disability_compliant: bool
-    name: str
-    subcategory_id: str
-    url: HttpUrl | None
-    venue_id: int
-    visual_disability_compliant: bool
-    withdrawal_delay: int | None
-    withdrawal_details: str | None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None
-
-    @validator("name", pre=True)
-    def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
-        return name
-
-    @validator("withdrawal_type")
-    def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
-        if value == offers_models.WithdrawalTypeEnum.IN_APP:
-            raise ValueError("Withdrawal type cannot be in_app for manually created offers")
-        return value
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
@@ -663,3 +627,50 @@ class VideoMetatdataQueryModel(BaseModel):
 
 class OfferHighlightResquestsResponseModel(BaseModel):
     highlight_requests: list[str]
+
+
+class OfferVideo(ConfiguredBaseModel):
+    id: str
+    title: str | None
+    thumbnailUrl: str | None
+    duration: int | None
+
+
+class PostOfferBodyModel(BaseModel):
+    address: offerers_schemas.AddressBodyModel | None
+    audio_disability_compliant: bool
+    booking_contact: EmailStr | None
+    booking_email: EmailStr | None
+    description: str | None
+    duration_minutes: int | None
+    external_ticket_office_url: HttpUrl | None
+    extra_data: dict[str, typing.Any] | None
+    is_duo: bool | None
+    is_national: bool | None
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
+    name: str
+    product_id: int | None
+    subcategory_id: str
+    url: HttpUrl | None
+    venue_id: int
+    video_url: HttpUrl | None = None
+    visual_disability_compliant: bool
+    withdrawal_delay: int | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
+
+    @validator("name", pre=True)
+    def validate_name(cls, name: str, values: dict) -> str:
+        check_offer_name_length_is_valid(name)
+        return name
+
+    @validator("withdrawal_type")
+    def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
+        if value == offers_models.WithdrawalTypeEnum.IN_APP:
+            raise ValueError("Withdrawal type cannot be in_app for manually created offers")
+        return value
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
