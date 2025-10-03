@@ -1,11 +1,13 @@
 import base64
 import datetime
 import pathlib
+from unittest import mock
 
 import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors import youtube
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
@@ -419,6 +421,41 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
 
         assert offer.offererAddress.addressId == address.id
+
+    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    def test_update_video(self, get_video_metadata_from_cache_mock):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
+            id="ZjSlDZhwHs8",
+            title="Gilbert organisé",
+            thumbnail_url="thumbnail url",
+            duration=100,
+        )
+
+        offers_factories.OfferMetaDataFactory(offer=offer, videoUrl="https://www.youtube.com/watch?v=o5B_YdZyOz8")
+        assert offer.metaData.videoUrl == "https://www.youtube.com/watch?v=o5B_YdZyOz8"
+        json_data = {"videoUrl": "https://www.youtube.com/watch?v=ZjSlDZhwHs8"}
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200
+        assert offer.metaData.videoExternalId == "ZjSlDZhwHs8"
+
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
+    def test_delete_video(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        offers_factories.OfferMetaDataFactory(offer=offer, videoUrl="https://www.youtube.com/watch?v=ZjSlDZhwHs8")
+        json_data = {"videoUrl": None}
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 200, response.json
+        assert offer.metaData.videoUrl == None
+        assert offer.metaData.videoExternalId == None
 
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",

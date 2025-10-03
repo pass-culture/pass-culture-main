@@ -138,6 +138,9 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
         if body.image:
             utils.save_image(body.image, created_offer)
 
+        if body.video_url:
+            utils.save_video(body.video_url, created_offer)
+
         publication_date = body.publication_date
 
         if publication_date:  # the provider used the legacy `publicationDate` param
@@ -316,6 +319,9 @@ def edit_event(event_id: int, body: events_serializers.EventOfferEdition) -> eve
 
         if body.image:
             utils.save_image(body.image, offer)
+        if "videoUrl" in updates:
+            utils.save_video(body.video_url, offer)
+
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
 

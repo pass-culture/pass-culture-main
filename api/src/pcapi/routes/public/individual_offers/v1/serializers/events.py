@@ -50,6 +50,7 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
     price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES_WITH_MAX_ITEMS
     publication_date: datetime.datetime | None = fields.DEPRECATED_OFFER_PUBLICATION_DATE
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
+    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
     @pydantic_v1.root_validator(pre=True)
     def check_publication_date_and_publication_datetime_are_not_both_set(cls, values: dict) -> dict:
@@ -92,6 +93,7 @@ class EventOfferEdition(v1_serialization.OfferEditionBase):
         fields.EVENT_CATEGORIES_RELATED_FIELDS
     )
     event_duration: int | None = fields.EVENT_DURATION
+    video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
 
 class EventStockEdition(v1_serialization.BaseStockEdition):
