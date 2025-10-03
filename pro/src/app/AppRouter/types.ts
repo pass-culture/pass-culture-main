@@ -2,6 +2,8 @@ import type { NonIndexRouteObject } from 'react-router'
 
 interface CustomRouteMeta {
   public?: boolean
+  unattachedOnly?: boolean
+  onboardingOnly?: boolean
 }
 
 export interface CustomRouteObject extends NonIndexRouteObject {

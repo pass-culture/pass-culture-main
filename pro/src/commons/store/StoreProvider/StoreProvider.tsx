@@ -66,7 +66,7 @@ export const StoreProvider = ({
           )
           dispatch(updateCurrentOfferer(offererObj))
           dispatch(updateOffererNames(response.offerersNames))
-          dispatch(setIsUnAttached(false))
+          dispatch(setIsUnAttached(true))
         } catch {
           dispatch(
             // TODO: Find a better way with the Product team to handle this behavior
@@ -103,7 +103,7 @@ export const StoreProvider = ({
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getStoreInitialState()
-  }, [isAdageIframe, dispatch])
+  }, [isAdageIframe, dispatch, currentOfferer])
 
   if (!isStoreInitialized) {
     return (

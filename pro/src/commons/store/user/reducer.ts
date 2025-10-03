@@ -4,12 +4,12 @@ import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
-  isUnAttached: null | boolean
+  isUnAttached: boolean
 }
 
 export const initialState: UserState = {
   currentUser: null,
-  isUnAttached: null,
+  isUnAttached: true,
 }
 
 const userSlice = createSlice({
