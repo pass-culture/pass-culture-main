@@ -61,38 +61,38 @@ class AbstractImporter(abc.ABC, Generic[BigQueryModel, BigQueryDeltaModel, SQLAl
 
         items_to_add = []
         items_to_update = []
-        pks_to_delete = []
+        items_to_remove = []
         query = self.get_delta_import_query()
-
         for delta_item in query.execute():
+            sqlalchemy_obj = self.exists(delta_item)
             if delta_item.action == DeltaAction.ADD:
-                if not self.exists(delta_item):
+                if not sqlalchemy_obj:
                     items_to_add.append(self.create(delta_item))
 
             elif delta_item.action == DeltaAction.UPDATE:
-                sqlalchemy_obj = self.exists(delta_item)
                 if sqlalchemy_obj:
                     self.update(sqlalchemy_obj, delta_item)
-                    items_to_update.append(sqlalchemy_obj)
+                    items_to_update.append((sqlalchemy_obj.id, delta_item))
 
             elif delta_item.action == DeltaAction.REMOVE:
-                sqlalchemy_obj = self.exists(delta_item)
                 if sqlalchemy_obj:
-                    pks_to_delete.append(sqlalchemy_obj.id)
+                    items_to_remove.append(sqlalchemy_obj)
 
             if len(items_to_add) >= BATCH_SIZE:
                 self._bulk_save(items_to_add)
                 items_to_add = []
-            if len(pks_to_delete) >= BATCH_SIZE:
-                self._bulk_delete(pks_to_delete)
-                pks_to_delete = []
+
+            if len(items_to_remove) >= BATCH_SIZE:
+                self._handle_removals(items_to_remove)
+                items_to_remove = []
+
+            if len(items_to_update) >= BATCH_SIZE:
+                self._handle_updates(items_to_update)
+                items_to_update = []
 
         self._bulk_save(items_to_add)
-        self._bulk_delete(pks_to_delete)
-
-        if items_to_update:
-            with transaction():
-                logger.info(f"Successfully updated {len(items_to_update)} {class_name}")
+        self._handle_removals(items_to_remove)
+        self._handle_updates(items_to_update)
 
         logger.info(f"Finished processing delta for {class_name}")
 
@@ -118,6 +118,13 @@ class AbstractImporter(abc.ABC, Generic[BigQueryModel, BigQueryDeltaModel, SQLAl
             except sa_exc.IntegrityError as exc:
                 logger.error(f"Failed to import item for {class_name}: {exc}")
 
+    def _handle_removals(self, items_to_remove: list[SQLAlchemyModel]) -> None:
+        if not items_to_remove:
+            return
+
+        pks_to_delete = [item.id for item in items_to_remove]
+        self._bulk_delete(pks_to_delete)
+
     def _bulk_delete(self, pks: list) -> None:
         if not pks:
             return
@@ -130,6 +137,41 @@ class AbstractImporter(abc.ABC, Generic[BigQueryModel, BigQueryDeltaModel, SQLAl
         except Exception as e:
             logger.error(f"Failed to bulk delete {model_class.__name__}: {e}", exc_info=True)
             db.session.rollback()
+
+    def _handle_updates(self, items: list[tuple[Any, BigQueryDeltaModel]]) -> None:
+        if not items:
+            return
+
+        class_name = self.get_sqlalchemy_class().__name__
+        object_ids = [item_id for item_id, _ in items]
+        try:
+            with transaction():
+                objects_map = {
+                    obj.id: obj
+                    for obj in db.session.query(self.get_sqlalchemy_class()).filter(
+                        self.get_sqlalchemy_class().id.in_(object_ids)
+                    )
+                }
+                for item_id, delta_item in items:
+                    if item_id in objects_map:
+                        self.update(objects_map[item_id], delta_item)
+                logger.info(f"Committing a batch of {len(items)} updates for {class_name}.")
+
+        except sa_exc.IntegrityError as exc:
+            logger.warning(f"Batch update failed for {class_name}: {exc}. Retrying one by one.")
+            db.session.rollback()
+            self._update_one_by_one(items)
+
+    def _update_one_by_one(self, items: list[tuple[Any, BigQueryDeltaModel]]) -> None:
+        class_name = self.get_sqlalchemy_class().__name__
+        for item_id, delta_item in items:
+            try:
+                with transaction():
+                    sqlalchemy_obj = db.session.query(self.get_sqlalchemy_class()).get(item_id)
+                    if sqlalchemy_obj:
+                        self.update(sqlalchemy_obj, delta_item)
+            except sa_exc.IntegrityError as exc:
+                logger.error(f"Failed to update individual {class_name} (id: {item_id}): {exc}")
 
     @abc.abstractmethod
     def get_sqlalchemy_class(self) -> Type[SQLAlchemyModel]:
