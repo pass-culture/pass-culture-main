@@ -5505,3 +5505,15 @@ class TagPublicAccountTest(PostEndpointHelper):
         assert action.offererId is None
         assert action.venueId is None
         assert action.extraData["modified_info"] == {"tags": {"old_info": ["Ambassadeur A"], "new_info": None}}
+
+
+class MarkBookingAsCancelledTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_cancelled"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+
+class MarkBookingAsUsedTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.mark_booking_as_used"
+    endpoint_kwargs = {"booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS

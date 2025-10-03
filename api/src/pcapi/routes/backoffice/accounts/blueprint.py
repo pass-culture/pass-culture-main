@@ -56,6 +56,8 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.bookings import forms as booking_forms
+from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
@@ -506,6 +508,8 @@ def render_public_account_details(
         active_tab=request.args.get("active_tab", "registration"),
         show_personal_info=True,
         has_gdpr_extract=has_gdpr_extract(user=user),
+        validate_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
         **kwargs,
     )
 
@@ -2302,3 +2306,58 @@ def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeRe
 
     flash("L'envoi du mail de changement de mot de passe a été initié", "success")
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+
+def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
+    bookings: list[bookings_models.Booking] = []
+    if bookings_ids:
+        bookings = (
+            db.session.query(bookings_models.Booking)
+            .filter(bookings_models.Booking.id.in_(bookings_ids))
+            .options(
+                sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+                sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(
+                    finance_models.BookingFinanceIncident.incident
+                ),
+                sa_orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name),
+                sa_orm.joinedload(bookings_models.Booking.venue)
+                .load_only(offerers_models.Venue.bookingEmail)
+                .joinedload(offerers_models.Venue.contact)
+                .load_only(offerers_models.VenueContact.email),
+                sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
+            )
+            .all()
+        )
+    return render_template(
+        "accounts/get/details/bookings_rows.html",
+        bookings=bookings,
+    )
+
+
+@public_accounts_blueprint.route("cancel-booking/<int:booking_id>", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
+    booking = booking_helpers.get_booking_query_for_cancelation().filter_by(id=booking_id).one_or_none()
+
+    if not booking:
+        raise NotFound()
+
+    form = booking_forms.CancelIndividualBookingForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _render_individual_bookings()
+
+    booking_helpers.batch_cancel_bookings([booking], bookings_models.BookingCancellationReasons(form.reason.data))
+
+    return _render_individual_bookings([booking_id])
+
+
+@public_accounts_blueprint.route("mark-booking-as-used/<int:booking_id>", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
+    booking = booking_helpers.get_booking_query_for_validation().filter_by(id=booking_id).one_or_none()
+    if not booking:
+        raise NotFound()
+    booking_helpers.batch_validate_bookings([booking])
+
+    return _render_individual_bookings([booking_id])

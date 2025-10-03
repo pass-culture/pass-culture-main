@@ -401,7 +401,7 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
 
 @finance_incidents_blueprint.route("/individual-bookings/overpayment-creation-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
-def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeResponse:
+def get_individual_bookings_overpayment_creation_form(dst: str | None = None) -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
     additional_data = {}
     info = None
@@ -457,7 +457,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_overpayment"),
+        dst=dst or url_for("backoffice_web.finance_incidents.create_individual_booking_overpayment"),
         div_id="overpayment-creation-modal",
         title="Création d'un incident",
         button_text="Créer l'incident",
@@ -468,7 +468,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
 
 @finance_incidents_blueprint.route("/individual-bookings/commercial-gesture-creation-form", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
-def get_individual_bookings_commercial_gesture_creation_form() -> utils.BackofficeResponse:
+def get_individual_bookings_commercial_gesture_creation_form(dst: str | None = None) -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
     additional_data = {}
 
@@ -517,7 +517,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
         "components/dynamic/modal_form.html",
         target_id="#booking-table",
         form=form,
-        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"),
+        dst=dst or url_for("backoffice_web.finance_incidents.create_individual_booking_commercial_gesture"),
         div_id="commercial-gesture-creation-modal",
         title="Création d'un geste commercial",
         button_text="Créer le geste commercial",
@@ -636,13 +636,15 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
 
 @finance_incidents_blueprint.route("/individual-bookings/create-overpayment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
-def create_individual_booking_overpayment() -> utils.BackofficeResponse:
+def create_individual_booking_overpayment(
+    renderer: typing.Callable = _render_individual_bookings,
+) -> utils.BackofficeResponse:
     form = forms.BookingOverPaymentIncidentForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings()
+        return renderer()
 
     bookings = (
         db.session.query(bookings_models.Booking)
@@ -666,7 +668,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
             'Au moins une des réservations sélectionnées est dans un état différent de "remboursé".',
             "warning",
         )
-        return _render_individual_bookings(form.object_ids_list)
+        return renderer(form.object_ids_list)
 
     amount = form.total_amount.data
     percent = form.percent.data
@@ -678,7 +680,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings(form.object_ids_list)
+        return renderer(form.object_ids_list)
 
     incident = finance_api.create_overpayment_finance_incident(
         bookings=bookings,
@@ -697,18 +699,20 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         ),
         "success",
     )
-    return _render_individual_bookings(form.object_ids_list)
+    return renderer(form.object_ids_list)
 
 
 @finance_incidents_blueprint.route("/individual-bookings/create-commercial-gesture", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.CREATE_INCIDENTS)
-def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
+def create_individual_booking_commercial_gesture(
+    renderer: typing.Callable = _render_individual_bookings,
+) -> utils.BackofficeResponse:
     form = forms.CommercialGestureCreationForm()
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings()
+        return renderer()
 
     amount = form.total_amount.data
 
@@ -733,7 +737,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
             'Au moins une des réservations sélectionnées est dans un état différent de "annulée".',
             "warning",
         )
-        return _render_individual_bookings(form.object_ids_list)
+        return renderer(form.object_ids_list)
 
     if not (
         valid := validation.check_commercial_gesture_bookings(bookings)
@@ -742,7 +746,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
         for message in valid.messages:
             flash(message, "warning")
         mark_transaction_as_invalid()
-        return _render_individual_bookings(form.object_ids_list)
+        return renderer(form.object_ids_list)
 
     commercial_gesture = finance_api.create_finance_commercial_gesture(
         bookings=bookings,
@@ -761,7 +765,7 @@ def create_individual_booking_commercial_gesture() -> utils.BackofficeResponse:
         "success",
     )
 
-    return _render_individual_bookings(form.object_ids_list)
+    return renderer(form.object_ids_list)
 
 
 @finance_incidents_blueprint.route(
