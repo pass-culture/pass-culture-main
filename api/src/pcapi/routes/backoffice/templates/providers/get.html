@@ -78,9 +78,9 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame id="venue_providers_count_frame" src="{{ url_for('backoffice_web.providers.get_stats', provider_id=provider.id) }}">
-        {{ build_loading_spinner() }}
-        </turbo-frame>
+        <div id="venue_providers_count_frame"
+             hx-trigger="load"
+             hx-get="{{ url_for('backoffice_web.providers.get_stats', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
       </div>
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
@@ -88,9 +88,9 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("venues", active_tab == 'venues') %}
-            <turbo-frame data-turbo="false" id="provider_venues_frame" loading="lazy" src="{{ url_for('backoffice_web.providers.get_venues', provider_id=provider.id) }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="provider_venues_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.providers.get_venues', provider_id=provider.id) }}">{{ build_loading_spinner() }}</div>
           {% endcall %}
         {% endcall %}
       </div>

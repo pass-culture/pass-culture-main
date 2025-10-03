@@ -74,17 +74,17 @@
         {% if has_permission("MANAGE_PERMISSIONS") %}
           {% call tabs.build_details_tab_content("management", active_tab == "management") %}
             <div class="mt-4">
-              <turbo-frame data-turbo="false" id="admin_roles_management_frame" src="{{ url_for('backoffice_web.get_roles_management') }}">
-              {{ build_loading_spinner() }}
-              </turbo-frame>
+              <div id="admin_roles_management_frame"
+                   hx-trigger="intersect once"
+                   hx-get="{{ url_for('backoffice_web.get_roles_management') }}">{{ build_loading_spinner() }}</div>
             </div>
           {% endcall %}
         {% endif %}
         {% call tabs.build_details_tab_content("history", active_tab == "history") %}
           <div class="mt-4">
-            <turbo-frame data-turbo="false" id="admin_roles_history_frame" src="{{ url_for('backoffice_web.get_roles_history') }}">
-            {{ build_loading_spinner() }}
-            </turbo-frame>
+            <div id="admin_roles_history_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.get_roles_history') }}">{{ build_loading_spinner() }}</div>
           </div>
         {% endcall %}
       {% endcall %}
