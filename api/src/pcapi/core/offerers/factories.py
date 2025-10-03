@@ -249,7 +249,8 @@ class VirtualVenueFactory(VenueFactory):
     motorDisabilityCompliant = None
     visualDisabilityCompliant = None
     venueTypeCode = models.VenueTypeCode.DIGITAL
-    offererAddress = None
+    # offererAddressId is not nullable
+    # offererAddress = None
 
 
 class VenueWithoutSiretFactory(VenueFactory):
