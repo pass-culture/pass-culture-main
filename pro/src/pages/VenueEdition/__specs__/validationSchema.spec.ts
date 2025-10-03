@@ -13,7 +13,7 @@ describe('VenueEditionForm validationSchema', () => {
       visual: true,
     },
     isAccessibilityAppliedOnAllOffers: false,
-    isOpenToPublic: 'false',
+    isOpenToPublic: 'true',
     openingHours: null,
   }
 
@@ -104,6 +104,17 @@ describe('VenueEditionForm validationSchema', () => {
         },
       },
       expectedErrors: ['Plages horaires incompatibles'],
+    },
+    {
+      description: 'valid form for non open to public and empty openingHours',
+      formValues: {
+        ...defaultValues,
+        isOpenToPublic: 'false',
+        openingHours: {
+          MONDAY: null,
+        },
+      },
+      expectedErrors: [],
     },
   ]
 
