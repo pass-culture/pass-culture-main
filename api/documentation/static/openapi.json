@@ -4147,13 +4147,6 @@
                 "title": "GetListEducationalInstitutionsQueryModel",
                 "type": "object"
             },
-            "GetMusicTypesResponse": {
-                "items": {
-                    "$ref": "#/components/schemas/MusicTypeResponse"
-                },
-                "title": "GetMusicTypesResponse",
-                "type": "array"
-            },
             "GetOffererVenuesResponse": {
                 "properties": {
                     "offerer": {
@@ -5479,23 +5472,6 @@
                 ],
                 "title": "MusicTypeEnum (deprecated)",
                 "type": "string"
-            },
-            "MusicTypeResponse": {
-                "properties": {
-                    "id": {
-                        "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
-                    },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "label"
-                ],
-                "title": "MusicTypeResponse",
-                "type": "object"
             },
             "NationalProgramModel": {
                 "properties": {
@@ -10902,51 +10878,6 @@
                 "summary": "Update Price Category",
                 "tags": [
                     "Event Offer Price Categories"
-                ]
-            }
-        },
-        "/public/offers/v1/music_types": {
-            "get": {
-                "deprecated": true,
-                "description": "\u26a0\ufe0f This is a DEPRACTED endpoint. It should not be used.",
-                "operationId": "GetMusicTypes",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/GetMusicTypesResponse"
-                                }
-                            }
-                        },
-                        "description": "Your request was succesful."
-                    },
-                    "401": {
-                        "description": "Authentication is necessary to use this API."
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    },
-                    "429": {
-                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
-                    }
-                },
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "summary": "[LEGACY] Get music types",
-                "tags": [
-                    "Offer Attributes"
                 ]
             }
         },

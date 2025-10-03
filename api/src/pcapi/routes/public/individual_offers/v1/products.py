@@ -8,7 +8,6 @@ import sqlalchemy.orm as sa_orm
 from flask import request
 
 from pcapi import settings
-from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
@@ -74,39 +73,6 @@ def get_show_types() -> serialization.GetShowTypesResponse:
         __root__=[
             serialization.ShowTypeResponse(id=show_type_slug, label=show_type.label)
             for show_type_slug, show_type in show.SHOW_SUB_TYPES_BY_SLUG.items()
-        ]
-    )
-
-
-@blueprints.public_api.route("/public/offers/v1/music_types", methods=["GET"])
-@atomic()
-@api_key_required
-@spectree_serialize(
-    api=spectree_schemas.public_api_schema,
-    tags=[tags.OFFER_ATTRIBUTES],
-    response_model=serialization.GetMusicTypesResponse,
-    deprecated=True,
-    resp=SpectreeResponse(
-        **(
-            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
-            # errors
-            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
-        )
-    ),
-)
-def get_music_types() -> serialization.GetMusicTypesResponse:
-    """
-    [LEGACY] Get music types
-
-    ⚠️ This is a DEPRACTED endpoint. It should not be used.
-    """
-    # Individual offers API only relies on music subtypes, not music types.
-    # To make it simpler for the provider using this API, we only expose music subtypes and call them music types.
-
-    return serialization.GetMusicTypesResponse(
-        __root__=[
-            serialization.MusicTypeResponse(id=music_type_slug, label=music_type.label)
-            for music_type_slug, music_type in music.MUSIC_SUB_TYPES_BY_SLUG.items()
         ]
     )
 
