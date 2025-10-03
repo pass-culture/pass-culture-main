@@ -87,6 +87,11 @@ MENU_SECTIONS = [
                 permissions=["READ_CHRONICLE"],
             ),
             MenuItem(
+                label="Temps forts",
+                url_name="backoffice_web.highlights.list_highlights",
+                permissions=["READ_HIGHLIGHT"],
+            ),
+            MenuItem(
                 label="Tags des jeunes",
                 url_name="backoffice_web.account_tag.list_account_tags",
                 permissions=["READ_TAGS"],

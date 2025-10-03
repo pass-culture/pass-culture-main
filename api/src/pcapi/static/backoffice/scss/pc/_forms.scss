@@ -45,7 +45,21 @@ input {
       margin-right: .5rem;
     }
   }
+
+  &[type=file]::file-selector-button {
+    border: none;
+    background: $primary;
+    color: white;
+    cursor: pointer;
+  }
+  &[type=file]::file-selector-button:hover {
+    background: $old-secondary;
+    border-color: $old-secondary;
+  }
 }
+
+
+
 
 .pc-search-inline{
   min-height: 3.6em;
