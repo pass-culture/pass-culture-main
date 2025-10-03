@@ -14,7 +14,7 @@ import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
+import { setIsUnAttached, updateUser } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
@@ -124,6 +124,7 @@ export const HeaderDropdown = () => {
     }
     dispatch(updateUser(null))
     dispatch(updateCurrentOfferer(null))
+    dispatch(setIsUnAttached(true))
   }
 
   return (

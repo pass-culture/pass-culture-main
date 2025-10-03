@@ -170,10 +170,6 @@ describe('CollectiveOffers', () => {
             undefined
           )
         })
-
-        await waitFor(() => {
-          expect(api.getOfferer).toHaveBeenLastCalledWith(1)
-        })
       })
 
       it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {

@@ -1,27 +1,15 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Navigate,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router'
+import { Outlet, useNavigate, useSearchParams } from 'react-router'
 import { SWRConfig } from 'swr'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
-import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
-import {
-  selectCurrentOffererId,
-  selectCurrentOffererIsOnboarded,
-} from '@/commons/store/offerer/selectors'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { Notification } from '@/components/Notification/Notification'
 
 import { useBeamer } from './analytics/beamer'
@@ -36,13 +24,9 @@ import { usePageTitle } from './hook/usePageTitle'
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 export const App = (): JSX.Element | null => {
-  const location = useLocation()
   const navigate = useNavigate()
-  const currentUser = useSelector(selectCurrentUser)
-  const isOffererOnboarded = useSelector(selectCurrentOffererIsOnboarded)
   const dispatch = useDispatch()
   const notify = useNotification()
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
   // Main hooks
   useLoadFeatureFlags()
@@ -57,11 +41,7 @@ export const App = (): JSX.Element | null => {
     ? Number(searchParams.get('structure'))
     : selectedOffererId
 
-  const {
-    data: offerer,
-    error: offererApiError,
-    isValidating: isOffererValidating,
-  } = useOfferer(offererId)
+  const { data: offerer } = useOfferer(offererId)
 
   useEffect(() => {
     if (searchParams.get('from-bo') && offerer) {
@@ -83,43 +63,6 @@ export const App = (): JSX.Element | null => {
   useLogNavigation()
   useLogExtraProData()
 
-  const isAwaitingRattachment = !isOffererValidating && offererApiError
-
-  const currentRoute = findCurrentRoute(location)
-  if (currentRoute && !currentRoute.meta?.public && currentUser === null) {
-    const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
-
-    const loginUrl =
-      location.pathname === '/' ? '/connexion' : `/connexion?de=${fromUrl}`
-
-    return <Navigate to={loginUrl} replace />
-  }
-
-  if (isDidacticOnboardingEnabled) {
-    if (
-      location.pathname.includes('accueil') &&
-      isOffererOnboarded === false &&
-      !isAwaitingRattachment
-    ) {
-      return <Navigate to="/onboarding" replace />
-    }
-    if (
-      location.pathname.includes('onboarding') &&
-      (isAwaitingRattachment ||
-        (isOffererOnboarded && !searchParams.get('userHasJustOnBoarded')))
-    ) {
-      return <Navigate to="/accueil" replace />
-    }
-  }
-
-  if (
-    !currentRoute?.meta?.public &&
-    !currentRoute?.path.includes('/inscription/structure') &&
-    !!currentUser &&
-    !currentUser.hasUserOfferer
-  ) {
-    return <Navigate to="/inscription/structure/recherche" replace />
-  }
   return (
     <>
       <SWRConfig
