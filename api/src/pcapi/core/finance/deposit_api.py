@@ -379,7 +379,7 @@ def compute_deposit_expiration_date(beneficiary: users_models.User) -> datetime.
 
     # We add here an 11h buffer for the french territories overseas.
     # TODO (dnguyen): use the actual department code of the user
-    return beneficiary.birth_date + relativedelta(years=21, hours=11)
+    return beneficiary.birth_date + relativedelta(years=21, hours=11)  # type: ignore[return-value]
 
 
 def _can_be_recredited(user: users_models.User, age: int | None = None) -> bool:
