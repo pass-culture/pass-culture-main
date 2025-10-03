@@ -1,8 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 import styles from './FormContactTemplate.module.scss'
@@ -75,15 +75,13 @@ export const FormContactTemplate = ({
     <div className={styles['container']}>
       <CheckboxGroup
         name="contactOptions"
-        legend={
-          <h2 className={styles['subtitle']}>
-            Comment les enseignants peuvent-ils vous contacter ? *
-          </h2>
-        }
+        label="Comment les enseignants peuvent-ils vous contacter ?"
+        labelTag="h2"
         required
-        asterisk={false}
-        group={contactOptions}
+        asterisk
+        options={contactOptions}
         disabled={disableForm}
+        variant="detailed"
         error={getFieldState('contactOptions').error?.message}
       />
     </div>

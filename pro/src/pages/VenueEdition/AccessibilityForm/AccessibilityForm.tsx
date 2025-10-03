@@ -6,9 +6,9 @@ import { isEqual } from '@/commons/utils/isEqual'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { AccessibilityCallout } from '@/pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
 import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from './AccessibilityForm.module.scss'
 
@@ -62,9 +62,11 @@ export const AccessibilityForm = ({
           <FormLayout.Row>
             <CheckboxGroup
               name="accessibility"
-              group={checkboxGroup}
+              options={checkboxGroup}
               required
-              legend="Votre établissement est accessible au public en situation de handicap :"
+              label="Votre établissement est accessible au public en situation de handicap :"
+              labelTag="h2"
+              variant="detailed"
               error={formState.errors.accessibility?.message}
             />
           </FormLayout.Row>

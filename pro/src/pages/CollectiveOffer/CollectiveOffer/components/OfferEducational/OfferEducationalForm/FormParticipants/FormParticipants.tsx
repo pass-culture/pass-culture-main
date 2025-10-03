@@ -5,7 +5,7 @@ import { StudentLevels } from '@/apiClient/adage'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
+import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import { studentLevelsLabels } from './constants'
@@ -68,8 +68,9 @@ export const FormParticipants = ({
       collapsed: (
         <CheckboxGroup
           name={levelPrefixes.join('')}
-          legend="Choisissez des niveaux scolaires"
-          group={defaultPartipantsOptions
+          label="Choisissez des niveaux scolaires"
+          variant="detailed"
+          options={defaultPartipantsOptions
             .filter((option) =>
               levelPrefixes.some((prefix) => option.name.startsWith(prefix))
             )
@@ -92,7 +93,7 @@ export const FormParticipants = ({
               }
             })}
           disabled={disableForm}
-          inline
+          display="horizontal"
         />
       ),
     }
@@ -135,15 +136,15 @@ export const FormParticipants = ({
         }
       >
         <CheckboxGroup
-          legend={
-            <h2 className={styles['subtitle']}>
-              À quels niveaux scolaires s’adressent votre offre ? *
-            </h2>
-          }
+          label="À quels niveaux scolaires s’adressent votre offre ?"
+          labelTag="h2"
           name="participants"
+          variant="detailed"
           disabled={disableForm}
-          group={studentLevelsOptions}
+          options={studentLevelsOptions}
           error={getFieldState('participants').error?.message}
+          required
+          asterisk
         />
       </FormLayout.Row>
     </div>

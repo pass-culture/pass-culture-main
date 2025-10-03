@@ -3,9 +3,3 @@
 .container {
   margin: var(--size-spacing-xxxxl) 0;
 }
-
-.subtitle {
-  @include fonts.title2;
-
-  margin-bottom: var(--size-spacing-l);
-}

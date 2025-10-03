@@ -5,30 +5,27 @@ import dog from '../assets/dog.jpg'
 import { CheckboxGroup, CheckboxGroupOption } from './CheckboxGroup'
 
 const defaultOptions: CheckboxGroupOption[] = [
-  { label: 'Option 1', value: '1' },
-  { label: 'Option 2', value: '2' },
-  { label: 'Option 3', value: '3' },
+  { label: 'Option 1', checked: false },
+  { label: 'Option 2', checked: false },
+  { label: 'Option 3', checked: false },
 ]
 
 const detailedOptions: CheckboxGroupOption[] = [
   {
     label: 'Detailed 1',
-    value: 'a',
-    variant: 'detailed',
     description: 'Detailed description 1',
     asset: { variant: 'image', src: dog },
+    checked: false
   },
   {
     label: 'Detailed 2',
-    value: 'b',
-    variant: 'detailed',
+   checked: false,
     description: 'Detailed description 2',
     asset: { variant: 'image', src: dog },
   },
   {
     label: 'Detailed 3',
-    value: 'c',
-    variant: 'detailed',
+   checked: false,
     description: 'Detailed description 3',
     asset: { variant: 'image', src: dog },
   },
@@ -97,7 +94,6 @@ export const DefaultWithDefaultValue: Story = {
     options: defaultOptions,
     variant: 'default',
     display: 'vertical',
-    value: ['2'],
   },
 }
 
@@ -175,6 +171,5 @@ export const DetailedWithDefaultValue: Story = {
     options: detailedOptions,
     variant: 'detailed',
     display: 'vertical',
-    value: ['b'],
   },
 }

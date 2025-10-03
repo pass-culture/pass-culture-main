@@ -1,17 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.contact-checkbox {
-  &:not(:last-child) {
-    margin-bottom: var(--size-spacing-l);
-  }
-}
-
 .container {
   margin: var(--size-spacing-xxxxl) 0;
-}
-
-.subtitle {
-  @include fonts.title2;
-
-  margin-bottom: var(--size-spacing-l);
 }
