@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.users.factories as users_factories
-from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors.entreprise import exceptions as sirene_exceptions
 from pcapi.core.testing import assert_num_queries
@@ -84,16 +83,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         message = "Le format de ce SIREN ou SIRET est incorrect."
-        assert response.json == {"global": [message]}
-
-    def test_search_structure_by_pass_culture_siret(self, client):
-        pro = users_factories.ProFactory()
-        client = client.with_session_auth(pro.email)
-
-        response = client.get(f"{GET_STRUCTURE_DATA_URL}{settings.PASS_CULTURE_SIRET}")
-
-        assert response.status_code == 400
-        message = "Ce SIRET est déjà inscrit sur le pass Culture."
         assert response.json == {"global": [message]}
 
     def test_search_inactive_siret(self, client):

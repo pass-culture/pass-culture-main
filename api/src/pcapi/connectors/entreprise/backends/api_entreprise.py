@@ -94,11 +94,6 @@ class EntrepriseBackend(BaseBackend):
         if not siren_utils.is_valid_siren(siren):
             raise exceptions.InvalidFormatException("SIREN invalide")
 
-        # Pass Culture also acts as an offerer which organizes events.
-        # Avoid HTTP 422 Unprocessable Content "Le paramètre recipient est identique au SIRET/SIREN appelé."
-        if siren == settings.PASS_CULTURE_SIRET[:9]:
-            raise exceptions.EntrepriseException("Pass Culture")
-
     def _check_siret_can_be_requested(self, siret: str) -> None:
         if not siren_utils.is_valid_siret(siret):
             raise exceptions.InvalidFormatException("SIRET invalide")
