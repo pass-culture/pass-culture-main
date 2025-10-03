@@ -1,11 +1,9 @@
 import logging
 import re
 import time
-import typing
 
 from flask import current_app as app
 from redis import Redis
-from sqlalchemy import orm as sa_orm
 from sqlalchemy.orm import exc as sa_exc
 
 from pcapi import settings
@@ -75,7 +73,7 @@ def _ensure_phone_number_unicity(
                 users_models.User,
             )
             .filter(
-                typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number,
+                users_models.User.phoneNumber == phone_number,
                 users_models.User.is_phone_validated,
             )
             .one_or_none()
@@ -164,7 +162,7 @@ def send_phone_validation_code(
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    user.phoneNumber = phone_data.phone_number  # type: ignore[method-assign]
+    user.phoneNumber = phone_data.phone_number
     repository.save(user)
 
     phone_validation_token = users_api.create_phone_validation_token(
@@ -203,7 +201,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
-    user.phoneNumber = phone_number  # type: ignore[method-assign]
+    user.phoneNumber = phone_number
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
     fraud_check = fraud_models.BeneficiaryFraudCheck(

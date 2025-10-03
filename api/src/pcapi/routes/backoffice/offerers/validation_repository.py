@@ -271,7 +271,7 @@ def list_offerers_to_be_validated(
             _get_tags_subquery().label("tags"),
             last_comment_subquery.label("last_comment"),
             users_models.User.id.label("creator_id"),
-            users_models.User.full_name.label("creator_name"),  # type: ignore[attr-defined]
+            users_models.User.full_name.label("creator_name"),
             users_models.User.email.label("creator_email"),
             dms_applications_subquery.label("dms_venues"),
         )

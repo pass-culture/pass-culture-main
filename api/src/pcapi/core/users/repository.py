@@ -122,15 +122,14 @@ def get_users_that_had_birthday_since(since: date, age: int) -> list[models.User
     """
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
-    birth_date_typed_column = typing.cast(sa_orm.Mapped[date | None], models.User.birth_date)
     eligible_users = (
         db.session.query(models.User)
         .outerjoin(offerers_models.UserOfferer)
         .filter(
             sa.not_(models.User.has_admin_role),  # not an admin
             offerers_models.UserOfferer.userId.is_(None),  # not a pro
-            birth_date_typed_column <= today - relativedelta(years=age),
-            birth_date_typed_column > since - relativedelta(years=age),
+            models.User.birth_date <= today - relativedelta(years=age),
+            models.User.birth_date > since - relativedelta(years=age),
             models.User.dateCreated < today,
         )
         .all()
@@ -188,11 +187,10 @@ def create_single_sign_on(user: models.User, sso_provider: str, sso_user_id: str
 
 
 def fill_phone_number_on_all_users_offerer_without_any(offerer_id: int, phone_number: str) -> None:
-    phone_number_typed_column = typing.cast(sa_orm.Mapped[str | None], models.User.phoneNumber)
     users_without_phone_number = (
         sa.select(models.User.id)
         .select_from(models.User)
-        .where(sa.or_(phone_number_typed_column == None, phone_number_typed_column == ""))
+        .where(sa.or_(models.User.phoneNumber == None, models.User.phoneNumber == ""))
         .join(
             offerers_models.UserOfferer,
             sa.and_(

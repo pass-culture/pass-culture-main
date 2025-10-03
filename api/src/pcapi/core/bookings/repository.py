@@ -292,7 +292,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         User.firstName.label("beneficiaryFirstName"),
         User.lastName.label("beneficiaryLastName"),
         User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.phoneNumber.label("beneficiaryPhoneNumber"),
         User.postalCode.label("beneficiaryPostalCode"),
         models.Booking.token,
         models.Booking.priceCategoryLabel,
@@ -663,7 +663,7 @@ def _get_filtered_booking_report(
         User.firstName.label("beneficiaryFirstName"),
         User.lastName.label("beneficiaryLastName"),
         User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.phoneNumber.label("beneficiaryPhoneNumber"),
         User.postalCode.label("beneficiaryPostalCode"),
         models.Booking.id,
         models.Booking.token,
@@ -751,7 +751,7 @@ def _get_filtered_booking_pro(
         User.firstName.label("beneficiaryFirstname"),
         User.lastName.label("beneficiaryLastname"),
         User.email.label("beneficiaryEmail"),
-        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.phoneNumber.label("beneficiaryPhoneNumber"),
         offers_models.Stock.beginningDatetime.label("stockBeginningDatetime"),
         models.Booking.stockId,
         offerers_models.Offerer.postalCode.label("offererPostalCode"),

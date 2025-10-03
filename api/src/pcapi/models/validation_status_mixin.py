@@ -3,7 +3,7 @@ import enum
 import sqlalchemy as sa
 import sqlalchemy.ext.hybrid as sa_hybrid
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import ColumnElement
 
 
 class ValidationStatus(enum.Enum):
@@ -25,40 +25,45 @@ class ValidationStatusMixin:
     def isNew(self) -> bool:
         return self.validationStatus == ValidationStatus.NEW
 
-    @isNew.expression  # type: ignore[no-redef]
-    def isNew(cls) -> BinaryExpression:
+    @isNew.inplace.expression
+    @classmethod
+    def _isNewExpression(cls) -> ColumnElement[bool]:
         return cls.validationStatus == ValidationStatus.NEW
 
     @sa_hybrid.hybrid_property
     def isPending(self) -> bool:
         return self.validationStatus == ValidationStatus.PENDING
 
-    @isPending.expression  # type: ignore[no-redef]
-    def isPending(cls) -> BinaryExpression:
+    @isPending.inplace.expression
+    @classmethod
+    def _isPendingExpression(cls) -> ColumnElement[bool]:
         return cls.validationStatus == ValidationStatus.PENDING
 
     @sa_hybrid.hybrid_property
     def isWaitingForValidation(self) -> bool:
         return self.validationStatus in (ValidationStatus.NEW, ValidationStatus.PENDING)
 
-    @isWaitingForValidation.expression  # type: ignore[no-redef]
-    def isWaitingForValidation(cls) -> BinaryExpression:
+    @isWaitingForValidation.inplace.expression
+    @classmethod
+    def _isWaitingForValidationExpression(cls) -> ColumnElement[bool]:
         return cls.validationStatus.in_([ValidationStatus.NEW, ValidationStatus.PENDING])
 
     @sa_hybrid.hybrid_property
     def isValidated(self) -> bool:
         return self.validationStatus == ValidationStatus.VALIDATED
 
-    @isValidated.expression  # type: ignore[no-redef]
-    def isValidated(cls) -> BinaryExpression:
+    @isValidated.inplace.expression
+    @classmethod
+    def _isValidatedExpression(cls) -> ColumnElement[bool]:
         return cls.validationStatus == ValidationStatus.VALIDATED
 
     @sa_hybrid.hybrid_property
     def isRejected(self) -> bool:
         return self.validationStatus == ValidationStatus.REJECTED
 
-    @isRejected.expression  # type: ignore[no-redef]
-    def isRejected(cls) -> BinaryExpression:
+    @isRejected.inplace.expression
+    @classmethod
+    def _isRejectedExpression(cls) -> ColumnElement[bool]:
         # sa.not_(isRejected) works only if we check None separately.
         return cls.validationStatus == ValidationStatus.REJECTED
 
@@ -66,8 +71,9 @@ class ValidationStatusMixin:
     def isDeleted(self) -> bool:
         return self.validationStatus == ValidationStatus.DELETED
 
-    @isDeleted.expression  # type: ignore[no-redef]
-    def isDeleted(cls) -> BinaryExpression:
+    @isDeleted.inplace.expression
+    @classmethod
+    def _isDeletedExpression(cls) -> ColumnElement[bool]:
         # sa.not_(isDeleted) works only if we check None separately.
         return cls.validationStatus == ValidationStatus.DELETED
 
@@ -75,6 +81,7 @@ class ValidationStatusMixin:
     def isClosed(self) -> bool:
         return self.validationStatus == ValidationStatus.CLOSED
 
-    @isClosed.expression  # type: ignore[no-redef]
-    def isClosed(cls) -> BinaryExpression:
+    @isClosed.inplace.expression
+    @classmethod
+    def _isClosedExpression(cls) -> ColumnElement[bool]:
         return cls.validationStatus == ValidationStatus.CLOSED

@@ -229,7 +229,7 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
 
     user.lastName = row["Nom"]
     user.firstName = row["Prénom"]
-    user.phoneNumber = row["Téléphone"]  # type: ignore[method-assign]
+    user.phoneNumber = row["Téléphone"]
     user.departementCode = row["Département"]
     user.postalCode = row["Code postal"]
     user.comment = row["Type"]

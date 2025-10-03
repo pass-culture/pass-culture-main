@@ -20,8 +20,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.elements import Case
+from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.functions import coalesce
+from sqlalchemy.sql.selectable import ScalarSelect
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.models import DepositType
@@ -482,8 +484,9 @@ class User(PcObject, Model, DeactivableMixin):
             return self.dateOfBirth.date()
         return None
 
-    @birth_date.expression  # type: ignore[no-redef]
-    def birth_date(cls) -> date | None:
+    @birth_date.inplace.expression
+    @classmethod
+    def _birth_date_expression(cls) -> Case:
         return sa.case(
             (cls.validatedBirthDate.is_not(None), cls.validatedBirthDate),
             (cls.dateOfBirth.is_not(None), sa.cast(cls.dateOfBirth, sa.Date)),
@@ -561,8 +564,9 @@ class User(PcObject, Model, DeactivableMixin):
         # We use the email as a fallback because it is the most human-readable way to identify a single user
         return (f"{self.firstName or ''} {self.lastName or ''}".strip()) or self.email
 
-    @full_name.expression  # type: ignore[no-redef]
-    def full_name(cls) -> str:
+    @full_name.inplace.expression
+    @classmethod
+    def _full_name_expression(cls) -> coalesce:
         return sa.func.coalesce(
             sa.func.nullif(
                 sa.func.trim(
@@ -634,8 +638,9 @@ class User(PcObject, Model, DeactivableMixin):
                 return constants.SuspensionReason(reason)
         return None
 
-    @suspension_reason.expression  # type: ignore[no-redef]
-    def suspension_reason(cls) -> BinaryExpression:
+    @suspension_reason.inplace.expression
+    @classmethod
+    def _suspension_reason_expression(cls) -> ScalarSelect:
         import pcapi.core.history.models as history_models
 
         return (
@@ -671,8 +676,9 @@ class User(PcObject, Model, DeactivableMixin):
             return suspension_action_history[-1].actionDate
         return None
 
-    @suspension_date.expression  # type: ignore[no-redef]
-    def suspension_date(cls) -> BinaryExpression:
+    @suspension_date.inplace.expression
+    @classmethod
+    def _suspension_date_expression(cls) -> ScalarSelect:
         import pcapi.core.history.models as history_models
 
         return (
@@ -737,8 +743,9 @@ class User(PcObject, Model, DeactivableMixin):
     def is_beneficiary(self) -> bool:
         return self.has_beneficiary_role or self.has_underage_beneficiary_role or self.has_free_beneficiary_role
 
-    @is_beneficiary.expression  # type: ignore[no-redef]
-    def is_beneficiary(cls) -> BooleanClauseList:
+    @is_beneficiary.inplace.expression
+    @classmethod
+    def _is_beneficiary_expression(cls) -> ColumnElement[bool]:
         return expression.or_(
             cls.roles.contains([UserRole.BENEFICIARY]),
             cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY]),
@@ -753,103 +760,115 @@ class User(PcObject, Model, DeactivableMixin):
     def phoneNumber(self) -> str | None:
         return self._phoneNumber
 
-    @phoneNumber.setter  # type: ignore[no-redef]
-    def phoneNumber(self, value: str | None) -> None:
+    @phoneNumber.inplace.setter
+    def _phoneNumberSetter(self, value: str | None) -> None:
         if not value:
             self._phoneNumber = None
         else:
             self._phoneNumber = ParsedPhoneNumber(value).phone_number
 
-    @phoneNumber.expression  # type: ignore[no-redef]
-    def phoneNumber(cls) -> str | None:
+    @phoneNumber.inplace.expression
+    @classmethod
+    def _phoneNumberExpression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._phoneNumber
 
     @hybrid_property
     def is_phone_validated(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
-    @is_phone_validated.expression  # type: ignore[no-redef]
-    def is_phone_validated(cls) -> BinaryExpression:
+    @is_phone_validated.inplace.expression
+    @classmethod
+    def _is_phone_validated_expression(cls) -> ColumnElement[bool]:
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @hybrid_property
     def is_phone_validation_skipped(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
-    @is_phone_validation_skipped.expression  # type: ignore[no-redef]
-    def is_phone_validation_skipped(cls) -> BinaryExpression:
+    @is_phone_validation_skipped.inplace.expression
+    @classmethod
+    def _is_phone_validation_skipped_expression(cls) -> ColumnElement[bool]:
         return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @hybrid_property
     def has_admin_role(self) -> bool:
         return UserRole.ADMIN in self.roles
 
-    @has_admin_role.expression  # type: ignore[no-redef]
-    def has_admin_role(cls) -> BinaryExpression:
+    @has_admin_role.inplace.expression
+    @classmethod
+    def _has_admin_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
     def has_pro_role(self) -> bool:
         return UserRole.PRO in self.roles
 
-    @has_pro_role.expression  # type: ignore[no-redef]
-    def has_pro_role(cls) -> BinaryExpression:
+    @has_pro_role.inplace.expression
+    @classmethod
+    def _has_pro_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.PRO])
 
     @hybrid_property
     def has_non_attached_pro_role(self) -> bool:
         return UserRole.NON_ATTACHED_PRO in self.roles
 
-    @has_non_attached_pro_role.expression  # type: ignore[no-redef]
-    def has_non_attached_pro_role(cls) -> BinaryExpression:
+    @has_non_attached_pro_role.inplace.expression
+    @classmethod
+    def _has_non_attached_pro_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
     @hybrid_property
     def has_any_pro_role(self) -> bool:
         return self.has_pro_role or self.has_non_attached_pro_role
 
-    @has_any_pro_role.expression  # type: ignore[no-redef]
-    def has_any_pro_role(cls) -> BinaryExpression:
+    @has_any_pro_role.inplace.expression
+    @classmethod
+    def _has_any_pro_role_expression(cls) -> ColumnElement[bool]:
         return expression.or_(cls.roles.contains([UserRole.PRO]), cls.roles.contains([UserRole.NON_ATTACHED_PRO]))
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
         return UserRole.BENEFICIARY in self.roles
 
-    @has_beneficiary_role.expression  # type: ignore[no-redef]
-    def has_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @has_beneficiary_role.inplace.expression
+    @classmethod
+    def _has_beneficiary_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 
-    @has_underage_beneficiary_role.expression  # type: ignore[no-redef]
-    def has_underage_beneficiary_role(cls) -> BinaryExpression:
+    @has_underage_beneficiary_role.inplace.expression
+    @classmethod
+    def _has_underage_beneficiary_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
 
     @hybrid_property
     def has_free_beneficiary_role(self) -> bool:
         return UserRole.FREE_BENEFICIARY in self.roles
 
-    @has_free_beneficiary_role.expression  # type: ignore[no-redef]
-    def has_free_beneficiary_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+    @has_free_beneficiary_role.inplace.expression
+    @classmethod
+    def _has_free_beneficiary_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.FREE_BENEFICIARY])
 
     @hybrid_property
     def has_test_role(self) -> bool:
         return UserRole.TEST in self.roles
 
-    @has_test_role.expression  # type: ignore[no-redef]
-    def has_test_role(cls) -> BinaryExpression:
+    @has_test_role.inplace.expression
+    @classmethod
+    def _has_test_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.TEST])
 
     @hybrid_property
     def has_anonymized_role(self) -> bool:
         return UserRole.ANONYMIZED in self.roles
 
-    @has_anonymized_role.expression  # type: ignore[no-redef]
-    def has_anonymized_role(cls) -> BinaryExpression:
+    @has_anonymized_role.inplace.expression
+    @classmethod
+    def _has_anonymized_role_expression(cls) -> ColumnElement[bool]:
         return cls.roles.contains([UserRole.ANONYMIZED])
 
     @property
@@ -893,8 +912,9 @@ class DiscordUser(PcObject, Model):
     def is_active(self) -> bool:
         return bool(self.discordId) and not self.isBanned
 
-    @is_active.expression  # type: ignore[no-redef]
-    def is_active(cls) -> BinaryExpression:
+    @is_active.inplace.expression
+    @classmethod
+    def _is_active_expression_expression(cls) -> ColumnElement[bool]:
         return cls.discordId.is_not(None) and cls.isBanned.is_(False)
 
 
@@ -1070,8 +1090,9 @@ class UserEmailHistory(PcObject, Model):
     def oldEmail(self) -> str:
         return f"{self.oldUserEmail}@{self.oldDomainEmail}"
 
-    @oldEmail.expression  # type: ignore[no-redef]
-    def oldEmail(cls):
+    @oldEmail.inplace.expression
+    @classmethod
+    def _oldEmailExpression(cls) -> ColumnElement[str]:
         return cls.oldUserEmail + "@" + cls.oldDomainEmail
 
     @hybrid_property
@@ -1080,8 +1101,9 @@ class UserEmailHistory(PcObject, Model):
             return f"{self.newUserEmail}@{self.newDomainEmail}"
         return None
 
-    @newEmail.expression  # type: ignore[no-redef]
-    def newEmail(cls):
+    @newEmail.inplace.expression
+    @classmethod
+    def _newEmailExpression(cls) -> Case:
         return sa.case(
             (
                 sa.and_(cls.newUserEmail.is_not(None), cls.newDomainEmail.is_not(None)),
@@ -1326,8 +1348,9 @@ class GdprUserDataExtract(PcObject, Model):
     def expirationDate(self) -> datetime:
         return self.dateCreated + timedelta(days=7)
 
-    @expirationDate.expression  # type: ignore [no-redef]
-    def expirationDate(cls):
+    @expirationDate.inplace.expression
+    @classmethod
+    def _expirationDateExpression(cls) -> ColumnElement[datetime]:
         return cls.dateCreated + timedelta(days=7)
 
     @property

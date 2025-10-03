@@ -12,7 +12,6 @@ import typing
 from datetime import datetime
 
 from markupsafe import Markup
-from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.external.attributes import api as attributes_api
@@ -54,11 +53,7 @@ def update_contact_attributes(
 
     # Then search by phone number, which is NOT unique in user database
     if not user and phone_number:
-        user = (
-            db.session.query(users_models.User)
-            .filter(typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == phone_number)
-            .first()
-        )
+        user = db.session.query(users_models.User).filter(users_models.User.phoneNumber == phone_number).first()
 
     if user and not email:
         email = user.email

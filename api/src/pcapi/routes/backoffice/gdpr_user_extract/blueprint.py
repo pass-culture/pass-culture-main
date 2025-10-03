@@ -1,5 +1,4 @@
 import logging
-import typing
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -64,7 +63,6 @@ def list_gdpr_user_data_extract() -> utils.BackofficeResponse:
 
 @gdpr_extract_blueprint.route("/<int:extract_id>/download", methods=["POST"])
 def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
-    typed_expiration_date = typing.cast(sa_orm.Mapped[datetime], users_models.GdprUserDataExtract.expirationDate)
     form = empty_forms.EmptyForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
@@ -77,7 +75,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
         db.session.query(users_models.GdprUserDataExtract)
         .filter(
             users_models.GdprUserDataExtract.id == extract_id,
-            typed_expiration_date > datetime.utcnow(),
+            users_models.GdprUserDataExtract.expirationDate > datetime.utcnow(),
         )
         .options(joinedload(users_models.GdprUserDataExtract.user).load_only(users_models.User.email))
         .one_or_none()

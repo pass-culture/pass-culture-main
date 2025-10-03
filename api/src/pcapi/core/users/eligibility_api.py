@@ -58,6 +58,9 @@ def decide_eligibility(
 
 
 def get_pre_decree_or_current_eligibility(user: users_models.User) -> users_models.EligibilityType | None:
+    if user.birth_date is None:
+        return None
+
     pre_decree_eligibility = get_pre_decree_eligibility(user, user.birth_date, datetime.datetime.utcnow())
     return pre_decree_eligibility or user.eligibility
 
@@ -123,9 +126,9 @@ def get_first_eligible_registration_date(
 
 
 def get_eligibility_at_date(
-    birth_date: datetime.date, at_datetime: datetime.datetime, department_code: str | None = None
+    birth_date: datetime.date | None, at_datetime: datetime.datetime, department_code: str | None = None
 ) -> users_models.EligibilityType | None:
-    if not is_datetime_within_eligibility_period(birth_date, at_datetime, department_code):
+    if not birth_date or not is_datetime_within_eligibility_period(birth_date, at_datetime, department_code):
         return None
 
     age = users_utils.get_age_at_date(birth_date, at_datetime, department_code)

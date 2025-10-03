@@ -3,12 +3,10 @@ from enum import Enum
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
 from pcapi.models import Model
-from pcapi.models import db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.pc_object import PcObject
 
@@ -61,57 +59,7 @@ class BeneficiaryImport(PcObject, Model):
         back_populates="beneficiaryImport",
     )
 
-    @hybrid_property
-    def currentStatus(self):
-        return self._last_status().status
-
-    @currentStatus.expression  # type: ignore[no-redef]
-    def currentStatus(cls):
-        return cls._query_last_status(BeneficiaryImportStatus.status)
-
-    @hybrid_property
-    def updatedAt(self):
-        return self._last_status().date
-
-    @updatedAt.expression  # type: ignore[no-redef]
-    def updatedAt(cls):
-        return cls._query_last_status(BeneficiaryImportStatus.date)
-
-    @hybrid_property
-    def detail(self):
-        return self._last_status().detail
-
-    @detail.expression  # type: ignore[no-redef]
-    def detail(cls):
-        return cls._query_last_status(BeneficiaryImportStatus.detail)
-
-    @hybrid_property
-    def authorEmail(self):
-        author = self._last_status().author
-        return author.email or None
-
-    @authorEmail.expression  # type: ignore[no-redef]
-    def authorEmail(cls):
-        return cls._query_last_status(BeneficiaryImportStatus.author)
-
-    @property
-    def history(self) -> str:
-        return "\n".join([repr(s) for s in self.statuses])
-
     def get_detailed_source(self) -> str:
         if self.source == BeneficiaryImportSources.demarches_simplifiees.value:
             return f"démarches simplifiées dossier [{self.applicationId}]"
         return f"dossier {self.source} [{self.applicationId}]"
-
-    @classmethod
-    def _query_last_status(cls, column: sa.Column) -> typing.Any:
-        return (
-            db.session.query(column)
-            .filter(BeneficiaryImportStatus.beneficiaryImportId == cls.id)
-            .order_by(sa.desc(BeneficiaryImportStatus.date))
-            .limit(1)
-            .scalar()
-        )
-
-    def _last_status(self) -> BeneficiaryImportStatus:
-        return sorted(self.statuses, key=lambda x: x.date, reverse=True)[0]

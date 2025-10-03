@@ -90,7 +90,7 @@ def _is_ended_booking(booking: models.Booking) -> bool:
 
 
 def is_booking_by_18_user(booking: models.Booking) -> bool:
-    if not booking.deposit:
+    if not booking.deposit or not booking.user.birth_date:
         return False
     if booking.deposit.type == finance_models.DepositType.GRANT_18:
         return True

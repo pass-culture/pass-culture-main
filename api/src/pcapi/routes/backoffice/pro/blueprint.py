@@ -167,8 +167,8 @@ def _get_connect_as_base_query() -> sa_orm.Query:
         .join(users_models.User.UserOfferers)
         .filter(
             users_models.User.isActive.is_(True),
-            ~users_models.User.has_admin_role,  # type: ignore[operator]
-            ~users_models.User.has_anonymized_role,  # type: ignore[operator]
+            ~users_models.User.has_admin_role,
+            ~users_models.User.has_anonymized_role,
             offerers_models.UserOfferer.isValidated,
         )
     )

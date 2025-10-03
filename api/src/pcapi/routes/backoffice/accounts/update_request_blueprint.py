@@ -1,5 +1,4 @@
 import datetime
-import typing
 from functools import partial
 
 import sqlalchemy as sa
@@ -119,7 +118,7 @@ def _get_filtered_account_update_requests(form: account_forms.AccountUpdateReque
         else:
             term_filters.append(
                 sa.or_(
-                    typing.cast(sa_orm.Mapped[str], users_models.User.phoneNumber) == term_as_phone_number,
+                    users_models.User.phoneNumber == term_as_phone_number,
                     users_models.UserAccountUpdateRequest.newPhoneNumber == term_as_phone_number,
                 )
             )

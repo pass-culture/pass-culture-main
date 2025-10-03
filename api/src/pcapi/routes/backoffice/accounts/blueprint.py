@@ -82,11 +82,11 @@ def _load_suspension_info(query: sa_orm.Query) -> sa_orm.Query:
     return query.options(
         sa_orm.with_expression(
             users_models.User.suspension_reason_expression,
-            users_models.User.suspension_reason.expression,  # type: ignore[attr-defined]
+            users_models.User.suspension_reason.expression,
         ),
         sa_orm.with_expression(
             users_models.User.suspension_date_expression,
-            users_models.User.suspension_date.expression,  # type: ignore[attr-defined]
+            users_models.User.suspension_date.expression,
         ),
     )
 
