@@ -408,7 +408,7 @@ def get_expired_or_archived_collective_offers_template() -> sa_orm.Query:
         .order_by(models.CollectiveOfferTemplate.id)
         .filter(
             sa.or_(
-                models.CollectiveOfferTemplate.hasEndDatePassed.is_(True),  # type: ignore[attr-defined]
+                models.CollectiveOfferTemplate.hasEndDatePassed.is_(True),
                 models.CollectiveOfferTemplate.isArchived.is_(True),
             )
         )
@@ -606,7 +606,7 @@ def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersF
     if filters.statuses:
         template_statuses = set(filters.statuses) & set(models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
         status_values = [status.value for status in template_statuses]
-        query = query.filter(models.CollectiveOfferTemplate.displayedStatus.in_(status_values))  # type: ignore[attr-defined]
+        query = query.filter(models.CollectiveOfferTemplate.displayedStatus.in_(status_values))
 
     if filters.formats:
         query = query.filter(
@@ -639,14 +639,6 @@ def filter_collective_offers_by_statuses(
     Returns:
       sa_orm.Query: The modified query with applied filters.
     """
-    typed_offer_has_booking_datetime_passed = typing.cast(
-        sa_orm.Mapped[bool], models.CollectiveOffer.hasBookingLimitDatetimesPassed
-    )
-    typed_offer_has_end_datetime_passed = typing.cast(sa_orm.Mapped[bool], models.CollectiveOffer.hasEndDatetimePassed)
-    typed_offer_has_start_datetime_passed = typing.cast(
-        sa_orm.Mapped[bool], models.CollectiveOffer.hasStartDatetimePassed
-    )
-
     on_collective_offer_filters: list = []
     on_booking_status_filter: list = []
 
@@ -694,7 +686,7 @@ def filter_collective_offers_by_statuses(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == None,
-                typed_offer_has_booking_datetime_passed == False,
+                models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
             )
         )
 
@@ -704,7 +696,7 @@ def filter_collective_offers_by_statuses(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.PENDING,
-                typed_offer_has_booking_datetime_passed == False,
+                models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
             )
         )
 
@@ -714,7 +706,7 @@ def filter_collective_offers_by_statuses(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CONFIRMED,
-                typed_offer_has_end_datetime_passed == False,
+                models.CollectiveOffer.hasEndDatetimePassed == False,
             )
         )
 
@@ -727,7 +719,7 @@ def filter_collective_offers_by_statuses(
                     offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.USED,
                     offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CONFIRMED,
                 ),
-                typed_offer_has_end_datetime_passed == True,
+                models.CollectiveOffer.hasEndDatetimePassed == True,
             )
         )
 
@@ -746,8 +738,8 @@ def filter_collective_offers_by_statuses(
             sa.and_(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
-                typed_offer_has_booking_datetime_passed == True,
-                typed_offer_has_start_datetime_passed == False,
+                models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
+                models.CollectiveOffer.hasStartDatetimePassed == False,
                 sa.or_(
                     offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.PENDING,
                     offer_id_with_booking_status_subquery.c.status == None,
@@ -759,8 +751,8 @@ def filter_collective_offers_by_statuses(
             sa.and_(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
-                typed_offer_has_booking_datetime_passed == True,
-                typed_offer_has_start_datetime_passed == False,
+                models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
+                models.CollectiveOffer.hasStartDatetimePassed == False,
                 offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CANCELLED,
                 offer_id_with_booking_status_subquery.c.cancellationReason
                 == models.CollectiveBookingCancellationReasons.EXPIRED,
@@ -776,7 +768,7 @@ def filter_collective_offers_by_statuses(
                 offer_id_with_booking_status_subquery.c.status == models.CollectiveBookingStatus.CANCELLED,
                 offer_id_with_booking_status_subquery.c.cancellationReason
                 == models.CollectiveBookingCancellationReasons.EXPIRED,
-                typed_offer_has_start_datetime_passed == True,
+                models.CollectiveOffer.hasStartDatetimePassed == True,
             )
         )
 
@@ -797,7 +789,7 @@ def filter_collective_offers_by_statuses(
                 models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 models.CollectiveOffer.isActive == True,
                 offer_id_with_booking_status_subquery.c.status == None,
-                typed_offer_has_start_datetime_passed == True,
+                models.CollectiveOffer.hasStartDatetimePassed == True,
             ),
         )
 
@@ -1383,14 +1375,13 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> models.Colle
 
 
 def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> sa_orm.Query:
-    typed_template_has_end_passed = typing.cast(sa_orm.Mapped[bool], models.CollectiveOfferTemplate.hasEndDatePassed)
     query = _get_collective_offer_template_by_id_for_adage_base_query()
     # Filter out the archived offers
     query = query.filter(models.CollectiveOfferTemplate.isArchived.is_(False))
     # Filter out the offers not displayed on adage
     query = query.filter(
         models.CollectiveOfferTemplate.isActive == True,
-        typed_template_has_end_passed == False,
+        models.CollectiveOfferTemplate.hasEndDatePassed == False,
     )
 
     return query.filter(models.CollectiveOfferTemplate.id.in_(offer_ids)).populate_existing()
