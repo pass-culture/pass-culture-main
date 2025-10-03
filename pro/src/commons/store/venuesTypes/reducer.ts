@@ -6,7 +6,7 @@ interface VenueTypesState {
   venueTypes: VenueTypeResponseModel[]
 }
 
-export const initialState: VenueTypesState = {
+const initialState: VenueTypesState = {
   venueTypes: [],
 }
 

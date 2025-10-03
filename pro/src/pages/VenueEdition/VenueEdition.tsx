@@ -10,7 +10,6 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -44,8 +43,6 @@ export const VenueEdition = (): JSX.Element | null => {
   const venue = venueQuery.data
 
   const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
-
-  const venueTypes = useSelector(selectVenueTypes)
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -180,7 +177,6 @@ export const VenueEdition = (): JSX.Element | null => {
           <VenueEditionHeader
             venue={venue}
             offerer={offerer}
-            venueTypes={venueTypes}
             context={context}
             key={venueId}
           />

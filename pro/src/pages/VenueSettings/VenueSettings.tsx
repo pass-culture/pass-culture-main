@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -9,7 +8,6 @@ import {
   GET_VENUE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
-import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'
@@ -28,8 +26,6 @@ const VenueSettings = (): JSX.Element | null => {
   const venue = venueQuery.data
 
   const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
-
-  const venueTypes = useSelector(selectVenueTypes)
 
   const venueProvidersQuery = useSWR(
     [GET_VENUE_PROVIDERS_QUERY_KEY, Number(venueId)],
@@ -53,7 +49,6 @@ const VenueSettings = (): JSX.Element | null => {
         <VenueSettingsScreen
           initialValues={setInitialFormValues({ venue })}
           offerer={offerer}
-          venueTypes={venueTypes}
           venue={venue}
           venueProviders={venueProviders}
         />

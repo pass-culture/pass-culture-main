@@ -5,7 +5,6 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
@@ -30,8 +29,6 @@ export const Homepage = (): JSX.Element => {
   const offererNamesQuery = useOffererNamesQuery()
 
   const offererNames = offererNamesQuery.data?.offerersNames
-
-  const venueTypes = useSelector(selectVenueTypes)
 
   const offererOptions = sortByLabel(
     offererNames?.map((item) => ({
@@ -91,7 +88,6 @@ export const Homepage = (): JSX.Element => {
               isLoading={isOffererLoading}
               offererOptions={offererOptions}
               isUserOffererValidated={isUserOffererValidated}
-              venueTypes={venueTypes}
             />
           </section>
 

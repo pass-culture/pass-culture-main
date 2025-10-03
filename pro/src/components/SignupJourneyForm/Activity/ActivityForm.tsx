@@ -1,6 +1,7 @@
 import { useFieldArray, useFormContext } from 'react-hook-form'
+import { useSelector } from 'react-redux'
 
-import type { VenueTypeResponseModel } from '@/apiClient/v1'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -28,13 +29,7 @@ export interface ActivityFormValues {
   phoneNumber: string
 }
 
-export interface ActivityFormProps {
-  venueTypes: VenueTypeResponseModel[]
-}
-
-export const ActivityForm = ({
-  venueTypes,
-}: ActivityFormProps): JSX.Element => {
+export const ActivityForm = (): JSX.Element => {
   const { register, control, formState, watch, setValue, trigger, setFocus } =
     useFormContext<ActivityFormValues>()
 
@@ -43,6 +38,7 @@ export const ActivityForm = ({
     name: 'socialUrls',
   })
 
+  const venueTypes = useSelector(selectVenueTypes)
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const watchSocialUrls = watch('socialUrls')
 

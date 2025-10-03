@@ -6,13 +6,13 @@ import { useSWRConfig } from 'swr'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import {
   UploaderModeEnum,
   type UploadImageValues,
@@ -34,19 +34,18 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetVenueResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueHasPartnerPage: boolean
 }
 
 export const PartnerPage = ({
   offerer,
   venue,
-  venueTypes,
   venueHasPartnerPage,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
+  const venueTypes = useSelector(selectVenueTypes)
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
   )

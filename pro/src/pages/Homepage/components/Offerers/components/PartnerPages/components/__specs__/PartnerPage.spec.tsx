@@ -26,7 +26,6 @@ const renderPartnerPages = (
     <PartnerPage
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       venueHasPartnerPage={false}
       {...props}
     />,

@@ -3,7 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -18,11 +17,6 @@ import {
 
 import { VenueSettingsScreen } from '../VenueSettingsScreen'
 
-const venueTypes: VenueTypeResponseModel[] = [
-  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
-]
-
 const renderForm = async (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <VenueSettingsScreen
@@ -31,7 +25,6 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
         id: 12,
         siren: '881457238',
       }}
-      venueTypes={venueTypes}
       venueProviders={[
         defaultVenueProvider,
         {

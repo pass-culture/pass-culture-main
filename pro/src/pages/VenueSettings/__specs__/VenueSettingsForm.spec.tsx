@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 
-import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -16,11 +15,6 @@ import {
 
 import type { VenueSettingsFormValues } from '../types'
 import { VenueSettingsForm } from '../VenueSettingsForm'
-
-const venueTypes: VenueTypeResponseModel[] = [
-  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
-]
 
 const offerer = {
   ...defaultGetOffererResponseModel,
@@ -55,7 +49,6 @@ function renderVenueSettingsForm(
           <VenueSettingsForm
             {...defaultProps}
             offerer={offerer}
-            venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={defaultGetVenue}
           />

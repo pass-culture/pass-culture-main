@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
 import { Target } from '@/apiClient/v1'
@@ -8,7 +7,6 @@ import {
   type ActivityContext,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 
@@ -21,7 +19,6 @@ import { validationSchema } from './validationSchema'
 export const Activity = (): JSX.Element => {
   const navigate = useNavigate()
   const { activity, setActivity } = useSignupJourneyContext()
-  const venueTypes = useSelector(selectVenueTypes)
 
   const serializeActivityContext = (
     activity: ActivityContext
@@ -91,7 +88,7 @@ export const Activity = (): JSX.Element => {
             Et enfin, définissez l’activité de votre structure
           </h2>
           <FormLayout.MandatoryInfo />
-          <ActivityForm venueTypes={venueTypes} />
+          <ActivityForm />
           <ActionBar
             onClickPrevious={handlePreviousStep}
             isDisabled={methods.formState.isSubmitting}

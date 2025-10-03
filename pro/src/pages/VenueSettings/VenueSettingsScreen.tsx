@@ -10,7 +10,6 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -32,7 +31,6 @@ import { getValidationSchema } from './validationSchema'
 interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
@@ -40,7 +38,6 @@ interface VenueSettingsScreenProps {
 export const VenueSettingsScreen = ({
   initialValues,
   offerer,
-  venueTypes,
   venueProviders,
   venue,
 }: VenueSettingsScreenProps): JSX.Element => {
@@ -85,7 +82,7 @@ export const VenueSettingsScreen = ({
 
       notify.success('Vos modifications ont été sauvegardées')
     } catch (error) {
-      let formErrors
+      let formErrors = null
       if (isErrorAPIError(error)) {
         formErrors = error.body
       }
@@ -133,7 +130,6 @@ export const VenueSettingsScreen = ({
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} noValidate>
           <VenueSettingsForm
-            venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={venue}
             offerer={offerer}
