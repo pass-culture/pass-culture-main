@@ -331,38 +331,46 @@ def render_public_account_details(
     user_id: int,
     edit_account_form: account_forms.EditAccountForm | None = None,
 ) -> str:
-    # Pre-load as many things as possible in the same request to avoid too many SQL queries
+    # Using subqueryload to avoid huge cartesian product which would cause timeout when fetching too many rows.
+    # 9 SQL queries require less resources than a single query with multiple 1-n joinedloads.
     # Note that extra queries are made in methods called by get_eligibility_history()
-    # Do not joinedload bookings: combinations would cause too many rows returned by postgresql - fetched in a 2nd query
     user = (
         db.session.query(users_models.User)
         .filter_by(id=user_id)
         .options(
             sa_orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
             sa_orm.subqueryload(users_models.User.userBookings).options(
-                sa_orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+                sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
+                    offers_models.Stock.offer, innerjoin=True
+                ),
                 sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(
                     finance_models.BookingFinanceIncident.incident
                 ),
-                sa_orm.joinedload(bookings_models.Booking.offerer).load_only(offerers_models.Offerer.name),
-                sa_orm.joinedload(bookings_models.Booking.venue)
+                sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(
+                    offerers_models.Offerer.name
+                ),
+                sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
                 .load_only(offerers_models.Venue.bookingEmail)
                 .joinedload(offerers_models.Venue.contact)
                 .load_only(offerers_models.VenueContact.email),
                 sa_orm.joinedload(bookings_models.Booking.fraudulentBookingTag),
             ),
-            sa_orm.joinedload(users_models.User.beneficiaryFraudChecks),
-            sa_orm.joinedload(users_models.User.beneficiaryFraudReviews),
-            sa_orm.joinedload(users_models.User.beneficiaryImports)
+            sa_orm.subqueryload(users_models.User.beneficiaryFraudChecks),
+            sa_orm.subqueryload(users_models.User.beneficiaryFraudReviews),
+            sa_orm.subqueryload(users_models.User.beneficiaryImports)
             .joinedload(BeneficiaryImport.statuses)
             .joinedload(BeneficiaryImportStatus.author)
-            .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa_orm.joinedload(users_models.User.action_history)
+            .load_only(  # User.full_name
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            ),
+            sa_orm.subqueryload(users_models.User.action_history)
             .joinedload(history_models.ActionHistory.authorUser)
-            .load_only(users_models.User.firstName, users_models.User.lastName),
-            sa_orm.joinedload(users_models.User.email_history),
-            sa_orm.joinedload(users_models.User.gdprUserDataExtracts),
-            sa_orm.joinedload(users_models.User.tags),
+            .load_only(  # User.full_name
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            ),
+            sa_orm.subqueryload(users_models.User.email_history),
+            sa_orm.subqueryload(users_models.User.gdprUserDataExtracts),
+            sa_orm.subqueryload(users_models.User.tags),
         )
         .one_or_none()
     )

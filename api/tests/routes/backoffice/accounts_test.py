@@ -775,13 +775,13 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
-    # session
-    # current user
-    # user data
+    # user session
+    # current backoffice user
+    # user and joinedload data
+    # 8 x subqueryload for additional user data
     # check if user is waiting to be anonymized
-    # bookings
     # user tags (for tag account form display)
-    expected_num_queries = 6
+    expected_num_queries = 13
     expected_num_queries_with_ff = expected_num_queries + 1
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
