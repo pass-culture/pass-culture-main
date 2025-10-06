@@ -23,8 +23,8 @@ class Returns200Test:
             response = client.get("/venue-types")
             assert response.status_code == 200
 
-        expected_venue_types = [{"id": venue_type.name, "label": venue_type.value} for venue_type in VenueTypeCode]
-        expected_venue_types = sorted(expected_venue_types, key=lambda item: item["id"])
+        expected_venue_types = [{"value": venue_type.name, "label": venue_type.value} for venue_type in VenueTypeCode]
+        expected_venue_types = sorted(expected_venue_types, key=lambda item: item["value"])
 
-        response_venue_types = sorted(response.json, key=lambda item: item["id"])
+        response_venue_types = sorted(response.json, key=lambda item: item["value"])
         assert response_venue_types == expected_venue_types

@@ -168,27 +168,28 @@ class BannerMetaModel(typing.TypedDict, total=False):
     is_from_google: bool
 
 
+# Keep this enum ordered and with the OTHER value first
 class VenueTypeCode(enum.Enum):
-    ARTISTIC_COURSE = "Cours et pratique artistiques"
-    BOOKSTORE = "Librairie"
-    CONCERT_HALL = "Musique - Salle de concerts"
-    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    OTHER = "Autre"
+    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
+    LIBRARY = "Bibliothèque ou médiathèque"
     CULTURAL_CENTRE = "Centre culturel"
-    DIGITAL = "Offre numérique"
-    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
+    MOVIE = "Cinéma - Salle de projections"
+    TRAVELING_CINEMA = "Cinéma itinérant"
+    ARTISTIC_COURSE = "Cours et pratique artistiques"
+    SCIENTIFIC_CULTURE = "Culture scientifique"
     FESTIVAL = "Festival"
     GAMES = "Jeux / Jeux vidéos"
-    LIBRARY = "Bibliothèque ou médiathèque"
-    MOVIE = "Cinéma - Salle de projections"
-    MUSEUM = "Musée"
+    BOOKSTORE = "Librairie"
+    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
+    RECORD_STORE = "Musique - Disquaire"
     MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
-    OTHER = "Autre"
+    CONCERT_HALL = "Musique - Salle de concerts"
+    MUSEUM = "Musée"
+    DIGITAL = "Offre numérique"
     PATRIMONY_TOURISM = "Patrimoine et tourisme"
     PERFORMING_ARTS = "Spectacle vivant"
-    RECORD_STORE = "Musique - Disquaire"
-    SCIENTIFIC_CULTURE = "Culture scientifique"
-    TRAVELING_CINEMA = "Cinéma itinérant"
-    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
 
     # These methods are used by pydantic in order to return the enum name and validate the value
     # instead of returning the enum directly.

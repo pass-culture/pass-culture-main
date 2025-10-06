@@ -13,7 +13,7 @@ import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointRe
 import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
-import type { VenueTypeCode } from './VenueTypeCode';
+import type { VenueTypeResponseModel } from './VenueTypeResponseModel';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
@@ -59,7 +59,7 @@ export type GetVenueResponseModel = {
   publicName?: string | null;
   siret?: string | null;
   venueLabelId?: number | null;
-  venueTypeCode: VenueTypeCode;
+  venueType: VenueTypeResponseModel;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };

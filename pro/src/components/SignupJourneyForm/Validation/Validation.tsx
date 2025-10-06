@@ -248,7 +248,7 @@ export const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {
               venueTypes.find(
-                (venueType) => venueType.id === activity.venueTypeCode
+                (venueType) => venueType.value === activity.venueTypeCode
               )?.label
             }
           </div>

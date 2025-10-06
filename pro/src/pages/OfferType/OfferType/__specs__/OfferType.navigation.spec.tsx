@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { SubcategoryIdEnum, type VenueTypeCode } from '@/apiClient/v1'
+import { SubcategoryIdEnum } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   categoryFactory,
@@ -53,7 +53,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     })
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
-      venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
+      venueType: { value: 'OTHER', label: '' },
     })
 
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)

@@ -357,7 +357,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   mentalDisabilityCompliant: true,
   motorDisabilityCompliant: false,
   name: 'Lieu de test',
-  venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
+  venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' },
   visualDisabilityCompliant: true,
   openingHours: null,
   isCaledonian: false,

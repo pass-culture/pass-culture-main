@@ -30,7 +30,7 @@ export const setInitialFormValues = ({
     venueSiret: venue.pricingPoint?.id || '',
     publicName: venue.publicName || '',
     siret: humanizeSiret(venue.siret || ''),
-    venueType: venue.venueTypeCode,
+    venueType: venue.venueType.value,
     withdrawalDetails: venue.withdrawalDetails || '',
   }
 }

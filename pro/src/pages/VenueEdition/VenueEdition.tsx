@@ -5,10 +5,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import {
-  GET_VENUE_QUERY_KEY,
-  GET_VENUE_TYPES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
@@ -46,11 +43,6 @@ export const VenueEdition = (): JSX.Element | null => {
   const venue = venueQuery.data
 
   const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
-
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -107,12 +99,7 @@ export const VenueEdition = (): JSX.Element | null => {
   }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
 
   const isNotReady =
-    venueQuery.isLoading ||
-    venueTypesQuery.isLoading ||
-    isOffererLoading ||
-    !venue ||
-    !offerer ||
-    !venueTypes
+    venueQuery.isLoading || isOffererLoading || !venue || !offerer
 
   const tabs: NavLinkItem[] = [
     {
@@ -190,7 +177,6 @@ export const VenueEdition = (): JSX.Element | null => {
           <VenueEditionHeader
             venue={venue}
             offerer={offerer}
-            venueTypes={venueTypes}
             context={context}
             key={venueId}
           />
