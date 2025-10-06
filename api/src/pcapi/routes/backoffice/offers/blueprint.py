@@ -460,7 +460,7 @@ def _get_offers_by_ids(
                         sa.case(
                             (
                                 sa.func.coalesce(
-                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)),  # type: ignore[attr-defined]
+                                    sa.func.max(sa.case((offers_models.Stock.remainingStock.is_(None), 1), else_=0)),
                                     0,
                                 )
                                 == 0,

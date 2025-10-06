@@ -12,12 +12,13 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.hybrid import _HybridClassLevelAccessor
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import Case
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.elements import UnaryExpression
 
 import pcapi.core.bookings.constants as bookings_constants
@@ -426,8 +427,9 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     def _bookable(self) -> bool:
         return not self.isExpired and not self.isSoldOut
 
-    @_bookable.expression  # type: ignore[no-redef]
-    def _bookable(cls) -> BooleanClauseList:
+    @_bookable.inplace.expression
+    @classmethod
+    def _bookableExpression(cls) -> ColumnElement[bool]:
         return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
@@ -440,16 +442,18 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     def hasBookingLimitDatetimePassed(self) -> bool:
         return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
 
-    @hasBookingLimitDatetimePassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimePassed(cls) -> BooleanClauseList:
+    @hasBookingLimitDatetimePassed.inplace.expression
+    @classmethod
+    def _hasBookingLimitDatetimePassedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.bookingLimitDatetime.is_not(None), cls.bookingLimitDatetime <= sa.func.now())
 
     @hybrid_property
-    def remainingQuantity(self) -> int | str:
+    def remainingQuantity(self) -> int | typing.Literal["unlimited"]:
         return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
-    @remainingQuantity.expression  # type: ignore[no-redef]
-    def remainingQuantity(cls) -> Case:
+    @remainingQuantity.inplace.expression
+    @classmethod
+    def _remainingQuantityExpression(cls) -> Case:
         return sa.case((cls.quantity.is_(None), None), else_=(cls.quantity - cls.dnBookedQuantity))
 
     @property
@@ -460,16 +464,18 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     def isEventExpired(self) -> bool:
         return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
 
-    @isEventExpired.expression  # type: ignore[no-redef]
-    def isEventExpired(cls) -> BooleanClauseList:
+    @isEventExpired.inplace.expression
+    @classmethod
+    def _isEventExpiredExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.beginningDatetime.is_not(None), cls.beginningDatetime <= sa.func.now())
 
     @hybrid_property
     def isExpired(self) -> bool:
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
-    @isExpired.expression  # type: ignore[no-redef]
-    def isExpired(cls) -> BooleanClauseList:
+    @isExpired.inplace.expression
+    @classmethod
+    def _isExpiredExpression(cls) -> ColumnElement[bool]:
         return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
@@ -487,8 +493,9 @@ class Stock(PcObject, Model, SoftDeletableMixin):
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
-    @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> BooleanClauseList:
+    @isSoldOut.inplace.expression
+    @classmethod
+    def _isSoldOutExpression(cls) -> ColumnElement[bool]:
         return sa.or_(
             cls.isSoftDeleted,
             sa.and_(sa.not_(cls.beginningDatetime.is_(None)), cls.beginningDatetime <= sa.func.now()),
@@ -525,8 +532,9 @@ class Stock(PcObject, Model, SoftDeletableMixin):
             return None if self.remainingQuantity == "unlimited" else self.remainingQuantity
         return 0
 
-    @remainingStock.expression  # type: ignore[no-redef]
-    def remainingStock(cls) -> Case:
+    @remainingStock.inplace.expression
+    @classmethod
+    def _remainingStockExpression(cls) -> Case:
         return sa.case((cls._bookable, cls.remainingQuantity), else_=0)
 
 
@@ -658,10 +666,13 @@ class HeadlineOffer(PcObject, Model):
     def isActive(self) -> bool:
         now = datetime.datetime.utcnow()
         has_images = self.offer.mediations or (self.offer.product.images if self.offer.product else None)
-        return now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images
+        if now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images:
+            return True
+        return False
 
-    @isActive.expression  # type: ignore[no-redef]
-    def isActive(cls) -> bool:
+    @isActive.inplace.expression
+    @classmethod
+    def _isActiveExpression(cls) -> ColumnElement[bool]:
         offer_alias = sa_orm.aliased(Offer)  # avoids cartesian product
         return sa.and_(
             cls.timespan.contains(sa.cast(sa.func.now(), sa.TIMESTAMP)),
@@ -1014,8 +1025,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
                 return False
         return True
 
-    @isSoldOut.expression  # type: ignore[no-redef]
-    def isSoldOut(cls) -> UnaryExpression:
+    @isSoldOut.inplace.expression
+    @classmethod
+    def _isSoldOutExpression(cls) -> ColumnElement[bool]:
         return ~sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)).where(
             sa.or_(Stock.beginningDatetime > sa.func.now(), Stock.beginningDatetime.is_(None))
         ).where(sa.or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
@@ -1030,8 +1042,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def canExpire(self) -> bool:
         return self.subcategoryId in subcategories.EXPIRABLE_SUBCATEGORIES
 
-    @canExpire.expression  # type: ignore[no-redef]
-    def canExpire(cls) -> BinaryExpression:
+    @canExpire.inplace.expression
+    @classmethod
+    def _canExpireExpression(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.EXPIRABLE_SUBCATEGORIES)
 
     @hybrid_property
@@ -1041,8 +1054,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             return False
         return self._released and offerer.isActive and offerer.isValidated
 
-    @isReleased.expression  # type: ignore[no-redef]
-    def isReleased(cls):
+    @isReleased.inplace.expression
+    @classmethod
+    def _isReleasedExpression(cls) -> ColumnElement[bool]:
         from pcapi.core.offerers import models as offerers_models
 
         # explicit join on Venue then Offerer
@@ -1059,8 +1073,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             self.publicationDatetime is not None and self.publicationDatetime <= now
         )
 
-    @_released.expression  # type: ignore[no-redef]
-    def _released(cls) -> BooleanClauseList:
+    @_released.inplace.expression
+    @classmethod
+    def _releasedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             cls.validation == OfferValidationStatus.APPROVED,
             sa.or_(cls.publicationDatetime != None, cls.publicationDatetime <= sa.func.now()),
@@ -1070,16 +1085,18 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def isPermanent(self) -> bool:
         return self.subcategoryId in subcategories.PERMANENT_SUBCATEGORIES
 
-    @isPermanent.expression  # type: ignore[no-redef]
-    def isPermanent(cls) -> BinaryExpression:
+    @isPermanent.inplace.expression
+    @classmethod
+    def _isPermanentExpression(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.PERMANENT_SUBCATEGORIES)
 
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
 
-    @isEvent.expression  # type: ignore[no-redef]
-    def isEvent(cls) -> BinaryExpression:
+    @isEvent.inplace.expression
+    @classmethod
+    def _isEventExpression(cls) -> BinaryExpression:
         return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
@@ -1094,13 +1111,13 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def isThing(self) -> bool:
         return not self.subcategory.is_event
 
-    # TODO (igabriele, 2025-07-25): Rename that to `hasUrl` to avoid multiplying vocabulary terms related to online/offline offers.
     @hybrid_property
     def hasUrl(self) -> bool:
         return self.url is not None and self.url != ""
 
-    @hasUrl.expression  # type: ignore[no-redef]
-    def hasUrl(cls) -> BooleanClauseList:
+    @hasUrl.inplace.expression
+    @classmethod
+    def _hasUrlExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.url.is_not(None), cls.url != "")
 
     @property
@@ -1137,24 +1154,27 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def is_eligible_for_search(self) -> bool:
         return self.is_released_and_bookable
 
-    @is_eligible_for_search.expression  # type: ignore[no-redef]
-    def is_eligible_for_search(cls) -> BooleanClauseList:
+    @is_eligible_for_search.inplace.expression
+    @classmethod
+    def _is_eligible_for_search_expression(cls) -> ColumnElement[bool]:
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
     def is_released_and_bookable(self) -> bool:
         return self.isReleased and self.isBookable
 
-    @is_released_and_bookable.expression  # type: ignore[no-redef]
-    def is_released_and_bookable(cls) -> BooleanClauseList:
+    @is_released_and_bookable.inplace.expression
+    @classmethod
+    def _is_released_and_bookable_expression(cls) -> ColumnElement[bool]:
         return sa.and_(cls._released, Stock._bookable)
 
     @hybrid_property
     def is_offer_released_with_bookable_stock(self) -> bool:
         return self.isReleased and self.isBookable
 
-    @is_offer_released_with_bookable_stock.expression  # type: ignore[no-redef]
-    def is_offer_released_with_bookable_stock(cls) -> BooleanClauseList:
+    @is_offer_released_with_bookable_stock.inplace.expression
+    @classmethod
+    def _is_offer_released_with_bookable_stock_expression(cls) -> ColumnElement[bool]:
         return sa.and_(cls._released, sa.exists().where(Stock.offerId == cls.id).where(Stock._bookable))
 
     @hybrid_property
@@ -1163,29 +1183,15 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
-    @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
-    def hasBookingLimitDatetimesPassed(cls) -> BooleanClauseList:
+    @hasBookingLimitDatetimesPassed.inplace.expression
+    @classmethod
+    def _hasBookingLimitDatetimesPassedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             sa.exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
             ~sa.exists()
             .where(Stock.offerId == cls.id)
             .where(Stock.isSoftDeleted.is_(False))
             .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
-        )
-
-    @hybrid_property
-    def firstBeginningDatetime(self) -> datetime.datetime | None:
-        stocks_with_date = [
-            stock.beginningDatetime for stock in self.activeStocks if stock.beginningDatetime is not None
-        ]
-        return min(stocks_with_date) if stocks_with_date else None
-
-    @firstBeginningDatetime.expression  # type: ignore[no-redef]
-    def firstBeginningDatetime(cls) -> datetime.datetime | None:
-        return (
-            sa.select(sa.func.min(Stock.beginningDatetime))
-            .where(Stock.offerId == cls.id)
-            .where(Stock.isSoftDeleted.is_(False))
         )
 
     @property
@@ -1301,8 +1307,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def is_expired(self) -> bool:
         return self.hasBookingLimitDatetimesPassed
 
-    @is_expired.expression  # type: ignore[no-redef]
-    def is_expired(cls) -> UnaryExpression:
+    @is_expired.inplace.expression
+    @classmethod
+    def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
         return cls.hasBookingLimitDatetimesPassed
 
     @hybrid_property
@@ -1335,8 +1342,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
         return OfferStatus.ACTIVE
 
-    @status.expression  # type: ignore[no-redef]
-    def status(cls) -> Case:
+    @status.inplace.expression
+    @classmethod
+    def _status(cls) -> Case:
         cases = [
             (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
             (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
@@ -1374,13 +1382,14 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def is_headline_offer(self) -> bool:
         return any(headline_offer.isActive for headline_offer in self.headlineOffers)
 
-    @is_headline_offer.expression  # type: ignore[no-redef]
-    def is_headline_offer(cls) -> UnaryExpression:
+    @is_headline_offer.inplace.expression
+    @classmethod
+    def _is_headline_offer_expression(cls) -> UnaryExpression:
         headline_offer_alias = sa_orm.aliased(HeadlineOffer)
         return sa.exists().where(headline_offer_alias.offerId == cls.id, headline_offer_alias.isActive)
 
     @hybrid_property
-    def isActive(self):
+    def isActive(self) -> bool:
         if self.publicationDatetime is None:
             return False
 
@@ -1392,8 +1401,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         now = now.replace(tzinfo=None) if self.publicationDatetime.tzinfo is None else now
         return self.publicationDatetime <= now
 
-    @isActive.expression  # type: ignore[no-redef]
-    def isActive(cls):
+    @isActive.inplace.expression
+    @classmethod
+    def _isActiveExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             cls.publicationDatetime != None,
             cls.publicationDatetime <= sa.func.now(),
