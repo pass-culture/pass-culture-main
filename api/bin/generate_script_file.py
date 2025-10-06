@@ -25,9 +25,14 @@ SCRIPT_PATH = PCAPI_DIR / "scripts"
 HEADER = """\
 \"""
 Job console documentation here: https://www.notion.so/passcultureapp/Documentation-Job-Console-769beeacd5a146de9c97b6f8ee544276
-Assumed path to the script (copy-paste in github actions):
 
-https://github.com/pass-culture/pass-culture-main/blob/{git_branch_name}/api/src/pcapi/scripts/{namespace}/main.py
+You can start the job from the infrastructure repository with github cli :
+
+gh workflow run on_dispatch_pcapi_console_job.yml \
+  -f ENVIRONMENT=testing \
+  -f BRANCH_NAME={git_branch_name} \
+  -f NAMESPACE={namespace} \
+  -f SCRIPT_ARGUMENTS="";
 
 \"""
 
