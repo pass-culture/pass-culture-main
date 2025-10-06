@@ -153,6 +153,8 @@ export type { HasInvoiceResponseModel } from './models/HasInvoiceResponseModel';
 export type { HeadlineOfferCreationBodyModel } from './models/HeadlineOfferCreationBodyModel';
 export type { HeadlineOfferDeleteBodyModel } from './models/HeadlineOfferDeleteBodyModel';
 export type { HeadLineOfferResponseModel } from './models/HeadLineOfferResponseModel';
+export type { HighlightResponseModel } from './models/HighlightResponseModel';
+export type { HighlightsResponseModel } from './models/HighlightsResponseModel';
 export type { HistoryStep } from './models/HistoryStep';
 export type { IndividualRevenue } from './models/IndividualRevenue';
 export type { InviteMemberQueryModel } from './models/InviteMemberQueryModel';
