@@ -26,7 +26,6 @@ const renderPartnerPages = (
     <PartnerPage
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       venueHasPartnerPage={false}
       {...props}
     />,
@@ -49,7 +48,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
       },
     })
 
@@ -69,7 +68,7 @@ describe('PartnerPages', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
           original_image_url: 'https://www.example.com/image.png',

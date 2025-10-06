@@ -28,6 +28,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base
 from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
+from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
@@ -219,6 +220,11 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 return opening_hours_api.format_opening_hours(opening_hours)
             return typing.cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
 
+        if key == "venueType":
+            value = venue.venueTypeCode
+            label = value.value if value else ""
+            return VenueTypeResponseModel(value=value.name if value else "", label=label)
+
         return super().get(key, default)
 
 
@@ -233,7 +239,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     pricingPoint: GetVenuePricingPointResponseModel | None
     siret: str | None
     venueLabelId: int | None
-    venueTypeCode: offerers_models.VenueTypeCode
+    venueType: VenueTypeResponseModel
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
     collectiveWebsite: str | None

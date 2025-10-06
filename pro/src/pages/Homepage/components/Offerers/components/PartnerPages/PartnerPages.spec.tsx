@@ -22,7 +22,6 @@ const renderPartnerPages = (props: Partial<PartnerPagesProps> = {}) => {
     <PartnerPages
       venues={[defaultGetOffererVenueResponseModel]}
       offerer={mockOfferer}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />
   )
@@ -32,7 +31,7 @@ describe('PartnerPages', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue({
       ...defaultGetVenue,
-      venueTypeCode: VenueTypeCode.FESTIVAL,
+      venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
       bannerUrl: 'MyFirstImage',
       name: 'first venue',
       bannerMeta: {

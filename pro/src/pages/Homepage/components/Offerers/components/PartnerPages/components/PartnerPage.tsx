@@ -6,7 +6,6 @@ import { useSWRConfig } from 'swr'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -34,22 +33,17 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
   venue: GetVenueResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueHasPartnerPage: boolean
 }
 
 export const PartnerPage = ({
   offerer,
   venue,
-  venueTypes,
   venueHasPartnerPage,
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
-  const venueType = venueTypes.find(
-    (venueType) => venueType.id === venue.venueTypeCode
-  )
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [imageValues, setImageValues] =
@@ -107,7 +101,7 @@ export const PartnerPage = ({
         />
 
         <div className={styles['venue']}>
-          <div className={styles['venue-type']}>{venueType?.label}</div>
+          <div className={styles['venue-type']}>{venue.venueType.label}</div>
           <h3 className={styles['venue-name']}>
             {venue.publicName || venue.name}
           </h3>

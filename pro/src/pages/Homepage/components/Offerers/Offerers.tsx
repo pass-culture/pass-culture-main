@@ -1,7 +1,4 @@
-import type {
-  GetOffererResponseModel,
-  VenueTypeResponseModel,
-} from '@/apiClient/v1'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { Card } from '@/components/Card/Card'
 import { SoftDeletedOffererWarning } from '@/components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
@@ -17,7 +14,6 @@ export interface OfferersProps {
   isLoading: boolean
   isUserOffererValidated: boolean
   offererOptions: SelectOption[]
-  venueTypes: VenueTypeResponseModel[]
 }
 
 export const Offerers = ({
@@ -25,7 +21,6 @@ export const Offerers = ({
   selectedOfferer,
   isLoading,
   isUserOffererValidated,
-  venueTypes,
 }: OfferersProps) => {
   if (isLoading) {
     return (
@@ -47,11 +42,7 @@ export const Offerers = ({
       {userHasOfferers && (
         <>
           {selectedOfferer && permanentVenues.length > 0 && (
-            <PartnerPages
-              venues={permanentVenues}
-              offerer={selectedOfferer}
-              venueTypes={venueTypes}
-            />
+            <PartnerPages venues={permanentVenues} offerer={selectedOfferer} />
           )}
 
           {selectedOfferer && !isOffererSoftDeleted && (

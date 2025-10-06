@@ -162,7 +162,7 @@ class Returns200Test:
             "publicName": venue.publicName,
             "siret": venue.siret,
             "venueLabelId": venue.venueLabelId,
-            "venueTypeCode": venue.venueTypeCode.name,
+            "venueType": {"label": venue.venueTypeCode.value, "value": venue.venueTypeCode.name},
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,

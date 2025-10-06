@@ -2,7 +2,7 @@ from pcapi.routes.serialization import BaseModel
 
 
 class VenueTypeResponseModel(BaseModel):
-    id: str
+    value: str
     label: str
 
 

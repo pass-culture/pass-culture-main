@@ -31,7 +31,6 @@ const renderPartnerPages = (
     <VenueEditionHeader
       offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
-      venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       context="partnerPage"
       {...props}
     />,
@@ -58,7 +57,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
       },
     })
 
@@ -79,7 +78,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: 'Festival' },
         bannerUrl: 'https://www.example.com/image.png',
         bannerMeta: {
           original_image_url: 'https://www.example.com/image.png',
@@ -104,7 +103,7 @@ describe('VenueEditionHeader', () => {
     renderPartnerPages({
       venue: {
         ...defaultGetVenue,
-        venueTypeCode: VenueTypeCode.FESTIVAL,
+        venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
         isPermanent: true,
       },
     })
@@ -117,7 +116,7 @@ describe('VenueEditionHeader', () => {
       {
         venue: {
           ...defaultGetVenue,
-          venueTypeCode: VenueTypeCode.FESTIVAL,
+          venueType: { value: VenueTypeCode.FESTIVAL, label: '' },
         },
       },
       {

@@ -6,7 +6,6 @@ import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { buildVenueTypesOptions } from '@/pages/VenueEdition/buildVenueTypesOptions'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
@@ -43,7 +42,6 @@ export const ActivityForm = ({
     name: 'socialUrls',
   })
 
-  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
   const watchSocialUrls = watch('socialUrls')
 
   return (
@@ -55,7 +53,7 @@ export const ActivityForm = ({
               value: '',
               label: 'Sélectionnez votre activité principale',
             },
-            ...venueTypesOptions,
+            ...venueTypes,
           ]}
           {...register('venueTypeCode')}
           error={formState.errors.venueTypeCode?.message}

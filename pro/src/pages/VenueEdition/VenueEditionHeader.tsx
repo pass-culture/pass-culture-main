@@ -8,7 +8,6 @@ import type {
   BannerMetaModel,
   GetOffererResponseModel,
   GetVenueResponseModel,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -35,7 +34,6 @@ import styles from './VenueEditionHeader.module.scss'
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   context: 'collective' | 'partnerPage' | 'address'
 }
 
@@ -64,17 +62,12 @@ export const buildInitialValues = (
 export const VenueEditionHeader = ({
   venue,
   offerer,
-  venueTypes,
   context,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  const venueType = venueTypes.find(
-    (venueType) => venueType.id === venue.venueTypeCode
-  )
 
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const [imageValues, setImageValues] =
@@ -140,7 +133,7 @@ export const VenueEditionHeader = ({
 
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
-          <div className={styles['venue-type']}>{venueType?.label}</div>
+          <div className={styles['venue-type']}>{venue.venueType.label}</div>
           <h2 className={styles['venue-name']}>
             {venue.isVirtual
               ? `${offerer.name} (Offre numérique)`

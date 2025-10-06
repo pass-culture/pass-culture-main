@@ -62,8 +62,8 @@ describe('screens:SignupJourney::Activity', () => {
       setInitialAddress: noop,
     }
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { id: 'MUSEUM', label: 'first venue label' },
-      { id: 'venue2', label: 'second venue label' },
+      { value: 'MUSEUM', label: 'first venue label' },
+      { value: 'venue2', label: 'second venue label' },
     ])
   })
 

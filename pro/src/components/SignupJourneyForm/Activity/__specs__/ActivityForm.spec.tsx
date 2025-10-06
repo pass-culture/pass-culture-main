@@ -29,8 +29,8 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const venueTypes: VenueTypeResponseModel[] = [
-  { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
+  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
+  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
 const onSubmit = vi.fn()
