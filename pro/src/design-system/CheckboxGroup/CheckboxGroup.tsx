@@ -8,7 +8,7 @@ import styles from './CheckboxGroup.module.scss'
 
 export type CheckboxGroupOption = Omit<CheckboxProps, 'variant'>
 
-type CheckboxGroupProps = {
+export type CheckboxGroupProps = {
   /** Label for the checkbox group */
   label: string
   /** Tag for the label, defaults to 'span', can be 'h1', 'h2', etc. */
