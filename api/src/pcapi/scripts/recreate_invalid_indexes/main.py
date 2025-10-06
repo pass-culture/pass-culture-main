@@ -82,6 +82,21 @@ INDEXES_TO_RECREATE = [
         'ON public."highlight_request" USING btree ("offerId")',
     ),
 ]
+INDEXES_TABLE_MAP = {
+    "ix_recredit_depositId": 'public."recredit"',
+    "idx_product_trgm_name": 'public."product"',
+    "ix_achievement_bookingId": 'public."achievement"',
+    "ix_artist_alias_trgm_unaccent_name": 'public."artist_alias"',
+    "ix_artist_trgm_unaccent_name": 'public."artist"',
+    "ix_chronicle_productIdentifier": 'public."chronicle"',
+    "ix_collective_offer_locationType_offererAddressId": 'public."collective_offer"',
+    "ix_collective_offer_template_locationType_offererAddressId": 'public."collective_offer_template"',
+    "ix_user_departementCode": 'public."user"',
+    "ix_validation_rule_collective_offer_link_collectiveOfferId": 'public."validation_rule_collective_offer_link"',
+    "ix_validation_rule_collective_offer_template_link_colle_8ea2": 'public."validation_rule_collective_offer_template_link"',
+    "ix_highlight_request_highlightId": 'public."highlight_request"',
+    "ix_highlight_request_offerId": 'public."highlight_request"',
+}
 
 
 @contextmanager
@@ -128,6 +143,26 @@ where
     return sorted(row[0] for row in res.fetchall())
 
 
+def log_locks_on_table(table_name: str) -> None:
+    statement = f"""
+SELECT
+        age (clock_timestamp (), xact_start) as transaction_time,
+        *
+FROM    pg_stat_activity
+WHERE   pid IN (
+    SELECT pid
+    FROM pg_locks
+    WHERE relation = '{table_name}'::regclass
+) ORDER BY transaction_time DESC;
+    """
+    res = db.session.execute(sa.text(statement))
+    logger.info(
+        "transaction_time,datid,datname,pid,leader_pid,usesysid,usename,application_name,client_addr,client_hostname,client_port,backend_start,xact_start,query_start,state_change,wait_event_type,wait_event,state,backend_xid,backend_xmin,query_id,query,backend_type"
+    )
+    for row in list(res.fetchall())[:5]:
+        logger.info(row)
+
+
 def create_index(connection: sa.engine.Connection, index_name: str, index_definition: str, max_retries: int) -> None:
     logger.info(f"Creating index {index_name}...")
     attempts = 0
@@ -141,6 +176,7 @@ def create_index(connection: sa.engine.Connection, index_name: str, index_defini
             logger.info(f"Failed to create index {index_name}: {exc}")
             if "lock timeout" in str(exc):
                 retry = True
+                log_locks_on_table(INDEXES_TABLE_MAP[index_name])
                 logger.info("Failed due to lock timeout, retrying...")
                 time.sleep(attempts * 10)
         else:
@@ -170,9 +206,16 @@ def drop_index(connection: sa.engine.Connection, index_name: str, max_retries: i
             logger.info(f"Dropped index {index_name}")
 
 
-def recreate_invalid_indexes(lock_timeout: int, statement_timeout: int, max_retries: int) -> None:
+def recreate_invalid_indexes(
+    lock_timeout: int, statement_timeout: int, max_retries: int, index_to_recreate: str | None = None
+) -> None:
     invalid_indexes = get_invalid_indexes()
     indexes_to_recreate = [index for index in INDEXES_TO_RECREATE if index[0] in invalid_indexes]
+    if index_to_recreate:
+        indexes_to_recreate = [index_info for index_info in indexes_to_recreate if index_info[0] == index_to_recreate]
+        if not indexes_to_recreate:
+            logger.info(f"Index {index_to_recreate} is not in the list of invalid indexes.")
+            return
     logger.info("Indexes to recreate: %s", [index for index, _ in indexes_to_recreate])
     with autocommit_connection(lock_timeout, statement_timeout) as connection:
         logger.info("Dropping indexes...")
@@ -183,6 +226,8 @@ def recreate_invalid_indexes(lock_timeout: int, statement_timeout: int, max_retr
         for index_name, index_definition in indexes_to_recreate:
             create_index(connection, index_name, index_definition, max_retries=max_retries)
 
+
+def log_invalid_indexes() -> None:
     logger.info("Checking for invalid indexes remaining...")
     invalid_indexes_remaining = get_invalid_indexes()
     if invalid_indexes_remaining:
@@ -225,13 +270,19 @@ if __name__ == "__main__":
     parser.add_argument("--lock-timeout", type=int, default=5)
     parser.add_argument("--statement-timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=10)
+    parser.add_argument("--deactivate-cron", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("--only-recreate-indexes", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument(
         "--schedule-date",
         type=str,
         default=datetime.now(LOCAL_TZ).strftime(DATE_FORMAT),
         help="Date et heure de planification au format DD-MM-YYYY:HH:MM. Par défaut, l'instant de lancement",
     )
+    parser.add_argument("--index", type=str, default=None, help="Nom de l'index à recréer (optionnel)")
     args = parser.parse_args()
+
+    if args.index:
+        assert args.index in INDEXES_TABLE_MAP, f"L'index {args.index} n'est pas dans la liste des index gérés"
 
     now = int(time.time())
     scheduled_timestamp = int(datetime.strptime(args.schedule_date, DATE_FORMAT).replace(tzinfo=LOCAL_TZ).timestamp())
@@ -241,8 +292,16 @@ if __name__ == "__main__":
         time.sleep(time_to_wait)
         logger.info("Lancement de la recréation d'indexes")
 
-    toggle_feature_flag(is_active=False)  # désactive le FF au moment du lancement
-    clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
-    create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
-    recreate_invalid_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
-    toggle_feature_flag(is_active=True)
+    try:
+        if args.deactivate_cron:
+            toggle_feature_flag(is_active=False)  # désactive le FF au moment du lancement
+        if not args.only_recreate_indexes:
+            clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
+            create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
+        recreate_invalid_indexes(
+            args.lock_timeout, args.statement_timeout, args.max_retries, index_to_recreate=args.index
+        )
+        log_invalid_indexes()
+    finally:
+        if args.deactivate_cron:
+            toggle_feature_flag(is_active=True)
