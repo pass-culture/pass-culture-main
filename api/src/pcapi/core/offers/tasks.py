@@ -1,9 +1,7 @@
 import datetime
 import logging
-import typing
 
 import sqlalchemy as sa
-import sqlalchemy.orm as sa_orm
 
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.core import search
@@ -141,7 +139,7 @@ def _get_existing_offers(
         db.session.query(
             sa.func.max(offers_models.Offer.id).label("max_id"),
         )
-        .filter(typing.cast(sa_orm.Mapped[bool], offers_models.Offer.isEvent) == False)
+        .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venueId == venue.id)
         .filter(offers_models.Offer.ean.in_(ean_to_create_or_update))
         .group_by(

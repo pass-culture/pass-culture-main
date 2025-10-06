@@ -69,7 +69,9 @@ def check_stock_is_bookable(stock: Stock, quantity: int) -> None:
     # is past.
     if (
         not stock.isBookable
-        or (stock.quantity is not None and stock.remainingQuantity < quantity)
+        or (
+            stock.quantity is not None and stock.remainingQuantity != "unlimited" and stock.remainingQuantity < quantity
+        )
         or not _stock_can_be_booked(stock)
     ):
         raise exceptions.StockIsNotBookable()

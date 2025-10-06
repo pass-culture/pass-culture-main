@@ -1,5 +1,3 @@
-import typing
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -105,7 +103,7 @@ def get_filtered_offers_linked_to_provider(
         .join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
-        .filter(typing.cast(sa_orm.Mapped[bool], offers_models.Offer.isEvent) == is_event)
+        .filter(offers_models.Offer.isEvent == is_event)
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(

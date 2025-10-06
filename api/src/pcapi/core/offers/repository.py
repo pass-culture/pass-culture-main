@@ -469,8 +469,7 @@ def _filter_by_creation_mode(query: sa_orm.Query, creation_mode: str) -> sa_orm.
 
 
 def _filter_by_status(query: sa_orm.Query, status: str) -> sa_orm.Query:
-    typed_status = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], models.Offer.status)
-    return query.filter(typed_status == offer_mixin.OfferStatus[status].name)
+    return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
 def venue_already_has_validated_offer(offer: models.Offer) -> bool:
@@ -826,7 +825,6 @@ def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
 
 
 def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
-    typed_status = typing.cast(sa_orm.Mapped[offer_mixin.OfferStatus], models.Offer.status)
     return (
         db.session.query(models.HeadlineOffer)
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
@@ -838,7 +836,7 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
         )
         .filter(
             sa.or_(
-                typed_status != offer_mixin.OfferStatus.ACTIVE,
+                models.Offer.status != offer_mixin.OfferStatus.ACTIVE.name,
                 sa.and_(
                     models.ProductMediation.id.is_(None),
                     models.Mediation.id.is_(None),
