@@ -65,6 +65,7 @@ import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel'
 import type { HeadlineOfferCreationBodyModel } from '../models/HeadlineOfferCreationBodyModel';
 import type { HeadlineOfferDeleteBodyModel } from '../models/HeadlineOfferDeleteBodyModel';
 import type { HeadLineOfferResponseModel } from '../models/HeadLineOfferResponseModel';
+import type { HighlightsResponseModel } from '../models/HighlightsResponseModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2ResponseModel';
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
@@ -1399,6 +1400,21 @@ export class DefaultService {
         'ean': ean,
         'offerer_id': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_highlights <GET>
+   * @returns HighlightsResponseModel OK
+   * @throws ApiError
+   */
+  public getHighlights(): CancelablePromise<HighlightsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/highlights',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

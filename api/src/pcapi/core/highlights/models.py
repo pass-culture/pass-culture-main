@@ -1,4 +1,3 @@
-import datetime
 import typing
 
 import psycopg2.extras
@@ -9,6 +8,7 @@ from sqlalchemy.dialects import postgresql
 from pcapi import settings
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.date import get_naive_utc_now
 
 
 if typing.TYPE_CHECKING:
@@ -31,11 +31,6 @@ class Highlight(PcObject, Model):
         "HighlightRequest", foreign_keys="HighlightRequest.highlightId", back_populates="highlight"
     )
 
-    @property
-    def is_available(self) -> bool:
-        now = datetime.datetime.utcnow()
-        return self.availability_timespan.upper >= now and self.availability_timespan.lower < now
-
     __table_args__ = (
         sa.CheckConstraint('length("name") <= 200'),
         sa.CheckConstraint('length("mediation_uuid") <= 100'),
@@ -43,8 +38,13 @@ class Highlight(PcObject, Model):
     )
 
     @property
+    def is_available(self) -> bool:
+        now = get_naive_utc_now()
+        return self.availability_timespan.upper >= now and self.availability_timespan.lower < now
+
+    @property
     def mediation_url(self) -> str:
-        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.uuid}"
+        return f"{settings.OBJECT_STORAGE_URL}/{settings.THUMBS_FOLDER_NAME}/{self.mediation_uuid}"
 
 
 class HighlightRequest(PcObject, Model):
