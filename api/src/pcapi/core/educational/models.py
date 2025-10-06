@@ -635,6 +635,14 @@ class CollectiveOffer(
                 '"locationComment" IS NULL OR length("locationComment") <= 200',
                 name="collective_offer_location_comment_constraint",
             ),
+            sa.CheckConstraint(
+                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+                name="collective_offer_location_type_and_address_constraint",
+            ),
+            sa.CheckConstraint(
+                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+                name="collective_offer_location_type_and_comment_constraint",
+            ),
         ]
 
         return tuple(parent_args)
@@ -739,13 +747,6 @@ class CollectiveOffer(
             .where(aliased_collective_stock.collectiveOfferId == cls.id)
             .where(aliased_collective_stock.hasStartDatetimePassed.is_(True))
         )
-
-    # TODO: remove this property to use the hybrid below
-    @property
-    def hasBookingLimitDatetimePassed(self) -> bool:
-        if self.collectiveStock:
-            return self.collectiveStock.hasBookingLimitDatetimePassed
-        return False
 
     @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
@@ -1164,6 +1165,14 @@ class CollectiveOfferTemplate(
             sa.CheckConstraint(
                 '"locationComment" IS NULL OR length("locationComment") <= 200',
                 name="collective_offer_tmpl_location_comment_constraint",
+            ),
+            sa.CheckConstraint(
+                '("locationType" = \'ADDRESS\' AND "offererAddressId" IS NOT NULL) OR ("locationType" != \'ADDRESS\' AND "offererAddressId" IS NULL)',
+                name="collective_offer_template_location_type_and_address_constraint",
+            ),
+            sa.CheckConstraint(
+                '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
+                name="collective_offer_template_location_type_and_comment_constraint",
             ),
         ]
 

@@ -14,6 +14,7 @@ from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 
@@ -79,14 +80,14 @@ class Returns200Test:
         }
 
     def test_refuse_collective_booking_location(self, client):
+        venue = VenueFactory()
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,
-            collectiveStock__collectiveOffer__offererAddress=None,
-            collectiveStock__collectiveOffer__locationComment=None,
+            collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
+            collectiveStock__collectiveOffer__venue=venue,
         )
         offer = collective_booking.collectiveStock.collectiveOffer
-        offer.offererAddress = offer.venue.offererAddress
 
         response = client.with_eac_token().post(f"/adage/v1/prebookings/{collective_booking.id}/refuse")
 

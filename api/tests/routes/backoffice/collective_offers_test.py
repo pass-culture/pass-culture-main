@@ -79,6 +79,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__author=users_factories.UserFactory(),
         collectiveOffer__institution=institution_1,
         collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
+        collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
         collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="47000", address__departmentCode="47"
         ),
@@ -91,6 +92,7 @@ def collective_offers_fixture() -> tuple:
         collectiveOffer__institution=institution_1,
         collectiveOffer__name="A Very Specific Name",
         collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
         collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="97400", address__departmentCode="974"
         ),
@@ -108,6 +110,7 @@ def collective_offers_fixture() -> tuple:
         ],
         collectiveOffer__validation=offers_models.OfferValidationStatus.REJECTED,
         collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.WRONG_DATE,
+        collectiveOffer__locationType=educational_models.CollectiveLocationType.ADDRESS,
         collectiveOffer__offererAddress=offerers_factories.OffererAddressFactory(
             address__postalCode="74000", address__departmentCode="74"
         ),
