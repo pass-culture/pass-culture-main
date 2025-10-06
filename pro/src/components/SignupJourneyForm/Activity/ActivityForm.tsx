@@ -6,7 +6,6 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { buildVenueTypesOptions } from '@/pages/VenueEdition/buildVenueTypesOptions'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { CheckboxGroup } from '@/ui-kit/form/CheckboxGroup/CheckboxGroup'
@@ -38,8 +37,7 @@ export const ActivityForm = (): JSX.Element => {
     name: 'socialUrls',
   })
 
-  const venueTypes = useSelector(selectVenueTypes)
-  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
+  const venueTypesOptions = useSelector(selectVenueTypes)
   const watchSocialUrls = watch('socialUrls')
 
   return (

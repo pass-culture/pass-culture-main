@@ -16,7 +16,6 @@ import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
-import { buildVenueTypesOptions } from '@/pages/VenueEdition/buildVenueTypesOptions'
 import { VenueFormActionBar } from '@/pages/VenueEdition/VenueFormActionBar/VenueFormActionBar'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -51,8 +50,8 @@ export const VenueSettingsForm = ({
   } = methods
 
   const location = useLocation()
-  const venueTypes = useSelector(selectVenueTypes)
-  const venueTypesOptions = buildVenueTypesOptions(venueTypes)
+  const venueTypesOptions = useSelector(selectVenueTypes)
+  console.log('venueTypesOptions', venueTypesOptions)
   const manuallySetAddress = watch('manuallySetAddress')
 
   const toggleManuallySetAddress = () => {

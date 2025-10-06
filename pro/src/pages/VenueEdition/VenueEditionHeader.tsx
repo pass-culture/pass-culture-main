@@ -14,7 +14,6 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { selectVenueTypes } from '@/commons/store/venuesTypes/selector'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import {
@@ -70,14 +69,11 @@ export const VenueEditionHeader = ({
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const venueTypes = useSelector(selectVenueTypes)
-  const venueType = venueTypes.find(
-    (venueType) => venueType.id === venue.venueTypeCode
-  )
-
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const [imageValues, setImageValues] =
     useState<UploadImageValues>(initialValues)
+
+  console.log('venue', venue)
 
   const handleOnImageUpload = async ({
     imageFile,
@@ -139,7 +135,7 @@ export const VenueEditionHeader = ({
 
       <div className={styles['venue-details']}>
         <div className={styles['venue-details-main']}>
-          <div className={styles['venue-type']}>{venueType?.label}</div>
+          <div className={styles['venue-type']}>{venue.venueType.label}</div>
           <h2 className={styles['venue-name']}>
             {venue.isVirtual
               ? `${offerer.name} (Offre numérique)`

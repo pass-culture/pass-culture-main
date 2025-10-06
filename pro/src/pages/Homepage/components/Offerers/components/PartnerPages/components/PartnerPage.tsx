@@ -46,9 +46,10 @@ export const PartnerPage = ({
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const venueTypes = useSelector(selectVenueTypes)
-  const venueType = venueTypes.find(
-    (venueType) => venueType.id === venue.venueTypeCode
-  )
+  console.log(venue)
+  const venueType = venueTypes[venue.venueTypeCode]
+  // venueTypes?.[activity.venueTypeCode]?.label ?? '—'
+
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const [imageValues, setImageValues] =

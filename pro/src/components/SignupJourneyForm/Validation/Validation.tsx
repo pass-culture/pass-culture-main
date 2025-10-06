@@ -233,11 +233,7 @@ export const Validation = (): JSX.Element | null => {
         </div>
         <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>
-            {
-              venueTypes.find(
-                (venueType) => venueType.id === activity.venueTypeCode
-              )?.label
-            }
+            {venueTypes[activity.venueTypeCode].label}
           </div>
           {activity.socialUrls.map((url) => (
             <div className={styles['data-line']} key={url}>
