@@ -25,9 +25,10 @@ SCRIPT_PATH = PCAPI_DIR / "scripts"
 HEADER = """\
 \"""
 Job console documentation here: https://www.notion.so/passcultureapp/Documentation-Job-Console-769beeacd5a146de9c97b6f8ee544276
-Assumed path to the script (copy-paste in github actions):
+Branch name and namespace for the job (copy-paste in github actions)
 
-https://github.com/pass-culture/pass-culture-main/blob/{git_branch_name}/api/src/pcapi/scripts/{namespace}/main.py
+Branch name : {git_branch_name}
+Namespace : {namespace}
 
 \"""
 
