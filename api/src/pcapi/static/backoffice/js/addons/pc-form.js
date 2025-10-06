@@ -13,6 +13,10 @@ class PcForm extends PcAddOn {
     return document.querySelectorAll(PcForm.FORM_SELECTORS)
   }
 
+  initialize = () => {
+    EventHandler.on(document.body, "htmx:afterRequest", this.#unlockAfterRequest)
+  }
+
   bindEvents = () => {
     EventHandler.on(document.body, 'submit', PcForm.FORM_SELECTORS, this.#submit)
     addEventListener("pagehide", this.#unlockAll)
@@ -37,6 +41,13 @@ class PcForm extends PcAddOn {
     }
   }
 
+  #unlockAfterRequest = (event) => {
+    const $target = event.detail.elt
+    if ($target.tagName === "FORM") {
+      this.#unlock($target)
+    }
+  }
+  
   #lock = ($target) => {
     $target.classList.add(PcForm.FORM_ALREADY_VALIDATED)
     const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
