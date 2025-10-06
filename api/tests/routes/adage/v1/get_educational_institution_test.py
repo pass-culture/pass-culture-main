@@ -6,6 +6,7 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -89,15 +90,15 @@ class Returns200Test:
     def test_get_educational_institution_address(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
+        venue = VenueFactory()
         booking = CollectiveBookingFactory(
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
+            collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
-            collectiveStock__collectiveOffer__offererAddress=None,
-            collectiveStock__collectiveOffer__locationComment=None,
+            collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
         )
         offer = booking.collectiveStock.collectiveOffer
-        offer.offererAddress = offer.venue.offererAddress
 
         response = client.with_eac_token().get(
             f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}"

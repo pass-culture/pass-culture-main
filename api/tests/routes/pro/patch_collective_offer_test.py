@@ -312,10 +312,11 @@ class Returns200Test:
         assert offer.locationComment == "Right here"
 
     def test_location_change_venue(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
         # offer is located at the address of its venue
-        offer.locationType = models.CollectiveLocationType.ADDRESS
-        offer.offererAddress = offer.venue.offererAddress
+        venue = offerers_factories.VenueFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, locationType=models.CollectiveLocationType.ADDRESS, offererAddress=venue.offererAddress
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # we change offer.venue and set the location to the new venue address

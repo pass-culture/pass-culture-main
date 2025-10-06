@@ -72,7 +72,7 @@ def get_location_options() -> list[LocationOption]:
 
 
 def _get_or_create_offerer_address(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+    venue: offerers_models.Venue,
     location_option: LocationOption,
     managing_offerer: offerers_models.Offerer,
     oa_label: str,
@@ -81,7 +81,7 @@ def _get_or_create_offerer_address(
         return None
 
     if location_option.get("isLocatedAtVenue", False):
-        return offer.venue.offererAddress
+        return venue.offererAddress
 
     factory = (
         geography_factories.ManualAddressFactory
@@ -758,17 +758,20 @@ def create_collective_offer_templates_with_different_displayed_status(
         )
 
 
-def _set_offerer_address(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+def _get_offerer_address(
+    # offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+    offer_name: str,
+    is_template: bool,
+    venue: offerers_models.Venue,
     location_option: LocationOption,
     offerer: offerers_models.Offerer,
-) -> None:
-    oa_label = f"OA pour l'offre {offer.name}"
-    if isinstance(offer, educational_models.CollectiveOfferTemplate):
+) -> offerers_models.OffererAddress | None:
+    oa_label = f"OA pour l'offre {offer_name}"
+    if is_template:
         oa_label += " (template)"
 
-    offer.offererAddress = _get_or_create_offerer_address(
-        offer=offer, location_option=location_option, managing_offerer=offerer, oa_label=oa_label
+    return _get_or_create_offerer_address(
+        venue=venue, location_option=location_option, managing_offerer=offerer, oa_label=oa_label
     )
 
 
@@ -784,8 +787,15 @@ def create_collective_offers_with_different_locations(
 
     for location_option in get_location_options():
         name = f"{location_option['name']}{' (public api)' if provider is not None else ''}"
+        offerer_address = _get_offerer_address(
+            offer_name=name,
+            is_template=False,
+            venue=venue,
+            location_option=location_option,
+            offerer=venue.managingOfferer,
+        )
 
-        offer = educational_factories.PublishedCollectiveOfferFactory.create(
+        educational_factories.PublishedCollectiveOfferFactory.create(
             name=name,
             educational_domains=[next(domains_iterator)],
             venue=venue,
@@ -796,9 +806,8 @@ def create_collective_offers_with_different_locations(
             interventionArea=location_option.get("interventionArea", []),
             locationType=location_option["locationType"],
             locationComment=location_option.get("locationComment"),
+            offererAddress=offerer_address,
         )
-
-        _set_offerer_address(offer=offer, location_option=location_option, offerer=venue.managingOfferer)
 
 
 def create_collective_offer_templates_with_different_locations(
@@ -807,7 +816,15 @@ def create_collective_offer_templates_with_different_locations(
     domains_iterator = cycle(domains)
 
     for location_option in get_location_options():
-        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.create(
+        offerer_address = _get_offerer_address(
+            offer_name=location_option["name"],
+            is_template=True,
+            venue=venue,
+            location_option=location_option,
+            offerer=venue.managingOfferer,
+        )
+
+        educational_factories.CollectiveOfferTemplateFactory.create(
             name=location_option["name"],
             venue=venue,
             educational_domains=[next(domains_iterator)],
@@ -816,10 +833,7 @@ def create_collective_offer_templates_with_different_locations(
             interventionArea=location_option.get("interventionArea", []),
             locationType=location_option["locationType"],
             locationComment=location_option.get("locationComment"),
-        )
-
-        _set_offerer_address(
-            offer=collective_offer_template, location_option=location_option, offerer=venue.managingOfferer
+            offererAddress=offerer_address,
         )
 
 
