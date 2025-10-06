@@ -55,7 +55,7 @@ psycopg2 = "^2.9.10"
 py7zr = "^1.0.0"
 # required by schwifty upgraded manually because of setuptools
 pycountry = "24.6.1"
-pydantic = { version = "2.11.9", extras = ["email"] }
+pydantic = { version = "2.11.10", extras = ["email"] }
 pyjwt = { version = "2.10.1", extras = ["crypto"] }
 pyopenssl = "25.3.0"
 pypdf = "6.1.1"
