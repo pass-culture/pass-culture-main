@@ -179,7 +179,7 @@ def get_educational_year_beginning_at_given_year(year: int) -> models.Educationa
     return educational_year
 
 
-def _get_bookings_for_adage_base_query() -> "sa_orm.Query[models.CollectiveBooking]":
+def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBooking]:
     query = db.session.query(models.CollectiveBooking)
     query = query.options(
         sa_orm.joinedload(models.CollectiveBooking.collectiveStock, innerjoin=True)
@@ -415,7 +415,7 @@ def get_expired_or_archived_collective_offers_template() -> sa_orm.Query:
     )
 
 
-def find_expiring_collective_bookings_query() -> sa_orm.Query:
+def find_expiring_collective_bookings_query() -> sa_orm.Query[models.CollectiveBooking]:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
     return db.session.query(models.CollectiveBooking).filter(
@@ -496,7 +496,7 @@ def get_collective_stock(collective_stock_id: int) -> models.CollectiveStock | N
     )
 
 
-def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) -> "sa_orm.Query[models.CollectiveOffer]":
+def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) -> sa_orm.Query[models.CollectiveOffer]:
     query = (
         db.session.query(models.CollectiveOffer)
         .join(models.CollectiveOffer.venue)
@@ -625,8 +625,8 @@ def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersF
 
 
 def filter_collective_offers_by_statuses(
-    query: sa_orm.Query, statuses: list[models.CollectiveOfferDisplayedStatus] | None
-) -> sa_orm.Query:
+    query: sa_orm.Query[models.CollectiveOffer], statuses: list[models.CollectiveOfferDisplayedStatus] | None
+) -> sa_orm.Query[models.CollectiveOffer]:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
 
@@ -908,7 +908,7 @@ def _get_filtered_collective_bookings_query(
     venue_id: int | None = None,
     *,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> sa_orm.Query:
+) -> sa_orm.Query[models.CollectiveBooking]:
     collective_bookings_query = (
         db.session.query(models.CollectiveBooking)
         .join(models.CollectiveBooking.offerer)
@@ -1022,7 +1022,7 @@ def _get_filtered_collective_bookings_pro(
     status_filter: models.CollectiveBookingStatusFilter | None = None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
-) -> sa_orm.Query:
+) -> sa_orm.Query[models.CollectiveBooking]:
     bookings_query = (
         _get_filtered_collective_bookings_query(
             pro_user,
@@ -1145,7 +1145,7 @@ def get_filtered_collective_booking_report(
     return bookings_query
 
 
-def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query:
+def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query[models.CollectiveOffer]:
     return (
         db.session.query(models.CollectiveOffer)
         .filter(models.CollectiveOffer.id == offer_id)
@@ -1267,7 +1267,7 @@ def get_collective_offer_templates_for_playlist_query(
     playlist_type: models.PlaylistType,
     max_distance: int | None = None,
     min_distance: int | None = None,
-) -> "sa_orm.Query[models.CollectivePlaylist]":
+) -> sa_orm.Query[models.CollectivePlaylist]:
     query = db.session.query(models.CollectivePlaylist).filter(
         models.CollectivePlaylist.type == playlist_type,
         models.CollectivePlaylist.institutionId == institution_id,
@@ -1344,7 +1344,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> models.CollectiveOffe
     return query.filter(models.CollectiveOffer.id == offer_id).populate_existing().one()
 
 
-def _get_collective_offer_template_by_id_for_adage_base_query() -> sa_orm.Query:
+def _get_collective_offer_template_by_id_for_adage_base_query() -> sa_orm.Query[models.CollectiveOfferTemplate]:
     return (
         db.session.query(models.CollectiveOfferTemplate)
         .filter(
@@ -1374,7 +1374,9 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> models.Colle
     return query.filter(models.CollectiveOfferTemplate.id == offer_id).populate_existing().one()
 
 
-def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> sa_orm.Query:
+def get_collective_offer_templates_by_ids_for_adage(
+    offer_ids: typing.Collection[int],
+) -> sa_orm.Query[models.CollectiveOfferTemplate]:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
     # Filter out the archived offers
     query = query.filter(models.CollectiveOfferTemplate.isArchived.is_(False))
@@ -1387,7 +1389,9 @@ def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection
     return query.filter(models.CollectiveOfferTemplate.id.in_(offer_ids)).populate_existing()
 
 
-def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> sa_orm.Query:
+def get_query_for_collective_offers_by_ids_for_user(
+    user: User, ids: typing.Iterable[int]
+) -> sa_orm.Query[models.CollectiveOffer]:
     query = db.session.query(models.CollectiveOffer)
 
     if not user.has_admin_role:
@@ -1403,7 +1407,9 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: typing.Iter
     return query
 
 
-def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: typing.Iterable[int]) -> sa_orm.Query:
+def get_query_for_collective_offers_template_by_ids_for_user(
+    user: User, ids: typing.Iterable[int]
+) -> sa_orm.Query[models.CollectiveOfferTemplate]:
     query = db.session.query(models.CollectiveOfferTemplate)
     if not user.has_admin_role:
         query = query.join(offerers_models.Venue, models.CollectiveOfferTemplate.venue)
@@ -1718,7 +1724,7 @@ def get_offers_for_my_institution(uai: str) -> sa_orm.Query[models.CollectiveOff
     )
 
 
-def get_active_national_programs() -> "sa_orm.Query[models.NationalProgram]":
+def get_active_national_programs() -> sa_orm.Query[models.NationalProgram]:
     return db.session.query(models.NationalProgram).filter(models.NationalProgram.isActive.is_(True))
 
 
@@ -1758,7 +1764,9 @@ def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.i
     )
 
 
-def get_synchronized_collective_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> sa_orm.Query:
+def get_synchronized_collective_offers_with_provider_for_venue(
+    venue_id: int, provider_id: int
+) -> sa_orm.Query[models.CollectiveOffer]:
     return (
         db.session.query(models.CollectiveOffer)
         .filter(models.CollectiveOffer.venueId == venue_id)
