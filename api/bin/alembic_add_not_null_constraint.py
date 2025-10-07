@@ -4,7 +4,7 @@ modified.
 
 Usage:
 
-    $ python bin/alembic_add_not_null_constraint --table TABLE --column COLUMN
+    $ python bin/alembic_add_not_null_constraint.py --table TABLE --column COLUMN
 
 Adding such a constraint on a large table should not be done in one
 step: this would require PostgreSQL to scan the whole table, lock it
@@ -125,7 +125,9 @@ def main() -> None:
     down_revision = get_current_post_head()
     for i_step, step in enumerate(STEPS, 1):
         slug = f"add_not_null_constraint_on_{args.table}_{args.column}_step_{i_step}_of_{len(STEPS)}"
+        dont_need_default_message = True
         message = f'Add NOT NULL constraint on "{args.table}.{args.column}" (step {i_step} of {len(STEPS)})'
+        dont_need_sa = True
         upgrade = string.Template(step["upgrade"]).substitute(bindings).strip()
         downgrade = string.Template(step["downgrade"]).substitute(bindings).strip()
         imports = step.get("imports", "").strip()
@@ -152,7 +154,9 @@ def main() -> None:
                 path,
                 "utf-8",
                 # The following kwargs are used to populate the template.
+                dont_need_default_message=dont_need_default_message,
                 message=message,
+                dont_need_sa=dont_need_sa,
                 imports=imports,
                 config=config,
                 up_revision=rev_id,

@@ -1,14 +1,16 @@
-"""FIXME: Cher·e auteur·ice de cette migration : le message ci-dessous
+"""${'' if dont_need_default_message else '''FIXME: Cher·e auteur·ice de cette migration : le message ci-dessous
 apparaît dans la sortie de `alembic history`. Tu dois supprimer ce
 FIXME et faire en sorte que le message ci-dessous soit en anglais,
 clair, en une seule ligne et lisible (un peu comme un message de
 commit). Exemple : Add "blob" column to "offer" table.
 
-${message}"""
+'''}${message}"""
 
-import sqlalchemy as sa
-from alembic import op
-${imports if imports else ""}
+${"" if dont_need_sa else """import sqlalchemy as sa
+"""}from alembic import op
+${'''
+''' + imports + '''
+''' if imports else ""}
 
 # pre/post deployment: ${config.cmd_opts.head.split("@")[0]}
 # revision identifiers, used by Alembic.
