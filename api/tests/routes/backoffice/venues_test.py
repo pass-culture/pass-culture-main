@@ -1725,6 +1725,29 @@ class UpdateVenueTest(PostEndpointHelper):
         assert set(update_snapshot.keys()) == {"contact.phone_number"}
         assert update_snapshot["contact.phone_number"]["new_info"] == data["phone_number"]
 
+    def test_update_empty_venue_contact_email(self, authenticated_client, offerer):
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=None,
+            contact__website=website,
+            contact__social_medias=social_medias,
+        )
+
+        data = self._get_current_data(venue)
+        data["phone_number"] = "+33102030456"
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
+
+        db.session.refresh(venue)
+
+        # should not have been updated or erased
+        assert venue.contact.email is None
+
     def test_update_venue_empty_phone_number(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
 

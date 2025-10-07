@@ -797,7 +797,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             phone_number=form.phone_number.data,
             # Use existing values, if any, to ensure that no data (website
             # for example) will be erased by mistake
-            email=pydantic_v1.EmailStr(venue.contact.email) if venue.contact else None,
+            email=pydantic_v1.EmailStr(venue.contact.email) if venue.contact and venue.contact.email else None,
             website=venue.contact.website if venue.contact else None,
             social_medias=venue.contact.social_medias if venue.contact else None,
         )
