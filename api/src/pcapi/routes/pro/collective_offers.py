@@ -51,6 +51,23 @@ def _get_filters_from_query(
     )
 
 
+def _get_template_filters_from_query(
+    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+) -> schemas.CollectiveOffersFilter:
+    return schemas.CollectiveOffersFilter(
+        user_id=current_user.id,
+        offerer_id=query.offerer_id,
+        venue_id=query.venue_id,
+        name_keywords=query.name,
+        statuses=query.status,
+        period_beginning_date=query.period_beginning_date,
+        period_ending_date=query.period_ending_date,
+        formats=[query.format] if query.format else None,
+        location_type=query.location_type,
+        offerer_address_id=query.offerer_address_id,
+    )
+
+
 @private_api.route("/collective/offers", methods=["GET"])
 @atomic()
 @login_required
@@ -69,6 +86,27 @@ def get_collective_offers(
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
+    )
+
+
+@private_api.route("/collective/offers-template", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel,
+    api=blueprint.pro_private_schema,
+    query_params_as_list=["status"],
+)
+def get_collective_offer_templates(
+    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+) -> collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel:
+    filters = _get_template_filters_from_query(query)
+    offers = repository.get_collective_offers_template_for_filters(
+        filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT
+    )
+
+    return collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel(
+        __root__=[collective_offers_serialize.CollectiveOfferTemplateResponseModel.build(offer) for offer in offers]
     )
 
 
