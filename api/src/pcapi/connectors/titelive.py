@@ -100,24 +100,19 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     if not response.ok:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
-        if 400 <= response.status_code < 500:
-            if response.status_code == 404:
-                log_func = logger.warning
-            else:
-                log_func = logger.error
-            log_func(
-                "Titelive get by ean 13: External error: %s",
-                response.status_code,
-                extra={
-                    "alert": "Titelive error",
-                    "ean": ean13,
-                    "error_type": "http",
-                    "status_code": response.status_code,
-                    "request_type": "get-by-ean13",
-                    "response_text": response.text,
-                },
-            )
-            raise requests.ExternalAPIException(True, {"status_code": response.status_code})
+        logger.error(
+            "Titelive get by ean 13: External error: %s",
+            response.status_code,
+            extra={
+                "alert": "Titelive error",
+                "ean": ean13,
+                "error_type": "http",
+                "status_code": response.status_code,
+                "request_type": "get-by-ean13",
+                "response_text": response.text,
+            },
+        )
+        raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
     return response.json()
 
@@ -146,24 +141,19 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
     if not response.ok:
         if response.status_code == 404:
             raise offers_exceptions.TiteLiveAPINotExistingEAN()
-        if 400 <= response.status_code < 500:
-            if response.status_code == 404:
-                log_func = logger.warning
-            else:
-                log_func = logger.error
-            log_func(
-                "Titelive get by ean list: External error: %s",
-                response.status_code,
-                extra={
-                    "alert": "Titelive error",
-                    "eans": ean_list,
-                    "error_type": "http",
-                    "status_code": response.status_code,
-                    "request_type": "get-by-ean-list",
-                    "response_text": response.text,
-                },
-            )
-            raise requests.ExternalAPIException(True, {"status_code": response.status_code})
+        logger.error(
+            "Titelive get by ean list: External error: %s",
+            response.status_code,
+            extra={
+                "alert": "Titelive error",
+                "eans": ean_list,
+                "error_type": "http",
+                "status_code": response.status_code,
+                "request_type": "get-by-ean-list",
+                "response_text": response.text,
+            },
+        )
+        raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
     return response.json()
 
