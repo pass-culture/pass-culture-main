@@ -93,4 +93,17 @@ describe('CollectiveOfferSummary', () => {
       expect(screen.queryByText('n°2')).not.toBeInTheDocument()
     )
   })
+
+  it('should have the correct url for the list button when offer isTemplate is true', async () => {
+    offer = getCollectiveOfferTemplateFactory({
+      isTemplate: true,
+    })
+
+    renderCollectiveOfferSummaryEdition(offer)
+
+    const listButton = await screen.findByRole('link', {
+      name: /Retour à la liste des offres/i,
+    })
+    expect(listButton).toHaveAttribute('href', '/offres/vitrines')
+  })
 })
