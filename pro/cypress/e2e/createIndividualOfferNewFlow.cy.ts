@@ -15,8 +15,10 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
+    cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as(
+      'patchNonEventStocks'
+    )
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postEventStocks')
-    cy.intercept({ method: 'POST', url: '/stocks' }).as('postProductStock')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
       'getOfferersNames'
@@ -315,7 +317,7 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@postProductStock', '@getOffer'], {
+    cy.wait(['@patchOffer', '@patchNonEventStocks', '@getOffer'], {
       responseTimeout: 30 * 1000,
     })
 
