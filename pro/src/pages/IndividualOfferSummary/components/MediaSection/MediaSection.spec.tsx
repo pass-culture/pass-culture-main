@@ -20,7 +20,7 @@ const MOCK_DATA = {
 
 const LABELS = {
   title: 'Image et vidéo',
-  editLink: 'Modifier les détails de l’offre',
+  editLink: 'Modifier l’image et la vidéo de l’offre',
   imageSubSectionTitle: 'Ajoutez une image',
   imageSubSectionImageAlt: 'Prévisualisation de l’image',
   imageFallbackText: 'Pas d’image',

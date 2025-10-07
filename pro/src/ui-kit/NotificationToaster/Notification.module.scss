@@ -23,7 +23,6 @@
   }
 
   &.hide {
-    opacity: 0;
     transform: translateX(0) translateY(100%);
     transition: all 400ms ease-in;
   }
@@ -51,7 +50,6 @@
   @media screen and (prefers-reduced-motion: reduce) {
     &.show {
       animation: none;
-      opacity: 1;
       transition: none;
       visibility: visible;
     }
@@ -64,12 +62,10 @@
   @keyframes animatetop {
     from {
       bottom: rem.torem(-300px);
-      opacity: 0;
     }
 
     to {
       bottom: 0;
-      opacity: 1;
     }
   }
 
