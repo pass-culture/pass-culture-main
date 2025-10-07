@@ -6,38 +6,12 @@ import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.testing import get_serialized_address
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-
-
-def _get_serialized_address(
-    offerer_address: offerers_models.OffererAddress, label: str, is_linked_to_venue: bool
-) -> dict:
-    address = offerer_address.address
-
-    return {
-        "address": {
-            "id": address.id,
-            "id_oa": offerer_address.id,
-            "inseeCode": address.inseeCode,
-            "isLinkedToVenue": is_linked_to_venue,
-            "isManualEdition": False,
-            "city": address.city,
-            "label": label,
-            "latitude": float(address.latitude),
-            "longitude": float(address.longitude),
-            "postalCode": address.postalCode,
-            "departmentCode": address.departmentCode,
-            "street": address.street,
-            "banId": address.banId,
-        },
-        "locationComment": None,
-        "locationType": "ADDRESS",
-    }
 
 
 @pytest.mark.usefixtures("db_session")
@@ -147,7 +121,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
         )
 
@@ -162,7 +136,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
         )
 
@@ -351,7 +325,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
         )
 
@@ -366,7 +340,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
         )
 

@@ -575,7 +575,9 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
     return query
 
 
-def get_collective_offers_template_by_filters(filters: schemas.CollectiveOffersFilter) -> sa_orm.Query:
+def get_collective_offers_template_by_filters(
+    filters: schemas.CollectiveOffersFilter,
+) -> sa_orm.Query[models.CollectiveOfferTemplate]:
     query = (
         db.session.query(models.CollectiveOfferTemplate)
         .join(models.CollectiveOfferTemplate.venue)
@@ -881,10 +883,9 @@ def get_collective_offers_template_for_filters(
 ) -> list[models.CollectiveOfferTemplate]:
     query = get_collective_offers_template_by_filters(filters=filters)
 
-    query = query.order_by(models.CollectiveOfferTemplate.dateCreated.desc())
-
     offers = (
-        query.options(
+        query.order_by(models.CollectiveOfferTemplate.isArchived, models.CollectiveOfferTemplate.dateCreated.desc())
+        .options(
             sa_orm.joinedload(models.CollectiveOfferTemplate.venue).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
@@ -897,6 +898,7 @@ def get_collective_offers_template_for_filters(
         .populate_existing()
         .all()
     )
+
     return offers
 
 
