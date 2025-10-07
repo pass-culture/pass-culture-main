@@ -7,6 +7,7 @@ import pathlib
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy as sa
 import time_machine
 
 import pcapi.core.mails.testing as mails_testing
@@ -3669,3 +3670,37 @@ class SendReminderEmailToIndividualOfferersTest:
         assert offerer.individualSubscription.isReminderEmailSent is True
         assert offerer.individualSubscription.dateReminderEmailSent == datetime.date.today()
         mocked_transactional_mail.assert_called_once_with(offerer.UserOfferers[0].user.email)
+
+
+class CleanUnusedOffererAddressTest:
+    def test_clean_unused_offerer_address(self, caplog):
+        offerers_factories.OffererAddressFactory()
+        venue = offerers_factories.VenueFactory()
+        oa1 = venue.offererAddress
+        oa2, oa3, oa4, _ = offerers_factories.OffererAddressFactory.create_batch(4, offerer=venue.managingOfferer)
+        offers_factories.OfferFactory(venue=venue, offererAddress=oa2)
+        educational_factories.CollectiveOfferFactory(
+            venue=venue, locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=oa3
+        )
+        educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=oa4
+        )
+
+        with caplog.at_level(logging.INFO):
+            offerers_api.clean_unused_offerer_address()
+
+        remaining_ids = db.session.query(sa.func.array_agg(offerers_models.OffererAddress.id)).scalar()
+        assert set(remaining_ids) == {oa1.id, oa2.id, oa3.id, oa4.id}
+
+        assert caplog.records[0].message == "2 unused rows to delete in offerer_address"
+
+    def test_nothing_to_delete(self, caplog):
+        oa = offerers_factories.VenueFactory().offererAddress
+
+        with caplog.at_level(logging.INFO):
+            offerers_api.clean_unused_offerer_address()
+
+        remaining_ids = db.session.query(sa.func.array_agg(offerers_models.OffererAddress.id)).scalar()
+        assert remaining_ids == [oa.id]
+
+        assert caplog.records[0].message == "0 unused rows to delete in offerer_address"

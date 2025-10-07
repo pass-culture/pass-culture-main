@@ -207,3 +207,14 @@ def acceslibre_matching(
     offerers_api.acceslibre_matching(
         batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
     )
+
+
+@blueprint.cli.command("clean_unused_offerer_address")
+@click.option("--dry-run", is_flag=True)
+def clean_unused_offerer_address(dry_run: bool = False) -> None:
+    offerers_api.clean_unused_offerer_address()
+
+    if dry_run:
+        db.session.rollback()
+    else:
+        db.session.commit()

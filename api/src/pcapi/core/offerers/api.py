@@ -3355,3 +3355,34 @@ def find_ban_address_from_insee_address(
             },
         )
         return None
+
+
+def clean_unused_offerer_address() -> None:
+    offerer_address_usage = db.session.query(
+        offerers_models.OffererAddress.id.label("offerer_address_id"),
+        sa.or_(
+            sa.select(1).where(offerers_models.Venue.offererAddressId == offerers_models.OffererAddress.id).exists(),
+            sa.select(1)
+            .where(educational_models.CollectiveOffer.offererAddressId == offerers_models.OffererAddress.id)
+            .exists(),
+            sa.select(1)
+            .where(educational_models.CollectiveOfferTemplate.offererAddressId == offerers_models.OffererAddress.id)
+            .exists(),
+            sa.select(1).where(offers_models.Offer.offererAddressId == offerers_models.OffererAddress.id).exists(),
+        ).label("is_used"),
+    ).cte()
+
+    count = (
+        db.session.query(offerers_models.OffererAddress)
+        .filter(
+            offerers_models.OffererAddress.id.in_(
+                sa.select(offerer_address_usage.c.offerer_address_id)
+                .select_from(offerer_address_usage)
+                .filter(offerer_address_usage.c.is_used.is_(False))
+                .scalar_subquery()
+            )
+        )
+        .delete(synchronize_session=False)
+    )
+
+    logger.info("%s unused rows to delete in offerer_address", count)
