@@ -267,8 +267,8 @@ if __name__ == "__main__":
     app.app_context().push()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--lock-timeout", type=int, default=5)
-    parser.add_argument("--statement-timeout", type=int, default=3600)
+    parser.add_argument("--lock-timeout", type=int, default=5, help="Lock timeout in seconds")
+    parser.add_argument("--statement-timeout", type=int, default=3600, help="Statement timeout in seconds")
     parser.add_argument("--max-retries", type=int, default=10)
     parser.add_argument("--deactivate-cron", action=argparse.BooleanOptionalAction, default=False)
     parser.add_argument("--only-recreate-indexes", action=argparse.BooleanOptionalAction, default=False)
@@ -284,6 +284,9 @@ if __name__ == "__main__":
     if args.index:
         assert args.index in INDEXES_TABLE_MAP, f"L'index {args.index} n'est pas dans la liste des index gérés"
 
+    statement_timeout = args.statement_timeout * 1000  # en ms
+    lock_timeout = args.lock_timeout * 1000  # en ms
+
     now = int(time.time())
     scheduled_timestamp = int(datetime.strptime(args.schedule_date, DATE_FORMAT).replace(tzinfo=LOCAL_TZ).timestamp())
     if scheduled_timestamp > now:
@@ -296,11 +299,9 @@ if __name__ == "__main__":
         if args.deactivate_cron:
             toggle_feature_flag(is_active=False)  # désactive le FF au moment du lancement
         if not args.only_recreate_indexes:
-            clean_temporary_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
-            create_missing_indexes(args.lock_timeout, args.statement_timeout, args.max_retries)
-        recreate_invalid_indexes(
-            args.lock_timeout, args.statement_timeout, args.max_retries, index_to_recreate=args.index
-        )
+            clean_temporary_indexes(lock_timeout, statement_timeout, args.max_retries)
+            create_missing_indexes(lock_timeout, statement_timeout, args.max_retries)
+        recreate_invalid_indexes(lock_timeout, statement_timeout, args.max_retries, index_to_recreate=args.index)
         log_invalid_indexes()
     finally:
         if args.deactivate_cron:
