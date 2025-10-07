@@ -58,7 +58,7 @@ export function IndividualOfferSummaryPracticalInfosScreen({
             step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
-          aria-label="Modifier les détails de l’offre"
+          aria-label="Modifier les informations de l’offre"
         >
           <div className={styles['withdrawal-block']}>
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />

@@ -192,7 +192,9 @@ export function IndividualOfferSummaryDetailsScreen({
                     : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
                   mode: OFFER_WIZARD_MODE.EDITION,
                 }),
-                'aria-label': 'Modifier les détails de l’offre',
+                'aria-label': isNewOfferCreationFlowFeatureActive
+                  ? 'Modifier la description de l’offre'
+                  : 'Modifier les détails de l’offre',
               })}
         >
           <SummarySubSection title="A propos de votre offre">

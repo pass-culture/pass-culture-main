@@ -205,7 +205,11 @@ export const OfferSection = ({
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
-        aria-label="Modifier les détails de l’offre"
+        aria-label={
+          isNewOfferCreationFlowFeatureActive
+            ? 'Modifier la description de l’offre'
+            : 'Modifier les détails de l’offre'
+        }
         shouldShowDivider
       >
         <SummarySubSection
@@ -227,7 +231,11 @@ export const OfferSection = ({
         )}
       </SummarySection>
       <SummarySection
-        title="Informations pratiques"
+        title={
+          isNewOfferCreationFlowFeatureActive
+            ? 'Localisation'
+            : 'Informations pratiques'
+        }
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
           step: isNewOfferCreationFlowFeatureActive
@@ -236,7 +244,11 @@ export const OfferSection = ({
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
-        aria-label="Modifier les informations pratiques de l’offre"
+        aria-label={
+          isNewOfferCreationFlowFeatureActive
+            ? 'Modifier la localisation de l’offre'
+            : 'Modifier les informations pratiques de l’offre'
+        }
         shouldShowDivider
       >
         {!offer.isDigital && (
