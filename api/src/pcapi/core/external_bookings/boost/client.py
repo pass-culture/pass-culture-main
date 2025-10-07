@@ -368,7 +368,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         interval_days: int = constants.BOOST_SHOWS_INTERVAL_DAYS,
         per_page: int = 30,  # `per_page` max value seems to be 200
         film: int | None = None,
-    ) -> list:
+    ) -> list[serializers.ShowTime4]:
         start_str = start_date.strftime("%Y-%m-%d")
         end_str = (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d")
         url = f"{self.cinema_details.cinemaUrl}api/showtimes/between/{start_str}/{end_str}"

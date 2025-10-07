@@ -62,7 +62,7 @@ class PublicApiProviderFactory(BaseFactory):
     notificationExternalUrl = factory.Sequence("https://{}.example.org/booking".format)
 
 
-class VenueProviderFactory(BaseFactory):
+class VenueProviderFactory(BaseFactory[models.VenueProvider]):
     class Meta:
         model = models.VenueProvider
 
@@ -81,7 +81,7 @@ class VenueProviderExternalUrlsFactory(BaseFactory):
     notificationExternalUrl = factory.Sequence("https://{}.example.org/notification".format)
 
 
-class CinemaProviderPivotFactory(BaseFactory):
+class CinemaProviderPivotFactory(BaseFactory[models.CinemaProviderPivot]):
     class Meta:
         model = models.CinemaProviderPivot
 
@@ -127,7 +127,7 @@ class CDSCinemaDetailsFactory(BaseFactory):
     accountId = factory.Sequence("account{}".format)
 
 
-class BoostCinemaDetailsFactory(BaseFactory):
+class BoostCinemaDetailsFactory(BaseFactory[models.BoostCinemaDetails]):
     class Meta:
         model = models.BoostCinemaDetails
 

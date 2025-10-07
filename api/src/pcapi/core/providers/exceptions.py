@@ -9,6 +9,10 @@ class VenueProviderException(ProviderException):
     pass
 
 
+class InactiveVenueProvider(ProviderException):
+    pass
+
+
 class NoPriceSpecified(VenueProviderException):
     pass
 

@@ -323,7 +323,7 @@ class HeadlineOfferFactory(BaseFactory[models.HeadlineOffer]):
                 MediationFactory(offer=self.offer)
 
 
-class PriceCategoryLabelFactory(BaseFactory):
+class PriceCategoryLabelFactory(BaseFactory[models.PriceCategoryLabel]):
     class Meta:
         model = models.PriceCategoryLabel
 
