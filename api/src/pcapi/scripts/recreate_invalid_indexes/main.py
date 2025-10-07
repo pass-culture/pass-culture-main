@@ -222,6 +222,8 @@ def recreate_invalid_indexes(
         for index_name, _ in indexes_to_recreate:
             drop_index(connection, index_name, max_retries=max_retries)
 
+    time.sleep(5)  # let's just wait a bit before recreating
+    with autocommit_connection(lock_timeout, statement_timeout) as connection:
         logger.info("Recreating indexes...")
         for index_name, index_definition in indexes_to_recreate:
             create_index(connection, index_name, index_definition, max_retries=max_retries)
