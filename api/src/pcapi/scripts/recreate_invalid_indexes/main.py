@@ -171,7 +171,12 @@ def create_index(connection: sa.engine.Connection, index_name: str, index_defini
         attempts += 1
         retry = False
         try:
-            connection.execute(sa.text(f'CREATE INDEX CONCURRENTLY IF NOT EXISTS "{index_name}" {index_definition};'))
+            if attempts == 1:
+                connection.execute(
+                    sa.text(f'CREATE INDEX CONCURRENTLY IF NOT EXISTS "{index_name}" {index_definition};')
+                )
+            else:
+                connection.execute(sa.text(f'REINDEX INDEX CONCURRENTLY "{index_name}";'))
         except sqlalchemy.exc.OperationalError as exc:
             logger.info(f"Failed to create index {index_name}: {exc}")
             if "lock timeout" in str(exc):
