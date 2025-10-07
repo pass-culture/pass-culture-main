@@ -1186,6 +1186,10 @@ def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | N
     return query
 
 
+def get_venue_price_category_labels(venue_id: int) -> list[models.PriceCategoryLabel]:
+    return db.session.query(models.PriceCategoryLabel).filter(models.PriceCategoryLabel.venueId == venue_id).all()
+
+
 def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Query:
     return (
         query.outerjoin(models.Offer.lastProvider)

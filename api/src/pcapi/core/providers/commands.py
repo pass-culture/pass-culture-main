@@ -15,6 +15,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
+from .etls.boost_etl import BoostETLProcess
 from .titelive_book_search import TiteliveBookSearch
 from .titelive_music_search import TiteliveMusicSearch
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -39,6 +40,23 @@ def _set_debug_level(target_logger: logging.Logger, level: int) -> Generator[Non
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def synchronize_allocine_products() -> None:
     allocine.synchronize_products()
+
+
+# TODO (tcoudray-pass, 07/10/25): Remove this command once Boost has been migrated to new integration
+@blueprint.cli.command("test_etl_integration")
+@click.option("-vp", "--venue-provider-id", required=True, help="Venue provider id", type=int)
+def test_etl_integration(venue_provider_id: int) -> None:
+    venue_provider: providers_models.VenueProvider = (
+        db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
+    )
+
+    if venue_provider.provider.localClass not in ["BoostStocks"]:
+        logger.warning("ETL integration not available for %s", venue_provider.provider.localClass)
+        return
+
+    with _set_debug_level(logging.getLogger("pcapi"), level=logging.DEBUG):
+        etl_process = BoostETLProcess(venue_provider)
+        etl_process.execute()
 
 
 @blueprint.cli.command("debug_synchronize_venue_provider")
