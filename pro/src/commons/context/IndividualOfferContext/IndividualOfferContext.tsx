@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
+import { queries, tags } from '@/apiClient/services'
 import type {
   CategoryResponseModel,
   GetIndividualOfferWithAddressResponseModel,
@@ -68,19 +69,10 @@ export const IndividualOfferContextProvider = ({
   const offerQuery = useSWR(
     // TODO (igabriele, 2025-08-18): Use the `mode` via `useOfferWizardMode` hook to keep a single source of truth.
     offerId && offerIdAsString !== 'creation'
-      ? [GET_OFFER_QUERY_KEY, Number(offerId)]
+      ? queries.getOffer.tag(offerId)
       : null,
-    ([, offerIdParam]) => api.getOffer(offerIdParam),
-    {
-      onError: (error, key) => {
-        if (error.status === 404) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate('/404', { state: { from: 'offer' } })
-          return
-        }
-        SWRConfig.onError(error, key, SWRConfig)
-      },
-    }
+    () => api.getOffer(Number(offerId)),
+    queries.getOffer.options
   )
   const offer = offerQuery.data
 

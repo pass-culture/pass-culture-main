@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
+import { mutations, tags } from '@/apiClient/services'
 import type {
   GetIndividualOfferResponseModel,
   VenueListItemResponseModel,
@@ -140,6 +141,10 @@ export const IndividualOfferDetailsScreen = ({
             isNewOfferCreationFlowFeatureActive
           )
         )
+        await mutate(
+          mutations.patchDraftOffer.postDraftOffer(offerId),
+          mutations.patchDraftOffer.options
+        )
       } else if (!shouldNotPatchData && initialOfferId) {
         response = await api.patchDraftOffer(
           initialOfferId,
@@ -148,11 +153,18 @@ export const IndividualOfferDetailsScreen = ({
             isNewOfferCreationFlowFeatureActive
           )
         )
+        await mutate(
+          mutations.patchDraftOffer.cacheKey(offerId),
+          mutations.patchDraftOffer.options
+        )
       }
 
       offerId = response?.id ?? initialOfferId
 
-      await mutate([GET_OFFER_QUERY_KEY, offerId])
+      /* Avant c'était ça : */
+      /* await mutate([GET_OFFER_QUERY_KEY, offerId]) */
+
+      // https://swr.vercel.app/fr-FR/docs/mutation#update-cache-after-mutation
 
       // replace url to fix back button
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

@@ -133,6 +133,7 @@ export const App = (): JSX.Element | null => {
             notify.error(GET_DATA_ERROR_MESSAGE)
           },
           revalidateOnFocus: false,
+          dedupingInterval: 60000,
         }}
       >
         <Outlet />
