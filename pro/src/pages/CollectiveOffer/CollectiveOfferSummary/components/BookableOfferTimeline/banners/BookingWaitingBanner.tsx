@@ -82,8 +82,8 @@ export const BookingWaitingBanner = ({
             departmentCode
           )}
         </span>
-        . Sinon, elle sera automatiquement annulée et vous ne pourrez pas en
-        obtenir le remboursement par la suite.
+        . Sinon, elle sera automatiquement expirée et vous devrez renseigner une
+        nouvelle date limite de réservation.
       </div>
     </Callout>
   )
