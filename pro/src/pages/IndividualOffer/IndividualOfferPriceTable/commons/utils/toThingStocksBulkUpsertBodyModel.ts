@@ -23,7 +23,10 @@ const toThingStockUpsertBodyModel = (
   const activationCodesExpirationDatetime: string | null =
     (entry.activationCodes ?? []).length > 0 &&
     isDateValid(entry.activationCodesExpirationDatetime)
-      ? toBookingLimitDatetime(departementCode)
+      ? toBookingLimitDatetime(
+          entry.activationCodesExpirationDatetime,
+          departementCode
+        )
       : null
   const bookingLimitDatetime = isDateValid(entry.bookingLimitDatetime)
     ? toBookingLimitDatetime(entry.bookingLimitDatetime, departementCode)
@@ -39,17 +42,6 @@ const toThingStockUpsertBodyModel = (
     offerId: entry.offerId,
     price,
     quantity,
-  }
-
-  const activationCodes = (entry.activationCodes ?? []) as string[]
-  if (activationCodes.length > 0) {
-    stock.activationCodes = activationCodes
-    if (isDateValid(entry.activationCodesExpirationDatetime)) {
-      stock.activationCodesExpirationDatetime = toBookingLimitDatetime(
-        entry.activationCodesExpirationDatetime,
-        departementCode
-      )
-    }
   }
 
   return stock

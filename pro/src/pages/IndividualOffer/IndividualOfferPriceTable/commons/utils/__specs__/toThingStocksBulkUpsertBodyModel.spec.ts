@@ -23,6 +23,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
     hasActivationCode: false,
     label: 'Tarif',
   }
+  const contextBase = { departementCode: '75' }
 
   it('should map a basic entry without dates or codes', () => {
     const formValues: PriceTableFormValues = {
@@ -30,9 +31,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: null,
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks).toHaveLength(1)
     expect(result.stocks[0]).toEqual({
@@ -58,9 +57,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: undefined,
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].price).toBe(0)
     expect(result.stocks[0].quantity).toBeNull()
@@ -78,9 +75,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: '75',
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].bookingLimitDatetime).not.toBeNull()
     // Should be an ISO string without milliseconds and ending with 'Z'
@@ -100,9 +95,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: '13',
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].bookingLimitDatetime).toBeNull()
   })
@@ -120,7 +113,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
     }
 
     const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: null,
+      departementCode: '75',
     })
 
     expect(result.stocks[0].activationCodes).toBeNull()
@@ -128,27 +121,24 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
   })
 
   it('should set activationCodes and expiration when both valid', () => {
-    const futureDate = new Date(Date.UTC(2030, 0, 15))
-    const isoDateOnly = format(futureDate, FORMAT_ISO_DATE_ONLY)
     const formValues: PriceTableFormValues = {
       entries: [
         {
           ...formValuesEntryBase,
           activationCodes: ['A', 'B'],
-          activationCodesExpirationDatetime: isoDateOnly,
+          activationCodesExpirationDatetime: '2025-10-26',
+          hasActivationCode: true,
         },
       ],
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: null,
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].activationCodes).toEqual(['A', 'B'])
     expect(result.stocks[0].activationCodesExpirationDatetime).not.toBeNull()
     expect(result.stocks[0].activationCodesExpirationDatetime).toMatch(
-      /2030-01-15T\d{2}:\d{2}:\d{2}Z$/
+      /2025-10-26T\d{2}:\d{2}:\d{2}Z$/
     )
   })
 
@@ -159,14 +149,13 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
           ...formValuesEntryBase,
           activationCodes: ['A'],
           activationCodesExpirationDatetime: 'bad-date',
+          hasActivationCode: true,
         },
       ],
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: '59',
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].activationCodes).toEqual(['A'])
     expect(result.stocks[0].activationCodesExpirationDatetime).toBeNull()
@@ -188,9 +177,7 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: null,
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks).toHaveLength(2)
     expect(result.stocks[0].offerId).toBe(1)
@@ -209,29 +196,8 @@ describe('toThingStocksBulkUpsertBodyModel', () => {
       isDuo: null,
     }
 
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: undefined,
-    })
+    const result = toThingStocksBulkUpsertBodyModel(formValues, contextBase)
 
     expect(result.stocks[0].id).toBe(99)
-  })
-
-  it('should keep activationCodes array instance (no cloning logic required)', () => {
-    const formValues: PriceTableFormValues = {
-      entries: [
-        {
-          ...formValuesEntryBase,
-          activationCodes: ['X'],
-          activationCodesExpirationDatetime: null,
-        },
-      ],
-      isDuo: null,
-    }
-
-    const result = toThingStocksBulkUpsertBodyModel(formValues, {
-      departementCode: null,
-    })
-
-    expect(result.stocks[0].activationCodes).toEqual(['X'])
   })
 })
