@@ -11,6 +11,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from . import blueprint
 
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/structure/search/<search_input>", methods=["GET"])
 @login_required
+@atomic()
 @spectree_serialize(
     response_model=sirene_serializers.StructureDataBodyModel,
     api=blueprint.pro_private_schema,
