@@ -4,8 +4,10 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
-import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
+import {
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+  DEFAULT_PAGE,
+} from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
@@ -32,8 +34,6 @@ export const CollectiveOffers = (): JSX.Element => {
   const navigate = useNavigate()
   const offerer = useSelector(selectCurrentOfferer)
 
-  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
-
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
   const redirectWithUrlFilters = (
@@ -44,9 +44,15 @@ export const CollectiveOffers = (): JSX.Element => {
     delete filters.offererId
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    navigate(computeCollectiveOffersUrl(filters, defaultCollectiveFilters), {
-      replace: true,
-    })
+    navigate(
+      computeCollectiveOffersUrl(
+        filters,
+        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+      ),
+      {
+        replace: true,
+      }
+    )
   }
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
@@ -57,7 +63,7 @@ export const CollectiveOffers = (): JSX.Element => {
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
-    ...defaultCollectiveFilters,
+    ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
     ...finalSearchFilters,
     ...{ offererId: offerer?.id?.toString() ?? 'all' },
   }
@@ -68,7 +74,7 @@ export const CollectiveOffers = (): JSX.Element => {
     () => {
       const params = serializeApiCollectiveFilters(
         apiFilters,
-        defaultCollectiveFilters,
+        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
         isNewOffersAndBookingsActive
       )
 

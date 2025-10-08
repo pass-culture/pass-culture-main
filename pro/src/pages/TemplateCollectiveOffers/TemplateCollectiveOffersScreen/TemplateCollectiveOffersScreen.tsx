@@ -65,7 +65,7 @@ export const TemplateCollectiveOffersScreen = ({
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ignore: ['nameOrIsbn'],
+    ignore: ['nameOrIsbn', 'collectiveOfferType'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
