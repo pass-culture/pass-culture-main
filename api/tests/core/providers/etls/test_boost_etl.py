@@ -1,10 +1,11 @@
 import datetime
+import decimal
 import logging
 from decimal import Decimal
 
 import pytest
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.external_bookings.boost import constants as boost_constants
@@ -75,7 +76,7 @@ class BoostETLProcessTest:
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "exc": "ConnectTimeout",
+            "data": {"exc": "ConnectTimeout"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):
@@ -90,9 +91,6 @@ class BoostETLProcessTest:
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        price_category_label = offers_factories.PriceCategoryLabelFactory(
-            label="Tarif pass Culture", venue=venue_provider.venue
         )
 
         etl_process = BoostETLProcess(venue_provider)
@@ -116,7 +114,6 @@ class BoostETLProcessTest:
                 boost_serializers.CinemaAttribut(id=28, title="Sièges Inclinables"),
                 boost_serializers.CinemaAttribut(id=29, title="Sièges Inclinables électriques"),
             ],
-            "price_category_labels": [price_category_label],
             "showtimes": [
                 boost_serializers.ShowTime4(
                     id=15971,
@@ -234,3 +231,130 @@ class BoostETLProcessTest:
                 ),
             ],
         }
+
+    def test_transform_should_return_loadable_result(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        venue_id = venue_provider.venueId
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+        )
+
+        etl_process = BoostETLProcess(venue_provider)
+
+        extract_result = etl_process._extract()
+        transform_result = etl_process._transform(extract_result=extract_result)
+        assert transform_result == [
+            {
+                "movie_uuid": f"161%{venue_id}%Boost",
+                "movie_data": offers_models.Movie(
+                    allocine_id="270935",
+                    description=None,
+                    duration=163,
+                    poster_url="http://example.com/images/159673.jpg",
+                    visa="159673",
+                    title="MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1",
+                    extra_data=None,
+                ),
+                "stocks_data": [
+                    {
+                        "stock_uuid": f"161%{venue_id}%Boost#15971",
+                        "show_datetime": datetime.datetime(2023, 9, 26, 8, 40),
+                        "remaining_quantity": 147,
+                        "features": ["VF", "ICE"],
+                        "price": decimal.Decimal("12.0"),
+                        "price_label": "PASS CULTURE",
+                    }
+                ],
+            },
+            {
+                "movie_uuid": f"145%{venue_id}%Boost",
+                "movie_data": offers_models.Movie(
+                    allocine_id="269975",
+                    description=None,
+                    duration=140,
+                    poster_url="http://example.com/images/159570.jpg",
+                    visa="159570",
+                    title="SPIDER-MAN ACROSS THE SPIDER-VERSE",
+                    extra_data=None,
+                ),
+                "stocks_data": [
+                    {
+                        "stock_uuid": f"145%{venue_id}%Boost#16277",
+                        "show_datetime": datetime.datetime(2023, 9, 26, 9, 10),
+                        "remaining_quantity": 452,
+                        "features": ["VO"],
+                        "price": decimal.Decimal("6.0"),
+                        "price_label": "PASS CULTURE",
+                    },
+                    {
+                        "stock_uuid": f"145%{venue_id}%Boost#15978",
+                        "show_datetime": datetime.datetime(2023, 9, 26, 12, 20),
+                        "remaining_quantity": 152,
+                        "features": ["VF", "ICE"],
+                        "price": decimal.Decimal("12.0"),
+                        "price_label": "PASS CULTURE",
+                    },
+                ],
+            },
+        ]
+
+    def test_transform_should_drop_showtime_without_pc_pricing(self):
+        venue_provider = self.setup_cinema_objects()
+        etl_process = BoostETLProcess(venue_provider)
+
+        extract_result = {
+            "cinema_attributes": [],
+            "showtimes": [
+                boost_serializers.ShowTime4(
+                    id=15971,
+                    numberSeatsRemaining=147,
+                    showDate=datetime.datetime(2023, 9, 26, 8, 40),
+                    showEndDate=datetime.datetime(2023, 9, 26, 11, 38),
+                    film=boost_serializers.Film2(
+                        id=161,
+                        titleCnc="MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1",
+                        numVisa=159673,
+                        posterUrl="http://example.com/images/159673.jpg",
+                        thumbUrl="http://example.com/img/thumb/film/159673.jpg",
+                        duration=163,
+                        idFilmAllocine=270935,
+                    ),
+                    format={"id": 1, "title": "2D"},
+                    version={"id": 3, "title": "Film Etranger en Langue Française", "code": "VF"},
+                    screen={
+                        "id": 6,
+                        "auditoriumNumber": 6,
+                        "name": "SALLE 6 - ICE",
+                        "capacity": 152,
+                        "HFR": True,
+                        "is4K": True,
+                        "ice": True,
+                        "lightVibes": True,
+                        "eclairColor": False,
+                        "hearingImpaired": False,
+                        "audioDescription": False,
+                        "seatingAllowed": True,
+                        "screenPosition": False,
+                    },
+                    showtimePricing=[
+                        boost_serializers.ShowtimePricing(
+                            id=537105,
+                            pricingCode="FULL_PRICE",
+                            amountTaxesIncluded=Decimal("14.0"),
+                            title="Plein tarif",
+                        )
+                    ],
+                    attributs=[35, 44, 24, 1, 29, 40],
+                ),
+            ],
+        }
+        transform_result = etl_process._transform(extract_result)
+        assert transform_result == []
