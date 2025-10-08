@@ -43,12 +43,10 @@ describe('OfferInstitutionCell', () => {
       },
     })
 
-    expect(screen.getByRole('cell')).toHaveTextContent(
-      'Collège Bellevue - 76000'
-    )
+    expect(screen.getByRole('cell')).toHaveTextContent('Collège Bellevue 76000')
   })
 
-  it('should display institutionType and city when name is not provided', () => {
+  it('should display institutionType, city and postalCode when name is not provided', () => {
     renderOfferInstitutionCell({
       ...props,
       educationalInstitution: {
@@ -57,7 +55,7 @@ describe('OfferInstitutionCell', () => {
       },
     })
 
-    expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen')
+    expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen 76000')
   })
 
   it('should display "Tous les établissements" for OfferTemplate when institution name and postal code are empty', () => {
