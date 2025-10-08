@@ -14,14 +14,23 @@ depends_on: list[str] | None = None
 
 def upgrade() -> None:
     conn = op.get_bind()
-    is_hypertable = conn.execute(
+    is_timescaledb_installed = conn.execute(
         sa.text("""
+            SELECT EXISTS (
+                SELECT 1 FROM pg_extension WHERE extname = 'timescaledb'
+            );
+        """)
+    ).scalar()
+    is_hypertable = False
+    if is_timescaledb_installed:
+        is_hypertable = conn.execute(
+            sa.text("""
             SELECT EXISTS (
                 SELECT 1 FROM timescaledb_information.hypertables
                 WHERE hypertable_name = 'booking'
             );
         """)
-    ).scalar()
+        ).scalar()
     if is_hypertable:
         op.add_column("fraudulent_booking_tag", sa.Column("bookingDateCreated", sa.DateTime(), nullable=True))
         op.execute("""
@@ -51,14 +60,23 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    is_hypertable = conn.execute(
+    is_timescaledb_installed = conn.execute(
         sa.text("""
+            SELECT EXISTS (
+                SELECT 1 FROM pg_extension WHERE extname = 'timescaledb'
+            );
+        """)
+    ).scalar()
+    is_hypertable = False
+    if is_timescaledb_installed:
+        is_hypertable = conn.execute(
+            sa.text("""
             SELECT EXISTS (
                 SELECT 1 FROM timescaledb_information.hypertables
                 WHERE hypertable_name = 'booking'
             );
         """)
-    ).scalar()
+        ).scalar()
     if is_hypertable:
         op.drop_constraint("fraudulent_booking_tag_booking_fk", "fraudulent_booking_tag", type_="foreignkey")
         op.drop_column("fraudulent_booking_tag", "bookingDateCreated")

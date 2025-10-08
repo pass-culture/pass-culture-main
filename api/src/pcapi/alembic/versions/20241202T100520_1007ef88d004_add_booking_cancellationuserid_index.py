@@ -16,14 +16,23 @@ depends_on: list[str] | None = None
 
 def upgrade() -> None:
     conn = op.get_bind()
-    is_hypertable = conn.execute(
+    is_timescaledb_installed = conn.execute(
         sa.text("""
-        SELECT EXISTS (
-            SELECT 1 FROM timescaledb_information.hypertables
-            WHERE hypertable_name = 'booking'
-        );
-    """)
+            SELECT EXISTS (
+                SELECT 1 FROM pg_extension WHERE extname = 'timescaledb'
+            );
+        """)
     ).scalar()
+    is_hypertable = False
+    if is_timescaledb_installed:
+        is_hypertable = conn.execute(
+            sa.text("""
+            SELECT EXISTS (
+                SELECT 1 FROM timescaledb_information.hypertables
+                WHERE hypertable_name = 'booking'
+            );
+        """)
+        ).scalar()
     if is_hypertable:
         with op.get_context().autocommit_block():
             op.execute("SET SESSION statement_timeout='900s'")
@@ -55,14 +64,23 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     conn = op.get_bind()
-    is_hypertable = conn.execute(
+    is_timescaledb_installed = conn.execute(
         sa.text("""
+            SELECT EXISTS (
+                SELECT 1 FROM pg_extension WHERE extname = 'timescaledb'
+            );
+        """)
+    ).scalar()
+    is_hypertable = False
+    if is_timescaledb_installed:
+        is_hypertable = conn.execute(
+            sa.text("""
             SELECT EXISTS (
                 SELECT 1 FROM timescaledb_information.hypertables
                 WHERE hypertable_name = 'booking'
             );
         """)
-    ).scalar()
+        ).scalar()
     if is_hypertable:
         with op.get_context().autocommit_block():
             op.drop_index(
