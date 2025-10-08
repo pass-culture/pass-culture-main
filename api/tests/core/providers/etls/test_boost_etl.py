@@ -75,7 +75,7 @@ class BoostETLProcessTest:
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "exc": "ConnectTimeout",
+            "data": {"exc": "ConnectTimeout"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):
