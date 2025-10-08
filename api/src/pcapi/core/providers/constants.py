@@ -590,6 +590,7 @@ class TiteliveBookSupport(TiteliveSupport):
 
 TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
     {"codesupport": "A", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
+    {"codesupport": "AG", "libelle": "Agendas", "is_allowed": False, "book_format": None},
     {"codesupport": "I", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
     {"codesupport": "LA", "libelle": "Code obsolète", "is_allowed": False, "book_format": None},
     {
@@ -634,10 +635,13 @@ TITELIVE_BOOK_SUPPORTS: list[TiteliveBookSupport] = [
         "is_allowed": True,
         "book_format": BookFormat.MOYEN_FORMAT,
     },
+    {"codesupport": "MC", "libelle": "Partitions + CD", "is_allowed": True, "book_format": None},
+    {"codesupport": "MD", "libelle": "Partitions + DVD", "is_allowed": True, "book_format": None},
     {"codesupport": "MK", "libelle": "Mook", "is_allowed": True, "book_format": BookFormat.MOOK},
     {"codesupport": "O", "libelle": "objet", "is_allowed": False, "book_format": None},
     {"codesupport": "P", "libelle": "poche", "is_allowed": True, "book_format": BookFormat.POCHE},
     {"codesupport": "PC", "libelle": "papeterie / consommable", "is_allowed": False, "book_format": None},
+    {"codesupport": "PM", "libelle": "Partitions Musicales", "is_allowed": True, "book_format": None},
     {"codesupport": "PS", "libelle": "poster", "is_allowed": False, "book_format": None},
     {"codesupport": "R", "libelle": "revue", "is_allowed": True, "book_format": BookFormat.REVUE},
     {"codesupport": "T", "libelle": "livre papier (hors spécificité)", "is_allowed": True, "book_format": None},
