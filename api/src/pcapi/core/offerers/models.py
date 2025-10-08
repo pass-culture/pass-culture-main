@@ -38,6 +38,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.offerers import constants
 from pcapi.core.offerers.schemas import BannerMetaModel
+from pcapi.core.offerers.schemas import VenueImageCredit
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.models import Model
 from pcapi.models import db
@@ -480,16 +481,17 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
-    @bannerUrl.setter  # type: ignore[no-redef]
-    def bannerUrl(self, value: str | None) -> None:
+    @bannerUrl.inplace.setter
+    def _bannerUrlSetter(self, value: str | None) -> None:
         self._bannerUrl = value
 
-    @bannerUrl.expression  # type: ignore[no-redef]
-    def bannerUrl(cls):
+    @bannerUrl.inplace.expression
+    @classmethod
+    def _bannerUrlExpression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._bannerUrl
 
     @hybrid_property
-    def bannerMeta(self) -> str | None:
+    def bannerMeta(self) -> dict | None:
         if self._bannerMeta is not None:
             return self._bannerMeta
         if self.googlePlacesInfo and self.googlePlacesInfo.bannerMeta:
@@ -499,20 +501,26 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             regex = r'<a href="(.*?)">(.*?)</a>'
 
             # TODO: (lixxday 2024-04-25) handle multiple attributions
-            first_attribution = self.googlePlacesInfo.bannerMeta.get("html_attributions")[0]
-            match = re.search(regex, first_attribution)
+            html_attributions = self.googlePlacesInfo.bannerMeta.get("html_attributions")
+            if not html_attributions:
+                return None
+            match = re.search(regex, html_attributions[0])
             if match:
                 url, credit = match.groups()
 
-                return BannerMetaModel(image_credit=credit, image_credit_url=url, is_from_google=True)
+                return typing.cast(
+                    dict,
+                    BannerMetaModel(image_credit=VenueImageCredit(credit), image_credit_url=url, is_from_google=True),
+                )
         return None
 
-    @bannerMeta.setter  # type: ignore[no-redef]
-    def bannerMeta(self, value: str | None) -> None:
+    @bannerMeta.inplace.setter
+    def _bannerMetaSetter(self, value: dict | None) -> None:
         self._bannerMeta = value
 
-    @bannerMeta.expression  # type: ignore[no-redef]
-    def bannerMeta(cls):
+    @bannerMeta.inplace.expression
+    @classmethod
+    def _bannerMetaExpression(cls) -> sa_orm.InstrumentedAttribute[dict | None]:
         return cls._bannerMeta
 
     @hybrid_property
