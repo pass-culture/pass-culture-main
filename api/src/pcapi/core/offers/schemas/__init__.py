@@ -173,7 +173,7 @@ class OfferOpeningHoursSchema(BaseModel):
         use_enum_values = True
 
 
-class SerializedProductsStocks(typing.TypedDict):
+class SerializedProductsStock(typing.TypedDict):
     quantity: StrictInt | individual_offers_v1_serialization.UNLIMITED_LITERAL | None
     price: int
     booking_limit_datetime: datetime.datetime | None
@@ -182,7 +182,7 @@ class SerializedProductsStocks(typing.TypedDict):
 
 
 class CreateOrUpdateEANOffersRequest(BaseModel):
-    serialized_products_stocks: dict[str, SerializedProductsStocks]
+    serialized_products_stocks: dict[str, SerializedProductsStock]
     venue_id: int
     provider_id: int
     address_id: int | None

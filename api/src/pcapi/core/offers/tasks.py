@@ -77,7 +77,7 @@ def _create_offer_from_product(
     product: offers_models.Product,
     provider: providers_models.Provider,
     offererAddress: offerers_models.OffererAddress,
-    publicationDatetime: datetime.datetime,
+    publicationDatetime: datetime.datetime | None,
     bookingAllowedDatetime: datetime.datetime | None,
 ) -> offers_models.Offer:
     offer = offers_api.build_new_offer_from_product(
@@ -173,7 +173,7 @@ def create_or_update_ean_offers_celery(payload: offers_schemas.CreateOrUpdateEAN
 @job(worker.low_queue)
 def create_or_update_ean_offers(
     *,
-    serialized_products_stocks: dict,
+    serialized_products_stocks: dict[str, offers_schemas.SerializedProductsStock],
     venue_id: int,
     provider_id: int,
     address_id: int | None = None,
@@ -188,9 +188,91 @@ def create_or_update_ean_offers(
     )
 
 
+def _update_offer_and_related_stock(
+    offer: offers_models.Offer,
+    stock_data: offers_schemas.SerializedProductsStock,
+    provider: providers_models.Provider,
+    offerer_address: offerers_models.OffererAddress,
+) -> tuple[bool, offers_models.Offer]:
+    """
+    Update offer and its stock only when necessary
+
+    :return: (bool, Offer) bool is equal to `True` if the offer or its stock has been updated.
+    """
+    # Part 1 - Offer update
+    should_update_offer = (
+        offer.lastProviderId != provider.id  # provider has changed
+        or (offer.offererAddress != offerer_address)  # address has changed
+        or (
+            # offer should be published
+            (offer.publicationDatetime is None and stock_data["publication_datetime"])
+            # offer should be unpublished
+            or (offer.publicationDatetime and stock_data["publication_datetime"] is None)
+            # offer should be published in the future
+            or (
+                stock_data["publication_datetime"]
+                and stock_data["publication_datetime"] > utils_date.get_naive_utc_now()
+            )
+            # offer was planned to be published in the future but should be published now
+            or (offer.publicationDatetime and offer.publicationDatetime > utils_date.get_naive_utc_now())
+        )
+        or (offer.bookingAllowedDatetime != stock_data["booking_allowed_datetime"])
+    )
+
+    if should_update_offer:
+        offer.lastProvider = provider
+        offer.offererAddress = offerer_address
+        offer.publicationDatetime = stock_data["publication_datetime"]
+        offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
+
+    # Part 2 - Stock create or update
+    current_stock = next((stock for stock in offer.activeStocks), None)
+    target_stock_price = finance_utils.cents_to_full_unit(stock_data["price"])
+    remaining_quantity = individual_offers_v1_serialization.deserialize_quantity(stock_data["quantity"])
+
+    if not current_stock:
+        offers_api.create_stock(
+            offer=offer,
+            price=target_stock_price,
+            quantity=remaining_quantity,
+            booking_limit_datetime=stock_data["booking_limit_datetime"],
+            creating_provider=provider,
+        )
+        return True, offer
+
+    should_update_stock = (
+        # booking_limit_datetime has changed
+        (current_stock.bookingLimitDatetime != stock_data["booking_limit_datetime"])
+        # price has changed
+        or (current_stock.price != target_stock_price)
+        # available quantity should be updated
+        or (
+            isinstance(remaining_quantity, int)
+            and remaining_quantity + current_stock.dnBookedQuantity != current_stock.quantity
+        )
+        # quantity should be set to unlimited
+        or (current_stock.quantity and remaining_quantity is None)
+    )
+
+    if should_update_stock:
+        target_quantity = None  # i.e unlimited
+        if isinstance(remaining_quantity, int):
+            target_quantity = remaining_quantity + current_stock.dnBookedQuantity
+
+        offers_api.edit_stock(
+            current_stock,
+            quantity=target_quantity,
+            price=target_stock_price,
+            booking_limit_datetime=stock_data["booking_limit_datetime"],
+            editing_provider=provider,
+        )
+
+    return bool(should_update_offer or should_update_stock), offer
+
+
 def _create_or_update_ean_offers(
     *,
-    serialized_products_stocks: dict,
+    serialized_products_stocks: dict[str, offers_schemas.SerializedProductsStock],
     venue_id: int,
     provider_id: int,
     address_id: int | None = None,
@@ -238,6 +320,7 @@ def _create_or_update_ean_offers(
                     if offerer_address is None:
                         # FIXME(PC-37261): change workflow to make this case impossible.
                         raise Exception("offerer_address should not be None here")
+                    assert product.ean  # to make mypy happy
                     stock_data = serialized_products_stocks[product.ean]
                     created_offer = _create_offer_from_product(
                         venue,
@@ -266,6 +349,7 @@ def _create_or_update_ean_offers(
             for offer in reloaded_offers:
                 try:
                     ean = offer.ean
+                    assert ean  # to make mypy happy
                     stock_data = serialized_products_stocks[ean]
                     # FIXME (mageoffray, 2023-05-26): stock saving optimisation
                     # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
@@ -273,7 +357,7 @@ def _create_or_update_ean_offers(
                     offers_api.create_stock(
                         offer=offer,
                         price=finance_utils.cents_to_full_unit(stock_data["price"]),
-                        quantity=stock_data["quantity"],
+                        quantity=individual_offers_v1_serialization.deserialize_quantity(stock_data["quantity"]),
                         booking_limit_datetime=stock_data["booking_limit_datetime"],
                         creating_provider=provider,
                     )
@@ -290,40 +374,18 @@ def _create_or_update_ean_offers(
 
         for offer in offers_to_update:
             try:
-                offer.lastProvider = provider
-                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
-                offer.offererAddress = offerer_address
-
                 ean = offer.ean
-                stock_data = serialized_products_stocks[ean]
-                offer.publicationDatetime = stock_data["publication_datetime"]
-                offer.bookingAllowedDatetime = stock_data["booking_allowed_datetime"]
-                # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
-                # Stocks are edited one by one for now, we need to improve edit_stock to remove the repository.session.add()
-                # It will be done before the release of this API
-
-                # TODO(jbaudet-pass): remove call to .replace(): it should not
-                # be needed.
-                # Why? Because input checks remove the timezone information as
-                # it is not expected after... but StockEdition needs a
-                # timezone-aware datetime object.
-                # -> datetimes are not always handleded the same way.
-                # -> it can be messy.
-                booking_limit = stock_data["booking_limit_datetime"]
-                booking_limit = booking_limit.replace(tzinfo=datetime.timezone.utc) if booking_limit else None
-
-                upsert_product_stock(
-                    offer_to_update_by_ean[ean],
-                    products_serializers.StockEdition(
-                        **{
-                            "price": stock_data["price"],
-                            "quantity": stock_data["quantity"],
-                            "booking_limit_datetime": booking_limit,
-                        }
-                    ),
-                    provider,
+                assert ean  # to make mypy happy
+                # TODO (tcoudray-pass, 08/10/25) : (OA) Remove when `Venue.offererAddress` is not nullable
+                assert offerer_address  # to make mypy happy
+                has_been_updated, offer = _update_offer_and_related_stock(
+                    offer=offer,
+                    stock_data=serialized_products_stocks[ean],
+                    provider=provider,
+                    offerer_address=offerer_address,
                 )
-                offers_to_index.append(offer_to_update_by_ean[ean].id)
+                if has_been_updated:
+                    offers_to_index.append(offer.id)
             except offers_exceptions.OfferException as exc:
                 logger.warning(
                     "Error while creating offer by ean",
