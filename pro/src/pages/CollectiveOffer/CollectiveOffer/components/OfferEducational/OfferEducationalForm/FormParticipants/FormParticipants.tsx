@@ -136,7 +136,7 @@ export const FormParticipants = ({
       >
         <CheckboxGroup
           label="À quels niveaux scolaires s’adressent votre offre ?"
-          description="Sélectionnez au moins un niveau scolaire"
+          description="Sélectionnez au moins une option"
           labelTag="h2"
           variant="detailed"
           disabled={disableForm}

@@ -123,7 +123,7 @@ export const ActivityForm = ({
       <FormLayout.Row className={styles['target-customer-row']}>
         <CheckboxGroup
           label="À qui souhaitez-vous destiner vos offres sur le pass Culture ? Cette information est collectée à titre informatif."
-          description="Sélectionnez au moins un élément"
+          description="Sélectionnez au moins une option"
           options={[
             {
               label: 'Au grand public',
