@@ -1,0 +1,17 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_outline.scss" as outline;
+
+.title-column {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: rem.torem(16px);
+}
+
+.title-column-name {
+  color: var(--Base-Colors-Black);
+  font-size: var(--typography-fontSize-s, 16px);
+}
