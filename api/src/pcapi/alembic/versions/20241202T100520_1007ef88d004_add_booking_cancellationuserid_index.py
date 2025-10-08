@@ -15,27 +15,69 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    with op.get_context().autocommit_block():
-        # Tested on staging: executed in: 157.314s (2.0 minutes 37 seconds)
-        op.execute("SET SESSION statement_timeout='900s'")
-        op.create_index(
-            "ix_booking_cancellationUserId",
-            "booking",
-            ["cancellationUserId"],
-            unique=False,
-            postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
-            postgresql_concurrently=True,
-            if_not_exists=True,
-        )
-        op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    conn = op.get_bind()
+    is_hypertable = conn.execute(
+        sa.text("""
+        SELECT EXISTS (
+            SELECT 1 FROM timescaledb_information.hypertables
+            WHERE hypertable_name = 'booking'
+        );
+    """)
+    ).scalar()
+    if is_hypertable:
+        with op.get_context().autocommit_block():
+            op.execute("SET SESSION statement_timeout='900s'")
+            op.create_index(
+                "ix_booking_cancellationUserId",
+                "booking",
+                ["cancellationUserId"],
+                unique=False,
+                postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
+                postgresql_concurrently=False,
+                if_not_exists=True,
+            )
+            op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
+    else:
+        with op.get_context().autocommit_block():
+            # Tested on staging: executed in: 157.314s (2.0 minutes 37 seconds)
+            op.execute("SET SESSION statement_timeout='900s'")
+            op.create_index(
+                "ix_booking_cancellationUserId",
+                "booking",
+                ["cancellationUserId"],
+                unique=False,
+                postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
+                postgresql_concurrently=True,
+                if_not_exists=True,
+            )
+            op.execute(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}")
 
 
 def downgrade() -> None:
-    with op.get_context().autocommit_block():
-        op.drop_index(
-            "ix_booking_cancellationUserId",
-            table_name="booking",
-            postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
-            postgresql_concurrently=True,
-            if_exists=True,
-        )
+    conn = op.get_bind()
+    is_hypertable = conn.execute(
+        sa.text("""
+            SELECT EXISTS (
+                SELECT 1 FROM timescaledb_information.hypertables
+                WHERE hypertable_name = 'booking'
+            );
+        """)
+    ).scalar()
+    if is_hypertable:
+        with op.get_context().autocommit_block():
+            op.drop_index(
+                "ix_booking_cancellationUserId",
+                table_name="booking",
+                postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
+                postgresql_concurrently=False,
+                if_exists=True,
+            )
+    else:
+        with op.get_context().autocommit_block():
+            op.drop_index(
+                "ix_booking_cancellationUserId",
+                table_name="booking",
+                postgresql_where=sa.text('"cancellationUserId" IS NOT NULL'),
+                postgresql_concurrently=True,
+                if_exists=True,
+            )
