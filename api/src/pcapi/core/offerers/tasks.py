@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+import typing
 
 import sqlalchemy.orm as sa_orm
 
@@ -16,9 +17,11 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
+from pcapi.utils.repository import transaction
 from pcapi.utils.urls import build_backoffice_offerer_link
 
 
@@ -29,7 +32,49 @@ CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 class CheckOffererSirenRequest(BaseModel):
     siren: str
+    close_or_tag_when_inactive: bool
     must_fill_in_codir_report: bool = False
+
+
+def handle_closed_offerer(offerer: offerers_models.Offerer, closure_date: datetime.date | None) -> None:
+    action_kwargs: dict[str, typing.Any] = {
+        "comment": "L'entité juridique est détectée comme fermée "
+        + (closure_date.strftime("le %d/%m/%Y ") if closure_date else "")
+        + "via l'API Entreprise (données INSEE)"
+    }
+    with transaction():
+        logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
+        # Offerer may have been tagged in the past, but not closed
+        if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
+            # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
+            tag = (
+                db.session.query(offerers_models.OffererTag)
+                .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
+                .one()
+            )
+            action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
+            db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
+        if offerer.isWaitingForValidation:
+            offerers_api.reject_offerer(
+                offerer=offerer,
+                author_user=None,
+                rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
+                **action_kwargs,
+            )
+        elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
+            offerers_api.close_offerer(
+                offerer,
+                closure_date=closure_date,
+                author_user=None,
+                **action_kwargs,
+            )
+        elif "modified_info" in action_kwargs:
+            history_api.add_action(
+                history_models.ActionType.INFO_MODIFIED,
+                author=None,
+                offerer=offerer,
+                **action_kwargs,
+            )
 
 
 @task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore[arg-type]
@@ -72,10 +117,18 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                     modified_info={"tags": {"old_info": tag.label}},
                 )
                 break
-
         if not payload.must_fill_in_codir_report:
             # Nothing to do
             return
+    if payload.close_or_tag_when_inactive and not siren_info.active:
+        # Since we have check_closed_offerer task this should not happen. However we keep it here in case check_closed_offerer fails.
+        # This way we make sure to close inactive offerers, even if it's with a delay.
+        logger.info(
+            "offerer is inactive and has been closed by check_offerer_siren_task instead of in check_closed_offerer, check check_closed_offerer command",
+            extra={"offerer_id": offerer.id, "siren": offerer.siren},
+        )
+        handle_closed_offerer(offerer, closure_date=siren_info.closure_date)
+
     if offerer.isValidated and payload.must_fill_in_codir_report:
         fill_in_codir_report(offerer, siren_info)
     else:
@@ -90,7 +143,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
 
 def fill_in_codir_report(offerer: offerers_models.Offerer, siren_info: entreprise_models.SirenInfo) -> None:
-    # check attestations
+    # Unused for now, and since 09/2024. Is used to get reports on offerer's administrative status (up to date on URSSAF etc...)
     try:
         urssaf_status = "OK" if entreprise_api.get_urssaf(siren_info.siren).attestation_delivered else "REFUS"
     except entreprise_exceptions.EntrepriseException as exc:

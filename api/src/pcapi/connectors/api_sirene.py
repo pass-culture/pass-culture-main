@@ -56,8 +56,9 @@ def _get_backend() -> "BaseBackend":
 
 
 def get_siren_closed_at_date(date_closed: datetime.date) -> list[dict[str, Any]]:
-    """Returns the list of SIREN which closure has been declared on the given date.
-    Closure date may be the same day or in the past.
+    """Returns the list of SIREN :
+    -which closure has been declared on the given date. Closure date may be the same day or in the past.
+    -which closure date is on the given date (even if closure has been declared in the past).
     """
     return _get_backend().get_siren_closed_at_date(date_closed)
 

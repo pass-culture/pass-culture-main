@@ -1950,6 +1950,18 @@ class CloseOffererTest:
             "closure_date": "2025-03-07",
         }
 
+    def test_future_closure_date(self):
+        admin = users_factories.AdminFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+
+        with pytest.raises(offerers_exceptions.FutureClosureDate):
+            offerers_api.close_offerer(
+                offerer, closure_date=datetime.date.today() + datetime.timedelta(days=1), author_user=admin
+            )
+
+        assert offerer.isValidated
+
     def test_close_offerer_with_thing_bookings(self):
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory()
