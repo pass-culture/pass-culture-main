@@ -214,7 +214,7 @@ export const CollectiveDataForm = ({
             </FormLayout.SubSection>
 
             <FormLayout.SubSection title="Contact">
-              <FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
                 <PhoneNumberInput
                   label="Téléphone"
                   {...register('collectivePhone')}
