@@ -218,7 +218,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               title="Contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
             >
-              <FormLayout.Row>
+              <FormLayout.Row mdSpaceAfter>
                 <PhoneNumberInput
                   {...methods.register('phoneNumber')}
                   label="Téléphone"
