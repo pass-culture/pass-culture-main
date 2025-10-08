@@ -54,13 +54,13 @@ export const CollectiveOfferRow = ({
 
   const rowId = `collective-offer-${id}`
 
-  const isOfferDraft =
+  const draftOfferLink =
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${id}/creation`
 
-  const offerLink = isOfferDraft || `/offre/${id}/collectif/recapitulatif`
+  const offerLink = draftOfferLink || `/offre/${id}/collectif/recapitulatif`
 
-  const editionOfferLink = isOfferDraft || `/offre/${id}/collectif/edition`
+  const editionOfferLink = draftOfferLink || `/offre/${id}/collectif/edition`
 
   const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
 

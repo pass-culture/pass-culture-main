@@ -182,7 +182,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
   const offerEditLink = `/offre/${offer.id}/collectif/edition`
 
-  const isOfferDraft =
+  const draftOfferLink =
     offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT &&
     `/offre/collectif/${offer.id}/creation`
 
@@ -267,7 +267,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               {canEditOffer && (
                 <li>
                   <ButtonLink
-                    to={isOfferDraft ? isOfferDraft : offerEditLink}
+                    to={draftOfferLink ? draftOfferLink : offerEditLink}
                     aria-label={'Modifier l’offre'}
                     icon={fullEditIcon}
                   >
