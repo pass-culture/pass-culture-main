@@ -13,6 +13,7 @@ from pcapi.core.categories.subcategories import LIVRE_PAPIER
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.csr import get_closest_csr
 
 from .titelive_api import TiteliveSearchTemplate
@@ -92,6 +93,7 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         product.extraData.update(build_book_extra_data(article, authors))
         product.ean = ean
         product.name = title
+        product.dateModifiedAtLastProvider = date_utils.get_naive_utc_now()
         product.subcategoryId = LIVRE_PAPIER.id
 
         activate_newly_eligible_product_and_offers(product)
