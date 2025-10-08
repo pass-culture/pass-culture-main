@@ -2,10 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getIndividualOfferFactory,
@@ -50,7 +47,7 @@ const renderPriceCategoriesForm = (
 describe('PriceCategories', () => {
   beforeEach(() => {
     vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      getIndividualOfferFactory()
     )
     vi.spyOn(api, 'getOffer').mockResolvedValue(getIndividualOfferFactory())
   })

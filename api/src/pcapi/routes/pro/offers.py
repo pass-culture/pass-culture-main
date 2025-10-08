@@ -391,12 +391,11 @@ def patch_draft_offer(
         "product",
         "price_category",
         "venue",
-        "bookings_count",
         "offerer_address",
-        "future_offer",
         "pending_bookings",
         "headline_offer",
         "meta_data",
+        "stock",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_options)
@@ -701,13 +700,13 @@ def _get_offer_for_price_categories_upsert(
 @private_api.route("/offers/<int:offer_id>/price_categories", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def post_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
-) -> offers_serialize.GetIndividualOfferResponseModel:
+) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
     price_categories_to_create = [
         price_category
         for price_category in body.price_categories
@@ -749,8 +748,21 @@ def post_price_categories(
     # Since we modified the price categories, we need to push the changes to the database
     # so that the response does include them
     db.session.flush()
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
+        "headline_offer",
+        "meta_data",
+    ]
+    offer = offers_repository.get_offer_by_id(offer_id, load_options=load_options)
 
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers/<int:offer_id>/price_categories/<int:price_category_id>", methods=["DELETE"])
