@@ -126,6 +126,19 @@ services:
     depends_on:
       - flask
 
+  postgres-legacy:
+    image: postgis/postgis:15-3.4-alpine
+    container_name: pc-postgres-legacy
+    volumes:
+      - postgres_data_legacy:/var/lib/postgresql/data
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+    ports:
+      - 5435:5432
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+
 networks:
   db_nw:
     driver: bridge
@@ -136,3 +149,4 @@ volumes:
   postgres_data:
   postgres_data_test:
   redis_data:
+  postgres_data_legacy:
