@@ -25,6 +25,7 @@ from pcapi.core.search import get_base_query_for_offer_indexation
 from pcapi.core.search import serialization
 from pcapi.core.search.backends import algolia
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -414,7 +415,7 @@ def test_serialize_offer_forever_headline():
 
 @time_machine.travel("2025-01-01")
 def test_serialize_offer_temporarily_headline():
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     headline_offer = offers_factories.HeadlineOfferFactory(timespan=(now, now + relativedelta(days=1)))
     serialized = algolia.AlgoliaBackend().serialize_offer(headline_offer.offer, 0)
     assert serialized["offer"]["isHeadline"] is True
@@ -580,7 +581,7 @@ def test_serialize_venue_with_one_bookable_offer():
 
 
 def test_serialize_future_offer():
-    publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+    publication_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=5)
     booking_allowed_dt = publication_date + datetime.timedelta(days=30)
     beginning_date = datetime.datetime(2032, 1, 4, 12, 15)
 

@@ -7,6 +7,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.routes.shared.price import convert_to_cent
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -60,7 +61,7 @@ class PlaylistTest:
         assert response.json == []
 
     def test_unbookable_offers_are_not_ignored(self, client):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         unbookable_offer = offers_factories.EventOfferFactory()
         offers_factories.EventStockFactory(offer=unbookable_offer, isSoftDeleted=True)
         offers_factories.EventStockFactory(offer=unbookable_offer, quantity=0)
@@ -85,7 +86,7 @@ class PlaylistTest:
         ]
 
     def test_unbookable_stocks_are_ignored(self, client):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         offer = offers_factories.EventOfferFactory()
         offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
         offers_factories.EventStockFactory(offer=offer, quantity=0)

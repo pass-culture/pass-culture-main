@@ -1,10 +1,10 @@
-from datetime import datetime
 from functools import partial
 from unittest.mock import MagicMock
 
 import pytest
 
 from pcapi.core.operations import models as operations_models
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -14,7 +14,7 @@ from pcapi.utils.transaction_manager import on_commit
 MODEL_INSTANCE = operations_models.SpecialEvent(
     externalId="azerty123",
     title="some_title",
-    eventDate=datetime.utcnow(),
+    eventDate=date_utils.get_naive_utc_now(),
 )
 
 

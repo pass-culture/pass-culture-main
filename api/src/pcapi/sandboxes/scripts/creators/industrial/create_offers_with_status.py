@@ -16,6 +16,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -65,7 +66,8 @@ def create_offers_fully_booked(user_bene: User, venue: Venue) -> None:
         EventStockFactory.create(offer=offer_with_past_stock, priceCategory=price_category)
         stock_past = EventStockFactory.create(
             offer=offer_with_past_stock,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+            beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
+            - datetime.timedelta(days=5),
             quantity=1,
             priceCategory=price_category,
         )
@@ -84,7 +86,8 @@ def create_offers_expired(venue: Venue) -> None:
         EventStockFactory.create(
             offer=offer_event,
             quantity=1,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=5),
+            beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
+            - datetime.timedelta(days=5),
         )
     logger.info("create_offers_expired")
 

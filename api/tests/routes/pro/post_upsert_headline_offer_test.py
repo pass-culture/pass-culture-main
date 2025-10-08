@@ -10,6 +10,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -62,8 +63,8 @@ class Returns200Test:
         offers_factories.HeadlineOfferFactory(
             offer=offer,
             timespan=(
-                datetime.datetime.utcnow() - datetime.timedelta(days=20),
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=20),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
             ),
         )
         assert not offer.is_headline_offer

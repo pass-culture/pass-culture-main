@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -8,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -61,7 +61,7 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_stats(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory(

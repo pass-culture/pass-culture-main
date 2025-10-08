@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -16,6 +15,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -54,7 +54,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=ThingStockFactory(
                 price=10.20,
-                beginningDatetime=datetime.utcnow() - timedelta(days=1),
+                beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
                 offer__name="Test thing name",
                 offer__id=123456,
             ),
@@ -85,7 +85,7 @@ class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
             user=BeneficiaryGrant18Factory(email="fabien@example.com", firstName="Fabien"),
             stock=EventStockFactory(
                 price=10.20,
-                beginningDatetime=datetime.utcnow(),
+                beginningDatetime=date_utils.get_naive_utc_now(),
                 offer__name="Test event name",
                 offer__id=123456,
             ),

@@ -20,6 +20,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -184,7 +185,7 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         for days_ago in (2, 4, 1, 3):
             educational_factories.CollectiveOfferTemplateFactory(
                 name=f"Offre {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=days_ago),
                 validation=offers_models.OfferValidationStatus.PENDING,
                 venue=validated_venue,
             )

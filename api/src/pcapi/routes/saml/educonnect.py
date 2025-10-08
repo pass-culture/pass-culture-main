@@ -1,4 +1,3 @@
-import datetime
 import logging
 from urllib.parse import urlencode
 
@@ -23,6 +22,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 
 from . import blueprint
 
@@ -77,7 +77,7 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
     educonnect_user = users_factories.EduconnectUserFactory.create(
         birth_date=body.birthDate,
         civility=users_models.GenderEnum.F,
-        connection_datetime=datetime.datetime.utcnow(),
+        connection_datetime=date_utils.get_naive_utc_now(),
         educonnect_id=f"educonnect-id_e2e-test_{user.id}",
         first_name=body.firstName,
         ine_hash=f"inehash_e2e-test_{user.id}",

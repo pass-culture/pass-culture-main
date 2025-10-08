@@ -1,4 +1,3 @@
-import datetime
 from operator import attrgetter
 
 import pytest
@@ -12,6 +11,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -1050,7 +1050,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_creation_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_CREATED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,
             extraData={
@@ -1078,7 +1078,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_modification_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_MODIFIED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,
             extraData={
@@ -1116,7 +1116,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         rule_deletion_history = history_factories.ActionHistoryFactory(
             ruleId=rule.id,
             actionType=history_models.ActionType.RULE_DELETED,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=date_utils.get_naive_utc_now(),
             authorUser=legit_user,
             comment=None,
             extraData={

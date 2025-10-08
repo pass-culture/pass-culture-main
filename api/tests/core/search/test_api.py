@@ -19,6 +19,7 @@ from pcapi.core.search import serialization
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -37,8 +38,8 @@ def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> off
 
 
 def make_future_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
-    publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    booking_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    publication_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+    booking_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
     return offers_factories.StockFactory(
         offer__venue=venue or offerers_factories.VenueFactory(),
         offer__publicationDatetime=publication_date,
@@ -49,7 +50,7 @@ def make_future_offer(venue: offerers_models.Venue | None = None) -> offers_mode
 def make_booked_offer() -> offers_models.Offer:
     offer = make_bookable_offer()
     offers_factories.StockFactory(offer=offer)
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     ago_30_days = now - datetime.timedelta(days=30, hours=-1)
     ago_31_days = now - datetime.timedelta(days=30, hours=1)
     bookings = []
@@ -195,8 +196,8 @@ class ReindexOfferIdsTest:
         unbookable = make_unbookable_offer()
         bookable = make_fully_featured_offer()
         future_offer = make_future_offer()
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=10)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
         multi_dates_unbookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         multi_dates_bookable = offers_factories.EventStockFactory(beginningDatetime=past).offer
         offers_factories.EventStockFactory(offer=multi_dates_bookable, beginningDatetime=future)

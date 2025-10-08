@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 
 
 YIELD_COUNT_PER_DB_QUERY = 1000
@@ -42,7 +43,7 @@ def get_inactive_venues_emails() -> Iterable[str]:
         .join(bookings_models.Booking)
         .filter(
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
-            bookings_models.Booking.dateCreated >= datetime.utcnow() - relativedelta(days=90),
+            bookings_models.Booking.dateCreated >= date_utils.get_naive_utc_now() - relativedelta(days=90),
         )
         .exists()
     )

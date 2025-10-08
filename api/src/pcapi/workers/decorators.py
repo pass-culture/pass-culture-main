@@ -1,7 +1,6 @@
 import logging
 import time
 import typing
-from datetime import datetime
 from functools import wraps
 
 from flask import current_app
@@ -9,6 +8,7 @@ from rq.job import get_current_job
 from rq.queue import Queue
 
 from pcapi import settings
+from pcapi.utils import date as date_utils
 from pcapi.workers.logger import job_extra_description
 
 
@@ -30,8 +30,16 @@ def job(queue: Queue) -> typing.Callable:
                 return
 
             start = time.perf_counter()
-            started_at = current_job.started_at.replace(tzinfo=None) if current_job.started_at else datetime.utcnow()
-            enqueued_at = current_job.enqueued_at.replace(tzinfo=None) if current_job.enqueued_at else datetime.utcnow()
+            started_at = (
+                current_job.started_at.replace(tzinfo=None)
+                if current_job.started_at
+                else date_utils.get_naive_utc_now()
+            )
+            enqueued_at = (
+                current_job.enqueued_at.replace(tzinfo=None)
+                if current_job.enqueued_at
+                else date_utils.get_naive_utc_now()
+            )
             assert enqueued_at is not None  # help mypy
             logger.info(
                 "Started job %s",

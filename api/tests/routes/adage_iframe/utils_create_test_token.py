@@ -4,6 +4,7 @@ from datetime import timedelta
 import jwt
 
 from pcapi.core.users.utils import ALGORITHM_RS_256
+from pcapi.utils import date as date_utils
 
 from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
@@ -29,7 +30,7 @@ def create_adage_jwt_default_fake_valid_token(
         firstname=firstname,
         email=email,
         uai=uai,
-        expiration_date=datetime.utcnow() + timedelta(days=1),
+        expiration_date=date_utils.get_naive_utc_now() + timedelta(days=1),
         lat=lat,
         lon=lon,
         can_prebook=can_prebook,
@@ -84,7 +85,7 @@ def create_adage_valid_token_with_email(
         firstname=firstname,
         email=email,
         uai=uai,
-        expiration_date=datetime.utcnow() + timedelta(days=1),
+        expiration_date=date_utils.get_naive_utc_now() + timedelta(days=1),
         lat=lat,
         lon=lon,
         can_prebook=can_prebook,
@@ -100,7 +101,7 @@ def create_adage_jwt_fake_invalid_token(
     lat: float | None = None,
     lon: float | None = None,
 ) -> bytes:
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         return jwt.encode(
             {

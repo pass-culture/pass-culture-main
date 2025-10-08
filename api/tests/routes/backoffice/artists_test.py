@@ -11,6 +11,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -462,7 +463,7 @@ class ListArtistsTest(GetEndpointHelper):
 
     @pytest.fixture
     def artists(self, db_session):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         artist1 = artist_factories.ArtistFactory(
             name="Daniel Balavoine",
             image="http://example.com/image1.jpg",
@@ -591,7 +592,7 @@ class ListArtistsTest(GetEndpointHelper):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
             "search-0-operator": "DATE_FROM",
-            "search-0-date": (datetime.datetime.utcnow() - datetime.timedelta(days=7)).strftime("%Y-%m-%d"),
+            "search-0-date": (date_utils.get_naive_utc_now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d"),
         }
 
         with assert_num_queries(self.expected_num_queries):

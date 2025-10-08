@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
@@ -18,6 +16,7 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils import date as date_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
 from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -539,7 +538,7 @@ def archive_collective_offers(
         raise api_errors.ResourceNotFoundError({"ids": f"Les offres suivantes n'ont pas été trouvées: {not_found_ids}"})
 
     try:
-        educational_api_offer.archive_collective_offers(offers=offers, date_archived=datetime.utcnow())
+        educational_api_offer.archive_collective_offers(offers=offers, date_archived=date_utils.get_naive_utc_now())
     except educational_exceptions.CollectiveOfferForbiddenAction:
         raise api_errors.ApiErrors({"global": ["Cette action n'est pas autorisée sur une des offres"]}, status_code=400)
 

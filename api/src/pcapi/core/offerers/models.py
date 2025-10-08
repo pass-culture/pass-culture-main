@@ -51,6 +51,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -276,7 +277,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
     venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     withdrawalDetails: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
@@ -692,7 +695,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def current_pricing_point_id(self) -> int | None:
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
             .filter(
@@ -706,7 +709,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
         # avoids additional SQL query
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
 
         for link in self.pricing_point_links:
             lower = link.timespan.lower
@@ -726,7 +729,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
 
         for link in self.bankAccountLinks:
             lower = link.timespan.lower
@@ -889,7 +892,7 @@ class AccessibilityProvider(PcObject, Model):
         MutableDict.as_mutable(JSONB), nullable=True
     )
     lastUpdateAtProvider: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
 
@@ -1110,7 +1113,9 @@ class Offerer(
     __tablename__ = "offerer"
     thumb_path_component = "offerers"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
@@ -1288,7 +1293,9 @@ class UserOfferer(PcObject, Model, ValidationStatusMixin):
     )
 
     # dateCreated will remain null for all rows already in this table before this field was added
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
+    )
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1308,7 +1315,7 @@ class ApiKey(PcObject, Model):
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
     )
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     prefix: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=True)
     secret: sa_orm.Mapped[bytes] = sa_orm.mapped_column(LargeBinary, nullable=True)
@@ -1400,7 +1407,9 @@ class OffererInvitation(PcObject, Model):
     )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), nullable=False, index=True
     )
@@ -1586,7 +1595,9 @@ class NonPaymentNotice(PcObject, Model):
     dateReceived: sa_orm.Mapped[date] = sa_orm.mapped_column(
         sa.Date, nullable=False, server_default=sa.func.current_date()
     )
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     emitterName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     emitterEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     reference: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)

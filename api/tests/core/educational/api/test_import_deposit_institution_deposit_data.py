@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from tempfile import NamedTemporaryFile
@@ -10,6 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api.institution import import_deposit_institution_csv
 from pcapi.core.educational.api.institution import import_deposit_institution_data
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -47,7 +47,7 @@ class ImportDepositInstitutionDataTest:
         assert institution.phoneNumber == "0600000000"
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.dateCreated - date_utils.get_naive_utc_now() < timedelta(seconds=5)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
@@ -85,7 +85,7 @@ class ImportDepositInstitutionDataTest:
         assert institution.phoneNumber == "0600000000"
         assert institution.isActive is True
         assert deposit.amount == Decimal(1250)
-        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.dateCreated - date_utils.get_naive_utc_now() < timedelta(seconds=5)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
@@ -254,11 +254,11 @@ class ImportDepositInstitutionDataTest:
         assert new_institution.isActive is True
 
         assert deposit.amount == Decimal(1250)
-        assert deposit.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit.dateCreated - date_utils.get_naive_utc_now() < timedelta(seconds=5)
         assert deposit.isFinal is False
         assert deposit.ministry == educational_models.Ministry.EDUCATION_NATIONALE
 
         assert deposit_new_uai.amount == Decimal(1500)
-        assert deposit_new_uai.dateCreated - datetime.utcnow() < timedelta(seconds=5)
+        assert deposit_new_uai.dateCreated - date_utils.get_naive_utc_now() < timedelta(seconds=5)
         assert deposit_new_uai.isFinal is False
         assert deposit_new_uai.ministry == educational_models.Ministry.EDUCATION_NATIONALE

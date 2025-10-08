@@ -22,6 +22,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.clean_accents import clean_accents
 
@@ -44,14 +45,14 @@ BOOKING_DATE_STATUS_MAPPING: dict[models.CollectiveBookingStatusFilter, sa_orm.I
 
 
 def find_bookings_starting_in_x_days(number_of_days: int) -> list[models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    target_day = date_utils.get_naive_utc_now() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     return find_bookings_in_interval(start, end, models.CollectiveStock.startDatetime)
 
 
 def find_bookings_ending_in_x_days(number_of_days: int) -> list[models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    target_day = date_utils.get_naive_utc_now() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     return find_bookings_in_interval(start, end, models.CollectiveStock.endDatetime)
@@ -1531,7 +1532,7 @@ def search_educational_institution(
 
 
 def find_pending_booking_confirmation_limit_date_in_3_days() -> list[models.CollectiveBooking]:
-    target_day = datetime.utcnow() + timedelta(days=3)
+    target_day = date_utils.get_naive_utc_now() + timedelta(days=3)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
     query = (
@@ -1576,7 +1577,7 @@ def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBa
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id)
@@ -1666,7 +1667,7 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
             models.CollectiveOffer.venueId.in_(venue_ids),
             models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
             models.EducationalInstitutionProgram.name == program_name,
-            models.EducationalInstitutionProgramAssociation.timespan.contains(datetime.utcnow()),
+            models.EducationalInstitutionProgramAssociation.timespan.contains(date_utils.get_naive_utc_now()),
         )
         .exists()
     )

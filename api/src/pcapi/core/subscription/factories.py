@@ -22,6 +22,7 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 
 
 # This factory is here instead of in the `pcapi.core.users.factories` module because it needs both UserFactory and BeneficiaryFraudCheckFactory.
@@ -88,7 +89,7 @@ class DMSContentFactory(factory.Factory):
     phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     procedure_number = factory.Faker("pyint")
-    registration_datetime = LazyAttribute(lambda _: datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
+    registration_datetime = LazyAttribute(lambda _: date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S"))
 
 
 class UbbleContentFactory(factory.Factory):
@@ -110,7 +111,7 @@ class UbbleContentFactory(factory.Factory):
     supported: float | None = None
     identification_id: str | None = None
     identification_url: str | None = None
-    registration_datetime = factory.LazyFunction(datetime.utcnow)
+    registration_datetime = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class EduconnectContentFactory(factory.Factory):
@@ -125,7 +126,7 @@ class EduconnectContentFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
-    registration_datetime = factory.LazyFunction(datetime.utcnow)
+    registration_datetime = factory.LazyFunction(date_utils.get_naive_utc_now)
     civility = users_models.GenderEnum.F
 
 
@@ -160,7 +161,7 @@ class BeneficiaryFraudCheckFactory(factories.BaseFactory):
     type = subscription_models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = subscription_models.FraudCheckStatus.PENDING
-    dateCreated = factory.LazyFunction(datetime.utcnow)
+    dateCreated = factory.LazyFunction(date_utils.get_naive_utc_now)
 
     @factory.lazy_attribute
     def eligibilityType(

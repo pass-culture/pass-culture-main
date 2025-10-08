@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 
 from pcapi.core.educational import factories
@@ -7,6 +5,7 @@ from pcapi.core.educational import models
 from pcapi.routes.serialization.collective_history_serialize import CollectiveOfferHistory
 from pcapi.routes.serialization.collective_history_serialize import HistoryStep
 from pcapi.routes.serialization.collective_history_serialize import get_collective_offer_history
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -193,7 +192,7 @@ class HistoryCancelledTest:
 
 def _archive_offer(offer: models.CollectiveOffer):
     offer.publicationDatetime = None
-    offer.dateArchived = datetime.datetime.utcnow()
+    offer.dateArchived = date_utils.get_naive_utc_now()
 
 
 class HistoryArchivedTest:

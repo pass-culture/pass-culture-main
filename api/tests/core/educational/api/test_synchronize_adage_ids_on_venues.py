@@ -15,6 +15,7 @@ from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 BASE_DATA = {
@@ -56,9 +57,9 @@ def test_synchronize_adage_ids_on_venues(db_session):
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()
     venue4 = offerers_factories.VenueFactory()
-    venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
-    venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=datetime.utcnow())
-    venue7 = offerers_factories.VenueFactory(adageId="128033", adageInscriptionDate=datetime.utcnow())
+    venue5 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=date_utils.get_naive_utc_now())
+    venue6 = offerers_factories.VenueFactory(adageId="1252", adageInscriptionDate=date_utils.get_naive_utc_now())
+    venue7 = offerers_factories.VenueFactory(adageId="128033", adageInscriptionDate=date_utils.get_naive_utc_now())
 
     adage_id1 = 128028
     adage_id2 = 128029
@@ -259,10 +260,10 @@ def test_synchronize_adage_ids_on_offerers(db_session):
     venue3 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue4 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue5 = offerers_factories.VenueFactory(
-        managingOfferer__allowedOnAdage=False, adageId="11", adageInscriptionDate=datetime.utcnow()
+        managingOfferer__allowedOnAdage=False, adageId="11", adageInscriptionDate=date_utils.get_naive_utc_now()
     )
     venue6 = offerers_factories.VenueFactory(
-        managingOfferer__allowedOnAdage=False, adageId="1252", adageInscriptionDate=datetime.utcnow()
+        managingOfferer__allowedOnAdage=False, adageId="1252", adageInscriptionDate=date_utils.get_naive_utc_now()
     )
     venue7 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
     venue8 = offerers_factories.VenueFactory(managingOfferer__allowedOnAdage=False)
@@ -402,7 +403,7 @@ def test_synchronize_adage_ids_on_offerers_soft_deleted_venue(db_session, initia
 @patch("pcapi.core.educational.api.adage.send_eac_offerer_activation_email")
 def test_synchronize_adage_ids_on_venues_with_date_filter(mock_send_eac_email, db_session):
     venue1 = offerers_factories.VenueFactory()
-    venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=datetime.utcnow())
+    venue2 = offerers_factories.VenueFactory(adageId="11", adageInscriptionDate=date_utils.get_naive_utc_now())
 
     adage_id1 = 128028
     adage_id2 = 128029

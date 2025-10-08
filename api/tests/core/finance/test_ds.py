@@ -31,6 +31,7 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
@@ -68,7 +69,7 @@ class ImportDSBankAccountApplicationsTest:
         latest_import = ds_factories.LatestDmsImportFactory(
             procedureId=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
             isProcessing=True,
-            latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            latestImportDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         )
 
         import_ds_applications(settings.DS_BANK_ACCOUNT_PROCEDURE_ID, update_ds_applications_for_procedure)
@@ -128,8 +129,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -171,7 +174,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
         assert bank_account.statusHistory[0].timespan.lower.timestamp() == pytest.approx(
-            datetime.datetime.utcnow().timestamp()
+            date_utils.get_naive_utc_now().timestamp()
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
@@ -183,8 +186,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.ON_GOING
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.on_going.value,
             "last_modification_date": dead_line_application,
@@ -226,7 +231,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         bank_account = db.session.query(BankAccount).filter_by(dsApplicationId=application_id).one()
         assert bank_account.status == BankAccountApplicationStatus.WITHOUT_CONTINUATION
         assert bank_account.statusHistory[0].timespan.lower.timestamp() == pytest.approx(
-            datetime.datetime.utcnow().timestamp()
+            date_utils.get_naive_utc_now().timestamp()
         )
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.archive_application")
@@ -239,8 +244,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -285,8 +292,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=31)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=2 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=31)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=2 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -331,8 +340,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=29)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=29)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -377,8 +388,10 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         application_id = random.randint(1, 100000)
         status = BankAccountApplicationStatus.DRAFT
         BankAccountFactory(dsApplicationId=application_id, status=status)
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,
@@ -424,16 +437,18 @@ class MarkWithoutApplicationTooOldApplicationsTest:
         status = BankAccountApplicationStatus.DRAFT
         bank_account = BankAccountFactory(dsApplicationId=application_id, status=status)
         status_history = BankAccountStatusHistoryFactory(
-            bankAccount=bank_account, status=status, timespan=(datetime.datetime.utcnow(),)
+            bankAccount=bank_account, status=status, timespan=(date_utils.get_naive_utc_now(),)
         )
         venue = VenueFactory(managingOfferer=bank_account.offerer)
         # This shouldn't happen but we need to be sure that if any venue is linked to a bank account
         # that is going to be marked without continuation, it's unlinked.
         # We don't want any Cashflow to be generated using non valid bank accounts
         VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
-        fields_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_application = (datetime.datetime.utcnow() - datetime.timedelta(days=91)).astimezone().isoformat()
-        dead_line_annotation = (datetime.datetime.utcnow() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        fields_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_application = (date_utils.get_naive_utc_now() - datetime.timedelta(days=91)).astimezone().isoformat()
+        dead_line_annotation = (
+            (date_utils.get_naive_utc_now() - datetime.timedelta(days=6 * 31)).astimezone().isoformat()
+        )
         application_meta_data = {
             "state": ds_models.GraphQLApplicationStates.draft.value,
             "last_modification_date": dead_line_application,

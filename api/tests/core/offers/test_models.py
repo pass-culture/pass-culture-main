@@ -17,6 +17,7 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 from pcapi.utils import repository
 
@@ -62,12 +63,12 @@ class OfferHasBookingLimitDatetimesPassedTest:
     def test_with_stock_with_no_booking_limit_datetime(self):
         stock = factories.StockFactory(bookingLimitDatetime=None)
         offer = stock.offer
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(offer=offer, isSoftDeleted=True, bookingLimitDatetime=past)
         assert not offer.hasBookingLimitDatetimesPassed
 
     def test_with_stocks_with_booking_limit_datetime(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert stock.offer.hasBookingLimitDatetimesPassed
 
@@ -81,7 +82,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         ]
 
     def test_expression_with_stock_with_booking_limit_datetime_passed(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         offer = stock.offer
 
@@ -91,7 +92,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         assert db.session.query(models.Offer).filter(models.Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
 
     def test_expression_with_stock_with_booking_limit_datetime_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=future)
         offer = stock.offer
 
@@ -109,7 +110,7 @@ class OfferHasBookingLimitDatetimesPassedTest:
         ]
 
     def test_expression_with_soft_deleted_stock(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past, isSoftDeleted=True)
         offer = stock.offer
 
@@ -315,7 +316,7 @@ class OfferStatusTest:
 
     def test_expired(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         expired_stock = factories.StockFactory(bookingLimitDatetime=past)
         expired_offer = factories.OfferFactory(
             validation=models.OfferValidationStatus.APPROVED,
@@ -329,7 +330,7 @@ class OfferStatusTest:
     def test_expression_expired(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         expired_stock = factories.StockFactory(
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=1),
             offer__publicationDatetime=yesterday,
         )
         expired_offer = expired_stock.offer
@@ -385,8 +386,8 @@ class OfferStatusTest:
 
     def test_expression_sold_out_offer_with_passed_stock(self):
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         offer = factories.OfferFactory(publicationDatetime=yesterday)
         factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
         factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
@@ -467,7 +468,7 @@ class OfferIsSoldOutTest:
         assert db.session.query(models.Offer).filter(models.Offer.isSoldOut.is_(False)).count() == 0
 
     def test_offer_with_passed_stock_date(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(quantity=10, beginningDatetime=past)
         offer = stock.offer
 
@@ -542,7 +543,7 @@ class StockDateModifiedTest:
         stock.quantity = 10
         repository.save(stock)
         stock = db.session.query(models.Stock).one()
-        assert stock.dateModified.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+        assert stock.dateModified.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp())
 
     def test_do_not_update_dateModified_if_price_changes(self):
         initial_dt = datetime.datetime(2018, 2, 12)
@@ -625,7 +626,7 @@ class StockQuantityTest:
 
 class StockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert not stock.isBookable
 
@@ -650,7 +651,7 @@ class StockIsBookableTest:
         assert not stock.isBookable
 
     def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         stock = factories.EventStockFactory(beginningDatetime=past)
         assert not stock.isBookable
 
@@ -687,12 +688,12 @@ class StockIsEventExpiredTest:
         assert not stock.isEventExpired
 
     def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(hours=72)
         stock = factories.EventStockFactory(beginningDatetime=future)
         assert not stock.isEventExpired
 
     def test_is_expired_when_stock_is_an_event_in_the_past(self):
-        past = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(hours=24)
         stock = factories.EventStockFactory(beginningDatetime=past)
         assert stock.isEventExpired
 
@@ -703,22 +704,22 @@ class StockIsEventDeletableTest:
         assert stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
-        future = datetime.datetime.utcnow() + datetime.timedelta(hours=72)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(hours=72)
         stock = factories.EventStockFactory(beginningDatetime=future)
         assert stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + datetime.timedelta(1)
+        dt = date_utils.get_naive_utc_now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY + datetime.timedelta(1)
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert stock.isEventDeletable
 
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        dt = date_utils.get_naive_utc_now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert not stock.isEventDeletable
 
     def test_is_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay_but_is_draft(self):
-        dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        dt = date_utils.get_naive_utc_now() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt, offer__validation=models.OfferValidationStatus.DRAFT)
         assert stock.isEventDeletable
 
@@ -763,7 +764,7 @@ class OfferfullAddressTest:
 
 
 class HeadlineOfferTest:
-    today = datetime.datetime.utcnow()
+    today = date_utils.get_naive_utc_now()
     tomorrow = today + datetime.timedelta(days=1)
     day_after_tomorrow = today + datetime.timedelta(days=2)
     next_month = today + datetime.timedelta(days=30)
@@ -854,7 +855,7 @@ class HeadlineOfferTest:
         assert product.headlinesCount == 1
 
     def test_new_headline_does_not_increment_product_count_if_inactive(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         past_datetime = now - datetime.timedelta(days=1)
 
         product = factories.ProductFactory()
@@ -875,7 +876,7 @@ class HeadlineOfferTest:
 
 class OnSetTimespanTest:
     def test_deactivating_headline_offer_decrements_product_count(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         past_datetime = now - datetime.timedelta(days=1)
 
         product = factories.ProductFactory()
@@ -889,7 +890,7 @@ class OnSetTimespanTest:
         assert product.headlinesCount == 0
 
     def test_updating_timespan_without_deactivating_does_not_affect_count(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         future_datetime = now + datetime.timedelta(days=1)
 
         product = factories.ProductFactory()
@@ -903,7 +904,7 @@ class OnSetTimespanTest:
         assert product.headlinesCount == 1
 
     def test_incrementing_headlines_count_when_activating_headline_offer(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         past_datetime = now - datetime.timedelta(days=1)
 
         product = factories.ProductFactory()
@@ -918,7 +919,7 @@ class OnSetTimespanTest:
 
 
 class OfferIsHeadlineTest:
-    today = datetime.datetime.utcnow()
+    today = date_utils.get_naive_utc_now()
     day_before_yesterday = today - datetime.timedelta(days=2)
     day_after_tomorrow = today + datetime.timedelta(days=2)
 
@@ -957,11 +958,11 @@ class OfferIsHeadlineTest:
 
 class OfferIsSearchableTest:
     def test_offer_is_future(self):
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
-        past_publication_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
+        past_publication_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
 
-        future_booking_allowed_dt = datetime.datetime.utcnow() + datetime.timedelta(days=50)
-        past_booking_allowed_dt = datetime.datetime.utcnow() - datetime.timedelta(days=50)
+        future_booking_allowed_dt = date_utils.get_naive_utc_now() + datetime.timedelta(days=50)
+        past_booking_allowed_dt = date_utils.get_naive_utc_now() - datetime.timedelta(days=50)
 
         offer_1 = factories.OfferFactory(
             isActive=False,

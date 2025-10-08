@@ -10,6 +10,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -21,7 +22,9 @@ class Returns201Test:
         [
             {
                 "price": 20,
-                "bookingLimitDatetime": format_into_utc_date(datetime.datetime.utcnow() + datetime.timedelta(days=1)),
+                "bookingLimitDatetime": format_into_utc_date(
+                    date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
+                ),
                 "quantity": 10,
             },
             {"price": 0},
@@ -64,8 +67,8 @@ class Returns201Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         activation_codes = ["AZ3", "3ZE"]
-        limit_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        expiration_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=14)
+        limit_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
+        expiration_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=14)
         stock_data = {
             "offerId": offer.id,
             "price": 20,

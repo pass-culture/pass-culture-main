@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from pcapi.core.cultural_survey import cultural_survey
@@ -8,6 +7,7 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.tasks.cultural_survey_tasks import upload_answers_task
 from pcapi.tasks.serialization.cultural_survey_tasks import CulturalSurveyAnswersForData
+from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 
 from .. import blueprint
@@ -40,14 +40,14 @@ def get_cultural_survey_questions(user: users_models.User) -> serializers.Cultur
 def post_cultural_survey_answers(user: users_models.User, body: serializers.CulturalSurveyAnswersRequest) -> None:
     payload = CulturalSurveyAnswersForData(
         user_id=user.id,
-        submitted_at=datetime.datetime.utcnow().isoformat(),  # type: ignore[arg-type]
+        submitted_at=date_utils.get_naive_utc_now().isoformat(),  # type: ignore[arg-type]
         answers=body.answers,
     )
 
     upload_answers_task.delay(payload)
     with transaction():
         user.needsToFillCulturalSurvey = False
-        user.culturalSurveyFilledDate = datetime.datetime.utcnow()
+        user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
 
     update_external_user(
         user,

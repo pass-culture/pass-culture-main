@@ -44,6 +44,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
+from pcapi.utils import date as date_utils
 
 
 MAX_BATCH_PARAMETER_SIZE = 30
@@ -143,17 +144,17 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     FavoriteFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.VISITE.id),
-        dateCreated=datetime.utcnow() - relativedelta(days=3),
+        dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
     )
     FavoriteFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
-        dateCreated=datetime.utcnow() - relativedelta(days=2),
+        dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=2),
     )
     last_favorite = FavoriteFactory(
         user=user,
         offer=OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id),
-        dateCreated=datetime.utcnow() - relativedelta(days=1),
+        dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=1),
     )
 
     last_date_created = max(booking.dateCreated for booking in [b1, b2])
@@ -213,7 +214,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
 
 
 def test_get_user_attributes_ex_beneficiary_because_of_expiration():
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=3, days=2)):
+    with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=3, days=2)):
         user = BeneficiaryFactory()
 
     with assert_no_duplicated_queries():
@@ -344,7 +345,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
 @pytest.mark.parametrize("credit_spent", [False, True])
 def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
     # At 17 years old
-    with time_machine.travel(datetime.utcnow() - relativedelta(months=6)):
+    with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(months=6)):
         user = UnderageBeneficiaryFactory(subscription_age=17)
 
     if credit_spent:
@@ -364,9 +365,9 @@ def test_get_user_attributes_underage_beneficiary_before_18(credit_spent: bool):
 
 def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18_yet():
     # At 17 years old
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
+    with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=1)):
         user = UnderageBeneficiaryFactory(
-            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
+            subscription_age=17, deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=1)
         )
 
     # At 18 years old
@@ -382,9 +383,9 @@ def test_get_user_attributes_ex_underage_beneficiary_who_did_not_claim_credit_18
 
 def test_get_user_attributes_double_beneficiary():
     # At 17 years old
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=1)):
+    with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=1)):
         user = UnderageBeneficiaryFactory(
-            subscription_age=17, deposit__expirationDate=datetime.utcnow() + relativedelta(years=1)
+            subscription_age=17, deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=1)
         )
 
     # At 18 years old
@@ -406,7 +407,7 @@ def test_get_user_attributes_double_beneficiary():
 
 def test_get_user_attributes_not_beneficiary():
     user = UserFactory(
-        dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=3),
+        dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=3),
         firstName="Cou",
         lastName="Zin",
         city="Nice",

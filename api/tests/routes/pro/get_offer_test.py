@@ -11,6 +11,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -381,7 +382,7 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_future_offer(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
             offerer__siren="123456789",

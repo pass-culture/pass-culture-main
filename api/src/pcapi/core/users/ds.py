@@ -17,6 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -208,7 +209,7 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
         and data["dateLastInstructorMessage"] is not None
         and data["dateLastInstructorMessage"]
         + relativedelta(days=settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE)
-        < datetime.datetime.utcnow().astimezone(datetime.timezone.utc)
+        < date_utils.get_naive_utc_now().astimezone(datetime.timezone.utc)
         and data["dateLastInstructorMessage"] > last_user_action_date
     ):
         try:

@@ -37,6 +37,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.db import MagicEnum
 from pcapi.utils.phone_number import ParsedPhoneNumber
@@ -213,7 +214,9 @@ class User(PcObject, Model, DeactivableMixin):
     culturalSurveyFilledDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     # culturalSurveyId is obsolete. the column is kept for backward compatibility with the existing data
     culturalSurveyId: sa_orm.Mapped[UUID | None] = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     dateOfBirth: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)  # declared at signup
     departementCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(3), nullable=True)
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=True)
@@ -560,7 +563,7 @@ class User(PcObject, Model, DeactivableMixin):
     def eligibility(self) -> EligibilityType | None:
         from pcapi.core.users import eligibility_api
 
-        return eligibility_api.decide_eligibility(self, self.birth_date, datetime.utcnow())
+        return eligibility_api.decide_eligibility(self, self.birth_date, date_utils.get_naive_utc_now())
 
     @hybrid_property
     def full_name(self) -> str:
@@ -591,7 +594,7 @@ class User(PcObject, Model, DeactivableMixin):
             return False
         if not self.deposit.expirationDate:
             return True
-        return self.deposit.expirationDate > datetime.utcnow()
+        return self.deposit.expirationDate > date_utils.get_naive_utc_now()
 
     @property
     def is_eligible(self) -> bool:
@@ -984,7 +987,7 @@ class Favorite(PcObject, Model):
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="favorites")
 
-    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated = sa_orm.mapped_column(sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now)
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1141,10 +1144,10 @@ class UserAccountUpdateRequest(PcObject, Model):
         MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
     )
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     dateLastStatusUpdate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     # Information about applicant, used to match with a single user
     firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
@@ -1291,7 +1294,9 @@ class TrustedDevice(PcObject, Model):
 
     source: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     os: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
 
 class LoginDeviceHistory(PcObject, Model):
@@ -1307,7 +1312,9 @@ class LoginDeviceHistory(PcObject, Model):
     source = sa_orm.mapped_column(sa.Text, nullable=True)
     os = sa_orm.mapped_column(sa.Text, nullable=True)
     location = sa_orm.mapped_column(sa.Text, nullable=True)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
 
 class SingleSignOn(PcObject, Model):
@@ -1338,7 +1345,9 @@ class SingleSignOn(PcObject, Model):
 class GdprUserDataExtract(PcObject, Model):
     __tablename__ = "gdpr_user_data_extract"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     dateProcessed: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
@@ -1359,14 +1368,14 @@ class GdprUserDataExtract(PcObject, Model):
 
     @property
     def is_expired(self) -> bool:
-        return datetime.utcnow() > self.expirationDate
+        return date_utils.get_naive_utc_now() > self.expirationDate
 
 
 class GdprUserAnonymization(PcObject, Model):
     __tablename__ = "gdpr_user_anonymization"
 
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=func.now()
     )
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     user: sa_orm.Mapped[sa_orm.Mapped[User]] = sa_orm.relationship(User, foreign_keys=[userId])
@@ -1430,7 +1439,9 @@ class UserProfileRefreshCampaign(PcObject, Model):
     __tablename__ = "user_profile_refresh_campaign"
 
     campaignDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
-    creationDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    creationDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     updateDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
     )

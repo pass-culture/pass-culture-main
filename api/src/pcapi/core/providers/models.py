@@ -14,6 +14,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 
 if typing.TYPE_CHECKING:
@@ -342,7 +343,7 @@ class LocalProviderEvent(PcObject, Model):
     providerId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=False)
     provider: sa_orm.Mapped["Provider"] = sa_orm.relationship("Provider", foreign_keys=[providerId])
     date: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     type: sa_orm.Mapped[LocalProviderEventType] = sa_orm.mapped_column(sa.Enum(LocalProviderEventType), nullable=False)
     payload: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(50), nullable=True)

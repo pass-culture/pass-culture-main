@@ -15,6 +15,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.repository import transaction
 
@@ -99,7 +100,7 @@ def check_deposit_csv(path: str) -> None:
 @cron_decorators.log_cron_with_transaction
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
-    since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
+    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2) if with_timestamp else None
     adage_api.synchronize_adage_ids_on_venues(debug=debug, since_date=since_date)
     # This commit is very much needed at this time.
     # log_cron_with_transaction will only commit IF the session is dirty
@@ -114,7 +115,7 @@ def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_ti
 @cron_decorators.log_cron_with_transaction
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
-    since_date = datetime.datetime.utcnow() - datetime.timedelta(days=2) if with_timestamp else None
+    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2) if with_timestamp else None
     with transaction():
         adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)

@@ -12,6 +12,7 @@ from pcapi.core.users import repository
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.core.users.repository import has_access_to_venues
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -112,11 +113,11 @@ class GetNewlyEligibleUsersTest:
         assert set(users) == {user_just_18, user_just_18_ex_underage_beneficiary, user_already_18}
 
     def test_eligible_user_with_discordant_dates_on_declared_one(self):
-        date_to_check = datetime.utcnow() - relativedelta(days=1)
+        date_to_check = date_utils.get_naive_utc_now() - relativedelta(days=1)
         users_factories.BaseUserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
-            validatedBirthDate=datetime.utcnow() - relativedelta(years=17, months=11),
-            dateCreated=datetime.utcnow() - relativedelta(months=1),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=17, months=11),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(months=1),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
         users = repository.get_users_that_had_birthday_since(since=date_to_check, age=18)
@@ -124,11 +125,11 @@ class GetNewlyEligibleUsersTest:
 
     @time_machine.travel("2024-02-01")
     def test_eligible_user_with_discordant_dates_on_validated_one(self):
-        date_to_check = datetime.utcnow() - relativedelta(days=1)
+        date_to_check = date_utils.get_naive_utc_now() - relativedelta(days=1)
         user_just_18_discordant_dates = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=1),
-            validatedBirthDate=datetime.utcnow() - relativedelta(years=18),
-            dateCreated=datetime.utcnow() - relativedelta(months=2),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=1),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=18),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(months=2),
             roles=[UserRole.UNDERAGE_BENEFICIARY],
         )
 

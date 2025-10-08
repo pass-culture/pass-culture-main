@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -15,6 +14,7 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -57,7 +57,7 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
         self,
     ):
         # given
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         email = "isasimov@example.com"
         user = users_factories.BeneficiaryGrant18Factory(email=email)
         created_5_days_ago = now - timedelta(days=5)

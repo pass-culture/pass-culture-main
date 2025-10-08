@@ -7,6 +7,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def create_offerer_with_several_venues() -> offerers_models.Offerer:
     virtual_venue = offerers_factories.VirtualVenueFactory.create(
         name="Lieu virtuel de la structure avec plusieurs lieux ", managingOfferer=user_offerer.offerer
     )
-    in_two_month = datetime.datetime.utcnow() + datetime.timedelta(days=60)
+    in_two_month = date_utils.get_naive_utc_now() + datetime.timedelta(days=60)
     for i in range(1, 6):
         offer = offers_factories.DigitalOfferFactory.create(
             name=f"Offre avec code d'activation {i}", venue=virtual_venue

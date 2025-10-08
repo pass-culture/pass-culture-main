@@ -14,12 +14,13 @@ from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
 
 
-THREE_YEARS_AGO = datetime.datetime.utcnow() - relativedelta(years=3)
+THREE_YEARS_AGO = date_utils.get_naive_utc_now() - relativedelta(years=3)
 
 INCREMENT = itertools.count()
 

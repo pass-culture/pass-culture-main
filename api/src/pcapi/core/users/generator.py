@@ -7,6 +7,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.users import constants as users_constants
+from pcapi.utils import date as date_utils
 
 from . import exceptions
 
@@ -33,7 +34,7 @@ class GenerateUserData:
     id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
     transition_17_18: bool = False
-    date_created: datetime.datetime = datetime.datetime.utcnow()
+    date_created: datetime.datetime = date_utils.get_naive_utc_now()
     postal_code: str | None = None
 
 

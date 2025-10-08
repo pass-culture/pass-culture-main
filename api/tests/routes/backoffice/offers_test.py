@@ -38,6 +38,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 
 from .helpers import button as button_helpers
@@ -105,13 +106,13 @@ def offers_fixture(criteria) -> tuple:
         quantity=10,
         dnBookedQuantity=0,
         offer=offer_with_limited_stock,
-        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
     )
     offers_factories.EventStockFactory(
         quantity=10,
         dnBookedQuantity=5,
         offer=offer_with_limited_stock,
-        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
     )
     return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria, offer_with_a_lot_of_types
 
@@ -361,13 +362,13 @@ class ListOffersTest(GetEndpointHelper):
         [
             (
                 "DATE_FROM",
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ),
             (
                 "DATE_TO",
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
             ),
         ],
     )
@@ -524,14 +525,14 @@ class ListOffersTest(GetEndpointHelper):
         offers_factories.StockFactory(
             price=15,
             offer=offer_with_multiple_stocks_valid_and_not_valid,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
 
         offers_factories.StockFactory(
             price=16,
             offer=offer_with_multiple_stocks_valid_and_not_valid,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
         )
 
         query_args = {
@@ -772,7 +773,7 @@ class ListOffersTest(GetEndpointHelper):
         for days_ago in (2, 4, 1, 3):
             offers_factories.OfferFactory(
                 name=f"Offre {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=days_ago),
                 validation=offers_models.OfferValidationStatus.PENDING,
                 venue=validated_venue,
             )
@@ -1195,19 +1196,19 @@ class ListOffersTest(GetEndpointHelper):
             offer=offer,
             quantity=7,
             dnBookedQuantity=2,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         offers_factories.EventStockFactory(
             offer=offer,
             quantity=9,
             dnBookedQuantity=3,
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         offers_factories.EventStockFactory(
             offer=offer,
             quantity=None,  # unlimited
             dnBookedQuantity=7,
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         query_args = self._get_query_args_by_id(offer.id)
         client = client.with_bo_session_auth(support_pro_n2_admin)
@@ -1336,7 +1337,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = self._get_query_args_by_id(offer.id)
 
         offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1346,7 +1347,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
 
         closest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1356,7 +1357,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == closest_stock.bookingLimitDatetime.strftime("%d/%m/%Y")
 
         furthest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1373,7 +1374,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = self._get_query_args_by_id(offer.id)
 
         offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1383,7 +1384,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
 
         closest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1393,7 +1394,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == closest_stock.bookingLimitDatetime.strftime("%d/%m/%Y")
 
         furthest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -2306,7 +2307,9 @@ class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
         offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.EventStockFactory(offer=offer)
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=3), isSoftDeleted=True
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+            isSoftDeleted=True,
         )
         return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
 
@@ -2376,9 +2379,13 @@ class EditOfferVenueTest(PostEndpointHelper):
 
         # other objects to validate queries filters
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7), isSoftDeleted=True
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+            isSoftDeleted=True,
         )
-        offers_factories.EventStockFactory(beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7))
+        offers_factories.EventStockFactory(
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
+        )
         bookings_factories.ReimbursedBookingFactory()
 
         response = self.post_to_endpoint(
@@ -2514,10 +2521,10 @@ class EditOfferVenueTest(PostEndpointHelper):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
         offer = offers_factories.EventOfferFactory(venue=source_venue)
         offers_factories.EventStockFactory.create_batch(
-            2, offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            2, offer=offer, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         )
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            offer=offer, beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         )
 
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={"venue": destination_venue.id})
@@ -2868,7 +2875,7 @@ class EditOfferStockTest(PostEndpointHelper):
         later_booking = bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.CONFERENCE.id,
-            stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(hours=2),
         )
         later_event = finance_factories.FinanceEventFactory(
             booking=later_booking,
@@ -3809,7 +3816,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_get_detail_validated_offer(self, legit_user, authenticated_client):
-        validation_date = datetime.datetime.utcnow()
+        validation_date = date_utils.get_naive_utc_now()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
             validation=offers_models.OfferValidationStatus.APPROVED,
@@ -3887,7 +3894,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Rejeter" in buttons
 
     def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
-        validation_date = datetime.datetime.utcnow()
+        validation_date = date_utils.get_naive_utc_now()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
             validation=offers_models.OfferValidationStatus.REJECTED,
@@ -3943,7 +3950,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
+            offer=offer, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1), price=6.66
         )
 
         query_count = self.expected_num_queries_with_ff
@@ -3972,13 +3979,13 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer,
             quantity=100,
             dnBookedQuantity=70,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=2),
         )
         expired_stock_2 = offers_factories.EventStockFactory(
             offer=offer,
             quantity=None,
             dnBookedQuantity=25,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1),
         )
 
         query_count = self.expected_num_queries_with_ff
@@ -4135,7 +4142,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[3]["Prix"] == expected_price_4
 
     def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         offer = offers_factories.EventOfferFactory()
         stock1 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=5))
         stock2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=9))

@@ -1407,7 +1407,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)

@@ -18,6 +18,7 @@ from flask import current_app as app
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import utils
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class AbstractToken(abc.ABC):
         if ttl < 0:
             # -2 if doesn't exist, -1 if no expiration
             return None
-        return datetime.utcnow() + timedelta(seconds=ttl)
+        return date_utils.get_naive_utc_now() + timedelta(seconds=ttl)
 
     @classmethod
     def delete(cls: typing.Type[T], type_: TokenType, key_suffix: int | str | None) -> None:
@@ -165,7 +166,7 @@ class Token(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
 
         encoded_token = utils.encode_jwt_payload(payload)
         if ttl is None or ttl > timedelta(0):
@@ -275,7 +276,7 @@ class UUIDToken(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
         encoded_token = utils.encode_jwt_payload(payload)
 
         if ttl is None or ttl > timedelta(0):
@@ -379,7 +380,7 @@ class AsymetricToken(AbstractToken):
             "data": data or {},
         }
         if ttl:
-            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+            payload["exp"] = (date_utils.get_naive_utc_now() + ttl).timestamp()
 
         encoded_token = utils.encode_jwt_payload_rs256(payload, private_key=private_key)
         if ttl is None or ttl > timedelta(0):
@@ -409,7 +410,7 @@ def create_passwordless_login_token(user_id: int, ttl: timedelta) -> str:
     Returns:
         A JWT token (str)
     """
-    issued_at = datetime.utcnow()
+    issued_at = date_utils.get_naive_utc_now()
     expiration_date = issued_at + ttl
 
     jti = str(uuid.uuid4())

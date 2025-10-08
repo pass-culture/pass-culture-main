@@ -20,6 +20,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.movie_festivals import api as movie_festivals_api
 from pcapi.local_providers.movie_festivals import constants as movie_festivals_constants
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.validation.models import entity_validator
 
 
@@ -83,7 +84,7 @@ class EMSStocks:
 
             self.created_offers.add(offer)
 
-        self.venue_provider.lastSyncDate = datetime.datetime.utcnow()
+        self.venue_provider.lastSyncDate = date_utils.get_naive_utc_now()
         db.session.add(self.venue_provider)
 
         db.session.commit()

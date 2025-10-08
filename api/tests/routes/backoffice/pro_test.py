@@ -23,6 +23,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
 from pcapi.utils.human_ids import humanize
@@ -267,7 +268,7 @@ class SearchProUserTest:
         common_name = "Pro"
         users_factories.ProFactory(firstName=common_name)
         suspended_user = users_factories.ProFactory(firstName=common_name, isActive=False)
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
             actionDate=now - datetime.timedelta(days=4),

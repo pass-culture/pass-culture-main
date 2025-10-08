@@ -31,7 +31,7 @@ def decide_eligibility(
         return None
 
     if at_datetime is None:
-        at_datetime = datetime.datetime.utcnow()
+        at_datetime = date_utils.get_naive_utc_now()
 
     current_age = users_utils.get_age_from_birth_date(birth_date, user.departementCode)
     if not (15 <= current_age <= 20):
@@ -53,7 +53,7 @@ def decide_eligibility(
     if first_age_17_to_18_registration_date:
         return get_eligibility_at_date(birth_date, first_age_17_to_18_registration_date, user.departementCode)
 
-    current_eligibility = get_eligibility_at_date(birth_date, datetime.datetime.utcnow(), user.departementCode)
+    current_eligibility = get_eligibility_at_date(birth_date, date_utils.get_naive_utc_now(), user.departementCode)
     return current_eligibility
 
 
@@ -61,7 +61,7 @@ def get_pre_decree_or_current_eligibility(user: users_models.User) -> users_mode
     if user.birth_date is None:
         return None
 
-    pre_decree_eligibility = get_pre_decree_eligibility(user, user.birth_date, datetime.datetime.utcnow())
+    pre_decree_eligibility = get_pre_decree_eligibility(user, user.birth_date, date_utils.get_naive_utc_now())
     return pre_decree_eligibility or user.eligibility
 
 

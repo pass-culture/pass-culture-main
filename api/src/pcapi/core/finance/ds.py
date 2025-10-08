@@ -21,6 +21,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.db import make_timerange
 
 
@@ -217,14 +218,14 @@ class ImportBankAccountMixin:
                 finance_models.BankAccountStatusHistory,
                 sa.and_(
                     finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
-                    finance_models.BankAccountStatusHistory.timespan.contains(datetime.datetime.utcnow()),
+                    finance_models.BankAccountStatusHistory.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
                 sa.and_(
                     offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .outerjoin(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)
@@ -283,7 +284,7 @@ class ImportBankAccountMixin:
         if venue.bankAccountLinks:
             deprecated_link = venue.bankAccountLinks[0]
             lower_bound = deprecated_link.timespan.lower
-            upper_bound = datetime.datetime.utcnow()
+            upper_bound = date_utils.get_naive_utc_now()
             timespan = make_timerange(start=lower_bound, end=upper_bound)
             deprecated_link.timespan = timespan
             deprecated_log = history_models.ActionHistory(
@@ -293,7 +294,7 @@ class ImportBankAccountMixin:
             )
             db.session.add(deprecated_log)
         link = offerers_models.VenueBankAccountLink(
-            bankAccount=bank_account, venue=venue, timespan=(datetime.datetime.utcnow(),)
+            bankAccount=bank_account, venue=venue, timespan=(date_utils.get_naive_utc_now(),)
         )
         created_log = history_models.ActionHistory(
             actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
@@ -305,7 +306,7 @@ class ImportBankAccountMixin:
         return link
 
     def keep_track_of_bank_account_status_changes(self, bank_account: finance_models.BankAccount) -> None:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         if bank_account.statusHistory:
             current_link = bank_account.statusHistory[0]
             if current_link.status == bank_account.status:
@@ -389,7 +390,7 @@ class ImportBankAccountMixin:
                 offerers_models.VenueBankAccountLink,
                 sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .options(
@@ -480,7 +481,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
                 offerers_models.VenueBankAccountLink,
                 sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .options(sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id))

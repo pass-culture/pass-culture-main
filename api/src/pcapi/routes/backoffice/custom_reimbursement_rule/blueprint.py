@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
@@ -191,7 +190,7 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
         "custom_reimbursement_rules/list.html",
         rows=custom_reimbursement_rules,
         form=form,
-        now=datetime.utcnow(),
+        now=date_utils.get_naive_utc_now(),
     )
 
 

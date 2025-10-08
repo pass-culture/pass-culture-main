@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 import math
@@ -19,6 +18,7 @@ from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.models import Ticket
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
@@ -342,7 +342,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         create_transaction_body = cds_serializers.CreateTransactionBodyCDS(  # type: ignore[call-arg]
             cinema_id=self.cinema_id,
             is_cancelled=False,
-            transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+            transaction_date=date_utils.get_naive_utc_now().strftime(CDS_DATE_FORMAT),
             ticket_sale_collection=ticket_sale_collection,
             payement_collection=payement_collection,
         ).json(by_alias=True)
@@ -357,7 +357,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 {
                     "barcode": ticket.barcode,
                     "venue_id": booking.venueId,
-                    "timestamp": datetime.datetime.utcnow().timestamp(),
+                    "timestamp": date_utils.get_naive_utc_now().timestamp(),
                     "booking_type": RedisExternalBookingType.CINEMA,
                 },
             )
@@ -393,7 +393,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             ticket_sale = cds_serializers.TicketSaleCDS(  # type: ignore[call-arg]
                 id=(i + 1) * -1,
                 cinema_id=self.cinema_id,
-                operation_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
+                operation_date=date_utils.get_naive_utc_now().strftime(CDS_DATE_FORMAT),
                 is_cancelled=False,
                 seat_col=seats_to_book[i].seatCol if bool(seats_to_book) else None,
                 seat_row=seats_to_book[i].seatRow if bool(seats_to_book) else None,

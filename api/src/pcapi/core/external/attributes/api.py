@@ -26,6 +26,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import on_commit
 
 
@@ -78,7 +79,7 @@ def update_external_pro(email: str | None) -> None:
     from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         on_commit(
             partial(
                 update_sib_pro_attributes_task.delay,
@@ -263,7 +264,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .options(

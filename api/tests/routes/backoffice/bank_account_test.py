@@ -17,6 +17,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -233,7 +234,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         venue = offerers_factories.VenueFactory()
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
         )
 
         action = history_factories.ActionHistoryFactory(
@@ -262,7 +263,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         venue = offerers_factories.VenueFactory()
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+            venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
         )
 
         link_action = history_factories.ActionHistoryFactory(
@@ -389,7 +390,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             status=finance_models.PricingStatus.INVOICED, booking=booking_finance_incident.booking
         )
         incident_events = finance_api._create_finance_events_from_incident(
-            booking_finance_incident, datetime.datetime.utcnow()
+            booking_finance_incident, date_utils.get_naive_utc_now()
         )
         incident_pricings = []
         for event in incident_events:
@@ -399,7 +400,8 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
 
         # Create total overpayment on collective booking
         collective_booking_finance_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now()
+            - datetime.timedelta(days=5),
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
             collectiveBooking__collectiveStock__price=7,
             newTotalAmount=0,
@@ -409,7 +411,7 @@ class DownloadReimbursementDetailsTest(PostEndpointHelper):
             collectiveBooking=collective_booking_finance_incident.collectiveBooking,
         )
         collective_incident_events = finance_api._create_finance_events_from_incident(
-            collective_booking_finance_incident, datetime.datetime.utcnow()
+            collective_booking_finance_incident, date_utils.get_naive_utc_now()
         )
         for event in collective_incident_events:
             pricing = finance_api.price_event(event)

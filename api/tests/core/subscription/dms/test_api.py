@@ -29,6 +29,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 
 from tests.scripts.beneficiary import fixture
@@ -152,7 +153,7 @@ class HandleDmsApplicationTest:
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
             birth_date=user.dateOfBirth,
-            construction_datetime=datetime.datetime.utcnow().isoformat(),
+            construction_datetime=date_utils.get_naive_utc_now().isoformat(),
         )
 
         dms_subscription_api.handle_dms_application(dms_response)
@@ -173,14 +174,14 @@ class HandleDmsApplicationTest:
 
     def test_handle_dms_application_updates_birth_info(self):
         user = users_factories.ProfileCompletedUserFactory(age=17)
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         dms_response = make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
             birth_date=seventeen_years_ago,
             birth_place="Casablanca",
-            construction_datetime=datetime.datetime.utcnow().isoformat(),
+            construction_datetime=date_utils.get_naive_utc_now().isoformat(),
         )
 
         dms_subscription_api.handle_dms_application(dms_response)
@@ -525,7 +526,7 @@ class HandleDmsApplicationTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
         )
 
@@ -543,7 +544,7 @@ class HandleDmsApplicationTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=ELIGIBILITY_END_AGE, days=-6),
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
             application_labels=[{"id": settings.DMS_ENROLLMENT_FR_LABEL_ID_URGENT, "name": "Urgent"}],
         )
@@ -832,7 +833,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(dms_response)
 
@@ -852,7 +853,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow(),
+            birth_date=date_utils.get_naive_utc_now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
 
@@ -872,7 +873,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow(),
+            birth_date=date_utils.get_naive_utc_now(),
             id_piece_number="r2d2",
         )
         fraud_check = dms_subscription_api.handle_dms_application(wrong_birth_date_application)
@@ -893,8 +894,8 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
-            construction_datetime=datetime.datetime.utcnow(),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=20),
+            construction_datetime=date_utils.get_naive_utc_now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
 
@@ -918,8 +919,8 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=20),
-            construction_datetime=datetime.datetime.utcnow(),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=20),
+            construction_datetime=date_utils.get_naive_utc_now(),
         )
         fraud_check = dms_subscription_api.handle_dms_application(not_eligible_application)
 
@@ -939,7 +940,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(application_ok)
 
@@ -952,7 +953,7 @@ class DmsSubscriptionMessageTest:
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=self.user_email,
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=18),
         )
         fraud_check = dms_subscription_api.handle_dms_application(refused_application)
 
@@ -974,7 +975,7 @@ class DmsSubscriptionMessageTest:
     def test_duplicate(self, mock_send_user_message):
         first_name = "Jean-Michel"
         last_name = "Doublon"
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=18, days=1)
+        birth_date = date_utils.get_naive_utc_now() - relativedelta(years=18, days=1)
         users_factories.BeneficiaryGrant18Factory(
             firstName=first_name, lastName=last_name, dateOfBirth=birth_date, email="jean-michel@doublon.com"
         )
@@ -1143,7 +1144,7 @@ class ShouldImportDmsApplicationTest:
             application_techid="TECH_ID",
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
-            last_modification_date=datetime.datetime.utcnow(),
+            last_modification_date=date_utils.get_naive_utc_now(),
         )
         _process_dms_application_mock.reset_mock()
 
@@ -1311,7 +1312,7 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_import_ex_underage_beneficiary(self, get_applications_with_details):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2, month=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, month=1)):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
                 firstName="john",
@@ -1319,11 +1320,11 @@ class RunIntegrationTest:
                 dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
                 subscription_age=15,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-                deposit__expirationDate=datetime.datetime.utcnow() + relativedelta(years=2),
+                deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=2),
             )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
-        details.draft_date = datetime.datetime.utcnow().isoformat()
+        details.draft_date = date_utils.get_naive_utc_now().isoformat()
         get_applications_with_details.return_value = [details]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
 
@@ -1384,7 +1385,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=user.email,
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         # when
@@ -1444,7 +1445,7 @@ class RunIntegrationTest:
                 state="accepte",
                 email=user.email,
                 birth_date=dms_validated_birth_date,
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -1491,7 +1492,7 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
-        date_of_birth = (datetime.datetime.utcnow() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
+        date_of_birth = (date_utils.get_naive_utc_now() - relativedelta(years=19)).strftime("%Y-%m-%dT%H:%M:%S")
 
         # Create a user that has validated its email and phone number, meaning it
         # should become beneficiary.
@@ -1508,7 +1509,7 @@ class RunIntegrationTest:
                 state="accepte",
                 email=user.email,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1544,7 +1545,7 @@ class RunIntegrationTest:
                 state="accepte",
                 email=user.email,
                 birth_date=self.BENEFICIARY_BIRTH_DATE,
-                construction_datetime=datetime.datetime.utcnow().isoformat(),
+                construction_datetime=date_utils.get_naive_utc_now().isoformat(),
             )
         ]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1626,7 +1627,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=user.email,
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1742,7 +1743,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 city="Strasbourg",
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1796,7 +1797,7 @@ class GraphQLSourceProcessApplicationTest:
                 123,
                 "accepte",
                 email=user.email,
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -1808,12 +1809,12 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_registered_at_18_dms_at_19(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(years=1, months=2),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(years=1, months=2),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
@@ -1824,7 +1825,7 @@ class GraphQLSourceProcessApplicationTest:
                 email=user.email,
                 birth_date=user.dateOfBirth,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
-                construction_datetime=(datetime.datetime.utcnow() - relativedelta(months=5)).strftime(
+                construction_datetime=(date_utils.get_naive_utc_now() - relativedelta(months=5)).strftime(
                     "%Y-%m-%dT%H:%M:%S+02:00"
                 ),
             ),
@@ -1838,12 +1839,12 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_registered_at_18_dms_started_at_19(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, days=1),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, days=1),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(years=1),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(years=1),
         )
 
         get_applications_with_details.return_value = [
@@ -1854,7 +1855,7 @@ class GraphQLSourceProcessApplicationTest:
                 birth_date=user.dateOfBirth,
                 # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
                 # Here it's created after 19yo, so requires a manual review
-                construction_datetime=(datetime.datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=(date_utils.get_naive_utc_now()).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -1866,7 +1867,7 @@ class GraphQLSourceProcessApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
@@ -1876,7 +1877,7 @@ class GraphQLSourceProcessApplicationTest:
                 "accepte",
                 email=user.email,
                 birth_date=user.dateOfBirth,
-                construction_datetime=datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                construction_datetime=date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 

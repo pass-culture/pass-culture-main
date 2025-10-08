@@ -251,7 +251,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
 
         stringified_next_month = date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat()
@@ -283,7 +283,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         )
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + timedelta(days=30)
         next_month_minus_one_day = next_month - timedelta(days=1)
 
         payload = {
@@ -304,7 +304,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        new_start = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        new_start = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + timedelta(days=30)
         new_end = new_start + timedelta(days=10)
         new_limit = new_start + timedelta(days=5)
 
@@ -464,7 +464,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     def test_should_update_expired_booking(self):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         limit = now - timedelta(days=2)
 
         key, venue_provider = self.setup_active_venue_provider()
@@ -615,7 +615,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue_provider.venue, provider=venue_provider.provider
         )
-        start = datetime.utcnow() + timedelta(days=5)
+        start = date_utils.get_naive_utc_now() + timedelta(days=5)
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=start)
 
         input_end = start - timedelta(days=1)
@@ -638,7 +638,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue_provider.venue, provider=venue_provider.provider
         )
-        end = datetime.utcnow() + timedelta(days=5)
+        end = date_utils.get_naive_utc_now() + timedelta(days=5)
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer, startDatetime=end - timedelta(days=1), endDatetime=end
         )
@@ -663,7 +663,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue_provider.venue, provider=venue_provider.provider
         )
-        start = datetime.utcnow() + timedelta(days=5)
+        start = date_utils.get_naive_utc_now() + timedelta(days=5)
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer, startDatetime=start, bookingLimitDatetime=start - timedelta(days=2)
         )
@@ -690,7 +690,7 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue_provider.venue, provider=venue_provider.provider
         )
-        start = datetime.utcnow() + timedelta(days=5)
+        start = date_utils.get_naive_utc_now() + timedelta(days=5)
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=start)
 
         input_limit = start + timedelta(days=3)

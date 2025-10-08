@@ -18,6 +18,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -119,7 +120,7 @@ def test_generate_cashflows_calls_generate_invoices(run_command):
     offerer = offerers_factories.OffererFactory()
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self", bank_account=bank_account)
-    past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
 
     with time_machine.travel(past):
         user = users_factories.BeneficiaryGrant18Factory()

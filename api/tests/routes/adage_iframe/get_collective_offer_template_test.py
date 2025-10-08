@@ -11,6 +11,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.date import format_into_utc_date
 
@@ -34,8 +35,8 @@ def redactor_fixture():
 @pytest.fixture(name="offer")
 def offer_fixture():
     offer_range = educational_factories.DateRangeFactory(
-        start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-        end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        start=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+        end=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     return offer_range
 
@@ -146,10 +147,10 @@ class CollectiveOfferTemplateTest:
 
     def test_get_collective_offer_template_if_inactive(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+                end=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ),
         )
 
@@ -163,7 +164,7 @@ class CollectiveOfferTemplateTest:
 
     def test_get_collective_offer_template_without_date_range(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=None,
         )
 
@@ -318,7 +319,7 @@ class GetCollectiveOfferTemplatesTest:
     def test_one_template_id_with_one_archived_template(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory()
         archived_offer = educational_factories.CollectiveOfferTemplateFactory(
-            isActive=False, dateArchived=datetime.datetime.utcnow()
+            isActive=False, dateArchived=date_utils.get_naive_utc_now()
         )
 
         url = url_for(self.endpoint, ids=[offer.id, archived_offer.id])

@@ -212,8 +212,9 @@ extend-select = [
   # "PLR0914",  # too-many-locals -> preview mode only
   # "PLR0915",  # too-many-statements
   # "PLR0917",  # too-many-positional-arguments -> preview mode only
-  "S704",   # unsafe-markup-use
-  "TID251", # banned-api (requests)
+  "S704",    # unsafe-markup-use
+  "TID251",  # banned-api (requests)
+  "DTZ003",  # call-datetime-utcnow
 ]
 
 ignore = [
@@ -232,7 +233,14 @@ ignore = [
 case-sensitive = true
 force-single-line = true
 lines-after-imports = 2
-section-order = ["future", "standard-library", "third-party", "first-party", "tests", "local-folder"]
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "tests",
+  "local-folder",
+]
 
 [tool.ruff.lint.isort.sections]
 tests = ["tests"]

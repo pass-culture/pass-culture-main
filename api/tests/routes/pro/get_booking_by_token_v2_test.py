@@ -12,6 +12,7 @@ from pcapi.core import testing
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.utils import date
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -28,11 +29,11 @@ class Returns200Test:
     num_queries += 1  # select user
 
     def test_when_user_has_rights_and_regular_offer(self, client):
-        past = datetime.utcnow() - timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - timedelta(days=2)
         booking = bookings_factories.BookingFactory(
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=2),
             stock__beginningDatetime=past,
             stock__offer=offers_factories.EventOfferFactory(
                 extraData={
@@ -80,7 +81,7 @@ class Returns200Test:
 
     def test_when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         booking = bookings_factories.BookingFactory(
-            stock__beginningDatetime=datetime.utcnow() - timedelta(days=2),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=2),
         )
         booking_token = booking.token.lower()
         user_offerer = offerers_factories.UserOffererFactory(offerer=booking.offerer)
@@ -121,7 +122,7 @@ class Returns403Test:
         ]
 
     def test_when_booking_not_confirmed(self, client):
-        next_week = datetime.utcnow() + timedelta(weeks=1)
+        next_week = date_utils.get_naive_utc_now() + timedelta(weeks=1)
         booking = bookings_factories.BookingFactory(stock__beginningDatetime=next_week)
         pro = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)

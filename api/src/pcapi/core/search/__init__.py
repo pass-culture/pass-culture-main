@@ -21,6 +21,7 @@ from pcapi.core.search.backends import algolia
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 from pcapi.utils.transaction_manager import atomic
@@ -619,7 +620,7 @@ def get_offers_booking_count_by_id(
         .filter(
             offers_models.Offer.id.in_(offer_ids),
             offers_models.Offer.isActive,
-            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=days),
+            bookings_models.Booking.dateCreated >= date_utils.get_naive_utc_now() - datetime.timedelta(days=days),
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(offers_models.Offer.id)

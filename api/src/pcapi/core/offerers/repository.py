@@ -13,6 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 
 from . import exceptions
 from . import models
@@ -738,7 +739,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             models.VenuePricingPointLink,
             sa.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
-                models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(
@@ -746,7 +747,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             sa.and_(
                 finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
                 models.Venue.id == models.VenueBankAccountLink.venueId,
-                models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .options(
@@ -812,7 +813,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
             models.VenueBankAccountLink,
             sa.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
-                models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .with_entities(models.Venue.id)
@@ -839,7 +840,7 @@ def get_offerers_venues_with_pricing_point(
             models.VenuePricingPointLink,
             sa.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
-                models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
             isouter=include_without_pricing_points,
         )
@@ -878,7 +879,7 @@ def get_offerers_venues_with_pricing_point(
             models.VenueBankAccountLink,
             sa.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
-                models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         ).options(
             sa_orm.contains_eager(models.Venue.bankAccountLinks).load_only(

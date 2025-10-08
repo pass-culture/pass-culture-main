@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 # store here UAIs with a ministry that is not EDUCATION_NATIONALE
@@ -178,15 +179,19 @@ def create_deposits(institutions: list[educational_models.EducationalInstitution
                 educationalInstitution=institution,
                 educationalYear=year,
                 amount=amount,
-                isFinal=(year.beginningDate <= datetime.datetime.utcnow()),
+                isFinal=(year.beginningDate <= date_utils.get_naive_utc_now()),
             )
 
 
 def create_years() -> tuple[educational_models.EducationalYear, ...]:
     two_years_ago = educational_factories.create_educational_year(
-        datetime.datetime.utcnow() - datetime.timedelta(days=731)
+        date_utils.get_naive_utc_now() - datetime.timedelta(days=731)
     )
-    last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
-    current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
-    next_year = educational_factories.create_educational_year(datetime.datetime.utcnow() + datetime.timedelta(days=365))
+    last_year = educational_factories.create_educational_year(
+        date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+    )
+    current_year = educational_factories.create_educational_year(date_utils.get_naive_utc_now())
+    next_year = educational_factories.create_educational_year(
+        date_utils.get_naive_utc_now() + datetime.timedelta(days=365)
+    )
     return two_years_ago, last_year, current_year, next_year

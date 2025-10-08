@@ -17,6 +17,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
+from pcapi.utils import date as date_utils
 
 from ...connectors.titelive import fixtures
 from ...connectors.titelive.fixtures import BOOK_BY_SINGLE_EAN_FIXTURE
@@ -103,7 +104,7 @@ class SearchEanTest(GetEndpointHelper):
         card_text = html_parser.extract_cards_text(response.data)
         assert "Inéligible pass Culture :" not in card_text[0]
         assert "EAN white listé : Oui" in card_text[0]
-        assert f"Date d'ajout : {datetime.datetime.utcnow().strftime('%d/%m/%Y')}" in card_text[0]
+        assert f"Date d'ajout : {date_utils.get_naive_utc_now().strftime('%d/%m/%Y')}" in card_text[0]
         assert "Auteur : Frank Columbo" in card_text[0]
         assert "Commentaire : Superbe livre !" in card_text[0]
 

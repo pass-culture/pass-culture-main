@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -48,7 +49,7 @@ class CollectiveOfferTest:
             collectiveOffer__offererAddress=offerers_factories.get_offerer_address_with_label_from_venue(venue),
         )
         # this archived offer should not appear in the result
-        stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
+        stocks[2].collectiveOffer.dateArchived = date_utils.get_naive_utc_now() - timedelta(days=1)
         stocks[2].collectiveOffer.isActive = False
 
         # cancelled booking should not appear in the result

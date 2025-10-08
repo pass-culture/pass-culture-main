@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -11,6 +10,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -49,12 +49,12 @@ def domains_fixture():
 
 @pytest.fixture(name="template_start", scope="module")
 def template_start_fixture():
-    return datetime.utcnow() + timedelta(days=1)
+    return date_utils.get_naive_utc_now() + timedelta(days=1)
 
 
 @pytest.fixture(name="template_end", scope="module")
 def template_end_fixture():
-    return datetime.utcnow() + timedelta(days=100)
+    return date_utils.get_naive_utc_now() + timedelta(days=100)
 
 
 @pytest.fixture(name="payload")
@@ -168,7 +168,7 @@ class Returns200Test:
         assert response.status_code == 201
 
     def test_with_start_and_end_equal(self, pro_client, payload):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         data = {**payload, "dates": {"start": format_into_utc_date(now), "end": format_into_utc_date(now)}}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -550,7 +550,7 @@ class InvalidDatesTest:
         assert "dates.start" in response.json
 
     def test_start_is_in_the_past(self, pro_client, payload, template_end):
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - timedelta(days=7)
         dates_extra = {"start": one_week_ago.isoformat(), "end": template_end.isoformat()}
 
         response = self.send_request(pro_client, payload, dates_extra)

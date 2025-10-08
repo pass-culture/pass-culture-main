@@ -12,6 +12,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -23,11 +24,11 @@ pytestmark = [
 def test_integration_full_workflow(css_font_http_request_mock):
     # A booking is manually marked as used. Check the whole workflow
     # until the invoice is generated.
-    initial_dt = datetime.datetime.utcnow()
+    initial_dt = date_utils.get_naive_utc_now()
     venue = offerers_factories.VenueFactory(pricing_point="self")
     bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow() - datetime.timedelta(days=10),)
+        venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now() - datetime.timedelta(days=10),)
     )
     booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
 
@@ -47,7 +48,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
         assert pricing.booking == booking
         assert pricing.status == models.PricingStatus.VALIDATED
 
-    cutoff = datetime.datetime.utcnow()
+    cutoff = date_utils.get_naive_utc_now()
     batch = api.generate_cashflows_and_payment_files(cutoff)
     assert len(pricing.cashflows) == 1
     cashflow = pricing.cashflows[0]
@@ -67,7 +68,7 @@ def test_integration_full_workflow(css_font_http_request_mock):
 def test_integration_partial_auto_mark_as_used():
     # A booking is manually marked as used. Check only until the
     # generation of the pricing.
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     venue = offerers_factories.VenueFactory(pricing_point="self")
     bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
@@ -102,7 +103,7 @@ def test_integration_partial_auto_mark_as_used():
 
 def test_integration_partial_used_then_cancelled():
     # A booking is manually marked as used, then cancelled.
-    initial_dt = datetime.datetime.utcnow()
+    initial_dt = date_utils.get_naive_utc_now()
     venue = offerers_factories.VenueFactory(pricing_point="self")
     bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
     offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)

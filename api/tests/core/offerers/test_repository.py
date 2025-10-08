@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -13,6 +12,7 @@ from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -169,7 +169,7 @@ class HasDigitalVenueWithAtLeastOneOfferTest:
 
 class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
     def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
-        five_days_ago = datetime.utcnow() - timedelta(days=5)
+        five_days_ago = date_utils.get_naive_utc_now() - timedelta(days=5)
         # Offerer with two physical venues and one offer => venues should not be returned
         offerer_with_two_venues = offerers_factories.OffererFactory(dateValidated=five_days_ago)
         venue_with_offers = offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)

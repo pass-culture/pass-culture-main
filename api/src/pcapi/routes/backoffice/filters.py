@@ -44,6 +44,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
+from pcapi.utils import date as date_utils
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -168,7 +169,7 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
             else:
                 text = "Ancien Pass 18"
             if not last_deposit or (
-                last_deposit.expirationDate and last_deposit.expirationDate <= datetime.datetime.utcnow()
+                last_deposit.expirationDate and last_deposit.expirationDate <= date_utils.get_naive_utc_now()
             ):
                 text += " expiré"
             return text
@@ -179,7 +180,7 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
             else:
                 text = "Ancien Pass 15-17"
             if not last_deposit or (
-                last_deposit.expirationDate and last_deposit.expirationDate <= datetime.datetime.utcnow()
+                last_deposit.expirationDate and last_deposit.expirationDate <= date_utils.get_naive_utc_now()
             ):
                 text += " expiré"
             return text
@@ -204,7 +205,7 @@ def format_deposit_used(booking: bookings_models.Booking) -> str:
 
 def format_active_deposit(deposit: finance_models.Deposit | None) -> str:
     if deposit:
-        if not deposit.expirationDate or deposit.expirationDate > datetime.datetime.utcnow():
+        if not deposit.expirationDate or deposit.expirationDate > date_utils.get_naive_utc_now():
             return Markup('<span class="visually-hidden">Oui</span><i class="bi bi-check-circle-fill"></i>')
     return Markup('<span class="visually-hidden">Non</span><i class="bi bi-x-circle-fill"></i>')
 

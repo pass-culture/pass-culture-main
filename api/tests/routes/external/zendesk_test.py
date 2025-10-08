@@ -12,6 +12,7 @@ from pcapi.core.users import constants as user_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
+from pcapi.utils import date as date_utils
 from pcapi.utils import postal_code as postal_code_utils
 
 
@@ -26,7 +27,7 @@ class ZendeskWebhookTest:
         ],
     )
     def test_webhook_update_user_by_email(self, client, caplog, phone_number, postal_code, expected_additional_tags):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = date_utils.get_naive_utc_now().year - user_constants.ELIGIBILITY_AGE_18
 
         user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(birth_year, 1, 2),
@@ -134,7 +135,7 @@ class ZendeskWebhookTest:
         }
 
     def test_webhook_update_user_without_subscription_process(self, client):
-        birth_year = datetime.utcnow().year - user_constants.ELIGIBILITY_AGE_18
+        birth_year = date_utils.get_naive_utc_now().year - user_constants.ELIGIBILITY_AGE_18
 
         # first name, last name and phone number unknown
         user = users_factories.UserFactory(

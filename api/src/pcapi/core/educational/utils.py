@@ -10,6 +10,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational.constants import COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS
 from pcapi.core.users.utils import ALGORITHM_RS_256
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 
@@ -63,7 +64,7 @@ def create_adage_jwt_fake_valid_token(readonly: bool, can_prebook: bool = True, 
             "nom": "TEST",
             "prenom": "COMPTE",
             "mail": "compte.test@education.gouv.fr",
-            "exp": datetime.utcnow() + timedelta(days=1),
+            "exp": date_utils.get_naive_utc_now() + timedelta(days=1),
             "canPrebook": can_prebook,
         }
         if not readonly:

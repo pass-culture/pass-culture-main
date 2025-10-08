@@ -15,6 +15,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -24,7 +25,7 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, datetime.utcnow())
+        eligibility = eligibility_api.decide_eligibility(user, birth_date, date_utils.get_naive_utc_now())
 
         assert eligibility == users_models.EligibilityType.AGE17_18
 
@@ -45,7 +46,7 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        eligibility = eligibility_api.decide_eligibility(user, birth_date, datetime.utcnow())
+        eligibility = eligibility_api.decide_eligibility(user, birth_date, date_utils.get_naive_utc_now())
 
         assert eligibility is None
 
@@ -126,7 +127,7 @@ class DecideEligibilityTest:
     def test_user_underage_eligibility_with_registration_datetime_before_decree(self, age):
         birth_date = date.today() - relativedelta(years=age, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
-        day_before_decree = datetime.utcnow() - relativedelta(days=1)
+        day_before_decree = date_utils.get_naive_utc_now() - relativedelta(days=1)
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.UBBLE,
@@ -143,7 +144,7 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=18, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        yesterday = datetime.utcnow() - relativedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - relativedelta(days=1)
         eligibility = eligibility_api.decide_eligibility(user, birth_date, yesterday)
 
         assert eligibility == users_models.EligibilityType.AGE18
@@ -152,7 +153,7 @@ class DecideEligibilityTest:
     def test_user_21_ineligibility_when_registered_before_decree(self):
         birth_date = date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
-        year_when_user_was_eighteen = datetime.utcnow() - relativedelta(years=user.age - 18)
+        year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=user.age - 18)
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.UBBLE,
@@ -169,7 +170,7 @@ class DecideEligibilityTest:
         birth_date = date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
-        year_when_user_was_eighteen = datetime.utcnow() - relativedelta(years=user.age - 18)
+        year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=user.age - 18)
         eligibility = eligibility_api.decide_eligibility(user, birth_date, year_when_user_was_eighteen)
 
         assert eligibility is None
@@ -255,7 +256,7 @@ class DecideEligibilityTest:
         )
         assert result == users_models.EligibilityType.AGE18
 
-    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=datetime.utcnow() - relativedelta(years=1))
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=date_utils.get_naive_utc_now() - relativedelta(years=1))
     def test_18yo_underage_eligible(self):
         today = date.today()
         birth_date = today - relativedelta(years=18, days=1)
@@ -277,7 +278,7 @@ class DecideEligibilityTest:
     def test_decide_eligibility_for_underage_users(self):
         # All 15-17 users are eligible after 2022-01-01
         for age in range(15, 18):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age))
+            user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age))
             birth_date = user.dateOfBirth
             registration_datetime = datetime.today()
 
@@ -325,7 +326,7 @@ class DecideEligibilityTest:
                 registration_datetime=None,
                 birth_date=birth_date,
             ),
-            dateCreated=datetime.utcnow() - relativedelta(days=3),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
         )
 
         assert eligibility_api.decide_eligibility(user, birth_date, None) == users_models.EligibilityType.AGE17_18
@@ -391,7 +392,7 @@ class EligibilityDatesTest:
     def test_eligibility_start_after_decree(self):
         birth_date = datetime(2008, 1, 1)
 
-        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, datetime.utcnow())
+        eligibility_start = eligibility_api.get_eligibility_start_datetime(birth_date, date_utils.get_naive_utc_now())
 
         assert eligibility_start == datetime(2025, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
@@ -406,7 +407,7 @@ class EligibilityDatesTest:
     def test_eligibility_end(self):
         birth_date = datetime(2008, 1, 1)
 
-        eligibility_end = eligibility_api.get_eligibility_end_datetime(birth_date, datetime.utcnow())
+        eligibility_end = eligibility_api.get_eligibility_end_datetime(birth_date, date_utils.get_naive_utc_now())
 
         assert eligibility_end == datetime(2027, 1, 1, tzinfo=ZoneInfo("Europe/Paris"))
 
@@ -604,7 +605,7 @@ class GetFirstRegistrationDateTest:
 class GetKnownBirthdateAtDateTest:
     def test_last_age_change_before_date_by_identity_provider(self):
         identity_check_known_birthday = date.today() - relativedelta(years=27)
-        last_week = datetime.utcnow() - relativedelta(weeks=1)
+        last_week = date_utils.get_naive_utc_now() - relativedelta(weeks=1)
         user = users_factories.IdentityValidatedUserFactory(
             validatedBirthDate=identity_check_known_birthday, beneficiaryFraudChecks__dateCreated=last_week
         )
@@ -613,14 +614,14 @@ class GetKnownBirthdateAtDateTest:
             user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=date(9999, 1, 1)
         )
 
-        yesterday = datetime.utcnow() - relativedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - relativedelta(days=1)
         yesterday_known_birthday = eligibility_api.get_known_birthday_at_date(user, yesterday)
 
         assert yesterday_known_birthday == identity_check_known_birthday
 
     def test_last_age_change_before_date_by_support_actions(self):
         identity_check_known_birth_date = date.today() - relativedelta(years=27)
-        last_week = datetime.utcnow() - relativedelta(weeks=1)
+        last_week = date_utils.get_naive_utc_now() - relativedelta(weeks=1)
         user = users_factories.IdentityValidatedUserFactory(
             validatedBirthDate=identity_check_known_birth_date, beneficiaryFraudChecks__dateCreated=last_week
         )
@@ -631,7 +632,7 @@ class GetKnownBirthdateAtDateTest:
         )
 
         # identity provider check that should be ignored
-        tomorrow = datetime.utcnow() + relativedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + relativedelta(days=1)
         subscription_factories.BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
             status=subscription_models.FraudCheckStatus.OK,
@@ -639,7 +640,7 @@ class GetKnownBirthdateAtDateTest:
             dateCreated=tomorrow,
         )
 
-        currently_known_birthday = eligibility_api.get_known_birthday_at_date(user, datetime.utcnow())
+        currently_known_birthday = eligibility_api.get_known_birthday_at_date(user, date_utils.get_naive_utc_now())
 
         assert currently_known_birthday == support_known_birthday
 
@@ -650,6 +651,6 @@ class GetKnownBirthdateAtDateTest:
             user=user, actionType=history_models.ActionType.INFO_MODIFIED, extraData=falsy_value
         )
 
-        birthday = eligibility_api.get_known_birthday_at_date(user, datetime.utcnow())
+        birthday = eligibility_api.get_known_birthday_at_date(user, date_utils.get_naive_utc_now())
 
         assert birthday == user.dateOfBirth.date()

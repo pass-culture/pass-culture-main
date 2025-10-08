@@ -10,6 +10,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.utils import date as date_utils
 from pcapi.utils.crypto import encrypt
 
 from . import models
@@ -134,7 +135,7 @@ class BoostCinemaDetailsFactory(BaseFactory[models.BoostCinemaDetails]):
     cinemaProviderPivot = factory.SubFactory(BoostCinemaProviderPivotFactory)
     cinemaUrl = factory.Sequence("https://boost-cinema-{}.example.com/".format)
     token = factory.LazyFunction(secrets.token_urlsafe)
-    tokenExpirationDate = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() + datetime.timedelta(hours=24))
+    tokenExpirationDate = factory.LazyAttribute(lambda _: date_utils.get_naive_utc_now() + datetime.timedelta(hours=24))
 
 
 class CGRCinemaDetailsFactory(BaseFactory):
@@ -193,4 +194,4 @@ class LocalProviderEventFactory(BaseFactory):
 
     provider = factory.SubFactory(ProviderFactory)
     type = models.LocalProviderEventType.SyncStart
-    date = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() - datetime.timedelta(days=30))
+    date = factory.LazyAttribute(lambda _: date_utils.get_naive_utc_now() - datetime.timedelta(days=30))

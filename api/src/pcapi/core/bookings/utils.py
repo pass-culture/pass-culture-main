@@ -99,7 +99,7 @@ def convert_collective_booking_dates_utc_to_venue_timezone(
 
 
 def get_cooldown_datetime_by_subcategories(sub_category_id: str) -> datetime:
-    return datetime.utcnow() - timedelta(
+    return date_utils.get_naive_utc_now() - timedelta(
         seconds=(
             SUGGEST_REACTION_COOLDOWN_IN_SECONDS[sub_category_id]
             if sub_category_id in SUGGEST_REACTION_COOLDOWN_IN_SECONDS

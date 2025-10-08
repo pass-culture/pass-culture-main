@@ -6,6 +6,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.reminders import factories as reminders_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
 
@@ -26,7 +27,7 @@ class GetRemindersTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
         offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
         offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
@@ -83,7 +84,7 @@ class PostReminderTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
         offer = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
         for user in [user_1, user_2]:
@@ -103,7 +104,7 @@ class PostReminderTest:
     def test_already_existing_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
         offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
         offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
@@ -155,7 +156,7 @@ class DeleteReminderTest:
         user_1 = users_factories.BeneficiaryFactory()
         user_2 = users_factories.BeneficiaryFactory()
 
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
         offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
         offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 
@@ -182,7 +183,7 @@ class DeleteReminderTest:
     def test_delete_reminder(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        future_publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        future_publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=30)
         offer_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
         offer_2 = offers_factories.OfferFactory(isActive=False, publicationDatetime=future_publication_date)
 

@@ -16,6 +16,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
@@ -384,7 +385,7 @@ def get_active_token_expiration(user: models.User) -> datetime | None:
 
 
 def generate_email_change_token_expiration_date() -> datetime:
-    return datetime.utcnow() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    return date_utils.get_naive_utc_now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
 
 
 def check_user_password(user: models.User, password: str) -> None:

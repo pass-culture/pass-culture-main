@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_naive_utc_now
 
 
@@ -149,7 +150,7 @@ def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITE
     if value.tzinfo is None:
         raise ValueError("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
-    if no_tz_value < datetime.datetime.utcnow():
+    if no_tz_value < date_utils.get_naive_utc_now():
         raise ValueError("The datetime must be in the future.")
     return no_tz_value
 

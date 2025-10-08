@@ -106,7 +106,7 @@ class OffersTest:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
-            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
@@ -360,7 +360,7 @@ class OffersTest:
 
     @time_machine.travel("2020-01-01")
     def test_get_expired_offer(self, client):
-        stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+        stock = offers_factories.EventStockFactory(beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1))
 
         offer_id = stock.offer.id
 
@@ -586,7 +586,7 @@ class OffersV2Test:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
-            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,
@@ -829,7 +829,7 @@ class OffersV2Test:
 
     @time_machine.travel("2020-01-01")
     def test_get_expired_offer(self, client):
-        stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+        stock = offers_factories.EventStockFactory(beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1))
 
         offer_id = stock.offer.id
         with assert_num_queries(self.base_num_queries):
@@ -1457,7 +1457,7 @@ class OffersStocksV2Test:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             price=45.67,
-            beginningDatetime=datetime.utcnow() - timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - timedelta(days=1),
             priceCategory__priceCategoryLabel__label="expired",
             features=[
                 cinema_providers_constants.ShowtimeFeatures.VF.value,

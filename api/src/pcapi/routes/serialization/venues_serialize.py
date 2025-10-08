@@ -33,6 +33,7 @@ from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
@@ -187,7 +188,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             return bool(venue.adageId)
 
         if key == "pricingPoint":
-            now = datetime.utcnow()
+            now = date_utils.get_naive_utc_now()
             for pricing_link in venue.pricing_point_links:
                 if pricing_link.timespan.lower <= now and (
                     not pricing_link.timespan.upper or pricing_link.timespan.upper > now

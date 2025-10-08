@@ -1,4 +1,3 @@
-import datetime
 import re
 import typing
 
@@ -40,6 +39,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import atomic
@@ -617,7 +617,7 @@ def _batch_validate_or_reject_collective_offers(
             old_validation_status = collective_offer.validation
             new_validation_status = validation
             collective_offer.validation = new_validation_status
-            collective_offer.lastValidationDate = datetime.datetime.utcnow()
+            collective_offer.lastValidationDate = date_utils.get_naive_utc_now()
             collective_offer.lastValidationType = offer_mixin.OfferValidationType.MANUAL
             collective_offer.lastValidationAuthorUserId = current_user.id
 
@@ -1083,7 +1083,7 @@ def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .options(

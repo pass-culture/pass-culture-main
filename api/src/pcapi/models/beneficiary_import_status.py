@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 
 if typing.TYPE_CHECKING:
@@ -46,7 +47,7 @@ class BeneficiaryImportStatus(PcObject, Model):
     )
 
     date: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
 
     detail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)

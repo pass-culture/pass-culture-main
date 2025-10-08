@@ -147,7 +147,7 @@ class ProductMediation(PcObject, Model):
     __tablename__ = "product_mediation"
 
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
     imageType: sa_orm.Mapped[ImageType] = sa_orm.mapped_column(
         db_utils.MagicEnum(ImageType, use_values=False), nullable=False
@@ -188,7 +188,7 @@ class Product(PcObject, Model, HasThumbMixin):
     thumb_path_component = "products"
 
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
     description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
@@ -318,10 +318,10 @@ class Mediation(PcObject, Model, HasThumbMixin, DeactivableMixin):
     )
     credit: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
     lastProviderId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True
@@ -349,10 +349,10 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     beginningDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     bookingLimitDatetime = sa_orm.mapped_column(sa.DateTime, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     dateModified: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     dnBookedQuantity: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, nullable=False, server_default=sa.text("0")
@@ -393,7 +393,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
     )
 
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
 
     fieldsUpdated: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
@@ -440,7 +440,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.datetime.utcnow())
+        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= date_utils.get_naive_utc_now())
 
     @hasBookingLimitDatetimePassed.inplace.expression
     @classmethod
@@ -462,7 +462,7 @@ class Stock(PcObject, Model, SoftDeletableMixin):
 
     @hybrid_property
     def isEventExpired(self) -> bool:
-        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.datetime.utcnow())
+        return bool(self.beginningDatetime and self.beginningDatetime <= date_utils.get_naive_utc_now())
 
     @isEventExpired.inplace.expression
     @classmethod
@@ -483,13 +483,13 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         if not self.beginningDatetime or self.offer.validation == OfferValidationStatus.DRAFT:
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
-        return limit_date_for_stock_deletion >= datetime.datetime.utcnow()
+        return limit_date_for_stock_deletion >= date_utils.get_naive_utc_now()
 
     @hybrid_property
     def isSoldOut(self) -> bool:
         return (
             self.isSoftDeleted
-            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.datetime.utcnow())
+            or (self.beginningDatetime is not None and self.beginningDatetime <= date_utils.get_naive_utc_now())
             or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
         )
 
@@ -664,7 +664,7 @@ class HeadlineOffer(PcObject, Model):
 
     @hybrid_property
     def isActive(self) -> bool:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         has_images = self.offer.mediations or (self.offer.product.images if self.offer.product else None)
         if now in self.timespan and self.offer.status == OfferStatus.ACTIVE and has_images:
             return True
@@ -796,13 +796,13 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         "Criterion", back_populates="offers", secondary=OfferCriterion.__table__
     )
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     dateModifiedAtLastProvider: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )
     dateUpdated: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
 
     finalizationDatetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
@@ -1019,7 +1019,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
         for stock in self.stocks:
             if (
                 not stock.isSoftDeleted
-                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.datetime.utcnow())
+                and (stock.beginningDatetime is None or stock.beginningDatetime > date_utils.get_naive_utc_now())
                 and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
             ):
                 return False

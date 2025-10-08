@@ -1,10 +1,9 @@
-import datetime
-
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 @log_func_duration
@@ -80,7 +79,7 @@ Ut quis egestas neque. Fusce sem nulla, luctus ac sagittis eu, mattis quis purus
         isActive=True,
         isDuo=False,
     )
-    offers_factories.StockFactory.create(offer=movie_offer, bookingLimitDatetime=datetime.datetime.utcnow())
+    offers_factories.StockFactory.create(offer=movie_offer, bookingLimitDatetime=date_utils.get_naive_utc_now())
 
     book_product = offers_factories.ProductFactory.create(
         subcategoryId=subcategories.LIVRE_PAPIER.id,

@@ -28,6 +28,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 from . import utils
 
@@ -302,7 +303,7 @@ class BankAccount(PcObject, Model, DeactivableMixin):
     @property
     def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
         for link in self.venueLinks:
-            if link.timespan.upper is None and link.timespan.lower <= datetime.datetime.utcnow():
+            if link.timespan.upper is None and link.timespan.lower <= date_utils.get_naive_utc_now():
                 return link
         return None
 
@@ -1086,7 +1087,7 @@ class PaymentStatus(PcObject, Model):
         "Payment", foreign_keys=[paymentId], back_populates="statuses"
     )
     date: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     status: sa_orm.Mapped[TransactionStatus] = sa_orm.mapped_column(sa.Enum(TransactionStatus), nullable=False)
     detail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.VARCHAR(), nullable=True)

@@ -77,7 +77,7 @@ logger = logging.getLogger(__name__)
 def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> token_utils.Token:
     return token_utils.Token.create(
         token_utils.TokenType.RESET_PASSWORD,
-        datetime.datetime.utcnow() - expiration if expiration else constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+        date_utils.get_naive_utc_now() - expiration if expiration else constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
         user.id,
     )
 
@@ -135,7 +135,7 @@ def create_account(
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
         phoneNumber=phone_number,
-        lastConnectionDate=datetime.datetime.utcnow(),
+        lastConnectionDate=date_utils.get_naive_utc_now(),
     )
     db.session.add(user)
 
@@ -291,7 +291,7 @@ def get_email_validation_resends_limitation_expiration_time(user: models.User) -
     ttl = app.redis_client.ttl(_email_validation_resends_key(user))
 
     if ttl > 0:
-        return datetime.datetime.utcnow() + datetime.timedelta(seconds=ttl)
+        return date_utils.get_naive_utc_now() + datetime.timedelta(seconds=ttl)
 
     return None
 
@@ -510,7 +510,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
     if reason in _BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS | _NON_BO_REASONS_WHICH_CANCEL_ALL_BOOKINGS:
         bookings_query = bookings_query.filter(
             sa.or_(
-                datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
+                date_utils.get_naive_utc_now() < bookings_models.Booking.cancellationLimitDate,
                 bookings_models.Booking.cancellationLimitDate.is_(None),
             ),
         )
@@ -700,7 +700,7 @@ def update_user_info(
     if activity is not UNCHANGED:
         if user.activity != activity.value:
             snapshot.set("activity", old=user.activity, new=activity.value)
-            batch_extra_data["last_status_update_date"] = datetime.datetime.utcnow()
+            batch_extra_data["last_status_update_date"] = date_utils.get_naive_utc_now()
         user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
@@ -839,7 +839,7 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
     if settings.MAKE_PROS_BENEFICIARIES_IN_APP:
         new_pro_user.add_beneficiary_role()
-        eighteen_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=366 * 18)
+        eighteen_years_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 18)
         new_pro_user.dateOfBirth = eighteen_years_ago
         new_pro_user.validatedBirthDate = new_pro_user.dateOfBirth.date()
         deposit = deposit_api.upsert_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
@@ -865,7 +865,7 @@ def set_pro_rgs_as_seen(user: models.User) -> None:
 
 def update_last_connection_date(user: models.User) -> None:
     previous_connection_date = user.lastConnectionDate
-    last_connection_date = datetime.datetime.utcnow()
+    last_connection_date = date_utils.get_naive_utc_now()
 
     should_save_last_connection_date = (
         not previous_connection_date or last_connection_date - previous_connection_date > datetime.timedelta(minutes=15)
@@ -1097,7 +1097,7 @@ def search_pro_account(search_query: str, *_: typing.Any) -> sa_orm.Query:
             # load only the last deposit to avoid breaking line count
             sa.and_(
                 models.User.id == finance_models.Deposit.userId,
-                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+                finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
             ),
         )
     )
@@ -1225,7 +1225,7 @@ def is_login_device_a_trusted_device(
 
 
 def get_recent_suspicious_logins(user: models.User) -> list[models.LoginDeviceHistory]:
-    yesterday = datetime.datetime.utcnow() - relativedelta(hours=24)
+    yesterday = date_utils.get_naive_utc_now() - relativedelta(hours=24)
     recent_logins = (
         db.session.query(models.LoginDeviceHistory)
         .filter(
@@ -1267,10 +1267,10 @@ def create_suspicious_login_email_token(
             token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
             users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
             user_id,
-            {"dateCreated": datetime.datetime.utcnow().strftime(date_utils.DATE_ISO_FORMAT)},
+            {"dateCreated": date_utils.get_naive_utc_now().strftime(date_utils.DATE_ISO_FORMAT)},
         )
 
-    passed_ttl = datetime.datetime.utcnow() - login_info.dateCreated
+    passed_ttl = date_utils.get_naive_utc_now() - login_info.dateCreated
     remaining_ttl = users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - passed_ttl
 
     return token_utils.Token.create(
@@ -1311,14 +1311,14 @@ def save_device_info_and_notify_user(
 
 
 def delete_old_trusted_devices() -> None:
-    five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
+    five_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=5)
 
     db.session.query(models.TrustedDevice).filter(models.TrustedDevice.dateCreated <= five_years_ago).delete()
     db.session.commit()
 
 
 def delete_old_login_device_history() -> None:
-    thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
+    thirteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=13)
 
     db.session.query(models.LoginDeviceHistory).filter(
         models.LoginDeviceHistory.dateCreated <= thirteen_months_ago

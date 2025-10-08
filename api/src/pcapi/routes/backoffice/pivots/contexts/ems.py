@@ -10,6 +10,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .. import forms
 from .base import PivotContext
@@ -90,7 +91,7 @@ class EMSContext(PivotContext):
     def check_if_api_call_is_ok(cls) -> None:
         connector = EMSScheduleConnector()
         try:
-            connector.get_schedules(version=int(datetime.utcnow().timestamp()))
+            connector.get_schedules(version=int(date_utils.get_naive_utc_now().timestamp()))
             flash("Connexion à l'API EMS OK.", "success")
         except Exception as exc:
             logger.exception("Error while checking EMS API information", extra={"exc": exc})

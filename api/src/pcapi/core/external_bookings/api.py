@@ -1,4 +1,3 @@
-import datetime
 import functools
 import logging
 
@@ -28,6 +27,7 @@ from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 from pcapi.utils.transaction_manager import on_commit
@@ -231,7 +231,7 @@ def book_event_ticket(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
                 "barcode": ticket.barcode,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": date_utils.get_naive_utc_now().timestamp(),
                 "booking_type": RedisExternalBookingType.EVENT,
                 "cancel_event_info": {
                     "provider_id": provider.id,
@@ -259,7 +259,7 @@ def _verify_and_return_tickets_with_same_quantity_as_booking(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
                 "barcode": tickets[0].barcode,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": date_utils.get_naive_utc_now().timestamp(),
                 "booking_type": RedisExternalBookingType.EVENT,
                 "cancel_event_info": {
                     "provider_id": stock.offer.lastProvider.id,

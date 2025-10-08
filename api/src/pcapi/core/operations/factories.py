@@ -5,6 +5,7 @@ import factory.fuzzy
 
 from pcapi.core.factories import BaseFactory
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 
 from . import models
 
@@ -14,7 +15,7 @@ class SpecialEventFactory(BaseFactory):
         model = models.SpecialEvent
 
     externalId = factory.Sequence("ExtIdEvt{:04}".format)
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=2))
     title = factory.Sequence("Opération #{}".format)
     eventDate = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=7))
     endImportDate = factory.LazyFunction(lambda: datetime.date.today() + datetime.timedelta(days=6))
@@ -35,7 +36,7 @@ class SpecialEventResponseFactory(BaseFactory):
 
     event = factory.SubFactory(SpecialEventFactory)
     externalId = factory.Sequence("ExtIdRes{:04}".format)
-    dateSubmitted = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    dateSubmitted = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
     user: factory.declarations.BaseDeclaration | None = factory.SubFactory(users_factories.BeneficiaryFactory)
     phoneNumber: factory.declarations.BaseDeclaration | str | None = factory.SelfAttribute("user.phoneNumber")
     email: factory.declarations.BaseDeclaration = factory.SelfAttribute("user.email")

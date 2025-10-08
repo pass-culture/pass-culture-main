@@ -42,13 +42,14 @@ from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def _datetime_within_last_5sec(when: datetime.datetime) -> bool:
-    return datetime.datetime.utcnow() - relativedelta(seconds=5) < when < datetime.datetime.utcnow()
+    return date_utils.get_naive_utc_now() - relativedelta(seconds=5) < when < date_utils.get_naive_utc_now()
 
 
 def _assert_user_action_history_as_expected(
@@ -122,8 +123,8 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         -----------------|------------------------------------------------->
                         now
         """
-        in_the_past = datetime.datetime.utcnow() - relativedelta(days=1)
-        in_the_future = datetime.datetime.utcnow() + relativedelta(days=1)
+        in_the_past = date_utils.get_naive_utc_now() - relativedelta(days=1)
+        in_the_future = date_utils.get_naive_utc_now() + relativedelta(days=1)
         booking_event = bookings_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
@@ -148,8 +149,8 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         -------------------------------------------------|----------------->
                                                         now
         """
-        in_the_past = datetime.datetime.utcnow() - relativedelta(seconds=1)
-        further_in_the_past = datetime.datetime.utcnow() - relativedelta(days=3)
+        in_the_past = date_utils.get_naive_utc_now() - relativedelta(seconds=1)
+        further_in_the_past = date_utils.get_naive_utc_now() - relativedelta(days=3)
         booking_event = bookings_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             status=BookingStatus.CONFIRMED,
@@ -195,7 +196,7 @@ class SuspendAccountTest:
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.BookingFactory(user=user)
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         confirmed_booking = bookings_factories.BookingFactory(
             user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
@@ -488,7 +489,7 @@ class CreateBeneficiaryTest:
             status=subscription_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=subscription_factories.EduconnectContentFactory(
-                registration_datetime=datetime.datetime.utcnow()
+                registration_datetime=date_utils.get_naive_utc_now()
             ),
         )
         user = subscription_api.activate_beneficiary_for_eligibility(
@@ -605,8 +606,8 @@ class CreateBeneficiaryTest:
         assert trigger_event_log["event_payload"] == {"deposit_type": "GRANT_18", "deposit_amount": 300}
 
     def test_15yo_that_started_at_14_is_activated(self):
-        fifteen_years_and_one_week_ago = datetime.datetime.utcnow() - relativedelta(years=15, weeks=1)
-        one_month_ago = datetime.datetime.utcnow() - relativedelta(months=1)
+        fifteen_years_and_one_week_ago = date_utils.get_naive_utc_now() - relativedelta(years=15, weeks=1)
+        one_month_ago = date_utils.get_naive_utc_now() - relativedelta(months=1)
 
         fifteen_year_old = users_factories.UserFactory(validatedBirthDate=fifteen_years_and_one_week_ago)
 
@@ -628,7 +629,7 @@ class CreateBeneficiaryTest:
     def test_user_ex_underage_gets_remaining_amount_transferred_even_if_expired(self):
         # No time_travel for user creation here, because there is a call to get_wallet_ballance (which is a database function) in activate_beneficiary_for_eligibility.
         # The database has its own time, ignoring all time_travel shenanigans.
-        a_year_go = datetime.datetime.utcnow() - relativedelta(years=1)
+        a_year_go = date_utils.get_naive_utc_now() - relativedelta(years=1)
         user = users_factories.BeneficiaryFactory(
             validatedBirthDate=a_year_go - relativedelta(years=17),
             roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
@@ -640,7 +641,7 @@ class CreateBeneficiaryTest:
         bookings_factories.BookingFactory(user=user, amount=20)
 
         # Mock an expired deposit
-        user.deposit.expirationDate = datetime.datetime.utcnow() - relativedelta(days=1)
+        user.deposit.expirationDate = date_utils.get_naive_utc_now() - relativedelta(days=1)
 
         # Finish steps for 18yo user
         id_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -719,7 +720,7 @@ class UpdateUserInfoTest:
 
     def test_update_user_info_also_updates_underage_deposit_expiration_date(self):
         # Given a user with an underage deposit
-        underaged_beneficiary_birthday = datetime.datetime.utcnow() - relativedelta(years=17, months=4)
+        underaged_beneficiary_birthday = date_utils.get_naive_utc_now() - relativedelta(years=17, months=4)
         underaged_beneficiary_expiration_date = underaged_beneficiary_birthday + relativedelta(
             years=21, hour=0, minute=0, second=0, microsecond=0
         )
@@ -857,11 +858,11 @@ class DomainsCreditTest:
 
         booking1 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=4,
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 20€
         self._price_booking(booking1)
@@ -869,11 +870,11 @@ class DomainsCreditTest:
         # Booking to cancel totally
         booking2 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=2,
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 6€ → 0€
         self._price_booking(booking2)
@@ -881,17 +882,17 @@ class DomainsCreditTest:
         # Booking to cancel partially
         booking3 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=5,
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 15€ → 10€
         self._price_booking(booking3)
 
         # Mark all pricings as invoiced
-        cutoff = datetime.datetime.utcnow()
+        cutoff = date_utils.get_naive_utc_now()
         batch = finance_api.generate_cashflows(cutoff)
         assert len(batch.cashflows) == 1
         cashflow = batch.cashflows[0]
@@ -951,18 +952,18 @@ class DomainsCreditTest:
         author_user = users_factories.UserFactory()
         user = users_factories.BeneficiaryGrant18Factory(
             deposit__type=finance_models.DepositType.GRANT_15_17,
-            deposit__expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            deposit__expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
             deposit__amount=70,
         )
 
         # booking1 (20€ → 20€) + booking2 (6€ → 0€) + booking3 (15€ → 10€) = 30€
         booking1 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=4,
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 20€
         self._price_booking(booking1)
@@ -970,11 +971,11 @@ class DomainsCreditTest:
         # Booking to cancel totally
         booking2 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=2,
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 6€ → 0€
         self._price_booking(booking2)
@@ -982,26 +983,26 @@ class DomainsCreditTest:
         # Booking to cancel partially
         booking3 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=5,
             stock__price=Decimal("3.0"),
             stock__offer__venue=venue,
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
         )  # 15€ → 10€
         self._price_booking(booking3)
 
         # the old deposit expires and is replaced by a 17_18 one
-        user.deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+        user.deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=5)
         users_factories.DepositGrantFactory(
             user=user,
             type=finance_models.DepositType.GRANT_17_18,
-            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
             amount=50,
         )
         booking4 = bookings_factories.BookingFactory(
             user=user,
-            cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
             quantity=4,
             stock__price=Decimal("5.0"),
             stock__offer__venue=venue,
@@ -1010,7 +1011,7 @@ class DomainsCreditTest:
         self._price_booking(booking4)
 
         # Mark all pricings as invoiced
-        cutoff = datetime.datetime.utcnow()
+        cutoff = date_utils.get_naive_utc_now()
         batch = finance_api.generate_cashflows(cutoff)
         assert len(batch.cashflows) == 1
         cashflow = batch.cashflows[0]
@@ -1107,7 +1108,7 @@ class DomainsCreditTest:
         self._price_booking(booking3)
 
         # Mark all pricings as invoiced
-        cutoff = datetime.datetime.utcnow()
+        cutoff = date_utils.get_naive_utc_now()
         batch = finance_api.generate_cashflows(cutoff)
         assert len(batch.cashflows) == 1
         cashflow = batch.cashflows[0]
@@ -1201,7 +1202,7 @@ class DomainsCreditTest:
         self._price_booking(booking3)
 
         # Mark all pricings as invoiced
-        cutoff = datetime.datetime.utcnow()
+        cutoff = date_utils.get_naive_utc_now()
         batch = finance_api.generate_cashflows(cutoff)
         assert len(batch.cashflows) == 1
         cashflow = batch.cashflows[0]
@@ -1803,7 +1804,7 @@ class RecentSuspiciousLoginsTest:
     def should_ignore_old_suspicious_device_logins(self):
         user = users_factories.UserFactory()
         _untrusted_login = users_factories.LoginDeviceHistoryFactory(
-            user=user, dateCreated=datetime.datetime.utcnow() - relativedelta(hours=25)
+            user=user, dateCreated=date_utils.get_naive_utc_now() - relativedelta(hours=25)
         )
 
         assert not users_api.get_recent_suspicious_logins(user)
@@ -1861,8 +1862,8 @@ class CreateSuspiciousLoginEmailTokenTest:
 
 class DeleteOldTrustedDevicesTest:
     def should_delete_trusted_devices_older_than_five_years_ago(self):
-        five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
-        six_years_ago = datetime.datetime.utcnow() - relativedelta(years=6)
+        five_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=5)
+        six_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=6)
         users_factories.TrustedDeviceFactory(dateCreated=five_years_ago)
         users_factories.TrustedDeviceFactory(dateCreated=six_years_ago)
 
@@ -1871,7 +1872,7 @@ class DeleteOldTrustedDevicesTest:
         assert db.session.query(users_models.TrustedDevice).count() == 0
 
     def should_not_delete_trusted_devices_created_less_than_five_years_ago(self):
-        less_than_five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5) + datetime.timedelta(days=1)
+        less_than_five_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=5) + datetime.timedelta(days=1)
         users_factories.TrustedDeviceFactory(dateCreated=less_than_five_years_ago)
 
         users_api.delete_old_trusted_devices()
@@ -1881,8 +1882,8 @@ class DeleteOldTrustedDevicesTest:
 
 class DeleteOldLoginDeviceHistoryTest:
     def should_delete_device_history_older_than_thirteen_months_ago(self):
-        thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
-        fourteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=14)
+        thirteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=13)
+        fourteen_months_ago = date_utils.get_naive_utc_now() - relativedelta(months=14)
         users_factories.LoginDeviceHistoryFactory(dateCreated=thirteen_months_ago)
         users_factories.LoginDeviceHistoryFactory(dateCreated=fourteen_months_ago)
 
@@ -1892,7 +1893,7 @@ class DeleteOldLoginDeviceHistoryTest:
 
     def should_not_delete_device_history_created_less_than_thirteen_months_ago(self):
         less_than_thirteen_months_ago = (
-            datetime.datetime.utcnow() - relativedelta(months=13) + datetime.timedelta(days=1)
+            date_utils.get_naive_utc_now() - relativedelta(months=13) + datetime.timedelta(days=1)
         )
         users_factories.LoginDeviceHistoryFactory(dateCreated=less_than_thirteen_months_ago)
 
@@ -1948,7 +1949,7 @@ class RefreshAccessTokenTest:
 class NotifyUserBeforeDeletionUponSuspensionTest:
     def test_get_users_with_suspended_account_to_notify(self):
         delta_time = 5
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(days=delta_time)
+        exact_time = date_utils.get_naive_utc_now() - datetime.timedelta(days=delta_time)
         suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
             actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -1975,7 +1976,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
-        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=date_utils.get_naive_utc_now())
 
         expected_user_ids = {suspension_to_be_detected.userId}
 
@@ -1986,7 +1987,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
 
     def test_notify_user_before_deletion_upon_suspension(self, app):
         # given
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = date_utils.get_naive_utc_now() - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
@@ -2015,7 +2016,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
-        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=date_utils.get_naive_utc_now())
 
         # when
         users_api.notify_users_before_deletion_of_suspended_account()
@@ -2027,7 +2028,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert mails_testing.outbox[0]["To"] == user.email
 
     def test_multiple_suspensions_different_reason(self):
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = date_utils.get_naive_utc_now() - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         user = users_factories.UserFactory(isActive=False)
@@ -2050,7 +2051,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert len(mails_testing.outbox) == 0
 
     def test_multiple_suspensions_different_date(self):
-        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+        exact_time = date_utils.get_naive_utc_now() - datetime.timedelta(
             days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
         )
         user = users_factories.UserFactory(isActive=False)
@@ -2076,7 +2077,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
 @pytest.mark.usefixtures("db_session")
 class GetSuspendedAccountsUponUserRequestSinceTest:
     def test_get_suspended_upon_user_request_accounts_since(self) -> None:
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
         something = history_factories.SuspendedUserActionHistoryFactory(
             actionDate=one_week_ago, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -2087,7 +2088,7 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         )
 
         # suspended less than 5 days ago (see below): should be ignored
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         history_factories.SuspendedUserActionHistoryFactory(
             actionDate=yesterday, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
@@ -2104,13 +2105,13 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         Test that an unsuspended account is ignored, even if the
         suspension event occurred more than N days ago.
         """
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
         user = users_factories.UserFactory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(
             user=user, actionDate=one_week_ago, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
         )
 
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=yesterday)
 
         with assert_num_queries(1):

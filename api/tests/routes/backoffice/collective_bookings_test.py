@@ -14,6 +14,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .helpers import flash
 from .helpers import html_parser
@@ -38,8 +39,8 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution2,
         collectiveStock__collectiveOffer__name="Offer n°1",
         collectiveStock__collectiveOffer__formats=[EacFormat.CONFERENCE_RENCONTRE],
-        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=6),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
         venue=venue,
     )
     offerers_factories.UserOffererFactory(offerer=pending.offerer)
@@ -50,10 +51,10 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__price=1234,
         collectiveStock__collectiveOffer__name="Visite des locaux primitifs du pass Culture",
         collectiveStock__collectiveOffer__formats=[EacFormat.VISITE_GUIDEE],
-        collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
+        collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=24),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
     )
     # 2
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
@@ -62,9 +63,9 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__price=567.8,
         collectiveStock__collectiveOffer__name="Offer n°2",
         collectiveStock__collectiveOffer__formats=[EacFormat.CONCERT],
-        collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=7),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         venue=venue,
     )
     # 3
@@ -72,15 +73,15 @@ def collective_bookings_fixture() -> tuple:
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°3",
         collectiveStock__collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     # 4
     reimbursed = educational_factories.ReimbursedCollectiveBookingFactory(
         educationalInstitution=institution3,
         collectiveStock__collectiveOffer__name="Offer n°4",
         collectiveStock__collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
     )
 
     return pending, confirmed, cancelled, used, reimbursed

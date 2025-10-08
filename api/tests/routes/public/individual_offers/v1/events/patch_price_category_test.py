@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
@@ -123,7 +124,7 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             priceCategory=price_category,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+            beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=-2),
         )
 
         response = self.make_request(

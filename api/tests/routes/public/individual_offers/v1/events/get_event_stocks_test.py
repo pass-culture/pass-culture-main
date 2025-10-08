@@ -33,7 +33,9 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(
             offer=event, price=12.34, priceCategoryLabel__label="carre or"
         )
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        two_weeks_from_now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=2
+        )
         stock = offers_factories.EventStockFactory(
             offer=event,
             priceCategory=price_category,
@@ -84,7 +86,9 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer, price=12.34, priceCategoryLabel__label="carre or"
         )
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        two_weeks_from_now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            weeks=2
+        )
         stock1_id_at_provider = "5edd982915c2a74b9302e443"
         bookable_stock = offers_factories.EventStockFactory(
             offer=offer,

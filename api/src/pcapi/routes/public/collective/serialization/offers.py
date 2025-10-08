@@ -19,6 +19,7 @@ from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
 
@@ -79,27 +80,27 @@ def validate_booking_limit_datetime(
 
 
 def validate_start_datetime(start_datetime: datetime | None, values: dict[str, typing.Any]) -> datetime | None:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
     if not start_datetime:
         return None
 
     if start_datetime.tzinfo is not None:
         if start_datetime < datetime.now(timezone.utc):
             raise ValueError("L'évènement ne peut commencer dans le passé.")
-    elif start_datetime < datetime.utcnow():
+    elif start_datetime < date_utils.get_naive_utc_now():
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return start_datetime
 
 
 def validate_end_datetime(end_datetime: datetime | None, values: dict[str, typing.Any]) -> datetime | None:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
     if not end_datetime:
         return None
 
     if end_datetime.tzinfo is not None:
         if end_datetime < datetime.now(timezone.utc):
             raise ValueError("L'évènement ne peut se terminer dans le passé.")
-    elif end_datetime < datetime.utcnow():
+    elif end_datetime < date_utils.get_naive_utc_now():
         raise ValueError("L'évènement ne peut se terminer dans le passé.")
     return end_datetime
 

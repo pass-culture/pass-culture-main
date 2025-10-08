@@ -8,6 +8,7 @@ import sqlalchemy.orm as sa_orm
 import pcapi.utils.db as db_utils
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 
 if typing.TYPE_CHECKING:
@@ -44,7 +45,7 @@ class Achievement(PcObject, Model):
 
     name: sa_orm.Mapped[AchievementEnum] = sa_orm.mapped_column(db_utils.MagicEnum(AchievementEnum), nullable=False)
     unlockedDate: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     # For when the user has seen the achievement success modal in the native app:
     seenDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)

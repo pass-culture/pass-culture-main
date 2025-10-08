@@ -5,6 +5,7 @@ import pcapi.core.offers.factories as offer_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import Subcategory
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ def _create_future_offer_factory(
 def create_future_offers() -> None:
     # Create future Offers not active, i.e. proper coming soon offers
     for i in range(5):
-        publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=(i + 1) * 5)
+        publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=(i + 1) * 5)
         _create_future_offer_factory(
             is_active=False,
             publication_datetime=publication_date,
@@ -52,7 +53,7 @@ def create_future_offers() -> None:
     )
 
     # Create future Offer in the past, i.e. regular offer
-    publication_date = datetime.datetime.utcnow() + datetime.timedelta(days=-30)
+    publication_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=-30)
     _create_future_offer_factory(
         is_active=True,
         publication_datetime=publication_date,

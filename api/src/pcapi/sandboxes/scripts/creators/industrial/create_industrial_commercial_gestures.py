@@ -17,6 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils.chunks import get_chunks
 
 
@@ -133,7 +134,7 @@ def _create_total_commercial_gesture_collective_offer(
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -342,7 +343,7 @@ def _generate_bookings_for_commercial_gesture_creation(venue: offerers_models.Ve
         booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("14") + decimal.Decimal(i),
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -418,7 +419,7 @@ def create_industrial_commercial_gestures() -> None:
             users_count=3 + i,
         )
 
-    cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(cashflow_batch)
     db.session.flush()
 

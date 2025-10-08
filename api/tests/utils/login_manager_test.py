@@ -16,6 +16,7 @@ from pcapi.routes.native.blueprint import native_blueprint
 from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
 from pcapi.routes.public import blueprints as public_blueprint
 from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -101,9 +102,11 @@ class ManageProSessionTest:
         session_mock["last_api_call"] = datetime(2024, 12, 30, 13, 37, 0).timestamp()
 
         with patch("flask.request", request), patch("flask.session", session_mock) as session:
-            with patch("pcapi.utils.login_manager.datetime") as datetime_mock:
-                datetime_mock.utcnow.return_value = now
-                datetime_mock.fromtimestamp.side_effect = datetime.fromtimestamp
+            with patch("pcapi.utils.login_manager.date_utils") as date_utils_mock:
+                date_utils_mock.get_naive_utc_now.return_value = now
+
+                with patch("pcapi.utils.login_manager.datetime") as datetime_mock:
+                    datetime_mock.fromtimestamp.side_effect = datetime.fromtimestamp
 
                 result = login_manager.manage_pro_session(user)
 
@@ -134,32 +137,32 @@ class ManageProSessionTest:
 
 class ComputeProSessionValidityTest:
     def test_newly_connected(self, login_manager):
-        last_login = datetime.utcnow()
-        last_api_call = datetime.utcnow()
+        last_login = date_utils.get_naive_utc_now()
+        last_api_call = date_utils.get_naive_utc_now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert result
 
     def test_connexion_expired_but_still_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
-        last_api_call = datetime.utcnow()
+        last_login = date_utils.get_naive_utc_now() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
+        last_api_call = date_utils.get_naive_utc_now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert result
 
     def test_connexion_expired_and_not_active(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
-        last_api_call = datetime.utcnow() - (settings.PRO_SESSION_GRACE_TIME_IN_HOURS + timedelta(hours=1))
+        last_login = date_utils.get_naive_utc_now() - settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS
+        last_api_call = date_utils.get_naive_utc_now() - (settings.PRO_SESSION_GRACE_TIME_IN_HOURS + timedelta(hours=1))
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 
         assert not result
 
     def test_connexion_expired_but_still_active_older_than_grace_time(self, login_manager):
-        last_login = datetime.utcnow() - settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS
-        last_api_call = datetime.utcnow()
+        last_login = date_utils.get_naive_utc_now() - settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS
+        last_api_call = date_utils.get_naive_utc_now()
 
         result = login_manager.compute_pro_session_validity(last_login, last_api_call)
 

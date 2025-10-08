@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 
 import pytest
 
@@ -11,6 +10,7 @@ import pcapi.core.users.testing as users_testing
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import date as date_utils
 
 from tests.connectors import api_entreprise_test_data
 
@@ -131,7 +131,7 @@ def test_user_can_create_offerer(client):
 def test_when_no_address_is_provided(client):
     # given
     pro = users_factories.ProFactory(
-        lastConnectionDate=datetime.utcnow(),
+        lastConnectionDate=date_utils.get_naive_utc_now(),
     )
     body = {
         "name": "Test Offerer",

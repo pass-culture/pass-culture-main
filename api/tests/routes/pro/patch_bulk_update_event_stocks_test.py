@@ -15,6 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -28,7 +29,7 @@ class Returns200Test:
             offer=offer, price=23, priceCategoryLabel=price_cat_label
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
 
         response = client.with_session_auth("user@example.com").patch(
             "/stocks/bulk",
@@ -56,7 +57,7 @@ class Returns200Test:
 
     def test_do_not_edit_one_stock_when_duplicated(self, client):
         offer = offers_factories.EventOfferFactory()
-        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         tomorrow = beginning + datetime.timedelta(days=1)
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_category = offers_factories.PriceCategoryFactory(
@@ -106,7 +107,7 @@ class Returns200Test:
             offer=offer, priceCategoryLabel__venue=offer.venue, price=25
         )
         existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=old_price_category)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         with caplog.at_level(logging.INFO):
@@ -158,7 +159,7 @@ class Returns200Test:
         price_cat_label = offers_factories.PriceCategoryLabelFactory(venue=offer.venue, label="Tarif 1")
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
         existing_stock = offers_factories.EventStockFactory(offer=offer, priceCategory=price_cat)
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         bookings_factories.BookingFactory(stock=existing_stock, user__email="beneficiary@bookingEmail.fr")
@@ -200,7 +201,7 @@ class Returns200Test:
     def should_update_bookings_cancellation_limit_date_on_delayed_event(
         self, mock_update_cancellation_limit_dates, client
     ):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
         offer = offers_factories.EventOfferFactory(bookingEmail="test@bookingEmail.fr")
@@ -232,7 +233,7 @@ class Returns200Test:
         mock_update_cancellation_limit_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
     def should_invalidate_booking_token_when_event_is_reported(self, client):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         booking_made_3_days_ago = now - relativedelta(days=3)
         event_in_4_days = now + relativedelta(days=4)
         event_reported_in_10_days = now + relativedelta(days=10)
@@ -268,7 +269,7 @@ class Returns200Test:
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
     def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self, client):
-        now = datetime.datetime.utcnow() + relativedelta(hours=4)
+        now = date_utils.get_naive_utc_now() + relativedelta(hours=4)
         date_used_in_48_hours = now + relativedelta(days=2)
         event_in_3_days = now + relativedelta(days=3)
         event_reported_in_less_48_hours = now + relativedelta(days=1)
@@ -308,7 +309,7 @@ class Returns200Test:
         assert updated_booking.dateUsed == date_used_in_48_hours
 
     def test_update_event_stock_quantity(self, client):
-        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         offer = offers_factories.EventOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         price_category_1 = offers_factories.PriceCategoryFactory(offer=offer, price=10)
         existing_stock = offers_factories.EventStockFactory(
@@ -417,7 +418,7 @@ class Returns400Test:
 
     def test_beginning_datetime_after_booking_limit_datetime(self, client):
         stock = offers_factories.EventStockFactory()
-        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        beginning = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         after_beginning = beginning + datetime.timedelta(days=1)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
@@ -450,7 +451,7 @@ class Returns400Test:
         too_high_price_category = offers_factories.PriceCategoryFactory(
             offer=offer, priceCategoryLabel__label="too_high_price_category", price=310
         )
-        beginning = datetime.datetime.utcnow() + relativedelta(days=10)
+        beginning = date_utils.get_naive_utc_now() + relativedelta(days=10)
         existing_stock = offers_factories.EventStockFactory(
             offer=offer, priceCategoryId=positive_price_category.id, beginningDatetime=beginning
         )
@@ -480,7 +481,7 @@ class Returns403Test:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, client, db_session):
         users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.EventOfferFactory()
-        booking_datetime = datetime.datetime.utcnow() + relativedelta(hours=4)
+        booking_datetime = date_utils.get_naive_utc_now() + relativedelta(hours=4)
 
         response = client.with_session_auth("wrong@example.com").patch(
             "/stocks/bulk",

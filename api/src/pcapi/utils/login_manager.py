@@ -18,6 +18,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.blueprint import backoffice_web
 from pcapi.routes.pro.blueprint import pro_private_api
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -112,7 +113,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
     if getattr(flask.request, "blueprint", "") not in PRO_APIS:
         return user
 
-    current_timestamp = datetime.utcnow().timestamp()
+    current_timestamp = date_utils.get_naive_utc_now().timestamp()
     last_login = datetime.fromtimestamp(flask.session.get("last_login", current_timestamp))
     last_api_call = datetime.fromtimestamp(flask.session.get("last_api_call", current_timestamp))
     valid_session = compute_pro_session_validity(last_login, last_api_call)
@@ -130,7 +131,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
 
 
 def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) -> bool:
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     if last_login + settings.PRO_SESSION_LOGIN_TIMEOUT_IN_DAYS > now:  # connected less than 14 days ago
         return True

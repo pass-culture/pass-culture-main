@@ -10,6 +10,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils.db import MagicEnum
 
 
@@ -161,7 +162,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
     __tablename__ = "beneficiary_fraud_check"
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, server_default=sa.func.now(), default=date_utils.get_naive_utc_now
     )
     # The eligibility is null when the user is not eligible
     eligibilityType: sa_orm.Mapped[users_models.EligibilityType | None] = sa_orm.mapped_column(
@@ -183,7 +184,7 @@ class BeneficiaryFraudCheck(PcObject, Model):
         MagicEnum(FraudCheckType, use_values=False), nullable=False
     )
     updatedAt: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=sa.func.now()
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=sa.func.now()
     )
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
@@ -274,7 +275,7 @@ class OrphanDmsApplication(PcObject, Model):
         sa.BigInteger, primary_key=True, nullable=False
     )  # refers to DMS application "number"
     dateCreated: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
     )  # no sql default because the column was added after table creation
     email: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, index=True)
     latest_modification_datetime: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(

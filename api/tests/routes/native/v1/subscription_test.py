@@ -16,6 +16,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
@@ -94,7 +95,7 @@ class GetProfileTest:
         fraud_check_1 = subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(months=1),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(months=1),
         )
         fraud_check_1.resultContent["activity"] = "NOT_AN_ACTIVITY"
         fraud_check_2 = subscription_factories.ProfileCompletionFraudCheckFactory(
@@ -123,7 +124,7 @@ class GetProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        with time_machine.travel(datetime.datetime.utcnow() - datetime.timedelta(days=365)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - datetime.timedelta(days=365)):
             client.with_token(user.email)
             client.post("/native/v1/subscription/profile", profile_data)
 
@@ -469,7 +470,9 @@ class IdentificationSessionTest:
     @pytest.mark.parametrize("age", [14, 19, 20])
     @patch("pcapi.core.subscription.ubble.api.start_ubble_workflow")
     def test_request_not_eligible(self, start_ubble_mock, client, age):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=5))
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, days=5)
+        )
 
         client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
@@ -520,7 +523,7 @@ class IdentificationSessionTest:
         ],
     )
     def test_request_ubble_second_check_blocked(self, client, fraud_check_status, ubble_status):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, days=5))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5))
         client.with_token(user.email)
 
         # Perform phone validation
@@ -704,7 +707,7 @@ class IdentificationSessionTest:
             requests_mocker.get(
                 f"{settings.UBBLE_API_URL}/v2/identity-verifications/{ubble_identification_id}",
                 json=build_ubble_identification_v2_response(
-                    age_at_registration=18, created_on=datetime.datetime.utcnow()
+                    age_at_registration=18, created_on=date_utils.get_naive_utc_now()
                 ),
             )
 
@@ -722,7 +725,9 @@ class IdentificationSessionTest:
 class HonorStatementTest:
     @pytest.mark.parametrize("age", [17, 18])
     def test_create_honor_statement_fraud_check(self, client, age):
-        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=10))
+        user = users_factories.UserFactory(
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, days=10)
+        )
 
         client.with_token(user.email)
 

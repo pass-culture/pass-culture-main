@@ -26,6 +26,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import export as utils_export
 from pcapi.utils.token import random_token
 
@@ -1081,7 +1082,7 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[models.Booking]:
-    tomorrow = datetime.utcnow() + timedelta(days=1)
+    tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
 

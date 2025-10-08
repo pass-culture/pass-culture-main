@@ -17,6 +17,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.schemas as ubble_schemas
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -142,12 +143,12 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
 
     @factory.lazy_attribute
     def started_at(self):
-        return None if self.identification_state == IdentificationState.NEW else datetime.datetime.utcnow()
+        return None if self.identification_state == IdentificationState.NEW else date_utils.get_naive_utc_now()
 
     @factory.lazy_attribute
     def ended_at(self):
         return (
-            datetime.datetime.utcnow()
+            date_utils.get_naive_utc_now()
             if self.identification_state
             in (IdentificationState.VALID, IdentificationState.INVALID, IdentificationState.UNPROCESSABLE)
             else None
@@ -158,8 +159,8 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         return {
             IdentificationState.NEW: self.created_at,
             IdentificationState.INITIATED: self.started_at,
-            IdentificationState.ABORTED: datetime.datetime.utcnow(),
-            IdentificationState.PROCESSING: datetime.datetime.utcnow(),
+            IdentificationState.ABORTED: date_utils.get_naive_utc_now(),
+            IdentificationState.PROCESSING: date_utils.get_naive_utc_now(),
             IdentificationState.VALID: self.ended_at,
             IdentificationState.INVALID: self.ended_at,
             IdentificationState.UNPROCESSABLE: self.ended_at,
@@ -174,8 +175,8 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
         return {
             IdentificationState.NEW: self.created_at,
             IdentificationState.INITIATED: self.started_at,
-            IdentificationState.ABORTED: datetime.datetime.utcnow(),
-            IdentificationState.PROCESSING: datetime.datetime.utcnow(),
+            IdentificationState.ABORTED: date_utils.get_naive_utc_now(),
+            IdentificationState.PROCESSING: date_utils.get_naive_utc_now(),
             IdentificationState.VALID: self.ended_at,
             IdentificationState.INVALID: self.ended_at,
             IdentificationState.UNPROCESSABLE: self.ended_at,

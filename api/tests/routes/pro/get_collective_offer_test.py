@@ -1,5 +1,4 @@
 from datetime import date
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -12,6 +11,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -368,8 +368,8 @@ class Returns200Test:
         }
 
     def test_dates_on_offer(self, client):
-        beginningDate = datetime.utcnow() + timedelta(days=100)
-        endDate = datetime.utcnow() + timedelta(days=125)
+        beginningDate = date_utils.get_naive_utc_now() + timedelta(days=100)
+        endDate = date_utils.get_naive_utc_now() + timedelta(days=125)
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=beginningDate,
             endDatetime=endDate,

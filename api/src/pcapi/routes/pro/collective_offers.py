@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from PIL import UnidentifiedImageError
 from flask import request
@@ -24,6 +23,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
@@ -464,7 +464,7 @@ def patch_collective_offers_archive(
     collective_offers = repository.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids).all()
 
     try:
-        api_offer.archive_collective_offers(offers=collective_offers, date_archived=datetime.utcnow())
+        api_offer.archive_collective_offers(offers=collective_offers, date_archived=date_utils.get_naive_utc_now())
     except exceptions.CollectiveOfferForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 
@@ -512,7 +512,9 @@ def patch_collective_offers_template_archive(
     ).all()
 
     try:
-        api_offer.archive_collective_offers_template(offers=collective_offer_templates, date_archived=datetime.utcnow())
+        api_offer.archive_collective_offers_template(
+            offers=collective_offer_templates, date_archived=date_utils.get_naive_utc_now()
+        )
     except exceptions.CollectiveOfferTemplateForbiddenAction:
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, status_code=403)
 

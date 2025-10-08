@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -17,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class OnlineEventReminderTest:
     def setup_method(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         normalized_minute = 0 if now.minute < 30 else 30
 
         self.now = now.replace(minute=normalized_minute, second=0, microsecond=0)
