@@ -18,7 +18,6 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
-import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
@@ -161,19 +160,15 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
   const canEditOffer = isCollectiveOfferEditable(offer)
 
-  const canArchiveOffer =
-    isCollectiveOffer(offer) &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      CollectiveOfferAllowedAction.CAN_ARCHIVE
-    )
+  const canArchiveOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_ARCHIVE
+  )
 
-  const canDuplicateOffer =
-    isCollectiveOffer(offer) &&
-    isActionAllowedOnCollectiveOffer(
-      offer,
-      CollectiveOfferAllowedAction.CAN_DUPLICATE
-    )
+  const canDuplicateOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferAllowedAction.CAN_DUPLICATE
+  )
 
   const isBookingCancellable = isActionAllowedOnCollectiveOffer(
     offer,
@@ -195,7 +190,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
       <div className={styles['header-title']}>
         <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
       </div>
-      {isCollectiveOffer(offer) && offer.provider?.name && (
+      {offer.provider?.name && (
         <div className={styles['banner-container']}>
           <SynchronizedProviderInformation providerName={offer.provider.name} />
         </div>
