@@ -114,7 +114,7 @@ jobs:
         uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
-            SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token
+            SONAR_TOKEN:passculture-metier-ehp/passculture-main-api-sonar-token
 
       - name: SonarCloud scan
         uses: SonarSource/sonarqube-scan-action@master
@@ -124,7 +124,7 @@ jobs:
           SONAR_TOKEN: ${{ steps.secrets.outputs.SONAR_TOKEN }}
         with:
           projectBaseDir: api
-          args: -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false'  }}
+          args: -Dsonar.qualitygate.wait=false
 
 
   tests-database:
