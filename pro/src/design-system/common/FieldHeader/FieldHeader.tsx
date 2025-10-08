@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import styles from './FieldHeader.module.scss'
 
 type FieldHeaderProps = {
-  inputId: string
+  fieldId: string
   label: string
   required: boolean
   asterisk?: boolean
@@ -12,7 +12,7 @@ type FieldHeaderProps = {
 }
 
 export function FieldHeader({
-  inputId,
+  fieldId,
   label,
   required,
   asterisk,
@@ -25,7 +25,7 @@ export function FieldHeader({
         [styles['has-description']]: Boolean(description),
       })}
     >
-      <label htmlFor={inputId} className={styles['label']}>
+      <label htmlFor={fieldId} className={styles['label']}>
         {label}
         {required && asterisk && (
           <span className={styles['label-mandatory-asterisk']}>*</span>
