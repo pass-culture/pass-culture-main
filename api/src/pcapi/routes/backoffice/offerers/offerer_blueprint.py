@@ -242,7 +242,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         search_form=search_form,
         search_dst=url_for("backoffice_web.pro.search_pro"),
         offerer=offerer,
-        region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),
+        region=regions_utils.get_region_name_from_postal_code(offerer.postalCode) if offerer.postalCode else "",
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
         bank_information_status=bank_information_status,

@@ -5,6 +5,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.utils.date import METROPOLE_TIMEZONE
 
 
 def get_collective_bookings_per_year_response(
@@ -22,7 +23,7 @@ def get_collective_bookings_per_year_response(
             endDatetime=booking.collectiveStock.endDatetime,
             venueTimezone=booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone
             if booking.collectiveStock.collectiveOffer.venue.offererAddress
-            else booking.collectiveStock.collectiveOffer.venue.timezone,  # TODO(OA): remove this when the virtual venues are migrated
+            else METROPOLE_TIMEZONE,  # TODO(OA): remove this when the virtual venues are migrated
             name=booking.collectiveStock.collectiveOffer.name,
             redactorEmail=booking.educationalRedactor.email,
             domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
@@ -59,7 +60,7 @@ def serialize_collective_booking(
         venue_timezone = venue.offererAddress.address.timezone
     else:
         # TODO(OA): remove this when the virtual venues are migrated
-        venue_timezone = venue.timezone
+        venue_timezone = venue.timezone or METROPOLE_TIMEZONE
 
     return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
@@ -160,7 +161,7 @@ def serialize_reimbursement_notification(
         venue_timezone = venue.offererAddress.address.timezone
     else:
         # TODO(OA): remove this when the virtual venues are migrated
-        venue_timezone = venue.timezone
+        venue_timezone = venue.timezone or METROPOLE_TIMEZONE
 
     return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),

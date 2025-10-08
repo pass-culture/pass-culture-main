@@ -1,4 +1,3 @@
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi.core import mails
 from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.bookings.models import Booking
@@ -13,12 +12,10 @@ from pcapi.utils.urls import build_pc_pro_offer_link
 def get_bookings_expiration_to_pro_email_data(
     offerer: Offerer, bookings: list[Booking], withdrawal_period: int
 ) -> models.TransactionalEmailData:
-    departement_code = postal_code_utils.PostalCode(offerer.postalCode).get_departement_code()
     return models.TransactionalEmailData(
         template=TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value,
         params={
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings, offerer),
-            "DEPARTMENT": departement_code,
             "WITHDRAWAL_PERIOD": withdrawal_period,
             "OFFER_ADDRESS": bookings[0].stock.offer.fullAddress,
         },
