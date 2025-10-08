@@ -483,7 +483,29 @@ class OffererAddressFactory(BaseFactory):
 
     label: factory.declarations.BaseDeclaration | None = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)
-    offerer = factory.SubFactory(OffererFactory)
+
+    @classmethod
+    def _create(
+        cls, model_class: type[models.OffererAddress], *args: typing.Any, **kwargs: typing.Any
+    ) -> models.OffererAddress:
+        offerer = kwargs.get("offerer")
+        if venue := kwargs.get("venue"):
+            if offerer and offerer != venue.managingOfferer:
+                raise ValueError("venue must be consistent with offerer")
+            kwargs["offerer"] = venue.managingOfferer
+        elif not offerer:
+            kwargs["offerer"] = OffererFactory()
+        return super()._create(model_class, *args, **kwargs)
+
+
+class VenueLocationFactory(OffererAddressFactory):
+    type = models.LocationType.VENUE_LOCATION
+    venue = factory.SubFactory(VenueFactory)
+
+
+class OfferLocationFactory(OffererAddressFactory):
+    type = models.LocationType.OFFER_LOCATION
+    venue = factory.SubFactory(VenueFactory)
 
 
 class OffererAddressOfVenueFactory(OffererAddressFactory):

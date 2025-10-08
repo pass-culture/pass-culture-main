@@ -3608,7 +3608,7 @@ class OffererAddressTest:
         assert oa.id
         assert oa.label == "label"
 
-    def test_create_multiple_identic_offerer_address_with_label_null(self):
+    def test_create_multiple_identical_offerer_address_with_label_null(self):
         offerer = offerers_factories.OffererFactory()
         address = geography_factories.AddressFactory()
         oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
