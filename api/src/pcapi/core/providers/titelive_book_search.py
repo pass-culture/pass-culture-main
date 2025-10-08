@@ -226,8 +226,15 @@ def get_ineligibility_reasons(article: TiteLiveBookArticle, title: str) -> list[
         # If we find no known support code, the product is deemed ineligible
         reasons.append("no-known-codesupport")
 
-    if article.codesupport and not constants.TITELIVE_BOOK_SUPPORTS_BY_CODE[article.codesupport]["is_allowed"]:
-        reasons.append("uneligible-product-subcategory")
+    if article.codesupport:
+        support_info = constants.TITELIVE_BOOK_SUPPORTS_BY_CODE.get(article.codesupport)
+        if not support_info:
+            logger.error(
+                "Unknown Titelive support code found", extra={"codesupport": article.codesupport, "ean": article.gencod}
+            )
+            reasons.append("unknown-codesupport")
+        elif not support_info["is_allowed"]:
+            reasons.append("uneligible-product-subcategory")
 
     return reasons
 
