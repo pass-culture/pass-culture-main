@@ -17,5 +17,5 @@ from pcapi.utils.transaction_manager import atomic
 def list_features(authenticated_information: AuthenticatedInformation) -> features_serialize.ListFeatureResponseModel:
     features = db.session.query(Feature).all()
     return features_serialize.ListFeatureResponseModel(
-        __root__=[features_serialize.FeatureResponseModel.from_orm(feature) for feature in features],
+        [features_serialize.FeatureResponseModel.model_validate(feature) for feature in features],
     )

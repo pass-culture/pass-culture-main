@@ -14,6 +14,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import BaseModelV2
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 from .spec_tree import add_feature_flag
@@ -74,7 +75,7 @@ def spectree_serialize(
     *,
     headers: type[BaseModel] | None = None,
     cookies: type[BaseModel] | None = None,
-    response_model: type[BaseModel] | None = None,
+    response_model: type[BaseModel] | type[BaseModelV2] | None = None,
     tags: typing.Sequence = (),
     before: typing.Callable | None = None,
     after: typing.Callable | None = None,

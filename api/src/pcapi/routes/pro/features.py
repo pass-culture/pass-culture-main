@@ -13,8 +13,6 @@ from . import blueprint
 @spectree_serialize(response_model=features_serialize.ListFeatureResponseModel, api=blueprint.pro_private_schema)
 def list_features() -> features_serialize.ListFeatureResponseModel:
     features = db.session.query(Feature).all()
-    # Pydantic manages to convert a list of Feature to a list of FeatureResponseModel, with orm_mode=True
-    # This apparently confuses mypy
     return features_serialize.ListFeatureResponseModel(
-        __root__=[features_serialize.FeatureResponseModel.from_orm(f) for f in features]
+        [features_serialize.FeatureResponseModel.model_validate(feature) for feature in features]
     )
