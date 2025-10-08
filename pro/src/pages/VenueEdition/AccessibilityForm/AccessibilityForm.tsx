@@ -70,8 +70,7 @@ export const AccessibilityForm = ({
             <CheckboxGroup
               options={checkboxGroup}
               label="Votre établissement est accessible au public en situation de handicap :"
-              description="Sélectionnez au moins un critère d’accessibilité"
-              labelTag="h2"
+              description="Sélectionnez au moins une option"
               variant="detailed"
               error={formState.errors.accessibility?.message}
             />

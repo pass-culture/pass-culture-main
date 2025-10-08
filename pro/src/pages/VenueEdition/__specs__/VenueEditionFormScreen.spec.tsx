@@ -600,7 +600,7 @@ describe('VenueEditionFormScreen', () => {
             )
           ).toBeInTheDocument()
           expect(
-            screen.getByText('Sélectionnez au moins un critère d’accessibilité')
+            screen.getByText('Sélectionnez au moins une option')
           ).toBeInTheDocument()
         })
       })

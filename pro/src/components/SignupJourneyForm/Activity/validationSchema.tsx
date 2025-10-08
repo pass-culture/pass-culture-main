@@ -20,7 +20,7 @@ export const validationSchema = yup.object().shape({
     .object()
     .test({
       name: 'is-one-true',
-      message: 'Veuillez sélectionner une des réponses ci-dessus',
+      message: 'Veuillez sélectionner au moins une option',
       test: (values: Record<string, boolean>): boolean =>
         Object.values(values).includes(true),
     })
@@ -28,7 +28,7 @@ export const validationSchema = yup.object().shape({
       individual: yup.boolean(),
       educational: yup.boolean(),
     })
-    .required('Veuillez sélectionner une des réponses ci-dessus'),
+    .required('Veuillez sélectionner au moins une option'),
   phoneNumber: yup
     .string()
     .min(10, 'Veuillez renseigner au moins 10 chiffres')

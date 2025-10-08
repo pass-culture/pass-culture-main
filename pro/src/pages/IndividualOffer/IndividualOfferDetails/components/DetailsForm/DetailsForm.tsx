@@ -201,7 +201,7 @@ export const DetailsForm = ({
               options={accessibilityOptions}
               disabled={readOnlyFields.includes('accessibility')}
               label="Cette offre est accessible au public en situation de handicap :"
-              description="Sélectionnez au moins un critère d’accessibilité"
+              description="Sélectionnez au moins une option"
               variant="detailed"
               error={errors.accessibility?.message}
             />

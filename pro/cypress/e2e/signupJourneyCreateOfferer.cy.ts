@@ -72,7 +72,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Étape suivante').click()
-    cy.findByText('Veuillez sélectionner une des réponses ci-dessus')
+    cy.findByText('Veuillez sélectionner au moins une option')
 
     cy.url().should('contain', '/inscription/structure/activite')
     cy.findByText('Au grand public').click()
