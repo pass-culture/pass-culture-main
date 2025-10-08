@@ -64,7 +64,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
         period_ending_date=query.period_ending_date,
         offerer_address_id=query.offerer_address_id,
     )
-
+    print("test")
     return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
 
 
