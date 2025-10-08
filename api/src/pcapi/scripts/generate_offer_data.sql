@@ -8,8 +8,31 @@
 -- missing USER with first name lastname email phonenumber
 -- missing OFFERER userofferer 
 -- missing BOOKING "priceCategoryLabel" dateused, "cancellationDate", "cancellationLimitDate", "reimbursementDate", isexternal, isconfirmed
--- missing VENUE proper offerer address
 -- missing ALL coherent dates
+
+WITH last_user_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM "user"
+)
+INSERT INTO "user" (
+    id,
+    "email",
+    "dateCreated",
+    "firstName",
+    "lastName",
+    "phoneNumber",
+    "roles",
+    "password"
+)
+SELECT
+    last_user_id.last_id + gs AS id,
+    'user' || (last_user_id.last_id + gs) || '@example.com' AS "email",
+    now() - (random() * interval '730 days') AS "dateCreated",
+    'FirstName' || gs AS "firstName",
+    'LastName' || gs AS "lastName",
+    '06000000' || (last_user_id.last_id + gs) AS "phoneNumber",
+    '{}' AS roles,
+    '$2b$12$KIXQJf2r4Hq7jh3Zq7sXeOeG8b6v8b7eWfu8eWf8eWf8eWf8eWf8e' AS "password"
+FROM last_user_id, generate_series(1, 1) gs;
 
 WITH last_offerer_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer
@@ -37,12 +60,63 @@ SELECT
     'Paris' AS "city"
 FROM last_offerer_id, generate_series(1, 1) gs;
 
+WITH last_address_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM address
+)
+INSERT INTO address (
+    id,
+    "street",
+    "postalCode",
+    "city",
+    "latitude",
+    "longitude",
+    "departmentCode",
+    "timezone",
+    "isManualEdition",
+    "banId",
+    "inseeCode"
+)
+SELECT
+    last_address_id.last_id + gs AS id,
+    last_address_id.last_id + gs || ' rue de la Paix' AS "street",
+    '75002' AS "postalCode",
+    'Paris' AS "city",
+    48.868642 AS "latitude",
+    2.331354 AS "longitude",
+    '75' AS "departmentCode",
+    'Europe/Paris' AS "timezone",
+    false AS "isManualEdition",
+    '75002_0050_00001' AS "banId",
+    '75101' AS "inseeCode"
+FROM last_address_id, generate_series(1, 1) gs;
+
+WITH last_address_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM address
+), last_oa_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer_address
+), last_offerer_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer
+)
+INSERT INTO offerer_address (
+    id,
+    "offererId",
+    "addressId"
+)
+SELECT
+    last_oa_id.last_id + gs AS id,
+    last_offerer_id.last_id AS "offererId",
+    last_address_id.last_id AS "addressId"
+FROM last_address_id, last_oa_id, last_offerer_id, generate_series(1, 1) gs;
+
 
 WITH last_offerer_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer
 ),
 last_venue_id AS (
-    SELECT COALESCE(MAX(id), 0) AS last_id FROM venue)
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM venue),
+last_oa_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer_address
+)
 INSERT INTO venue (
     id,
     name,
@@ -70,9 +144,9 @@ SELECT
     'Europe/Paris' AS "timezone",
     1 AS "thumbCount",
     (trunc(random() * 999999999999 + 10000000000000))::TEXT AS "siret",
-    5 AS "offererAddressId",
+    last_oa_id.last_id AS "offererAddressId",
     substr(md5(random()::text), 1, 6) AS "dmsToken"
-FROM last_venue_id, last_offerer_id, generate_series(1, 1) gs;
+FROM last_venue_id, last_offerer_id, last_oa_id, generate_series(1, 1) gs;
 
 WITH last_venue_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM venue
@@ -133,13 +207,15 @@ SELECT
 FROM last_stock_id, last_offer_id, generate_series(1, 1) gs;
 
 WITH last_stock_id AS (
-    SELECT COALESCE(MAX(id), 0) AS last_id FROM stock),
-last_booking_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM stock
+), last_booking_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM booking
 ), last_offerer_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM offerer
 ), last_venue_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM venue
+),last_user_id AS (
+    SELECT COALESCE(MAX(id), 0) AS last_id FROM "user"
 )
 
 INSERT INTO booking (
@@ -164,7 +240,7 @@ SELECT
     last_offerer_id.last_id::bigint AS "offererId",
     2 AS "quantity",
     substr(md5(random()::text), 1, 6) AS token,
-    (1 + floor(random() * 10))::bigint AS "userId",
+    last_user_id.last_id AS "userId",
     0 AS "amount",
     'CONFIRMED' AS status
-FROM last_booking_id, last_offerer_id, last_stock_id, last_venue_id, generate_series(1, 100) gs;
+FROM last_booking_id, last_offerer_id, last_stock_id, last_venue_id, last_user_id, generate_series(1, 100) gs;
