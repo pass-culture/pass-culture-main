@@ -119,4 +119,4 @@ def get_cutoff_as_datetime(last_day: datetime.date) -> datetime.datetime:
 
 
 def clean_names_for_SEPA(name: str) -> str:
-    return re.sub("[^A-Za-z0-9\ ]+", "", clean_accents(name))
+    return re.sub(r"[^A-Za-z0-9\ ]+", "", clean_accents(name))

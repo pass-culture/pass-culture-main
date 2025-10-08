@@ -175,7 +175,7 @@ class SerializationDecoratorTest:
         mock_func(body, query)
 
         # Then
-        assert mocked_validate.called_once()
+        mocked_validate.assert_called_once()
 
         _, kwargs = mocked_validate.call_args
         assert kwargs["json"] == TestBodyModel

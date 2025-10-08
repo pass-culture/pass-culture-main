@@ -4,7 +4,7 @@ version = "0.0.0"
 description = "The backend of the pass Culture"
 license = "MPL-2.0"
 authors = [{ name = "Equipe pass Culture", email = "<contact@passculture.app>" }]
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.12,<4.0"
 
 [tool.poetry.dependencies]
 alembic = "1.16.5"
@@ -117,8 +117,9 @@ types-redis = "^4.6.0.20241004"
 types-requests = "2.32.4.20250913"
 types-urllib3 = "^1.26.25.14"
 
+
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 mypy_path = "stubs/"
 disallow_untyped_defs = true
 # The following line solves the internal mypy (v>1.4) error due to
