@@ -10,6 +10,27 @@
 -- missing BOOKING "priceCategoryLabel" dateused, "cancellationDate", "cancellationLimitDate", "reimbursementDate", isexternal, isconfirmed
 -- missing ALL coherent dates
 
+CREATE OR REPLACE FUNCTION base36_encode(IN digits bigint, IN min_width int = 0) RETURNS varchar AS $$
+DECLARE
+    chars char[]; 
+    ret varchar; 
+    val bigint; 
+BEGIN
+    chars := ARRAY['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+    val := digits; 
+    ret := ''; 
+    IF val < 0 THEN 
+        val := val * -1; 
+    END IF; 
+    WHILE val != 0 LOOP 
+        ret := chars[(val % 36)+1] || ret; 
+        val := val / 36; 
+    END LOOP;
+
+    RETURN ret;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 WITH last_user_id AS (
     SELECT COALESCE(MAX(id), 0) AS last_id FROM "user"
 )
@@ -239,8 +260,9 @@ SELECT
     last_venue_id.last_id::bigint AS "venueId",
     last_offerer_id.last_id::bigint AS "offererId",
     2 AS "quantity",
-    substr(md5(random()::text), 1, 6) AS token,
+    -- substr(md5(random()::text), 1, 6) AS token,
+    base36_encode(last_booking_id.last_id + gs, 6) AS token,
     last_user_id.last_id AS "userId",
     0 AS "amount",
     'CONFIRMED' AS status
-FROM last_booking_id, last_offerer_id, last_stock_id, last_venue_id, last_user_id, generate_series(1, 100) gs;
+FROM last_booking_id, last_offerer_id, last_stock_id, last_venue_id, last_user_id, generate_series(1, 1000000) gs;
