@@ -1,16 +1,18 @@
-from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
+from pydantic import RootModel
+
+from pcapi.routes.serialization import BaseModelV2
 
 
-class FeatureResponseModel(BaseModel):
+class FeatureResponseModel(BaseModelV2):
     description: str
-    id: str
+    id: int
     isActive: bool
     name: str
     nameKey: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
-class ListFeatureResponseModel(BaseModel):
-    __root__: list[FeatureResponseModel]
+class ListFeatureResponseModel(RootModel, BaseModelV2):
+    root: list[FeatureResponseModel]

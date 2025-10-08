@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type FeatureResponseModel = {
   description: string;
-  id: string;
+  id: number;
   isActive: boolean;
   name: string;
   nameKey: string;

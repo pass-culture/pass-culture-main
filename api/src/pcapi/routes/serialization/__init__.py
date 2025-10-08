@@ -1,6 +1,8 @@
 import datetime
+import typing
 from math import isfinite
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 
 from pcapi.serialization import utils as serialization_utils
@@ -38,3 +40,13 @@ class ConfiguredBaseModel(BaseModel):
         allow_population_by_field_name = True
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
+
+
+# See here -> https://docs.pydantic.dev/latest/migration/
+# for a migration guide from v1 to v2
+class BaseModelV2(pydantic_v2.BaseModel):
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=serialization_utils.to_camel,
+        validate_by_name=True,
+        json_encoders={datetime.datetime: format_into_utc_date},
+    )
