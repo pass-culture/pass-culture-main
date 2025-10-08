@@ -153,11 +153,19 @@ export const AdageMultiselect = ({
     )
   }, [isOpen])
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Escape' && inputValue) {
+      //  In case the search input is in a dropdown or in a modal
+      event.stopPropagation()
+    }
+  }
+
   return (
     <div className={styles['container']}>
       <div className={styles['search-input']}>
         <SearchInput
           {...getInputProps()}
+          onKeyDown={handleKeyDown}
           value={inputValue}
           aria-describedby={indicationId}
           label={label}

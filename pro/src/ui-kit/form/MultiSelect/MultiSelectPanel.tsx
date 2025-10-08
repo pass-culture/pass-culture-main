@@ -39,6 +39,13 @@ export const MultiSelectPanel = ({
     [options, searchValue]
   )
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Escape' && searchValue) {
+      //  In case the search input is in a dropdown or in a modal
+      event.stopPropagation()
+    }
+  }
+
   return (
     <div id={id} className={styles['panel']}>
       {hasSearch && (
@@ -48,6 +55,7 @@ export const MultiSelectPanel = ({
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             label={searchLabel || 'Rechercher'}
+            onKeyDown={handleKeyDown}
           />
         </div>
       )}
