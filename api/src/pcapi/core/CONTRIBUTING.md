@@ -23,7 +23,7 @@ Chaque sous-package peut contenir les fichiers suivants :
   - `__table_args__`
   - propriétés
 - Quand on définit une `hybrid_property`, on écrit une version compatible avec la PEP-484 : voir la doc SQLA [ici](https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html#using-inplace-to-create-pep-484-compliant-hybrid-properties)
-- Dans les `relationship`, on précise les champs `back_populates` et `foreign_keys` explicitement
+- Dans les `relationship`, on précise `foreign_keys` explicitement et on utilise `back_populates` et non `backref` si nécessaire 
 
 ## Les fichiers `repository`
 
