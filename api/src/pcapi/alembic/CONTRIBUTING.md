@@ -27,13 +27,13 @@ Note : La phase 1 peut durer longtemps. Par exemple si une des migrations échou
 Pour une migration `pre`
 
 ```bash
-pc alembic  revision --head pre@head -m nom_de_la_migration
+pc alembic revision --head pre@head -m nom_de_la_migration
 ```
 
 Pour une migration `post`
 
 ```bash
-pc alembic  revision --head post@head -m nom_de_la_migration
+pc alembic revision --head post@head -m nom_de_la_migration
 ```
 
 On peut générer une migration de manière automatique en ajoutant le flag `--autogenerate`.

@@ -476,10 +476,10 @@ class CollectiveOfferDomain(models.Model):
 
 class CollectiveOffer(
     PcObject,
+    models.Model,
     offer_mixin.ValidationMixin,
     AccessibilityMixin,
     HasImageMixin,
-    models.Model,
 ):
     __tablename__ = "collective_offer"
 
@@ -487,16 +487,15 @@ class CollectiveOffer(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
     )
 
-    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-
-    author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
-
+    authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    author: sa_orm.Mapped["User | None"] = sa_orm.relationship(
+        "User", foreign_keys=[authorId], back_populates="collectiveOffers", uselist=False
+    )
     # the venueId is the billing address.
     # To find where the offer takes place, check locationType / offererAddress
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
     )
-
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOffers"
     )
@@ -508,15 +507,13 @@ class CollectiveOffer(
         nullable=False,
         server_default="{}",
     )
-
     description: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, server_default="", default="")
 
-    durationMinutes = sa_orm.mapped_column(sa.Integer, nullable=True)
+    durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=datetime.datetime.utcnow
     )
-
     dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
@@ -545,10 +542,9 @@ class CollectiveOffer(
         "EducationalDomain", secondary=CollectiveOfferDomain.__table__, back_populates="collectiveOffers"
     )
 
-    institutionId = sa_orm.mapped_column(
+    institutionId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True
     )
-
     institution: sa_orm.Mapped["EducationalInstitution | None"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
@@ -556,7 +552,6 @@ class CollectiveOffer(
     templateId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
-
     template: sa_orm.Mapped["CollectiveOfferTemplate | None"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="collectiveOffers"
     )
@@ -567,7 +562,6 @@ class CollectiveOffer(
         nullable=True,
         index=True,
     )
-
     teacher: sa_orm.Mapped["EducationalRedactor | None"] = sa_orm.relationship(
         "EducationalRedactor",
         back_populates="collectiveOffers",
@@ -580,9 +574,8 @@ class CollectiveOffer(
         nullable=True,
         index=True,
     )
-
-    provider: sa_orm.Mapped["Provider"] = sa_orm.relationship(
-        "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
+    provider: sa_orm.Mapped["Provider | None"] = sa_orm.relationship(
+        "Provider", foreign_keys=[providerId], back_populates="collectiveOffers"
     )
 
     flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
@@ -594,7 +587,7 @@ class CollectiveOffer(
     )
 
     rejectionReason: sa_orm.Mapped[CollectiveOfferRejectionReason | None] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None
+        db_utils.MagicEnum(CollectiveOfferRejectionReason), default=None, nullable=True
     )
 
     isNonFreeOffer: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
@@ -603,7 +596,7 @@ class CollectiveOffer(
         sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
     )
     offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
-        "OffererAddress", foreign_keys=offererAddressId, uselist=False
+        "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
 
     # locationType = SCHOOL -> the offer is located at school - offererAddressId and locationComment are None
@@ -612,9 +605,19 @@ class CollectiveOffer(
     locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=False
     )
-    sa.Index("ix_collective_offer_locationType_offererAddressId", locationType, offererAddressId)
 
     locationComment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+
+    # does the collective offer belongs to a national program
+    nationalProgramId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("national_program.id"),
+        nullable=True,
+        index=True,
+    )
+    nationalProgram: sa_orm.Mapped["NationalProgram | None"] = sa_orm.relationship(
+        "NationalProgram", foreign_keys=[nationalProgramId], back_populates="collectiveOffers"
+    )
 
     @sa_orm.declared_attr.directive
     def __table_args__(cls) -> tuple:
@@ -643,6 +646,7 @@ class CollectiveOffer(
                 '"locationType" = \'TO_BE_DEFINED\' OR "locationComment" IS NULL',
                 name="collective_offer_location_type_and_comment_constraint",
             ),
+            sa.Index("ix_collective_offer_locationType_offererAddressId", "locationType", "offererAddressId"),
         ]
 
         return tuple(parent_args)
@@ -650,18 +654,6 @@ class CollectiveOffer(
     @property
     def isPublicApi(self) -> bool:
         return self.providerId is not None
-
-    # does the collective offer belongs to a national program
-    nationalProgramId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger,
-        sa.ForeignKey("national_program.id"),
-        nullable=True,
-        index=True,
-    )
-
-    nationalProgram: sa_orm.Mapped["NationalProgram"] = sa_orm.relationship(
-        "NationalProgram", foreign_keys=nationalProgramId
-    )
 
     @hybrid_property
     def hasEndDatePassed(self) -> bool:
@@ -2156,6 +2148,9 @@ class NationalProgram(PcObject, models.Model):
     )
     isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
+    )
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
+        "CollectiveOffer", back_populates="nationalProgram"
     )
 
 

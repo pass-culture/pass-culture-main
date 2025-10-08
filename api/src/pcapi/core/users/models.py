@@ -46,6 +46,7 @@ if typing.TYPE_CHECKING:
     from pcapi.core.achievements.models import Achievement
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
+    from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.finance.models import BookingFinanceIncident
     from pcapi.core.finance.models import Deposit
     from pcapi.core.history.models import ActionHistory
@@ -264,6 +265,9 @@ class User(PcObject, Model, DeactivableMixin):
     )
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", back_populates="author", foreign_keys="Offer.authorId"
+    )
+    collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
+        "CollectiveOffer", back_populates="author", foreign_keys="CollectiveOffer.authorId"
     )
     password: sa_orm.Mapped[bytes | None] = sa_orm.mapped_column(sa.LargeBinary(60), nullable=True)
     _phoneNumber: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
