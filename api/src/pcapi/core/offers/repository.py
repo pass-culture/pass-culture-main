@@ -26,6 +26,7 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
 from pcapi.utils import string as string_utils
+from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.decorators import retry
 
 from . import exceptions
@@ -1063,7 +1064,7 @@ def get_filtered_stocks(
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        timezone = pytz.timezone(venue.timezone)
+        timezone = pytz.timezone(METROPOLE_TIMEZONE)
 
         if offer.offererAddress:
             timezone = pytz.timezone(offer.offererAddress.address.timezone)

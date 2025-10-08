@@ -4,6 +4,7 @@ from datetime import datetime
 
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas as educational_schemas
+from pcapi.utils.date import METROPOLE_TIMEZONE
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
@@ -54,7 +55,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         venue_timezone = venue.offererAddress.address.timezone
     else:
         # TODO(OA): remove this when the virtual venues are migrated
-        venue_timezone = venue.timezone
+        venue_timezone = venue.timezone or METROPOLE_TIMEZONE
 
     if not institution:
         raise CollectiveOfferNotAssociatedToInstitution()

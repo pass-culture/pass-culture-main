@@ -233,8 +233,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
     banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
-    timezone: sa_orm.Mapped[str] = sa_orm.mapped_column(
-        sa.String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
+    timezone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
     publicName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -1208,8 +1208,8 @@ class Offerer(
         return cls._address
 
     @hybrid_property
-    def departementCode(self) -> str:
-        return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
+    def departementCode(self) -> str | None:
+        return postal_code_utils.PostalCode(self.postalCode).get_departement_code() if self.postalCode else None
 
     @departementCode.inplace.expression
     @classmethod
@@ -1239,7 +1239,7 @@ class Offerer(
         """
         if siren_utils.is_rid7(self.siren):
             return True
-        if self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
+        if self.postalCode and self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
             return True
         return False
 

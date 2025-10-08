@@ -145,7 +145,8 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
             # we must must do this transformation on `publicationDate`
             # as our serializer authorizes naive datetimes
             if publication_date.tzinfo is None:  # the provider did not provide a tz in the payload
-                tz = offerer_address.address.timezone if offerer_address else venue.timezone
+                # TODO: CLEAN_OA remove this fallback and always use offerer_address when it's not nullable in Venue
+                tz = offerer_address.address.timezone if offerer_address else date_utils.METROPOLE_TIMEZONE
                 publication_date = date_utils.local_datetime_to_default_timezone(publication_date, local_tz=tz).replace(
                     tzinfo=None
                 )
