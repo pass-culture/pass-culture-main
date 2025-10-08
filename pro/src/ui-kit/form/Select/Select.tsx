@@ -54,7 +54,7 @@ export const Select = forwardRef(
         <div className={styles['select-field']}>
           <FieldHeader
             label={label}
-            inputId={fieldId}
+            fieldId={fieldId}
             required={required}
             asterisk={asterisk}
           />

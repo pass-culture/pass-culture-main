@@ -56,7 +56,7 @@ export const TimePicker = forwardRef(
           })}
         >
           <FieldHeader
-            inputId={inputId}
+            fieldId={inputId}
             label={label}
             required={required}
             asterisk={asterisk}
