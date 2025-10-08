@@ -1488,6 +1488,11 @@ class OffererStats(PcObject, Model):
     __table_args__ = (sa.Index("ix_offerer_stats_offererId", offererId),)
 
 
+class LocationType(enum.Enum):
+    VENUE_LOCATION = "VENUE_LOCATION"
+    OFFER_LOCATION = "OFFER_LOCATION"
+
+
 class OffererAddress(PcObject, Model):
     __tablename__ = "offerer_address"
     label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
@@ -1499,6 +1504,13 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    type: sa_orm.Mapped[LocationType | None] = sa_orm.mapped_column(db_utils.MagicEnum(LocationType), nullable=True)
+    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
+    )
+    # TODO (prouzet, 2025-10-08) CLEAN_OA back_populates="offererAddress" -- currently in conflict with Venue.offererAddressId
+    venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+    # TODO (prouzet, 2025-10-08) CLEAN_OA Remove relationship when venueId replaces usage of Venue.offererAddressId
     venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", foreign_keys="Venue.offererAddressId", back_populates="offererAddress"
     )
