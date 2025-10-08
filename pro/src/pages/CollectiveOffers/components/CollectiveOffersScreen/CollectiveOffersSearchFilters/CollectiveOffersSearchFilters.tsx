@@ -15,8 +15,8 @@ import {
   ALL_OFFERER_ADDRESS_OPTION,
   ALL_OFFERERS_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import type {
   CollectiveOfferTypeEnum,
   CollectiveSearchFiltersParams,
@@ -62,8 +62,6 @@ export const CollectiveOffersSearchFilters = ({
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
 
-  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
-
   const { data } = useSWR(
     [GET_VENUES_QUERY_KEY, offerer?.id],
     ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
@@ -106,19 +104,22 @@ export const CollectiveOffersSearchFilters = ({
     }))
   }
 
+  const {
+    periodBeginningDate: defaultPeriodBeginningDate,
+    periodEndingDate: defaultPeriodEndingDate,
+  } = DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+
   const onBeginningDateChange = (periodBeginningDate: string) => {
     const dateToFilter =
       periodBeginningDate !== ''
         ? periodBeginningDate
-        : defaultCollectiveFilters.periodBeginningDate
+        : defaultPeriodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
   const onEndingDateChange = (periodEndingDate: string) => {
     const dateToFilter =
-      periodEndingDate !== ''
-        ? periodEndingDate
-        : defaultCollectiveFilters.periodEndingDate
+      periodEndingDate !== '' ? periodEndingDate : defaultPeriodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
