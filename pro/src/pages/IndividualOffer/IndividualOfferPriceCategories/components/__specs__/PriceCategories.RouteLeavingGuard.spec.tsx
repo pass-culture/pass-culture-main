@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { generatePath, Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetIndividualOfferResponseModel,
-  GetIndividualOfferWithAddressResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -110,7 +107,7 @@ describe('PriceCategories', () => {
       {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      getIndividualOfferFactory()
     )
   })
 

@@ -2194,13 +2194,13 @@ export class DefaultService {
    * post_price_categories <POST>
    * @param offerId
    * @param requestBody
-   * @returns GetIndividualOfferResponseModel OK
+   * @returns GetIndividualOfferWithAddressResponseModel OK
    * @throws ApiError
    */
   public postPriceCategories(
     offerId: number,
     requestBody: PriceCategoryBody,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/{offer_id}/price_categories',
