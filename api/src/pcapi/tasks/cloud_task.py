@@ -12,6 +12,7 @@ from google.protobuf import duration_pb2
 from google.protobuf import timestamp_pb2
 
 from pcapi import settings
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 
@@ -115,7 +116,7 @@ def enqueue_internal_task(
     # id is recommended".
     task_id = hashlib.sha1(json.dumps(payload, sort_keys=True).encode()).hexdigest() if deduplicate else None
 
-    schedule_time = datetime.datetime.utcnow() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
+    schedule_time = date_utils.get_naive_utc_now() + relativedelta(seconds=delayed_seconds) if delayed_seconds else None
 
     return enqueue_task(
         queue, http_request, task_id=task_id, schedule_time=schedule_time, task_request_timeout=task_request_timeout

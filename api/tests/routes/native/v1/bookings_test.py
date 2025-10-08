@@ -41,6 +41,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 from tests.connectors.cgr import soap_definitions
@@ -291,7 +292,7 @@ class PostBookingTest:
             == hmac.new(provider.hmacKey.encode(), json.dumps(json_data).encode(), hashlib.sha256).hexdigest()
         )
 
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
         json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
 
@@ -366,7 +367,7 @@ class PostBookingTest:
         assert response.status_code == 200
         json_data = json.loads(requests_mock.last_request.json())
 
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         json_confirmation_date = datetime.fromisoformat(json_data.pop("booking_confirmation_date"))
         json_creation_date = datetime.fromisoformat(json_data.pop("booking_creation_date"))
 
@@ -980,7 +981,7 @@ class GetBookingsTest:
         event_booking = booking_factories.BookingFactory(
             user=user,
             stock=offers_factories.EventStockFactory(
-                beginningDatetime=datetime.utcnow() + timedelta(days=2),
+                beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=2),
                 offer__bookingContact="contact@example.net",
             ),
         )
@@ -1000,12 +1001,12 @@ class GetBookingsTest:
             activationCode=second_activation_code,
         )
         expire_tomorrow = booking_factories.BookingFactory(
-            user=user, dateCreated=datetime.utcnow() - timedelta(days=29)
+            user=user, dateCreated=date_utils.get_naive_utc_now() - timedelta(days=29)
         )
         used_but_in_future = booking_factories.UsedBookingFactory(
             user=user,
-            dateUsed=datetime.utcnow() - timedelta(days=1),
-            stock=offers_factories.StockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=3)),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(days=1),
+            stock=offers_factories.StockFactory(beginningDatetime=date_utils.get_naive_utc_now() + timedelta(days=3)),
         )
 
         cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
@@ -1131,7 +1132,7 @@ class GetBookingsTest:
             assert booking["qrCodeData"] is not None
 
     def test_get_bookings_returns_user_reaction(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
@@ -1146,7 +1147,7 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][0]["userReaction"] is None
 
     def test_get_bookings_returns_user_reaction_when_one_exists(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
@@ -1162,7 +1163,7 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][0]["userReaction"] == "NO_REACTION"
 
     def test_get_bookings_returns_user_reaction_when_reaction_is_on_the_product(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         product = offers_factories.ProductFactory()
         stock = offers_factories.EventStockFactory(offer__product=product)
         ongoing_booking = booking_factories.BookingFactory(
@@ -1183,7 +1184,7 @@ class GetBookingsTest:
         )
         booking = booking_factories.UsedBookingFactory(
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=60 * 24 * 3600),
         )
         client = client.with_token(booking.user.email)
         with assert_num_queries(2):
@@ -1194,7 +1195,7 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][0]["enablePopUpReaction"] == True
 
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
@@ -1444,7 +1445,7 @@ class CancelBookingTest:
     def test_cancel_confirmed_booking(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(
-            user=user, cancellation_limit_date=datetime.utcnow() - timedelta(days=1)
+            user=user, cancellation_limit_date=date_utils.get_naive_utc_now() - timedelta(days=1)
         )
 
         client = client.with_token(self.identifier)
@@ -1567,7 +1568,7 @@ class ToggleBookingVisibilityTest:
         booking = booking_factories.UsedBookingFactory(
             user=user,
             displayAsEnded=None,
-            dateUsed=datetime.utcnow(),
+            dateUsed=date_utils.get_naive_utc_now(),
             stock=stock,
             activationCode=activation_code,
         )

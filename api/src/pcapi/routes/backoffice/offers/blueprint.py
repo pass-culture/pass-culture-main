@@ -53,6 +53,7 @@ from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import repository
 from pcapi.utils import string as string_utils
@@ -586,7 +587,7 @@ def _get_offers_by_ids(
         .select_from(offers_models.Stock)
         .filter(
             offers_models.Stock.offerId == offers_models.Offer.id,
-            offers_models.Stock.bookingLimitDatetime >= datetime.datetime.utcnow(),
+            offers_models.Stock.bookingLimitDatetime >= date_utils.get_naive_utc_now(),
         )
         .correlate(offers_models.Offer)
         .scalar_subquery()
@@ -1137,7 +1138,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = date_utils.get_naive_utc_now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
 
@@ -1185,7 +1186,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         if offer.validation != new_validation:
             old_validation = offer.validation
             offer.validation = new_validation
-            offer.lastValidationDate = datetime.datetime.utcnow()
+            offer.lastValidationDate = date_utils.get_naive_utc_now()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.lastValidationAuthorUserId = current_user.id
             offer.publicationDatetime = None
@@ -1651,7 +1652,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
                     offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .options(
@@ -1716,7 +1717,7 @@ def move_offer(offer_id: int) -> utils.BackofficeResponse:
                 offerers_models.VenuePricingPointLink,
                 sa.and_(
                     offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                    offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
                 ),
             )
             .options(

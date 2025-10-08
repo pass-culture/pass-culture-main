@@ -9,6 +9,8 @@ from datetime import datetime
 
 import weasyprint
 
+from pcapi.utils import date as date_utils
+
 
 PDF_AUTHOR = "Pass Culture"
 url_fetcher_container = threading.local()
@@ -84,7 +86,7 @@ def generate_pdf_from_html(html_content: str, metadata: PdfMetadata | None = Non
     document = weasyprint.HTML(string=html_content, url_fetcher=fetcher.fetch_url).render()
     metadata = metadata or PdfMetadata()
     # a W3C date, as expected by Weasyprint
-    document.metadata.created = (metadata.created or datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%SZ")
+    document.metadata.created = (metadata.created or date_utils.get_naive_utc_now()).strftime("%Y-%m-%dT%H:%M:%SZ")
     document.metadata.modified = document.metadata.created
     document.metadata.authors = [metadata.author]
     document.metadata.title = metadata.title

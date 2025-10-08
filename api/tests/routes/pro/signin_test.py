@@ -9,6 +9,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -16,7 +17,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, client, caplog):
         # given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
             city=None,
@@ -122,7 +123,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_with_user_offerer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow(),
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
         )
         data = {
             "identifier": user_offerer.user.email,

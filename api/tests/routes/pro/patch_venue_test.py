@@ -1,4 +1,3 @@
-from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -15,6 +14,7 @@ from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -51,7 +51,7 @@ class Returns200Test:
     def test_should_update_venue(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=datetime.utcnow(),
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
         )
         initial_address = geography_factories.AddressFactory(
             street="35 Boulevard de Sébastopol",
@@ -177,7 +177,7 @@ class Returns200Test:
         }
 
     def test_update_venue_is_open_to_public_should_set_is_permanent_to_true_and_sync_acceslibre(self, client) -> None:
-        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
+        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=date_utils.get_naive_utc_now())
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             isOpenToPublic=False,
@@ -205,7 +205,7 @@ class Returns200Test:
     def test_update_venue_is_close_to_public_should_not_change_is_permanent_but_delete_sync_acceslibre(
         self, client
     ) -> None:
-        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
+        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=date_utils.get_naive_utc_now())
         venue = offerers_factories.VenueFactory(
             venueTypeCode=offerers_models.VenueTypeCode.LIBRARY,
             managingOfferer=user_offerer.offerer,

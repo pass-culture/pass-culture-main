@@ -10,6 +10,7 @@ from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.core.users.utils import decode_jwt_token_rs256
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_login_location
+from pcapi.utils import date as date_utils
 
 from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
@@ -18,7 +19,7 @@ from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 class EncodeJWTPayloadTest:
     def test_encode_jwt_payload(self):
         payload = dict(data="value")
-        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        expiration_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
 
         jwt_token = encode_jwt_payload(payload, expiration_date)
 

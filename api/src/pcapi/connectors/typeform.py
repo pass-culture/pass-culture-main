@@ -11,6 +11,7 @@ from datetime import datetime
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils import module_loading
 from pcapi.utils import requests
@@ -132,7 +133,7 @@ class TestingBackend(BaseBackend):
         return TypeformForm(
             form_id=form_id,
             title=title,
-            date_created=datetime.utcnow(),
+            date_created=date_utils.get_naive_utc_now(),
             fields=[
                 TypeformQuestion(field_id=f"{form_id}-{i:04}", title=question)
                 for i, question in enumerate(self.QUESTIONS)
@@ -145,7 +146,7 @@ class TestingBackend(BaseBackend):
         return [
             TypeformResponse(
                 response_id=f"{form_id}-response",
-                date_submitted=datetime.utcnow(),
+                date_submitted=date_utils.get_naive_utc_now(),
                 phone_number="0199000123",
                 email="spilgrim@example.com",
                 answers=[

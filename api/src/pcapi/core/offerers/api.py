@@ -470,7 +470,7 @@ def create_venue(
             # foreign key id. No need to handle this here, let it fail later.
             offerer.allowedOnAdage = True
         venue.adageId = str(int(time.time()))
-        venue.adageInscriptionDate = datetime.utcnow()
+        venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
     db.session.add(venue)
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
@@ -519,7 +519,7 @@ def delete_venue(venue_id: int) -> None:
             .filter(
                 offerers_models.VenuePricingPointLink.venueId != venue_id,
                 offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             )
             .exists()
         ).scalar()
@@ -745,7 +745,7 @@ def link_venue_to_pricing_point(
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
     collective_stock_datetime = educational_models.CollectiveStock.endDatetime.name
     if not timestamp:
-        timestamp = datetime.utcnow()
+        timestamp = date_utils.get_naive_utc_now()
     current_link = (
         db.session.query(models.VenuePricingPointLink)
         .filter(
@@ -886,7 +886,7 @@ def _initialize_offerer(offerer: offerers_models.Offerer) -> None:
     else:
         offerer.validationStatus = ValidationStatus.NEW
     offerer.isActive = True
-    offerer.dateCreated = datetime.utcnow()
+    offerer.dateCreated = date_utils.get_naive_utc_now()
 
 
 def auto_tag_new_offerer(
@@ -1006,7 +1006,7 @@ def create_offerer(
                 delete_venue(venue_to_delete.id)
         elif not user_offerer.isValidated:
             user_offerer.validationStatus = ValidationStatus.NEW
-            user_offerer.dateCreated = datetime.utcnow()
+            user_offerer.dateCreated = date_utils.get_naive_utc_now()
             extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
@@ -1259,7 +1259,7 @@ def validate_offerer(
 
     applicants = users_repository.get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationStatus = ValidationStatus.VALIDATED
-    offerer.dateValidated = datetime.utcnow()
+    offerer.dateValidated = date_utils.get_naive_utc_now()
     offerer.isActive = True
     db.session.add(offerer)
 
@@ -1435,7 +1435,9 @@ def auto_delete_attachments_on_closed_offerers() -> None:
     )
 
     for row in rows:
-        if row.offererClosedDate <= datetime.utcnow() - timedelta(days=settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY):
+        if row.offererClosedDate <= date_utils.get_naive_utc_now() - timedelta(
+            days=settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY
+        ):
             user_offerer = row.UserOfferer
             comment = (
                 f"Délai de {settings.CLOSED_OFFERER_PRO_USER_DELETION_DELAY} jours expiré "
@@ -1448,7 +1450,7 @@ def auto_delete_attachments_on_closed_offerers() -> None:
 
 
 def get_individual_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[bookings_models.Booking]:
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     event_subcategory_ids = subcategories.EVENT_SUBCATEGORIES.keys()
 
     ongoing_bookings = (
@@ -1495,7 +1497,7 @@ def _cancel_individual_bookings_on_offerer_closure(offerer_id: int, author_id: i
 
 
 def get_collective_bookings_to_cancel_on_offerer_closure(offerer_id: int) -> list[educational_models.CollectiveBooking]:
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     ongoing_collective_bookings = (
         db.session.query(educational_models.CollectiveBooking)
@@ -1644,7 +1646,7 @@ def save_venue_banner(
     """
     rm_previous_venue_thumbs(venue)
 
-    updated_at = datetime.utcnow()
+    updated_at = date_utils.get_naive_utc_now()
     banner_timestamp = str(int(updated_at.timestamp()))
     storage.create_thumb(
         model_with_thumb=venue,
@@ -3262,7 +3264,7 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 
 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
-    since_date = datetime.utcnow() - timedelta(days=2)
+    since_date = date_utils.get_naive_utc_now() - timedelta(days=2)
     adage_api.synchronize_adage_ids_on_venues(debug=True, since_date=since_date)
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
 

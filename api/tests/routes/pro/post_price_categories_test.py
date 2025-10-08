@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -133,7 +134,7 @@ class Returns200Test:
         expired_stock = offers_factories.EventStockFactory(
             offer=offer,
             priceCategory=price_category,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
+            beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=-2),
         )
 
         response = client.with_session_auth("user@example.com").post(

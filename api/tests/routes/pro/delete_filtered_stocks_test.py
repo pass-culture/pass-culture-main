@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 import time_machine
 
@@ -8,6 +6,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -16,7 +15,9 @@ class Returns204Test:
     def test_delete_filtered_stocks(self, client):
         # Given
         offer = offers_factories.OfferFactory()
-        offers_factories.EventStockFactory.create_batch(3, offer=offer, beginningDatetime=datetime.utcnow())
+        offers_factories.EventStockFactory.create_batch(
+            3, offer=offer, beginningDatetime=date_utils.get_naive_utc_now()
+        )
         user = users_factories.UserFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
@@ -63,7 +64,7 @@ class Returns403Test:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow())
+        offers_factories.EventStockFactory(offer=offer, beginningDatetime=date_utils.get_naive_utc_now())
         data = {
             "offer_id": offer.id,
             "date": "2020-10-15",

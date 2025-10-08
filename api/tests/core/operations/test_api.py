@@ -10,6 +10,7 @@ from pcapi.core.operations import factories as operations_factories
 from pcapi.core.operations import models as operations_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -21,7 +22,7 @@ class CreateSpecialEventFromTypeformTest:
         return_value=typeform.TypeformForm(
             form_id="test",
             title="Mon questionnaire",
-            date_created=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            date_created=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
             fields=[
                 typeform.TypeformQuestion(field_id="question1", title="Quel est ton prénom ?"),
                 typeform.TypeformQuestion(field_id="question2", title="Que penses-tu de ce test ?"),

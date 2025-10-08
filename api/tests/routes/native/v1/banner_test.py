@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
@@ -9,6 +7,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 from pcapi.utils.string import u_nbsp
 
 
@@ -68,7 +67,7 @@ class BannerTest:
         assert response.json == self.geolocation_banner
 
     def should_return_activation_banner_when_user_has_phone_validation_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = date_utils.get_naive_utc_now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
@@ -79,7 +78,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_profile_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = date_utils.get_naive_utc_now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -92,7 +91,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_identity_check_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = date_utils.get_naive_utc_now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -111,7 +110,7 @@ class BannerTest:
         assert response.json == self.activation_banner
 
     def should_return_activation_banner_when_user_has_honor_statement_to_complete(self, client):
-        dateOfBirth = datetime.datetime.utcnow() - relativedelta(years=18, months=5)
+        dateOfBirth = date_utils.get_naive_utc_now() - relativedelta(years=18, months=5)
         user = users_factories.UserFactory(
             dateOfBirth=dateOfBirth, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
@@ -196,7 +195,7 @@ class BannerTest:
         }
 
     def should_get_17_18_transition_id_check_done_banner(self, client):
-        a_year_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        a_year_ago = date_utils.get_naive_utc_now() - relativedelta(years=1, months=1)
         with time_machine.travel(a_year_ago):
             user = users_factories.BeneficiaryFactory(age=17)
 

@@ -43,7 +43,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_404_because_has_no_access_to_venue(self):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
         payload = {
@@ -95,7 +97,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         venue = venue_provider.venue
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
 
         payload = {
@@ -127,7 +131,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         )
         unknown_ean = "1234567897123"
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         payload = {
             "location": {"type": "physical", "venueId": venue.id},
@@ -311,7 +317,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
         bookings_factories.BookingFactory(stock=stock, quantity=2, user__deposit__amount=300)
 
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         payload = {
             "location": {"type": "physical", "venueId": venue_provider.venue.id},
             "products": [
@@ -407,7 +413,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         book_stock = offers_factories.ThingStockFactory(offer=book_offer, quantity=10, price=100)
         book_stock_id = book_stock.id
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         payload = {
             "location": {"type": "physical", "venueId": venue.id},
@@ -470,7 +478,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         # environments, therefore we cannot rely on its side effects
         update_sib_pro_task_mock.side_effect = None
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         payload = {
             "products": [

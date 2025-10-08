@@ -9,6 +9,7 @@ import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.repository as subscription_repository
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -63,7 +64,7 @@ class GetRelevantFraudCheckTest:
     )
     def should_get_relevant_identity_fraud_check_when_same_eligibility(self, user_eligibility, fraud_check_type):
         age = 17 if user_eligibility == users_models.EligibilityType.UNDERAGE else 18
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age))
         fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=user_eligibility, type=fraud_check_type
         )
@@ -130,7 +131,7 @@ class GetRelevantFraudCheckTest:
             status=subscription_models.FraudCheckStatus.OK,
         )
 
-        year_when_user_is_eighteen = datetime.utcnow() + relativedelta(years=1)
+        year_when_user_is_eighteen = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(year_when_user_is_eighteen):
             relevant_fraud_check = subscription_repository.get_relevant_identity_fraud_check(
                 user, users_models.EligibilityType.AGE18
@@ -181,7 +182,7 @@ class GetRelevantFraudCheckTest:
         self, user_eligibility, fraud_check_eligibility, fraud_check_type
     ):
         age = 17 if user_eligibility == users_models.EligibilityType.UNDERAGE else 18
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=age))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age))
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user, eligibilityType=fraud_check_eligibility, type=fraud_check_type
         )
@@ -189,7 +190,7 @@ class GetRelevantFraudCheckTest:
         assert subscription_repository.get_relevant_identity_fraud_check(user, user_eligibility) is None
 
     def should_get_ok_fraud_check_if_any(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=17))
         fraud_check_ok = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -207,7 +208,7 @@ class GetRelevantFraudCheckTest:
         )
 
     def should_get_pending_fraud_check_when_no_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=17))
         fraud_check_pending = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
@@ -225,7 +226,7 @@ class GetRelevantFraudCheckTest:
         )
 
     def should_get_latest_ko_fraud_check_when_no_pending_or_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
+        user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=17))
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,

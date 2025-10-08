@@ -1,11 +1,10 @@
-import datetime
-
 from pcapi.core.achievements import exceptions as achievements_exceptions
 from pcapi.core.achievements import models as achievements_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 def unlock_achievement(booking: bookings_models.Booking) -> achievements_models.Achievement | None:
@@ -102,6 +101,6 @@ def mark_achievements_as_seen(user: users_models.User, achievement_ids: list[int
         )
 
     for achievement in achievements:
-        achievement.seenDate = datetime.datetime.utcnow()
+        achievement.seenDate = date_utils.get_naive_utc_now()
 
     db.session.flush()

@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -17,6 +16,7 @@ from pcapi.core.mails.transactional.bookings.booking_expiration_to_beneficiary i
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -63,7 +63,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         assert mails_testing.outbox[1]["params"]["WITHDRAWAL_PERIOD"] == 30
 
     def test_should_get_correct_data_when_expired_bookings_cancelled(self):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com", firstName="Dory")
         long_ago = now - timedelta(days=31)
         dvd = ProductFactory(name="Memento", subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)

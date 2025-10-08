@@ -17,6 +17,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -260,7 +261,7 @@ class Return200Test:
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
     def test_edit_collective_stock_update_booking_limit_date_with_expired_booking(self, client):
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=now + timedelta(days=5), bookingLimitDatetime=now - timedelta(days=2)
         )

@@ -9,6 +9,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -26,7 +27,7 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
         price_category = offers_factories.PriceCategoryFactory(
             offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
         )
-        next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
+        next_year = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
         stock = offers_factories.EventStockFactory(
             offer=event,
             quantity=10,
@@ -104,7 +105,7 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
 
         # update
         event.withdrawalType = WithdrawalTypeEnum.IN_APP
-        too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        too_long_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         stock.beginningDatetime = too_long_ago
         stock.bookingLimitDatetime = too_long_ago
         db.session.commit()

@@ -46,6 +46,7 @@ from pcapi.core.users.utils import get_age_at_date
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.utils import date as date_utils
 from pcapi.utils import queue
 from pcapi.utils.repository import save
 from pcapi.utils.repository import transaction
@@ -72,7 +73,7 @@ def _is_ended_booking(booking: models.Booking) -> bool:
     if (
         booking.stock.beginningDatetime
         and booking.status != models.BookingStatus.CANCELLED
-        and booking.stock.beginningDatetime >= datetime.datetime.utcnow()
+        and booking.stock.beginningDatetime >= date_utils.get_naive_utc_now()
     ):
         # consider future events as "ongoing" even if they are used
         return False
@@ -245,7 +246,7 @@ def _book_offer(
             ),
         )
 
-        booking.dateCreated = datetime.datetime.utcnow()
+        booking.dateCreated = date_utils.get_naive_utc_now()
         booking.cancellationLimitDate = compute_booking_cancellation_limit_date(
             stock.beginningDatetime, booking.dateCreated
         )
@@ -758,7 +759,7 @@ def mark_as_used_with_uncancelling(
     if (
         booking.deposit
         and booking.deposit.expirationDate
-        and booking.deposit.expirationDate < datetime.datetime.utcnow()
+        and booking.deposit.expirationDate < date_utils.get_naive_utc_now()
     ):
         raise exceptions.BookingDepositCreditExpired()
 
@@ -815,7 +816,7 @@ def mark_as_cancelled(
             )
             or (
                 booking.stock.beginningDatetime
-                and booking.stock.beginningDatetime < datetime.datetime.utcnow() - datetime.timedelta(days=15)
+                and booking.stock.beginningDatetime < date_utils.get_naive_utc_now() - datetime.timedelta(days=15)
             )
         ):
             raise exceptions.OneSideCancellationForbidden()
@@ -832,7 +833,7 @@ def mark_as_cancelled(
     if one_side_cancellation:
         logging.info("External booking cancelled unilaterally", extra={"booking_id": booking.id})
         assert booking.stock.beginningDatetime
-        if booking.stock.beginningDatetime < datetime.datetime.utcnow():
+        if booking.stock.beginningDatetime < date_utils.get_naive_utc_now():
             transactional_mails.send_booking_cancelled_unilaterally_provider_support_email(booking)
         else:
             transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking, one_side_cancellation)
@@ -882,7 +883,7 @@ def update_cancellation_limit_dates(
     for booking in bookings_to_update:
         booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
             event_beginning=new_beginning_datetime,
-            edition_date=datetime.datetime.utcnow(),
+            edition_date=date_utils.get_naive_utc_now(),
         )
     save(*bookings_to_update)
     return bookings_to_update
@@ -929,7 +930,7 @@ def auto_mark_as_used_after_event() -> None:
     if not FeatureToggle.UPDATE_BOOKING_USED.is_active():
         raise ValueError("This function is behind a deactivated feature flag.")
 
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     threshold = now - constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
 
     # Revisit with SQLAlchemy 2.
@@ -1076,7 +1077,7 @@ def get_individual_bookings_from_stock(
 
 
 def archive_old_bookings() -> None:
-    date_condition = models.Booking.dateCreated < datetime.datetime.utcnow() - constants.ARCHIVE_DELAY
+    date_condition = models.Booking.dateCreated < date_utils.get_naive_utc_now() - constants.ARCHIVE_DELAY
 
     query_old_booking_ids = (
         db.session.query(models.Booking)
@@ -1160,7 +1161,7 @@ def _cancel_expired_individual_bookings(batch_size: int = 500) -> None:
                 {
                     "status": models.BookingStatus.CANCELLED,
                     "cancellationReason": models.BookingCancellationReasons.EXPIRED,
-                    "cancellationDate": datetime.datetime.utcnow(),
+                    "cancellationDate": date_utils.get_naive_utc_now(),
                 },
                 synchronize_session=False,
             )
@@ -1253,7 +1254,7 @@ def cancel_unstored_external_bookings() -> None:
         if not external_booking_info:
             break
         if (
-            datetime.datetime.utcnow().timestamp() - external_booking_info["timestamp"]
+            date_utils.get_naive_utc_now().timestamp() - external_booking_info["timestamp"]
             < constants.EXTERNAL_BOOKINGS_MINIMUM_ITEM_AGE_IN_QUEUE
         ):
             queue.add_to_queue(
@@ -1300,7 +1301,7 @@ def cancel_ems_external_bookings() -> None:
             booking_to_cancel["timestamp"],
         )
 
-        if timestamp + EMS_DEADLINE_BEFORE_CANCELLING > datetime.datetime.utcnow().timestamp():
+        if timestamp + EMS_DEADLINE_BEFORE_CANCELLING > date_utils.get_naive_utc_now().timestamp():
             # This is the oldest booking to cancel we have in the queue and its too recent.
             redis_client.rpush(ems_queue, json.dumps(booking_to_cancel))
             return
@@ -1333,7 +1334,7 @@ def cancel_ems_external_bookings() -> None:
 def is_external_event_booking_visible(offer: offers_models.Offer, stock: offers_models.Stock) -> bool:
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
         if stock.beginningDatetime:
-            delta = stock.beginningDatetime - datetime.datetime.utcnow()
+            delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
             return delta.total_seconds() < NUMBER_SECONDS_HIDE_QR_CODE
     return True
 
@@ -1347,6 +1348,6 @@ def is_voucher_displayed(offer: offers_models.Offer, isExternal: bool) -> bool:
 
 def has_email_been_sent(stock: offers_models.Stock, withdrawal_delay: int | None) -> bool:
     if withdrawal_delay and stock.beginningDatetime:
-        delta = stock.beginningDatetime - datetime.datetime.utcnow()
+        delta = stock.beginningDatetime - date_utils.get_naive_utc_now()
         return delta.total_seconds() < withdrawal_delay
     return False

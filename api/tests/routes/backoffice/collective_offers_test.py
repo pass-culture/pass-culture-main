@@ -30,6 +30,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_collective_offer_displayed_status
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
 
@@ -48,9 +49,13 @@ pytestmark = [
 
 @pytest.fixture(scope="function", name="collective_offers")
 def collective_offers_fixture() -> tuple:
-    last_year = educational_factories.create_educational_year(datetime.datetime.utcnow() - datetime.timedelta(days=365))
-    current_year = educational_factories.create_educational_year(datetime.datetime.utcnow())
-    next_year = educational_factories.create_educational_year(datetime.datetime.utcnow() + datetime.timedelta(days=365))
+    last_year = educational_factories.create_educational_year(
+        date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+    )
+    current_year = educational_factories.create_educational_year(date_utils.get_naive_utc_now())
+    next_year = educational_factories.create_educational_year(
+        date_utils.get_naive_utc_now() + datetime.timedelta(days=365)
+    )
     institution_1 = educational_factories.EducationalInstitutionFactory()
     institution_2 = educational_factories.EducationalInstitutionFactory(postalCode="97600", city="MAMOUDZOU")
     educational_factories.EducationalDepositFactory(
@@ -87,8 +92,8 @@ def collective_offers_fixture() -> tuple:
         price=10.1,
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
-        startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-        endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
+        startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
+        endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=24),
         collectiveOffer__institution=institution_1,
         collectiveOffer__name="A Very Specific Name",
         collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
@@ -99,8 +104,8 @@ def collective_offers_fixture() -> tuple:
         price=11,
     ).collectiveOffer
     collective_offer_3 = educational_factories.CollectiveStockFactory(
-        startDatetime=datetime.datetime.utcnow(),
-        endDatetime=datetime.datetime.utcnow(),
+        startDatetime=date_utils.get_naive_utc_now(),
+        endDatetime=date_utils.get_naive_utc_now(),
         collectiveOffer__dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         collectiveOffer__institution=institution_2,
         collectiveOffer__name="A Very Specific Name That Is Longer",
@@ -172,7 +177,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Entité juridique"] == collective_offers[0].venue.managingOfferer.name
         assert rows[0]["Partenaire culturel"] == collective_offers[0].venue.name
         assert rows[0]["Ministère"] == "MENjs"
-        first_year = educational_factories._get_educational_year_beginning(datetime.datetime.utcnow())
+        first_year = educational_factories._get_educational_year_beginning(date_utils.get_naive_utc_now())
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
         assert rows[0]["Partenaire technique"] == "Cinéma Provider"
 
@@ -221,7 +226,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Partenaire culturel"] == collective_offers[1].venue.name
         assert rows[0]["Ministère"] == "MENjs"
         first_year = educational_factories._get_educational_year_beginning(
-            datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         assert rows[0]["Année"] == f"{first_year}-{first_year + 1}"
 
@@ -331,13 +336,13 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         [
             (
                 "DATE_FROM",
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ),
             (
                 "DATE_TO",
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
             ),
         ],
     )
@@ -584,8 +589,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
                 educational_factories.EducationalInstitutionProgramAssociationFactory(program=other_program)
             ]
         )
-        one_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
-        two_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 2)
+        one_year_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+        two_years_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=365 * 2)
         leaving_meg_educational_institution = educational_factories.EducationalInstitutionFactory(
             programAssociations=[
                 educational_factories.EducationalInstitutionProgramAssociationFactory(
@@ -597,8 +602,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         educational_year = (
             db.session.query(educational_models.EducationalYear)
             .filter(
-                educational_models.EducationalYear.beginningDate <= datetime.datetime.utcnow(),
-                datetime.datetime.utcnow() <= educational_models.EducationalYear.expirationDate,
+                educational_models.EducationalYear.beginningDate <= date_utils.get_naive_utc_now(),
+                date_utils.get_naive_utc_now() <= educational_models.EducationalYear.expirationDate,
             )
             .one()
         )
@@ -835,7 +840,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         for days_ago in (2, 4, 1, 3):
             educational_factories.CollectiveOfferFactory(
                 name=f"Offre collective {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=days_ago),
                 validation=offers_models.OfferValidationStatus.PENDING,
                 venue=validated_venue,
             )
@@ -1587,7 +1592,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
 
     def test_nominal(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory(pricing_point="self")
-        date_used = datetime.datetime.utcnow() - datetime.timedelta(hours=72)
+        date_used = date_utils.get_naive_utc_now() - datetime.timedelta(hours=72)
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -1694,7 +1699,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         )
 
     def test_cashflow_pending(self, legit_user, authenticated_client, app):
-        event_date = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -1728,7 +1733,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         ],
     )
     def test_price_higher_than_previously(self, legit_user, authenticated_client, booking_status):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -1769,7 +1774,7 @@ class PostEditCollectiveOfferPriceTest(PostEndpointHelper):
         ],
     )
     def test_number_of_tickets_higher_than_previously(self, legit_user, authenticated_client, booking_status):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__price=Decimal(100.00),
             collectiveStock__numberOfTickets=25,
@@ -1815,7 +1820,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     expected_num_queries_with_ff = expected_num_queries + 1  # FF VENUE_REGULARIZATION
 
     def test_nominal(self, legit_user, authenticated_client):
-        start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         end_date = start_date + datetime.timedelta(days=28)
         provider = providers_factories.ProviderFactory(name="Cinéma Provider")
         collective_booking = educational_factories.CollectiveBookingFactory(
@@ -1931,8 +1936,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Ajuster le prix" not in buttons
 
     def test_get_validated_offer(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        validation_date = datetime.datetime.utcnow()
+        event_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        validation_date = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__startDatetime=event_date,
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,
@@ -1949,8 +1954,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert descriptions["Date de dernière validation"] == format_date(validation_date, "%d/%m/%Y à %Hh%M")
 
     def test_get_rejected_offer(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        validation_date = datetime.datetime.utcnow()
+        event_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        validation_date = date_utils.get_naive_utc_now()
         collective_booking = educational_factories.CollectiveBookingFactory(
             collectiveStock__startDatetime=event_date,
             collectiveStock__collectiveOffer__lastValidationDate=validation_date,

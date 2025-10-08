@@ -19,7 +19,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
+TODAY = datetime.combine(date_utils.get_naive_utc_now(), time(hour=20))
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
     TODAY,
     TODAY + timedelta(days=2),

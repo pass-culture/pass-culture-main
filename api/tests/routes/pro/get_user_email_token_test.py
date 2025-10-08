@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from typing import Any
 
@@ -6,6 +5,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -38,7 +38,7 @@ def test_get_user_email_no_pending_validation(client: Any) -> None:
 
 def test_get_user_email_no_active_pending_validation(client: Any) -> None:
     user = users_factories.ProFactory()
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     users_factories.EmailUpdateEntryFactory(user=user, creationDate=now - timedelta(hours=2))
     users_factories.EmailValidationEntryFactory(user=user, creationDate=now - timedelta(hours=1))
 
@@ -52,7 +52,7 @@ def test_get_user_email_no_active_pending_validation(client: Any) -> None:
 
 def test_get_user_email_multiple_validations_with_pending(client: Any) -> None:
     user = users_factories.ProFactory()
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     users_factories.EmailUpdateEntryFactory(user=user, creationDate=now - timedelta(hours=2))
     users_factories.EmailValidationEntryFactory(user=user, creationDate=now - timedelta(hours=1))
     users_factories.EmailUpdateEntryFactory(

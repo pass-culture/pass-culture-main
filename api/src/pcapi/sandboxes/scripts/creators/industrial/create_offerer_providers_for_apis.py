@@ -17,6 +17,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ def create_offerer_provider(
 
 
 def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
-    now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
+    now = date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
     offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_ticketing_service=True)
@@ -124,7 +125,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
 
     offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
-        syncDate=datetime.datetime.utcnow(),
+        syncDate=date_utils.get_naive_utc_now(),
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
     )
@@ -136,7 +137,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     top_offer = offers[0]
     offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
-        syncDate=datetime.datetime.utcnow(),
+        syncDate=date_utils.get_naive_utc_now(),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(
             top_offers=[offerers_models.TopOffersData(offerId=top_offer.id, numberOfViews=today.day)],

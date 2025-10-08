@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
@@ -7,6 +5,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.mails import testing as mails_testing
+from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
@@ -44,7 +43,7 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 204
 
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
-        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.cancellationDate.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp(), rel=1)
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         assert len(educational_testing.adage_requests) == 1
@@ -60,7 +59,7 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 204
 
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
-        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.cancellationDate.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp(), rel=1)
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
     def test_cancel_offer_ended(self):
@@ -72,7 +71,7 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 204
 
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
-        assert booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
+        assert booking.cancellationDate.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp(), rel=1)
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
     @pytest.mark.parametrize(

@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -6,13 +5,14 @@ import pytest
 
 import pcapi.core.offers.factories as offers_factories
 from pcapi.sandboxes.scripts.save_sandbox import _index_all_offers
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class IndexAllOffersTest:
     def test_index_all_offers(self):
-        publication_date = datetime.utcnow() - timedelta(days=3)
-        booking_allowed_date = datetime.utcnow() + timedelta(days=14)
+        publication_date = date_utils.get_naive_utc_now() - timedelta(days=3)
+        booking_allowed_date = date_utils.get_naive_utc_now() + timedelta(days=14)
 
         # active, published, booking date in the future and active -> should be indexed
         offer_1 = offers_factories.StockFactory(

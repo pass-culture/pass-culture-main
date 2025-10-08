@@ -1,5 +1,3 @@
-import datetime
-
 import flask
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
@@ -25,6 +23,7 @@ from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
@@ -53,7 +52,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
             models.VenueBankAccountLink,
             sa.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
-                models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(models.VenueBankAccountLink.bankAccount)

@@ -1,10 +1,9 @@
-import datetime
-
 import pytest
 
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import repository as dms_repository
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -18,7 +17,7 @@ class RepositoryUnitTest:
         dms_repository.create_orphan_dms_application(
             application_number=88,
             procedure_number=99,
-            latest_modification_datetime=datetime.datetime.utcnow(),
+            latest_modification_datetime=date_utils.get_naive_utc_now(),
             email="john.stiles@example.com",
         )
         assert dms_repository.get_orphan_dms_application_by_application_id(88) is not None

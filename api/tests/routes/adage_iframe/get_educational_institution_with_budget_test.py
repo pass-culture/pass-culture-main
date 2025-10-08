@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from flask import url_for
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -75,7 +76,7 @@ class EducationalInstitutionTest:
 
 def _build_educational_year(delta: relativedelta | None = None):
     delta = delta if delta else relativedelta(years=0)
-    now = datetime.utcnow() - delta
+    now = date_utils.get_naive_utc_now() - delta
 
     return educational_factories.EducationalYearFactory(
         beginningDate=datetime(now.year, 9, 1),

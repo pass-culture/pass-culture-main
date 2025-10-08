@@ -16,6 +16,7 @@ from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_account
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -693,7 +694,7 @@ class CegidFinanceBackendTest:
     @pytest.mark.usefixtures("mock_cegid_auth")
     def test_push_invoice(self, cegid_config, requests_mock):
         with time_machine.travel("2025-01-25", tick=False):
-            now = datetime.datetime.utcnow()
+            now = date_utils.get_naive_utc_now()
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -728,7 +729,7 @@ class CegidFinanceBackendTest:
         finance_event = finance_factories.FinanceEventFactory(
             bookingFinanceIncident=booking_finance_incident,
             booking=None,
-            valueDate=datetime.datetime.utcnow(),
+            valueDate=date_utils.get_naive_utc_now(),
             pricingPoint=venue,
             venue=venue,
         )
@@ -971,7 +972,7 @@ class CegidFinanceBackendTest:
     def test_push_debit_note(self, cegid_config, requests_mock):
         test_date = "2025-01-25"
         with time_machine.travel(test_date, tick=False):
-            now = datetime.datetime.utcnow()
+            now = date_utils.get_naive_utc_now()
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -1216,7 +1217,7 @@ class CegidFinanceBackendTest:
         iban_uuid = str(faker.uuid4())
         bic_uuid = str(faker.uuid4())
 
-        iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
+        iso_now = f"{date_utils.get_naive_utc_now().isoformat()}+00"
 
         response_data = {
             "APAccount": {"value": "467500"},
@@ -1352,7 +1353,7 @@ class CegidFinanceBackendTest:
         vendor_uuid = str(faker.uuid4())
         iban_uuid = str(faker.uuid4())
         bic_uuid = str(faker.uuid4())
-        iso_now = f"{datetime.datetime.utcnow().isoformat()}+00"
+        iso_now = f"{date_utils.get_naive_utc_now().isoformat()}+00"
 
         response_vendor_data = {
             "APAccount": {"value": "467500"},

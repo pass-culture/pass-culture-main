@@ -9,6 +9,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -42,7 +43,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+            user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
         client.with_token(user.email)
 
@@ -59,7 +60,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+            user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
         client.with_token(user.email)
 
@@ -72,7 +73,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+            user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
         client.with_token(user.email)
 
@@ -97,7 +98,7 @@ class PostReactionTest:
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(product=product)
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+            user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
         client.with_token(user.email)
 
@@ -120,10 +121,10 @@ class PostReactionTest:
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         other_offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+            user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
         bookings_factories.UsedBookingFactory(
-            user=user, stock__offer=other_offer, dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=25)
+            user=user, stock__offer=other_offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(days=25)
         )
         client.with_token(user.email)
 
@@ -154,7 +155,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             # booking from someone else
             stock__offer=offer,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(hours=25),
+            dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25),
         )
         client.with_token(user.email)
 
@@ -242,9 +243,9 @@ class GetAvailableReactionTest:
         offer_4 = offers_factories.OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         offer_5 = offers_factories.OfferFactory(subcategoryId=subcategories.ABO_PRESSE_EN_LIGNE.id)
 
-        a_little_more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
-        a_little_more_than_31d_ago = datetime.datetime.utcnow() - datetime.timedelta(days=32)
-        a_lot_more_than_31d_ago = datetime.datetime.utcnow() - datetime.timedelta(days=60)
+        a_little_more_than_24h_ago = date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
+        a_little_more_than_31d_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=32)
+        a_lot_more_than_31d_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=60)
 
         # Booking eligible to reactions from user
         booking_offer_1 = bookings_factories.UsedBookingFactory(

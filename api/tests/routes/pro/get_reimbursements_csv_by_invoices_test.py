@@ -1,5 +1,4 @@
 import csv
-import datetime
 import string
 from io import StringIO
 
@@ -15,6 +14,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -40,13 +40,13 @@ def test_with_pricings(client):
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     bank_account_2 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
+        venue=venue2, bankAccount=bank_account_2, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     batch = finance_factories.CashflowBatchFactory()
@@ -119,13 +119,13 @@ def test_with_pricings_collective_use_case(client):
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     bank_account_2 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
+        venue=venue2, bankAccount=bank_account_2, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     batch = finance_factories.CashflowBatchFactory()
@@ -216,13 +216,13 @@ def test_return_only_searched_invoice(client):
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account_1 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue1, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue1, bankAccount=bank_account_1, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point=venue1)
     bank_account_2 = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue2, bankAccount=bank_account_2, timespan=(datetime.datetime.utcnow(),)
+        venue=venue2, bankAccount=bank_account_2, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     batch = finance_factories.CashflowBatchFactory()

@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest.mock import patch
 
 import pytest
@@ -12,13 +11,14 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi import settings
 from pcapi.core.external.automations import venue as venue_automations
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class VenueAutomationsTest:
     def test_get_inactive_venues_emails(self):
-        date_92_days_ago = datetime.utcnow() - relativedelta(days=92)
-        date_70_days_ago = datetime.utcnow() - relativedelta(days=70)
+        date_92_days_ago = date_utils.get_naive_utc_now() - relativedelta(days=92)
+        date_70_days_ago = date_utils.get_naive_utc_now() - relativedelta(days=70)
 
         offerer_validated_92_days_ago = offerers_factories.OffererFactory(dateValidated=date_92_days_ago)
 
@@ -94,7 +94,9 @@ class VenueAutomationsTest:
 
     @patch("pcapi.core.external.sendinblue.brevo_python.api.contacts_api.ContactsApi.import_contacts")
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
-        offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
+        offerer = offerers_factories.OffererFactory(
+            dateValidated=date_utils.get_naive_utc_now() - relativedelta(days=100)
+        )
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.EventOfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
 

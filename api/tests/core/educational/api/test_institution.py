@@ -5,6 +5,7 @@ import time_machine
 
 import pcapi.core.educational.api.institution as api
 import pcapi.core.educational.factories as educational_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -18,7 +19,7 @@ def freeze_fixture():
 
 @pytest.fixture(name="current_year_deposit")
 def current_year_deposit_fixture(freeze):
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     return educational_factories.EducationalDepositFactory(
         educationalYear__beginningDate=datetime(now.year, 9, 1),

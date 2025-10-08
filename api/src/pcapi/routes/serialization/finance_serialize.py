@@ -7,6 +7,7 @@ import pydantic.v1 as pydantic_v1
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 from pcapi.routes.serialization import BaseModel
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -131,7 +132,7 @@ class BankAccountResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         bank_account.linkedVenues = pydantic_v1.parse_obj_as(
             list[LinkedVenues],
             [

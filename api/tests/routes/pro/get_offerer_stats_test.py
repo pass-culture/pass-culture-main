@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 import time_machine
 
@@ -9,6 +7,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
 from pcapi.core import testing
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -28,7 +27,7 @@ class OffererStatsTest:
         mediation = offers_factories.MediationFactory(offer=offer_2)
         offer_3 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
         offers_factories.HeadlineOfferFactory(
-            offer=offer_2, venue=offer_2.venue, timespan=(datetime.datetime.utcnow(),), without_mediation=True
+            offer=offer_2, venue=offer_2.venue, timespan=(date_utils.get_naive_utc_now(),), without_mediation=True
         )
 
         offerers_factories.OffererStatsFactory(

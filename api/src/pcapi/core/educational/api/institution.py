@@ -15,6 +15,7 @@ from pcapi.core.educational import repository
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import postal_code as postal_code_utils
 
@@ -277,7 +278,7 @@ def get_current_year_remaining_credit(institution: models.EducationalInstitution
 
       current year deposit amount - sum of confirmed bookings amounts
     """
-    educational_year = repository.find_educational_year_by_date(datetime.utcnow())
+    educational_year = repository.find_educational_year_by_date(date_utils.get_naive_utc_now())
     assert educational_year is not None
 
     deposit = repository.find_educational_deposit_by_institution_id_and_year(institution.id, educational_year.adageId)
@@ -294,7 +295,7 @@ def create_missing_educational_institution_from_adage(destination_uai: str) -> m
     Fetch known adage institutions of the current year and create the
     missing institution inside or database if the target uai exists.
     """
-    year = repository.find_educational_year_by_date(datetime.utcnow())
+    year = repository.find_educational_year_by_date(date_utils.get_naive_utc_now())
     if year is None:
         raise exceptions.EducationalYearNotFound()
 
@@ -332,7 +333,7 @@ def create_educational_institution_from_adage(
 
 def synchronise_institutions_geolocation(adage_year_id: str | None = None) -> None:
     if adage_year_id is None:
-        year = repository.find_educational_year_by_date(datetime.utcnow())
+        year = repository.find_educational_year_by_date(date_utils.get_naive_utc_now())
         if year is None:
             raise exceptions.EducationalYearNotFound()
         adage_year_id = year.adageId

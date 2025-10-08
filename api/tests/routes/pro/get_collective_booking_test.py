@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -10,6 +9,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -71,7 +71,7 @@ class Returns200Test:
             offerer=user_offerer.offerer, status=finance_models.BankAccountApplicationStatus.ACCEPTED
         )
         offerers_factories.VenueBankAccountLinkFactory(
-            bankAccount=bank_account, venue=venue, timespan=(datetime.utcnow() - timedelta(days=365), None)
+            bankAccount=bank_account, venue=venue, timespan=(date_utils.get_naive_utc_now() - timedelta(days=365), None)
         )
         booking = educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
         booking_id = booking.id

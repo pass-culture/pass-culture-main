@@ -6,6 +6,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 
 if TYPE_CHECKING:
@@ -24,7 +25,7 @@ class BlacklistedDomainName(PcObject, Model):
     __tablename__ = "blacklisted_domain_name"
     domain: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
 
 
@@ -37,7 +38,7 @@ class ProductWhitelist(PcObject, Model):
     title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     ean: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(length=13), nullable=False, unique=True, index=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     comment: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     authorId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)

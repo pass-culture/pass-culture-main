@@ -20,6 +20,7 @@ from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -109,38 +110,38 @@ class UnindexExpiredOffersTest:
         # Given
         # Expired template offer
         collective_offer_template_1 = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+                end=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
             ),
         )
         # Non expired template offer
         educational_factories.CollectiveOfferTemplateFactory()
         # Expired template offer
         collective_offer_template_2 = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=7),
-                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+                end=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1),
             ),
         )
         # Archived template offer
         collective_offer_template_3 = educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                end=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+                end=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
             ),
-            dateArchived=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateArchived=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             isActive=False,
         )
         # Non expired template offer with dateRange overlapping today
         educational_factories.CollectiveOfferTemplateFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=9),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=9),
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                end=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+                end=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
             ),
         )
         # When

@@ -24,6 +24,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -528,8 +529,8 @@ class GetCappedOffersForFiltersTest:
                 description="expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity",
             )
 
-            five_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=5)
-            in_five_days = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+            five_days_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=5)
+            in_five_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
             beneficiary = users_factories.BeneficiaryGrant18Factory(email="jane.doe@example.com")
             factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             factories.ThingStockFactory(
@@ -646,7 +647,7 @@ class GetCappedOffersForFiltersTest:
                 bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            in_six_days = datetime.datetime.utcnow() + datetime.timedelta(days=6)
+            in_six_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=6)
             self.active_event_in_six_days_offer = factories.EventOfferFactory(venue=self.venue)
             factories.EventStockFactory(
                 offer=self.active_event_in_six_days_offer,
@@ -877,7 +878,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_only_pending_offers_when_requesting_pending_status(self):
             # given
-            unexpired_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            unexpired_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
 
             pending_offer = factories.ThingOfferFactory(
                 validation=offer_mixin.OfferStatus.PENDING.name, name="Offre en attente"
@@ -901,7 +902,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self):
             # given
-            unexpired_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            unexpired_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
 
             rejected_offer = factories.ThingOfferFactory(
                 validation=offer_mixin.OfferValidationStatus.REJECTED,
@@ -958,7 +959,7 @@ class GetCappedOffersForFiltersTest:
             # given
             self.init_test_data()
 
-            in_six_days = datetime.datetime.utcnow() + datetime.timedelta(days=6)
+            in_six_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=6)
             in_six_days_beginning = in_six_days.replace(hour=0, minute=0, second=0)
             in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
 
@@ -984,7 +985,7 @@ class GetCappedOffersForFiltersTest:
 @pytest.mark.usefixtures("db_session")
 class GetOffersByPublicationDateTest:
     def test_get_offers_by_publication_date(self):
-        publication_date_target = datetime.datetime.utcnow().replace(
+        publication_date_target = date_utils.get_naive_utc_now().replace(
             minute=0, second=0, microsecond=0
         ) + datetime.timedelta(days=30)
 
@@ -1099,9 +1100,9 @@ class CheckStockConsistenceTest:
 @pytest.mark.usefixtures("db_session")
 class IncomingEventStocksTest:
     def setup_stocks(self):
-        today = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        today = date_utils.get_naive_utc_now() + datetime.timedelta(hours=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
+        next_week = date_utils.get_naive_utc_now() + datetime.timedelta(days=7)
 
         address_paris = geography_factories.AddressFactory()
         address_overseas = geography_factories.AddressFactory(postalCode="97180", departmentCode="971")
@@ -1224,7 +1225,7 @@ class IncomingEventStocksTest:
         self.setup_stocks()
 
         # add digital offer
-        today = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        today = date_utils.get_naive_utc_now() + datetime.timedelta(hours=1)
         offer = factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
         digital_stock = factories.StockWithActivationCodesFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory(stock=digital_stock)
@@ -1300,7 +1301,7 @@ class AvailableActivationCodeTest:
         factories.ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         factories.ActivationCodeFactory(
             stock=stock,
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )  # expired code
 
         # WHEN THEN
@@ -1912,16 +1913,16 @@ class GetHeadlineOfferFiltersTest:
         factories.HeadlineOfferFactory(offer=active_offer)
 
         finished_timespan = (
-            datetime.datetime.utcnow() - datetime.timedelta(days=20),
-            datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=20),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
         )
         # alreeady inactive offer headline offer:
         factories.HeadlineOfferFactory(offer=active_offer, timespan=finished_timespan)
 
         another_active_offer = factories.OfferFactory(isActive=True)
         timespan_finishing_in_the_future = (
-            datetime.datetime.utcnow() - datetime.timedelta(days=3),
-            datetime.datetime.utcnow() + datetime.timedelta(days=3),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
         )
         # soon to be inactive offer headline offer:
         factories.HeadlineOfferFactory(offer=another_active_offer, timespan=timespan_finishing_in_the_future)
@@ -1943,16 +1944,16 @@ class GetHeadlineOfferFiltersTest:
         inactive_offer_headline_offer = factories.HeadlineOfferFactory(offer=inactive_offer)
 
         finished_timespan = (
-            datetime.datetime.utcnow() - datetime.timedelta(days=20),
-            datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=20),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
         )
         # already inactive headline offer
         factories.HeadlineOfferFactory(offer=inactive_offer, timespan=finished_timespan)
 
         another_inactive_offer = factories.OfferFactory(isActive=False)
         timespan_finishing_in_the_future = (
-            datetime.datetime.utcnow() - datetime.timedelta(days=3),
-            datetime.datetime.utcnow() + datetime.timedelta(days=3),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
         )
         headline_offer_finishing_in_the_future_but_offer_is_inactive = factories.HeadlineOfferFactory(
             offer=another_inactive_offer, timespan=timespan_finishing_in_the_future
@@ -1976,8 +1977,8 @@ class GetHeadlineOfferFiltersTest:
         headline_offer_without_mediation = factories.HeadlineOfferFactory(offer=offer, without_mediation=True)
 
         finished_timespan = (
-            datetime.datetime.utcnow() - datetime.timedelta(days=20),
-            datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=20),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
         )
         # already inactive headline offer without mediation
         factories.HeadlineOfferFactory(offer=offer, timespan=finished_timespan, without_mediation=True)

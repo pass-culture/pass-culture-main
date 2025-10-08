@@ -19,6 +19,7 @@ from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
 from pcapi.tasks.serialization import sendinblue_tasks
+from pcapi.utils import date as date_utils
 
 from . import common_pro_attributes
 from . import common_user_attributes
@@ -359,7 +360,7 @@ class BulkImportUsersDataTest:
         warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
 
         # 40 characters per email address
-        test_time = datetime.utcnow().strftime("%y%m%d.%H%M")
+        test_time = date_utils.get_naive_utc_now().strftime("%y%m%d.%H%M")
         thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
 
         result = add_contacts_to_list(thousands_emails, SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID)
@@ -389,7 +390,7 @@ class BulkImportUsersDataTest:
         # Note that SENDINBLUE_API_KEY must be filled in settings.
         make_update_request(
             sendinblue_tasks.UpdateSendinblueContactRequest(
-                email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
+                email=f"test.pro.{date_utils.get_naive_utc_now().strftime('%y%m%d.%H%M')}@example.net",
                 use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
                 contact_list_ids=None,
@@ -398,7 +399,7 @@ class BulkImportUsersDataTest:
         )
 
     def test_make_update_request(self):
-        email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
+        email = f"test.pro.{date_utils.get_naive_utc_now().strftime('%y%m%d.%H%M')}@example.net"
         attributes = format_user_attributes(common_pro_attributes)
 
         make_update_request(

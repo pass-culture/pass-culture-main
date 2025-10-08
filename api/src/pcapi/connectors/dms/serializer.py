@@ -21,6 +21,7 @@ from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import without_timezone
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import FrenchParserInfo
 
 
@@ -356,10 +357,10 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
 
     @property
     def should_be_marked_without_continuation(self) -> bool:
-        dead_line_application = datetime.utcnow() - timedelta(
+        dead_line_application = date_utils.get_naive_utc_now() - timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_APPLICATION_DEADLINE)
         )
-        dead_line_annotation = datetime.utcnow() - timedelta(
+        dead_line_annotation = date_utils.get_naive_utc_now() - timedelta(
             days=int(settings.DS_MARK_WITHOUT_CONTINUATION_ANNOTATION_DEADLINE)
         )
 

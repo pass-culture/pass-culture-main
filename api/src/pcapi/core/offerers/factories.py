@@ -11,6 +11,7 @@ from pcapi.core.factories import BaseFactory
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
@@ -210,7 +211,7 @@ class CollectiveVenueFactory(VenueFactory):
     isPermanent = True
 
     adageId = factory.Sequence(str)
-    adageInscriptionDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=365))
+    adageInscriptionDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=365))
 
     managingOfferer = factory.SubFactory(CollectiveOffererFactory)
 
@@ -268,7 +269,7 @@ class VenuePricingPointLinkFactory(BaseFactory):
     )
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
             None,
         ]
     )
@@ -282,7 +283,7 @@ class VenueBankAccountLinkFactory(BaseFactory):
     bankAccount = factory.SubFactory(
         "pcapi.core.finance.factories.BankAccountFactory", offerer=factory.SelfAttribute("..venue.managingOfferer")
     )
-    timespan = factory.LazyFunction(lambda: [datetime.datetime.utcnow() - datetime.timedelta(days=365), None])
+    timespan = factory.LazyFunction(lambda: [date_utils.get_naive_utc_now() - datetime.timedelta(days=365), None])
 
 
 class OpeningHoursFactory(BaseFactory):
@@ -430,7 +431,7 @@ class OffererInvitationFactory(BaseFactory):
 
     offerer = factory.SubFactory(OffererFactory)
     email = factory.Sequence("invited.pro{}@example.net".format)
-    dateCreated = datetime.datetime.utcnow()
+    dateCreated = date_utils.get_naive_utc_now()
     user = factory.SubFactory(users_factories.ProFactory)
     status = models.InvitationStatus.PENDING
 

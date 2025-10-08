@@ -1,5 +1,3 @@
-import datetime
-
 import flask
 import pytest
 from dateutil.relativedelta import relativedelta
@@ -7,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -44,7 +43,7 @@ class Returns200Test:
             email="toto@example.com",
             firstName="Jean",
             lastName="Smisse",
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
             phoneNumber="0612345678",
             isEmailValidated=True,
         )

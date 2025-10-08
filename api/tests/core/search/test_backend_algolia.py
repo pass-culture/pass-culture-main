@@ -13,6 +13,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search import redis_queues
 from pcapi.core.search import serialization
 from pcapi.core.search.backends import algolia
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -312,7 +313,7 @@ class ProcessingQueueTest:
         # processing queue has been deleted, too.
         assert redis.keys() == []
 
-    @time_machine.travel(datetime.datetime.utcnow(), tick=False)
+    @time_machine.travel(date_utils.get_naive_utc_now(), tick=False)
     def test_processing_queue_is_kept_upon_error(self):
         backend = get_backend()
         redis = backend.redis_client
@@ -326,7 +327,7 @@ class ProcessingQueueTest:
             pass
 
         assert redis.scard(queue) == 0
-        timestamp = datetime.datetime.utcnow().timestamp()
+        timestamp = date_utils.get_naive_utc_now().timestamp()
         processing_queue = f"{queue}:processing:{timestamp}"
         assert redis.smembers(processing_queue) == {"1", "2", "3"}
 
@@ -334,7 +335,7 @@ class ProcessingQueueTest:
         backend = get_backend()
         redis = backend.redis_client
         main_queue = redis_queues.REDIS_OFFER_IDS_NAME
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         timestamp_old_enough = (now - datetime.timedelta(hours=1)).timestamp()
         processing_old_enough = f"{main_queue}:processing:{timestamp_old_enough}"
         redis.sadd(processing_old_enough, "1", "2", "3")

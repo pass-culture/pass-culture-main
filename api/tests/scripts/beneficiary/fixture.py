@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
+from pcapi.utils import date as date_utils
 
 
 DEFAULT_MESSAGES = [
@@ -19,7 +20,7 @@ DEFAULT_MESSAGES = [
 ]
 
 
-AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
+AGE18_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
 # TODO (thconte: 2023-09-06)

@@ -12,6 +12,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -26,12 +27,12 @@ def venues_with_same_pricing_point_fixture():
     offerers_factories.VenuePricingPointLinkFactory(
         venue=destination_venue,
         pricingPoint=pricing_point_venue,
-        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+        timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
     )
     offerers_factories.VenuePricingPointLinkFactory(
         venue=venue,
         pricingPoint=pricing_point_venue,
-        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+        timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
     )
     return venue, destination_venue
 
@@ -139,8 +140,8 @@ class MoveCollectiveOfferSuccessTest:
             venue=destination_venue,
             pricingPoint=destination_venue,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=3),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ],
         )
         assert collective_offer.venue.current_pricing_point_link is None
@@ -264,7 +265,7 @@ class MoveCollectiveOfferSuccessTest:
         """
         A collective offer on a venue without bank account can be moved to another venue with the bank account
         """
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         venue, destination_venue = venues_with_same_pricing_point
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(
@@ -286,7 +287,7 @@ class MoveCollectiveOfferSuccessTest:
         """
         A collective offer on a venue with a bank account can be moved to another venue with the same bank account
         """
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         venue, destination_venue = venues_with_same_pricing_point
         bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory(
@@ -357,7 +358,7 @@ class MoveCollectiveOfferFailTest:
         offerers_factories.VenuePricingPointLinkFactory(
             venue=destination_venue,
             pricingPoint=destination_venue,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
         )
         assert collective_offer.venue.current_pricing_point_link is None
         assert destination_venue.current_pricing_point_link is not None
@@ -377,12 +378,12 @@ class MoveCollectiveOfferFailTest:
         offerers_factories.VenuePricingPointLinkFactory(
             venue=invalid_destination_venue,
             pricingPoint=pricing_point_venue_1,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
         )
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=pricing_point_venue_2,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         with pytest.raises(api.exceptions.NoDestinationVenue):
@@ -399,7 +400,7 @@ class MoveCollectiveOfferFailTest:
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=pricing_point_venue_1,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
         )
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         with pytest.raises(api.exceptions.NoDestinationVenue):
@@ -409,7 +410,7 @@ class MoveCollectiveOfferFailTest:
         assert collective_offer.venue != invalid_destination_venue
 
     def test_move_collective_offer_with_different_banking_account(self, venues_with_same_pricing_point):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         venue, invalid_destination_venue = venues_with_same_pricing_point
         bank_account_1 = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
         bank_account_2 = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)

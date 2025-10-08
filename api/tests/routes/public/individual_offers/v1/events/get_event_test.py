@@ -9,6 +9,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
@@ -108,7 +109,9 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     def test_get_future_event(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now().replace(minute=0, second=0, microsecond=0) + timedelta(
+            days=30
+        )
         offer = self.setup_base_resource(venue=venue_provider.venue, publicationDatetime=publication_date)
         offer_id = offer.id
 

@@ -72,7 +72,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     apply to subcategories of an offerer are ignored (because they
     define a *rate*).
     """
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     timespan = db_utils.make_timerange(start=now, end=None)
     query = (
         db.session.query(models.CustomReimbursementRule)
@@ -532,14 +532,14 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
             offerers_models.VenuePricingPointLink,
             sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .options(

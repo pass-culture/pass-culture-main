@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 import sqlalchemy as sa
@@ -14,6 +13,7 @@ from pcapi import settings
 from pcapi.core.mails.transactional import send_subscription_document_error_email
 from pcapi.core.users import eligibility_api
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -53,9 +53,9 @@ def _find_users_to_remind(
                 [subscription_models.FraudCheckStatus.KO, subscription_models.FraudCheckStatus.SUSPICIOUS]
             ),
             subscription_models.BeneficiaryFraudCheck.dateCreated
-            < datetime.datetime.utcnow() - relativedelta(days=days_ago),
+            < date_utils.get_naive_utc_now() - relativedelta(days=days_ago),
             subscription_models.BeneficiaryFraudCheck.dateCreated
-            >= datetime.datetime.utcnow() - relativedelta(days=days_ago + 1),
+            >= date_utils.get_naive_utc_now() - relativedelta(days=days_ago + 1),
         )
         .all()
     )

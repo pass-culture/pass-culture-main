@@ -24,6 +24,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
+from pcapi.utils import date as date_utils
 
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
@@ -41,18 +42,18 @@ class UpsertDepositTest:
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
         with time_machine.travel(
-            datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
+            datetime.datetime.combine(date_utils.get_naive_utc_now(), datetime.time(0, 0))
             - relativedelta(years=age, months=2)
         ):
-            beneficiary = users_factories.UserFactory(validatedBirthDate=datetime.datetime.utcnow())
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(month=1)):
+            beneficiary = users_factories.UserFactory(validatedBirthDate=date_utils.get_naive_utc_now())
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(month=1)):
             subscription_factories.BeneficiaryFraudCheckFactory(
                 user=beneficiary,
                 status=subscription_models.FraudCheckStatus.OK,
                 type=subscription_models.FraudCheckType.EDUCONNECT,
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
                 resultContent=subscription_factories.EduconnectContentFactory(
-                    age=age, registration_datetime=datetime.datetime.utcnow()
+                    age=age, registration_datetime=date_utils.get_naive_utc_now()
                 ),
             )
 
@@ -66,10 +67,10 @@ class UpsertDepositTest:
 
     @time_machine.travel("2025-03-03")
     def test_create_underage_deposit_with_two_birthdays_since_registration(self):
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         beneficiary = users_factories.UserFactory(validatedBirthDate=seventeen_years_ago.date())
 
-        when_user_is_15_years_and_11_months_old = datetime.datetime.utcnow() - relativedelta(years=1, months=2)
+        when_user_is_15_years_and_11_months_old = date_utils.get_naive_utc_now() - relativedelta(years=1, months=2)
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
             status=subscription_models.FraudCheckStatus.STARTED,
@@ -87,7 +88,7 @@ class UpsertDepositTest:
             type=subscription_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=subscription_factories.EduconnectContentFactory(
-                registration_datetime=datetime.datetime.utcnow()
+                registration_datetime=date_utils.get_naive_utc_now()
             ),
         )
 
@@ -101,7 +102,7 @@ class UpsertDepositTest:
 
     @time_machine.travel("2025-03-03")
     def test_create_underage_deposit_with_birthday_since_registration(self):
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16)
         beneficiary = users_factories.UserFactory(
             dateOfBirth=sixteen_years_ago, validatedBirthDate=sixteen_years_ago.date()
         )
@@ -111,7 +112,7 @@ class UpsertDepositTest:
             type=subscription_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=subscription_factories.EduconnectContentFactory(
-                registration_datetime=datetime.datetime.utcnow() - relativedelta(years=1)
+                registration_datetime=date_utils.get_naive_utc_now() - relativedelta(years=1)
             ),
         )
 
@@ -168,7 +169,7 @@ class UpsertDepositTest:
         assert not deposit.recredits
 
     def test_cannot_upsert_grant_18_deposit(self):
-        AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow().replace(
+        AGE18_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now().replace(
             hour=0, minute=0, second=0, microsecond=0
         ) - relativedelta(years=18, months=2)
         beneficiary = users_factories.BeneficiaryGrant18Factory(validatedBirthDate=AGE18_ELIGIBLE_BIRTH_DATE)
@@ -187,7 +188,7 @@ class UpsertDepositTest:
         assert deposit.type == models.DepositType.GRANT_18
         assert len(user.deposits) == 2
         underage_deposit = min(*user.deposits, key=lambda d: d.id)
-        assert underage_deposit.expirationDate < datetime.datetime.utcnow()
+        assert underage_deposit.expirationDate < date_utils.get_naive_utc_now()
 
     def test_compute_deposit_expiration_date(self):
         user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
@@ -202,22 +203,22 @@ class UserRecreditTest:
     def test_cannot_be_recredited_for_deposit_using_identity_provider_checks(self):
         user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
 
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16)
         users_api.update_user_info(
             user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=sixteen_years_ago.date()
         )
 
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(next_year):
             can_be_recredited_for_17 = api._can_be_recredited(user)
             assert not can_be_recredited_for_17
 
     def test_cannot_be_recredited_for_deposit_using_support_actions(self, ubble_mocker):
-        yesterday = datetime.datetime.utcnow() - relativedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - relativedelta(days=1)
         with time_machine.travel(yesterday):
             # for some reason, the Ubble fraud check is created after the action history below, so we create the user yesterday
             user = users_factories.HonorStatementValidatedUserFactory()
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17)
+        seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17)
         users_api.update_user_info(
             user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=seventeen_years_ago.date()
         )
@@ -227,10 +228,10 @@ class UserRecreditTest:
             status=subscription_models.FraudCheckStatus.PENDING,
             user=user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            dateCreated=datetime.datetime.utcnow() + relativedelta(days=1),
+            dateCreated=date_utils.get_naive_utc_now() + relativedelta(days=1),
         )
 
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16)
         ubble_response = UbbleIdentificationResponseFactory(
             identification_state=IdentificationState.VALID,
             data__attributes__identification_id=fraud_check.thirdPartyId,
@@ -246,7 +247,7 @@ class UserRecreditTest:
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(next_year):
             can_be_recredited_for_17 = api._can_be_recredited(user)
             assert not can_be_recredited_for_17
@@ -256,7 +257,7 @@ class UserRecreditTest:
         factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_16)
         factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
 
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(next_year):
             can_be_recredited_for_16 = api._can_be_recredited(user)
             assert not can_be_recredited_for_16
@@ -370,7 +371,7 @@ class UserRecreditTest:
             assert user.recreditAmountToShow is None
 
     def test_notify_user_on_recredit(self):
-        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
 
@@ -508,7 +509,7 @@ class UserRecreditTest:
 
     def test_user_recredited_at_18(self):
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
-        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
             assert user.age == 18
             subscription_factories.PhoneValidationFraudCheckFactory(user=user)
             subscription_factories.BeneficiaryFraudCheckFactory(
@@ -524,7 +525,7 @@ class UserRecreditTest:
 
     def test_user_not_recredited_at_18_if_missing_step(self):
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
-        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
             assert user.age == 18
             # user has not finished their subscription for the 18 year old recredit
 
@@ -533,7 +534,7 @@ class UserRecreditTest:
 
     def test_users_recredited_once(self):
         user = users_factories.BeneficiaryFactory(age=17, phoneNumber="0123456789")
-        with time_machine.travel(datetime.datetime.utcnow() + relativedelta(years=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() + relativedelta(years=1)):
             assert user.age == 18
             subscription_factories.PhoneValidationFraudCheckFactory(user=user)
             subscription_factories.BeneficiaryFraudCheckFactory(
@@ -554,7 +555,7 @@ class UserRecreditTest:
     def test_user_with_missing_steps_is_not_recredited(self):
         user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(next_year):
             # User cannot be recredited because of missing steps
             api.recredit_users()
@@ -575,7 +576,7 @@ class UserRecreditTest:
 
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
-        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
+        next_week = date_utils.get_naive_utc_now() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             user_1 = users_factories.BeneficiaryFactory(
                 age=16, phoneNumber="+33600000000", deposit__amount=12, deposit__expirationDate=next_week
@@ -606,7 +607,7 @@ class UserRecreditTest:
 
     def test_booking_transfer_when_recrediting_underage_deposit(self):
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
-        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
+        next_week = date_utils.get_naive_utc_now() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             user = users_factories.BeneficiaryFactory(
                 age=16, phoneNumber="+33600000000", deposit__amount=30, deposit__expirationDate=next_week
@@ -635,7 +636,7 @@ class UserRecreditTest:
         )
 
     def test_recredit_only_if_identity_fraud_check_is_ok(self):
-        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(
                 age=17,
@@ -657,7 +658,7 @@ class UserRecreditTest:
     )
     def test_recredit_users_does_not_crash_on_big_pages(self):
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
-        next_week = datetime.datetime.utcnow() + relativedelta(weeks=1)
+        next_week = date_utils.get_naive_utc_now() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
             users_factories.BeneficiaryFactory.create_batch(
                 1000, age=16, phoneNumber="+33600000000", deposit__amount=12, deposit__expirationDate=next_week
@@ -666,7 +667,7 @@ class UserRecreditTest:
         assert api.recredit_users() is None
 
     def test_recredit_email_is_sent_to_18_years_old_users(self):
-        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(age=17, deposit__type=models.DepositType.GRANT_17_18)
 
@@ -691,20 +692,20 @@ class CanBeRecreditedTest:
     @pytest.mark.parametrize("age", (14, 15, 16, 19))
     def test_users_not_eligible_cannot_be_recredited(self, age):
         user = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1)
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, months=1)
         )
         assert not api._can_be_recredited(user)
 
     def test_user_18_yo_can_be_recredited_with_post_decree_deposit(self):
         user = users_factories.BeneficiaryFactory(age=17)
 
-        year_when_user_is_18 = datetime.datetime.utcnow() + relativedelta(years=1)
+        year_when_user_is_18 = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(year_when_user_is_18):
             assert api._can_be_recredited(user)
 
     def test_users_with_no_deposit_cannot_be_recredited(self):
         user = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=1)
         )
         assert not api._can_be_recredited(user)
 
@@ -714,13 +715,13 @@ class CanBeRecreditedTest:
         with time_machine.travel(before_decree):
             user = users_factories.BeneficiaryFactory(age=age - 1)
 
-        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        next_year = date_utils.get_naive_utc_now() + relativedelta(years=1)
         with time_machine.travel(next_year):
             assert api._can_be_recredited(user)
 
     def test_user_18_yo_can_not_be_recredited_twice(self):
         user = users_factories.BaseUserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=1)
         )
         deposit = users_factories.DepositGrantFactory(user=user)
         factories.RecreditFactory(deposit=deposit, amount=150, recreditType=models.RecreditType.RECREDIT_18)
@@ -731,7 +732,7 @@ class CanBeRecreditedTest:
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree):
             user = users_factories.BaseUserFactory(
-                dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=16, months=1)
+                dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=16, months=1)
             )
             deposit = users_factories.DepositGrantFactory(user=user)
             # user already received the 17 year old pre-decree recredit
@@ -765,7 +766,7 @@ class LastAgeRelatedRecreditTest:
             deposit=user.deposit,
             amount=Decimal("150"),
             recreditType=models.RecreditType.RECREDIT_18,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )
 
         last_recredit = api.get_latest_age_related_user_recredit(user)
@@ -779,13 +780,13 @@ class LastAgeRelatedRecreditTest:
             deposit=user.deposit,
             amount=Decimal("30"),
             recreditType=models.RecreditType.RECREDIT_17,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )
         factories.RecreditFactory(
             deposit=user.deposit,
             amount=Decimal("30"),
             recreditType=models.RecreditType.RECREDIT_16,
-            dateCreated=datetime.datetime.utcnow() - relativedelta(weeks=1),
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(weeks=1),
         )
 
         last_recredit = api.get_latest_age_related_user_recredit(user)

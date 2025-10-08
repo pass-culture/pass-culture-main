@@ -21,6 +21,7 @@ from pcapi.routes.backoffice.finance import validation
 from pcapi.sandboxes.scripts.creators.test_cases import create_movie_products
 from pcapi.sandboxes.scripts.creators.test_cases import create_offer_and_stocks_for_cinemas
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
 
 
@@ -139,15 +140,15 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         dsApplicationId="988001",
     )
     offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
     )
     offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=second_venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=second_venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
     )
 
     event_offer = offers_factories.EventOfferFactory.create(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
     # 22:00 UTC = 11:00 Noumea time on the day after
-    ref_date = datetime.datetime.utcnow().replace(hour=22, minute=0, second=0, microsecond=0)
+    ref_date = date_utils.get_naive_utc_now().replace(hour=22, minute=0, second=0, microsecond=0)
     event_stocks = [
         offers_factories.EventStockFactory.create(
             offer=event_offer,
@@ -362,7 +363,7 @@ def _create_nc_invoice() -> None:
     incident_events = []
     for booking_finance_incident in booking_incidents:
         incident_events += finance_api._create_finance_events_from_incident(
-            booking_finance_incident, incident_validation_date=datetime.datetime.utcnow()
+            booking_finance_incident, incident_validation_date=date_utils.get_naive_utc_now()
         )
 
     for event in incident_events:
@@ -414,7 +415,7 @@ def _create_nc_invoice() -> None:
         event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     logger.info("Created caledonian and metropolitan Invoices")
@@ -444,7 +445,7 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
         validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
     )
     finance_api.price_event(incident_booking.finance_events[0])
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert incident_booking.status == bookings_models.BookingStatus.REIMBURSED
@@ -472,5 +473,5 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
         for finance_event in booking_finance_incident.finance_events:
             finance_api.price_event(finance_event)
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)

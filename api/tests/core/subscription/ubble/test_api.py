@@ -29,6 +29,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications.push import trigger_events
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.string import u_nbsp
@@ -364,7 +365,9 @@ class UbbleWorkflowV2Test:
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
-            json=build_ubble_identification_v2_response(age_at_registration=18, created_on=datetime.datetime.utcnow()),
+            json=build_ubble_identification_v2_response(
+                age_at_registration=18, created_on=date_utils.get_naive_utc_now()
+            ),
         )
 
         ubble_subscription_api.update_ubble_workflow(fraud_check)
@@ -374,7 +377,7 @@ class UbbleWorkflowV2Test:
         assert user.has_beneficiary_role is True
 
     def test_ubble_workflow_updates_birth_date(self, requests_mock):
-        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16, months=1)
+        sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16, months=1)
         user = users_factories.UserFactory(dateOfBirth=sixteen_years_ago)
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -397,7 +400,7 @@ class UbbleWorkflowV2Test:
 
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, requests_mock):
-        last_year = datetime.datetime.utcnow() - relativedelta(years=1)
+        last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(
                 age=17,
@@ -425,7 +428,7 @@ class UbbleWorkflowV2Test:
         assert user.has_beneficiary_role
 
     def test_ubble_workflow_with_eligibility_change_17_18(self, requests_mock):
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(dateOfBirth=seventeen_years_ago)
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -456,7 +459,7 @@ class UbbleWorkflowV2Test:
         assert ok_fraud_check.thirdPartyId == original_third_party_id
 
     def test_ubble_workflow_with_eligibility_change_18_19(self, requests_mock):
-        eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18, months=1)
+        eighteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=18, months=1)
         user = users_factories.UserFactory(dateOfBirth=eighteen_years_ago)
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -470,7 +473,7 @@ class UbbleWorkflowV2Test:
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
             json=build_ubble_identification_v2_response(
-                birth_date=nineteen_years_ago, created_on=datetime.datetime.utcnow()
+                birth_date=nineteen_years_ago, created_on=date_utils.get_naive_utc_now()
             ),
         )
 
@@ -485,7 +488,7 @@ class UbbleWorkflowV2Test:
     def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(self, requests_mock):
         nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
         user = users_factories.UserFactory(dateOfBirth=nineteen_years_ago)
-        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=1)
+        year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=1)
         BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
             status=subscription_models.FraudCheckStatus.KO,
@@ -500,12 +503,12 @@ class UbbleWorkflowV2Test:
             user=user,
             thirdPartyId="idv_qwerty1234",
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
             json=build_ubble_identification_v2_response(
-                age_at_registration=19, created_on=datetime.datetime.utcnow() - relativedelta(months=2)
+                age_at_registration=19, created_on=date_utils.get_naive_utc_now() - relativedelta(months=2)
             ),
         )
 
@@ -519,7 +522,7 @@ class UbbleWorkflowV2Test:
     def test_ubble_workflow_with_eligibility_change_at_21_with_first_attempt_at_18(self, requests_mock):
         twenty_one_years_ago = datetime.date.today() - relativedelta(years=21, months=1)
         user = users_factories.UserFactory(dateOfBirth=twenty_one_years_ago)
-        year_when_user_was_eighteen = datetime.datetime.utcnow() - relativedelta(years=3)
+        year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=3)
         BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
             status=subscription_models.FraudCheckStatus.KO,
@@ -534,7 +537,7 @@ class UbbleWorkflowV2Test:
             user=user,
             thirdPartyId="idv_qwerty1234",
             eligibilityType=users_models.EligibilityType.AGE18,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         requests_mock.get(
             f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}",
@@ -634,7 +637,7 @@ class UbbleWorkflowV1Test:
         ubble_mocker,
     ):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         ProfileCompletionFraudCheckFactory(user=user)
@@ -782,7 +785,7 @@ class UbbleWorkflowV1Test:
         assert user.validatedBirthDate == document_birth_date.date()
 
     def test_ubble_workflow_updates_user_birth_date_when_already_beneficiary(self, ubble_mocker):
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=1)):
             user = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT,

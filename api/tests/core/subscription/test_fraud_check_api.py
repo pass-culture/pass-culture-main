@@ -17,6 +17,7 @@ from pcapi import settings as pcapi_settings
 from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -295,7 +296,7 @@ class FindDuplicateUserTest:
 
     def test_send_email_to_fraud_if_duplicated_beneficiary(self):
         # 2 years ago
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
                 age=17,
                 beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT,
@@ -303,7 +304,7 @@ class FindDuplicateUserTest:
 
         # A year ago
         # user 1 is now 18 yo
-        with time_machine.travel(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=1, days=1)):
             user2 = users_factories.BeneficiaryFactory(
                 age=17, beneficiaryFraudChecks__type=subscription_models.FraudCheckType.EDUCONNECT
             )
@@ -362,7 +363,7 @@ class FindDuplicateUserTest:
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         birth_date = (datetime.datetime.today() - relativedelta(years=17, days=5)).date()
-        registration_date = datetime.datetime.utcnow() - relativedelta(days=3)  # eligible 17-18
+        registration_date = date_utils.get_naive_utc_now() - relativedelta(days=3)  # eligible 17-18
         user = users_factories.UserFactory(dateOfBirth=birth_date)
 
         fraud_api.on_educonnect_result(
@@ -549,7 +550,7 @@ class EduconnectFraudTest:
 
 def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AGE18):
     user = users_factories.UserFactory(
-        dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, days=5),
+        dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, days=5),
         phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     subscription_factories.ProfileCompletionFraudCheckFactory(
@@ -599,7 +600,7 @@ class HasUserPerformedIdentityCheckTest:
     def test_has_user_performed_identity_check_at_17_now_turned_18(self, decree_month_offset):
         with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
             user = build_user_at_id_check(18)
-            year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
+            year_when_user_was_underage = date_utils.get_naive_utc_now() - relativedelta(years=1)
             subscription_factories.BeneficiaryFraudCheckFactory(
                 type=subscription_models.FraudCheckType.UBBLE,
                 user=user,
@@ -669,7 +670,7 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_user_beneficiary(self):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=20, months=1),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=20, months=1),
             roles=[users_models.UserRole.BENEFICIARY],
         )
         assert fraud_api.has_user_performed_identity_check(user)

@@ -3,6 +3,7 @@ import logging
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.finance import factories as finance_factories
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_LIVRE", "FESTIVAL_CINE"],
         timespan=[  # start date in the past => not editable
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
             None,
         ],
     )
@@ -24,7 +25,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_MUSIQUE"],
         timespan=[  # start date in the future, end date not defined => editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=100),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=100),
             None,
         ],
         amount=None,
@@ -34,7 +35,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_SPECTACLE"],
         timespan=[  # start date in the future, end date not defined => editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=150),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=150),
             None,
         ],
         amount=None,
@@ -44,8 +45,8 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
         offerer=offerer,
         subcategories=["FESTIVAL_ART_VISUEL"],
         timespan=[  # start date in the future but end date defined => not editable
-            datetime.datetime.utcnow() + datetime.timedelta(days=200),
-            datetime.datetime.utcnow() + datetime.timedelta(days=250),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=200),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=250),
         ],
         amount=None,
         rate=0.9,
@@ -56,7 +57,7 @@ def create_industrial_offerer_with_custom_reimbursement_rule() -> None:
     )
     finance_factories.CustomReimbursementRuleFactory.create(
         venue=venue,
-        timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=10), None],
+        timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=10), None],
         amount=None,
         rate=0.97,
     )

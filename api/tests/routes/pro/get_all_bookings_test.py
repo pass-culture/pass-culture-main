@@ -16,6 +16,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -262,7 +263,7 @@ class Returns200Test:
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
 
-        booked_date = datetime.utcnow()
+        booked_date = date_utils.get_naive_utc_now()
 
         booking1 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue1)
         bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue2)

@@ -12,6 +12,7 @@ from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -53,7 +54,7 @@ class PayloadContext:
 
 
 def build_template_start():
-    return datetime.utcnow() + timedelta(days=1)
+    return date_utils.get_naive_utc_now() + timedelta(days=1)
 
 
 def build_template_end(template_start=None):
@@ -237,7 +238,7 @@ class Returns200Test:
         offer_ctx = build_offer_context()
         pro_client = build_pro_client(client, offer_ctx.user)
         offer = offer_ctx.offer
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(
@@ -909,7 +910,7 @@ class InvalidDatesTest:
         pro_client = build_pro_client(client, offer_ctx.user)
         offer_id = offer_ctx.offer.id
 
-        one_week_ago = datetime.utcnow() - timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - timedelta(days=7)
         dates = {"start": one_week_ago.isoformat(), "end": build_template_end().isoformat()}
 
         response = self.send_request(pro_client, offer_id, dates)

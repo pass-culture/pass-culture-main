@@ -56,6 +56,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_venue_labels import crea
 from pcapi.sandboxes.scripts.creators.test_cases import venues_mock
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.transaction_manager import atomic
 
@@ -766,7 +767,7 @@ def create_offers_with_video_url() -> None:
 
 @log_func_duration
 def create_highlights() -> None:
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     highlights_factories.HighlightFactory.create(
         name="Temps fort passé",
         description="Ceci est un temps fort passé",
@@ -838,7 +839,7 @@ def create_venues_across_cities() -> None:
                     offers_factories.EventStockFactory.create(
                         quantity=random.randint(10, 100),
                         offer=event_offer,
-                        beginningDatetime=datetime.datetime.utcnow()
+                        beginningDatetime=date_utils.get_naive_utc_now()
                         + datetime.timedelta(
                             days=random.randint(30, 59),
                             hours=random.randint(1, 23),
@@ -882,7 +883,7 @@ def create_offers_for_each_subcategory() -> None:
                     offer__venue__longitude=2.37850 if is_in_Paris else 5.37421,
                     price=0 if is_free else i * 2,
                     quantity=i * 10,
-                    beginningDatetime=datetime.datetime.utcnow()
+                    beginningDatetime=date_utils.get_naive_utc_now()
                     + datetime.timedelta(
                         days=i + 7,
                         hours=(3 * i) % 60,
@@ -1085,19 +1086,19 @@ def create_app_beneficiaries() -> None:
     achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING,
-        unlockedDate=datetime.datetime.utcnow(),
+        unlockedDate=date_utils.get_naive_utc_now(),
     )
     achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_SHOW_BOOKING,
-        unlockedDate=datetime.datetime.utcnow(),
-        seenDate=datetime.datetime.utcnow(),
+        unlockedDate=date_utils.get_naive_utc_now(),
+        seenDate=date_utils.get_naive_utc_now(),
     )
     achievements_factories.AchievementFactory.create(
         user=user_with_achievements,
         name=achievements_models.AchievementEnum.FIRST_ART_LESSON_BOOKING,
-        unlockedDate=datetime.datetime.utcnow(),
-        seenDate=datetime.datetime.utcnow(),
+        unlockedDate=date_utils.get_naive_utc_now(),
+        seenDate=date_utils.get_naive_utc_now(),
     )
 
 
@@ -1274,7 +1275,7 @@ def create_users_with_reactions() -> None:
 
 @log_func_duration
 def create_user_that_booked_some_cinema() -> None:
-    seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+    seance_cine_start = date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
     stock = offers_factories.StockFactory.create(
         beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories.SEANCE_CINE.id
     )

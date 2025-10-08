@@ -17,6 +17,7 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.providers.models import BoostCinemaDetails
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.date import get_naive_utc_now
@@ -338,7 +339,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             {
                 "barcode": sale_confirmation_response.data.code,
                 "venue_id": booking.venueId,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": date_utils.get_naive_utc_now().timestamp(),
                 "booking_type": bookings_constants.RedisExternalBookingType.CINEMA,
             },
         )

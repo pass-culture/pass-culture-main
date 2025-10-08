@@ -1,6 +1,5 @@
 import decimal
 import logging
-from datetime import datetime
 from functools import partial
 
 import pydantic.v1 as pydantic_v1
@@ -49,6 +48,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
@@ -421,7 +421,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
@@ -1297,7 +1297,7 @@ def _render_remove_siret_content(
             finance_models.CustomReimbursementRule.venueId == venue.id,
             sa.or_(
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
-                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= date_utils.get_naive_utc_now(),
             ),
         )
         .exists()

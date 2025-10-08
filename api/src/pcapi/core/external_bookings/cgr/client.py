@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 
@@ -19,6 +18,7 @@ from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeat
 from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
 from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.crypto import decrypt
 from pcapi.utils.queue import add_to_queue
@@ -173,7 +173,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             {
                 "barcode": response.QrCode,
                 "venue_id": booking.venueId,
-                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "timestamp": date_utils.get_naive_utc_now().timestamp(),
                 "booking_type": RedisExternalBookingType.CINEMA,
             },
         )

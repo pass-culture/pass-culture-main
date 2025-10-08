@@ -1,16 +1,16 @@
-from datetime import datetime
-
 from pcapi.core import mails
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.users import constants
+from pcapi.utils import date as date_utils
 from pcapi.utils.urls import generate_app_link
 
 
 def get_email_confirmation_email_data(email: str, token: token_utils.Token) -> models.TransactionalEmailData:
     expiration_date = (
-        token.get_expiration_date_from_token() or datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        token.get_expiration_date_from_token()
+        or date_utils.get_naive_utc_now() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
     expiration_timestamp = int(expiration_date.timestamp())
     email_confirmation_link = generate_app_link(

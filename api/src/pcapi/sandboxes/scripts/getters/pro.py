@@ -15,6 +15,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
+from pcapi.utils import date as date_utils
 
 
 def create_new_pro_user() -> dict:
@@ -307,8 +308,8 @@ def create_pro_user_with_collective_offers() -> dict:
         collectiveOffer__name="Mon offre collective publiée réservable",
         collectiveOffer__venue=venue1,
         collectiveOffer__formats=[EacFormat.CONCERT],
-        startDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
-        endDatetime=datetime.datetime.utcnow() + datetime.timedelta(weeks=2),
+        startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
+        endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
     )
 
     offerDraft = educational_factories.DraftCollectiveOfferFactory.create(
@@ -405,7 +406,7 @@ def create_pro_user_with_active_collective_offer() -> dict:
     )
     # Make sur the stock starts during the current year
     stock_start = min(
-        datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
         current_year.expirationDate - datetime.timedelta(days=1),
     )
     offer.collectiveStock.startDatetime = stock_start
@@ -445,7 +446,7 @@ def create_pro_user_with_collective_bookings() -> dict:
     collectiveStock = educational_factories.CollectiveStockFactory.create(
         collectiveOffer__venue=venue,
         collectiveOffer__name="Mon offre",
-        startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
     )
     collectiveStock_B = educational_factories.CollectiveStockFactory.create(
         collectiveOffer__venue=venue, collectiveOffer__name="Mon autre offre"
@@ -453,7 +454,7 @@ def create_pro_user_with_collective_bookings() -> dict:
     educational_factories.CollectiveBookingFactory.create(collectiveStock=collectiveStock)
     educational_factories.CollectiveBookingFactory.create(
         collectiveStock__collectiveOffer__name="Encore une autre offre",
-        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
         collectiveStock__collectiveOffer__venue=venue,
         educationalInstitution__name="Autre collège",
     )

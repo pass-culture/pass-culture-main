@@ -46,6 +46,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -309,8 +310,8 @@ class DeleteVenueTest:
             2,  # other venues
             pricingPoint=venue_to_delete,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             ],
         )
 
@@ -325,14 +326,14 @@ class DeleteVenueTest:
             2,
             pricingPoint=venue_to_delete,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=10),
-                datetime.datetime.utcnow() - datetime.timedelta(days=5),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             ],
         )
         finance_event = finance_factories.FinanceEventFactory(
             venue=links[1].venue,
             pricingPoint=venue_to_delete,
-            pricingOrderingDate=datetime.datetime.utcnow() - datetime.timedelta(days=7),
+            pricingOrderingDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
         )
         finance_factories.PricingFactory(
             booking=finance_event.booking, pricingPoint=venue_to_delete, event=finance_event
@@ -544,16 +545,16 @@ class DeleteVenueTest:
         "timespan",
         [
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=150),
-                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=150),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=50),
             ],
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
                 None,
             ],
             [
-                datetime.datetime.utcnow() + datetime.timedelta(days=10),
-                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=30),
             ],
         ],
     )
@@ -1398,16 +1399,16 @@ class DeleteOffererTest:
         "timespan",
         [
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=100),
-                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=50),
             ],
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=100),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
                 None,
             ],
             [
-                datetime.datetime.utcnow() + datetime.timedelta(days=10),
-                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=30),
             ],
         ],
     )
@@ -1427,16 +1428,16 @@ class DeleteOffererTest:
         "timespan",
         [
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=100),
-                datetime.datetime.utcnow() - datetime.timedelta(days=50),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=50),
             ],
             [
-                datetime.datetime.utcnow() - datetime.timedelta(days=100),
-                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=30),
             ],
             [
-                datetime.datetime.utcnow() + datetime.timedelta(days=10),
-                datetime.datetime.utcnow() + datetime.timedelta(days=30),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=30),
             ],
         ],
     )
@@ -2013,12 +2014,12 @@ class CloseOffererTest:
 
         confirmed_booking_2_days_ago = bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
-                offer__venue=venue, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2)
+                offer__venue=venue, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
             )
         )
         confirmed_booking_in_2_days = bookings_factories.BookingFactory(
             stock=offers_factories.EventStockFactory(
-                offer__venue=venue, beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2)
+                offer__venue=venue, beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
             )
         )
 
@@ -2067,23 +2068,23 @@ class CloseOffererTest:
 
         pending_booking = educational_factories.PendingCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
-            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
+            collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(hours=1),
         )
         confirmed_booking_ends_2_days_ago = educational_factories.ConfirmedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
-            collectiveStock__endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
+            collectiveStock__endDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         )
         confirmed_booking_started_which_ends_in_2_days = educational_factories.ConfirmedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+            collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         confirmed_booking_starts_in_4_days = educational_factories.ConfirmedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
-            collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=6),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=4),
+            collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=6),
         )
         used_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
         reimbursed_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -2162,7 +2163,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         offerer = offerers_factories.ClosedOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=88),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=88),
             actionType=history_models.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
@@ -2177,12 +2178,12 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         offerer = offerers_factories.OffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=95),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=95),
             actionType=history_models.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=85),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=85),
             actionType=history_models.ActionType.OFFERER_VALIDATED,
             offerer=offerer,
         )
@@ -2200,17 +2201,17 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         offerer = offerers_factories.ClosedOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=100),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
             actionType=history_models.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=98),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=98),
             actionType=history_models.ActionType.OFFERER_VALIDATED,
             offerer=offerer,
         )
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=days),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=days),
             actionType=history_models.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
@@ -2224,7 +2225,7 @@ class AutoDeleteAttachmentsOnClosedOfferersTest:
         user_offerer_list = offerers_factories.UserOffererFactory.create_batch(3, offerer=offerer)
         pending_user_offerer = offerers_factories.NewUserOffererFactory(offerer=offerer)
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=91),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=91),
             actionType=history_models.ActionType.OFFERER_CLOSED,
             offerer=offerer,
         )
@@ -2473,7 +2474,7 @@ class HasVenueAtLeastOneBookableOfferTest:
     def test_expired_event(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
         offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
 
         assert not offerers_api.has_venue_at_least_one_bookable_offer(venue)
@@ -2486,7 +2487,7 @@ class HasVenueAtLeastOneBookableOfferTest:
         offers_factories.EventStockFactory(offer__venue=venue)
 
         # without the previous offer, the venue would not be eligible
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        one_week_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
         offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
 
         assert offerers_api.has_venue_at_least_one_bookable_offer(venue)
@@ -2500,7 +2501,7 @@ class GetOffererTotalRevenueTest:
         bookings_factories.UsedBookingFactory(
             stock__offer__venue__managingOfferer=offerer,
             stock__price=11.5,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=400),
+            dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(days=400),
         )
         bookings_factories.ReimbursedBookingFactory(
             stock__offer__venue__managingOfferer=offerer, stock__price=12, quantity=2
@@ -2517,7 +2518,7 @@ class GetOffererTotalRevenueTest:
         educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer,
             collectiveStock__price=1555,
-            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=500),
+            dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(days=500),
         )
         educational_factories.CancelledCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=offerer, collectiveStock__price=6000

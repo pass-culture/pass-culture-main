@@ -32,6 +32,7 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.postal_code import PostalCode
 
@@ -693,7 +694,7 @@ def _process_instructor_annotation(application_content: dms_schemas.DMSContent, 
         from_draft=(application_content.state == dms_models.GraphQLApplicationStates.draft.value),
     )
     application_content.state = dms_models.GraphQLApplicationStates.refused.value
-    application_content.processed_datetime = datetime.datetime.utcnow()
+    application_content.processed_datetime = date_utils.get_naive_utc_now()
     return True
 
 
@@ -943,7 +944,7 @@ def handle_inactive_dms_applications(procedure_number: int, with_never_eligible_
 
 
 def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResponse) -> bool:
-    date_with_delay = datetime.datetime.utcnow() - relativedelta(days=settings.DMS_INACTIVITY_TOLERANCE_DELAY)
+    date_with_delay = date_utils.get_naive_utc_now() - relativedelta(days=settings.DMS_INACTIVITY_TOLERANCE_DELAY)
 
     if dms_application.latest_modification_datetime >= date_with_delay:
         return False

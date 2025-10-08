@@ -12,6 +12,7 @@ from pcapi.connectors import typeform
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
@@ -28,7 +29,7 @@ def anonymize_unlinked_chronicles() -> None:
     db.session.query(models.Chronicle).filter(
         models.Chronicle.userId.is_(None),
         models.Chronicle.email != constants.ANONYMIZED_EMAIL,
-        models.Chronicle.dateCreated < datetime.utcnow() - relativedelta(years=2),
+        models.Chronicle.dateCreated < date_utils.get_naive_utc_now() - relativedelta(years=2),
     ).update({"email": constants.ANONYMIZED_EMAIL}, synchronize_session=False)
 
 

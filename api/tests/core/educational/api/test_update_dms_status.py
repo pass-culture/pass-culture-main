@@ -10,6 +10,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.api.dms import import_dms_applications
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 DEFAULT_API_RESULT = [
@@ -149,7 +150,7 @@ class UpdateDmsStatusTest:
         latest_import = dms_factories.LatestDmsImportFactory(
             procedureId=123,
             isProcessing=True,
-            latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            latestImportDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         )
 
         with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):

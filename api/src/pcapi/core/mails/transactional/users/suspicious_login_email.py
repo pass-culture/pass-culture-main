@@ -1,10 +1,9 @@
-from datetime import datetime
-
 import pcapi.core.users.models as users_models
 from pcapi.core import mails
 from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.urls import generate_app_link
@@ -32,7 +31,7 @@ def get_suspicious_login_email_data(
     )
 
     localized_login_datetime = utc_datetime_to_department_timezone(
-        login_info.dateCreated if login_info else datetime.utcnow(), user.departementCode
+        login_info.dateCreated if login_info else date_utils.get_naive_utc_now(), user.departementCode
     )
 
     if login_info:

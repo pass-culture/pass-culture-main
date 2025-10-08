@@ -41,6 +41,7 @@ from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.serialization import venues_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import urls
@@ -79,7 +80,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .filter(
@@ -871,7 +872,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .options(
@@ -1250,12 +1251,12 @@ def create_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer.individualSubscription:
         db.session.add(
             offerers_models.IndividualOffererSubscription(
-                offererId=offerer_id, isEmailSent=True, dateEmailSent=datetime.datetime.utcnow()
+                offererId=offerer_id, isEmailSent=True, dateEmailSent=date_utils.get_naive_utc_now()
             )
         )
     elif not offerer.individualSubscription.isEmailSent:
         offerer.individualSubscription.isEmailSent = True
-        offerer.individualSubscription.dateEmailSent = datetime.datetime.utcnow()
+        offerer.individualSubscription.dateEmailSent = date_utils.get_naive_utc_now()
         db.session.add(offerer.individualSubscription)
 
     transactional_mails.send_offerer_individual_subscription_reminder(offerer.UserOfferers[0].user.email)

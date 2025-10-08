@@ -25,6 +25,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.routes.serialization import collective_bookings_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
@@ -50,7 +51,7 @@ def book_collective_offer(
         raise exceptions.EducationalYearNotFound()
     validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
-    utcnow = datetime.datetime.utcnow()
+    utcnow = date_utils.get_naive_utc_now()
     booking = educational_models.CollectiveBooking(
         educationalInstitution=educational_institution,
         educationalYear=educational_year,
@@ -550,7 +551,7 @@ def _cancel_expired_collective_bookings(batch_size: int = 500) -> None:
                 {
                     "status": educational_models.CollectiveBookingStatus.CANCELLED,
                     "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
-                    "cancellationDate": datetime.datetime.utcnow(),
+                    "cancellationDate": date_utils.get_naive_utc_now(),
                 },
                 synchronize_session=False,
             )

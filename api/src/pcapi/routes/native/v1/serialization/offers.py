@@ -38,6 +38,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -59,7 +60,7 @@ class OfferStockResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         stock = self._obj
         if key == "cancellation_limit_datetime":
-            return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
+            return compute_booking_cancellation_limit_date(stock.beginningDatetime, date_utils.get_naive_utc_now())
 
         if key == "activationCode":
             if not stock.canHaveActivationCodes:

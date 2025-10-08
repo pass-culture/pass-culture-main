@@ -31,13 +31,13 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             ean="1234567890123",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=2),
             user__postalCode="75001",
             stock=stock,
         )
@@ -118,13 +118,13 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=2),
             user__postalCode="69100",
             stock=event_stock,
         )
@@ -166,7 +166,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_403_when_booking_not_confirmed(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        next_week = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
+        next_week = date_utils.get_naive_utc_now() + datetime.timedelta(weeks=1)
 
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=next_week)

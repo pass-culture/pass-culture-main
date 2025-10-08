@@ -19,6 +19,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date_time
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 from .helpers import flash
@@ -41,7 +42,7 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_list_account_update_requests(self, authenticated_client):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         first_name_update_request = users_factories.FirstNameUpdateRequestFactory(
             user__firstName="Octave",
             user__lastName="César",

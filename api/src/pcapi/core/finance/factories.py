@@ -14,6 +14,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.factories import BaseFactory
 from pcapi.core.finance import reimbursement_rules
+from pcapi.utils import date as date_utils
 
 from . import api
 from . import conf
@@ -108,7 +109,7 @@ class FinanceEventFactory(BaseFactory):
         model = models.FinanceEvent
 
     valueDate = factory.LazyAttribute(lambda o: (o.booking or o.collectiveBooking).dateUsed)
-    pricingOrderingDate = factory.LazyFunction(datetime.datetime.utcnow)
+    pricingOrderingDate = factory.LazyFunction(date_utils.get_naive_utc_now)
     status = models.FinanceEventStatus.PRICED
     motive = models.FinanceEventMotive.BOOKING_USED
     booking = factory.SubFactory(bookings_factories.UsedBookingFactory)
@@ -223,8 +224,8 @@ class CustomReimbursementRuleFactory(BaseFactory):
     offer = factory.SubFactory(offers_factories.OfferFactory)
     timespan = factory.LazyFunction(
         lambda: [
-            datetime.datetime.utcnow() - datetime.timedelta(days=365),
-            datetime.datetime.utcnow() + datetime.timedelta(days=365),
+            date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=365),
         ]
     )
     amount = 500
@@ -260,7 +261,7 @@ class CashflowBatchFactory(BaseFactory):
     class Meta:
         model = models.CashflowBatch
 
-    cutoff = factory.LazyFunction(datetime.datetime.utcnow)
+    cutoff = factory.LazyFunction(date_utils.get_naive_utc_now)
     label = factory.Sequence("VIR{}".format)
 
 
@@ -350,7 +351,7 @@ class FinanceIncidentFactory(BaseFactory):
     kind = models.IncidentType.OVERPAYMENT
     status = models.IncidentStatus.CREATED
     details = {
-        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "createdAt": date_utils.get_naive_utc_now().isoformat(),
         "author": "Sandy Box",
         "validator": "",
         "validatedAt": "",
@@ -366,7 +367,7 @@ class FinanceCommercialGestureFactory(BaseFactory):
     kind = models.IncidentType.COMMERCIAL_GESTURE
     status = models.IncidentStatus.CREATED
     details = {
-        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "createdAt": date_utils.get_naive_utc_now().isoformat(),
         "authorId": 1,
         "validator": "",
         "validatedAt": "",

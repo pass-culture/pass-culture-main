@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from random import choice
@@ -13,6 +12,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 
 
@@ -91,8 +91,8 @@ def _create_bookings_for_other_beneficiaries(
             is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
             if is_used:
-                stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
-                stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
+                stock.beginningDatetime = date_utils.get_naive_utc_now() - timedelta(days=2)
+                stock.bookingLimitDatetime = date_utils.get_naive_utc_now() - timedelta(days=5)
                 repository.save(stock)
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
@@ -108,7 +108,7 @@ def _create_bookings_for_other_beneficiaries(
                 user=user,
                 status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
                 stock=stock,
-                dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
+                dateUsed=date_utils.get_naive_utc_now() - timedelta(days=2) if is_used else None,
                 amount=booking_amount if booking_amount is not None else stock.price,
                 token=str(token),
                 offerer=offer.venue.managingOfferer,
@@ -145,15 +145,15 @@ def _create_has_booked_some_bookings(
         is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
         if is_used:
-            stock.beginningDatetime = datetime.utcnow() - timedelta(days=2)
-            stock.bookingLimitDatetime = datetime.utcnow() - timedelta(days=5)
+            stock.beginningDatetime = date_utils.get_naive_utc_now() - timedelta(days=2)
+            stock.bookingLimitDatetime = date_utils.get_naive_utc_now() - timedelta(days=5)
             repository.save(stock)
 
         booking = bookings_factories.BookingFactory.create(
             user=user,
             status=BookingStatus.USED if is_used else BookingStatus.CONFIRMED,
             stock=stock,
-            dateUsed=datetime.utcnow() - timedelta(days=2) if is_used else None,
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(days=2) if is_used else None,
         )
         if is_used:
             finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)

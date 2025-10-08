@@ -10,6 +10,7 @@ from pcapi.core.external.zendesk_sell_backends.base import ContactNotFoundError
 from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsNames
 from pcapi.core.external.zendesk_sell_backends.base import ZendeskCustomFieldsShort
 from pcapi.core.offerers import models as offerers_models
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils import urls
 from pcapi.utils.regions import get_region_name_from_department
@@ -395,7 +396,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(department_code).upper(),
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Lieu"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_venue_link(venue.id),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
+                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: date_utils.get_naive_utc_now().isoformat(),
                 },
             }
         }
@@ -432,7 +433,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                     ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_offerer_link(offerer.id),
-                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: datetime.datetime.utcnow().isoformat(),
+                    ZendeskCustomFieldsNames.UPDATED_IN_PRODUCT.value: date_utils.get_naive_utc_now().isoformat(),
                 },
             }
         }

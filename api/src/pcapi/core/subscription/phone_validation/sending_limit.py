@@ -6,6 +6,7 @@ from redis import Redis
 
 from pcapi import settings
 from pcapi.core.users.models import User
+from pcapi.utils import date as date_utils
 
 
 @dataclass
@@ -42,7 +43,7 @@ def get_remaining_sms_sending_attempts(redis: Redis, user: User) -> int:
 def get_attempt_limitation_expiration_time(redis: Redis, user: User) -> datetime | None:
     ttl = redis.ttl(_sent_SMS_counter_key_name(user))
     if ttl > 0:
-        return datetime.utcnow() + timedelta(seconds=ttl)
+        return date_utils.get_naive_utc_now() + timedelta(seconds=ttl)
 
     return None
 

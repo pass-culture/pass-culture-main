@@ -9,6 +9,7 @@ import pytz
 import pcapi.core.offers.models as offers_models
 from pcapi.core import search
 from pcapi.core.search.backends import algolia
+from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -22,7 +23,7 @@ blueprint = Blueprint(__name__, __name__)
 def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
     left_to_do = end - current
     eta_seconds = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
-    eta_datetime = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta_seconds)
+    eta_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(seconds=eta_seconds)
     eta_datetime = eta_datetime.astimezone(pytz.timezone("Europe/Paris"))
     return eta_datetime.strftime("%d/%m/%Y %H:%M:%S")
 

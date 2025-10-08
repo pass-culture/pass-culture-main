@@ -1,5 +1,3 @@
-import datetime
-
 import pytest
 from dateutil.relativedelta import relativedelta
 
@@ -12,6 +10,7 @@ import pcapi.core.subscription.schemas as subscription_schemas
 import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
 from pcapi.core.users import constants as users_constants
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -197,7 +196,7 @@ class UserGeneratorTest:
         assert user.age == users_constants.ELIGIBILITY_AGE_18
         assert user.has_underage_beneficiary_role
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
-        assert user.deposit.expirationDate < datetime.datetime.utcnow()
+        assert user.deposit.expirationDate < date_utils.get_naive_utc_now()
         user_subscription_state = subscription_api.get_user_subscription_state(user)
         assert user_subscription_state.next_step == subscription_schemas.SubscriptionStep.PHONE_VALIDATION
 
@@ -215,7 +214,7 @@ class UserGeneratorTest:
         assert self.has_fraud_check_validated(user, id_provider.value)
 
     def test_user_generated_with_date_created(self):
-        date_in_the_past = datetime.datetime.utcnow() - relativedelta(months=5)
+        date_in_the_past = date_utils.get_naive_utc_now() - relativedelta(months=5)
         user_data = users_generator.GenerateUserData(
             step=users_generator.GeneratedSubscriptionStep.BENEFICIARY, date_created=date_in_the_past
         )

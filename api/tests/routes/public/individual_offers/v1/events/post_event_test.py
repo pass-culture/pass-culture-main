@@ -127,7 +127,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         payload = self._get_base_payload(venue_provider.venueId)
-        publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now().replace(minute=0, second=0) + timedelta(days=30)
         payload["publicationDate"] = publication_date.isoformat()
         response = self.make_request(plain_api_key, json_body=payload)
 

@@ -30,6 +30,7 @@ from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
@@ -84,7 +85,7 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 
 def _create_pro_user(row: dict) -> User:
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     user = users_api.create_pro_user(
         ProUserCreationBodyV2Model(  # type: ignore[call-arg]

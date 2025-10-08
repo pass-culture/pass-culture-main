@@ -12,6 +12,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.models import Weekday
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import timespan_str_to_numrange
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -20,7 +21,7 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client, db_session):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
             name="L'encre et la plume",

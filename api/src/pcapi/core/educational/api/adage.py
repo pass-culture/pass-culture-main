@@ -22,6 +22,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
 from pcapi.routes.serialization import venues_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
@@ -232,7 +233,7 @@ def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | 
                     update_external_pro(email)
                 if venue.managingOfferer.isValidated:
                     send_eac_offerer_activation_email(venue, list(emails))
-                venue.adageInscriptionDate = datetime.utcnow()
+                venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
             new_adage_id = venue_to_adage_id.get(venue.id)
             if new_adage_id:

@@ -7,6 +7,7 @@ import jwt
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -64,7 +65,7 @@ def get_age_at_date(birth_date: date, specified_datetime: datetime, department_c
 
 
 def get_age_from_birth_date(birth_date: date, department_code: str | None = None) -> int:
-    return get_age_at_date(birth_date, datetime.utcnow(), department_code)
+    return get_age_at_date(birth_date, date_utils.get_naive_utc_now(), department_code)
 
 
 def format_login_location(country_name: str | None, city_name: str | None) -> str | None:

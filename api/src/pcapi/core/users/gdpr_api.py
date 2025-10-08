@@ -45,6 +45,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.utils import date as date_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.pdf import generate_pdf_from_html
@@ -63,7 +64,7 @@ def has_unprocessed_extract(user: models.User) -> bool:
 
 def is_suspended_for_less_than_five_years(user: models.User) -> bool:
     if user.suspension_reason in constants.FRAUD_SUSPENSION_REASONS and user.suspension_date:
-        return user.suspension_date > datetime.datetime.utcnow() - relativedelta(years=5)
+        return user.suspension_date > date_utils.get_naive_utc_now() - relativedelta(years=5)
     return False
 
 
@@ -185,13 +186,13 @@ def anonymize_non_pro_non_beneficiary_users() -> None:
             sa.func.email_domain(models.User.email) != "passculture.app",  # people who work or worked in the company
             func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
             finance_models.Deposit.userId.is_(None),  # no deposit
-            models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+            models.User.lastConnectionDate < date_utils.get_naive_utc_now() - relativedelta(years=3),
             sa.or_(
                 models.User.suspension_reason.is_(None),
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_date < date_utils.get_naive_utc_now() - relativedelta(years=5),
                 ),
             ),
         )
@@ -213,7 +214,7 @@ def is_beneficiary_anonymizable(user: models.User) -> bool:
     # Check if the user is over 21.
     if (
         user.validatedBirthDate
-        and users_utils.get_age_at_date(user.validatedBirthDate, datetime.datetime.utcnow()) >= 21
+        and users_utils.get_age_at_date(user.validatedBirthDate, date_utils.get_naive_utc_now()) >= 21
     ):
         return True
     return False
@@ -261,14 +262,14 @@ def anonymize_beneficiary_users() -> None:
         )
         .filter(
             models.User.is_beneficiary,
-            models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
-            finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
+            models.User.lastConnectionDate < date_utils.get_naive_utc_now() - relativedelta(years=3),
+            finance_models.Deposit.expirationDate < date_utils.get_naive_utc_now() - relativedelta(years=5),
             sa.or_(
                 models.User.suspension_reason.is_(None),
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_date < date_utils.get_naive_utc_now() - relativedelta(years=5),
                 ),
             ),
         )
@@ -278,13 +279,13 @@ def anonymize_beneficiary_users() -> None:
         db.session.query(models.User)
         .join(models.GdprUserAnonymization)
         .filter(
-            models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21),
+            models.User.validatedBirthDate < date_utils.get_naive_utc_now() - relativedelta(years=21),
             sa.or_(
                 models.User.suspension_reason.is_(None),
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
                 sa.and_(
                     models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
-                    models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),
+                    models.User.suspension_date < date_utils.get_naive_utc_now() - relativedelta(years=5),
                 ),
             ),
         )
@@ -362,7 +363,7 @@ def anonymize_pro_users() -> None:
     """
     Anonymize pro accounts
     """
-    three_years_ago = datetime.datetime.utcnow() - relativedelta(years=3)
+    three_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=3)
 
     users = _get_anonymize_pro_query(
         sa.or_(
@@ -424,7 +425,7 @@ def anonymize_user_deposits() -> None:
     Anonymize deposits that have been expired for at least 10 years.
     """
     deposits_query = db.session.query(finance_models.Deposit).filter(
-        finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=10),
+        finance_models.Deposit.expirationDate < date_utils.get_naive_utc_now() - relativedelta(years=10),
         ~sa.and_(  # ignore already anonymized deposits
             sa.func.extract("month", finance_models.Deposit.expirationDate) == 1,
             sa.func.extract("day", finance_models.Deposit.expirationDate) == 1,
@@ -467,7 +468,7 @@ def clean_gdpr_extracts() -> None:
 
     extracts_to_delete = (
         db.session.query(models.GdprUserDataExtract)
-        .filter(models.GdprUserDataExtract.expirationDate < datetime.datetime.utcnow())
+        .filter(models.GdprUserDataExtract.expirationDate < date_utils.get_naive_utc_now())
         .with_entities(models.GdprUserDataExtract.id)
     )
     for extract in extracts_to_delete:
@@ -757,7 +758,7 @@ def _dump_gdpr_data_container_as_json_bytes(
     json_bytes = container.json(indent=4).encode("utf-8")
     file_info = zipfile.ZipInfo(
         filename=f"{container.internal.user.email}.json",
-        date_time=datetime.datetime.utcnow().timetuple()[:6],
+        date_time=date_utils.get_naive_utc_now().timetuple()[:6],
     )
     return file_info, json_bytes
 
@@ -769,7 +770,7 @@ def _dump_gdpr_data_container_as_pdf_bytes(
     pdf_bytes = generate_pdf_from_html(html_content=html_content)
     file_info = zipfile.ZipInfo(
         filename=f"{container.internal.user.email}.pdf",
-        date_time=datetime.datetime.utcnow().timetuple()[:6],
+        date_time=date_utils.get_naive_utc_now().timetuple()[:6],
     )
     return file_info, pdf_bytes
 
@@ -794,10 +795,10 @@ def _store_gdpr_archive(name: str, archive: bytes) -> None:
 
 
 def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
-    extract.dateProcessed = datetime.datetime.utcnow()
+    extract.dateProcessed = date_utils.get_naive_utc_now()
     user = extract.user
     data = users_serialization.GdprDataContainer(
-        generationDate=datetime.datetime.utcnow(),
+        generationDate=date_utils.get_naive_utc_now(),
         internal=users_serialization.GdprInternal(
             user=users_serialization.GdprUserSerializer.from_orm(user),
             marketing=_extract_gdpr_marketing_data(user),
@@ -854,7 +855,7 @@ def extract_beneficiary_data_command() -> bool:
         db.session.query(models.GdprUserDataExtract)
         .filter(
             models.GdprUserDataExtract.dateProcessed.is_(None),
-            models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),
+            models.GdprUserDataExtract.expirationDate > date_utils.get_naive_utc_now(),
         )
         .options(
             sa_orm.joinedload(models.GdprUserDataExtract.user),
@@ -888,7 +889,7 @@ class ExtractBeneficiaryDataCounter:
         self.max_value = max_value
 
     def reset(self) -> None:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         if now.hour == 0 and now.minute < 10:
             app.redis_client.delete(self.key)
 

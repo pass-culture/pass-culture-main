@@ -19,6 +19,7 @@ from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils import requests
 
@@ -111,7 +112,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
     ) -> providers_models.LocalProviderEvent:
         message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
-            date=datetime.datetime.utcnow(),
+            date=date_utils.get_naive_utc_now(),
             payload=message,
             provider=self.provider,
             type=provider_event_type,

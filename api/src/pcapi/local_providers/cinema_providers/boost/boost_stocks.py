@@ -24,6 +24,7 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_naive_utc_now
 
 
@@ -77,13 +78,13 @@ class BoostStocks(LocalProvider):
 
         provider_movie_unique_id = _build_movie_uuid(self.showtime_details.film.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            offers_models.Offer, provider_movie_unique_id, datetime.utcnow(), provider_movie_unique_id
+            offers_models.Offer, provider_movie_unique_id, date_utils.get_naive_utc_now(), provider_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
         showtime_id = _build_stock_uuid(self.showtime_details.film.id, self.venue, self.showtime_details.id)
         stock_providable_info = self.create_providable_info(
-            offers_models.Stock, showtime_id, datetime.utcnow(), showtime_id
+            offers_models.Stock, showtime_id, date_utils.get_naive_utc_now(), showtime_id
         )
         providable_information_list.append(stock_providable_info)
 

@@ -25,6 +25,7 @@ from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils.db import MagicEnum
 from pcapi.utils.human_ids import humanize
 
@@ -118,7 +119,9 @@ class ExternalBooking(PcObject, Model):
 class Booking(PcObject, Model):
     __tablename__ = "booking"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     dateUsed: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
@@ -248,7 +251,7 @@ class Booking(PcObject, Model):
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = date_utils.get_naive_utc_now()
         self.status = BookingStatus.USED
         self.validationAuthorType = validation_author_type
 
@@ -270,7 +273,7 @@ class Booking(PcObject, Model):
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
         self.status = BookingStatus.CANCELLED
-        self.cancellationDate = datetime.utcnow()
+        self.cancellationDate = date_utils.get_naive_utc_now()
         self.cancellationReason = reason
         self.cancellationUserId = author_id
         self.dateUsed = None
@@ -282,7 +285,7 @@ class Booking(PcObject, Model):
         self.cancellationReason = None
         self.cancellationUserId = None
         self.status = BookingStatus.USED
-        self.dateUsed = datetime.utcnow()
+        self.dateUsed = date_utils.get_naive_utc_now()
 
     @property
     def expirationDate(self) -> datetime | None:
@@ -324,7 +327,7 @@ class Booking(PcObject, Model):
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= datetime.utcnow()
+        return self.cancellationLimitDate is not None and self.cancellationLimitDate <= date_utils.get_naive_utc_now()
 
     @isConfirmed.inplace.expression
     @classmethod
@@ -638,7 +641,9 @@ sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_ca
 
 class FraudulentBookingTag(PcObject, Model):
     __tablename__ = "fraudulent_booking_tag"
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     bookingId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=False, unique=True

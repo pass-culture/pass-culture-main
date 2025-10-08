@@ -20,6 +20,7 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.utils import date as date_utils
 
 from . import models
 
@@ -308,7 +309,7 @@ class HeadlineOfferFactory(BaseFactory[models.HeadlineOffer]):
         venue=factory.SubFactory(offerers_factories.VenueFactory, venueTypeCode=VenueTypeCode.LIBRARY),
     )
     venue = factory.SelfAttribute("offer.venue")
-    timespan = (datetime.datetime.utcnow(),)
+    timespan = (date_utils.get_naive_utc_now(),)
 
     @factory.post_generation
     def without_mediation(
@@ -378,7 +379,7 @@ class StockFactory(BaseFactory[models.Stock]):
     beginningDatetime: factory.declarations.BaseDeclaration | None = factory.Maybe(
         "offer.isEvent",
         factory.LazyFunction(
-            lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+            lambda: date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         ),
         None,
     )
@@ -396,7 +397,7 @@ class ThingStockFactory(StockFactory):
 class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        lambda: date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
     priceCategory = factory.SubFactory(
@@ -409,7 +410,7 @@ class EventStockFactory(StockFactory):
 
 class CinemaStockProviderFactory(EventStockFactory):
     beginningDatetime = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        lambda: date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
     )
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
 

@@ -23,6 +23,7 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import date as utils_date
 
 
@@ -65,7 +66,7 @@ class CGRStocks(LocalProvider):
         offer_providable_info = self.create_providable_info(
             pc_object=offers_models.Offer,
             id_at_providers=provider_offer_unique_id,
-            date_modified_at_provider=datetime.datetime.utcnow(),
+            date_modified_at_provider=date_utils.get_naive_utc_now(),
             new_id_at_provider=provider_offer_unique_id,
         )
         providable_information_list.append(offer_providable_info)
@@ -75,7 +76,7 @@ class CGRStocks(LocalProvider):
             stock_providable_info = self.create_providable_info(
                 pc_object=offers_models.Stock,
                 id_at_providers=stock_showtime_unique_id,
-                date_modified_at_provider=datetime.datetime.utcnow(),
+                date_modified_at_provider=date_utils.get_naive_utc_now(),
                 new_id_at_provider=stock_showtime_unique_id,
             )
             providable_information_list.append(stock_providable_info)

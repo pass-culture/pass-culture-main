@@ -40,6 +40,7 @@ from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.push import testing as batch_testing
+from pcapi.utils import date as date_utils
 
 import tests
 from tests.test_utils import StorageFolderManager
@@ -57,12 +58,12 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_users(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             validatedBirthDate=datetime.date.today(),
         )
         user_too_new = users_factories.UserFactory(
             firstName="user_too_new",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=-11),
         )
         user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
         user_beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -151,7 +152,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_force_iris_not_found(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
         )
 
         gdpr_api.anonymize_non_pro_non_beneficiary_users()
@@ -166,7 +167,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_keep_history_on_offerer(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
         )
         history_factories.ActionHistoryFactory(
             authorUser=user_to_anonymize,
@@ -190,7 +191,7 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_keep_email_in_brevo_if_used_for_venue(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
         )
         offerers_factories.VenueFactory(bookingEmail=user_to_anonymize.email)
 
@@ -221,11 +222,11 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_recently_suspended_with_fraud(self, reason) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
@@ -241,11 +242,11 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_suspended_5_years_ago_with_fraud(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
@@ -261,11 +262,11 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
     def test_anonymize_non_pro_non_beneficiary_user_recently_suspended_without_fraud(self) -> None:
         user_to_anonymize = users_factories.UserFactory(
             firstName="user_to_anonymize",
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.DEVICE_AT_RISK,
             user=user_to_anonymize,
@@ -283,7 +284,7 @@ class NotifyProUsersBeforeAnonymizationTest:
     # users and joined data
     expected_num_queries = 1
 
-    last_connection_date = datetime.datetime.utcnow() - relativedelta(years=3, days=-30)
+    last_connection_date = date_utils.get_naive_utc_now() - relativedelta(years=3, days=-30)
 
     @pytest.mark.parametrize(
         "offerer_validation_status,user_offerer_validation_status",
@@ -312,7 +313,7 @@ class NotifyProUsersBeforeAnonymizationTest:
         )
         offerers_factories.NonAttachedUserOffererFactory(
             offerer=user_offerer.offerer,
-            user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=2, months=8),
+            user__lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=2, months=8),
             validationStatus=user_offerer_validation_status,
         )
 
@@ -327,7 +328,7 @@ class NotifyProUsersBeforeAnonymizationTest:
         user_to_notify = users_factories.NonAttachedProFactory(
             lastConnectionDate=self.last_connection_date,
         )
-        users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
+        users_factories.NonAttachedProFactory(lastConnectionDate=date_utils.get_naive_utc_now())
 
         with assert_num_queries(self.expected_num_queries):
             gdpr_api.notify_pro_users_before_anonymization()
@@ -370,7 +371,7 @@ class NotifyProUsersBeforeAnonymizationTest:
                 users_factories.NonAttachedProFactory(
                     lastConnectionDate=self.last_connection_date - datetime.timedelta(days=1)
                 ),
-                users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow()),
+                users_factories.NonAttachedProFactory(lastConnectionDate=date_utils.get_naive_utc_now()),
             ]
         )
 
@@ -455,13 +456,13 @@ class AnonymizeProUserTest:
         self, delete_beamer_user_mock, offerer_validation_status, user_offerer_validation_status
     ):
         user_offerer_to_anonymize = offerers_factories.NonAttachedUserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3),
+            user__lastConnectionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3),
             offerer__validationStatus=offerer_validation_status,
             validationStatus=user_offerer_validation_status,
         )
         user_offerer_to_keep = offerers_factories.NonAttachedUserOffererFactory(
             offerer=user_offerer_to_anonymize.offerer,
-            user__lastConnectionDate=datetime.datetime.utcnow(),
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
         )
 
         gdpr_api.anonymize_pro_users()
@@ -473,9 +474,9 @@ class AnonymizeProUserTest:
     @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
     def test_keep_pro_users_with_activity_less_than_three_years(self, delete_beamer_user_mock):
         users_factories.NonAttachedProFactory(
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-1)
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=-1)
         )
-        users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
+        users_factories.NonAttachedProFactory(lastConnectionDate=date_utils.get_naive_utc_now())
 
         gdpr_api.anonymize_pro_users()
 
@@ -487,18 +488,18 @@ class AnonymizeProUserTest:
         offerers_factories.DeletedUserOffererFactory(
             user=users_factories.BeneficiaryGrant18Factory(
                 roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
-                lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+                lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=4),
             )
         )
         offerers_factories.RejectedUserOffererFactory(
             user=users_factories.UnderageBeneficiaryFactory(
                 roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.UNDERAGE_BENEFICIARY],
-                lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+                lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=4),
             )
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=offerers_factories.RejectedUserOffererFactory(
-                user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+                user__lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=4),
             ).user
         )
 
@@ -510,7 +511,7 @@ class AnonymizeProUserTest:
     @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
     def test_keep_when_attached_to_another_active_offerer(self, delete_beamer_user_mock):
         user_offerer = offerers_factories.DeletedUserOffererFactory(
-            user__lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=4),
+            user__lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=4),
         )
         offerers_factories.NewUserOffererFactory(user=user_offerer.user)
 
@@ -522,9 +523,9 @@ class AnonymizeProUserTest:
     @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
     def test_anonymize_non_attached_pro_user(self, delete_beamer_user_mock):
         user_to_anonymize = users_factories.NonAttachedProFactory(
-            lastConnectionDate=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3)
+            lastConnectionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3)
         )
-        user_to_keep1 = users_factories.NonAttachedProFactory(lastConnectionDate=datetime.datetime.utcnow())
+        user_to_keep1 = users_factories.NonAttachedProFactory(lastConnectionDate=date_utils.get_naive_utc_now())
         user_to_keep2 = users_factories.NonAttachedProFactory()
 
         gdpr_api.anonymize_pro_users()
@@ -537,7 +538,7 @@ class AnonymizeProUserTest:
     @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
     def test_anonymize_non_attached_never_connected_pro(self, delete_beamer_user_mock):
         user_to_anonymize = users_factories.NonAttachedProFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=366 * 3)
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3)
         )
         user_to_keep = users_factories.NonAttachedProFactory()
 
@@ -565,7 +566,7 @@ class AnonymizeInternalUserTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=367),
         )
 
         gdpr_api.anonymize_internal_users()
@@ -594,7 +595,7 @@ class AnonymizeInternalUserTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=date_utils.get_naive_utc_now(),
         )
 
         gdpr_api.anonymize_internal_users()
@@ -608,11 +609,11 @@ class AnonymizeInternalUserTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=367),
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow(),
+            actionDate=date_utils.get_naive_utc_now(),
         )
 
         gdpr_api.anonymize_internal_users()
@@ -626,7 +627,7 @@ class AnonymizeInternalUserTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=367),
         )
 
         gdpr_api.anonymize_internal_users()
@@ -639,7 +640,7 @@ class AnonymizeInternalUserTest:
         )
         history_factories.SuspendedUserActionHistoryFactory(
             user=user_to_anonymize,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=367),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=367),
         )
 
         gdpr_api.anonymize_internal_users()
@@ -658,48 +659,48 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_beneficiary_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         user_underage_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_underage_beneficiary_to_anonymize",
             age=17,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         user_with_ready_gdpr_extract_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_beneficiary_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             gdprUserDataExtracts=[
                 users_factories.GdprUserDataExtractBeneficiaryFactory(
-                    dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                    dateProcessed=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
                 )
             ],
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         user_with_expired_gdpr_extract_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_beneficiary_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             gdprUserDataExtracts=[
                 users_factories.GdprUserDataExtractBeneficiaryFactory(
-                    dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+                    dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8)
                 )
             ],
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         user_too_new = users_factories.BeneficiaryFactory(
             firstName="user_too_new",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=-11),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=-11),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         user_deposit_too_new = users_factories.BeneficiaryFactory(
             firstName="user_deposit_too_new",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=-11),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=-11),
         )
         user_never_connected = users_factories.UserFactory(firstName="user_never_connected", lastConnectionDate=None)
         user_no_role = users_factories.UserFactory(
@@ -796,8 +797,8 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
         chronicle = chronicles_factories.ChronicleFactory(
             user=user_to_anonymize,
@@ -814,8 +815,8 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
 
         gdpr_api.anonymize_beneficiary_users()
@@ -831,9 +832,9 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_beneficiary_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_beneficiary_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             gdprUserDataExtracts=[users_factories.GdprUserDataExtractBeneficiaryFactory()],
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
         )
 
         self.import_iris()
@@ -850,11 +851,11 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
     def test_anonymize_user_tagged_when_he_is_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=18, days=1),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=18, days=1),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
 
-        when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
+        when_user_is_21 = date_utils.get_naive_utc_now() + relativedelta(years=3)
         with time_machine.travel(when_user_is_21):
             gdpr_api.anonymize_beneficiary_users()
             db.session.refresh(user_to_anonymize)
@@ -864,12 +865,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
     def test_do_not_anonymize_user_tagged_when_he_is_less_than_21(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
-            lastConnectionDate=datetime.datetime.utcnow(),
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=18),
+            lastConnectionDate=date_utils.get_naive_utc_now(),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=18),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
 
-        when_user_is_21 = datetime.datetime.utcnow() + relativedelta(years=3)
+        when_user_is_21 = date_utils.get_naive_utc_now() + relativedelta(years=3)
         with time_machine.travel(when_user_is_21 - relativedelta(days=1)):
             gdpr_api.anonymize_beneficiary_users()
             db.session.refresh(user_to_anonymize)
@@ -896,12 +897,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
     )
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_recently_tagged_as_fraud(self, reason) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
-            lastConnectionDate=datetime.datetime.utcnow(),
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=12),
+            lastConnectionDate=date_utils.get_naive_utc_now(),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=21, days=12),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
@@ -915,12 +916,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
     def test_do_not_anonymize_user_tagged_when_he_is_21_and_tagged_as_fraud_5_years_ago(self) -> None:
         user_to_anonymize = users_factories.BeneficiaryFactory(
-            lastConnectionDate=datetime.datetime.utcnow(),
-            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=12),
+            lastConnectionDate=date_utils.get_naive_utc_now(),
+            validatedBirthDate=date_utils.get_naive_utc_now() - relativedelta(years=21, days=12),
         )
         users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
@@ -953,12 +954,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
@@ -975,12 +976,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
             user=user_to_anonymize,
@@ -1009,12 +1010,12 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         user_to_anonymize = users_factories.BeneficiaryFactory(
             firstName="user_to_anonymize",
             age=18,
-            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
-            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
+            deposit__expirationDate=date_utils.get_naive_utc_now() - relativedelta(years=5, days=1),
             isActive=False,
         )
         history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=1),
             actionType=history_models.ActionType.USER_SUSPENDED,
             reason=reason,
             user=user_to_anonymize,
@@ -1030,7 +1031,7 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
 class AnonymizeUserDepositsTest:
     def test_anonymize_user_deposits(self) -> None:
-        now = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        now = date_utils.get_naive_utc_now().replace(hour=0, minute=0, second=0, microsecond=0)
         user_recent_deposit = users_factories.BeneficiaryFactory(
             deposit__dateCreated=now - relativedelta(years=6),
             deposit__expirationDate=now - relativedelta(years=5, days=1),
@@ -1059,7 +1060,7 @@ class DeleteGdprExtractTest(StorageFolderManager):
 
     def test_nominal(self):
         # given
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
         with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
         # when
@@ -1071,7 +1072,7 @@ class DeleteGdprExtractTest(StorageFolderManager):
 
     def test_extract_file_does_not_exists(self):
         # given
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
         # when
         gdpr_api.delete_gdpr_extract(extract.id)
 
@@ -1085,8 +1086,8 @@ class CleanGdprExtractTest(StorageFolderManager):
     def test_delete_expired_extracts(self):
         # given
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
-            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=6),
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+            dateProcessed=date_utils.get_naive_utc_now() - datetime.timedelta(days=6),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         )
         with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")
@@ -1108,7 +1109,7 @@ class CleanGdprExtractTest(StorageFolderManager):
     def test_delete_expired_unprocessed_extracts(self):
         # given
         users_factories.GdprUserDataExtractBeneficiaryFactory(
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8)
         )
         # when
         gdpr_api.clean_gdpr_extracts()
@@ -1118,8 +1119,8 @@ class CleanGdprExtractTest(StorageFolderManager):
     def test_keep_unexpired_extracts(self):
         # given
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
-            dateProcessed=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6),
+            dateProcessed=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=6),
         )
         with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
             fp.write(b"[personal data compressed with deflate]")

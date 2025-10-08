@@ -25,6 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
+from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.decorators import retry
 
@@ -649,7 +650,7 @@ def check_stock_consistency() -> list[int]:
 
 
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> sa_orm.Query:
-    target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
+    target_day = date_utils.get_naive_utc_now() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
 
@@ -745,7 +746,7 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
             code
             for code in stock.activationCodes
             if code.bookingId is None
-            and (code.expirationDate is None or code.expirationDate > datetime.datetime.utcnow())
+            and (code.expirationDate is None or code.expirationDate > date_utils.get_naive_utc_now())
         ),
         None,
     )
@@ -818,7 +819,7 @@ def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
         )
         .filter(
             offerers_models.Offerer.id == offerer_id,
-            models.HeadlineOffer.timespan.contains(datetime.datetime.utcnow()),
+            models.HeadlineOffer.timespan.contains(date_utils.get_naive_utc_now()),
         )
         .one_or_none()
     )
@@ -844,7 +845,7 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
             ),
             sa.or_(
                 # We don't want to fetch HeadlineOffers that have already been marked as finished
-                sa.func.upper(models.HeadlineOffer.timespan) > datetime.datetime.utcnow(),
+                sa.func.upper(models.HeadlineOffer.timespan) > date_utils.get_naive_utc_now(),
                 sa.func.upper(models.HeadlineOffer.timespan).is_(None),
             ),
         )

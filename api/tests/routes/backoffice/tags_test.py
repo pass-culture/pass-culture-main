@@ -1,5 +1,4 @@
 from datetime import date
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -11,6 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -130,7 +130,7 @@ class ListTagsTest(GetEndpointHelper):
     def test_list_tags(self, authenticated_client):
         categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
 
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         tag_1 = criteria_factories.CriterionFactory(
             description="tag1 description", startDateTime=now, categories=[categories[0]]
         )
@@ -165,10 +165,10 @@ class ListTagsTest(GetEndpointHelper):
     def test_search_list_tags(self, authenticated_client, q, expected_nb_results, expected_results_key):
         tags = {
             "tag1": criteria_factories.CriterionFactory(
-                description="tag1 description", startDateTime=datetime.utcnow()
+                description="tag1 description", startDateTime=date_utils.get_naive_utc_now()
             ),
             "tag2": criteria_factories.CriterionFactory(
-                description="tag2 description", startDateTime=datetime.utcnow()
+                description="tag2 description", startDateTime=date_utils.get_naive_utc_now()
             ),
         }
 

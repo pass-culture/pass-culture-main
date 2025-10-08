@@ -18,6 +18,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ def create_closed_offerers() -> None:
 def _create_closed_offerer(
     name: str, email: str, beneficiary: users_models.User, with_bank_account: bool = False
 ) -> None:
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     siren_caduc_tag = db.session.query(offerers_models.OffererTag).filter_by(name="siren-caduc").one()
 
     offerer = offerers_factories.ClosedOffererFactory.create(

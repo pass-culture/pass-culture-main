@@ -1,4 +1,3 @@
-import datetime
 from typing import Iterable
 from typing import Sequence
 
@@ -11,6 +10,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from . import constants
 from . import models
@@ -234,7 +234,7 @@ def _get_future_provider_events_requiring_a_ticketing_system_query(
 
     # Events with future stocks
     events_query = events_query.filter(
-        offers_models.Stock.beginningDatetime >= datetime.datetime.utcnow(),
+        offers_models.Stock.beginningDatetime >= date_utils.get_naive_utc_now(),
     )
 
     return events_query

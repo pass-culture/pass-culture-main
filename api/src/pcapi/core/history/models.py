@@ -1,4 +1,3 @@
-import datetime
 import enum
 import typing
 
@@ -11,6 +10,7 @@ from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -121,7 +121,7 @@ class ActionHistory(PcObject, Model):
 
     # nullable because of old suspensions without date migrated here; but mandatory for new actions
     actionDate = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, server_default=sa.func.now(), default=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, server_default=sa.func.now(), default=date_utils.get_naive_utc_now
     )
 
     # User (beneficiary, pro, admin...) who *initiated* the action

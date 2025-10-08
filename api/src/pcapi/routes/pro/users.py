@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 import flask
 from flask_login import current_user
@@ -38,6 +37,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -86,7 +86,7 @@ def validate_user(token: str) -> None:
     discard_session()
     login_user(user)
     stamp_session(user)
-    flask.session["last_login"] = datetime.utcnow().timestamp()
+    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
 
@@ -260,7 +260,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     discard_session()
     login_user(user)
     stamp_session(user)
-    flask.session["last_login"] = datetime.utcnow().timestamp()
+    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
     return users_serializers.SharedLoginUserResponseModel.from_orm(user)
@@ -344,7 +344,7 @@ def connect_as(token: str) -> Response:
     stamp_session(user)
     flask.session["internal_admin_email"] = token_data.internal_admin_email
     flask.session["internal_admin_id"] = token_data.internal_admin_id
-    flask.session["last_login"] = datetime.utcnow().timestamp()
+    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     return flask.redirect(token_data.redirect_link, code=302)
 
 
