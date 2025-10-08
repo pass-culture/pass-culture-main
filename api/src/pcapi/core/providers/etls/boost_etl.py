@@ -4,6 +4,8 @@ import typing
 from pcapi import settings
 from pcapi.core.external_bookings.boost import serializers as boost_serializers
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
+from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import exceptions
@@ -17,6 +19,15 @@ class ExtractResult(typing.TypedDict):
     price_category_labels: list[offers_models.PriceCategoryLabel]
     cinema_attributes: list[boost_serializers.CinemaAttribut]
     showtimes: list[boost_serializers.ShowTime4]
+
+
+class TransformResult(typing.TypedDict):
+    pass
+
+
+class LoadableData(typing.TypedDict):
+    product_data: dict
+    stocks_data: list[dict]
 
 
 class BoostETLProcess:
@@ -70,6 +81,43 @@ class BoostETLProcess:
             "price_category_labels": price_category_labels,
         }
 
+    def _transform(self, extract_result: ExtractResult) -> list[LoadableData]:
+        """
+        Step 2: Make data easily loadable
+        """
+        product_by_pass_uuid = {}
+
+        for showtime in extract_result["showtimes"]:
+            pass_culture_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
+
+            if not pass_culture_pricing:
+                logger.warning(
+                    "[BoostETLProcess] Step 2 - Missing pass Culture pricing",
+                    extra={
+                        "venue_id": self.venue_provider.venueId,
+                        "provider_id": self.venue_provider.providerId,
+                        "venue_provider_id": self.venue_provider.id,
+                        "venue_id_at_offer_provider": self.venue_provider.venueIdAtOfferProvider,
+                        "showtime_data": {
+                            "id": showtime.id,
+                            "date": showtime.showDate,
+                            "film": {
+                                "id": showtime.film.id,
+                                "title": showtime.film.titleCnc,
+                            },
+                        },
+                    },
+                )
+                continue
+
+            movie_uuid = _build_movie_uuid(showtime.film.id, self.venue_provider.venue)
+
+            if movie_uuid in product_by_pass_uuid:
+                product_by_pass_uuid[movie_uuid]["showtimes"].append(showtime)
+            else:
+                product_by_pass_uuid[movie_uuid] = {"showtimes": [showtime], "product_data": showtime.film}
+        return
+
     def execute(self) -> None:
         """
         Check provider & venue_provider are active, then execute the etl process (extract, transform, load)
@@ -99,3 +147,11 @@ class BoostETLProcess:
                 },
             },
         )
+
+
+def _build_movie_uuid(film_id: int, venue: offerers_models.Venue) -> str:
+    return f"{film_id}%{venue.id}%Boost"
+
+
+def _build_stock_uuid(film_id: int, venue: offerers_models.Venue, showtime_id: int) -> str:
+    return f"{_build_movie_uuid(film_id, venue)}#{showtime_id}"
