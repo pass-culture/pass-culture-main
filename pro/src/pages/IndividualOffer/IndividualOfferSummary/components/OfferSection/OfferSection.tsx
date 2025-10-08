@@ -194,7 +194,7 @@ export const OfferSection = ({
       <SummarySection
         title={
           isNewOfferCreationFlowFeatureActive
-            ? 'Descritpion'
+            ? 'Description'
             : 'Détails de l’offre'
         }
         editLink={getIndividualOfferUrl({

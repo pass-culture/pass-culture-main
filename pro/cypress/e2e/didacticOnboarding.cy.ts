@@ -117,7 +117,7 @@ describe('Didactic Onboarding feature', () => {
     )
   })
 
-  it('I should be able to start my first offer manually, saving and resume a draft offer, and publish it to get onboarded', () => {
+  it('I should be able to start my first offer manually, saving and resume a draft offer, and publish it to get onboarded with FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW disabled', () => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
@@ -248,6 +248,107 @@ describe('Didactic Onboarding feature', () => {
         })
 
         // Then, check if we can display the homepage (as we are now onboarded)
+        cy.visit('/accueil')
+        homePageLoaded()
+      }
+    )
+  })
+
+  it('I should be able to start my first offer manually, saving and resume a draft offer, and publish it to get onboarded with FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW enabled', () => {
+    cy.visit('/connexion')
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      (response) => {
+        login = response.body.user.email
+
+        cy.setFeatureFlags([
+          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: true },
+        ])
+
+        // Should display the didactic onboarding homepage after login
+        logInAndSeeDidacticOnboarding(login)
+
+        // From the onboarding page, navigate to the first offer creation
+        fromOnBoardingGoToFirstOfferCreation()
+
+        cy.findByRole('link', { name: 'Manuellement' }).click()
+
+        cy.stepLog({
+          message: `Starts offer creation (before saving a draft)`,
+        })
+
+        //  DESCRIPTION STEP
+        cy.findByRole('textbox', { name: /Titre de l’offre/ }).type(
+          'Mon offre en brouillon'
+        )
+        cy.findByRole('combobox', { name: /Catégorie/ }).select('Beaux-arts')
+        cy.findByLabelText(/Non accessible/).check()
+        cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@postDraftOffer'])
+
+        cy.stepLog({
+          message: `Go back and resume the previous draft offer`,
+        })
+
+        cy.visit('/onboarding/individuel')
+
+        cy.findByRole('heading', {
+          level: 2,
+          name: 'Reprendre une offre déjà commencée',
+        })
+        cy.findByRole('link', { name: /Mon offre en brouillon/ }).click()
+
+        cy.findByRole('heading', { level: 1, name: 'Créer une offre' })
+        cy.findByRole('textbox', { name: /Titre de l’offre/ }).should(
+          'have.value',
+          'Mon offre en brouillon'
+        )
+        cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchDraftOffer'])
+
+        //  LOCALISATION STEP
+        cy.url().should('contain', '/creation/localisation')
+        cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchOffer'])
+
+        //  MEDIA STEP
+        cy.url().should('contain', '/creation/media')
+        cy.findByText('Enregistrer et continuer').click()
+        cy.wait('@getOffer')
+
+        //  PRICE CATEGORY STEP
+        cy.url().should('contain', '/creation/tarifs')
+        cy.findByLabelText(/Prix/).type('42')
+
+        cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@getOffer', '@patchOffer'])
+
+        //  USEFUL INFO STEP
+        cy.url().should('contain', '/creation/informations_pratiques')
+        cy.findByText('Enregistrer et continuer').click()
+        cy.wait('@getOffer')
+
+        //  SUMMARY STEP
+        cy.findByRole('heading', { level: 2, name: 'Description' })
+        cy.findByText('Vous y êtes presque !')
+        cy.findAllByText('Mon offre en brouillon').should('have.length', 3) // Title is present in the header, in the summary and in the card preview
+        cy.findByText('42,00 €')
+
+        cy.stepLog({
+          message: `Publishing first offer to get onboarded`,
+        })
+
+        cy.findByRole('button', { name: 'Publier l’offre' }).click()
+        cy.wait(['@publishOffer', '@getOffer'], {
+          requestTimeout: 60000 * 2,
+          responseTimeout: 60000 * 2,
+        })
+
+        cy.findByRole('dialog', {
+          name: 'Félicitations, vous avez créé votre offre !',
+        })
+
         cy.visit('/accueil')
         homePageLoaded()
       }
