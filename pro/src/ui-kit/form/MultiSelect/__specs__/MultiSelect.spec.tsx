@@ -152,4 +152,35 @@ describe('<MultiSelect />', () => {
 
     await waitFor(() => expect(selectAllCheckbox).not.toBeInTheDocument())
   })
+
+  it('should not propagate the event when pressing the Escape key', async () => {
+    const globalKeyDownMock = vi.fn()
+    render(
+      <div onKeyDown={globalKeyDownMock}>
+        <MultiSelect
+          options={[{ id: '1', label: 'Option 1' }]}
+          buttonLabel="Options"
+          label="label"
+          name="name"
+          hasSearch
+          searchLabel="Input label"
+          onSelectedOptionsChanged={() => {}}
+        />
+      </div>
+    )
+
+    const toggleButton = screen.getByRole('button', { name: 'Options' })
+    toggleButton.focus()
+
+    await userEvent.click(toggleButton)
+
+    const searchInput = screen.getByLabelText('Input label')
+
+    await userEvent.type(searchInput, '1')
+
+    await userEvent.keyboard('{Escape}')
+
+    //  Once for the search input value typed, and once for the Escape key
+    expect(globalKeyDownMock).toHaveBeenCalledOnce()
+  })
 })

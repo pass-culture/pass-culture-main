@@ -1,5 +1,4 @@
-import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+import { render } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import { SearchInput, type SearchInputProps } from './SearchInput'
@@ -23,20 +22,5 @@ describe('SearchInput', () => {
         rules: { 'color-contrast': { enabled: false } },
       })
     ).toHaveNoViolations()
-  })
-
-  it('should not propagate the event when pressing the Escape key', async () => {
-    const globalKeyDownMock = vi.fn()
-    render(
-      <div onKeyDown={globalKeyDownMock}>
-        <SearchInput {...defaultProps} />
-      </div>
-    )
-
-    await userEvent.click(screen.getByLabelText('Input label'))
-
-    await userEvent.keyboard('{Escape}')
-
-    expect(globalKeyDownMock).not.toHaveBeenCalled()
   })
 })
