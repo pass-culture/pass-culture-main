@@ -5167,15 +5167,21 @@ class VideoIdExtractionTest:
             ("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("https://youtu.be/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("http://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s", "dQw4w9WgXcQ"),
-            ("m.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("https://m.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("https://www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+            ("https://youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
             ("https://www.youtube.com/shorts/dQw4w9WgXcQ", None),  # we do not accept shorts
             ("https://www.other.com", None),
             ("dQw4w9WgXcQ", None),
             ("https://www.youtube.com/@Msnight_fall", None),  # we do not accept channels
+            ("https://www.youtube.com.jesuiscool.fr", None),  # we do not accept subdomains, even if you are cool
+            ("https://www.youtube.comjesuisunvilainhacker", None),  # we do not accept hackers
+            ("m.youtube.com/watch?v=dQw4w9WgXcQ", None),  # we require https://
+            ("www.youtube.com/embed/dQw4w9WgXcQ", None),
+            ("youtube.com/v/dQw4w9WgXcQ", None),
+            ("ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ", None),
         ],
     )
     def test_extract_youtube_video_id_from_url(self, url, video_id):

@@ -1,7 +1,7 @@
 // This regex is a replicate of what exists backend-side.
-// Mind that frontend / backend controls regarding video url always match.
+// Mind that frontend / backend controls always match regarding video url.
 const youtubeVideoRegex = new RegExp(
-  /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.be)(\/watch\?v=|\/embed\/|\/v\/|\/e\/|\/)([^"&?\s]{11}\b)/
+  /^(https?:\/\/)(www\.)?(m\.)?(youtube\.com\b|youtu\.be\b)(\/watch\?v=|\/embed\/|\/v\/|\/e\/|\/)([\w-]{11}\b)/
 )
 
 export const getUrlYoutubeError = (url?: string): string | undefined => {
