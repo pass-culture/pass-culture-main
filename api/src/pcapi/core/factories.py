@@ -9,10 +9,7 @@ from pcapi import models
 from pcapi.models import db
 
 
-T = typing.TypeVar("T")
-
-
-class BaseFactory(factory.alchemy.SQLAlchemyModelFactory, typing.Generic[T]):
+class BaseFactory[T](factory.alchemy.SQLAlchemyModelFactory):
     """
     When defining a factory, you can write
 

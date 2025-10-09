@@ -1,9 +1,7 @@
 import abc
 import enum
 import logging
-import typing
 from typing import Any
-from typing import Generic
 from typing import Protocol
 from typing import Type
 
@@ -22,18 +20,13 @@ class HasId(Protocol):
     id: Any
 
 
-BigQueryModel = typing.TypeVar("BigQueryModel")
-BigQueryDeltaModel = typing.TypeVar("BigQueryDeltaModel")
-SQLAlchemyModel = typing.TypeVar("SQLAlchemyModel", bound=HasId)
-
-
 class DeltaAction(str, enum.Enum):
     ADD = "add"
     REMOVE = "remove"
     UPDATE = "update"
 
 
-class AbstractImporter(abc.ABC, Generic[BigQueryModel, BigQueryDeltaModel, SQLAlchemyModel]):
+class AbstractImporter[BigQueryModel, BigQueryDeltaModel, SQLAlchemyModel: HasId](abc.ABC):
     def import_all(self) -> None:
         class_name = self.get_sqlalchemy_class().__name__
         logger.info(f"Starting full import for {class_name}")
