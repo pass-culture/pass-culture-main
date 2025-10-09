@@ -1,19 +1,21 @@
-import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_VENUE_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
+import { formatAndOrderVenues } from '@/repository/venuesService'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 import {
@@ -42,7 +44,9 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venue = venueQuery.data
 
-  const { data: offerer, isLoading: isOffererLoading } = useOfferer(offererId)
+  const venuesQuery = useSWR([GET_VENUES_QUERY_KEY, offererId], () =>
+    api.getVenues(true, true, selectedOffererId)
+  )
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -50,56 +54,16 @@ export const VenueEdition = (): JSX.Element | null => {
       ? 'partnerPage'
       : 'address'
 
-  const filteredVenues = useMemo(() => {
-    if (context === 'partnerPage') {
-      return (
-        offerer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ?? []
-      )
-    }
-
-    return offerer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
-  }, [context, offerer?.managedVenues])
-
-  const venuesOptions: SelectOption[] = filteredVenues.map((venue) => ({
-    label: venue.publicName || venue.name,
-    value: venue.id.toString(),
+  const venuesOptions: SelectOption[] = formatAndOrderVenues(
+    venuesQuery?.data?.venues?.filter(
+      (venue) => venue.hasCreatedOffer && venue.isPermanent
+    ) ?? []
+  ).map((venue) => ({
+    value: String(venue.value),
+    label: venue.label,
   }))
 
-  useEffect(() => {
-    if (selectedOffererId?.toString() !== offererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigate('/accueil')
-    }
-  }, [selectedOffererId, offererId])
-
-  useEffect(() => {
-    if (context === 'partnerPage' && offerer) {
-      // Selected venue is no longer in the list of hasPartnerPage venues.
-      // On browser tab return, data is revalidated, and offerer.managedVenues
-      // is updated - but venueId is not. In SelectInput, there is a
-      // natural fallback to the first element of the list - but the rest
-      // of the page still needs to be updated, just like the side nav link.
-      const selectedVenue = filteredVenues.find(
-        (venue) => venue.id === Number(venueId)
-      )
-
-      if (!selectedVenue) {
-        if (filteredVenues.length > 0) {
-          const fallbackVenueId = filteredVenues[0]?.id.toString()
-
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate(getVenuePagePathToNavigateTo(offerer.id, fallbackVenueId))
-          dispatch(setSelectedPartnerPageId(fallbackVenueId))
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate('/accueil')
-        }
-      }
-    }
-  }, [context, venueId, filteredVenues, offerer, navigate, dispatch])
-
-  const isNotReady =
-    venueQuery.isLoading || isOffererLoading || !venue || !offerer
+  const isNotReady = venueQuery.isLoading || !venue
 
   const tabs: NavLinkItem[] = [
     {
@@ -174,12 +138,7 @@ export const VenueEdition = (): JSX.Element | null => {
               </>
             )}
           </FormLayout>
-          <VenueEditionHeader
-            venue={venue}
-            offerer={offerer}
-            context={context}
-            key={venueId}
-          />
+          <VenueEditionHeader venue={venue} context={context} key={venueId} />
 
           {!venue.isPermanent && (
             <NavLinkItems

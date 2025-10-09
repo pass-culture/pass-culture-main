@@ -1,19 +1,17 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type { GetVenueResponseModel } from '@/apiClient/v1'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
+import type {
+  GetVenueResponseModel,
+  VenueListItemResponseModel,
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
   defaultVenueProvider,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -94,6 +92,25 @@ const notValidatedVenue: GetVenueResponseModel = {
   isPermanent: false,
 }
 
+const FIRST_VENUE = { id: 1, name: 'First Venue' }
+const SECOND_VENUE = { id: 2, name: 'Second Venue' }
+const mockDataVenues: { venues: VenueListItemResponseModel[] } = {
+  venues: [
+    makeVenueListItem({
+      id: FIRST_VENUE.id,
+      name: FIRST_VENUE.name,
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+    makeVenueListItem({
+      id: SECOND_VENUE.id,
+      name: SECOND_VENUE.name,
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+  ],
+}
+
 describe('VenueEdition', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
@@ -154,36 +171,22 @@ describe('VenueEdition', () => {
 
   describe('about venue / partner page selection', () => {
     it('should let choose an other partner page', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 13,
-            publicName: 'Mon lieu de malheur',
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 666,
-            publicName: 'Mon lieu diabolique',
-          },
-        ],
-      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
       renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
       await userEvent.selectOptions(
         screen.getByLabelText('Sélectionnez votre page partenaire'),
-        '13'
+        FIRST_VENUE.id.toString()
       )
-      expect(screen.getByText('Mon lieu de malheur')).toBeInTheDocument()
+      expect(screen.getByText(FIRST_VENUE.name)).toBeInTheDocument()
 
       await userEvent.selectOptions(
         screen.getByLabelText('Sélectionnez votre page partenaire'),
-        '666'
+        SECOND_VENUE.id.toString()
       )
-      expect(screen.getByText('Mon lieu diabolique')).toBeInTheDocument()
+      expect(screen.getByText(SECOND_VENUE.name)).toBeInTheDocument()
     })
 
     it('should save the venue id in local storage on selection', async () => {
@@ -191,26 +194,13 @@ describe('VenueEdition', () => {
       vi.spyOn(utils, 'setSavedPartnerPageVenueId').mockImplementation(() => ({
         setSavedPartnerPageVenueId,
       }))
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 13,
-            publicName: 'Mon lieu de malheur',
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 666,
-            publicName: 'Mon lieu diabolique',
-          },
-        ],
-      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
+
       renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
-      const selectedVenueId = '13'
+      const selectedVenueId = SECOND_VENUE.id.toString()
       await userEvent.selectOptions(
         screen.getByLabelText('Sélectionnez votre page partenaire'),
         selectedVenueId
@@ -229,21 +219,18 @@ describe('VenueEdition', () => {
     })
 
     it('should not let choose an other partner page when there is only one partner page', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 13,
-            publicName: 'Mon lieu de malheur',
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 666,
-            publicName: 'Mon lieu diabolique',
+      vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+        venues: [
+          makeVenueListItem({
+            id: FIRST_VENUE.id,
+            publicName: FIRST_VENUE.name,
+          }),
+          makeVenueListItem({
+            id: SECOND_VENUE.id,
+            publicName: SECOND_VENUE.name,
             isPermanent: false,
-            hasPartnerPage: false,
-          },
+            hasCreatedOffer: false,
+          }),
         ],
       })
       renderVenueEdition({ context: 'partnerPage' })
@@ -256,21 +243,7 @@ describe('VenueEdition', () => {
     })
 
     it('should not let choose an other partner page when on adress page', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...defaultGetOffererResponseModel,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 13,
-            publicName: 'Mon lieu de malheur',
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 666,
-            publicName: 'Mon lieu diabolique',
-          },
-        ],
-      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
       renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
@@ -413,125 +386,5 @@ describe('VenueEdition', () => {
     expect(
       screen.queryByText(/Barème de remboursement/)
     ).not.toBeInTheDocument()
-  })
-
-  describe('when context is partner page', () => {
-    it('should navigate back to a fallback venue if selected venue is deprecated', async () => {
-      const fallbackVenue = {
-        ...defaultGetOffererVenueResponseModel,
-        id: 100,
-        publicName: 'Fallback venue',
-      }
-      const deprecatedVenue = {
-        ...defaultGetOffererVenueResponseModel,
-        id: defaultGetVenue.id,
-        publicName: 'Deprecated venue',
-      }
-
-      vi.spyOn(api, 'getVenue').mockResolvedValue({
-        ...baseVenue,
-        id: deprecatedVenue.id,
-        publicName: deprecatedVenue.publicName,
-      })
-
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          managedVenues: [fallbackVenue, deprecatedVenue],
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-
-      const { rerender } = renderVenueEdition({ context: 'partnerPage' })
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-      const displayedVenuePublicName = await screen.findByRole('heading', {
-        name: deprecatedVenue.publicName,
-      })
-      expect(displayedVenuePublicName).toBeInTheDocument()
-
-      // We simulate offerer data revalidation & offerer.managedVenues
-      // update.
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          managedVenues: [fallbackVenue],
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-      rerender(<VenueEdition />)
-
-      await waitFor(() => {
-        expect(mockUseNavigate).toHaveBeenCalled()
-        expect(mockDispatch).toHaveBeenCalledWith(
-          expect.objectContaining({
-            payload: fallbackVenue.id.toString(),
-          })
-        )
-      })
-    })
-
-    it('should navigate back home page if selected venue is deprecated & there is no venues left', async () => {
-      const fallbackVenue = {
-        ...defaultGetOffererVenueResponseModel,
-        id: 100,
-        publicName: 'Fallback venue',
-      }
-      const deprecatedVenue = {
-        ...defaultGetOffererVenueResponseModel,
-        id: defaultGetVenue.id,
-        publicName: 'Deprecated venue',
-      }
-
-      vi.spyOn(api, 'getVenue').mockResolvedValue({
-        ...baseVenue,
-        id: deprecatedVenue.id,
-        publicName: deprecatedVenue.publicName,
-      })
-
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          managedVenues: [fallbackVenue, deprecatedVenue],
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-
-      const { rerender } = renderVenueEdition({ context: 'partnerPage' })
-
-      await waitForElementToBeRemoved(screen.getByTestId('spinner'))
-      const displayedVenuePublicName = await screen.findByRole('heading', {
-        name: deprecatedVenue.publicName,
-      })
-      expect(displayedVenuePublicName).toBeInTheDocument()
-
-      // We simulate offerer data revalidation & offerer.managedVenues
-      // update.
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          managedVenues: [],
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-
-      rerender(<VenueEdition />)
-
-      await waitFor(() => {
-        expect(mockUseNavigate).toHaveBeenLastCalledWith('/accueil')
-      })
-    })
   })
 })
