@@ -2854,15 +2854,16 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
 def extract_youtube_video_id(url: str) -> str | None:
     if not isinstance(url, str):
         return None
-    # This regex is a replicate of what exists frontend-side in isYoutubeValid.ts file
-    # Mind that frontend / backend controls regarding video url always match.
+    # This regex is a replicate of what exists frontend-side
+    # Mind that frontend / backend controls always match regarding video url.
     youtube_regex = (
-        r"(https?://)?"
+        r"^(https?://)"
         r"(www\.)?"
         r"(m\.)?"
-        r"(youtube\.com|youtu\.be)"
-        r'(/watch\?v=|/embed/|/v/|/e/|\/)?(?P<video_id>[^"&?\/\s]{11})\b'
+        r"(youtube\.com\b|youtu\.be\b)"
+        r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
     )
+
     pattern = re.compile(youtube_regex)
     if match := pattern.match(url):
         return match.group("video_id")
