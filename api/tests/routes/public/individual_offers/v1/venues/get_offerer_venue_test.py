@@ -232,7 +232,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key, query_params={"siren": invalid_siren})
             assert response == 400
 
-        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+        assert response.json == {"siren": ['string does not match regex "^(\\d{9}|NC\\d{7})$"']}
 
     def test_when_no_venues(self):
         plain_api_key, _ = self.setup_provider()

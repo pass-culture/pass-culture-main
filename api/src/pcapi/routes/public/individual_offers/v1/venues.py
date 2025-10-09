@@ -74,6 +74,10 @@ def get_venue_by_siret(
     Get Venue
 
     Return venue corresponding to the given [**SIRET number (Système d'identification du répertoire des établissements)**](https://www.economie.gouv.fr/cedef/numero-siret)
+    or RIDET for a new caledonian venue.
+
+    In the case of a New Caledonian venue, the RIDET must be prefixed by `"NC"` and postfixed by `"XX"`.
+    For instance, if the RIDET is `"1234567001"`, you should try a get request on `"NC1234567001XX"`.
     """
     if not is_siret_or_ridet(siret):
         raise api_errors.ApiErrors({"siret": [f'string does not match regex "{SIRET_OR_RIDET_RE}"']})
