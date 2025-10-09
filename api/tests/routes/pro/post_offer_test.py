@@ -225,7 +225,7 @@ ACTIVITY_RANDOM = {
     subcategories.SALON.id,
     subcategories.SEANCE_CINE.id,
     subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
-    subcategories.VISITE.id,
+    subcategories.VISITE_LIBRE.id,
     subcategories.VISITE_GUIDEE.id,
 }
 
