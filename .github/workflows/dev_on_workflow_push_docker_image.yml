@@ -6,9 +6,11 @@ on:
       image:
         required: true
         type: string
+
       commit-hash:
         required: true
         type: string
+
       checksum-tag:
         required: true
         type: string
@@ -16,32 +18,38 @@ on:
       prefix-tag:
         required: false
         type: string
-        default: 'develop'
+        default: develop
 
       tag-latest:
         required: false
         type: boolean
         default: false
+
       artifact_registry_workload_identity_provider:
         required: false
         type: string
         default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+
       artifact_registry_service_account:
         required: false
         type: string
         default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+
       cosign_kms_key:
         required: false
         type: string
         default: passculture-metier-ehp/cosign_kms_key
+
       registry:
         required: false
         type: string
         default: europe-west1-docker.pkg.dev
+
       repository:
         required: false
         type: string
         default: passculture-infra-prod/pass-culture-artifact-registry
+
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
