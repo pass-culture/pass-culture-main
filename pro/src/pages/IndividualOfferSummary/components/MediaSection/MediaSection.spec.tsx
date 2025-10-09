@@ -57,7 +57,7 @@ describe('MediaSection', () => {
     })
 
     it('should not render any image subsection when asked (shouldImageBeHidden)', () => {
-      renderMediaSection({ shouldImageBeHidden: true })
+      renderMediaSection({ isOnCreation: true })
 
       const imageSubSection = screen.queryByRole('heading', {
         name: LABELS.imageSubSectionTitle,
