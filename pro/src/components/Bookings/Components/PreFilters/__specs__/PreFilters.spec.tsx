@@ -67,8 +67,8 @@ describe('filter bookings by bookings period', () => {
       audience: Audience.INDIVIDUAL,
       venues: [
         {
-          id: '12',
-          displayName: 'Mon nom de lieu',
+          value: '12',
+          label: 'Mon nom de lieu',
         },
       ],
       offererAddresses: [{ value: '21', label: 'label - street city cp' }],

@@ -44,7 +44,7 @@ export interface PreFiltersProps {
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
-  venues: { id: string; displayName: string }[]
+  venues: { value: string; label: string }[]
   offererAddresses: SelectOption[]
 }
 

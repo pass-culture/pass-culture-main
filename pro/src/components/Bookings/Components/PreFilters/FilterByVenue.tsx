@@ -9,7 +9,7 @@ interface FilterByVenueProps {
   isDisabled?: boolean
   selectedVenueId: string
   updateFilters: (filter: Partial<PreFiltersParams>) => void
-  venuesFormattedAndOrdered: { displayName: string; id: string }[]
+  venuesFormattedAndOrdered: { label: string; value: string }[]
 }
 
 export const FilterByVenue = ({
@@ -18,11 +18,6 @@ export const FilterByVenue = ({
   selectedVenueId,
   venuesFormattedAndOrdered,
 }: FilterByVenueProps): JSX.Element => {
-  const venueOptions = venuesFormattedAndOrdered.map((venue) => ({
-    value: venue.id,
-    label: venue.displayName,
-  }))
-
   return (
     <FieldLayout
       label="Structure"
@@ -37,7 +32,7 @@ export const FilterByVenue = ({
         }
         disabled={isDisabled}
         name="lieu"
-        options={venueOptions}
+        options={venuesFormattedAndOrdered}
         value={selectedVenueId}
       />
     </FieldLayout>
