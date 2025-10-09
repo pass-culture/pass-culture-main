@@ -515,19 +515,24 @@ def check_activation_codes_expiration_datetime(
         )
         raise errors
 
-    if (
-        booking_limit_datetime is not None
-        and activation_codes_expiration_datetime < booking_limit_datetime + datetime.timedelta(days=7)
-    ):
-        errors = api_errors.ApiErrors()
-        errors.add_error(
-            "activationCodesExpirationDatetime",
-            (
-                "La date limite de validité des codes d'activation doit être ultérieure"
-                " d'au moins 7 jours à la date limite de réservation"
-            ),
-        )
-        raise errors
+    if booking_limit_datetime is not None:
+        if activation_codes_expiration_datetime.tzinfo is None:
+            activation_codes_expiration_datetime = activation_codes_expiration_datetime.replace(
+                tzinfo=datetime.timezone.utc
+            )
+        if booking_limit_datetime.tzinfo is None:
+            booking_limit_datetime = booking_limit_datetime.replace(tzinfo=datetime.timezone.utc)
+
+        if activation_codes_expiration_datetime < booking_limit_datetime + datetime.timedelta(days=7):
+            errors = api_errors.ApiErrors()
+            errors.add_error(
+                "activationCodesExpirationDatetime",
+                (
+                    "La date limite de validité des codes d'activation doit être ultérieure"
+                    " d'au moins 7 jours à la date limite de réservation"
+                ),
+            )
+            raise errors
 
 
 def check_activation_codes_expiration_datetime_on_stock_edition(
