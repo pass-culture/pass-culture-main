@@ -2,7 +2,7 @@ ARG network_mode=default
 
 ########## BUILDER ##########
 
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 RUN apt update \
     && apt -y install \
@@ -75,7 +75,7 @@ RUN poetry install --only dev --no-root
 
 ########## SOURCES ##########
 
-FROM python:3.12-slim AS sources
+FROM python:3.13-slim AS sources
 
 RUN mkdir -p /tmp/src
 
@@ -87,7 +87,7 @@ RUN rm -rf tests/ pyproject.toml
 
 ######### LIB ##########
 
-FROM python:3.12-slim AS lib
+FROM python:3.13-slim AS lib
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
