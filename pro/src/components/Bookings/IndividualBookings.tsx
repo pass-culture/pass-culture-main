@@ -86,12 +86,7 @@ export const IndividualBookingsComponent = <
     ([, maybeOffererId]) => api.getVenues(undefined, false, maybeOffererId)
   )
 
-  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? []).map(
-    (venue) => ({
-      id: String(venue.value),
-      displayName: venue.label,
-    })
-  )
+  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? [])
 
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
