@@ -18,6 +18,9 @@ export const AppRouter = (): JSX.Element => {
   const activeRoutes = routes.filter(
     (route) => !route.featureName || activeFeatures.includes(route.featureName)
   )
+  const activeRedirections = redirectedRoutes.filter(
+    (route) => !route.featureName || activeFeatures.includes(route.featureName)
+  )
 
   const router = sentryCreateBrowserRouter(
     [
@@ -27,8 +30,8 @@ export const AppRouter = (): JSX.Element => {
         errorElement: <ErrorBoundary />,
         hydrateFallbackElement: <></>,
         children: [
+          ...activeRedirections,
           ...activeRoutes,
-          ...redirectedRoutes,
           {
             lazy: () => import('@/pages/Errors/NotFound/NotFound'),
             path: '*',
