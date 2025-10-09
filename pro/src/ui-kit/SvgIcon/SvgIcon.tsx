@@ -59,7 +59,7 @@ export interface SvgIconProps {
  * <SvgIcon src="/icons/check.svg" alt="Checkmark" width="24" />
  *
  * @accessibility
- * - **Alt Text**: Provide meaningful alt text for screen readers when the icon conveys important information. Use `aria-hidden` for decorative icons.
+ * - if the icon is decorative only, the `alt` should be an empty string. Otherwise it should describe the meaning of the icon.
  */
 export const SvgIcon = ({
   src,

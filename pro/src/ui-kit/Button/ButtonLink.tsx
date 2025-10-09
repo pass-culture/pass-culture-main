@@ -65,9 +65,6 @@ export type ButtonLinkProps = LinkProps &
  * >
  *   Learn More
  * </ButtonLink>
- *
- * @accessibility
- * - Provide meaningful ARIA labels for links without visible text to assist screen reader users.
  */
 export const ButtonLink = forwardRef(
   (

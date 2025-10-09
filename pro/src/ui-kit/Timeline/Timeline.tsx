@@ -169,10 +169,6 @@ const getLineStyle = (
  *     { type: TimelineStepType.WAITING, content: 'Step 3 pending' }
  *   ]}
  * />
- *
- * @accessibility
- * - **Icons and Labels**: Icons are used to represent the status of each step, with appropriate `alt` attributes for context.
- * - **Visual Indicators**: The component uses different colors and icons to indicate the status of each step, making it easy to understand at a glance.
  */
 export const Timeline = ({ steps }: TimelineProps): JSX.Element => {
   return (

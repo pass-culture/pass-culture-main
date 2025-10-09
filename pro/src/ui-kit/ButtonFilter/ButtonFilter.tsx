@@ -46,9 +46,6 @@ interface ButtonFilterProps
  * >
  *   Filtrer
  * </ButtonFilter>
- *
- * @accessibility
- * - **Keyboard Navigation**: The button can be focused and activated using the keyboard, ensuring it meets accessibility standards for interactive elements.
  */
 export const ButtonFilter = ({
   className,

@@ -42,9 +42,8 @@ export interface ButtonProps
  * </Button>
  *
  * @accessibility
- * - Ensure to use descriptive labels for buttons to improve accessibility.
- * - When using an icons as content for the button, make sure to provide an accessible label with the `iconAlt` prop.
- * - The `Tooltip` component is used to display additional information. Ensure that the tooltip content is meaningful and helpful for users.
+ * - Use descriptive labels.
+ * - When using an icon as content for the button, provide a tooltip describing the action.
  */
 export const Button = forwardRef(
   (
