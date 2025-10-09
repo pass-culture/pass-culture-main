@@ -208,7 +208,9 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        db.session.query(Product).filter(Product.extraData["allocineId"] == "2133").delete(synchronize_session=False)
+        db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == "2133").delete(
+            synchronize_session=False
+        )
 
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
