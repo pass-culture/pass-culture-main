@@ -582,7 +582,7 @@ class EMSStocksTest:
         assert (
             created_offers[0].product
             == db.session.query(offers_models.Product)
-            .filter(offers_models.Product.extraData["allocineId"] == "269975")
+            .filter(offers_models.Product.extraData.op("->")("allocineId") == "269975")
             .one()
         )
 
@@ -593,7 +593,7 @@ class EMSStocksTest:
         assert (
             created_offers[1].product
             == db.session.query(offers_models.Product)
-            .filter(offers_models.Product.extraData["allocineId"] == "241065")
+            .filter(offers_models.Product.extraData.op("->")("allocineId") == "241065")
             .one()
         )
 
