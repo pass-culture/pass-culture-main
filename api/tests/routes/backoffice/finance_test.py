@@ -1395,6 +1395,9 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
+    expected_num_queries += (
+        1  # Fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path`
+    )
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
@@ -1437,7 +1440,8 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        # `- 1` because `build_pc_pro_offer_path` return early since it's a collective offer (= no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check)
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1510,6 +1514,9 @@ class GetCommercialGestureTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
+    expected_num_queries += (
+        1  # Fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path`
+    )
 
     @pytest.mark.parametrize(
         "venue_factory,expected_xpf_text",
@@ -1563,7 +1570,8 @@ class GetCommercialGestureTest(GetEndpointHelper):
         finance_factories.CollectiveBookingFinanceIncidentFactory(incident=finance_incident)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        # `- 1` because `build_pc_pro_offer_path` return early since it's a collective offer (= no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check)
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
