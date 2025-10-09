@@ -1243,7 +1243,7 @@ def get_movie_products_matching_allocine_id_or_film_visa(
         raise ValueError("`allocine_id` or `visa` must be defined")
 
     if allocine_id:
-        filters.append((models.Product.extraData["allocineId"] == str(allocine_id)))
+        filters.append((models.Product.extraData.op("->")("allocineId") == str(allocine_id)))
 
     if visa:
         filters.append((models.Product.extraData["visa"].astext == visa))
