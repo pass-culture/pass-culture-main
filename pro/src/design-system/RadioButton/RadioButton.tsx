@@ -1,11 +1,8 @@
 import cn from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
+import { Asset, type AssetProps } from '../common/Asset/Asset'
 import styles from './RadioButton.module.scss'
-import {
-  RadioButtonAsset,
-  type RadioButtonAssetProps,
-} from './RadioButtonAsset/RadioButtonAsset'
 
 export type RadioButtonSizing = 'hug' | 'fill'
 
@@ -39,7 +36,7 @@ export type RadioButtonVariantProps = {
   /**
    * Asset element displayed on the right of the checkbox.
    */
-  asset?: RadioButtonAssetProps
+  asset?: AssetProps
   /**
    * Content collapsed, displayed under the checkbox input when the checkbox is checked.
    */
@@ -104,7 +101,7 @@ export const RadioButton = forwardRef(
             </div>
           </div>
           {asset && isVariantDetailed && (
-            <RadioButtonAsset
+            <Asset
               {...asset}
               className={cn(styles['radio-asset'], {
                 [styles[asset.variant]]: asset.variant,
