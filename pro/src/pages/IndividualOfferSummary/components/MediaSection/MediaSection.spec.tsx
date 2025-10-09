@@ -79,7 +79,7 @@ describe('MediaSection', () => {
 
   describe('about video', () => {
     it('should render a video subsection with provided data', () => {
-      renderMediaSection()
+      renderMediaSection({ videoData: { videoUrl: MOCK_DATA.videoUrl } })
 
       const videoSubSection = screen.getByRole('heading', {
         name: LABELS.videoSubSectionTitle,
@@ -90,7 +90,7 @@ describe('MediaSection', () => {
     })
 
     it('should render a fallback "-" text when no videoUrl is provided', () => {
-      renderMediaSection({ videoUrl: undefined })
+      renderMediaSection({ videoData: { videoUrl: undefined } })
 
       const videoUrl = screen.getByText('-')
       expect(videoUrl).toBeInTheDocument()

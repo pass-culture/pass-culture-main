@@ -1,3 +1,4 @@
+import type { VideoData } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -8,22 +9,26 @@ import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { VideoPreview } from '@/components/VideoPreview/VideoPreview'
 
 import styles from './MediaSection.module.scss'
 
 export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
-  videoUrl?: string | null
+  videoData?: VideoData
   shouldImageBeHidden?: boolean
 }
 
 export const MediaSection = ({
   offerId,
   imageUrl,
-  videoUrl,
+  videoData,
   shouldImageBeHidden = false,
 }: MediaSectionProps) => {
+  const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
+    videoData ?? {}
+
   return (
     <SummarySection
       title="Image et vidéo"
@@ -51,14 +56,22 @@ export const MediaSection = ({
         </SummarySubSection>
       )}
       <SummarySubSection title="Ajoutez une vidéo" shouldShowDivider={false}>
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: 'Lien URL de votre vidéo',
-              text: videoUrl || ' - ',
-            },
-          ]}
-        />
+        {videoThumbnailUrl ? (
+          <VideoPreview
+            videoDuration={videoDuration}
+            videoTitle={videoTitle}
+            videoThumbnailUrl={videoThumbnailUrl}
+          />
+        ) : (
+          <SummaryDescriptionList
+            descriptions={[
+              {
+                title: 'Lien URL de votre vidéo',
+                text: videoUrl || ' - ',
+              },
+            ]}
+          />
+        )}
       </SummarySubSection>
     </SummarySection>
   )
