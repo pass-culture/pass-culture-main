@@ -3,9 +3,9 @@ import classNames from 'classnames'
 import { Tag, type TagProps } from '@/design-system/Tag/Tag'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import styles from './CheckboxAsset.module.scss'
+import styles from './Asset.module.scss'
 
-export type CheckboxAssetProps =
+export type AssetProps =
   | {
       variant: 'icon'
       src: string
@@ -35,14 +35,14 @@ export type CheckboxAssetProps =
       size?: 's' | 'm' | 'l'
     }
 
-export function CheckboxAsset({
+export function Asset({
   className,
   variant,
   src,
   size = 's',
   text,
   tag,
-}: { className?: string } & CheckboxAssetProps) {
+}: { className?: string } & AssetProps) {
   if (variant === 'icon') {
     return (
       <div className={classNames(styles['icon'], className)}>
