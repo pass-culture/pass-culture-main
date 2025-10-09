@@ -4,11 +4,7 @@ import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import type {
-  BannerMetaModel,
-  GetOffererResponseModel,
-  GetVenueResponseModel,
-} from '@/apiClient/v1'
+import type { BannerMetaModel, GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -33,7 +29,6 @@ import styles from './VenueEditionHeader.module.scss'
 
 export interface VenueEditionHeaderProps {
   venue: GetVenueResponseModel
-  offerer: GetOffererResponseModel
   context: 'collective' | 'partnerPage' | 'address'
 }
 
@@ -41,7 +36,15 @@ export const buildInitialValues = (
   bannerUrl?: string | null,
   bannerMeta?: BannerMetaModel | null
 ): UploadImageValues => {
-  let cropParams
+  let cropParams:
+    | {
+        xCropPercent: number
+        yCropPercent: number
+        heightCropPercent: number
+        widthCropPercent: number
+      }
+    | undefined
+
   if (bannerMeta !== undefined) {
     cropParams = {
       xCropPercent: bannerMeta?.crop_params?.x_crop_percent || 0,
@@ -61,7 +64,6 @@ export const buildInitialValues = (
 
 export const VenueEditionHeader = ({
   venue,
-  offerer,
   context,
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
@@ -136,7 +138,7 @@ export const VenueEditionHeader = ({
           <div className={styles['venue-type']}>{venue.venueType.label}</div>
           <h2 className={styles['venue-name']}>
             {venue.isVirtual
-              ? `${offerer.name} (Offre numérique)`
+              ? `${venue.managingOfferer.name} (Offre numérique)`
               : venue.publicName || venue.name}
           </h2>
         </div>

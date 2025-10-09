@@ -29,7 +29,6 @@ const renderPartnerPages = (
 ) => {
   renderWithProviders(
     <VenueEditionHeader
-      offerer={{ ...defaultGetOffererResponseModel }}
       venue={{ ...defaultGetVenue }}
       context="partnerPage"
       {...props}
