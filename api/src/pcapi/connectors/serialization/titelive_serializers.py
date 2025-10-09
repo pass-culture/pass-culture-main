@@ -140,10 +140,7 @@ class TiteliveMusicArticle(TiteliveArticle):
     nb_galettes: str | None
 
 
-TiteliveArticleType = typing.TypeVar("TiteliveArticleType", bound=TiteliveArticle)
-
-
-class BaseTiteliveWork(generics.GenericModel, typing.Generic[TiteliveArticleType]):
+class BaseTiteliveWork[TiteliveArticleType: TiteliveArticle](generics.GenericModel):
     article: list[TiteliveArticleType]
 
     @pydantic_v1.validator("article", pre=True)
@@ -173,6 +170,3 @@ class TiteLiveBookWork(BaseTiteliveWork[TiteLiveBookArticle]):
 class TiteliveMusicWork(BaseTiteliveWork[TiteliveMusicArticle]):
     article: list[TiteliveMusicArticle]  # repeated without generics so mypy understands
     titre: str
-
-
-TiteliveWorkType = typing.TypeVar("TiteliveWorkType", bound=BaseTiteliveWork)
