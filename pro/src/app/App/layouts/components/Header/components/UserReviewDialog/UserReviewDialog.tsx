@@ -133,7 +133,7 @@ export const UserReviewDialog = ({
                   legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
                   group={group}
                   required
-                  asterisk={false}
+                  requiredIndicator={null}
                   value={form.watch('userSatisfaction')}
                   onChange={(e) => form.setValue('userSatisfaction', e)}
                 />
@@ -142,15 +142,9 @@ export const UserReviewDialog = ({
                   name="userComment"
                   value={form.watch('userComment')}
                   onChange={(e) => form.setValue('userComment', e.target.value)}
-                  label={
-                    <>
-                      Pourriez-vous préciser ? Nous lisons tous les
-                      commentaires.
-                      <span aria-hidden="true"> 🙂</span>
-                    </>
-                  }
+                  label="Pourriez-vous préciser ? Nous lisons tous les commentaires."
                   maxLength={500}
-                  asterisk={false}
+                  requiredIndicator={null}
                   required
                   error={textareaError}
                   className={styles['text-area-container']}

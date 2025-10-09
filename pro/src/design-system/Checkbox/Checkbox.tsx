@@ -43,9 +43,9 @@ type CheckboxBaseProps = {
    */
   required?: boolean
   /**
-   * Whether the required asterisk is displayed or not.
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
    */
-  asterisk?: boolean
+  requiredIndicator?: 'symbol' | 'explicit' | null
 }
 
 export type CheckboxProps = CheckboxBaseProps &
@@ -96,7 +96,7 @@ export const Checkbox = forwardRef(
       onBlur,
       name,
       required,
-      asterisk = true,
+      requiredIndicator = 'symbol',
     }: CheckboxProps,
     ref?: ForwardedRef<HTMLInputElement>
   ) => {
@@ -152,7 +152,7 @@ export const Checkbox = forwardRef(
           />
           <div className={styles['checkbox-label-row']}>
             <div className={styles['checkbox-label-row-left']}>
-              {label} {required && asterisk && '*'}
+              {label} {required && requiredIndicator === 'symbol' && '*'}
               {description && (
                 <p className={styles['checkbox-description']}>{description}</p>
               )}

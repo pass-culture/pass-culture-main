@@ -192,7 +192,7 @@ export const Collaborators = (): JSX.Element | null => {
                       description="Format : email@exemple.com"
                       error={errors.email?.message}
                       required
-                      asterisk={false}
+                      requiredIndicator={null}
                       {...register('email')}
                       extension={
                         <Button

@@ -58,8 +58,10 @@ type MultiSelectProps = {
   buttonLabel: string
   /** field is required */
   required?: boolean
-  /** display asterik  */
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | null
   /** this class offers the possibility of limiting the size of the multiselect  */
   className?: string
 
@@ -127,10 +129,9 @@ export const MultiSelect = forwardRef(
       disabled = false,
       onSelectedOptionsChanged,
       error,
-      name,
       buttonLabel,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       onBlur,
     }: MultiSelectProps,
     forwardedRef: ForwardedRef<HTMLFieldSetElement>
@@ -208,7 +209,7 @@ export const MultiSelect = forwardRef(
     return (
       <fieldset className={styles.container} onBlur={onBlur} ref={forwardedRef}>
         <legend className={styles['container-label']}>
-          {label} {required && asterisk && '*'}
+          {label} {required && requiredIndicator === 'symbol' && '*'}
         </legend>
         <div className={cn(className, styles['container-input'])}>
           <div ref={containerRef}>

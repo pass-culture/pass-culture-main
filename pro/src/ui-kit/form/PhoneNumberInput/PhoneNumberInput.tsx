@@ -32,7 +32,10 @@ export type PhoneNumberInputProps = {
   error?: string
   label: string | JSX.Element
   required?: boolean
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | null
 }
 
 export const PhoneNumberInput = forwardRef<
@@ -50,7 +53,7 @@ export const PhoneNumberInput = forwardRef<
       error,
       label,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       ...props
     },
     ref
@@ -143,7 +146,7 @@ export const PhoneNumberInput = forwardRef<
     return (
       <fieldset className={styles['phone-number-input-wrapper']}>
         <legend className={styles['phone-number-input-legend']}>
-          {label} {required && asterisk && '*'}
+          {label} {required && requiredIndicator === 'symbol' && '*'}
         </legend>
         <p className={styles['phone-format']} id={formatId}>
           Par exemple : {PHONE_EXAMPLE_MAP[prefix as PlusString]}

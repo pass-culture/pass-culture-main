@@ -8,7 +8,7 @@ import {
 
 export type QuantityInputProps = Pick<
   TextInputProps,
-  'disabled' | 'required' | 'asterisk'
+  'disabled' | 'required' | 'requiredIndicator'
 > & {
   /**
    * A label for the text input.
@@ -61,7 +61,7 @@ export const QuantityInput = ({
   onBlur,
   disabled,
   required,
-  asterisk,
+  requiredIndicator,
   min = 0,
   max = 1_000_000,
   value,
@@ -138,7 +138,7 @@ export const QuantityInput = ({
       name={quantityName}
       label={label}
       required={required}
-      asterisk={asterisk}
+      requiredIndicator={requiredIndicator}
       disabled={disabled}
       type="number"
       min={min}

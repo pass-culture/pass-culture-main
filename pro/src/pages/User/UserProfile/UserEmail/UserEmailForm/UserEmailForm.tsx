@@ -90,16 +90,16 @@ export const UserEmailForm = ({
                 required
                 type="email"
                 {...register('email')}
-                asterisk={false}
+                requiredIndicator={null}
               />
             </div>
             <div className={styles['text-input']}>
               <PasswordInput
                 label="Mot de passe (requis pour modifier votre email)"
                 error={errors.password?.message}
-                required={true}
+                required
                 {...register('password')}
-                asterisk={false}
+                requiredIndicator={null}
               />
             </div>
           </FormLayout>

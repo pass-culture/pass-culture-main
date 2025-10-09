@@ -15,8 +15,10 @@ type TimePickerProps = {
   value?: string
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   onBlur?: React.FocusEventHandler<HTMLInputElement>
-  /** Whether or not to display the asterisk in the label when the field is required */
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
@@ -35,7 +37,7 @@ export const TimePicker = forwardRef(
       disabled,
       label,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       error,
       value,
       onChange,
@@ -58,8 +60,7 @@ export const TimePicker = forwardRef(
           <FieldHeader
             inputId={inputId}
             label={label}
-            required={required}
-            asterisk={asterisk}
+            hasRequiredIndicator={required && requiredIndicator === 'symbol'}
           />
         </div>
         <BaseTimePicker

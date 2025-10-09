@@ -13,7 +13,10 @@ export interface PasswordInputProps {
   description?: string
   autoComplete?: string
   error?: string
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
   required?: boolean
 }
 
@@ -25,7 +28,7 @@ export const PasswordInput = React.forwardRef(
       description,
       autoComplete,
       error,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       required,
       ...props
     }: PasswordInputProps,
@@ -53,7 +56,7 @@ export const PasswordInput = React.forwardRef(
           type={isPasswordHidden ? 'password' : 'text'}
           autoComplete={autoComplete}
           error={error}
-          asterisk={asterisk}
+          requiredIndicator={requiredIndicator}
           required={required}
           iconButton={{
             icon: isPasswordHidden ? strokeHideIcon : strokeShowIcon,

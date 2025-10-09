@@ -55,7 +55,7 @@ describe('DatePicker', () => {
         label="input label"
         name="name"
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
     )
 

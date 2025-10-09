@@ -252,6 +252,7 @@ export const PriceTableForm = ({
                 label="Prix"
                 currency={isCaledonian ? 'XPF' : 'EUR'}
                 showFreeCheckbox={!offer.isDigital}
+                required
                 onChange={(event) => {
                   setValue(
                     `entries.${index}.price`,

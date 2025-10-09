@@ -20,8 +20,10 @@ type SelectProps<T extends number | string = string> = {
   /** Option displayed if no option of the option list is selected */
   defaultOption?: SelectOption<T> | null
   options: SelectOption<T>[]
-  /** Whether or not to display the asterisk in the label when the field is required */
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
   error?: string
   value?: string
   ariaLabel?: string
@@ -40,7 +42,7 @@ export const Select = forwardRef(
       onChange,
       onBlur,
       error,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       value,
       ariaLabel,
     }: SelectProps<string | number>,
@@ -55,8 +57,7 @@ export const Select = forwardRef(
           <FieldHeader
             label={label}
             inputId={fieldId}
-            required={required}
-            asterisk={asterisk}
+            hasRequiredIndicator={required && requiredIndicator === 'symbol'}
           />
           <SelectInput
             disabled={disabled}

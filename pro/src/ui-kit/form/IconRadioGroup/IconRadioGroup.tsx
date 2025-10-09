@@ -25,9 +25,12 @@ export interface IconRadioGroupProps {
    */
   group: IconRadioGroupValues[]
   isOptional?: boolean
-  asterisk?: boolean
   error?: string
   required?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | null
   value: string
   onChange: (value: string) => void
 }
@@ -37,7 +40,7 @@ export const IconRadioGroup = ({
   name,
   legend,
   required = false,
-  asterisk = true,
+  requiredIndicator = 'symbol',
   error,
   value,
   onChange,
@@ -59,7 +62,7 @@ export const IconRadioGroup = ({
     >
       <legend className={styles['icon-radio-group-legend']}>
         {legend}
-        {required && asterisk && ' *'}
+        {required && requiredIndicator === 'symbol' && ' *'}
       </legend>
       {displayScale && (
         <p className={styles['visually-hidden']} id={scaleId}>
