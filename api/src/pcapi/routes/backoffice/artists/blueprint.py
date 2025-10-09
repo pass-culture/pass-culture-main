@@ -509,7 +509,7 @@ def associate_product(artist_id: str) -> utils.BackofficeResponse:
     if id_type == forms.ProductIdentifierTypeEnum.EAN:
         query = query.filter_by(ean=id_value)
     elif id_type == forms.ProductIdentifierTypeEnum.ALLOCINE_ID:
-        query = query.filter(offers_models.Product.extraData["allocineId"] == id_value)
+        query = query.filter(offers_models.Product.extraData.op("->")("allocineId") == id_value)
     elif id_type == forms.ProductIdentifierTypeEnum.VISA:
         query = query.filter(offers_models.Product.extraData["visa"].astext == id_value)
 
