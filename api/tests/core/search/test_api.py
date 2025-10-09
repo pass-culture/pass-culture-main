@@ -75,19 +75,19 @@ def fail(*args, **kwargs):
     raise ValueError("It does not work")
 
 
-def test_async_index_offer_ids(app):
+def test_async_index_offer_ids(app, clear_redis):
     search.async_index_offer_ids({1, 2}, reason=IndexationReason.OFFER_UPDATE)
     queue = redis_queues.REDIS_OFFER_IDS_NAME
     assert app.redis_client.smembers(queue) == {"1", "2"}
 
 
-def test_async_index_offers_of_venue_ids(app):
+def test_async_index_offers_of_venue_ids(app, clear_redis):
     search.async_index_offers_of_venue_ids({1, 2}, reason=IndexationReason.VENUE_UPDATE)
     queue = redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME
     assert app.redis_client.smembers(queue) == {"1", "2"}
 
 
-def test_async_index_venue_ids(app):
+def test_async_index_venue_ids(app, clear_redis):
     """
     Ensure that both permanent and non permanent venues are enqueues.
     The permanent/non-permanent filter comes after, during indexing.
@@ -107,7 +107,7 @@ def test_async_index_venue_ids(app):
 
 
 @pytest.mark.settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
-def test_index_offers_of_venues_in_queue(app):
+def test_index_offers_of_venues_in_queue(app, clear_redis):
     bookable_offer = make_bookable_offer()
     venue1 = bookable_offer.venue
     unbookable_offer = make_unbookable_offer()
@@ -119,9 +119,7 @@ def test_index_offers_of_venues_in_queue(app):
 
     # `index_offers_of_venues_in_queue` pops 1 venue from the queue
     # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
-    print(app.redis_client.smembers(queue))
     search.index_offers_of_venues_in_queue()
-    print(app.redis_client.smembers(queue))
     assert app.redis_client.scard(queue) == 2
 
     search.index_offers_of_venues_in_queue()
@@ -136,7 +134,7 @@ def test_index_offers_of_venues_in_queue(app):
 
 
 @pytest.mark.settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
-def test_index_venues_in_queue(app):
+def test_index_venues_in_queue(app, clear_redis):
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory()
     queue = redis_queues.REDIS_VENUE_IDS_TO_INDEX
@@ -165,7 +163,7 @@ class ReindexOfferIdsTest:
         with assert_no_duplicated_queries():
             search.reindex_offer_ids(offer_ids)
 
-    def test_unindex_unbookable_offer(self, app):
+    def test_unindex_unbookable_offer(self, app, clear_redis):
         # given
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
@@ -177,7 +175,7 @@ class ReindexOfferIdsTest:
         # then
         assert search_testing.search_store["offers"] == {}
 
-    def test_closed_offerer(self, app):
+    def test_closed_offerer(self, app, clear_redis):
         offer = make_bookable_offer(
             offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
         )
@@ -188,7 +186,7 @@ class ReindexOfferIdsTest:
 
         assert search_testing.search_store["offers"] == {}
 
-    def test_that_base_query_is_correct(self, app):
+    def test_that_base_query_is_correct(self, app, clear_redis):
         # Make sure that `get_base_query_for_offer_indexation` loads
         # all offers and related data that is expected by
         # `reindex_offer_ids()`.
@@ -218,7 +216,7 @@ class ReindexOfferIdsTest:
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)
     @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
-    def test_handle_indexation_error(self, app):
+    def test_handle_indexation_error(self, app, clear_redis):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
 
@@ -230,7 +228,7 @@ class ReindexOfferIdsTest:
 
     @mock.patch("pcapi.core.search.backends.testing.FakeClient.delete_objects", fail)
     @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
-    def test_handle_unindexation_error(self, app):
+    def test_handle_unindexation_error(self, app, clear_redis):
         offer = make_unbookable_offer()
         search_testing.search_store["offers"][offer.id] = "dummy"
         app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
@@ -241,7 +239,7 @@ class ReindexOfferIdsTest:
         error_queue = redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
-    def test_reindex_artists_after_reindexing_offers(self, app):
+    def test_reindex_artists_after_reindexing_offers(self, app, clear_redis):
         offer = make_bookable_offer()
         artist = artists_factories.ArtistFactory()
         offer.product = offers_factories.ProductFactory()
@@ -257,7 +255,7 @@ class ReindexOfferIdsTest:
         assert artist_ids == {artist.id for artist in offer.product.artists}
 
     @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
-    def test_reindex_venues_after_reindexing_offers(self, app):
+    def test_reindex_venues_after_reindexing_offers(self, app, clear_redis):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
 
@@ -406,7 +404,7 @@ class ReindexVenueIdsTest:
 @pytest.mark.settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
 @mock.patch("pcapi.core.search.reindex_offer_ids")
 class IndexOffersInQueueTest:
-    def test_cron_behaviour(self, mocked_reindex_offer_ids, app):
+    def test_cron_behaviour(self, mocked_reindex_offer_ids, app, clear_redis):
         queue = redis_queues.REDIS_OFFER_IDS_NAME
         offer_ids = list(range(1, 9))
         app.redis_client.sadd(queue, *offer_ids)
@@ -420,7 +418,7 @@ class IndexOffersInQueueTest:
 
         assert app.redis_client.scard(queue) == 0
 
-    def test_command_behaviour_when_no_limit(self, mocked_reindex_offer_ids, app):
+    def test_command_behaviour_when_no_limit(self, mocked_reindex_offer_ids, app, clear_redis):
         queue = redis_queues.REDIS_OFFER_IDS_NAME
         items = list(range(1, 9))
         app.redis_client.sadd(queue, *items)
@@ -434,7 +432,7 @@ class IndexOffersInQueueTest:
         assert mocked_reindex_offer_ids.call_count == 3
         assert app.redis_client.scard(queue) == 0
 
-    def test_command_behaviour_when_limit_is_set(self, mocked_reindex_offer_ids, app):
+    def test_command_behaviour_when_limit_is_set(self, mocked_reindex_offer_ids, app, clear_redis):
         queue = redis_queues.REDIS_OFFER_IDS_NAME
         items = list(range(1, 9))
         app.redis_client.sadd(queue, *items)
@@ -450,7 +448,7 @@ class IndexOffersInQueueTest:
 
 
 @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
-def test_unindex_offer_ids(app):
+def test_unindex_offer_ids(app, clear_redis):
     offer1 = make_bookable_offer()
     offer2 = make_bookable_offer()
 

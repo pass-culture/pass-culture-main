@@ -31,6 +31,7 @@ from pcapi.utils.decorators import retry
 
 from . import exceptions
 from . import models
+from . import utils
 
 
 logger = logging.getLogger(__name__)
@@ -1150,29 +1151,18 @@ def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
     return [offer_id for (offer_id,) in query]
 
 
-def get_paginated_offer_ids_by_artist_id(artist_id: str, limit: int, page: int = 0) -> list[int]:
+def get_paginated_offer_ids_by_artist_id(artist_id: str, chunk_size: int) -> typing.Iterator[list[int]]:
     query = (
-        db.session.query(models.Offer)
-        .with_entities(models.Offer.id)
+        db.session.query(models.Offer.id)
         .join(artist_models.ArtistProductLink, models.Offer.productId == artist_models.ArtistProductLink.product_id)
         .filter(artist_models.ArtistProductLink.artist_id == artist_id)
-        .order_by(models.Offer.id)
-        .offset(page * limit)  # first page is 0
-        .limit(limit)
     )
-    return [offer_id for (offer_id,) in query]
+    yield from utils.yield_field_batch_from_query(query, chunk_size)
 
 
-def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0) -> list[int]:
-    query = (
-        db.session.query(models.Offer)
-        .with_entities(models.Offer.id)
-        .filter(models.Offer.venueId == venue_id)
-        .order_by(models.Offer.id)
-        .offset(page * limit)  # first page is 0
-        .limit(limit)
-    )
-    return [offer_id for (offer_id,) in query]
+def get_paginated_offer_ids_by_venue_id(venue_id: int, chunk_size: int) -> typing.Iterator[list[int]]:
+    query = db.session.query(models.Offer.id).filter(models.Offer.venueId == venue_id)
+    yield from utils.yield_field_batch_from_query(query, chunk_size)
 
 
 def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> sa_orm.Query:

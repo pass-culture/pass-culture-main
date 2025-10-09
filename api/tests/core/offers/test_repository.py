@@ -1368,15 +1368,31 @@ class GetPaginatedOfferIdsByVenueIdTest:
         offer3 = factories.OfferFactory(venue=venue1)
         _other_venue_offer = factories.OfferFactory()
 
-        assert repository.get_paginated_offer_ids_by_venue_id(venue1.id, limit=2, page=0) == [offer1.id, offer2.id]
-        assert repository.get_paginated_offer_ids_by_venue_id(venue1.id, limit=2, page=1) == [offer3.id]
+        iterator = repository.get_paginated_offer_ids_by_venue_id(venue1.id, chunk_size=2)
+
+        data = next(iterator)
+        assert len(data) == 2
+        data.extend(next(iterator))
+        assert len(data) == 3
+        assert offer1.id in data
+        assert offer2.id in data
+        assert offer3.id in data
 
     def test_include_inactive_offers(self):
         venue = offerers_factories.VenueFactory()
         offer1 = factories.OfferFactory(venue=venue, isActive=True)
         offer2 = factories.OfferFactory(venue=venue, isActive=False)
+        offer3 = factories.OfferFactory(venue=venue, isActive=False)
 
-        assert repository.get_paginated_offer_ids_by_venue_id(venue.id, limit=2, page=0) == [offer1.id, offer2.id]
+        iterator = repository.get_paginated_offer_ids_by_venue_id(venue.id, chunk_size=2)
+
+        data = next(iterator)
+        assert len(data) == 2
+        data.extend(next(iterator))
+        assert len(data) == 3
+        assert offer1.id in data
+        assert offer2.id in data
+        assert offer3.id in data
 
 
 @pytest.mark.usefixtures("db_session")
