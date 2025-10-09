@@ -132,7 +132,6 @@ class GetOfferersVenuesTest(PublicAPIEndpointBaseHelper):
 
     def test_filter_offerers_venues_by_siren(self):
         siren = "123456789"
-
         plain_api_key, provider = self.setup_provider()
         venue = providers_factories.VenueProviderFactory(venue__managingOfferer__siren=siren, provider=provider).venue
 
@@ -144,6 +143,25 @@ class GetOfferersVenuesTest(PublicAPIEndpointBaseHelper):
 
         assert len(response.json) == 1
         assert response.json[0]["offerer"]["siren"] == siren
+
+        assert len(response.json[0]["venues"]) == 1
+        assert response.json[0]["venues"][0]["id"] == venue.id
+
+    def test_filter_offerers_venues_by_rid7(self):
+        rid7 = "NC3456789"
+        plain_api_key, provider = self.setup_provider()
+        offerer = offerers_factories.CaledonianOffererFactory(siren=rid7)
+        venue = offerers_factories.CaledonianVenueFactory(managingOfferer=offerer)
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider).venue
+
+        providers_factories.VenueProviderFactory(provider=provider)  # excluded
+
+        with assert_num_queries(self.num_queries):
+            response = self.make_request(plain_api_key, query_params={"siren": rid7})
+            assert response.status_code == 200
+
+        assert len(response.json) == 1
+        assert response.json[0]["offerer"]["siren"] == rid7
 
         assert len(response.json[0]["venues"]) == 1
         assert response.json[0]["venues"][0]["id"] == venue.id
