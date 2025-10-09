@@ -1074,3 +1074,53 @@ class CheckOfferCanHaveActivationCodesTest:
         assert exc.value.errors == {
             "global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]
         }
+
+
+class CheckActivationCodesExpirationDatetimeTest:
+    @pytest.mark.parametrize(
+        "activation_codes_expiration_datetime, booking_limit_datetime",
+        [
+            (None, None),
+            (None, datetime.datetime.now()),
+            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now()),
+            (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8), datetime.datetime.now()),
+            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now(datetime.timezone.utc)),
+            (
+                datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8),
+                datetime.datetime.now(datetime.timezone.utc),
+            ),
+        ],
+    )
+    def test_check_activation_codes_expiration_datetime_should_not_raise(
+        self, activation_codes_expiration_datetime, booking_limit_datetime
+    ):
+        validation.check_activation_codes_expiration_datetime(
+            activation_codes_expiration_datetime, booking_limit_datetime
+        )
+
+    def test_check_activation_codes_expiration_datetime_should_raise_when_expiration_without_booking_limit(self):
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_activation_codes_expiration_datetime(datetime.datetime.now(), None)
+
+        assert exc.value.errors == {
+            "bookingLimitDatetime": [
+                "Une date limite de validité a été renseignée. Dans ce cas, il faut également renseigner une date limite de réservation qui doit être antérieure d'au moins 7 jours.",
+            ],
+        }
+
+    def test_check_activation_codes_expiration_datetime_should_raise_when_expiration_not_7_days_after_booking_limit(
+        self,
+    ):
+        booking_limit_datetime = datetime.datetime.now()
+        activation_codes_expiration_datetime = booking_limit_datetime + datetime.timedelta(days=6)
+
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_activation_codes_expiration_datetime(
+                activation_codes_expiration_datetime, booking_limit_datetime
+            )
+
+        assert exc.value.errors == {
+            "activationCodesExpirationDatetime": [
+                "La date limite de validité des codes d'activation doit être ultérieure d'au moins 7 jours à la date limite de réservation"
+            ]
+        }
