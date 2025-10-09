@@ -1160,8 +1160,8 @@ def finalize_offer(
     booking_allowed_datetime: datetime.datetime | None,
 ) -> models.Offer:
     """
-    :publication_datetime     : /!\ must be a naive utc datetime
-    :booking_allowed_datetime : /!\ must be a naive utc datetime
+    :publication_datetime     : //!\\ must be a naive utc datetime
+    :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
     offer.finalizationDatetime = get_naive_utc_now()
 
@@ -1191,8 +1191,8 @@ def publish_offer(
     booking_allowed_datetime: datetime.datetime | None = None,
 ) -> models.Offer:
     """
-    :publication_datetime     : /!\ must be a naive utc datetime
-    :booking_allowed_datetime : /!\ must be a naive utc datetime
+    :publication_datetime     : //!\\ must be a naive utc datetime
+    :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
     finalization_date = get_naive_utc_now()
 
