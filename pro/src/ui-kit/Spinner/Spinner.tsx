@@ -40,7 +40,7 @@ interface SpinnerProps {
  * <Spinner message="Loading data..." />
  *
  * @accessibility
- * - **Loading Message**: Provide a descriptive loading message to help users understand what is being processed, particularly for users relying on screen readers.
+ * - A descriptive loading message can be provided to help users understand what is being processed.
  */
 export const Spinner = ({
   message = 'Chargement en cours',

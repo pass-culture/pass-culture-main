@@ -105,13 +105,6 @@ type MultiSelectProps = {
  *   hasSearch={true}
  *   searchLabel="Search options"
  * />
- *
- *
- * @accessibility
- * - The component uses `aria-expanded` to indicate the open/closed state of the dropdown.
- * - The dropdown trigger is keyboard accessible and can be activated using Enter or Space.
- * - When open, the dropdown panel is navigable using arrow keys.
- *
  */
 export const MultiSelect = forwardRef(
   (

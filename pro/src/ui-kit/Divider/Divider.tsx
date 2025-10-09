@@ -42,8 +42,6 @@ interface DividerProps {
  * @example
  * <Divider size="large" />
  *
- * @accessibility
- * - **Visual Separation**: The divider provides a visual cue that helps users understand the grouping and separation of content. Ensure the divider's color contrast is sufficient for all users, including those with visual impairments.
  */
 export const Divider: FC<DividerProps> = ({
   size,

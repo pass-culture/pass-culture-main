@@ -33,10 +33,6 @@ type DialogBuilderCloseButtonProps = {
  *
  * @example
  * <DialogBuilderCloseButton onCloseClick={() => console.log('Dialog closed')} />
- *
- * @accessibility
- * - **Close Button Label**: The close button includes a `title` attribute with the text "Fermer la modale" to provide additional context for screen readers.
- * - **Icon Usage**: The close button includes an icon to visually indicate its purpose, which helps users quickly understand its functionality.
  */
 export const DialogBuilderCloseButton = ({
   onCloseClick,

@@ -56,10 +56,6 @@ type DropdownMenuWrapperProps = {
  * <DropdownMenuWrapper title="Options">
  *   <DropdownItem title="Settings" onSelect={() => console.log('Settings selected')}>Settings</DropdownItem>
  * </DropdownMenuWrapper>
- *
- * @accessibility
- * - **Dropdown Trigger**: The trigger button includes a `title` attribute to provide additional context for screen readers.
- * - **Keyboard Navigation**: The dropdown menu can be opened and closed using keyboard interactions, ensuring accessibility for all users.
  */
 export function DropdownMenuWrapper({
   title,

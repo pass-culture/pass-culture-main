@@ -97,10 +97,6 @@ function getNotificationContent(notification: Notification): JSX.Element {
  *   isVisible={true}
  *   isStickyBarOpen={false}
  * />
- *
- * @accessibility
- * - **Role and Aria Attributes**: The component uses roles such as `alert` or `status` to convey the nature of the notification to screen readers.
- * - **Icons**: Icons are included to provide visual representation of the notification type, making it easier for users to understand.
  */
 export const NotificationToaster = ({
   notification,
