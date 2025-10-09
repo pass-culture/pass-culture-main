@@ -23,50 +23,8 @@
   }
 }
 
-.video-uploader-with-video {
-  position: relative;
-  height: rem.torem(240px);
-  overflow: hidden;
-  border-radius: var(--size-border-radius-s);
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgb(0 0 0 / 0%) 0%,
-      rgb(0 0 0 / 50%) 45.31%,
-      #000 67.17%
-    );
-  }
-}
-
-.video-duration {
-  position: absolute;
-  top: rem.torem(16px);
-  right: rem.torem(16px);
-}
-
-.video-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.video-title {
-  @include fonts.body-accent;
-
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: var(--size-spacing-l);
-  color: var(--color-text-inverted);
-}
-
 .action-wrapper {
+  max-width: rem.torem(521px);
   display: flex;
   justify-content: center;
   align-items: center;

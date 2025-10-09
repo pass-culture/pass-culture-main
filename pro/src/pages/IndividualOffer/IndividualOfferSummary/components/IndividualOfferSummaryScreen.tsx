@@ -198,7 +198,7 @@ export const IndividualOfferSummaryScreen = ({
             <OfferSection conditionalFields={conditionalFields} offer={offer} />
             <MediaSection
               offerId={offer.id}
-              videoUrl={offer.videoData.videoUrl}
+              videoData={offer.videoData}
               shouldImageBeHidden
             />
             {offer.isEvent && (
