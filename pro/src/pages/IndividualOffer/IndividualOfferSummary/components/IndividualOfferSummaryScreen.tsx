@@ -199,7 +199,7 @@ export const IndividualOfferSummaryScreen = ({
             <MediaSection
               offerId={offer.id}
               videoData={offer.videoData}
-              shouldImageBeHidden
+              isOnCreation
             />
             {offer.isEvent && (
               <PriceCategoriesSection

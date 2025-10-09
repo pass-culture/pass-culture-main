@@ -17,14 +17,14 @@ export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
   videoData?: VideoData
-  shouldImageBeHidden?: boolean
+  isOnCreation?: boolean
 }
 
 export const MediaSection = ({
   offerId,
   imageUrl,
   videoData,
-  shouldImageBeHidden = false,
+  isOnCreation = false,
 }: MediaSectionProps) => {
   const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
     videoData ?? {}
@@ -35,12 +35,14 @@ export const MediaSection = ({
       editLink={getIndividualOfferUrl({
         offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-        mode: OFFER_WIZARD_MODE.EDITION,
+        mode: isOnCreation
+          ? OFFER_WIZARD_MODE.CREATION
+          : OFFER_WIZARD_MODE.EDITION,
       })}
       aria-label="Modifier l’image et la vidéo de l’offre"
       shouldShowDivider
     >
-      {!shouldImageBeHidden && (
+      {!isOnCreation && (
         <SummarySubSection title="Ajoutez une image" shouldShowDivider={false}>
           {imageUrl ? (
             <SafeImage
