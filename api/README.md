@@ -26,13 +26,13 @@ Spectree :
 
 #### Poetry
 
-Avec Python **3.11** :
+Avec Python **3.13** :
 Installation de poetry (version 2), puis ajout de `poetry-plugin-shell` pour avoir le shell.
 
 ```shell
 curl -sSL https://install.python-poetry.org | python3 -
 poetry self add poetry-plugin-shell
-poetry env use python3.11
+poetry env use python3.13
 poetry install --with dev
 ```
 
