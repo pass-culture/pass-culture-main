@@ -491,19 +491,24 @@ def patch_publish_offer(
 @private_api.route("/offers/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=None,
-    on_success_status=204,
+    response_model=offers_serialize.ListOffersResponseModel,  # e.g. { "offers": [...] }
+    on_success_status=200,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
+def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel
+) -> offers_serialize.ListOffersResponseModel:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
 
     if body.is_active:
         query = offers_repository.exclude_offers_from_inactive_venue_provider(query)
 
-    offers_api.batch_update_offers(query, activate=body.is_active)
+    updated_ids = offers_api.batch_update_offers(query, activate=body.is_active)
+    print(len(updated_ids))
 
+    updated_offers = offers_repository.get_offers_by_ids(current_user, updated_ids).all()
+
+    return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(updated_offers))
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
 @login_required
