@@ -9054,7 +9054,7 @@
                 "type": "object"
             },
             "VISITE_create": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [
@@ -9071,7 +9071,7 @@
                 "type": "object"
             },
             "VISITE_edit": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [
@@ -9088,7 +9088,7 @@
                 "type": "object"
             },
             "VISITE_read": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [

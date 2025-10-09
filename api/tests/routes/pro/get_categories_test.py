@@ -6,13 +6,13 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories.subcategories import ABO_BIBLIOTHEQUE
 from pcapi.core.categories.subcategories import CINE_PLEIN_AIR
-from pcapi.core.categories.subcategories import VISITE
+from pcapi.core.categories.subcategories import VISITE_LIBRE
 from pcapi.core.testing import assert_num_queries
 
 
 @patch(
     "pcapi.core.categories.subcategories.ALL_SUBCATEGORIES",
-    (ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR, VISITE),
+    (ABO_BIBLIOTHEQUE, CINE_PLEIN_AIR, VISITE_LIBRE),
 )
 @patch(
     "pcapi.core.categories.pro_categories.ALL_CATEGORIES",
@@ -82,8 +82,8 @@ class Returns200Test:
                 {
                     "id": "VISITE",
                     "categoryId": "MUSEE",
-                    "proLabel": "Visite",
-                    "appLabel": "Visite",
+                    "proLabel": "Visite libre",
+                    "appLabel": "Visite libre",
                     "isEvent": True,
                     "conditionalFields": [],
                     "canExpire": False,
