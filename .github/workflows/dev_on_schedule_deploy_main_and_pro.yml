@@ -119,6 +119,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
     name: "Push pcapi docker image to registry"
     needs: [build-pcapi, pcapi-init-job]
@@ -133,6 +134,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi-console:
     name: "Push pcapi-console docker image to registry"
     needs: [build-pcapi-console, pcapi-init-job]
