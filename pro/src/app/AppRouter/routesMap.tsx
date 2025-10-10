@@ -78,11 +78,6 @@ export const routes: CustomRouteObject[] = [
     title: 'Réservations individuelles',
   },
   {
-    lazy: () => import('@/pages/CollectiveBookings/CollectiveBookings'),
-    path: '/reservations/collectives',
-    title: 'Réservations collectives',
-  },
-  {
     lazy: () => import('@/pages/SignIn/SignIn'),
     path: '/connexion',
     title: 'Connectez-vous',
