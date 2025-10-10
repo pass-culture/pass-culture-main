@@ -529,9 +529,9 @@ def create_offer_and_stocks_for_cinemas(
             store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)
 
             product_stocks = []
-            for daydelta in range(0, 20, 2):
+            for daydelta in range(0, 20, 4):
                 day = datetime.date.today() + datetime.timedelta(days=daydelta)
-                for hour in (5, 11, 17, 21):
+                for hour in (11, 17, 21):
                     beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
                     is_full = hour == 5
                     quantity = daydelta * hour + 1 if not is_full else 0
@@ -569,7 +569,7 @@ def create_movie_products(offset: int = 0) -> list["offers_models.Product"]:
             extraData={"allocineId": 100_000 + i},
             durationMinutes=115 + i,
         )
-        for i in range(1 + offset, 6 + offset)
+        for i in range(1 + offset, 2 + offset)
     ]
 
 
