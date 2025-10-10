@@ -588,7 +588,10 @@ def change_email(
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
-    db.session.commit()
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
 
@@ -704,11 +707,13 @@ def update_user_info(
         user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
+    db.session.add(user)
     if commit:
         snapshot.add_action()
-        repository.save(user)
-    else:
-        repository.add_to_session(user)
+        if transaction_manager.is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
