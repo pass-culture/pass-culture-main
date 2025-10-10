@@ -28,7 +28,7 @@ jobs:
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-tags: false
       - name: "Check api folder changes"
@@ -66,7 +66,7 @@ jobs:
             api/poetry.lock
             pro/yarn.lock
       # checkout source branch of the pull request
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
