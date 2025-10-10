@@ -102,7 +102,6 @@ export const CollectiveActionsCells = ({
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive,
     isInTemplateOffersPage: offer.isShowcase,
     urlSearchFilters,
     selectedOffererId: selectedOffererId?.toString(),

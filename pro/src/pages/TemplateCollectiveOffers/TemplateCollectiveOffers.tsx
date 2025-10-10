@@ -57,7 +57,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive: true,
     isInTemplateOffersPage: true,
     urlSearchFilters: finalSearchFilters,
     selectedOffererId: offererId ?? '',
