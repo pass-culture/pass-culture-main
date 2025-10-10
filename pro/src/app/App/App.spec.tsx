@@ -8,13 +8,8 @@ import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import type { DeepPartial } from '@/commons/custom_types/utils'
 import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
-import type { RootState } from '@/commons/store/rootReducer'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -95,21 +90,6 @@ describe('App', () => {
     })
   })
 
-  it('should redirect to login if not logged in on a private page', async () => {
-    renderApp({ initialRouterEntries: ['/offres'], user: undefined })
-
-    expect(await screen.findByText('Login page')).toBeInTheDocument()
-  })
-
-  it('should redirect to onboarding if has no user_offerer on private page', async () => {
-    renderApp({
-      user: sharedCurrentUserFactory({ hasUserOfferer: false }),
-      initialRouterEntries: ['/offres'],
-    })
-
-    expect(await screen.findByText('Onboarding page')).toBeInTheDocument()
-  })
-
   it('should not initialize firebase on the adage iframe', async () => {
     vi.spyOn(orejime, 'useOrejime').mockImplementation(() => ({
       consentedToBeamer: false,
@@ -145,58 +125,5 @@ describe('App', () => {
     expect(await screen.findByText('broken page')).toBeInTheDocument()
 
     expect(await screen.findByText('404 page')).toBeInTheDocument()
-  })
-
-  describe('Onboarding status', () => {
-    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
-    const overrides: DeepPartial<RootState> = {
-      user: {
-        currentUser: user,
-      },
-      offerer: currentOffererFactory({
-        currentOfferer: { isOnboarded: false },
-      }),
-    }
-
-    it('should redirect to onboarding if user is not onboarded and tries to go to home page', async () => {
-      renderApp({
-        initialRouterEntries: ['/accueil'],
-        storeOverrides: overrides,
-        user,
-        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
-      })
-
-      expect(
-        await screen.findByText('onboarding didactique')
-      ).toBeInTheDocument()
-    })
-
-    it('should not redirect if user is not onboarded and tries to go to offers', async () => {
-      renderApp({
-        initialRouterEntries: ['/offres'],
-        storeOverrides: overrides,
-        user,
-        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
-      })
-
-      expect(await screen.findByText('Offres')).toBeInTheDocument()
-    })
-
-    it('should redirect to home if user is onboarded and tries to go to onboarding', async () => {
-      renderApp({
-        initialRouterEntries: ['/onboarding'],
-        storeOverrides: {
-          ...overrides,
-          offerer: {
-            currentOfferer: { id: 1, isOnboarded: true },
-            offererNames: [],
-          },
-        },
-        features: ['WIP_ENABLE_PRO_DIDACTIC_ONBOARDING'],
-        user,
-      })
-
-      expect(await screen.findByText('accueil')).toBeInTheDocument()
-    })
   })
 })

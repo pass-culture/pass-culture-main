@@ -1,14 +1,20 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
+type OpenSection = {
+  individual: boolean
+  collective: boolean
+}
+
 interface NavState {
-  isIndividualSectionOpen: boolean
-  isCollectiveSectionOpen: boolean
+  openSection: OpenSection
   selectedPartnerPageId?: string
 }
 
 const initialState: NavState = {
-  isIndividualSectionOpen: true,
-  isCollectiveSectionOpen: true,
+  openSection: {
+    individual: true,
+    collective: true,
+  },
   selectedPartnerPageId: undefined,
 }
 
@@ -16,17 +22,8 @@ const navSlice = createSlice({
   name: 'nav',
   initialState,
   reducers: {
-    setIsIndividualSectionOpen: (
-      state: NavState,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isIndividualSectionOpen = action.payload
-    },
-    setIsCollectiveSectionOpen: (
-      state: NavState,
-      action: PayloadAction<boolean>
-    ) => {
-      state.isCollectiveSectionOpen = action.payload
+    setOpenSection: (state: NavState, action: PayloadAction<OpenSection>) => {
+      state.openSection = action.payload
     },
     setSelectedPartnerPageId: (
       state: NavState,
@@ -39,8 +36,4 @@ const navSlice = createSlice({
 
 export const navReducer = navSlice.reducer
 
-export const {
-  setIsCollectiveSectionOpen,
-  setIsIndividualSectionOpen,
-  setSelectedPartnerPageId,
-} = navSlice.actions
+export const { setOpenSection, setSelectedPartnerPageId } = navSlice.actions

@@ -7,11 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import {
-  type GetOffererResponseModel,
-  type PostOffererResponseModel,
-  Target,
-} from '@/apiClient/v1'
+import { type PostOffererResponseModel, Target } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
@@ -227,47 +223,6 @@ describe('ValidationScreen', () => {
         )
         await userEvent.click(screen.getByText('Valider et créer ma structure'))
         expect(await screen.findByText('accueil')).toBeInTheDocument()
-      })
-
-      it('should redirect to onboarding after submit if user has access to onBoarding and the offerer is not activated', async () => {
-        useHasAccessToDidacticOnboarding.mockReturnValue(true)
-        selectCurrentOffererId.mockReturnValue(null)
-        renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(await screen.findByText('onboarding')).toBeInTheDocument()
-      })
-
-      it('should redirect to home after submit if user has access to onBoarding, but he added a structure that is already onBoarded', async () => {
-        useHasAccessToDidacticOnboarding.mockReturnValue(true)
-        selectCurrentOffererId.mockReturnValue(10)
-        vi.spyOn(api, 'getOfferer').mockResolvedValue({
-          isOnboarded: true,
-        } as GetOffererResponseModel)
-
-        renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(await screen.findByText('accueil')).toBeInTheDocument()
-      })
-
-      it('should redirect to onboarding after submit if user has access to onBoarding, and he added a structure that not onBoarded yet', async () => {
-        useHasAccessToDidacticOnboarding.mockReturnValue(true)
-        selectCurrentOffererId.mockReturnValue(10)
-        vi.spyOn(api, 'getOfferer').mockResolvedValue({
-          isOnboarded: false,
-        } as GetOffererResponseModel)
-
-        renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(await screen.findByText('onboarding')).toBeInTheDocument()
       })
     })
   })

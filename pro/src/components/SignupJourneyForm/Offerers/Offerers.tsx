@@ -14,10 +14,16 @@ import {
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { updateUser } from '@/commons/store/user/reducer'
+import {
+  updateCurrentOfferer,
+  updateOffererNames,
+} from '@/commons/store/offerer/reducer'
+import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
+import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import fullDownIcon from '@/icons/full-down.svg'
@@ -116,9 +122,18 @@ export const Offerers = (): JSX.Element => {
         postalCode: offerer.postalCode,
         siren: offerer.siren ?? '',
       }
-      await api.createOfferer(request)
+      const response = await api.createOfferer(request)
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
+      const { offerersNames } = await api.listOfferersNames()
+      dispatch(updateOffererNames(offerersNames))
+
+      const isLocalStorageAvailable = storageAvailable('localStorage')
+      if (isLocalStorageAvailable) {
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
+      }
+      dispatch(updateCurrentOfferer(null))
+      dispatch(updateUserAccess('unattached'))
       navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error(

@@ -959,7 +959,7 @@ describe('IndividualOffers', () => {
     await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
 
     expect(
-      screen.getByRole('link', { name: 'Créer une offre' })
+      screen.getAllByRole('link', { name: 'Créer une offre' })[1]
     ).toHaveAttribute('href', '/offre/creation?from_banner=banner_video')
   })
 })

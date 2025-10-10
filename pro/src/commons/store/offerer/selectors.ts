@@ -8,6 +8,3 @@ export const selectCurrentOfferer = (state: RootState) =>
 
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.currentOfferer?.id ?? null
-
-export const selectCurrentOffererIsOnboarded = (state: RootState) =>
-  state.offerer.currentOfferer?.isOnboarded ?? null

@@ -2,8 +2,6 @@ import { useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'

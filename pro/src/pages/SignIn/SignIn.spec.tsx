@@ -208,18 +208,6 @@ describe('SignIn', () => {
     })
   })
 
-  describe('when user is signed in', () => {
-    it('should redirect to offerers page', async () => {
-      renderSignIn({ user: sharedCurrentUserFactory() })
-
-      await waitFor(() =>
-        expect(
-          screen.getByText('I’m logged standard user redirect route')
-        ).toBeInTheDocument()
-      )
-    })
-  })
-
   it('should display errors message and focus email input when login failed', async () => {
     renderSignIn()
 

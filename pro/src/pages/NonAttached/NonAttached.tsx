@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer/Footer'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
-const NonAttached = () => {
+export const NonAttached = () => {
   return (
     <FunnelLayout mainHeading="Bienvenue sur votre espace partenaire">
       <Callout

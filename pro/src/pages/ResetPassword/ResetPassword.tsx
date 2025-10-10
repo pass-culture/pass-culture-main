@@ -6,7 +6,6 @@ import { type Params, useNavigate, useParams } from 'react-router'
 import { api } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
@@ -23,8 +22,6 @@ export const ResetPassword = (): JSX.Element => {
   const { token } = useParams<Params>()
   const notify = useNotification()
   const navigate = useNavigate()
-
-  useRedirectLoggedUser()
 
   const invalidTokenHandler = useCallback(() => {
     notify.error('Le lien est invalide ou a expiré. Veuillez recommencer.')

@@ -25,6 +25,9 @@ export const routesSignupJourney: CustomRouteObject[] = [
     element: <ConfirmedAttachment />,
     path: '/inscription/structure/rattachement/confirmation',
     title: 'Confirmation rattachement à une structure - Parcours d’inscription',
+    meta: {
+      canBeUnattached: true,
+    },
   },
   {
     element: <OffererAuthentication />,
