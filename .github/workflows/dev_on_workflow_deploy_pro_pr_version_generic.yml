@@ -48,7 +48,7 @@ jobs:
       description: "The pro (firebase) preview URL"
       pro_url: ${{ steps.firebase-deploy.outputs.details_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.REF }}
       - uses: actions/setup-node@v5
