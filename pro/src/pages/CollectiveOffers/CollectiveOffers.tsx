@@ -13,7 +13,6 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 
@@ -26,10 +25,6 @@ export const CollectiveOffers = (): JSX.Element => {
     ...(storedFilters as Partial<CollectiveSearchFiltersParams>),
     ...urlSearchFilters,
   }
-
-  const isNewOffersAndBookingsActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
 
   const navigate = useNavigate()
   const offerer = useSelector(selectCurrentOfferer)
@@ -73,8 +68,7 @@ export const CollectiveOffers = (): JSX.Element => {
     () => {
       const params = serializeApiCollectiveFilters(
         apiFilters,
-        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-        isNewOffersAndBookingsActive
+        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
       )
 
       return api.getCollectiveOffers(
@@ -95,13 +89,7 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <BasicLayout
-      mainHeading={
-        isNewOffersAndBookingsActive
-          ? 'Offres réservables'
-          : 'Offres collectives'
-      }
-    >
+    <BasicLayout mainHeading={'Offres réservables'}>
       <CollectiveOffersScreen
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}
