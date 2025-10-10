@@ -64,9 +64,6 @@ const matches = (patterns: RegExp[], path: string) =>
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const location = useLocation()
-  const isNewCollectiveOffersStructureEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
@@ -369,22 +366,20 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               id="collective-sublist"
               aria-labelledby="collective-sublist-button"
             >
-              {isNewCollectiveOffersStructureEnabled && (
-                <li>
-                  <NavLink
-                    to="/offres/vitrines"
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Offres vitrines
-                    </span>
-                  </NavLink>
-                </li>
-              )}
+              <li>
+                <NavLink
+                  to="/offres/vitrines"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Offres vitrines
+                  </span>
+                </NavLink>
+              </li>
               <li>
                 <NavLink
                   to="/offres/collectives"
@@ -395,29 +390,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   }
                 >
                   <span className={styles['nav-links-item-without-icon']}>
-                    {isNewCollectiveOffersStructureEnabled
-                      ? 'Offres réservables'
-                      : 'Offres'}
+                    Offres réservables
                   </span>
                 </NavLink>
               </li>
-              {!isNewCollectiveOffersStructureEnabled && (
-                <li>
-                  <NavLink
-                    to="/reservations/collectives"
-                    end
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Réservations
-                    </span>
-                  </NavLink>
-                </li>
-              )}
+
               {venueId && (
                 <li>
                   <NavLink

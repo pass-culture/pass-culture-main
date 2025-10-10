@@ -3,7 +3,6 @@ import cn from 'classnames'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -131,9 +130,6 @@ const CollectiveOfferConfirmation = ({
   const offererId = offer.venue.managingOfferer.id
   const institutionDisplayName = getInstitutionDisplayName(offer)
 
-  const isNewCollectiveOffersStructureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
   const { title, description, icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
@@ -150,11 +146,7 @@ const CollectiveOfferConfirmation = ({
             <ButtonLink
               variant={ButtonVariant.SECONDARY}
               className={styles['confirmation-action']}
-              to={
-                isShowcase && isNewCollectiveOffersStructureActive
-                  ? '/offres/vitrines'
-                  : '/offres/collectives'
-              }
+              to={isShowcase ? '/offres/vitrines' : '/offres/collectives'}
             >
               Voir mes offres
             </ButtonLink>
