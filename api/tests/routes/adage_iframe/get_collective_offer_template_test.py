@@ -55,7 +55,7 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
     return {
         "description": offer.description,
         "id": offer.id,
-        "isExpired": offer.hasBookingLimitDatetimesPassed,
+        "isExpired": False,
         "isSoldOut": False,
         "name": offer.name,
         "venue": {

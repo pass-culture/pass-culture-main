@@ -657,32 +657,6 @@ class CollectiveOffer(
         return self.providerId is not None
 
     @hybrid_property
-    def hasEndDatePassed(self) -> bool:
-        return False
-
-    @hasEndDatePassed.inplace.expression
-    @classmethod
-    def _hasEndDatePassedExpression(cls) -> sa_elements.False_:
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def isSoldOut(self) -> bool:
-        if self.collectiveStock:
-            return self.collectiveStock.isSoldOut
-        return True
-
-    @isSoldOut.inplace.expression
-    def _isSoldOutExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        aliased_collective_booking = sa_orm.aliased(CollectiveBooking)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_booking.collectiveStockId == aliased_collective_stock.id)
-            .where(aliased_collective_booking.status != CollectiveBookingStatus.CANCELLED)
-        )
-
-    @hybrid_property
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
@@ -741,36 +715,17 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasStartDatetimePassed.is_(True))
         )
 
-    @hybrid_property
+    @property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if not self.collectiveStock:
             return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
-    @hasBookingLimitDatetimesPassed.inplace.expression
-    def _hasBookingLimitDatetimesPassedExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_stock.hasBookingLimitDatetimePassed.is_(True))
-        )
-
-    @hybrid_property
+    @property
     def hasEndDatetimePassed(self) -> bool:
         if not self.collectiveStock:
             return False
         return self.collectiveStock.hasEndDatetimePassed
-
-    @hasEndDatetimePassed.inplace.expression
-    @classmethod
-    def _hasEndDatetimePassedExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_stock.hasEndDatetimePassed.is_(True))
-        )
 
     def get_days_until_booking_limit(self) -> int | None:
         if not self.collectiveStock:
@@ -1255,39 +1210,6 @@ class CollectiveOfferTemplate(
         )
 
     @hybrid_property
-    def hasBookingLimitDatetimesPassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasBookingLimitDatetimesPassed.inplace.expression
-    @classmethod
-    def _hasBookingLimitDatetimesPassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def hasStartDatetimePassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasStartDatetimePassed.inplace.expression
-    @classmethod
-    def _hasStartDatetimePassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def hasEndDatetimePassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasEndDatetimePassed.inplace.expression
-    @classmethod
-    def _hasEndDatetimePassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
@@ -1295,17 +1217,6 @@ class CollectiveOfferTemplate(
     @classmethod
     def _isArchivedExpression(cls) -> sa.BinaryExpression[bool]:
         return cls.dateArchived.is_not(sa.null())
-
-    @hybrid_property
-    def isSoldOut(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @isSoldOut.inplace.expression
-    @classmethod
-    def _isSoldOutExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
 
     @property
     def isReleased(self) -> bool:
@@ -1333,18 +1244,14 @@ class CollectiveOfferTemplate(
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"
 
-    @property
-    def is_cancellable_from_offerer(self) -> bool:
-        return False
-
     @hybrid_property
     def is_expired(self) -> bool:
-        return self.hasStartDatetimePassed
+        return False
 
     @is_expired.inplace.expression
     @classmethod
-    def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
-        return cls.hasStartDatetimePassed
+    def _is_expired_expression(cls) -> sa.False_:
+        return sa.sql.expression.false()
 
 
 class CollectiveStock(PcObject, models.Model):
