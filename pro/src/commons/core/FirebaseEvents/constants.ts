@@ -88,12 +88,6 @@ export enum VenueEvents {
   CLICKED_VENUE_PUBLISHED_OFFERS_LINK = 'hasClickedVenuePublishedOffersLink',
 }
 
-export enum CollectiveBookingsEvents {
-  CLICKED_DETAILS_BUTTON_CELL = 'hasClickedDetailsButtonCell',
-  CLICKED_MODIFY_BOOKING_LIMIT_DATE = 'hasClickedModifyBookingLimitDate',
-  CLICKED_SEE_COLLECTIVE_BOOKING = 'hasClickedSeeCollectiveBooking',
-}
-
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
   OFFERS_TRASH_ICON = 'OffersTrashicon',
 }

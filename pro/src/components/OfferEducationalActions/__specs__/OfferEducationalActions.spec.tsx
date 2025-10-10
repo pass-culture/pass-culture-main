@@ -2,18 +2,11 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import {
-  CollectiveBookingStatus,
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferTemplateAllowedAction,
-} from '@/apiClient/v1'
-import * as useAnalytics from '@/app/App/analytics/firebase'
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
-  getCollectiveOfferBookingFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
@@ -142,96 +135,6 @@ describe('OfferEducationalActions', () => {
       screen.getByRole('button', { name: 'Mettre en pause' })
     ).toBeInTheDocument()
     expect(screen.getByText('publiée')).toBeInTheDocument()
-  })
-
-  it('should display booking link for booked offer', () => {
-    const booking = getCollectiveOfferBookingFactory()
-
-    const offer = getCollectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-      booking,
-    })
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer,
-    })
-    expect(
-      screen.getByRole('link', { name: 'Voir la réservation' })
-    ).toHaveAttribute(
-      'href',
-      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${booking.id}`
-    )
-    expect(screen.getByText('réservée')).toBeInTheDocument()
-  })
-
-  it('should display booking link for used booking', () => {
-    const offer = getCollectiveOfferFactory({
-      displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
-      booking: getCollectiveOfferBookingFactory({
-        id: 1,
-        status: CollectiveBookingStatus.USED,
-      }),
-    })
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer,
-    })
-    expect(
-      screen.getByRole('link', { name: 'Voir la réservation' })
-    ).toHaveAttribute(
-      'href',
-      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1`
-    )
-    expect(screen.getByText('remboursée')).toBeInTheDocument()
-  })
-
-  it('should not display booking link for cancelled booking', () => {
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer: getCollectiveOfferFactory({
-        booking: getCollectiveOfferBookingFactory({
-          id: 1,
-          status: CollectiveBookingStatus.CANCELLED,
-        }),
-      }),
-    })
-    expect(
-      screen.queryByRole('link', {
-        name: 'Voir la réservation',
-      })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should log event when clicked on booking link', async () => {
-    const mockLogEvent = vi.fn()
-    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-      ...vi.importActual('@/app/App/analytics/firebase'),
-      logEvent: mockLogEvent,
-    }))
-    renderOfferEducationalActions({
-      ...defaultValues,
-      offer: getCollectiveOfferFactory({
-        booking: getCollectiveOfferBookingFactory({
-          id: 1,
-          status: CollectiveBookingStatus.CONFIRMED,
-        }),
-      }),
-    })
-    const bookingLink = screen.getByRole('link', {
-      name: 'Voir la réservation',
-    })
-    await userEvent.click(bookingLink)
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-      {
-        from: '/offre/collectif/recapitulatif',
-        offerId: 8,
-        offerType: 'collective',
-        offererId: '1',
-      }
-    )
   })
 
   it('should not display adage publish button when action is not allowed', () => {

@@ -1,7 +1,5 @@
 import cn from 'classnames'
 
-import { useAnalytics } from '@/app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -20,17 +18,10 @@ export const DetailsButtonCell = ({
   className,
   onClick,
 }: DetailsButtonCellProps) => {
-  const { logEvent } = useAnalytics()
-
   return (
     <div className={cn(className)}>
       <Button
-        onClick={() => {
-          onClick()
-          logEvent(CollectiveBookingsEvents.CLICKED_DETAILS_BUTTON_CELL, {
-            from: location.pathname,
-          })
-        }}
+        onClick={onClick}
         variant={ButtonVariant.TERNARY}
         icon={isExpanded ? fullUpIcon : fullDownIcon}
         iconPosition={IconPositionEnum.RIGHT}
