@@ -142,7 +142,7 @@ describe('CollectiveOfferConfirmation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should link to /offres/vitrines when isShowcase and isNewCollectiveOffersStructureActive are true', async () => {
+  it('should link to /offres/vitrines when offer is template', async () => {
     vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
       getCollectiveOfferFactory({
         id: mockedOfferId,
@@ -152,9 +152,7 @@ describe('CollectiveOfferConfirmation', () => {
       })
     )
 
-    renderWithProviders(<CollectiveOfferConfirmation />, {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-    })
+    renderWithProviders(<CollectiveOfferConfirmation />)
     await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
 
     const link = screen.getByRole('link', { name: /voir mes offres/i })

@@ -45,16 +45,23 @@ describe('SideNavLinks', () => {
   it('should toggle collective section on collective section button click', async () => {
     renderSideNavLinks()
 
+    expect(
+      screen.getByRole('link', { name: 'Offres vitrines' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Offres réservables' })
+    ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
-    expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(1)
-    await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
-    expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+    expect(
+      screen.queryByRole('link', { name: 'Offres vitrines' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', { name: 'Offres réservables' })
+    ).not.toBeInTheDocument()
   })
 
-  it('should show template and bookable offers links and hide bookings link in collective offer section link when FF is enabled', async () => {
-    renderSideNavLinks({
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-    })
+  it('should show template and bookable offers links', async () => {
+    renderSideNavLinks()
 
     // close individual section
     await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
@@ -64,24 +71,6 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Offres réservables' })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByRole('link', { name: 'Réservations' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not show template offers link in collective offer section link when FF is disabled', async () => {
-    renderSideNavLinks()
-
-    // close individual section
-    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
-
-    expect(
-      screen.queryByRole('link', { name: 'Offres vitrines' })
-    ).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Offres' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('link', { name: 'Réservations' })
     ).toBeInTheDocument()
   })
 
@@ -264,12 +253,22 @@ describe('SideNavLinks', () => {
           initialRouterEntries: ['/offres'],
         })
 
-        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+        expect(
+          screen.getByRole('link', { name: 'Offres vitrines' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Offres réservables' })
+        ).toBeInTheDocument()
 
         vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
         rerender(<SideNavLinks isLateralPanelOpen={true} />)
 
-        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(1)
+        expect(
+          screen.queryByRole('link', { name: 'Offres vitrines' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', { name: 'Offres réservables' })
+        ).not.toBeInTheDocument()
       })
 
       it('should collapse both section when location path doesnt match any page', () => {
@@ -279,13 +278,31 @@ describe('SideNavLinks', () => {
           initialRouterEntries: ['/'],
         })
 
-        expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
+        expect(screen.getByRole('link', { name: 'Offres' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Réservations' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Offres vitrines' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Offres réservables' })
+        ).toBeInTheDocument()
 
         vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
         rerender(<SideNavLinks isLateralPanelOpen={true} />)
 
         expect(
           screen.queryByRole('link', { name: 'Offres' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', { name: 'Réservations' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', { name: 'Offres vitrines' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('link', { name: 'Offres réservables' })
         ).not.toBeInTheDocument()
       })
     })
