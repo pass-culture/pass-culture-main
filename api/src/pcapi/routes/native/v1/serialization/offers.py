@@ -26,7 +26,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_metadata
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.api import extract_youtube_video_id
+from pcapi.core.offers.api import extract_video_id
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
@@ -366,7 +366,7 @@ class BaseOfferResponseGetterDict(GetterDict):
             if not (offer.metaData and offer.metaData.videoUrl):
                 return None
 
-            video_id = offer.metaData.videoExternalId or extract_youtube_video_id(offer.metaData.videoUrl)
+            video_id = offer.metaData.videoExternalId or extract_video_id(offer.metaData.videoUrl)
             if not video_id:
                 return None
 

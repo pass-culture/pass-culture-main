@@ -114,6 +114,15 @@ OFFER_LIKE_MODELS = {
 
 VIDEO_URL_CACHE_TTL = 24 * 60 * 60  # 24 hours
 YOUTUBE_INFO_CACHE_PREFIX = "youtube_video_"
+# This regex is a replicate of what exists frontend-side in isYoutubeValid.ts file
+# Mind that frontend / backend controls regarding video url always match.
+YOUTUBE_REGEX = (
+    r"^(https?://)"
+    r"(www\.)?"
+    r"(m\.)?"
+    r"(youtube\.com\b|youtu\.be\b)"
+    r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
+)
 
 
 class T_UNCHANGED(enum.Enum):
@@ -289,23 +298,36 @@ def remove_video_data_from_offer_metadata(
 
 
 def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
-    video_id = extract_youtube_video_id(video_url)
+    """
+    This method tries to fetch video metadata that have been stored in redis
+
+    If no metadata have been found in the cache for the given url, it requests the video API again to fetch its metadata
+    (and store it in redis cache for later purpose)
+
+    It returns the video metadata, whether it has been found in the redis cache or requested again.
+
+    It returns None if no metadata have been found requesting the video API
+    """
+    video_id = extract_video_id(video_url)
     if video_id is None:
         return None
     cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
     if cached_video_metadata is None:
-        video_metadata = youtube.get_video_metadata(video_id=video_id)
-        if video_metadata is not None:
+        video_metadata_retry = youtube.get_video_metadata(video_id=video_id)
+        if video_metadata_retry is not None:
             json_video_metadata = json.dumps(
                 {
-                    "title": video_metadata.title,
-                    "thumbnail_url": video_metadata.thumbnail_url,
-                    "duration": video_metadata.duration,
+                    "title": video_metadata_retry.title,
+                    "thumbnail_url": video_metadata_retry.thumbnail_url,
+                    "duration": video_metadata_retry.duration,
                 }
             )
             current_app.redis_client.set(
-                f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
+                f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata_retry.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
             )  # 24 hours
+            return video_metadata_retry
+        else:
+            return None
     else:
         video_metadata_dict = json.loads(cached_video_metadata)
         video_metadata = youtube.YoutubeVideoMetadata(
@@ -317,9 +339,9 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
     return video_metadata
 
 
-def update_video_and_metadata(video_url: str, offer: offers_models.Offer, provider_id: int | None = None) -> None:
+def upsert_video_and_metadata(video_url: str, offer: offers_models.Offer, provider_id: int | None = None) -> None:
     video_metadata = get_video_metadata_from_cache(video_url)
-    video_id = extract_youtube_video_id(video_url)
+    video_id = extract_video_id(video_url)
     if video_metadata is not None:
         if offer.metaData is None:
             offer.metaData = models.OfferMetaData(offer=offer)
@@ -369,7 +391,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     if "videoUrl" in fields:
         if new_video_url := fields.pop("videoUrl", None):
-            update_video_and_metadata(new_video_url, offer)
+            upsert_video_and_metadata(new_video_url, offer)
         elif offer.metaData and offer.metaData.videoUrl:
             remove_video_data_from_offer_metadata(offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl)
 
@@ -2844,20 +2866,8 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
     )
 
 
-def extract_youtube_video_id(url: str) -> str | None:
-    if not isinstance(url, str):
-        return None
-    # This regex is a replicate of what exists frontend-side
-    # Mind that frontend / backend controls always match regarding video url.
-    youtube_regex = (
-        r"^(https?://)"
-        r"(www\.)?"
-        r"(m\.)?"
-        r"(youtube\.com\b|youtu\.be\b)"
-        r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
-    )
-
-    pattern = re.compile(youtube_regex)
+def extract_video_id(url: str) -> str | None:
+    pattern = re.compile(YOUTUBE_REGEX)
     if match := pattern.match(url):
         return match.group("video_id")
 
