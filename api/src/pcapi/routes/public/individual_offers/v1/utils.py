@@ -175,7 +175,7 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
 
 def update_or_delete_video(video_url: str | None, offer: offers_models.Offer, provider_id: int) -> None:
     if video_url:
-        offers_api.update_video_and_metadata(video_url, offer, provider_id)
+        offers_api.upsert_video_and_metadata(video_url, offer, provider_id)
     elif offer.metaData and offer.metaData.videoUrl:
         offers_api.remove_video_data_from_offer_metadata(
             offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl, provider_id
@@ -183,26 +183,7 @@ def update_or_delete_video(video_url: str | None, offer: offers_models.Offer, pr
 
 
 def save_video(video_url: str, offer: offers_models.Offer, provider_id: int) -> None:
-    video_metadata = offers_api.get_video_metadata_from_cache(video_url)
-    video_id = offers_api.extract_youtube_video_id(video_url)
-    if video_metadata is not None:
-        offer.metaData = offers_models.OfferMetaData(offer=offer)
-        logger.info(
-            "Video has been added to offer",
-            extra={
-                "offer_id": offer.id,
-                "venue_id": offer.venueId,
-                "video_url": video_url,
-                "provider_id": provider_id,
-            },
-            technical_message_id="offer.video.added",
-        )
-        offer.metaData.videoExternalId = video_id
-        offer.metaData.videoTitle = video_metadata.title
-        offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
-        offer.metaData.videoDuration = video_metadata.duration
-        offer.metaData.videoUrl = video_url
-        db.session.add(offer.metaData)
+    offers_api.upsert_video_and_metadata(video_url, offer, provider_id)
 
 
 def get_event_with_details(event_id: int) -> offers_models.Offer | None:

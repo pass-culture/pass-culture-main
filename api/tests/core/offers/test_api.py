@@ -1470,14 +1470,10 @@ class CreateDraftOfferTest:
 class GetVideoMetadataFromCacheTest:
     VIDEO_ID = "WtM4OW2qVjY"
 
-    def test_get_video_metadata_from_cache_no_video_id(self):
-        video_metadata = api.get_video_metadata_from_cache(None)
-        assert video_metadata is None
-
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
     def test_get_video_metadata_from_cache_with_data_in_cache(self, app):
         video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = api.extract_video_id(video_url)
         app.redis_client.set(
             f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
@@ -1533,7 +1529,7 @@ class UpdateDraftOfferTest:
     @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
     def test_new_video_url(self, get_video_metadata_from_cache_mock):
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = api.extract_video_id(video_url)
         get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
             id=video_id,
             title="Title",
@@ -5181,5 +5177,5 @@ class VideoIdExtractionTest:
             ("ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ", None),
         ],
     )
-    def test_extract_youtube_video_id_from_url(self, url, video_id):
-        assert api.extract_youtube_video_id(url) == video_id
+    def test_extract_video_id_from_url(self, url, video_id):
+        assert api.extract_video_id(url) == video_id
