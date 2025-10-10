@@ -22,6 +22,6 @@
     </td>
     <td class="text-center">{{ row.products_count }}</td>
     <td class="text-center">{{ row.aliases_count }}</td>
-    <td>{{ artist.date_created | format_date("%d/%m/%Y") if artist.date_created else '-' }}</td>
+    <td>{{ artist.date_created | format_date if artist.date_created else '-' }}</td>
   </tr>
 {% endfor %}

@@ -15,6 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
@@ -633,9 +634,18 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert response.status_code == 400
         assert html_parser.extract_warnings(response.data) == [f"ID invalide pour {field} : 1)"]
 
-    def test_list_caledonian_booking_shows_xfp_amounts(self, authenticated_client):
+    def test_list_caledonian_booking(self, authenticated_client):
         nc_booking = bookings_factories.ReimbursedBookingFactory(
-            user=users_factories.CaledonianBeneficiaryFactory(), token="NC988F", amount=150.0
+            user=users_factories.CaledonianBeneficiaryFactory(),
+            token="NC988F",
+            amount=150.0,
+            dateCreated=datetime.datetime.combine(datetime.date.today(), datetime.time.min),
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=datetime.datetime(2035, 12, 31, 20, 30),
+                offer__offererAddress=offerers_factories.OffererAddressFactory(
+                    address=geography_factories.CaledonianAddressFactory()
+                ),
+            ),
         )
         bank_account = finance_factories.BankAccountFactory()
         offerers_factories.VenueBankAccountLinkFactory(venue=nc_booking.venue, bankAccount=bank_account)
@@ -654,6 +664,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID résa"] == str(nc_booking.id)
         assert rows[0]["Montant"] == "150,00 € (17900 CFP)"
+        assert rows[0]["Date de réservation"] == f"{(datetime.date.today()).strftime('%d/%m/%Y')} à 11h00"
+        assert rows[0]["Date de l'évènement"] == "01/01/2036 à 07h30"
 
         reimbursement_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
         assert "Total payé par l'utilisateur : 150,00 € (17900 CFP)" in reimbursement_data

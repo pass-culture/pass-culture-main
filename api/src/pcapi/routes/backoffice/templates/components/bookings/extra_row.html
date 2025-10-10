@@ -28,25 +28,25 @@
               {% if booking.dateUsed %}
                 <li>
                   Date de validation :
-                  {{ booking.dateUsed | format_date_time }}
+                  {{ booking.dateUsed | format_date_time(offer.address) }}
                 </li>
               {% endif %}
               {% if booking.confirmationDate %}
                 <li>
                   Date de confirmation de réservation :
-                  {{ booking.confirmationDate | format_date_time }}
+                  {{ booking.confirmationDate | format_date_time(offer.address) }}
                 </li>
               {% endif %}
               {% if stock.bookingLimitDatetime %}
                 <li>
                   Date limite de réservation :
-                  {{ stock.bookingLimitDatetime | format_date_time }}
+                  {{ stock.bookingLimitDatetime | format_date_time(offer.address) }}
                 </li>
               {% endif %}
               {% if booking.isCancelled %}
                 <li>
                   Date d'annulation :
-                  {{ booking.cancellationDate | format_date_time }}
+                  {{ booking.cancellationDate | format_date_time(offer.address) }}
                 </li>
                 <li>
                   Raison de l'annulation :

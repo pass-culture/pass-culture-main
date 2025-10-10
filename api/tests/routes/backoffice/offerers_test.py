@@ -1199,7 +1199,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["Type"] == "Commentaire interne"
-        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Commentaire"] == action.comment
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
@@ -1357,22 +1357,22 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert len(rows) == 4
 
         assert rows[0]["Type"] == "Entité juridique validée"
-        assert rows[0]["Date/Heure"] == "Le 06/10/2022 à 18h04"  # CET (Paris time)
+        assert rows[0]["Date/Heure"] == "06/10/2022 à 18h04"  # CET (Paris time)
         assert rows[0]["Commentaire"] == ""
         assert rows[0]["Auteur"] == admin.full_name
 
         assert rows[1]["Type"] == "Commentaire interne"
-        assert rows[1]["Date/Heure"] == "Le 05/10/2022 à 17h03"  # CET (Paris time)
+        assert rows[1]["Date/Heure"] == "05/10/2022 à 17h03"  # CET (Paris time)
         assert rows[1]["Commentaire"] == "Documents reçus"
         assert rows[1]["Auteur"] == legit_user.full_name
 
         assert rows[2]["Type"] == "Entité juridique mise en attente"
-        assert rows[2]["Date/Heure"] == "Le 04/10/2022 à 16h02"  # CET (Paris time)
+        assert rows[2]["Date/Heure"] == "04/10/2022 à 16h02"  # CET (Paris time)
         assert rows[2]["Commentaire"] == "Documents complémentaires demandés"
         assert rows[2]["Auteur"] == admin.full_name
 
         assert rows[3]["Type"] == "Nouvelle entité juridique"
-        assert rows[3]["Date/Heure"] == "Le 03/10/2022 à 15h01"  # CET (Paris time)
+        assert rows[3]["Date/Heure"] == "03/10/2022 à 15h01"  # CET (Paris time)
         assert rows[3]["Commentaire"] == ""
         assert rows[3]["Auteur"] == user_offerer.user.full_name
 
