@@ -12,7 +12,6 @@ import {
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -90,11 +89,6 @@ export function CollectiveOffersActionsBar({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
-
-  const isNewOffersAndBookingsActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const deActivateButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -319,9 +313,6 @@ export function CollectiveOffersActionsBar({
         </Button>
       </>
     )
-    if (!isNewOffersAndBookingsActive) {
-      return templateCTAs
-    }
     if (areTemplateOffers) {
       return templateCTAs
     }
