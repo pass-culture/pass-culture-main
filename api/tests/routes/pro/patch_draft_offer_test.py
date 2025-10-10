@@ -11,10 +11,10 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
-from pcapi.core.offers import api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.videos import api as videos_api
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -40,7 +40,8 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        video_id = "WtM4OW2qVjY"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         data = {
             "name": "New name",
             "description": "New description",
@@ -48,9 +49,8 @@ class Returns200Test:
             "extraData": {"gtl_id": "07000000"},
             "videoUrl": video_url,
         }
-        video_id = api.extract_video_id(video_url)
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -439,10 +439,10 @@ class Returns200Test:
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
-        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_video_id(video_url)
+        video_id = "l73rmrLTHQc"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -473,10 +473,10 @@ class Returns200Test:
             idAtProvider="id_at_provider",
         )
 
-        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_video_id(video_url)
+        video_id = "l73rmrLTHQc"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",

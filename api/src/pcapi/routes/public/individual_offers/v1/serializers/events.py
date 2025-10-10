@@ -7,8 +7,8 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
+from pcapi.core.videos import api as videos_api
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1 import base_serialization
@@ -93,7 +93,7 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
         cls,
         video_url: pydantic_v1.HttpUrl | None,
     ) -> pydantic_v1.HttpUrl | None:
-        if video_url and not offers_api.extract_video_id(video_url):
+        if video_url and not videos_api.extract_video_id(video_url):
             raise ValueError(
                 "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
             )
@@ -112,7 +112,7 @@ class EventOfferEdition(v1_serialization.OfferEditionBase):
         cls,
         video_url: pydantic_v1.HttpUrl | None,
     ) -> pydantic_v1.HttpUrl | None:
-        if video_url and not offers_api.extract_video_id(video_url):
+        if video_url and not videos_api.extract_video_id(video_url):
             raise ValueError(
                 "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
             )

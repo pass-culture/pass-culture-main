@@ -1,7 +1,7 @@
 from pydantic.v1 import HttpUrl
 
-from pcapi.core.offers import api
 from pcapi.core.offers import models
+from pcapi.core.videos import api as videos_api
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -17,7 +17,7 @@ def check_video_url(video_url: HttpUrl | None) -> str | None:
     if not video_url:
         return None
 
-    video_id = api.extract_video_id(video_url)
+    video_id = videos_api.extract_video_id(video_url)
     if not video_id:
         raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
     return video_id
