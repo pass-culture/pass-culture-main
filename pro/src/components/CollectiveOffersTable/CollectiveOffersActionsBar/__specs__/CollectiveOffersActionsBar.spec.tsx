@@ -85,8 +85,8 @@ describe('ActionsBar', () => {
     vi.spyOn(api, 'patchCollectiveOffersArchive').mockResolvedValue()
   })
 
-  it('should have publish, hide, archive, cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is not active', () => {
-    renderActionsBar(props)
+  it('should have publish, hide, archive, cancel CTAs offers are template', () => {
+    renderActionsBar({ ...props, areTemplateOffers: true })
 
     expect(
       screen.getByText('Publier', { selector: 'button' })
@@ -102,29 +102,8 @@ describe('ActionsBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should have publish, hide, archive, cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offers are template', () => {
-    renderActionsBar({ ...props, areTemplateOffers: true }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-
-    expect(
-      screen.getByText('Publier', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Mettre en pause', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Archiver', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Annuler', { selector: 'button' })
-    ).toBeInTheDocument()
-  })
-
-  it('should have archive and cancel CTAs when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offers are bookable', () => {
-    renderActionsBar({ ...props, areTemplateOffers: false }, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
+  it('should have archive and cancel CTAs when and offers are bookable', () => {
+    renderActionsBar({ ...props, areTemplateOffers: false })
 
     expect(
       screen.queryByText('Publier', { selector: 'button' })
@@ -164,10 +143,11 @@ describe('ActionsBar', () => {
     expect(screen.getByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
 
-  it('should hide selected offers when CAN_HIDE action is allowed', async () => {
+  it('should hide selected offers when CAN_HIDE action is allowed and offers are template', async () => {
     renderActionsBar({
       ...props,
       areAllOffersSelected: false,
+      areTemplateOffers: true,
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
@@ -242,38 +222,11 @@ describe('ActionsBar', () => {
     )
   })
 
-  it('should show an error message when an error occurs after clicking on "Mettre en pause" button when a bookable offer is selected', async () => {
-    renderActionsBar({
-      ...props,
-      areAllOffersSelected: false,
-      selectedOffers: [
-        collectiveOfferFactory({
-          id: 1,
-          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          isShowcase: true,
-        }),
-        collectiveOfferFactory({
-          id: 2,
-          displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        }),
-      ],
-    })
-
-    await userEvent.click(screen.getByText('Mettre en pause'))
-    const confirmDeactivateButton = screen.getAllByText('Mettre en pause')[1]
-    await userEvent.click(confirmDeactivateButton)
-
-    expect(screen.getByText('Une erreur est survenue'))
-
-    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
-      0
-    )
-  })
-
   it('should only make one call if the ids all come from template offer', async () => {
     renderActionsBar({
       ...props,
       areAllOffersSelected: false,
+      areTemplateOffers: true,
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
@@ -389,7 +342,6 @@ describe('ActionsBar', () => {
   it('should not archive offers on click on "Archiver" when at least one offer cannot be archived', async () => {
     renderActionsBar({
       ...props,
-
       selectedOffers: [
         collectiveOfferFactory({
           id: 1,
@@ -416,7 +368,7 @@ describe('ActionsBar', () => {
     ).toBeInTheDocument()
   })
 
-  it('should refresh the offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is disabled', async () => {
+  it('should refresh the bookable offers list when the offer status is modified', async () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
@@ -434,26 +386,23 @@ describe('ActionsBar', () => {
     await userEvent.click(confirmArchivingButton)
 
     expect(mockMutate).toHaveBeenCalledWith(
-      expect.arrayContaining(['getCollectiveOffers'])
+      expect.arrayContaining(['getCollectiveOffersBookable'])
     )
   })
 
-  it('should refresh the template offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is enabled', async () => {
-    renderActionsBar(
-      {
-        ...props,
-        areTemplateOffers: true,
-        selectedOffers: [
-          collectiveOfferFactory({
-            isShowcase: true,
-            displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
-            hasBookingLimitDatetimesPassed: false,
-            allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
-          }),
-        ],
-      },
-      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
-    )
+  it('should refresh the template offers list when the offer status is modified', async () => {
+    renderActionsBar({
+      ...props,
+      areTemplateOffers: true,
+      selectedOffers: [
+        collectiveOfferFactory({
+          isShowcase: true,
+          displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
+          hasBookingLimitDatetimesPassed: false,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+        }),
+      ],
+    })
 
     await userEvent.click(screen.getByText('Publier'))
 
