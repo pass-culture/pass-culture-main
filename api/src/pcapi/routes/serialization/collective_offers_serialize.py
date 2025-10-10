@@ -456,11 +456,20 @@ def get_collective_offer_location_model(
 
 class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        offer = self._obj
+
         if key == "location":
-            return get_collective_offer_location_model(self._obj)
+            return get_collective_offer_location_model(offer)
 
         if key == "history":
-            return collective_history_serialize.get_collective_offer_history(self._obj)
+            return collective_history_serialize.get_collective_offer_history(offer)
+
+        # we return these fields for a template for now
+        # we can remove this once the GET routes are separated
+        if key in ("hasBookingLimitDatetimesPassed", "isCancellable") and isinstance(
+            offer, educational_models.CollectiveOfferTemplate
+        ):
+            return False
 
         return super().get(key, default)
 
