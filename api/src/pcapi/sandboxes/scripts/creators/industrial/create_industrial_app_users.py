@@ -57,6 +57,7 @@ def create_industrial_app_users() -> dict[str, User]:
     other_users = create_industrial_app_other_users()
     general_public_users = create_industrial_app_general_public_users()
     short_email_users = create_short_email_beneficiaries()
+    create_special_users()
 
     app_users = dict(
         beneficiaries, **underage_beneficiaries, **other_users, **general_public_users, **short_email_users
@@ -327,3 +328,19 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         user_by_email[user.email] = user
 
     return user_by_email
+
+
+def create_special_users() -> None:
+    logger.info("create_industrial_app_special_beneficiaries")
+    users = 0
+
+    users_factories.BeneficiaryFactory.create(
+        dateCreated=datetime.combine(date.today(), time(0, 0)) - relativedelta(days=3),
+        firstName="Jeune",
+        lastName="Expiré",
+        deposit__source="sandbox",
+        beneficiaryFraudChecks__dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
+    )
+    users += 1
+
+    logger.info("created %d beneficiaries", users)

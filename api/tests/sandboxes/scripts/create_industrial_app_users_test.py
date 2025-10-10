@@ -13,8 +13,8 @@ from pcapi.sandboxes.scripts.creators.test_cases import create_users_for_credit_
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()
-        assert db.session.query(User).count() == 46
-        assert db.session.query(finance_models.Deposit).count() == 54
+        assert db.session.query(User).count() == 47
+        assert db.session.query(finance_models.Deposit).count() == 55
 
         ex_underage = db.session.query(User).filter_by(email="exunderage_18@example.com").first()
         ex_beneficiary = db.session.query(User).filter_by(email="exbene_20@example.com").first()
