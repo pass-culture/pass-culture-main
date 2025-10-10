@@ -93,33 +93,30 @@ class ExtendedSpecTree(SpecTree):
 
     def _get_model_definitions(self) -> dict[str, Any]:
         """
-        This is the same logic as SpecTree._get_model_definitions
-        EXCEPT the SpecTree version keeps the first occurence of a Model if there are several Models with the same name
-        We currently keep the last occurence instead
-        We should rename models that have the same name as another model, then we can remove this overriden method
+        Return the result from SpecTree._get_model_definitions
+        Raise an error if we see the same model key twice with different values
         """
         definitions = {}
+        errors = []
 
-        # store the model value for each key
-        # this way we can log a warning when we override a key with a different value
-        duplicates = {}
-
+        # inspired from SpecTree._get_model_definitions
         for name, schema in self.models.items():
-            # handle pydantic v1 & v2 def keys
             for def_key in ["definitions", "$defs"]:
                 if def_key in schema:
                     for key, value in schema[def_key].items():
                         composed_key = self.nested_naming_strategy(name, key)
 
-                        if composed_key not in duplicates:
-                            duplicates[composed_key] = value
-                        elif value != duplicates[composed_key]:
-                            logger.warning("Model with key %s is already present in the definitions", composed_key)
+                        if composed_key not in definitions:
+                            definitions[composed_key] = value
+                        elif value != definitions[composed_key]:
+                            errors.append(composed_key)
 
-                        definitions[composed_key] = value
-                    del schema[def_key]
+        if errors:
+            raise ValueError(
+                f"Some models appeared multiple times in the definitions with different values: {','.join(errors)}"
+            )
 
-        return definitions
+        return super()._get_model_definitions()
 
 
 class ExtendResponse(Response):

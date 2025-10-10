@@ -1603,41 +1603,6 @@
                 "title": "CONFERENCE_read",
                 "type": "object"
             },
-            "CategoryEnum": {
-                "description": "An enumeration.",
-                "enum": [
-                    "ABO_BIBLIOTHEQUE",
-                    "ABO_CONCERT",
-                    "ABO_LIVRE_NUMERIQUE",
-                    "ABO_MEDIATHEQUE",
-                    "ABO_PLATEFORME_MUSIQUE",
-                    "ABO_PLATEFORME_VIDEO",
-                    "ABO_PRATIQUE_ART",
-                    "ABO_PRESSE_EN_LIGNE",
-                    "ABO_SPECTACLE",
-                    "ACHAT_INSTRUMENT",
-                    "APP_CULTURELLE",
-                    "AUTRE_SUPPORT_NUMERIQUE",
-                    "CAPTATION_MUSIQUE",
-                    "CARTE_JEUNES",
-                    "CARTE_MUSEE",
-                    "LIVRE_AUDIO_PHYSIQUE",
-                    "LIVRE_NUMERIQUE",
-                    "LOCATION_INSTRUMENT",
-                    "PARTITION",
-                    "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                    "PODCAST",
-                    "PRATIQUE_ART_VENTE_DISTANCE",
-                    "SPECTACLE_ENREGISTRE",
-                    "SUPPORT_PHYSIQUE_FILM",
-                    "TELECHARGEMENT_LIVRE_AUDIO",
-                    "TELECHARGEMENT_MUSIQUE",
-                    "VISITE_VIRTUELLE",
-                    "VOD"
-                ],
-                "title": "CategoryEnum",
-                "type": "string"
-            },
             "CollectiveBookingResponseModel": {
                 "properties": {
                     "cancellationLimitDate": {
@@ -2473,6 +2438,41 @@
                 ],
                 "title": "EacFormat"
             },
+            "EventCategoryEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ACTIVATION_EVENT",
+                    "ATELIER_PRATIQUE_ART",
+                    "CINE_PLEIN_AIR",
+                    "CONCERT",
+                    "CONCOURS",
+                    "CONFERENCE",
+                    "DECOUVERTE_METIERS",
+                    "EVENEMENT_CINE",
+                    "EVENEMENT_JEU",
+                    "EVENEMENT_MUSIQUE",
+                    "EVENEMENT_PATRIMOINE",
+                    "FESTIVAL_ART_VISUEL",
+                    "FESTIVAL_CINE",
+                    "FESTIVAL_LIVRE",
+                    "FESTIVAL_MUSIQUE",
+                    "FESTIVAL_SPECTACLE",
+                    "LIVESTREAM_EVENEMENT",
+                    "LIVESTREAM_MUSIQUE",
+                    "LIVESTREAM_PRATIQUE_ARTISTIQUE",
+                    "RENCONTRE_EN_LIGNE",
+                    "RENCONTRE_JEU",
+                    "RENCONTRE",
+                    "SALON",
+                    "SEANCE_CINE",
+                    "SEANCE_ESSAI_PRATIQUE_ART",
+                    "SPECTACLE_REPRESENTATION",
+                    "VISITE_GUIDEE",
+                    "VISITE"
+                ],
+                "title": "EventCategoryEnum",
+                "type": "string"
+            },
             "EventCategoryResponse": {
                 "properties": {
                     "conditionalFields": {
@@ -2484,7 +2484,7 @@
                         "type": "object"
                     },
                     "id": {
-                        "$ref": "#/components/schemas/CategoryEnum"
+                        "$ref": "#/components/schemas/EventCategoryEnum"
                     }
                 },
                 "required": [
@@ -6492,6 +6492,41 @@
                 "title": "PriceCategoryResponse",
                 "type": "object"
             },
+            "ProductCategoryEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ABO_BIBLIOTHEQUE",
+                    "ABO_CONCERT",
+                    "ABO_LIVRE_NUMERIQUE",
+                    "ABO_MEDIATHEQUE",
+                    "ABO_PLATEFORME_MUSIQUE",
+                    "ABO_PLATEFORME_VIDEO",
+                    "ABO_PRATIQUE_ART",
+                    "ABO_PRESSE_EN_LIGNE",
+                    "ABO_SPECTACLE",
+                    "ACHAT_INSTRUMENT",
+                    "APP_CULTURELLE",
+                    "AUTRE_SUPPORT_NUMERIQUE",
+                    "CAPTATION_MUSIQUE",
+                    "CARTE_JEUNES",
+                    "CARTE_MUSEE",
+                    "LIVRE_AUDIO_PHYSIQUE",
+                    "LIVRE_NUMERIQUE",
+                    "LOCATION_INSTRUMENT",
+                    "PARTITION",
+                    "PLATEFORME_PRATIQUE_ARTISTIQUE",
+                    "PODCAST",
+                    "PRATIQUE_ART_VENTE_DISTANCE",
+                    "SPECTACLE_ENREGISTRE",
+                    "SUPPORT_PHYSIQUE_FILM",
+                    "TELECHARGEMENT_LIVRE_AUDIO",
+                    "TELECHARGEMENT_MUSIQUE",
+                    "VISITE_VIRTUELLE",
+                    "VOD"
+                ],
+                "title": "ProductCategoryEnum",
+                "type": "string"
+            },
             "ProductCategoryResponse": {
                 "properties": {
                     "conditionalFields": {
@@ -6503,7 +6538,7 @@
                         "type": "object"
                     },
                     "id": {
-                        "$ref": "#/components/schemas/CategoryEnum"
+                        "$ref": "#/components/schemas/ProductCategoryEnum"
                     },
                     "locationType": {
                         "anyOf": [

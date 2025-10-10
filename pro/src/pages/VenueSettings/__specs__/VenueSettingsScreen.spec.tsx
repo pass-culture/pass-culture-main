@@ -47,6 +47,7 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
             id: 13,
             hasOffererProvider: false,
             isActive: true,
+            enabledForPro: true,
           },
           quantity: 0,
           isDuo: true,
@@ -100,18 +101,21 @@ describe('VenueSettingsScreen', () => {
         id: 12,
         hasOffererProvider: false,
         isActive: true,
+        enabledForPro: true,
       },
       {
         name: 'Allociné',
         id: 13,
         hasOffererProvider: false,
         isActive: true,
+        enabledForPro: true,
       },
       {
         name: 'Ticket Buster',
         id: 14,
         hasOffererProvider: true,
         isActive: true,
+        enabledForPro: true,
       },
     ])
   })

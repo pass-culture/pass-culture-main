@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type ProviderResponse = {
+export type ProviderOfVenueResponse = {
   enabledForPro: boolean;
   hasOffererProvider: boolean;
   id: number;
