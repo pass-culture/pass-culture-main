@@ -258,9 +258,6 @@ def create_draft_offer(
         product=product,
     )
 
-    if body.video_url:
-        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-        db.session.add(offer_metadata)
     db.session.add(offer)
     db.session.flush()
 
@@ -524,10 +521,6 @@ def create_offer(
         publicationDatetime=None,
     )
     repository.add_to_session(offer)
-
-    if body.video_url:
-        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-        db.session.add(offer_metadata)
 
     db.session.flush()
 

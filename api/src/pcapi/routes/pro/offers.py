@@ -329,7 +329,6 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         withdrawalDelay=body.withdrawal_delay,
         withdrawalDetails=body.withdrawal_details,
         withdrawalType=body.withdrawal_type,
-        videoUrl=body.video_url,
         isNational=body.is_national,
     )
 
