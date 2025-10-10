@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -76,7 +76,7 @@ jobs:
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         id: "google-auth"
         with:
           create_credentials_file: true
@@ -216,7 +216,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -233,7 +233,7 @@ jobs:
         working-directory: "${{ inputs.doc-api-entrypoint }}"
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -304,7 +304,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -328,7 +328,7 @@ jobs:
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
