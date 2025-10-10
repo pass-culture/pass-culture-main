@@ -392,10 +392,7 @@ describe('CollectiveOffers', () => {
   describe('should reset filters', () => {
     // TODO (ahello): remove venueId from filters
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      vi.spyOn(api, 'getCollectiveOffers')
-        .mockResolvedValueOnce(offersRecap)
-        .mockResolvedValueOnce([])
-      // 3rd call is not made if filters are strictly the same
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
       const filters = {
         venueId: '666',
       }
@@ -419,10 +416,10 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Rechercher'))
       await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        2,
+        1,
         undefined,
         offererId,
         undefined,
@@ -440,10 +437,10 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
       await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        3,
+        2,
         undefined,
         offererId,
         undefined,

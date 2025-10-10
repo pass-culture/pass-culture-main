@@ -101,7 +101,6 @@ export function CollectiveOffersActionsBar({
   const { mutate } = useSWRConfig()
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive,
     isInTemplateOffersPage: areTemplateOffers,
     urlSearchFilters,
     selectedOffererId: selectedOffererId?.toString(),

@@ -56,7 +56,6 @@ export const CollectiveOffers = (): JSX.Element => {
   }
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive,
     isInTemplateOffersPage: false,
     urlSearchFilters: finalSearchFilters,
     selectedOffererId: offerer?.id.toString() ?? '',
