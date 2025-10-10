@@ -36,7 +36,7 @@ jobs:
           echo "::notice:: Running tests api with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
@@ -153,7 +153,7 @@ jobs:
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
@@ -359,7 +359,7 @@ jobs:
         run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
@@ -421,7 +421,7 @@ jobs:
       # When a matrix job is retried, it will reuse the same artifact to execute the exact same split.
       - name: Download test durations
         if: needs.restore-test-durations.outputs.restored == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: test-durations-before
 
@@ -471,7 +471,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download all partial test durations
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: test-durations-after-partial-*
           path: ${{ runner.temp }}
