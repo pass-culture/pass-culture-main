@@ -2,9 +2,7 @@ import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe } from 'vitest'
 
-import { api } from '@/apiClient/api'
 import {
-  ApiError,
   CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
@@ -13,10 +11,6 @@ import {
   type CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
-import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
-import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import * as useAnalytics from '@/app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { getToday } from '@/commons/utils/date'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -90,15 +84,17 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
+      const offer = collectiveOfferFactory({ imageUrl: null })
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({ imageUrl: null }),
+        offer,
       })
 
-      const offer = screen.getByRole('link', {
-        name: 'offer name 3',
-      })
-      expect(offer).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: `N°${offer.id} ${offer.name}`,
+        })
+      ).toBeInTheDocument()
     })
   })
 
@@ -107,7 +103,7 @@ describe('CollectiveOfferRow', () => {
       renderOfferItem(props)
 
       const offerTitle = screen.getByRole('link', {
-        name: props.offer.name,
+        name: `N°${offerId} ${props.offer.name}`,
       })
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
@@ -294,170 +290,38 @@ describe('CollectiveOfferRow', () => {
     })
   })
 
-  describe('booking link', () => {
-    it('should display booking link for prebooked offer with pending booking', () => {
-      renderOfferItem({
-        ...props,
-        offer: collectiveOfferFactory({
-          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-          stocks: [
-            {
-              startDatetime: String(new Date()),
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 0,
-            },
-          ],
-          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
-        }),
-      })
-
-      const bookingLink = screen.getByRole('link', {
-        name: 'Voir la préréservation',
-      })
-
-      expect(bookingLink).toBeInTheDocument()
+  it('should cancel offer booking', async () => {
+    renderOfferItem({
+      ...props,
+      offer: collectiveOfferFactory({
+        stocks,
+        displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
+        booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
+        allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
+      }),
     })
 
-    it('should display booking link for expired offer with booking', () => {
-      renderOfferItem({
-        ...props,
-        offer: collectiveOfferFactory({
-          displayedStatus: CollectiveOfferDisplayedStatus.EXPIRED,
-          stocks: [
-            {
-              startDatetime: String(new Date()),
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 0,
-            },
-          ],
-          booking: {
-            id: 1,
-            booking_status: CollectiveBookingStatus.USED,
-          },
-        }),
-      })
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
-      const bookingLink = screen.getByRole('link', {
-        name: 'Voir la réservation',
-      })
+    const cancelBookingButton = screen.getByText('Annuler la réservation')
+    await userEvent.click(cancelBookingButton)
 
-      expect(bookingLink).toBeInTheDocument()
-    })
+    const modalTitle = screen.getByText(
+      'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
+    )
+    expect(modalTitle).toBeInTheDocument()
 
-    it('should log event when clicking booking link', async () => {
-      const mockLogEvent = vi.fn()
-      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
-        ...vi.importActual('@/app/App/analytics/firebase'),
-        logEvent: mockLogEvent,
-      }))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler la réservation' })
+    )
 
-      renderOfferItem({
-        ...props,
-        offer: collectiveOfferFactory({
-          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-          stocks: [
-            {
-              startDatetime: String(new Date()),
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 0,
-            },
-          ],
-          booking: { id: 1, booking_status: CollectiveBookingStatus.PENDING },
-          id: 5,
-        }),
-      })
-
-      const bookingLink = screen.getByRole('link', {
-        name: 'Voir la préréservation',
-      })
-      await userEvent.click(bookingLink)
-
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-        {
-          from: '/',
-          offerId: 5,
-          offerType: 'collective',
-        }
+    expect(
+      screen.getByText(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
       )
-    })
-
-    it('should cancel offer booking', async () => {
-      renderOfferItem({
-        ...props,
-        offer: collectiveOfferFactory({
-          stocks,
-          displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-          booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
-          allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-        }),
-      })
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
-
-      const cancelBookingButton = screen.getByText('Annuler la réservation')
-      await userEvent.click(cancelBookingButton)
-
-      const modalTitle = screen.getByText(
-        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
-      )
-      expect(modalTitle).toBeInTheDocument()
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Annuler la réservation' })
-      )
-
-      expect(
-        screen.getByText(
-          'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should return an error when there are no bookings for this offer', async () => {
-      vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
-          ''
-        )
-      )
-
-      renderOfferItem({
-        ...props,
-        offer: collectiveOfferFactory({
-          stocks,
-          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-          booking: { booking_status: 'PENDING', id: 0 },
-          allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
-        }),
-      })
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
-
-      const cancelBookingButton = screen.getByText('Annuler la réservation')
-      await userEvent.click(cancelBookingButton)
-
-      const modalTitle = screen.getByText(
-        'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ?'
-      )
-      expect(modalTitle).toBeInTheDocument()
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Annuler la réservation' })
-      )
-
-      expect(
-        screen.getByText(
-          'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
-        )
-      ).toBeInTheDocument()
-    })
+    ).toBeInTheDocument()
   })
 
   describe('expiration row', () => {

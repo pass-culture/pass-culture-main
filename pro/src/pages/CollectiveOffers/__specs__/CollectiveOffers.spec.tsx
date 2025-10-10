@@ -15,7 +15,7 @@ import {
   EacFormat,
   type GetOffererAddressResponseModel,
 } from '@/apiClient/v1'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -70,7 +70,7 @@ const offererAddress: GetOffererAddressResponseModel[] = [
 ]
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -236,8 +236,8 @@ describe('CollectiveOffers', () => {
     })
 
     describe('location type filters', () => {
-      it('should send locationType ADDRESS and offererAddressId when feature flag is active and an address is selected', async () => {
-        await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+      it('should send locationType ADDRESS and offererAddressId when an address is selected', async () => {
+        await renderOffers()
         await userEvent.selectOptions(
           screen.getByLabelText('Localisation'),
           offererAddress[0].id.toString()
@@ -261,7 +261,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType TO_BE_DEFINED and offererAddressId undefined when "À déterminer" is selected', async () => {
-        await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+        await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -286,7 +286,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType SCHOOL and offererAddressId undefined when "En établissement scolaire" is selected', async () => {
-        await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+        await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -311,7 +311,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType and offererAddressId undefined when "all" is selected', async () => {
-        await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+        await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(localisationSelect, 'all')
         await userEvent.click(screen.getByText('Rechercher'))
@@ -600,7 +600,7 @@ describe('CollectiveOffers', () => {
         displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     ])
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+    await renderOffers()
 
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
