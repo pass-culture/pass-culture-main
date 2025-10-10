@@ -1,12 +1,12 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import type {
-  HeadLineOfferResponseModel,
-  ListOffersOfferResponseModel,
+import {
+  type HeadLineOfferResponseModel,
+  type ListOffersOfferResponseModel,
+  OfferStatus,
 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_STATUS_DRAFT,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
@@ -30,7 +30,7 @@ export function getIndividualOfferColumns(
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode:
-            offer.status === OFFER_STATUS_DRAFT
+            offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
           step: isNewOfferCreationFlowFFEnabled
@@ -86,7 +86,7 @@ export function getIndividualOfferColumns(
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode:
-            offer.status === OFFER_STATUS_DRAFT
+            offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
           step: isNewOfferCreationFlowFFEnabled

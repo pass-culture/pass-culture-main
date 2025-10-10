@@ -8,11 +8,11 @@ import { pluralize } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullErrorIcon from '@/icons/full-error.svg'
-import styles from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
+import styles from './OfferNameCell.module.scss'
 export interface OfferNameCellProps {
   offer: ListOffersOfferResponseModel
   offerLink: string
@@ -49,43 +49,41 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
     computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
-    <div className={styles['title-column']}>
-      <Link className={styles['title-column-with-thumb']} to={offerLink}>
-        <div className={styles['title-column-thumb']}>
-          <Thumb url={offer.thumbUrl} />
-        </div>
-        <div>
-          {offer.isShowcase && <Tag label="Offre vitrine" />}
-          <div className={styles['title-column-name']}>{offer.name}</div>
-          {offer.isEvent && (
-            <span className={styles['stocks']}>
-              {getDateInformations()}
-              {shouldShowIndividualWarning && (
-                <Tooltip
-                  content={pluralize(
-                    computeNumberOfSoldOutStocks(),
-                    'date épuisée'
-                  )}
-                >
-                  <button type="button" className={styles['sold-out-button']}>
-                    <SvgIcon
-                      className={styles['sold-out-icon']}
-                      src={fullErrorIcon}
-                      alt="Attention"
-                      width="16"
-                    />
-                  </button>
-                </Tooltip>
-              )}
-            </span>
-          )}
-          {offer.productIsbn && (
-            <div className={styles['isbn']} data-testid="offer-isbn">
-              {offer.productIsbn}
-            </div>
-          )}
-        </div>
-      </Link>
-    </div>
+    <Link className={styles['title-column']} to={offerLink}>
+      <div className={styles['title-column-thumb']}>
+        <Thumb url={offer.thumbUrl} />
+      </div>
+      <div>
+        {offer.isShowcase && <Tag label="Offre vitrine" />}
+        <div className={styles['title-column-name']}>{offer.name}</div>
+        {offer.isEvent && (
+          <span className={styles['stocks']}>
+            {getDateInformations()}
+            {shouldShowIndividualWarning && (
+              <Tooltip
+                content={pluralize(
+                  computeNumberOfSoldOutStocks(),
+                  'date épuisée'
+                )}
+              >
+                <button type="button" className={styles['sold-out-button']}>
+                  <SvgIcon
+                    className={styles['sold-out-icon']}
+                    src={fullErrorIcon}
+                    alt="Attention"
+                    width="16"
+                  />
+                </button>
+              </Tooltip>
+            )}
+          </span>
+        )}
+        {offer.productIsbn && (
+          <div className={styles['isbn']} data-testid="offer-isbn">
+            {offer.productIsbn}
+          </div>
+        )}
+      </div>
+    </Link>
   )
 }

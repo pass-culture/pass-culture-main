@@ -54,13 +54,16 @@
 }
 
 .table-row {
+  @include fonts.body-accent-xs;
+
   border-bottom: 1px solid var(--color-background-subtle);
+  color: var(--Base-Colors-Black);
 }
 
 .table-header {
   @include fonts.body-accent-xs;
 
-  background-color: var(--color-background-subtle);
+  color: var(--color-text-subtle);
 
   &-sticky {
     position: sticky;

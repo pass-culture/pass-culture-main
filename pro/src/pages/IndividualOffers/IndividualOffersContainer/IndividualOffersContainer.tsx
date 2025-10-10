@@ -192,7 +192,7 @@ export const IndividualOffersContainer = ({
         data={currentPageOffersSubset}
         allData={offers}
         isLoading={isLoading}
-        variant={TableVariant.COLLAPSE}
+        variant={TableVariant.SEPARATE}
         selectable={true}
         selectedIds={selectedOfferIds}
         onSelectionChange={(offers) =>
