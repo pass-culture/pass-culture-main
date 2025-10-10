@@ -1,10 +1,10 @@
 import { isEqual } from 'commons/utils/isEqual'
 
-import type {
-  ListCollectiveOffersQueryModel,
-  ListOffersQueryModel,
+import {
+  CollectiveOfferType,
+  type ListCollectiveOffersQueryModel,
+  type ListOffersQueryModel,
 } from '@/apiClient/v1'
-import { CollectiveOfferType } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
@@ -91,9 +91,9 @@ export const serializeApiCollectiveFilters = (
 
     if (field === 'collectiveOfferType') {
       accumulator.collectiveOfferType =
-        defaultFilters.collectiveOfferType === 'offer'
+        filterValue === 'offer'
           ? CollectiveOfferType.OFFER
-          : defaultFilters.collectiveOfferType === 'template'
+          : filterValue === 'template'
             ? CollectiveOfferType.TEMPLATE
             : null
       return accumulator

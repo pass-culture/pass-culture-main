@@ -48,25 +48,21 @@ const filters: CollectiveSearchFiltersParams = {
   format: EacFormat.CONCERT,
 }
 
-const renderCollectiveOffersDownloadDrawer = (
-  {
-    isDisabled = false,
-    filtersProp = filters,
-    defaultFiltersProp = defaultFilters,
-  } = {},
-  features = ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
-) => {
+const renderCollectiveOffersDownloadDrawer = ({
+  isDisabled = false,
+  filtersProp = filters,
+  defaultFiltersProp = defaultFilters,
+} = {}) => {
   return renderWithProviders(
     <CollectiveOffersDownloadDrawer
       isDisabled={isDisabled}
       filters={filtersProp}
       defaultFilters={defaultFiltersProp}
-    />,
-    { features }
+    />
   )
 }
 
-describe('DownloadBookableOffersButton', () => {
+describe('CollectiveOffersDownloadDrawer', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -115,7 +111,7 @@ describe('DownloadBookableOffersButton', () => {
       'test offer',
       '1',
       ['PUBLISHED'],
-      '2',
+      undefined,
       undefined,
       '2023-01-01',
       '2023-12-31',
@@ -145,7 +141,7 @@ describe('DownloadBookableOffersButton', () => {
       'test offer',
       '1',
       ['PUBLISHED'],
-      '2',
+      undefined,
       undefined,
       '2023-01-01',
       '2023-12-31',
@@ -242,7 +238,7 @@ describe('DownloadBookableOffersButton', () => {
       'test offer',
       '1',
       ['PUBLISHED'],
-      '2',
+      undefined,
       undefined,
       '2023-01-01',
       '2023-12-31',
@@ -281,7 +277,7 @@ describe('DownloadBookableOffersButton', () => {
       'test offer',
       '1',
       ['PUBLISHED'],
-      '2',
+      undefined,
       undefined,
       '2023-01-01',
       '2023-12-31',
