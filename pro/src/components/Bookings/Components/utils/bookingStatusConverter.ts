@@ -80,10 +80,3 @@ export const getBookingStatusDisplayInformations = (bookingStatus: string) =>
   INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )
-
-export const getCollectiveBookingStatusDisplayInformations = (
-  bookingStatus: string
-) =>
-  COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
-    ({ id }) => bookingStatus.toLowerCase() === id
-  )
