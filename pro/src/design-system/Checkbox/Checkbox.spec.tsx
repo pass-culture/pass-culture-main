@@ -116,7 +116,7 @@ describe('Checkbox', () => {
       label: 'Checkbox label',
       variant: 'default',
       required: true,
-      asterisk: false,
+      requiredIndicator: null,
       checked: false,
       onChange: () => {},
     })

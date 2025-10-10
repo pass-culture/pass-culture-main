@@ -69,7 +69,7 @@ export const FormStock = ({
         error={formState.errors.startDatetime?.message}
         className={styles['input-date']}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <DatePicker
         disabled={!canEditDates}
@@ -86,7 +86,7 @@ export const FormStock = ({
         minDate={minEndDatetime}
         className={styles['input-date']}
         required
-        asterisk={false}
+        requiredIndicator={null}
         {...register('endDatetime')}
         error={formState.errors.endDatetime?.message}
       />
@@ -97,7 +97,7 @@ export const FormStock = ({
         error={formState.errors.eventTime?.message}
         className={styles['custom-field-layout']}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -107,7 +107,7 @@ export const FormStock = ({
         type="number"
         icon={strokeCollaborator}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -118,7 +118,7 @@ export const FormStock = ({
         min={0}
         type="number"
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
     </FormLayout.Row>
   )

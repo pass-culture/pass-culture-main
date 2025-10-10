@@ -20,6 +20,7 @@ const renderPriceInput = (props: Partial<PriceInputProps>) => {
         {...props}
         name="price"
         label="Prix"
+        required
         value={value ?? ''}
         onChange={onChange}
       />

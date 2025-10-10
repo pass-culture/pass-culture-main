@@ -41,7 +41,11 @@ export type PriceInputProps = Pick<
    * A flag to show the "Gratuit" checkbox.
    */
   showFreeCheckbox?: boolean
-  hideAsterisk?: boolean
+  required?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
   /**
    * A custom error message to be displayed.
    * If this prop is provided, the error message will be displayed and the field will be marked as errored
@@ -80,7 +84,8 @@ export const PriceInput = React.forwardRef(
       max,
       disabled,
       showFreeCheckbox,
-      hideAsterisk = false,
+      required = false,
+      requiredIndicator = 'symbol',
       error,
       description,
       currency = 'EUR',
@@ -158,7 +163,7 @@ export const PriceInput = React.forwardRef(
         <TextInput
           ref={priceRef}
           autoComplete="off"
-          required={!hideAsterisk}
+          required={required}
           name={name}
           label={`${label} ${labelCurrency}`}
           value={value?.toString() ?? ''}
@@ -168,7 +173,7 @@ export const PriceInput = React.forwardRef(
           max={max}
           disabled={disabled}
           description={description}
-          asterisk={!hideAsterisk}
+          requiredIndicator={requiredIndicator}
           onChange={onTextInputChange}
           onBlur={onBlur}
           onKeyDown={(event) => {

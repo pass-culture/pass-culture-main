@@ -320,7 +320,6 @@ export const IndividualOfferPriceCategoriesScreen = ({
                       currency={isCaledonian ? 'XPF' : 'EUR'}
                       disabled={isDisabled}
                       showFreeCheckbox
-                      hideAsterisk
                       onChange={(event) => {
                         setValue(
                           `priceCategories.${index}.price`,

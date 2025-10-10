@@ -1,4 +1,4 @@
-import classNames, { default as cn } from 'classnames'
+import { default as cn } from 'classnames'
 import type React from 'react'
 import {
   type ForwardedRef,
@@ -11,6 +11,7 @@ import {
 } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
 import { Button } from '@/ui-kit/Button/Button'
 
 import styles from './TextArea.module.scss'
@@ -40,7 +41,7 @@ export type TextAreaProps = {
   /**
    * The label text for the textarea.
    */
-  label: string | React.ReactNode
+  label: string
   /**
    * A description providing additional information about the textarea.
    */
@@ -55,9 +56,9 @@ export type TextAreaProps = {
   disabled?: boolean
   hasDefaultPlaceholder?: boolean
   /**
-   * If the asterisk should be displayed when the field is required.
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
    */
-  asterisk?: boolean
+  requiredIndicator?: 'symbol' | 'explicit' | null
   /**
    * Error text displayed under the field. If the error is trythy, the field has the error styles.
    */
@@ -109,7 +110,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       label,
       maxLength = 1000,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       initialRows = 7,
       hasTemplateButton = false,
       wordingTemplate,
@@ -172,25 +173,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
     return (
       <div className={className}>
-        <div>
-          <label
-            className={classNames(styles['label'], {
-              [styles['has-description']]: Boolean(description),
-            })}
-            htmlFor={fieldId}
-          >
-            {label} {required && asterisk && '*'}
-          </label>
-          {description && (
-            <span
-              id={descriptionId}
-              data-testid={`description-${name}`}
-              className={styles['description']}
-            >
-              {description}
-            </span>
-          )}
-        </div>
+        <FieldHeader
+          label={label}
+          hasRequiredIndicator={required && requiredIndicator === 'symbol'}
+          fieldId={fieldId}
+          description={description}
+          descriptionId={descriptionId}
+        />
         <div className={styles['wrapper']}>
           <textarea
             ref={textAreaRef}

@@ -5,8 +5,7 @@ import styles from './FieldHeader.module.scss'
 type FieldHeaderProps = {
   inputId: string
   label: string
-  required: boolean
-  asterisk?: boolean
+  hasRequiredIndicator?: boolean
   description?: string
   descriptionId?: string
 }
@@ -14,10 +13,9 @@ type FieldHeaderProps = {
 export function FieldHeader({
   inputId,
   label,
-  required,
-  asterisk,
   description,
   descriptionId,
+  hasRequiredIndicator,
 }: FieldHeaderProps) {
   return (
     <div
@@ -27,7 +25,7 @@ export function FieldHeader({
     >
       <label htmlFor={inputId} className={styles['label']}>
         {label}
-        {required && asterisk && (
+        {hasRequiredIndicator && (
           <span className={styles['label-mandatory-asterisk']}>*</span>
         )}
       </label>

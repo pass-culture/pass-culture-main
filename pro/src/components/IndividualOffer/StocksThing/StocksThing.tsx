@@ -426,6 +426,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   value={watch('price')}
                   error={errors.price?.message}
                   label="Prix"
+                  required
                   disabled={readOnlyFields.includes('price')}
                   currency={isCaledonian ? 'XPF' : 'EUR'}
                   onChange={onPriceChange}

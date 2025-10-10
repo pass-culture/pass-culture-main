@@ -16,8 +16,10 @@ type DatePickerProps = {
   minDate?: Date
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   onBlur?: React.FocusEventHandler<HTMLInputElement>
-  /** Whether or not to display the asterisk in the label when the field is required */
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | null
   error?: string
   value?: string
   className?: string
@@ -36,7 +38,7 @@ export const DatePicker = React.forwardRef(
       name,
       value,
       label,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       className,
     }: DatePickerProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -49,7 +51,7 @@ export const DatePicker = React.forwardRef(
         <div>
           <label htmlFor={inputId} className={styles['label']}>
             {label}
-            {required && asterisk ? ' *' : ''}
+            {required && requiredIndicator === 'symbol' ? ' *' : ''}
           </label>
           <BaseDatePicker
             data-testid={name}

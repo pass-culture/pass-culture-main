@@ -58,8 +58,10 @@ export type RadioButtonGroupProps<
   onBlur?: onBlur
   /** Whether the checkbox is required or not */
   required?: boolean
-  /** Whether the required asterisk is displayed or not */
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
 }
 
 export const RadioButtonGroup = ({
@@ -78,7 +80,7 @@ export const RadioButtonGroup = ({
   onChange,
   onBlur,
   required,
-  asterisk = true,
+  requiredIndicator = 'symbol',
 }: RadioButtonGroupProps<
   string,
   RadioButtonVariantProps,
@@ -116,7 +118,7 @@ export const RadioButtonGroup = ({
           className={cn(styles[`radio-button-group-label-${LabelTag}`])}
         >
           {label}
-          {required && asterisk ? ' *' : ''}
+          {required && requiredIndicator === 'symbol' ? ' *' : ''}
         </LabelTag>
         {description && (
           <span

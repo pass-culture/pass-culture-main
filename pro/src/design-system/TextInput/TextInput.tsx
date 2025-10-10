@@ -32,7 +32,10 @@ export type TextInputProps = {
   description?: string
   error?: string
   required?: boolean
-  asterisk?: boolean
+  /**
+   * Type of required indicator. If it is a symbol, the signification of that symbol must be described somewhere else.
+   */
+  requiredIndicator?: 'symbol' | 'explicit' | null
   maxCharactersCount?: number
   step?: number | string
   min?: number | string
@@ -55,7 +58,7 @@ export const TextInput = forwardRef(
       description,
       error,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       maxCharactersCount,
       icon,
       iconButton,
@@ -98,8 +101,7 @@ export const TextInput = forwardRef(
             descriptionId={descriptionId}
             inputId={inputId}
             label={label}
-            required={required}
-            asterisk={asterisk}
+            hasRequiredIndicator={required && requiredIndicator === 'symbol'}
           />
         </div>
         <div className={styles['input-container']}>
