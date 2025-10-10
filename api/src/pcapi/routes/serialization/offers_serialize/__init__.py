@@ -654,7 +654,6 @@ class PostOfferBodyModel(BaseModel):
     subcategory_id: str
     url: HttpUrl | None
     venue_id: int
-    video_url: HttpUrl | None = None
     visual_disability_compliant: bool
     withdrawal_delay: int | None
     withdrawal_details: str | None
