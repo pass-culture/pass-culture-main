@@ -5,7 +5,7 @@ import fullUpIcon from '@/icons/full-up.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
-export interface DetailsButtonCellProps {
+interface DetailsButtonCellProps {
   controlledId: string
   isExpanded: boolean
   className?: string

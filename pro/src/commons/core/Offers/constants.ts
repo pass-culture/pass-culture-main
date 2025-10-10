@@ -149,9 +149,3 @@ export const CREATION_MODES_OPTIONS: SelectOption[] = [
   { label: 'Manuel', value: 'manual' },
   { label: 'Synchronisé', value: 'imported' },
 ]
-
-export const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
-  { label: 'Tout', value: ALL_COLLECTIVE_OFFER_TYPE },
-  { label: 'Offre vitrine', value: 'template' },
-  { label: 'Offre réservable', value: 'offer' },
-]
