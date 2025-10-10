@@ -276,10 +276,6 @@ def _silence_noisy_loggers() -> None:
     # model overriding skips a lot of bindings
     logging.getLogger("transitions").setLevel(logging.ERROR)
 
-    # FIXME (mgeoffray, 2024-06-26): environment variables can be
-    # quickly set and redeployed if we get a deluge of warnings. If
-    # everything seems fine, the use of these environment variables
-    # here can be removed to simplify the code.
     werkzeug_log_level = os.environ.get("WERZEUG_LOG_LEVEL", "WARNING")
     rq_log_level = os.environ.get("RQ_LOG_LEVEL", "WARNING")
     # We don't want Werkzeug INFO log for each request, we already
