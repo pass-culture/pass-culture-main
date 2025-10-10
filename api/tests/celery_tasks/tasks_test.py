@@ -1,18 +1,17 @@
-import datetime
-
 import pytest
 from flask import current_app as app
 
 from pcapi.celery_tasks.tasks import RateLimitedError
 from pcapi.celery_tasks.tasks import get_key
 from pcapi.celery_tasks.tasks import rate_limit
+from pcapi.utils import date as date_utils
 
 
 class GetKeyTest:
     @pytest.mark.parametrize("time_window_size", [60, 30])
     def test_generated_key(self, time_window_size):
         result = get_key("my_awesome_task", time_window_size)
-        time_window_size_id = int(datetime.datetime.utcnow().timestamp()) // time_window_size
+        time_window_size_id = int(date_utils.get_naive_utc_now().timestamp()) // time_window_size
 
         assert result == f"pcapi:celery:bucket:my_awesome_task:{time_window_size}:{time_window_size_id}"
 
