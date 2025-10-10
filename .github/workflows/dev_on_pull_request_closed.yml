@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -36,7 +36,7 @@ jobs:
             FIREBASE_SERVICE_ACCOUNT_TESTING:passculture-metier-ehp/pc_pro_testing_firebase_json
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           credentials_json: ${{ steps.secrets.outputs.FIREBASE_SERVICE_ACCOUNT_TESTING }}
 

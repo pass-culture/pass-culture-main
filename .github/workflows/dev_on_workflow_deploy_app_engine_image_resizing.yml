@@ -64,7 +64,7 @@ jobs:
         with:
           ref: ${{ inputs.base_ref }}
       - name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -78,7 +78,7 @@ jobs:
             APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER:${{ inputs.workload_identity_provider_secret_name }}
             APP_ENGINE_IMAGE_RESIZING_SERVICE_ACCOUNT:${{ inputs.service_account_secret_name }}
       - name: "Authenticate to Google Cloud with ${{ inputs.environment }} App Engine service account"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.APP_ENGINE_WORKLOAD_IDENTITY_PROVIDER }}
