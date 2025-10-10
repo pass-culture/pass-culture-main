@@ -14,7 +14,7 @@ Fake = faker.Faker(locale="fr_FR")
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_get_offer_video_metadata(self, get_video_metadata_from_cache_mock, client):
         video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
         get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(

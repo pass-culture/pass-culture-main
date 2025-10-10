@@ -1,6 +1,5 @@
 import copy
 import decimal
-import json
 import logging
 import os
 import pathlib
@@ -62,7 +61,6 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
 
 import tests
@@ -1467,48 +1465,6 @@ class CreateDraftOfferTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class GetVideoMetadataFromCacheTest:
-    VIDEO_ID = "WtM4OW2qVjY"
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
-    def test_get_video_metadata_from_cache_with_data_in_cache(self, app):
-        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
-        video_id = api.extract_video_id(video_url)
-        app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
-            json.dumps(
-                {
-                    "title": "Title",
-                    "thumbnail_url": "thumbnail url",
-                    "duration": 100,
-                }
-            ),
-        )
-        video_metadata = api.get_video_metadata_from_cache(video_url)
-        assert video_metadata.id == video_id
-        assert video_metadata.title == "Title"
-        assert video_metadata.thumbnail_url == "thumbnail url"
-        assert video_metadata.duration == 100
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
-    def test_get_video_metadata_from_cache_without_data_in_cache(self):
-        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
-
-        video_metadata = api.get_video_metadata_from_cache(video_url)
-        assert video_metadata.id == self.VIDEO_ID
-        assert video_metadata.title == "Mock Video Title"
-        assert video_metadata.thumbnail_url == f"https://example.com/vi/{self.VIDEO_ID}/default.jpg"
-        assert video_metadata.duration == 300
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
-    def test_get_video_metadata_from_cache_without_data_in_cache_connector_raise_error(self):
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-
-        with pytest.raises(ExternalAPIException):
-            api.get_video_metadata_from_cache(video_url)
-
-
-@pytest.mark.usefixtures("db_session")
 class UpdateDraftOfferTest:
     def test_basics(self):
         offer = factories.OfferFactory(
@@ -1526,10 +1482,10 @@ class UpdateDraftOfferTest:
         assert offer.name == "New name"
         assert offer.description == "New description"
 
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_new_video_url(self, get_video_metadata_from_cache_mock):
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-        video_id = api.extract_video_id(video_url)
+        video_id = "WtM4OW2qVjY"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
             id=video_id,
             title="Title",
@@ -5150,32 +5106,3 @@ class UpdateProductCountsTest:
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
         assert product_2.headlinesCount == 1
-
-
-@pytest.mark.usefixtures("db_session")
-class VideoIdExtractionTest:
-    @pytest.mark.parametrize(
-        "url,video_id",
-        [
-            ("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://youtu.be/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("http://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s", "dQw4w9WgXcQ"),
-            ("https://m.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/shorts/dQw4w9WgXcQ", None),  # we do not accept shorts
-            ("https://www.other.com", None),
-            ("dQw4w9WgXcQ", None),
-            ("https://www.youtube.com/@Msnight_fall", None),  # we do not accept channels
-            ("https://www.youtube.com.jesuiscool.fr", None),  # we do not accept subdomains, even if you are cool
-            ("https://www.youtube.comjesuisunvilainhacker", None),  # we do not accept hackers
-            ("m.youtube.com/watch?v=dQw4w9WgXcQ", None),  # we require https://
-            ("www.youtube.com/embed/dQw4w9WgXcQ", None),
-            ("youtube.com/v/dQw4w9WgXcQ", None),
-            ("ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ", None),
-        ],
-    )
-    def test_extract_video_id_from_url(self, url, video_id):
-        assert api.extract_video_id(url) == video_id

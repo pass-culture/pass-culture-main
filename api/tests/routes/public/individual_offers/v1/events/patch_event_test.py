@@ -422,7 +422,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert offer.offererAddress.addressId == address.id
 
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_update_video(self, get_video_metadata_from_cache_mock):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue

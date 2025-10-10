@@ -260,7 +260,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_event_creation_with_full_body(self, get_video_metadata_from_cache_mock, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 

@@ -10,6 +10,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
+from pcapi.core.videos import api as videos_api
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import utils as public_utils
@@ -175,15 +176,15 @@ def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) 
 
 def update_or_delete_video(video_url: str | None, offer: offers_models.Offer, provider_id: int) -> None:
     if video_url:
-        offers_api.upsert_video_and_metadata(video_url, offer, provider_id)
+        videos_api.upsert_video_and_metadata(video_url, offer, provider_id)
     elif offer.metaData and offer.metaData.videoUrl:
-        offers_api.remove_video_data_from_offer_metadata(
+        videos_api.remove_video_data_from_offer_metadata(
             offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl, provider_id
         )
 
 
 def save_video(video_url: str, offer: offers_models.Offer, provider_id: int) -> None:
-    offers_api.upsert_video_and_metadata(video_url, offer, provider_id)
+    videos_api.upsert_video_and_metadata(video_url, offer, provider_id)
 
 
 def get_event_with_details(event_id: int) -> offers_models.Offer | None:
