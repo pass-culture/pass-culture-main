@@ -29,11 +29,12 @@ class PostVenueProviderBody(BaseModel):
         return value
 
 
-class ProviderResponse(BaseModel):
+class ProviderOfVenueResponse(BaseModel):
     name: str
     id: int
     isActive: bool
     hasOffererProvider: bool
+    enabledForPro: bool
 
     class Config:
         orm_mode = True
@@ -56,7 +57,7 @@ class VenueProviderResponse(BaseModel):
     lastSyncDate: datetime | None
     dateCreated: datetime
     price: float | None
-    provider: ProviderResponse
+    provider: ProviderOfVenueResponse
     quantity: int | None
     venueId: int
     venueIdAtOfferProvider: str | None

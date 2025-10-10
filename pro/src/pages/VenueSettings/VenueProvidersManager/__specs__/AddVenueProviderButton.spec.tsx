@@ -36,24 +36,28 @@ describe('AddVenueProviderButton', () => {
         id: 12,
         hasOffererProvider: false,
         isActive: true,
+        enabledForPro: true,
       },
       {
         name: 'Allociné',
         id: 13,
         hasOffererProvider: false,
         isActive: true,
+        enabledForPro: true,
       },
       {
         name: 'Ticket Buster',
         id: 14,
         hasOffererProvider: true,
         isActive: true,
+        enabledForPro: true,
       },
       {
         name: 'Ticket Ultra Mega Buster',
         id: 15,
         hasOffererProvider: true,
         isActive: true,
+        enabledForPro: true,
       },
     ])
   })
@@ -113,6 +117,7 @@ describe('AddVenueProviderButton', () => {
           id: 14,
           hasOffererProvider: true,
           isActive: true,
+          enabledForPro: true,
         },
       ],
     })
@@ -141,6 +146,7 @@ describe('AddVenueProviderButton', () => {
           id: 13,
           hasOffererProvider: false,
           isActive: true,
+          enabledForPro: true,
         },
       ],
     })

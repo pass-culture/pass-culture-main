@@ -18,7 +18,7 @@ from pcapi.serialization import utils as serialization_utils
 
 
 EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
+    "EventCategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
 )
 
 
