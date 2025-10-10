@@ -30,6 +30,7 @@ from pcapi.core.criteria.models import OfferCriterion
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferLink
 from pcapi.core.educational.models import ValidationRuleCollectiveOfferTemplateLink
 from pcapi.core.finance.models import CustomReimbursementRule
+from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights.models import HighlightRequest
 from pcapi.core.history.constants import ACTION_HISTORY_ORDER_BY
 from pcapi.core.providers.models import Provider
@@ -1408,6 +1409,10 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
             cls.publicationDatetime != None,
             cls.publicationDatetime <= sa.func.now(),
         )
+
+    @property
+    def address(self) -> geography_models.Address | None:
+        return self.offererAddress.address if self.offererAddress else None
 
 
 class ActivationCode(PcObject, Model):

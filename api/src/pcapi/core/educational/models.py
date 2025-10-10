@@ -22,6 +22,7 @@ from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.educational import exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -972,6 +973,10 @@ class CollectiveOffer(
 
         return self.collectiveStock.is_two_days_past_end()
 
+    @property
+    def address(self) -> geography_models.Address | None:
+        return self.offererAddress.address if self.offererAddress else None
+
 
 class CollectiveOfferTemplateEducationalRedactor(PcObject, models.Model):
     """Allow adding to favorite the offer template for adage user"""
@@ -1344,6 +1349,10 @@ class CollectiveOfferTemplate(
     @classmethod
     def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
         return cls.hasStartDatetimePassed
+
+    @property
+    def address(self) -> geography_models.Address | None:
+        return self.offererAddress.address if self.offererAddress else None
 
 
 class CollectiveStock(PcObject, models.Model):

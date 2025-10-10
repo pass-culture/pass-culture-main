@@ -17,6 +17,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
@@ -60,7 +61,11 @@ def _get_collective_bookings_query() -> sa_orm.Query:
                 educational_models.CollectiveOffer.id,
                 educational_models.CollectiveOffer.name,
                 educational_models.CollectiveOffer.formats,
-            ),
+            )
+            .joinedload(educational_models.CollectiveOffer.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.timezone),
             sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution).load_only(
                 educational_models.EducationalInstitution.id,
                 educational_models.EducationalInstitution.name,

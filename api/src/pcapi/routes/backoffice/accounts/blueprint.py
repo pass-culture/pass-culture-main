@@ -26,6 +26,7 @@ from pcapi.core.finance import deposit_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import exceptions as fraud_exceptions
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.users.personal_data_updated import send_beneficiary_personal_data_updated
@@ -331,9 +332,12 @@ def get_user_tags() -> list[users_models.UserTag]:
 
 def _apply_bookings_joined_loads(query: OptionableType) -> OptionableType:
     result = query.options(
-        sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
-            offers_models.Stock.offer, innerjoin=True
-        ),
+        sa_orm.joinedload(bookings_models.Booking.stock, innerjoin=True)
+        .joinedload(offers_models.Stock.offer, innerjoin=True)
+        .joinedload(offers_models.Offer.offererAddress)
+        .load_only()
+        .joinedload(offerers_models.OffererAddress.address)
+        .load_only(geography_models.Address.timezone),
         sa_orm.joinedload(bookings_models.Booking.incidents).joinedload(finance_models.BookingFinanceIncident.incident),
         sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(offerers_models.Offerer.name),
         sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)

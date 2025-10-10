@@ -235,7 +235,21 @@ def format_date(
 
 
 def format_date_time(data: datetime.date | datetime.datetime, address: geography_models.Address | None = None) -> str:
-    return format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
+    local_date_time = format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
+
+    if not address or address.timezone == METROPOLE_TIMEZONE:
+        return local_date_time
+
+    split_timezone = address.timezone.split("/")
+    paris_date_time = format_date(data, strformat="%d/%m à %Hh%M")
+    if paris_date_time[:5] == local_date_time[:5]:
+        paris_date_time = paris_date_time[-5:]
+
+    return Markup(
+        "{date_and_time}&nbsp;"
+        '<i class="bi bi-clock-history text-body" data-bs-toggle="tooltip" data-bs-placement="top"'
+        ' data-bs-title="Fuseau horaire : {timezone} ({paris_time}&nbsp;à&nbsp;Paris)"></i>'
+    ).format(date_and_time=local_date_time, timezone=split_timezone[-1], paris_time=paris_date_time)
 
 
 def format_string_to_date_time(data: str) -> str:

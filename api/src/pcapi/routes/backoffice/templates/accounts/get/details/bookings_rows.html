@@ -43,7 +43,7 @@
       {{ booking.amount | format_amount(target=booking.user) }}
       {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}
     </td>
-    <td>{{ booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+    <td>{{ booking.dateCreated | format_date_time(booking.stock.offer.address) }}</td>
     <td>{{ booking | format_booking_status_long }}</td>
     {% if has_permission("READ_FRAUDULENT_BOOKING_INFO") %}
       <td>{{ build_fraudulent_booking_badge(booking.fraudulentBookingTag, "Frauduleuse") }}</td>
@@ -62,18 +62,18 @@
           {% if booking.stock.beginningDatetime %}
             <p class="mb-1">
               <span class="fw-bold">Date de l'évènement :</span>
-              {{ booking.stock.beginningDatetime | format_date_time }}
+              {{ booking.stock.beginningDatetime | format_date_time(booking.stock.offer.address) }}
             </p>
           {% endif %}
           {% if booking.is_used_or_reimbursed %}
             <p class="mb-1">
               <span class="fw-bold">Utilisée le :</span>
-              {{ booking.dateUsed | format_date_time }}
+              {{ booking.dateUsed | format_date_time(booking.stock.offer.address) }}
             </p>
           {% elif booking.isCancelled %}
             <p class="mb-1">
               <span class="fw-bold">Annulée le :</span>
-              {{ booking.cancellationDate | format_date_time }}
+              {{ booking.cancellationDate | format_date_time(booking.stock.offer.address) }}
             </p>
             <p class="mb-1">
               <span class="fw-bold">Motif d'annulation :</span>

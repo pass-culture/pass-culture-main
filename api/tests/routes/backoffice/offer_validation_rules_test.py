@@ -1149,7 +1149,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         deletion_history_row, modification_history_row, creation_history_row = rows[0], rows[1], rows[2]
 
         assert creation_history_row["Type"] == "Création d'une règle de conformité"
-        assert creation_history_row["Date/Heure"].startswith(rule_creation_history.actionDate.strftime("Le %d/%m/%Y à"))
+        assert creation_history_row["Date/Heure"].startswith(rule_creation_history.actionDate.strftime("%d/%m/%Y à"))
         assert creation_history_row["Auteur"] == legit_user.full_name
         for text in [
             rule.name,
@@ -1168,7 +1168,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
 
         assert modification_history_row["Type"] == "Modification d'une règle de conformité"
         assert modification_history_row["Date/Heure"].startswith(
-            rule_modification_history.actionDate.strftime("Le %d/%m/%Y à")
+            rule_modification_history.actionDate.strftime("%d/%m/%Y à")
         )
         assert modification_history_row["Auteur"] == legit_user.full_name
 
@@ -1189,7 +1189,7 @@ class ListRulesHistoryTest(GetEndpointHelper):
         assert "Loulou" not in modification_history_row["Commentaire"]
 
         assert deletion_history_row["Type"] == "Suppression d'une règle de conformité"
-        assert deletion_history_row["Date/Heure"].startswith(rule_deletion_history.actionDate.strftime("Le %d/%m/%Y à"))
+        assert deletion_history_row["Date/Heure"].startswith(rule_deletion_history.actionDate.strftime("%d/%m/%Y à"))
         assert deletion_history_row["Auteur"] == legit_user.full_name
         for text in [
             rule.name,

@@ -308,7 +308,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["Type"] == "Compte suspendu"
-        assert rows[0]["Date/Heure"] == format_date(action2.actionDate, "Le %d/%m/%Y à %Hh%M")
+        assert rows[0]["Date/Heure"] == format_date(action2.actionDate, "%d/%m/%Y à %Hh%M")
         assert (
             rows[0]["Commentaire"]
             == f"{users_constants.SUSPENSION_REASON_CHOICES[users_constants.SuspensionReason.FRAUD_USURPATION_PRO]} {action2.comment}"
@@ -316,7 +316,7 @@ class GetProUserHistoryTest(GetEndpointHelper):
         assert rows[0]["Auteur"] == action2.authorUser.full_name
 
         assert rows[1]["Type"] == "Commentaire interne"
-        assert rows[1]["Date/Heure"] == format_date(action1.actionDate, "Le %d/%m/%Y à %Hh%M")
+        assert rows[1]["Date/Heure"] == format_date(action1.actionDate, "%d/%m/%Y à %Hh%M")
         assert rows[1]["Commentaire"] == action1.comment
         assert rows[1]["Auteur"] == action1.authorUser.full_name
 

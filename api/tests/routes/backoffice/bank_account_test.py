@@ -255,7 +255,7 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert rows[0]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
-        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
     def test_get_full_sorted_history(self, authenticated_client, legit_user):
@@ -294,13 +294,13 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert rows[0]["Type"] == "Partenaire culturel dissocié d'un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
-        assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[0]["Date/Heure"].startswith(unlink_action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Auteur"] == legit_user.full_name
 
         assert rows[1]["Type"] == "Partenaire culturel associé à un compte bancaire"
         assert f"Partenaire culturel : {venue.common_name}" in rows[0]["Commentaire"]
         assert url_for("backoffice_web.venue.get", venue_id=venue.id) in str(response.data)
-        assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
 
 

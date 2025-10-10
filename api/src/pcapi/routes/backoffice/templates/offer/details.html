@@ -236,8 +236,8 @@
                 {% endif %}
               </td>
               {% if offer.isEvent %}
-                <td>{{ stock.beginningDatetime | format_date_time(offer.offererAddress.address) }}</td>
-                <td>{{ stock.bookingLimitDatetime | format_date_time(offer.offererAddress.address) }}</td>
+                <td>{{ stock.beginningDatetime | format_date_time(offer.address) }}</td>
+                <td>{{ stock.bookingLimitDatetime | format_date_time(offer.address) }}</td>
               {% endif %}
             </tr>
           {% endfor %}

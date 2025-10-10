@@ -50,7 +50,7 @@
     <td>{{ links.build_offerer_name_to_details_link(offerer) }}</td>
     <td>{{ offerer | format_offerer_status_badge }}</td>
     <td>{{ item.tags | map(attribute="label") | format_as_badges }}</td>
-    <td>{{ offerer.dateCreated | format_date("%d/%m/%Y") }}</td>
+    <td>{{ offerer.dateCreated | format_date }}</td>
     <td>
       {% if offerer.individualSubscription and offerer.individualSubscription.isEmailSent %}
         {% if has_read_ae_permission %}
