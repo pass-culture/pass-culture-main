@@ -69,12 +69,11 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       postalCode: offerVenue.address.postalCode,
       'search-addressAutocomplete': null,
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
-      // @ts-expect-error
+
       street: offerVenue.address.street ?? null,
     }
   }
 
-  // @ts-expect-error We have to initialize with empty values when we don't have an address.
   return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES
 }
 

@@ -1,3 +1,4 @@
+import type { AddressFormValues } from '@/commons/core/shared/types'
 import type { AnyObject } from '@/commons/utils/types'
 
 /**
@@ -11,21 +12,11 @@ export type NullableIfNonBoolean<T extends AnyObject> = {
 }
 
 // TODO (igabriele, 2025-08-25): We can get rid of `isManualEdition` and `offerLocation` to only use `isVenueAddress` + `banId` (Frontend + Backend).
-export interface PhysicalAddressSubformValues {
-  addressAutocomplete: string | null
-  banId: string | null
-  city: string
-  coords: string | null
-  inseeCode: string | null
+export interface PhysicalAddressSubformValues extends AddressFormValues {
   isManualEdition: boolean
   isVenueAddress: boolean
   label: string | null
-  latitude: string
-  longitude: string
   offerLocation: string
-  postalCode: string
-  'search-addressAutocomplete': string | null
-  street: string
 }
 
 // TODO (igabriele, 2025-08-25): Deduce this type from Yup schema (`yup.InferType<typeof LocationValidationSchema>`) to keep a single source of truth.

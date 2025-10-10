@@ -21,7 +21,7 @@ export const toPatchOfferBodyModel = ({
 
   const formValuesWithoutNulls = Object.fromEntries(
     Object.entries(formValues).filter(([, value]) => value !== null)
-  ) as LocationFormValues
+  )
 
   return {
     ...formValuesWithoutNulls,
