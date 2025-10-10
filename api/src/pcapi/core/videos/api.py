@@ -8,6 +8,8 @@ from pcapi.connectors import youtube
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 
+from . import exceptions
+
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +27,15 @@ YOUTUBE_REGEX = (
 )
 
 
-def extract_video_id(url: str) -> str | None:
+def extract_video_id(url: str) -> str:
     pattern = re.compile(YOUTUBE_REGEX)
     if match := pattern.match(url):
         return match.group("video_id")
 
-    return None
+    raise exceptions.InvalidVideoUrl()
 
 
-def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
+def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata:
     """
     This method tries to fetch video metadata that have been stored in redis
 
@@ -42,11 +44,9 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
 
     It returns the video metadata, whether it has been found in the redis cache or requested again.
 
-    It returns None if no metadata have been found requesting the video API
+    It raises an error if no metadata have been found requesting the video API
     """
     video_id = extract_video_id(video_url)
-    if video_id is None:
-        return None
     cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
 
     if cached_video_metadata is None:
@@ -64,7 +64,7 @@ def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadat
             )  # 24 hours
             return video_metadata_retry
         else:
-            return None
+            raise exceptions.YoutubeVideoNotFound()
     else:
         video_metadata_dict = json.loads(cached_video_metadata)
         video_metadata = youtube.YoutubeVideoMetadata(
@@ -104,8 +104,7 @@ def upsert_video_and_metadata(
     provider_id: int | None = None,
 ) -> None:
     cached_video_metadata = get_video_metadata_from_cache(video_url)
-    if cached_video_metadata is None:
-        return None
+
     if offer.metaData is None:
         offer.metaData = offers_models.OfferMetaData(offer=offer)
         logger.info(

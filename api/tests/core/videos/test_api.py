@@ -3,6 +3,7 @@ import json
 import pytest
 
 from pcapi.core.videos import api
+from pcapi.core.videos import exceptions
 from pcapi.utils.requests import ExternalAPIException
 
 
@@ -19,20 +20,34 @@ class VideoIdExtractionTest:
             ("https://youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
             ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/shorts/dQw4w9WgXcQ", None),  # we do not accept shorts
-            ("https://www.other.com", None),
-            ("dQw4w9WgXcQ", None),
-            ("https://www.youtube.com/@Msnight_fall", None),  # we do not accept channels
-            ("https://www.youtube.com.jesuiscool.fr", None),  # we do not accept subdomains, even if you are cool
-            ("https://www.youtube.comjesuisunvilainhacker", None),  # we do not accept hackers
-            ("m.youtube.com/watch?v=dQw4w9WgXcQ", None),  # we require https://
-            ("www.youtube.com/embed/dQw4w9WgXcQ", None),
-            ("youtube.com/v/dQw4w9WgXcQ", None),
-            ("ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ", None),
         ],
     )
     def test_extract_youtube_video_id_from_url(self, url, video_id):
         assert api.extract_video_id(url) == video_id
+
+    @pytest.mark.parametrize(
+        "video_url",
+        [
+            ("https://www.youtube.com/shorts/dQw4w9WgXcQ"),  # we do not accept shorts
+            ("https://www.youtube.com/@Msnight_fall"),  # we do not accept channels
+            ("https://www.youtube.com.jesuiscool.fr"),  # we do not accept subdomains, even if you are cool
+            "https://vimeo.com/1078258590",
+            "https://www.other.com",
+            "dQw4w9WgXcQ",
+            "https://www.youtube.comjesuisunvilainhacker",  # we do not accept hackers
+            "m.youtube.com/watch?v=dQw4w9WgXcQ",  # we require https://
+            "www.youtube.com/embed/dQw4w9WgXcQ",
+            "youtube.com/v/dQw4w9WgXcQ",
+            "ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        ],
+    )
+    def test_extract_youtube_video_id_from_unsupported_url_should_raise(self, video_url):
+        with pytest.raises(exceptions.InvalidVideoUrl) as error:
+            assert api.extract_video_id(video_url)
+        assert (
+            str(error.value)
+            == "The video URL must be from the Youtube plateform, it should be public and should not be a short nor a user's profile."
+        )
 
 
 @pytest.mark.usefixtures("db_session")

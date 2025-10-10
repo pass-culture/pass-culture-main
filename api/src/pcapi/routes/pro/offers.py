@@ -22,6 +22,7 @@ from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
@@ -899,20 +900,19 @@ def get_offer_opening_hours(offer_id: int) -> offers_schemas.OfferOpeningHoursSc
 def get_offer_video_metadata(
     query: offers_serialize.VideoMetatdataQueryModel,
 ) -> offers_serialize.VideoData:
-    video_id = offers_validation.check_video_url(query.video_url)
-    if video_id is None:
-        raise api_errors.ApiErrors(
-            errors={"videoUrl": ["Veuillez renseigner une URL valide. Ex : https://exemple.com"]}
-        )
     try:
         video_metadata = videos_api.get_video_metadata_from_cache(query.video_url)
     except requests.ExternalAPIException:
         raise api_errors.ApiErrors(
             errors={"videoUrl": ["Nous rencontrons des problèmes de serveur, veuillez réessayer plus tard"]}
         )
-    if video_metadata is None:
+    except videos_exceptions.InvalidVideoUrl:
         raise api_errors.ApiErrors(
-            errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé"]}
+            errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]}
+        )
+    except videos_exceptions.YoutubeVideoNotFound:
+        raise api_errors.ApiErrors(
+            errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
         )
     return offers_serialize.VideoData(
         videoDuration=video_metadata.duration,

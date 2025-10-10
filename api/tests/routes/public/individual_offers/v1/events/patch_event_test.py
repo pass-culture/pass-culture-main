@@ -469,11 +469,28 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         json_data = {"videoUrl": None}
 
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200, response.json
+        assert response.status_code == 200
         assert offer.metaData.videoUrl == None
         assert offer.metaData.videoExternalId == None
 
         assert response.json["videoUrl"] == None
+
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_video_metadata_not_found(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        json_data = {"videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU"}
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 400
+
+        assert response.json == {
+            "videoUrl": [
+                "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
+            ]
+        }
 
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",

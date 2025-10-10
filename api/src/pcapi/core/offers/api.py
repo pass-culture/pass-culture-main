@@ -68,6 +68,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -267,7 +268,14 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     if "videoUrl" in fields:
         if new_video_url := fields.pop("videoUrl", None):
-            videos_api.upsert_video_and_metadata(new_video_url, offer)
+            try:
+                videos_api.upsert_video_and_metadata(new_video_url, offer)
+            except videos_exceptions.InvalidVideoUrl:
+                raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
+            except videos_exceptions.YoutubeVideoNotFound:
+                raise ApiErrors(
+                    errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
+                )
         elif offer.metaData and offer.metaData.videoUrl:
             videos_api.remove_video_data_from_offer_metadata(
                 offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl

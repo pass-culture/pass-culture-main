@@ -669,6 +669,19 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
 
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_fetch_metadata_not_found_should_fail(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
+        data = {"videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc"}
+        auth_client = client.with_session_auth("user@example.com")
+        response = auth_client.patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["videoUrl"] == ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
