@@ -106,7 +106,10 @@ export const CollectiveEditionOfferNavigation = ({
     location.pathname.includes('edition')
 
   const canPreviewOffer = () => {
-    return isTemplate
+    return (
+      isTemplate &&
+      offer?.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
+    )
   }
 
   const canArchiveOffer = () => {

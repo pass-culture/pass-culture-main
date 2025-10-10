@@ -235,7 +235,7 @@ describe('BookableOfferSummary', () => {
     expect(previewButton).toBeInTheDocument()
   })
 
-  it('should render the "Aperçu" action for an archived offer', () => {
+  it('should not render the "Aperçu" action for an archived offer', () => {
     const testProps = {
       offer: getCollectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.ARCHIVED,
@@ -243,8 +243,8 @@ describe('BookableOfferSummary', () => {
     }
 
     renderBookableOfferSummary(testProps)
-    const previewButton = screen.getByText('Aperçu')
-    expect(previewButton).toBeInTheDocument()
+    const previewButton = screen.queryByText('Aperçu')
+    expect(previewButton).not.toBeInTheDocument()
   })
 
   it('should not render the "Aperçu" action for a draft offer', () => {
