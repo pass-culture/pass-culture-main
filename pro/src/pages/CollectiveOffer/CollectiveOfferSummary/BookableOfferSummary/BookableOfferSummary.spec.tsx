@@ -396,4 +396,13 @@ describe('BookableOfferSummary', () => {
       }
     )
   })
+
+  it('should have the correct url for the "Retour à la liste des offres" button', () => {
+    renderBookableOfferSummary(props)
+
+    const listButton = screen.getByRole('link', {
+      name: 'Retour à la liste des offres',
+    })
+    expect(listButton).toHaveAttribute('href', '/offres/collectives')
+  })
 })
