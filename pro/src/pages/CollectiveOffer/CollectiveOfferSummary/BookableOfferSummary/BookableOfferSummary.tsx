@@ -170,6 +170,10 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     CollectiveOfferAllowedAction.CAN_DUPLICATE
   )
 
+  const canPreviewOffer =
+    offer.displayedStatus !== CollectiveOfferDisplayedStatus.DRAFT &&
+    offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
+
   const isBookingCancellable = isActionAllowedOnCollectiveOffer(
     offer,
     CollectiveOfferAllowedAction.CAN_CANCEL
@@ -271,8 +275,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 </li>
               )}
 
-              {offer.displayedStatus !==
-                CollectiveOfferDisplayedStatus.DRAFT && (
+              {canPreviewOffer && (
                 <li>
                   <ButtonLink
                     to={`/offre/${offer.id}/collectif/apercu`}
