@@ -19,6 +19,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { Offerers } from '../Offerers'
@@ -27,6 +28,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
     createOfferer: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 
@@ -472,8 +474,12 @@ describe('screens:SignupJourney::Offerers', () => {
     })
 
     it('should link offerer to user when they confirm', async () => {
+      vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
+        () => false
+      )
       renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 

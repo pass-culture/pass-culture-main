@@ -25,7 +25,7 @@ def create_new_pro_user() -> dict:
 
 def create_new_pro_user_and_offerer() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer = offerers_factories.OffererFactory.create()
+    offerer = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren}
 
@@ -127,7 +127,7 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
 
 def create_pro_user_with_financial_data() -> dict:
     pro_user = users_factories.ProFactory.create()
-    offerer_A = offerers_factories.OffererFactory.create(allowedOnAdage=False)
+    offerer_A = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_A)
     offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_A)
     offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_A)
@@ -152,7 +152,7 @@ def create_pro_user_with_financial_data_and_3_venues() -> dict:
     pro_user = users_factories.ProFactory.create()
 
     offerer_C = offerers_factories.OffererFactory.create(
-        name="Structure avec informations bancaires et 3 lieux", allowedOnAdage=False
+        name="Structure avec informations bancaires et 3 lieux", allowedOnAdage=True
     )
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_C)
     venue_C = offerers_factories.VenueFactory.create(name="Mon lieu 1", managingOfferer=offerer_C)

@@ -29,21 +29,9 @@ const offererSlice = createSlice({
     ) => {
       state.currentOfferer = action.payload
     },
-    updateCurrentOffererOnboardingStatus: (
-      state: OffererState,
-      action: PayloadAction<GetOffererResponseModel['isOnboarded']>
-    ) => {
-      if (state.currentOfferer) {
-        state.currentOfferer.isOnboarded = action.payload
-      }
-    },
   },
 })
 
 export const offererReducer = offererSlice.reducer
 
-export const {
-  updateOffererNames,
-  updateCurrentOfferer,
-  updateCurrentOffererOnboardingStatus,
-} = offererSlice.actions
+export const { updateOffererNames, updateCurrentOfferer } = offererSlice.actions

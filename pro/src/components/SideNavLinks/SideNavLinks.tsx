@@ -15,13 +15,9 @@ import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
+import { setOpenSection } from '@/commons/store/nav/reducer'
 import {
-  setIsCollectiveSectionOpen,
-  setIsIndividualSectionOpen,
-} from '@/commons/store/nav/reducer'
-import {
-  selectIsCollectiveSectionOpen,
-  selectIsIndividualSectionOpen,
+  openSection,
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
 import {
@@ -76,8 +72,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   )
 
   const dispatch = useDispatch()
-  const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
-  const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
+  const navOpenSection = useSelector(openSection)
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const selectedOfferer = useSelector(selectCurrentOfferer)
   const sideNavCollapseSize = useMediaQuery(
@@ -92,6 +87,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const venueId = permanentVenues[0]?.id
 
   // Keep: this makes the “resize → auto-collapse to matching section” work.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want the changes if the state changes
   useEffect(() => {
     if (!sideNavCollapseSize) {
       return
@@ -103,19 +99,23 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
     // Only dispatch if a change is actually needed
     if (
-      openIndividual !== isIndividualSectionOpen ||
-      openCollective !== isCollectiveSectionOpen
+      openIndividual !== navOpenSection.individual ||
+      openCollective !== navOpenSection.collective
     ) {
-      dispatch(setIsIndividualSectionOpen(openIndividual))
-      dispatch(setIsCollectiveSectionOpen(openCollective))
+      dispatch(
+        setOpenSection({
+          individual:
+            openIndividual !== navOpenSection.individual
+              ? openIndividual
+              : navOpenSection.individual,
+          collective:
+            openCollective !== navOpenSection.collective
+              ? openCollective
+              : navOpenSection.collective,
+        })
+      )
     }
-  }, [
-    sideNavCollapseSize,
-    location.pathname,
-    isIndividualSectionOpen,
-    isCollectiveSectionOpen,
-    dispatch,
-  ])
+  }, [sideNavCollapseSize, location.pathname, dispatch])
 
   const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
@@ -219,17 +219,23 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           <button
             type="button"
             onClick={() => {
-              const willOpen = !isIndividualSectionOpen
-              if (sideNavCollapseSize && willOpen) {
-                dispatch(setIsCollectiveSectionOpen(false))
-              }
-              dispatch(setIsIndividualSectionOpen(willOpen))
+              const willOpen = !navOpenSection.individual
+
+              dispatch(
+                setOpenSection({
+                  individual: willOpen,
+                  collective:
+                    sideNavCollapseSize && willOpen
+                      ? false
+                      : navOpenSection.collective,
+                })
+              )
             }}
             className={classnames(
               styles['nav-links-item'],
               styles['nav-section-button']
             )}
-            aria-expanded={isIndividualSectionOpen}
+            aria-expanded={navOpenSection.individual}
             aria-controls="individual-sublist"
             id="individual-sublist-button"
           >
@@ -241,14 +247,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             />
             <span className={styles['nav-section-title']}>Individuel</span>
             <SvgIcon
-              src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
+              src={navOpenSection.individual ? fullUpIcon : fullDownIcon}
               alt=""
               width="18"
               className={styles['nav-section-icon']}
             />
           </button>
 
-          {isIndividualSectionOpen && (
+          {navOpenSection.individual && (
             <ul
               id="individual-sublist"
               aria-labelledby="individual-sublist-button"
@@ -323,17 +329,23 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           <button
             type="button"
             onClick={() => {
-              const willOpen = !isCollectiveSectionOpen
-              if (sideNavCollapseSize && willOpen) {
-                dispatch(setIsIndividualSectionOpen(false))
-              }
-              dispatch(setIsCollectiveSectionOpen(willOpen)) // fixed: no double dispatch
+              const willOpen = !navOpenSection.collective
+
+              dispatch(
+                setOpenSection({
+                  individual:
+                    sideNavCollapseSize && willOpen
+                      ? false
+                      : navOpenSection.individual,
+                  collective: willOpen,
+                })
+              )
             }}
             className={classnames(
               styles['nav-links-item'],
               styles['nav-section-button']
             )}
-            aria-expanded={isCollectiveSectionOpen}
+            aria-expanded={navOpenSection.collective}
             aria-controls="collective-sublist"
             id="collective-sublist-button"
           >
@@ -345,14 +357,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             />
             <span className={styles['nav-section-title']}>Collectif</span>
             <SvgIcon
-              src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
+              src={navOpenSection.collective ? fullUpIcon : fullDownIcon}
               alt=""
               width="18"
               className={styles['nav-section-icon']}
             />
           </button>
 
-          {isCollectiveSectionOpen && (
+          {navOpenSection.collective && (
             <ul
               id="collective-sublist"
               aria-labelledby="collective-sublist-button"

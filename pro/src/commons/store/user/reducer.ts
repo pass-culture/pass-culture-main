@@ -2,14 +2,16 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
 
+export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
+
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
-  isUnAttached: null | boolean
+  access: null | UserAccess
 }
 
 export const initialState: UserState = {
   currentUser: null,
-  isUnAttached: null,
+  access: null,
 }
 
 const userSlice = createSlice({
@@ -22,12 +24,12 @@ const userSlice = createSlice({
     ) => {
       state.currentUser = action.payload
     },
-    setIsUnAttached: (state, action: PayloadAction<boolean>) => {
-      state.isUnAttached = action.payload
+    updateUserAccess: (state, action: PayloadAction<null | UserAccess>) => {
+      state.access = action.payload
     },
   },
 })
 
 export const userReducer = userSlice.reducer
 
-export const { updateUser, setIsUnAttached } = userSlice.actions
+export const { updateUser, updateUserAccess } = userSlice.actions

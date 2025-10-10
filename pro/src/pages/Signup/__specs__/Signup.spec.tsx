@@ -1,13 +1,7 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
-import { api } from '@/apiClient/api'
 import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
-import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
-import {
-  currentOffererFactory,
-  sharedCurrentUserFactory,
-} from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -80,42 +74,6 @@ describe('src | components | pages | Signup', () => {
     expect(
       screen.getByText('Cliquez sur le lien envoyé par email')
     ).toBeInTheDocument()
-  })
-
-  it('should redirect logged users on confirmation page', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'Mon super cinéma',
-        }),
-        getOffererNameFactory({
-          id: 1,
-          name: 'Ma super librairie',
-        }),
-      ],
-    })
-
-    const user = sharedCurrentUserFactory()
-    renderSignup({
-      initialRouterEntries: ['/inscription/compte/confirmation'],
-      features: ['ENABLE_PRO_ACCOUNT_CREATION'],
-      user,
-      storeOverrides: {
-        user: {
-          currentUser: user,
-        },
-        offerer: currentOffererFactory(),
-      },
-    })
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/Votre compte est en cours de création./)
-      ).not.toBeInTheDocument()
-    })
-
-    expect(screen.getByText(/Connecté/)).toBeInTheDocument()
   })
 
   it('should render maintenance page when signup is unavailable', () => {

@@ -1,23 +1,15 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  Navigate,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router'
+import { Outlet, useNavigate, useSearchParams } from 'react-router'
 import { SWRConfig } from 'swr'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
-import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Notification } from '@/components/Notification/Notification'
 
 import { useBeamer } from './analytics/beamer'
@@ -32,9 +24,7 @@ import { usePageTitle } from './hook/usePageTitle'
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 export const App = (): JSX.Element | null => {
-  const location = useLocation()
   const navigate = useNavigate()
-  const currentUser = useSelector(selectCurrentUser)
   const dispatch = useDispatch()
   const notify = useNotification()
 
@@ -72,17 +62,6 @@ export const App = (): JSX.Element | null => {
   useFirebase(consentedToFirebase)
   useLogNavigation()
   useLogExtraProData()
-
-  const currentRoute = findCurrentRoute(location)
-
-  if (currentRoute && !currentRoute.meta?.public && currentUser === null) {
-    const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
-
-    const loginUrl =
-      location.pathname === '/' ? '/connexion' : `/connexion?de=${fromUrl}`
-
-    return <Navigate to={loginUrl} replace />
-  }
 
   return (
     <>

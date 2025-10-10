@@ -15,7 +15,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { SAVED_PARTNER_PAGE_VENUE_ID_KEYS } from '@/commons/utils/savedPartnerPageVenueId'
 
-import { SideNavLinks } from '../SideNavLinks'
+import { SideNavLinks } from './SideNavLinks'
 
 const renderSideNavLinks = (options: RenderWithProvidersOptions = {}) => {
   return renderWithProviders(<SideNavLinks isLateralPanelOpen={true} />, {
@@ -116,14 +116,6 @@ describe('SideNavLinks', () => {
       },
     }
 
-    // beforeEach(() => {
-    //   vi.spyOn(api, 'getOfferer').mockResolvedValue({
-    //     ...defaultGetOffererResponseModel,
-    //     hasPartnerPage: true,
-    //     managedVenues: mockedManagedVenues,
-    //   })
-    // })
-
     afterEach(() => {
       localStorage.clear()
     })
@@ -152,8 +144,10 @@ describe('SideNavLinks', () => {
       renderSideNavLinks({
         storeOverrides: {
           nav: {
-            isIndividualSectionOpen: true,
-            isCollectiveSectionOpen: true,
+            openSection: {
+              individual: true,
+              collective: true,
+            },
             selectedPartnerPageId: reduxStoreSelectedVenueId.toString(),
           },
           offerer,
@@ -347,10 +341,6 @@ describe('SideNavLinks', () => {
       },
       features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     })
-
-    // await waitFor(() => {
-    //   expect(api.getOfferer).toHaveBeenCalled()
-    // })
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Créer une offre' })

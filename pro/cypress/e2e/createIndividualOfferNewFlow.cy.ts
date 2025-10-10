@@ -35,7 +35,7 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
 
     cy.sandboxCall(
       'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         logInAndGoToPage(
           response.body.user.email,

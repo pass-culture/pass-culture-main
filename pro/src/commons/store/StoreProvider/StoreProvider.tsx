@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
@@ -8,9 +8,7 @@ import {
   updateCurrentOfferer,
   updateOffererNames,
 } from '@/commons/store/offerer/reducer'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
-import { setIsUnAttached, updateUser } from '@/commons/store/user/reducer'
-import { getOffererData } from '@/commons/utils/offererStoreHelper'
+import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -27,7 +25,6 @@ export const StoreProvider = ({
 }: StoreProviderProps) => {
   const dispatch = useDispatch()
   const [isStoreInitialized, setIsStoreInitialized] = useState(false)
-  const currentOfferer = useSelector(selectCurrentOfferer)
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -48,7 +45,7 @@ export const StoreProvider = ({
       }
       try {
         const response = await api.listOfferersNames()
-        const firstOffererId = response.offerersNames[0].id
+        const firstOffererId = response.offerersNames[0]?.id
 
         let offererIdToUse = firstOffererId
         if (storageAvailable('localStorage')) {
@@ -59,23 +56,28 @@ export const StoreProvider = ({
         }
 
         try {
-          const offererObj = await getOffererData(
-            offererIdToUse,
-            currentOfferer,
-            () => api.getOfferer(offererIdToUse)
-          )
+          const offererObj = offererIdToUse
+            ? await api.getOfferer(offererIdToUse)
+            : null
           dispatch(updateCurrentOfferer(offererObj))
-          dispatch(updateOffererNames(response.offerersNames))
-          dispatch(setIsUnAttached(false))
-        } catch {
+
           dispatch(
-            // TODO: Find a better way with the Product team to handle this behavior
-            // @ts-expect-error: This is because updateCurrentOfferer() expects its argument to be a full offerer object (which we can't have here because the API will returns a 404 for an offerer awaiting rattachment)
-            updateCurrentOfferer({
-              id: offererIdToUse,
-            })
+            updateUserAccess(
+              response.offerersNames.length > 0
+                ? offererObj?.isOnboarded
+                  ? 'full'
+                  : 'no-onboarding'
+                : 'no-offerer'
+            )
           )
-          dispatch(setIsUnAttached(true))
+        } catch {
+          if (response.offerersNames.length > 0) {
+            dispatch(updateUserAccess('unattached'))
+          } else {
+            dispatch(updateUserAccess('no-offerer'))
+          }
+        } finally {
+          dispatch(updateOffererNames(response.offerersNames))
         }
       } catch {
         // In any other case, it's a normal error
