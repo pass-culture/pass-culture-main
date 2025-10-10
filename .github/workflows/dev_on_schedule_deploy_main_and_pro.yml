@@ -27,7 +27,7 @@ jobs:
       pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       pcapi-console-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-tags: false
           ref: "master"

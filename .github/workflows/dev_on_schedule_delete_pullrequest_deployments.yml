@@ -22,7 +22,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v2"
         with:
@@ -54,7 +54,7 @@ jobs:
           permission-contents: write
 
       # Checkout rendered-manifests repository
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: pass-culture/rendered-manifests
           token: ${{ steps.github-token.outputs.token }}

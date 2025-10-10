@@ -23,7 +23,7 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -87,7 +87,7 @@ jobs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: false
@@ -231,7 +231,7 @@ jobs:
       GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
       - name: Checkout ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - name: Configure git author
         run: |
