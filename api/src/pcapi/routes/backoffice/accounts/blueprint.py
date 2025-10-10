@@ -490,6 +490,8 @@ def render_public_account_details(
         reverse=True,
     )
 
+    is_user_expired = users_api.has_profile_expired(user)
+
     search_form = account_forms.AccountSearchForm()  # values taken from request
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
         tag_account_form = account_forms.TagAccountForm(tags=user.tags)
@@ -521,6 +523,7 @@ def render_public_account_details(
         has_gdpr_extract=has_gdpr_extract(user=user),
         booking_fraudulent_form=account_forms.TagFraudulentBookingsForm(),
         booking_remove_fraudulent_form=empty_forms.EmptyForm(),
+        is_user_expired=is_user_expired,
         **kwargs,
     )
 

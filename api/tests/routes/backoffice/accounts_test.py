@@ -845,7 +845,11 @@ class GetPublicAccountTest(GetEndpointHelper):
         user = users[index]
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        expected_num_queries = self.expected_num_queries_with_ff
+        if index != 3:
+            # check if user should update their account
+            expected_num_queries += 1
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1061,7 +1065,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = beneficiary.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1115,7 +1120,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1164,7 +1170,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         bookings_factories.UsedBookingFactory()
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1181,7 +1188,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1251,7 +1259,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         repository.save(no_date_action)
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1339,6 +1348,20 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         badges = html_parser.extract_badges(response.data)
         assert {"Ambassadeur A", "Ambassadeur B"}.intersection(badges) == {"Ambassadeur A", "Ambassadeur B"}
+
+    def test_get_beneficiary_with_expired_address(self, authenticated_client):
+        campaign_date = date_utils.get_naive_utc_now() + relativedelta(days=30)
+        users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
+        before_profile_expiry_date = campaign_date - relativedelta(days=1)
+        user = users_factories.BeneficiaryFactory.create(beneficiaryFraudChecks__dateCreated=before_profile_expiry_date)
+
+        user_id = user.id
+        # check if user should update their account
+        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert "Informations expirées".encode("utf-8") in response.data
 
 
 class GetUserActivityTest(GetEndpointHelper):
