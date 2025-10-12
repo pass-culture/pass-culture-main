@@ -1,0 +1,115 @@
+name: '3 [on_workflow] push docker image'
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+
+      commit-hash:
+        required: true
+        type: string
+
+      checksum-tag:
+        required: true
+        type: string
+
+      prefix-tag:
+        required: false
+        type: string
+        default: develop
+
+      tag-latest:
+        required: false
+        type: boolean
+        default: false
+
+      artifact_registry_workload_identity_provider:
+        required: false
+        type: string
+        default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+
+      artifact_registry_service_account:
+        required: false
+        type: string
+        default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+
+      cosign_kms_key:
+        required: false
+        type: string
+        default: passculture-metier-ehp/cosign_kms_key
+
+      registry:
+        required: false
+        type: string
+        default: europe-west1
+
+      project_id:
+        required: false
+        type: string
+        default: passculture-infra-prod
+
+      repository:
+        required: false
+        type: string
+        default: pass-culture-artifact-registry
+
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  push-docker-image:
+    name: Push Docker image
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authentification to Google
+        uses: google-github-actions/auth@v2
+        with:
+          # TODO: avoid using EHP in variable names
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Get Secret
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@v2
+        with:
+          secrets: |-
+            COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+            # TODO: find the value ot the private key
+            PRIVATE_KEY:pc-infra-prd/argowf_githubapp_private_key
+            # ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
+            # ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
+            # COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+      - name: Authenticate through github app argo-wf
+        id: github-token
+        uses: actions/create-github-app-token@v1
+        with:
+          # TODO: PASSCULTURE_GITHUB_ACTION_APP_ID
+          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          private-key: ${{ steps.secrets.outputs.PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            pass-culture-main
+      - name: Build image
+        id: build
+        uses: pass-culture/common-workflows/actions/build-docker-image@build-docker-image/v0.2.0
+        with:
+          image: ${{ inputs.image }}
+          push: true
+          build_secrets: |
+            github-token=${{ steps.github-token.outputs.token }}
+          context: .
+          gcp_workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          artifact_registry_service_account: ${{ inputs.artifact_registry_service_account }}
+          cosign_kms_key: ${{ steps.secrets.outputs.COSIGN_KMS_KEY }}
+          docker_registry_region: ${{ inputs.registry }}
+          docker_registry_project_id: ${{ inputs.project_id }}
+          docker_registry_repository: ${{ inputs.repository }}
