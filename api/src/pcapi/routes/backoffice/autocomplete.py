@@ -391,6 +391,51 @@ def autocomplete_criteria() -> AutocompleteResponse:
     )
 
 
+def _get_offerer_tag_base_query() -> sa_orm.Query:
+    return db.session.query(offerers_models.OffererTag).options(
+        sa_orm.load_only(
+            offerers_models.OffererTag.id,
+            offerers_models.OffererTag.label,
+            offerers_models.OffererTag.name,  # a tag should always have a label but we take the name as a fallback
+        )
+    )
+
+
+def prefill_offerer_tag_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        tags = (
+            _get_offerer_tag_base_query()
+            .filter(offerers_models.OffererTag.id.in_(autocomplete_field.data))
+            .order_by(offerers_models.OffererTag.label)
+            .all()
+        )
+        autocomplete_field.choices = [(tag.id, tag.label or tag.name) for tag in tags]
+
+
+@blueprint.backoffice_web.route("/autocomplete/offerer_tags", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_offerer_tags() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    if len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    tags = (
+        _get_offerer_tag_base_query()
+        .filter(
+            sa.or_(
+                sa.func.unaccent(offerers_models.OffererTag.label).ilike(f"%{clean_accents(query_string)}%"),
+                sa.func.unaccent(offerers_models.OffererTag.name).ilike(f"%{clean_accents(query_string)}%"),
+            )
+        )
+        .limit(NUM_RESULTS)
+        .all()
+    )
+
+    return AutocompleteResponse(items=[AutocompleteItem(id=tag.id, text=(tag.label or tag.name)) for tag in tags])
+
+
 def _get_cashflow_batches_base_query() -> sa_orm.Query:
     return db.session.query(finance_models.CashflowBatch).options(
         sa_orm.load_only(
