@@ -908,7 +908,11 @@ def get_offer_video_metadata(
         )
     except videos_exceptions.InvalidVideoUrl:
         raise api_errors.ApiErrors(
-            errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]}
+            errors={
+                "videoUrl": [
+                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                ]
+            }
         )
     except videos_exceptions.YoutubeVideoNotFound:
         raise api_errors.ApiErrors(

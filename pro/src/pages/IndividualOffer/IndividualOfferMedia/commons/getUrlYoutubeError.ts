@@ -8,7 +8,7 @@ export const getUrlYoutubeError = (url?: string): string | undefined => {
   const INVALID_URL_MSG =
     'Veuillez renseigner une URL valide. Ex : https://exemple.com'
   const NOT_YOUTUBE_MSG =
-    'Veuillez renseigner une URL provenant de la plateforme Youtube'
+    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
 
   if (!url || url.trim() === '') {
     return NOT_YOUTUBE_MSG

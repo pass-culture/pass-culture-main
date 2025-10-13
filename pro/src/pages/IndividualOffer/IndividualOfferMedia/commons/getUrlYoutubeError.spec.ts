@@ -30,17 +30,21 @@ describe('getUrlYoutubeError', () => {
 
   it('returns specific message for non-youtube URLs', () => {
     expect(getUrlYoutubeError('https://vimeo.com/12345')).toBe(
-      'Veuillez renseigner une URL provenant de la plateforme Youtube'
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
     )
     expect(
       getUrlYoutubeError('https://www.dailymotion.com/video/x9negsq')
-    ).toBe('Veuillez renseigner une URL provenant de la plateforme Youtube')
+    ).toBe(
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
+    )
     // TODO: change error message
     expect(
       getUrlYoutubeError('https://www.youtube.com/shorts/dQw4w9WgXcQ')
-    ).toBe('Veuillez renseigner une URL provenant de la plateforme Youtube')
+    ).toBe(
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
+    )
     expect(getUrlYoutubeError('https://www.youtube.com/@Msnight_fall')).toBe(
-      'Veuillez renseigner une URL provenant de la plateforme Youtube'
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
     )
   })
 
@@ -49,10 +53,10 @@ describe('getUrlYoutubeError', () => {
       'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     )
     expect(getUrlYoutubeError('')).toBe(
-      'Veuillez renseigner une URL provenant de la plateforme Youtube'
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
     )
     expect(getUrlYoutubeError(undefined)).toBe(
-      'Veuillez renseigner une URL provenant de la plateforme Youtube'
+      'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.'
     )
   })
 })
