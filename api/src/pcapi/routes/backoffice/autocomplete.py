@@ -412,7 +412,7 @@ def prefill_offerer_tag_choices(autocomplete_field: fields.PCTomSelectField) -> 
         autocomplete_field.choices = [(tag.id, tag.label or tag.name) for tag in tags]
 
 
-@blueprint.backoffice_web.route("/autocomplete/offerer_tags", methods=["GET"])
+@blueprint.backoffice_web.route("/autocomplete/offerer-tags", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
 def autocomplete_offerer_tags() -> AutocompleteResponse:

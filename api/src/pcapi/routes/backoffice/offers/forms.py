@@ -50,6 +50,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
+    VENUE_TAG = "Tag sur le partenaire culturel"
     OFFERER_TAG = "Tag sur l'entité juridique"
     HEADLINE = "Offres à la une"
     HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
@@ -90,6 +91,7 @@ form_field_configuration = {
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
+    "VENUE_TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE_TYPE": {"field": "venue_type", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
