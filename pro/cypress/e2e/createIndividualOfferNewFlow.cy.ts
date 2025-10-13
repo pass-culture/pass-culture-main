@@ -37,10 +37,6 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
       'GET',
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
       (response) => {
-        cy.setFeatureFlags([
-          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: true },
-        ])
-
         logInAndGoToPage(
           response.body.user.email,
           '/offre/individuelle/creation/description'
