@@ -1,9 +1,11 @@
 import { addDays, format } from 'date-fns'
 
 import {
+  BOOKABLE_OFFERS_COLUMNS,
   DEFAULT_AXE_CONFIG,
   DEFAULT_AXE_RULES,
   MOCKED_BACK_ADDRESS_LABEL,
+  TEMPLATE_OFFERS_COLUMNS,
 } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
@@ -13,7 +15,8 @@ import {
 
 describe('Create collective offers', () => {
   let login: string
-  let offerDraft: { name: string; venueName: string }
+  let offerDraft: { id: number; name: string; venueName: string }
+
   const newOfferName = 'Ma nouvelle offre collective créée'
   const venueName = 'Mon Lieu 1'
   const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
@@ -109,7 +112,7 @@ describe('Create collective offers', () => {
     cy.findByText('Enregistrer et continuer').click()
   }
 
-  const verifyAndPublishOffer = (data = commonOfferData) => {
+  const publishAndSearchOffer = (data = commonOfferData) => {
     cy.findByText('Enregistrer et continuer').click()
     cy.findByText('Publier l’offre').click()
     cy.findByText('Voir mes offres').click()
@@ -126,29 +129,27 @@ describe('Create collective offers', () => {
 
     // Attendre que les résultats soient chargés
     cy.wait('@collectiveOffers')
+  }
 
-    // Vérifier les résultats
+  const assertOfferInList = (
+    title: string,
+    location: string,
+    status = 'publiée',
+    data = commonOfferData
+  ) => {
     const expectedResults = [
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
-      [
-        '',
-        '',
-        data.title,
-        `${format(data.date, 'dd/MM/yyyy')}`,
-        venueName,
+        title,
+        format(data.date, 'dd/MM/yyyy'),
+        `${data.price}€${data.participants} participants`,
         data.institution,
-        'publiée',
+        location,
+        status,
       ],
     ]
-
     expectOffersOrBookingsAreFound(expectedResults)
   }
 
@@ -182,7 +183,11 @@ describe('Create collective offers', () => {
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.contains(`Adresse : ${venueFullAddress}`)
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(
+      `N°6${newOfferName}`,
+      `${venueName} - 1 boulevard Poissonnière 75002 Paris`
+    )
   })
 
   it('Create collective bookable offers with a precise address (another address)', () => {
@@ -197,7 +202,8 @@ describe('Create collective offers', () => {
     fillDatesAndPrice()
     fillInstitution()
     cy.contains('Adresse : 3 RUE DE VALOIS, 75008, Paris')
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(`N°6${newOfferName}`, '3 RUE DE VALOIS 75008 Paris')
   })
 
   it('Create collective bookable offers with a precise address (another address - manual entry)', () => {
@@ -226,7 +232,8 @@ describe('Create collective offers', () => {
     fillInstitution()
     cy.contains('Intitulé : Libellé de mon adresse custom')
     cy.contains('Adresse : 10 Rue du test, 75002, Paris')
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(`N°6${newOfferName}`, '10 Rue du test 75002 Paris')
   })
 
   it('Create collective bookable offers with school location', () => {
@@ -240,7 +247,8 @@ describe('Create collective offers', () => {
     fillInstitution()
     cy.contains('Dans l’établissement scolaire')
     cy.contains('Zone de mobilité : Paris (75) - Hauts-de-Seine (92)')
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(`N°6${newOfferName}`, "Dans l'établissement")
   })
 
   it('Create collective bookable offers with to be defined location', () => {
@@ -255,7 +263,8 @@ describe('Create collective offers', () => {
     cy.contains('À déterminer avec l’enseignant')
     cy.contains('Commentaire : Test commentaire')
     cy.contains('Zone de mobilité : Paris (75) - Hauts-de-Seine (92)')
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(`N°6${newOfferName}`, 'À déterminer')
   })
 
   it('Create collective offer template and use it in duplication page', () => {
@@ -295,28 +304,18 @@ describe('Create collective offers', () => {
     cy.wait('@collectiveOffers')
 
     // Vérifier les résultats
-    const expectedResults = [
+    const templateResults = [
+      TEMPLATE_OFFERS_COLUMNS,
       [
         '',
         '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
-      [
-        '',
-        '',
-        commonOfferData.title,
+        `Offre vitrine${commonOfferData.title}`,
         'Toute l’année scolaire',
-        venueName,
-        'Tous les établissements',
+        `${venueName} - 1 boulevard Poissonnière 75002 Paris`,
         'publiée',
       ],
     ]
-
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(templateResults)
 
     cy.visit('/offre/creation')
     cy.findByText('À un groupe scolaire').click()
@@ -338,7 +337,11 @@ describe('Create collective offers', () => {
     fillInstitution()
     cy.contains('Intitulé : Mon Lieu 1')
     cy.contains(`Adresse : ${venueFullAddress}`)
-    verifyAndPublishOffer({ ...commonOfferData, title: 'Offre dupliquée OA' })
+    publishAndSearchOffer({ ...commonOfferData, title: 'Offre dupliquée OA' })
+    assertOfferInList(
+      'Offre dupliquée OA',
+      `${venueName} - 1 boulevard Poissonnière 75002 Paris`
+    )
   })
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default) and update location', () => {
@@ -349,10 +352,21 @@ describe('Create collective offers', () => {
     fillDatesAndPrice()
     fillInstitution()
     cy.contains(`Adresse : ${venueFullAddress}`)
-    verifyAndPublishOffer()
+    publishAndSearchOffer()
+    assertOfferInList(
+      `N°6${newOfferName}`,
+      `${venueName} - 1 boulevard Poissonnière 75002 Paris`
+    )
+
     cy.findAllByTestId('offer-item-row')
       .eq(0)
-      .within(() => cy.findByRole('link', { name: newOfferName }).click())
+      .within(() =>
+        cy
+          .findByRole('link', {
+            name: `N°6 ${newOfferName}`,
+          })
+          .click()
+      )
     cy.findAllByText('Modifier').eq(0).click()
     cy.findByLabelText('Autre adresse').click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
@@ -397,27 +411,20 @@ describe('Create collective offers', () => {
     cy.findByText('Brouillon').click()
 
     // We click outside the filter to close it
-    cy.findByRole('heading', { name: 'Offres collectives' }).click()
+    cy.findByRole('heading', { name: 'Offres réservables' }).click()
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers')
 
     const draftResults = [
-      [
-        '',
-        '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        venueName,
+        `${commonOfferData.price}€${commonOfferData.participants} participants`,
         commonOfferData.institution,
+        '3 RUE DE VALOIS 75008 Paris',
         'brouillon',
       ],
       [
@@ -425,8 +432,9 @@ describe('Create collective offers', () => {
         '',
         offerDraft.name,
         '-',
-        offerDraft.venueName,
+        '-',
         'DE LA TOUR',
+        'À déterminer',
         'brouillon',
       ],
     ]
@@ -436,7 +444,9 @@ describe('Create collective offers', () => {
     cy.stepLog({ message: 'I want to change my offer to published status' })
     cy.findAllByTestId('offer-item-row')
       .eq(0)
-      .within(() => cy.findByRole('link', { name: newOfferName }).click())
+      .within(() =>
+        cy.findByRole('link', { name: `N°6 ${newOfferName}` }).click()
+      )
 
     cy.wait('@educationalOfferers')
 
@@ -454,27 +464,6 @@ describe('Create collective offers', () => {
 
     // Attendre que les résultats soient chargés
     cy.wait('@collectiveOffers')
-
-    const expectedResults = [
-      [
-        '',
-        '',
-        'Titre',
-        'Date de l’évènement',
-        'Lieu',
-        'Établissement',
-        'Statut',
-      ],
-      [
-        '',
-        '',
-        commonOfferData.title,
-        `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
-        venueName,
-        commonOfferData.institution,
-        'publiée',
-      ],
-    ]
-    expectOffersOrBookingsAreFound(expectedResults)
+    assertOfferInList(`N°6${newOfferName}`, '3 RUE DE VALOIS 75008 Paris')
   })
 })
