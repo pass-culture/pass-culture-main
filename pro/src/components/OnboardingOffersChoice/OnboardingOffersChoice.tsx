@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react'
+import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -6,33 +6,12 @@ import { Dialog } from '@/components/Dialog/Dialog'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Card } from '@/ui-kit/Card/Card'
 
 import collective from './assets/collective.jpeg'
 import individuelle from './assets/individuelle.jpeg'
 import { OnboardingCollectiveModal } from './components/OnboardingCollectiveModal/OnboardingCollectiveModal'
 import styles from './OnboardingOffersChoice.module.scss'
-
-interface CardProps {
-  imageSrc: string
-  title: string
-  children: ReactNode
-  actions: ReactNode
-}
-
-const Card = ({ imageSrc, title, children, actions }: CardProps) => {
-  return (
-    <div className={styles['card']}>
-      <div className={styles['card-content']}>
-        <div>
-          <img src={imageSrc} alt="" className={styles['card-image']} />
-          <h3 className={styles['card-title']}>{title}</h3>
-          <p className={styles['card-description']}>{children}</p>
-        </div>
-        <div className={styles['card-button']}>{actions}</div>
-      </div>
-    </div>
-  )
-}
 
 export const OnboardingOffersChoice = () => {
   const [showModal, setShowModal] = useState(false)
@@ -42,7 +21,11 @@ export const OnboardingOffersChoice = () => {
     <div className={styles['card-container']}>
       <Card
         imageSrc={individuelle}
-        title="Sur l’application mobile à destination des jeunes"
+        title={
+          <h3 className={styles['card-title']}>
+            Sur l’application mobile à destination des jeunes
+          </h3>
+        }
         actions={
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
@@ -63,7 +46,11 @@ export const OnboardingOffersChoice = () => {
 
       <Card
         imageSrc={collective}
-        title="Sur ADAGE à destination des enseignants"
+        title={
+          <h3 className={styles['card-title']}>
+            Sur ADAGE à destination des enseignants
+          </h3>
+        }
         actions={
           <Dialog
             title=""
