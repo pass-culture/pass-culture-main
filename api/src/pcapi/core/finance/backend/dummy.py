@@ -1,5 +1,8 @@
+import datetime
+
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import BaseFinanceBackend
+from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.models import db
 
 
@@ -23,6 +26,11 @@ class DummyFinanceBackend(BaseFinanceBackend):
     def get_bank_account(self, bank_account_id: int) -> dict:
         bank_account = db.session.get(finance_models.BankAccount, bank_account_id)
         return bank_account.__dict__
+
+    def get_settlements(
+        self, from_date: datetime.date | None, to_date: datetime.date | None
+    ) -> list[SettlementPayload]:
+        return []
 
     @property
     def is_configured(self) -> bool:

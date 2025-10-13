@@ -928,6 +928,26 @@ class CashflowBatch(PcObject, Model):
     )
 
 
+class InvoiceSettlement(Model):
+    """An association table between invoices and settlements for their many-to-many relationship."""
+
+    __tablename__ = "invoice_settlement"
+    invoiceId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("invoice.id"), index=True, primary_key=True
+    )
+    settlementId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("settlement.id"), index=True, primary_key=True
+    )
+
+    __table_args__ = (
+        sa.PrimaryKeyConstraint(
+            "invoiceId",
+            "settlementId",
+            name="unique_invoice_settlement_association",
+        ),
+    )
+
+
 class InvoiceLine(PcObject, Model):
     __tablename__ = "invoice_line"
     invoiceId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -995,6 +1015,9 @@ class Invoice(PcObject, Model):
         "Cashflow", secondary=InvoiceCashflow.__table__, back_populates="invoices"
     )
     status: sa_orm.Mapped[InvoiceStatus] = sa_orm.mapped_column(db_utils.MagicEnum(InvoiceStatus), nullable=False)
+    settlements: sa_orm.Mapped[list["Settlement"]] = sa_orm.relationship(
+        "Settlement", secondary=InvoiceSettlement.__table__, back_populates="invoices"
+    )
 
     @property
     def storage_object_id(self) -> str:
@@ -1008,6 +1031,63 @@ class Invoice(PcObject, Model):
     @property
     def url(self) -> str:
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
+
+
+class SettlementStatus(enum.Enum):
+    """A settlement is considered validated if it hasn't been rejected at least 2 days after its creation"""
+
+    VALIDATED = "validated"
+    PENDING = "pending"
+    REJECTED = "rejected"
+
+
+class Settlement(PcObject, Model):
+    """This represents the real amount sent to or taken from a bank account.
+    One settlement can be made to pay for multiple invoices."""
+
+    __tablename__ = "settlement"
+
+    settlementDate: sa_orm.Mapped[datetime.date] = sa_orm.mapped_column(sa.Date, nullable=False)
+    dateImported: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    dateRejected: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+
+    externalSettlementId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    bankAccountId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("bank_account.id"), index=True, nullable=False
+    )
+    bankAccount: sa_orm.Mapped[BankAccount] = sa_orm.relationship("BankAccount", foreign_keys=[bankAccountId])
+    # See the note about `amount` at the beginning of this module.
+    amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False)
+    invoices: sa_orm.Mapped[list["Invoice"]] = sa_orm.relationship(
+        "Invoice", secondary=InvoiceSettlement.__table__, back_populates="settlements"
+    )
+    status: sa_orm.Mapped[SettlementStatus] = sa_orm.mapped_column(
+        db_utils.MagicEnum(SettlementStatus), nullable=False, default=SettlementStatus.PENDING
+    )
+    batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("settlement_batch.id"), index=True, nullable=False
+    )
+    batch: sa_orm.Mapped["SettlementBatch"] = sa_orm.relationship(
+        "SettlementBatch", foreign_keys=[batchId], back_populates="settlements"
+    )
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "externalSettlementId",
+            "bankAccountId",
+            name="unique_cegid_settlement_id_bank_account_id",
+        ),
+    )
+
+
+class SettlementBatch(PcObject, Model):
+    __tablename__ = "settlement_batch"
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
+    settlements: sa_orm.Mapped[list["Cashflow"]] = sa_orm.relationship(
+        "Settlement", foreign_keys="Settlement.batchId", back_populates="batch"
+    )
 
 
 # "Payment", "PaymentStatus" and "PaymentMessage" are deprecated. They

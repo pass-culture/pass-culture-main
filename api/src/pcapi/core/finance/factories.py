@@ -275,6 +275,25 @@ class CashflowFactory(BaseFactory):
     bankAccount = factory.SubFactory(BankAccountFactory)
 
 
+class SettlementBatchFactory(BaseFactory[models.SettlementBatch]):
+    class Meta:
+        model = models.SettlementBatch
+
+    name = factory.Sequence("VIR{}".format)
+    label = factory.Sequence("Libellé VIR{}".format)
+
+
+class SettlementFactory(BaseFactory[models.Settlement]):
+    class Meta:
+        model = models.Settlement
+
+    settlementDate = factory.LazyFunction(date_utils.get_naive_utc_now)
+    externalSettlementId = "0101234"
+    bankAccount = factory.SubFactory(BankAccountFactory)
+    amount = 10000
+    batch = factory.SubFactory(SettlementBatchFactory)
+
+
 # Factories below are deprecated and should probably NOT BE USED in
 # any new test. See comment in `models.py` above the definition of the
 # `Payment` model.

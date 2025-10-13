@@ -1,9 +1,11 @@
 import calendar
 import datetime
+import enum
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
+from pydantic import BaseModel as BaseModelV2
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
@@ -143,6 +145,22 @@ TITLES = {
     "OCCOLMEG": "Réservations",
     "CGCOLMEG": "Gestes commerciaux",
 }
+
+
+class SettlementType(enum.Enum):
+    PAYMENT = "Payment"
+    VOIDED_PAYMENT = "Voided Payment"
+
+
+class SettlementPayload(BaseModelV2):
+    bank_account_id: int
+    external_settlement_id: str
+    invoice_external_reference: str
+    settlement_type: SettlementType
+    settlement_batch_name: str | None
+    settlement_batch_label: str | None
+    settlement_date: datetime.date
+    amount: int
 
 
 class BaseFinanceBackend:
@@ -294,6 +312,11 @@ class BaseFinanceBackend:
         raise NotImplementedError()
 
     def get_invoice(self, reference: str) -> dict | None:
+        raise NotImplementedError()
+
+    def get_settlements(
+        self, from_date: datetime.date | None, to_date: datetime.date | None
+    ) -> list[SettlementPayload]:
         raise NotImplementedError()
 
     @property
