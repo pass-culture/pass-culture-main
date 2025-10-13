@@ -6,7 +6,6 @@ class Returns200Test:
     def test_get_venues_from_name(self, client, db_session) -> None:
         venue1 = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            publicName=None,
             isPermanent=True,
         )
         venue2 = offerers_factories.VenueFactory(
@@ -33,7 +32,6 @@ class Returns200Test:
     def test_get_venues_from_name_case_incensitive(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautifUl name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
@@ -117,7 +115,6 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
@@ -163,7 +160,6 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_request(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a name with c",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
@@ -186,7 +182,6 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_request_and_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
@@ -209,7 +204,6 @@ class Returns200Test:
     def test_get_venues_ignore_union_request(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
@@ -232,7 +226,6 @@ class Returns200Test:
     def test_get_venues_ignore_union_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
