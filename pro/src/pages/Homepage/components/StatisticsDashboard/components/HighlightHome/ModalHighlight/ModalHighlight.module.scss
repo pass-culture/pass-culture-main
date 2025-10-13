@@ -1,0 +1,93 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.callout {
+  margin-top: var(--size-spacing-xxl);
+}
+
+.callout-title {
+  @include fonts.body-accent;
+}
+
+.callout-list {
+  list-style: inside;
+}
+
+.highlight-title {
+  @include fonts.title3;
+
+  margin-top: var(--size-spacing-xxl);
+}
+
+.cards-container {
+  display: flex;
+  margin-top: var(--size-spacing-s);
+  gap: var(--size-spacing-s);
+  align-items: flex-start;
+  align-self: stretch;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.links-container {
+  margin-top: var(--size-spacing-xxl);
+  margin-bottom: var(--size-spacing-xxl);
+  display: flex;
+  justify-content: center;
+  gap: var(--size-spacing-xxl);
+}
+
+.actions-container {
+  display: flex;
+  gap: var(--size-spacing-m);
+}
+
+.card {
+  width: 100%;
+  padding: var(--size-spacing-l);
+  border-radius: var(--size-border-radius-m);
+  border: 1px solid var(--color-border-subtle);
+
+  &-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--size-spacing-m);
+  }
+
+  @media (min-width: size.$tablet) {
+    max-width: rem.torem(274px);
+  }
+}
+
+.card-image {
+  width: 100%;
+  height: rem.torem(90px);
+  object-fit: cover;
+  border-radius: var(--size-border-radius-m);
+}
+
+.card-title {
+  @include fonts.body-accent;
+}
+
+.card-description {
+  @include fonts.body-xs;
+}
+
+.card-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--size-spacing-l);
+}
+
+.card-limit-participation-date {
+  @include fonts.body-accent-xs;
+
+  font-weight: 600;
+  text-align: right;
+  margin-top: var(--size-border-radius-m);
+}
