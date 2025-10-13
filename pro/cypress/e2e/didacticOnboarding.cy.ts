@@ -125,6 +125,10 @@ describe('Didactic Onboarding feature', () => {
       (response) => {
         login = response.body.user.email
 
+        cy.setFeatureFlags([
+          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
+        ])
+
         // Should display the didactic onboarding homepage after login
         logInAndSeeDidacticOnboarding(login)
 
@@ -261,10 +265,6 @@ describe('Didactic Onboarding feature', () => {
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
       (response) => {
         login = response.body.user.email
-
-        cy.setFeatureFlags([
-          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: true },
-        ])
 
         // Should display the didactic onboarding homepage after login
         logInAndSeeDidacticOnboarding(login)

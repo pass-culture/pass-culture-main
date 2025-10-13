@@ -13,10 +13,6 @@ describe('Edit digital individual offers', () => {
         'GET',
         'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
         (response) => {
-          cy.setFeatureFlags([
-            { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: true },
-          ])
-
           login1 = response.body.user.email
         }
       )
