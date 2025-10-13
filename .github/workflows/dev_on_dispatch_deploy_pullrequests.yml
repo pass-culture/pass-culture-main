@@ -116,7 +116,6 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       resource_label: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [deploy-preview-env-init]
@@ -136,7 +135,6 @@ jobs:
       APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [deploy-preview-env-init, build-pcapi]

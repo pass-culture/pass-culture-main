@@ -91,7 +91,6 @@ jobs:
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
           echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   # Theses steps builds pcapi and pcapi-console image, tags them with the last commit sha then
   # pushes them to the registry
   build-pcapi:
@@ -113,7 +112,6 @@ jobs:
       APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
@@ -133,7 +131,6 @@ jobs:
       APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [build-pcapi, pcapi-init-job]
@@ -153,7 +150,6 @@ jobs:
       APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi-console:
     name: "Push pcapi-console docker image to artifact registry europe-west1"
     needs: [build-pcapi-console, pcapi-init-job]
