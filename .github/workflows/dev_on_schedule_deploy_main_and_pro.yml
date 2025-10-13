@@ -98,7 +98,7 @@ jobs:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi
       push: false
@@ -121,7 +121,7 @@ jobs:
     name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi-console
       push: false
@@ -144,7 +144,7 @@ jobs:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [build-pcapi, pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image_new.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
       push: true
@@ -167,7 +167,7 @@ jobs:
   push-pcapi-console:
     name: "Push pcapi-console docker image to artifact registry europe-west1"
     needs: [build-pcapi-console, pcapi-init-job]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image_new.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
