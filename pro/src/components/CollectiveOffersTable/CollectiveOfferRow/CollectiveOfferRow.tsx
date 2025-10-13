@@ -6,7 +6,6 @@ import {
 } from '@/apiClient/v1'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CheckboxCell } from '@/components/CollectiveOffersTable/CollectiveOfferRow/CheckboxCell'
 
@@ -18,7 +17,6 @@ import { OfferEventDateCell } from './OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from './OfferInstitutionCell/OfferInstitutionCell'
 import { OfferLocationCell } from './OfferLocationCell/OfferLocationCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
-import { OfferVenueCell } from './OfferVenueCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
 export type CollectiveOfferRowProps = {
@@ -48,9 +46,6 @@ export const CollectiveOfferRow = ({
   isTemplateTable,
 }: CollectiveOfferRowProps) => {
   const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
-  const isNewCollectiveOffersStructureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
 
   const rowId = `collective-offer-${id}`
 
@@ -95,24 +90,14 @@ export const CollectiveOfferRow = ({
           offerLink={offerLink}
           className={styles['collective-cell-name']}
           displayThumb={true}
-          isNewCollectiveOffersStructureActive={
-            isNewCollectiveOffersStructureActive
-          }
         />
         <OfferEventDateCell
           rowId={rowId}
           offer={offer}
           className={styles['collective-cell-event-date']}
         />
-        {isNewCollectiveOffersStructureActive && !isTemplateTable ? (
+        {isTemplateTable ? null : (
           <PriceAndParticipantsCell rowId={rowId} offer={offer} />
-        ) : null}
-        {!isNewCollectiveOffersStructureActive && (
-          <OfferVenueCell
-            rowId={rowId}
-            venue={offer.venue}
-            className={styles['collective-cell-venue']}
-          />
         )}
         {!isTemplateTable && (
           <OfferInstitutionCell
@@ -122,9 +107,7 @@ export const CollectiveOfferRow = ({
             className={styles['collective-cell-institution']}
           />
         )}
-        {isNewCollectiveOffersStructureActive && (
-          <OfferLocationCell rowId={rowId} offerLocation={offer.location} />
-        )}
+        <OfferLocationCell rowId={rowId} offerLocation={offer.location} />
         <CollectiveOfferStatusCell
           rowId={rowId}
           offer={offer}

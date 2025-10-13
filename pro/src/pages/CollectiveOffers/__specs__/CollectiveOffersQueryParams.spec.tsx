@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
@@ -136,10 +132,6 @@ describe('CollectiveOffersQueryParams', () => {
     it('should have offer name value when name search value is not an empty string', async () => {
       await renderOffers()
 
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-
       await userEvent.type(
         screen.getByRole('searchbox', {
           name: LABELS.nameSearchInput,
@@ -167,25 +159,6 @@ describe('CollectiveOffersQueryParams', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
-        replace: true,
-      })
-    })
-
-    it('should have venue value when user filters by venue', async () => {
-      await renderOffers()
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-
-      const venueSelect = screen.getByLabelText('Structure')
-
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
-      await userEvent.click(screen.getByText('Rechercher'))
-
-      expect(mockNavigate).toHaveBeenCalledWith(`/offres/collectives?lieu=1`, {
         replace: true,
       })
     })
