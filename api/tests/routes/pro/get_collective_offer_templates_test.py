@@ -12,6 +12,9 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 
 
+URL = "/collective/offers-template"
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     expected_num_queries = AUTHENTICATION_QUERIES
@@ -24,7 +27,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         assert response.json == [
@@ -56,7 +59,6 @@ class Returns200Test:
                 "name": offer.name,
                 "imageUrl": None,
                 "displayedStatus": "PUBLISHED",
-                "isActive": True,
             }
         ]
 
@@ -67,7 +69,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         [offer_json] = response.json
@@ -80,7 +82,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         [offer_json] = response.json
@@ -95,7 +97,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         [offer_json] = response.json
@@ -110,7 +112,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         [offer_json] = response.json
@@ -120,21 +122,6 @@ class Returns200Test:
             "locationType": "TO_BE_DEFINED",
         }
 
-    def test_one_inactive_offer(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        factories.create_collective_offer_template_by_status(
-            status=models.CollectiveOfferDisplayedStatus.HIDDEN, venue=venue
-        )
-
-        client = client.with_session_auth(user_offerer.user.email)
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
-            assert response.status_code == 200
-
-        [offer_json] = response.json
-        assert offer_json["isActive"] is False
-
     def test_collective_offer_template_user_has_no_access(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -143,7 +130,7 @@ class Returns200Test:
 
         client = client.with_session_auth(other_user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         assert response.json == []
@@ -166,7 +153,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template")
+            response = client.get(URL)
             assert response.status_code == 200
 
         # archived offers must appear at the end of the list even when created more recently
@@ -189,7 +176,7 @@ class Returns200Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/collective/offers-template?status={status.value}")
+            response = client.get(f"{URL}?status={status.value}")
 
         [response_offer] = response.json
         assert response_offer["id"] == offer.id
@@ -206,14 +193,14 @@ class Returns200Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template?locationType=SCHOOL")
+            response = client.get(f"{URL}?locationType=SCHOOL")
 
         assert response.status_code == 200
         [response_offer] = response.json
         assert response_offer["id"] == offer_school.id
 
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template?locationType=TO_BE_DEFINED")
+            response = client.get(f"{URL}?locationType=TO_BE_DEFINED")
 
         assert response.status_code == 200
         [response_offer] = response.json
@@ -221,7 +208,7 @@ class Returns200Test:
 
         oa_id = oa.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/collective/offers-template?locationType=ADDRESS&offererAddressId={oa_id}")
+            response = client.get(f"{URL}?locationType=ADDRESS&offererAddressId={oa_id}")
 
         assert response.status_code == 200
         [response_offer] = response.json
@@ -236,7 +223,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/collective/offers-template?format={EacFormat.CONCERT.value}")
+            response = client.get(f"{URL}?format={EacFormat.CONCERT.value}")
 
         assert response.status_code == 200
         [response_offer] = response.json
@@ -253,7 +240,7 @@ class Return400Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template?status=NOT_A_VALID_STATUS")
+            response = client.get(f"{URL}?status=NOT_A_VALID_STATUS")
             assert response.status_code == 400
 
         assert response.json == {
@@ -270,7 +257,7 @@ class Return400Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template?locationType=BLOUP")
+            response = client.get(f"{URL}?locationType=BLOUP")
 
         assert response.status_code == 400
         assert response.json == {
@@ -284,7 +271,7 @@ class Return400Test:
 
         client = client.with_session_auth(user_offerer.user.email)
         with assert_num_queries(self.expected_num_queries):
-            response = client.get("/collective/offers-template?locationType=SCHOOL&offererAddressId=1")
+            response = client.get(f"{URL}?locationType=SCHOOL&offererAddressId=1")
 
         assert response.status_code == 400
         assert response.json == {"__root__": ["Cannot provide offerer_address_id when location_type is not ADDRESS"]}

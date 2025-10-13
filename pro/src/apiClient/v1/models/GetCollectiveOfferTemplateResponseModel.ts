@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
@@ -11,7 +12,6 @@ import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferContactFormEnum } from './OfferContactFormEnum';
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
-import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferTemplateResponseModel = {
   allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
@@ -21,7 +21,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   contactPhone?: string | null;
   contactUrl?: string | null;
   dateCreated: string;
-  dates?: TemplateDatesModel | null;
+  dates?: CollectiveOfferDatesModel | null;
   description: string;
   displayedStatus: CollectiveOfferDisplayedStatus;
   domains: Array<OfferDomain>;

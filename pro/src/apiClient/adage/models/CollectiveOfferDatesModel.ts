@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type TemplateDatesModel = {
+export type CollectiveOfferDatesModel = {
   end: string;
   start: string;
 };

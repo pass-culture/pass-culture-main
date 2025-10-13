@@ -829,9 +829,9 @@ def get_collective_offers_for_filters(
 ) -> list[models.CollectiveOffer]:
     query = get_collective_offers_by_filters(filters=filters)
 
-    query = query.order_by(models.CollectiveOffer.dateCreated.desc())
     offers = (
-        query.options(
+        query.order_by(models.CollectiveOffer.isArchived, models.CollectiveOffer.dateCreated.desc())
+        .options(
             sa_orm.joinedload(models.CollectiveOffer.venue).options(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(

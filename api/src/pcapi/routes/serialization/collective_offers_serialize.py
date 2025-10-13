@@ -149,6 +149,15 @@ class CollectiveOffersStockResponseModel(BaseModel):
         orm_mode = True
 
 
+class CollectiveOfferStockResponseModel(ConfiguredBaseModel):
+    bookingLimitDatetime: datetime | None
+    price: float | None
+    numberOfTickets: int | None
+
+    class Config:
+        orm_mode = True
+
+
 class EducationalRedactorResponseModel(BaseModel):
     email: str | None
     firstName: str | None
@@ -159,7 +168,7 @@ class EducationalRedactorResponseModel(BaseModel):
         orm_mode = True
 
 
-class TemplateDatesModel(BaseModel):
+class CollectiveOfferDatesModel(BaseModel):
     start: datetime
     end: datetime
 
@@ -195,7 +204,7 @@ class CollectiveOfferResponseModel(BaseModel):
     )
     educationalInstitution: EducationalInstitutionResponseModel | None
     imageUrl: str | None
-    dates: TemplateDatesModel | None
+    dates: CollectiveOfferDatesModel | None
     location: GetCollectiveOfferLocationModel
 
     class Config:
@@ -283,16 +292,55 @@ def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffer
     )
 
 
-class CollectiveOfferTemplateResponseModel(ConfiguredBaseModel):
+class BaseCollectiveOfferResponseModel(ConfiguredBaseModel):
     id: int
-    isActive: bool
     name: str
     venue: base_serializers.ListOffersVenueResponseModel
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
-    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
     imageUrl: str | None
-    dates: TemplateDatesModel | None
     location: GetCollectiveOfferLocationModel
+    dates: CollectiveOfferDatesModel | None
+
+
+class CollectiveOfferBookableResponseModel(BaseCollectiveOfferResponseModel):
+    allowedActions: list[educational_models.CollectiveOfferAllowedAction]
+    stock: CollectiveOfferStockResponseModel | None
+    educationalInstitution: EducationalInstitutionResponseModel | None
+
+    @classmethod
+    def build(
+        cls: type["CollectiveOfferBookableResponseModel"], offer: educational_models.CollectiveOffer
+    ) -> "CollectiveOfferBookableResponseModel":
+        stock = offer.collectiveStock
+        serialized_stock = CollectiveOfferStockResponseModel.from_orm(stock) if stock is not None else None
+
+        start, end = offer.start, offer.end
+        if start is not None and end is not None:
+            dates = CollectiveOfferDatesModel(start=start, end=end)
+        else:
+            dates = None
+
+        return cls(
+            id=offer.id,
+            name=offer.name,
+            venue=_serialize_venue(offer.venue),
+            displayedStatus=offer.displayedStatus,
+            allowedActions=offer.allowedActions,
+            imageUrl=offer.imageUrl,
+            location=get_collective_offer_location_model(offer),
+            stock=serialized_stock,
+            educationalInstitution=offer.institution,
+            dates=dates,
+        )
+
+
+class ListCollectiveOfferBookableResponseModel(ConfiguredBaseModel):
+    __root__: list[CollectiveOfferBookableResponseModel]
+
+
+class CollectiveOfferTemplateResponseModel(BaseCollectiveOfferResponseModel):
+    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
+    dates: CollectiveOfferDatesModel | None
 
     @classmethod
     def build(
@@ -300,13 +348,12 @@ class CollectiveOfferTemplateResponseModel(ConfiguredBaseModel):
     ) -> "CollectiveOfferTemplateResponseModel":
         start, end = offer.start, offer.end
         if start is not None and end is not None:
-            dates = TemplateDatesModel(start=start, end=end)
+            dates = CollectiveOfferDatesModel(start=start, end=end)
         else:
             dates = None
 
         return cls(
             id=offer.id,
-            isActive=offer.isActive,
             name=offer.name,
             venue=_serialize_venue(offer.venue),
             displayedStatus=offer.displayedStatus,
@@ -508,7 +555,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
-    dates: TemplateDatesModel | None
+    dates: CollectiveOfferDatesModel | None
     isTemplate: bool = True
     contactEmail: str | None
     contactPhone: str | None
@@ -562,7 +609,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isPublicApi: bool
     provider: GetCollectiveOfferProviderResponseModel | None
     isTemplate: bool = False
-    dates: TemplateDatesModel | None
+    dates: CollectiveOfferDatesModel | None
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
     history: collective_history_serialize.CollectiveOfferHistory
 

@@ -72,6 +72,7 @@ import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankA
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
 import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
+import type { ListCollectiveOfferBookableResponseModel } from '../models/ListCollectiveOfferBookableResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
@@ -440,6 +441,51 @@ export class DefaultService {
         404: `La contremarque n'existe pas`,
         410: `Cette contremarque a été validée.
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_collective_bookable_offers <GET>
+   * @param name
+   * @param offererId
+   * @param status
+   * @param venueId
+   * @param periodBeginningDate
+   * @param periodEndingDate
+   * @param format
+   * @param locationType
+   * @param offererAddressId
+   * @returns ListCollectiveOfferBookableResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveBookableOffers(
+    name?: string | null,
+    offererId?: number | null,
+    status?: Array<CollectiveOfferDisplayedStatus> | null,
+    venueId?: number | null,
+    periodBeginningDate?: string | null,
+    periodEndingDate?: string | null,
+    format?: EacFormat | null,
+    locationType?: CollectiveLocationType | null,
+    offererAddressId?: number | null,
+  ): CancelablePromise<ListCollectiveOfferBookableResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/bookable-offers',
+      query: {
+        'name': name,
+        'offererId': offererId,
+        'status': status,
+        'venueId': venueId,
+        'periodBeginningDate': periodBeginningDate,
+        'periodEndingDate': periodEndingDate,
+        'format': format,
+        'locationType': locationType,
+        'offererAddressId': offererAddressId,
+      },
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Content`,
       },
     });

@@ -17,14 +17,12 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
-from pcapi.utils.repository import transaction
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
@@ -86,6 +84,26 @@ def get_collective_offers(
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
+    )
+
+
+@private_api.route("/collective/bookable-offers", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.ListCollectiveOfferBookableResponseModel,
+    api=blueprint.pro_private_schema,
+    query_params_as_list=["status"],
+)
+def get_collective_bookable_offers(
+    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+) -> collective_offers_serialize.ListCollectiveOfferBookableResponseModel:
+    filters = _get_template_filters_from_query(query)
+    offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
+    offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
+
+    return collective_offers_serialize.ListCollectiveOfferBookableResponseModel(
+        __root__=[collective_offers_serialize.CollectiveOfferBookableResponseModel.build(offer) for offer in offers]
     )
 
 
@@ -565,17 +583,15 @@ def patch_collective_offers_educational_institution(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
-    with transaction():
-        with db.session.no_autoflush:
-            offer = repository.get_collective_offer_and_extra_data(offer_id)
-            if offer is None:
-                raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
+    offer = repository.get_collective_offer_and_extra_data(offer_id)
+    if offer is None:
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
-            check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-            offer = api_offer.publish_collective_offer(offer=offer, user=current_user)
+    offer = api_offer.publish_collective_offer(offer=offer, user=current_user)
 
-            return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<int:offer_id>/publish", methods=["PATCH"])
