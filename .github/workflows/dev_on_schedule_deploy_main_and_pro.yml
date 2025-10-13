@@ -98,7 +98,7 @@ jobs:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
     with:
       image: pcapi
       push: false
@@ -121,7 +121,7 @@ jobs:
     name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
     with:
       image: pcapi-console
       push: false
