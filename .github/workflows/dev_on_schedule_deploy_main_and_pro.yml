@@ -119,7 +119,6 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [build-pcapi, pcapi-init-job]
@@ -130,16 +129,10 @@ jobs:
       commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
-      registry: europe-west1-docker.pkg.dev
-      repository: passculture-infra-prod/pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi-console:
     name: "Push pcapi-console docker image to artifact registry europe-west1"
     needs: [build-pcapi-console, pcapi-init-job]
@@ -150,11 +143,6 @@ jobs:
       commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
-      registry: europe-west1-docker.pkg.dev
-      repository: passculture-infra-prod/pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
