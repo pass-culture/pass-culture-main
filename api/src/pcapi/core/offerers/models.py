@@ -270,7 +270,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
-    publicName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
+    publicName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
 
     isVirtual: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean,

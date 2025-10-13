@@ -45,7 +45,7 @@ class VenueBySiretTest:
 
     def test_return_venue_without_publicName_of_given_siret(self, client):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName=None)
+        requested_venue = offerers_factories.VenueFactory()
         offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory()
         valid_encoded_token = self._create_adage_valid_token()
@@ -60,7 +60,7 @@ class VenueBySiretTest:
         assert response.json == {
             "id": requested_venue.id,
             "name": requested_venue.name,
-            "publicName": None,
+            "publicName": requested_venue.name,
             "relative": [],
             "departementCode": "75",
             "adageId": requested_venue.adageId,

@@ -1735,7 +1735,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         )
 
         venue_2 = offerers_factories.VenueFactory(
-            name="Premier", publicName=None, managingOfferer=offerer, isOpenToPublic=False
+            name="Premier", publicName="NumeroUn", managingOfferer=offerer, isOpenToPublic=False
         )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
@@ -1756,7 +1756,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["SIRET"] == venue_2.siret
         assert rows[0]["Permanent"] == ""
         assert rows[0]["Ouvert au public"] == ""
-        assert rows[0]["Nom"] == venue_2.name
+        assert rows[0]["Nom"] == venue_2.publicName
         assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[0].get("Activité principale du partenaire")
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"

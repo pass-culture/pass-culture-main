@@ -45,7 +45,7 @@ class VenueByIdTest:
 
     def test_return_venue_without_publicName_of_given_id(self, client):
         # Given
-        requested_venue = offerers_factories.VenueFactory(publicName=None, isPermanent=True)
+        requested_venue = offerers_factories.VenueFactory(isPermanent=True)
         offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
         offerers_factories.VenueFactory(isPermanent=True)
         valid_encoded_token = self._create_adage_valid_token()
@@ -60,7 +60,7 @@ class VenueByIdTest:
         assert response.json == {
             "id": requested_venue.id,
             "name": requested_venue.name,
-            "publicName": None,
+            "publicName": requested_venue.publicName,
             "relative": [],
             "departementCode": "75",
             "adageId": requested_venue.adageId,
@@ -69,7 +69,6 @@ class VenueByIdTest:
     def test_relative_venue(self, client):
         # Given
         requested_venue = offerers_factories.VenueFactory(
-            publicName=None,
             isPermanent=True,
         )
         venue2 = offerers_factories.VenueFactory(managingOfferer=requested_venue.managingOfferer, isPermanent=True)
@@ -87,7 +86,7 @@ class VenueByIdTest:
         assert response.json == {
             "id": requested_venue.id,
             "name": requested_venue.name,
-            "publicName": None,
+            "publicName": requested_venue.publicName,
             "relative": [venue2.id, venue3.id],
             "departementCode": "75",
             "adageId": requested_venue.adageId,
