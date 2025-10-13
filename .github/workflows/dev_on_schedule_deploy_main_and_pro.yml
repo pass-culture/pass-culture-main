@@ -102,6 +102,9 @@ jobs:
     with:
       image: pcapi
       push: false
+      # TODO: check me
+      # ref: ${{ github.sha }}
+      # tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
@@ -120,6 +123,9 @@ jobs:
     with:
       image: pcapi-console
       push: false
+      # TODO: check me
+      # ref: ${{ github.sha }}
+      # tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
@@ -138,6 +144,10 @@ jobs:
     with:
       image: pcapi
       push: true
+      # TODO: check me
+      # commit-hash: ${{ github.sha }}
+      # checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      # tag-latest: true
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
@@ -156,6 +166,10 @@ jobs:
     with:
       image: pcapi-console
       push: true
+      # TODO: check me
+      # commit-hash: ${{ github.sha }}
+      # checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      # tag-latest: true
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
