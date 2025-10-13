@@ -493,6 +493,70 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(offer_to_display.id)
 
+    def test_list_offers_with_venue_criterion_filter_in(self, authenticated_client):
+        should_be_displayed_offer = offers_factories.OfferFactory()
+        tag = criteria_factories.CriterionFactory()
+        should_be_displayed_offer.venue.criteria = [tag]
+        hidden_offer = offers_factories.OfferFactory()
+        hidden_offer.venue.criteria = [criteria_factories.CriterionFactory()]
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "IN",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(should_be_displayed_offer.id)
+
+    def test_list_offers_with_venue_criterion_filter_not_in(self, authenticated_client):
+        tag = criteria_factories.CriterionFactory()
+        offers_factories.OfferFactory().venue.criteria = [tag]
+        offer_to_display = offers_factories.OfferFactory()
+        offer_to_display.venue.criteria = [criteria_factories.CriterionFactory()]
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "NOT_IN",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_venue_criterion_filter_no_exist(self, authenticated_client):
+        tag = criteria_factories.CriterionFactory()
+        offers_factories.OfferFactory().venue.criteria = [tag]
+        offers_factories.OfferFactory().venue.criteria = [criteria_factories.CriterionFactory()]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
     def test_list_offers_by_event_date(self, authenticated_client, offers):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.date.today())

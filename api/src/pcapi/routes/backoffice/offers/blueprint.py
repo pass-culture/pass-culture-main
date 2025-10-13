@@ -171,6 +171,36 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "VENUE_TAG": {
+        "field": "criteria",
+        "column": offerers_models.VenueCriterion.criterionId,
+        "inner_join": "venue_criterion",
+        "custom_filters_inner_joins": {
+            "NOT_IN": ["venue"],
+            "NOT_EXIST": ["venue"],
+        },
+        "custom_filters": {
+            "NOT_IN": lambda values: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        criteria_models.VenueCriterion.venueId == offerers_models.Venue.id,
+                        criteria_models.VenueCriterion.criterionId.in_(values),
+                    )
+                )
+                .correlate(offerers_models.Venue)
+                .is_(False)
+            ),
+            "NOT_EXIST": lambda values: (
+                sa.exists()
+                .where(
+                    criteria_models.VenueCriterion.venueId == offerers_models.Venue.id,
+                )
+                .correlate(offerers_models.Venue)
+                .is_(False)
+            ),
+        },
+    },
     "OFFERER_TAG": {
         "field": "offerer_tags",
         "column": offerers_models.OffererTagMapping.tagId,
@@ -361,6 +391,19 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
             "args": (
                 offerers_models.OffererTagMapping,
                 offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            ),
+        },
+    ],
+    "venue_criterion": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+        {
+            "name": "venue_criterion",
+            "args": (
+                offerers_models.VenueCriterion,
+                offerers_models.VenueCriterion.venueId == offerers_models.Venue.id,
             ),
         },
     ],
