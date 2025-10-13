@@ -298,3 +298,10 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
     signal.signal(signal.SIGTERM, handler)
 
     finance_external.push_invoices(count, override_work_hours_check)
+
+
+@blueprint.cli.command("sync_settlements")
+@cron_decorators.log_cron
+def sync_settlements() -> None:
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
+    finance_external.sync_settlements(from_date=yesterday, to_date=yesterday)

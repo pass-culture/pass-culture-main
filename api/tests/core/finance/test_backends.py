@@ -12,6 +12,8 @@ from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend.base import SettlementPayload
+from pcapi.core.finance.backend.base import SettlementType
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
@@ -1480,3 +1482,129 @@ class CegidFinanceBackendTest:
     def test_is_configured(self):
         backend = finance_backend.CegidFinanceBackend()
         assert backend.is_configured
+
+    @pytest.mark.usefixtures("mock_cegid_auth")
+    def test_get_settlements(self, requests_mock, cegid_config, faker):
+        some_uuid = str(faker.uuid4())
+        now = datetime.datetime.now(datetime.UTC)
+        iso_now = now.isoformat()
+
+        response_data = {
+            "id": some_uuid,
+            "rowNumber": 1,
+            "note": None,
+            "Date": {"value": iso_now},
+            "EndDate": {},
+            "PaymentStatusDetails": [
+                {
+                    "id": some_uuid,
+                    "rowNumber": 1,
+                    "note": None,
+                    "AdjgDocType": {"value": "Voided Payment"},
+                    "adjgRefNbr": {"value": "0032596"},
+                    "Amount": {"value": -982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "VIR123 Label"},
+                    "EstAnnule": {"value": True},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": "FR123456789"},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "VCK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": "13579"},
+                    "VendorName": {"value": "Compte bancaire 13579"},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 2,
+                    "note": None,
+                    "AdjgDocType": {"value": "Something else"},
+                    "adjgRefNbr": {"value": "0032594"},
+                    "Amount": {"value": 982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "VIR123 Label"},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": "FR123456799"},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": "13579"},
+                    "VendorName": {"value": "Compte bancaire 13579"},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 3,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0032598"},
+                    "Amount": {"value": 982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": "R-FR123456999"},
+                    "RefLot": {},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": "13579"},
+                    "VendorName": {"value": "Compte bancaire 13579"},
+                    "custom": {},
+                },
+            ],
+            "RefFournFact": {},
+            "custom": {},
+        }
+
+        request_matcher_put_payment_status = requests_mock.register_uri(
+            "PUT",
+            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/PaymentStatus",
+            json=response_data,
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
+
+        settlements_payload = finance_backend.get_settlements(datetime.date.today(), datetime.date.today())
+        assert request_matcher_put_payment_status.call_count == 1
+
+        assert len(settlements_payload) == 2
+        assert (
+            SettlementPayload(
+                bank_account_id=13579,
+                external_settlement_id="0032596",
+                invoice_external_reference="FR123456789",
+                settlement_type=SettlementType.VOIDED_PAYMENT,
+                settlement_batch_name="VIR123",
+                settlement_batch_label="VIR123 Label",
+                settlement_date=now.date(),
+                amount=-98280,
+            )
+            in settlements_payload
+        )
+        assert (
+            SettlementPayload(
+                bank_account_id=13579,
+                external_settlement_id="0032598",
+                invoice_external_reference="FR123456999",
+                settlement_type=SettlementType.PAYMENT,
+                settlement_batch_name=None,
+                settlement_batch_label=None,
+                settlement_date=now.date(),
+                amount=98280,
+            )
+            in settlements_payload
+        )

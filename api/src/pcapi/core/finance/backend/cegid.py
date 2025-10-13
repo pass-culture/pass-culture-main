@@ -7,6 +7,8 @@ from pcapi.core.finance import exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.finance.backend.base import BaseFinanceBackend
+from pcapi.core.finance.backend.base import SettlementPayload
+from pcapi.core.finance.backend.base import SettlementType
 from pcapi.utils import cache as cache_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
@@ -324,6 +326,43 @@ class CegidFinanceBackend(BaseFinanceBackend):
             )
 
         return response_json[0]
+
+    def get_settlements(
+        self, from_date: datetime.date | None, to_date: datetime.date | None
+    ) -> list[SettlementPayload]:
+        url = f"{self.base_url}/{self._interface}/PaymentStatus"
+        # Date filters transaction dates older or equal to value
+        # EndDate filters transaction dates earlier or equal to value
+        from_date_filter = from_date.strftime("%Y-%m-%d") if from_date else ""
+        to_date_filter = to_date.strftime("%Y-%m-%d") if to_date else ""
+        response = self._request(
+            "PUT",
+            url,
+            params={"$expand": "PaymentStatusDetails"},
+            json={"Date": {"value": from_date_filter}, "EndDate": {"value": to_date_filter}},
+        )
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendUnexpectedResponse(response, "Unexpected response for PaymentStatus query")
+
+        response_json = response.json()
+        settlements = [
+            SettlementPayload(
+                bank_account_id=int(settlement_data["VendorID"]["value"]),
+                external_settlement_id=settlement_data["adjgRefNbr"]["value"],
+                invoice_external_reference=settlement_data["RefFournFact"]["value"].split("R-")[-1]
+                if settlement_data["RefFournFact"]["value"].startswith("R-")
+                else settlement_data["RefFournFact"]["value"],
+                settlement_type=SettlementType(settlement_data["AdjgDocType"]["value"]),
+                settlement_batch_name=settlement_data["RefLot"]["value"] if settlement_data["RefLot"] else None,
+                settlement_batch_label=settlement_data["DescLot"]["value"] if settlement_data["DescLot"] else None,
+                settlement_date=datetime.date.fromisoformat(settlement_data["Date"]["value"].split("T")[0]),
+                amount=int(float(settlement_data["Amount"]["value"]) * 100),
+            )
+            for settlement_data in response_json["PaymentStatusDetails"]
+            if settlement_data["AdjgDocType"]["value"] in ("Payment", "Voided Payment")
+        ]
+        return settlements
 
     @property
     def is_configured(self) -> bool:
