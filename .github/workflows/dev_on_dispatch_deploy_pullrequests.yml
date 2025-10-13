@@ -116,33 +116,39 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       resource_label: ${{ needs.deploy-preview-env-init.outputs.testing_label }}
 
+  # TODO: continue to push into old artifact registry until we fully migrated to new one
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [deploy-preview-env-init]
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi
-      tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
+      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
+      registry: europe-west1
+      project_id: passculture-infra-prod
+      repository: pass-culture-artifact-registry
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [deploy-preview-env-init, build-pcapi]
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_new.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
-      tag-latest: true
+      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
+      registry: europe-west1
+      project_id: passculture-infra-prod
+      repository: pass-culture-artifact-registry
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-api:
     name: "Deploy pullrequest"

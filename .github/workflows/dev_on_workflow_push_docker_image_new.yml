@@ -6,59 +6,31 @@ on:
         required: true
         type: string
 
-      commit-hash:
-        required: true
-        type: string
-
-      checksum-tag:
-        required: true
-        type: string
-
-      prefix-tag:
-        required: false
-        type: string
-        default: develop
-
-      tag-latest:
-        required: false
-        type: boolean
-        default: false
-
-      artifact_registry_workload_identity_provider:
-        required: false
-        type: string
-        default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-
       artifact_registry_service_account:
         required: false
         type: string
-        default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
 
       cosign_kms_key:
         required: false
         type: string
-        default: passculture-metier-ehp/cosign_kms_key
 
       registry:
         required: false
         type: string
-        default: europe-west1
 
       project_id:
         required: false
         type: string
-        default: passculture-infra-prod
 
       repository:
         required: false
         type: string
-        default: pass-culture-artifact-registry
 
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+      WORKLOAD_IDENTITY_PROVIDER:
         required: true
 
-      GCP_EHP_SERVICE_ACCOUNT:
+      SERVICE_ACCOUNT:
         required: true
 
 permissions:
@@ -74,8 +46,8 @@ jobs:
       - name: Authentification to Google
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
       - name: Get Secret
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v2
@@ -101,7 +73,7 @@ jobs:
           build_secrets: |
             github-token=${{ steps.github-token.outputs.token }}
           context: .
-          gcp_workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           artifact_registry_service_account: ${{ inputs.artifact_registry_service_account }}
           cosign_kms_key: ${{ steps.secrets.outputs.COSIGN_KMS_KEY }}
           docker_registry_region: ${{ inputs.registry }}
