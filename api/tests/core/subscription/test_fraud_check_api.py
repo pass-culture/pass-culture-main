@@ -485,6 +485,38 @@ class EduconnectFraudTest:
         )
         assert not age_check
 
+    def test_pre_decree_eligibility_used(self):
+        sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16, weeks=1)
+        user = users_factories.EmailValidatedUserFactory(dateOfBirth=sixteen_years_ago)
+        year_when_user_was_fifteen = sixteen_years_ago + relativedelta(years=15)
+        subscription_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=year_when_user_was_fifteen,
+        )
+
+        fraud_api.on_educonnect_result(
+            user,
+            educonnect_schemas.EduconnectContent(
+                birth_date=sixteen_years_ago,
+                civility=users_models.GenderEnum.F,
+                educonnect_id="id-1",
+                first_name="Lucy",
+                ine_hash="5ba682c0fc6a05edf07cd8ed0219258f",
+                last_name="Ellingson",
+                registration_datetime=date_utils.get_naive_utc_now(),
+                school_uai="shchool-uai",
+                student_level="2212",
+            ),
+        )
+
+        (educonnect_fraud_check,) = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == subscription_models.FraudCheckType.EDUCONNECT
+        ]
+        assert educonnect_fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
+
     def test_duplicates_fraud_checks(self):
         already_existing_user = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
         user = users_factories.UserFactory()

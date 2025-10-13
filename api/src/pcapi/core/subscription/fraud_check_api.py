@@ -61,8 +61,9 @@ class DuplicateIneHash(fraud_exceptions.FraudException):
 def on_educonnect_result(
     user: users_models.User, educonnect_content: educonnect_schemas.EduconnectContent
 ) -> subscription_models.BeneficiaryFraudCheck:
+    eligibility = subscription_api.get_id_provider_detected_eligibility(user, educonnect_content)
     fraud_check = subscription_api.initialize_identity_fraud_check(
-        eligibility_type=educonnect_content.get_eligibility_type_at_registration(),
+        eligibility_type=eligibility,
         fraud_check_type=subscription_models.FraudCheckType.EDUCONNECT,
         identity_content=educonnect_content,
         third_party_id=str(educonnect_content.educonnect_id),
