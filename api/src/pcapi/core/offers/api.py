@@ -271,7 +271,13 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
             try:
                 videos_api.upsert_video_and_metadata(new_video_url, offer)
             except videos_exceptions.InvalidVideoUrl:
-                raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
+                raise ApiErrors(
+                    errors={
+                        "videoUrl": [
+                            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                        ]
+                    }
+                )
             except videos_exceptions.YoutubeVideoNotFound:
                 raise ApiErrors(
                     errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}

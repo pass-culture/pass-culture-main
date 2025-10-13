@@ -99,7 +99,8 @@ const LABELS = {
   imageUpsertOrEditModalButton: 'Importer',
   videoSubSection: 'Ajoutez une vidéo',
   videoInput: 'Lien URL Youtube',
-  videoError: 'Veuillez renseigner une URL provenant de la plateforme Youtube',
+  videoError:
+    'Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées.',
   previousButtonCreationMode: 'Retour',
   previousButtonEditionMode: 'Annuler et quitter',
   nextButtonCreationMode: 'Enregistrer et continuer',
