@@ -1,9 +1,12 @@
+import datetime
+
 from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import BaseFinanceBackend
+from pcapi.core.finance.backend.base import SettlementPayload
 from pcapi.core.finance.backend.cegid import CegidFinanceBackend
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.offerers import models as offerers_models
@@ -47,6 +50,11 @@ def get_bank_account(bank_account_id: int) -> dict | None:
 def get_invoice(reference: str) -> dict | None:
     backend = _get_backend()
     return backend.get_invoice(reference)
+
+
+def get_settlements(from_date: datetime.date | None, to_date: datetime.date | None) -> list[SettlementPayload]:
+    backend = _get_backend()
+    return backend.get_settlements(from_date, to_date)
 
 
 def get_time_to_sleep_between_two_sync_requests() -> int:
