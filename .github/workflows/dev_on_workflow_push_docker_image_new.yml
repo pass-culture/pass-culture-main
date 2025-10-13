@@ -74,7 +74,6 @@ jobs:
       - name: Authentification to Google
         uses: google-github-actions/auth@v2
         with:
-          # TODO: avoid using EHP in variable names
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: Get Secret
@@ -83,16 +82,11 @@ jobs:
         with:
           secrets: |-
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
-            # TODO: find the value ot the private key
-            PRIVATE_KEY:pc-infra-prd/argowf_githubapp_private_key
-            # ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
-            # ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
-            # COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+            PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
       - name: Authenticate through github app argo-wf
         id: github-token
         uses: actions/create-github-app-token@v1
         with:
-          # TODO: PASSCULTURE_GITHUB_ACTION_APP_ID
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
           private-key: ${{ steps.secrets.outputs.PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
