@@ -37,7 +37,6 @@ describe('OfferNameCell', () => {
       offer: eventOffer,
       offerLink: '#',
       rowId: 'rowId',
-      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -51,7 +50,6 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '#',
       rowId: 'rowId',
-      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.queryByText('Offre vitrine')).not.toBeInTheDocument()
@@ -66,7 +64,6 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: true,
-      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByRole('presentation')).toHaveAttribute(
@@ -83,7 +80,6 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: false,
-      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
@@ -96,51 +92,39 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '/offre/123',
       rowId: 'rowId',
-      isNewCollectiveOffersStructureActive: false,
     })
 
     expect(screen.getByRole('link')).toHaveAttribute('href', '/offre/123')
   })
 
-  it('should show offer id when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
+  it('should show offer id when offer is bookable', () => {
     const offer = collectiveOfferFactory({
       name: 'Link test',
+      isShowcase: false,
     })
 
-    renderOfferNameCell(
-      {
-        offer,
-        offerLink: '/offre/123',
-        rowId: 'rowId',
-        isNewCollectiveOffersStructureActive: true,
-      },
-      {
-        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-      }
-    )
+    renderOfferNameCell({
+      offer,
+      offerLink: '/offre/123',
+      rowId: 'rowId',
+    })
     const offerTitle = screen.getByRole('link', {
       name: `N°${offer.id} ${offer.name}`,
     })
     expect(offerTitle).toBeInTheDocument()
   })
 
-  it('should not show offer id when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active and offer is template', () => {
+  it('should not show offer id when offer is template', () => {
     const offer = collectiveOfferFactory({
       name: 'Link test',
       isShowcase: true,
     })
 
-    renderOfferNameCell(
-      {
-        offer,
-        offerLink: '/offre/123',
-        rowId: 'rowId',
-        isNewCollectiveOffersStructureActive: true,
-      },
-      {
-        features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-      }
-    )
+    renderOfferNameCell({
+      offer,
+      offerLink: '/offre/123',
+      rowId: 'rowId',
+    })
     const offerTitle = screen.getByRole('link', {
       name: `Offre vitrine ${offer.name}`,
     })

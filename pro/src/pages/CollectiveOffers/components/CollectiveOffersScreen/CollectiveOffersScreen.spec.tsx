@@ -21,7 +21,7 @@ import { COLLECTIVE_TABLES_TITLE } from '@/components/CollectiveBudgetInformatio
 import {
   CollectiveOffersScreen,
   type CollectiveOffersScreenProps,
-} from '../CollectiveOffersScreen'
+} from './CollectiveOffersScreen'
 
 const renderOffers = (
   props: CollectiveOffersScreenProps,
@@ -179,7 +179,6 @@ describe('CollectiveOffersScreen', () => {
     expect(
       await screen.findByLabelText('Publiée sur ADAGE')
     ).toBeInTheDocument()
-    expect(await screen.findByLabelText('En pause')).toBeInTheDocument()
     expect(await screen.findByLabelText('Expirée')).toBeInTheDocument()
     expect(await screen.findByLabelText('En instruction')).toBeInTheDocument()
     expect(await screen.findByLabelText('Non conforme')).toBeInTheDocument()
@@ -329,45 +328,6 @@ describe('CollectiveOffersScreen', () => {
       screen.getAllByTestId('offer-event-date')[0].textContent
 
     expect(newFirstOfferEventDate).toEqual('30/06/2024')
-  })
-
-  it('should not display the offer type filter if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', () => {
-    renderOffers(props, {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-    })
-    expect(
-      screen.queryByRole('button', { name: 'Type de l’offre' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not show the inactive status option if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {
-    renderOffers(props, {
-      features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Statut',
-      })
-    )
-
-    expect(
-      screen.queryByRole('option', { name: 'En pause' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should display "Structure"', () => {
-    renderOffers(props)
-
-    // In filters
-    expect(
-      screen.getByRole('combobox', { name: 'Structure' })
-    ).toBeInTheDocument()
-
-    // In table results
-    expect(
-      screen.getByRole('columnheader', { name: 'Structure' })
-    ).toBeInTheDocument()
   })
 
   it('should render budget information callout when offerer is allowed on adage', () => {

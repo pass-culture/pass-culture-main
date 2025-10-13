@@ -10,7 +10,6 @@ type CELLS =
   | 'EVENT_DATE'
   | 'VENUE'
   | 'LOCATION'
-  | 'STRUCTURE'
   | 'INSTITUTION'
   | 'COLLECTIVE_STATUS'
   | 'ACTIONS'
@@ -41,10 +40,6 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
     LOCATION: {
       id: 'offer-head-location',
       title: 'Localisation',
-    },
-    STRUCTURE: {
-      id: 'offer-head-structure',
-      title: 'Structure',
     },
     INSTITUTION: {
       id: 'offer-head-institution',

@@ -15,10 +15,7 @@ import {
   type GetOffererAddressResponseModel,
   type VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import {
-  ALL_OFFERERS_OPTION,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -250,10 +247,6 @@ describe('CollectiveOffers', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
 
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
-
         const searchInput = screen.getByRole('searchbox', {
           name: LABELS.nameSearchInput,
         })
@@ -267,35 +260,6 @@ describe('CollectiveOffers', () => {
             offererId,
             undefined,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should load offers with selected venue filter', async () => {
-        await renderOffers()
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
-        const firstVenueOption = screen.getByRole('option', {
-          name: proVenues[0].name,
-        })
-        const venueSelect = screen.getByLabelText('Structure')
-        await userEvent.selectOptions(venueSelect, firstVenueOption)
-
-        await userEvent.click(screen.getByText('Rechercher'))
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-            undefined,
-            offererId,
-            undefined,
-            proVenues[0].id.toString(),
             undefined,
             undefined,
             undefined,
@@ -351,40 +315,6 @@ describe('CollectiveOffers', () => {
             undefined,
             '2020-12-27',
             undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should load offers with selected offer type if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is not active', async () => {
-        await renderOffers()
-
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
-
-        const offerTypeSelect = screen.getByLabelText('Type de l’offre')
-        await userEvent.selectOptions(
-          offerTypeSelect,
-          CollectiveOfferType.TEMPLATE
-        )
-
-        const button = screen.getByRole('button', { name: 'Rechercher' })
-
-        await userEvent.click(button)
-
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
-            offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            CollectiveOfferType.TEMPLATE,
             undefined,
             undefined,
             undefined
@@ -460,6 +390,7 @@ describe('CollectiveOffers', () => {
   })
 
   describe('should reset filters', () => {
+    // TODO (ahello): remove venueId from filters
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       vi.spyOn(api, 'getCollectiveOffers')
         .mockResolvedValueOnce(offersRecap)
@@ -469,16 +400,6 @@ describe('CollectiveOffers', () => {
         venueId: '666',
       }
       await renderOffers(filters)
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-
-      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
-
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -505,7 +426,7 @@ describe('CollectiveOffers', () => {
         undefined,
         offererId,
         undefined,
-        proVenues[0].id.toString(),
+        '666',
         undefined,
         undefined,
         undefined,
@@ -537,6 +458,7 @@ describe('CollectiveOffers', () => {
       )
     })
 
+    // TODO (ahello): remove venueId from filters
     it('when clicking on "Réinitialiser les filtres"  - except nameOrIsbn', async () => {
       vi.spyOn(api, 'getCollectiveOffers')
         .mockResolvedValueOnce(offersRecap)
@@ -548,16 +470,6 @@ describe('CollectiveOffers', () => {
         nameOrIsbn,
         venueId: '666',
       })
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-      const venueOptionToSelect = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-
-      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
-
-      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -575,31 +487,12 @@ describe('CollectiveOffers', () => {
         undefined
       )
 
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       await waitFor(() => {
         expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
-        nameOrIsbn,
-        offererId,
-        undefined,
-        proVenues[0].id.toString(),
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-
-      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
-      })
-      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        3,
         nameOrIsbn,
         offererId,
         undefined,
