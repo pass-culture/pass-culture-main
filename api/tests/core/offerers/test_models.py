@@ -511,23 +511,91 @@ class OffererConfidenceRuleTest:
 
 class OffererAddressTest:
     def test_offerer_address_isLinkedToVenue_property_should_be_true(self):
-        offererAddress = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offererAddress)
-        assert offererAddress.isLinkedToVenue is True
+        offerer_address = factories.OffererAddressFactory()
+        factories.VenueFactory(offererAddress=offerer_address)
+        assert offerer_address.isLinkedToVenue is True
 
     def test_offerers_address_is_notLinkedToVenue_property_should_be_false(self):
-        offererAddress = factories.OffererAddressFactory()
-        assert offererAddress.isLinkedToVenue is False
+        offerer_address = factories.OffererAddressFactory()
+        assert offerer_address.isLinkedToVenue is False
 
     def test_offerers_address_isLinkedToVenue_expression_should_be_false(self):
-        offererAddress = factories.OffererAddressFactory()
-        assert db.session.query(models.OffererAddress).filter_by(id=offererAddress.id).one().isLinkedToVenue is False
+        offerer_address = factories.OffererAddressFactory()
+        assert db.session.query(models.OffererAddress).filter_by(id=offerer_address.id).one().isLinkedToVenue is False
         assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == False).one()
 
     def test_offerers_address_isLinkedToVenue_expression_should_be_true(self):
-        offererAddress = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offererAddress)
+        offerer_address = factories.OffererAddressFactory()
+        factories.VenueFactory(offererAddress=offerer_address)
         assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == True).one()
+
+    def test_unique_constraint_on_legacy_offerer_address_raises(self):
+        offerer_address = factories.OffererAddressFactory()
+
+        with pytest.raises(IntegrityError):
+            factories.OffererAddressFactory(
+                offerer=offerer_address.offerer,
+                address=offerer_address.address,
+                label=offerer_address.label,
+            )
+
+    def test_unique_constraint_on_legacy_offerer_address_does_not_raise_when_label_is_null(self):
+        offerer_address = factories.OffererAddressFactory(label=None)
+
+        factories.OffererAddressFactory(
+            offerer=offerer_address.offerer,
+            address=offerer_address.address,
+            label=None,
+        )
+
+    def test_unique_constraint_on_offerer_address_raises_when_label_is_null(self):
+        offerer_address = factories.VenueLocationFactory(label=None)
+
+        with pytest.raises(IntegrityError):
+            factories.VenueLocationFactory(
+                offerer=offerer_address.offerer,
+                address=offerer_address.address,
+                label=None,
+                venue=offerer_address.venue,
+            )
+
+    def test_unique_constraint_on_offerer_address_raises_when_label_is_filled(self):
+        offerer_address = factories.VenueLocationFactory()
+
+        with pytest.raises(IntegrityError):
+            factories.VenueLocationFactory(
+                offerer=offerer_address.offerer,
+                address=offerer_address.address,
+                label=offerer_address.label,
+                venue=offerer_address.venue,
+            )
+
+    def test_unique_constraint_on_offerer_address_validates(self):
+        offerer_address = factories.VenueLocationFactory()
+
+        factories.OffererAddressFactory(
+            offerer=offerer_address.offerer,
+            address=offerer_address.address,
+            label="Other label",
+            type=models.LocationType.VENUE_LOCATION,
+            venue=offerer_address.venue,
+        )
+
+        factories.OffererAddressFactory(
+            offerer=offerer_address.offerer,
+            address=offerer_address.address,
+            label=offerer_address.label,
+            type=models.LocationType.OFFER_LOCATION,
+            venue=offerer_address.venue,
+        )
+
+        factories.OffererAddressFactory(
+            offerer=offerer_address.offerer,
+            address=offerer_address.address,
+            label=offerer_address.label,
+            type=models.LocationType.VENUE_LOCATION,
+            venue=factories.VenueFactory(managingOfferer=offerer_address.offerer),
+        )
 
 
 class OffererRid7Test:
