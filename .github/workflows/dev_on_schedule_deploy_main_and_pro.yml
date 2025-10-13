@@ -100,12 +100,16 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      push: false
+      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
+      registry: europe-west1
+      project_id: passculture-infra-prod
+      repository: pass-culture-artifact-registry
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   # TODO: continue to push into old artifact registry until we fully migrated to new one
   build-pcapi-console:
@@ -130,7 +134,7 @@ jobs:
     name: "Push pcapi docker image to artifact registry europe-west1"
     needs: [build-pcapi, pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_new.yml
     with:
       image: pcapi
       push: true
@@ -147,7 +151,7 @@ jobs:
   push-pcapi-console:
     name: "Push pcapi-console docker image to artifact registry europe-west1"
     needs: [build-pcapi-console, pcapi-init-job]
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image_new.yml
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
@@ -160,6 +164,8 @@ jobs:
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-to-testing:
     name: "Deploy to testing"
