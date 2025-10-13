@@ -51,7 +51,7 @@ phonenumberslite = "9.0.16"
 pillow = "11.3.0"
 prometheus-flask-exporter = "^0.23.2"
 protobuf = "6.32.1"
-psycopg2 = "^2.9.10"
+psycopg2 = "^2.9.11"
 py7zr = "^1.0.0"
 # required by schwifty upgraded manually because of setuptools
 pycountry = "24.6.1"
