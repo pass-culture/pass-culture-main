@@ -52,4 +52,21 @@
 
   text-align: end;
   margin-top: var(--size-spacing-s);
+  grid-column: 1 / -1;
+}
+
+.container-stats-highlight {
+  display: flex;
+  gap: var(--size-spacing-xxl);
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.card-data {
+  display: flex;
+  justify-content: center;
+  flex: 1 1 670px;
+  min-width: rem.torem(360px);
+  width: 100%;
 }
