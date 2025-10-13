@@ -304,6 +304,9 @@ class BaseFinanceBackend:
     def get_invoice(self, reference: str) -> dict | None:
         raise NotImplementedError()
 
+    def get_settlements(self, from_date: datetime.date | None, to_date: datetime.date | None) -> dict:
+        raise NotImplementedError()
+
     @property
     def is_configured(self) -> bool:
         raise NotImplementedError()

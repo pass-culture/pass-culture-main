@@ -10,6 +10,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import backend as finance_backend
 from pcapi.core.finance import exceptions as finance_exceptions
+from pcapi.core.finance import external as finance_external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
@@ -1479,3 +1480,207 @@ class CegidFinanceBackendTest:
     def test_is_configured(self):
         backend = finance_backend.CegidFinanceBackend()
         assert backend.is_configured
+
+    @pytest.mark.usefixtures("mock_cegid_auth")
+    def test_get_settlements(self, requests_mock, cegid_config, faker):
+        first_bank_account = finance_factories.BankAccountFactory()
+        second_bank_account = finance_factories.BankAccountFactory()
+        other_bank_account = finance_factories.BankAccountFactory()
+        invoice = finance_factories.InvoiceFactory(bankAccount=first_bank_account)
+        other_invoice = finance_factories.InvoiceFactory(bankAccount=other_bank_account)
+        another_invoice = finance_factories.InvoiceFactory(bankAccount=other_bank_account)
+        some_uuid = str(faker.uuid4())
+        now = date_utils.get_naive_utc_now()
+        iso_now = f"{now.isoformat()}+00"
+
+        response_vendor_data = {
+            "id": some_uuid,
+            "rowNumber": 1,
+            "note": None,
+            "Date": {"value": iso_now},
+            "EndDate": {},
+            "PaymentStatusDetails": [
+                {
+                    "id": some_uuid,
+                    "rowNumber": 1,
+                    "note": None,
+                    "AdjgDocType": {"value": "Voided Payment"},
+                    "adjgRefNbr": {"value": "0032596"},
+                    "Amount": {"value": -982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "Virement du VIR123"},
+                    "EstAnnule": {"value": True},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": invoice.reference},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "VCK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": first_bank_account.id},
+                    "VendorName": {"value": first_bank_account.label},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 2,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0032596"},
+                    "Amount": {"value": 982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "Virement du VIR123"},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": invoice.reference},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": first_bank_account.id},
+                    "VendorName": {"value": first_bank_account.label},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 3,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0032598"},
+                    "Amount": {"value": 982.8},
+                    "APInvoice_RefNbr": {"value": "0038380"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "Virement du VIR123"},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0038380"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": invoice.reference},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": second_bank_account.id},
+                    "VendorName": {"value": second_bank_account.label},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 4,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0052634"},
+                    "Amount": {"value": 450.0},
+                    "APInvoice_RefNbr": {"value": "0054316"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "Virement du VIR123"},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0054316"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": other_invoice.reference},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": other_bank_account.id},
+                    "VendorName": {"value": other_bank_account.label},
+                    "custom": {},
+                },
+                {
+                    "id": some_uuid,
+                    "rowNumber": 5,
+                    "note": None,
+                    "AdjgDocType": {"value": "Payment"},
+                    "adjgRefNbr": {"value": "0052634"},
+                    "Amount": {"value": 450.0},
+                    "APInvoice_RefNbr": {"value": "0054317"},
+                    "APInvoiceDocType": {"value": "Bill"},
+                    "Date": {"value": iso_now},
+                    "DescLot": {"value": "Virement du VIR123"},
+                    "EstAnnule": {"value": False},
+                    "Ndajustement": {"value": 0},
+                    "NumFacFourn": {"value": "0054317"},
+                    "PaymentStatus": {"value": "Closed"},
+                    "RefFournFact": {"value": another_invoice.reference},
+                    "RefLot": {"value": "VIR123"},
+                    "Typededocajust": {"value": "CHK"},
+                    "TypeFacFour": {"value": "Bill"},
+                    "VendorID": {"value": other_bank_account.id},
+                    "VendorName": {"value": other_bank_account.label},
+                    "custom": {},
+                },
+            ],
+            "RefFournFact": {},
+            "custom": {},
+        }
+
+        request_matcher_put_payment_status = requests_mock.register_uri(
+            "PUT",
+            f"{cegid_config.CEGID_URL}/entity/eCommerce/23.200.001/PaymentStatus",
+            json=response_vendor_data,
+            status_code=200,
+            headers={"content-type": "application/json"},
+        )
+
+        finance_external.get_settlements(datetime.date.today(), datetime.date.today())
+        assert request_matcher_put_payment_status.call_count == 1
+
+        assert db.session.query(finance_models.SettlementBatch).count() == 1
+        settlement_batch = db.session.query(finance_models.SettlementBatch).one()
+        assert settlement_batch.name == "VIR123"
+
+        assert db.session.query(finance_models.Settlement).count() == 3
+
+        first_settlement = (
+            db.session.query(finance_models.Settlement)
+            .filter(
+                finance_models.Settlement.cegidSettlementId == "0032596",
+                finance_models.Settlement.bankAccountId == first_bank_account.id,
+            )
+            .one()
+        )
+        assert first_settlement.invoices == [invoice]
+        assert first_settlement.settlementDate == datetime.date.today()
+        assert first_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert first_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert first_settlement.amount == 98280
+        assert first_settlement.status == finance_models.SettlementStatus.REJECTED
+        assert first_settlement.batch == settlement_batch
+
+        second_settlement = (
+            db.session.query(finance_models.Settlement)
+            .filter(
+                finance_models.Settlement.cegidSettlementId == "0032598",
+                finance_models.Settlement.bankAccountId == second_bank_account.id,
+            )
+            .one()
+        )
+        assert second_settlement.invoices == [invoice]
+        assert second_settlement.settlementDate == datetime.date.today()
+        assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert second_settlement.dateRejected == None
+        assert second_settlement.amount == 98280
+        assert second_settlement.status == finance_models.SettlementStatus.PENDING
+        assert second_settlement.batch == settlement_batch
+
+        other_settlement = (
+            db.session.query(finance_models.Settlement)
+            .filter(
+                finance_models.Settlement.cegidSettlementId == "0052634",
+                finance_models.Settlement.bankAccountId == other_bank_account.id,
+            )
+            .one()
+        )
+        assert set(other_settlement.invoices) == {other_invoice, another_invoice}
+        assert other_settlement.settlementDate == datetime.date.today()
+        assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
+        assert other_settlement.dateRejected == None
+        assert other_settlement.amount == 45000
+        assert other_settlement.status == finance_models.SettlementStatus.PENDING
+        assert other_settlement.batch == settlement_batch
