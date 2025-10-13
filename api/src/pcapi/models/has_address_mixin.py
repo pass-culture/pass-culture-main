@@ -8,6 +8,6 @@ from sqlalchemy import String
 class HasAddressMixin:
     _address: sa_orm.Mapped[str | None] = sa_orm.mapped_column("address", String(200), nullable=True)
 
-    postalCode: sa_orm.Mapped[str] = sa_orm.mapped_column(String(6), nullable=False, index=True)
+    postalCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(String(6), nullable=True, index=True)
 
-    city: sa_orm.Mapped[str] = sa_orm.mapped_column(String(50), nullable=False)
+    city: sa_orm.Mapped[str | None] = sa_orm.mapped_column(String(50), nullable=True)

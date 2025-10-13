@@ -1,13 +1,16 @@
 import classnames from 'classnames'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 
-import { useVenuesFromOfferer } from '@/commons/hooks/swr/useVenuesFromOfferer'
+import { api } from '@/apiClient/api'
+import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
+import { formatAndOrderVenues } from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -29,17 +32,21 @@ export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const incomeResults = useId()
+
   const {
-    data: venues,
+    data: venuesData,
     isLoading: areVenuesLoading,
     error: venuesApiError,
-  } = useVenuesFromOfferer(selectedOffererId)
+  } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
+    api.getVenues(true, null, selectedOffererId)
+  )
 
-  const venueValues = venues.map((v) => ({
-    id: v.value,
-    label: v.label,
-  }))
+  const venueValues = formatAndOrderVenues(venuesData?.venues ?? []).map(
+    (venue) => ({
+      id: String(venue.value),
+      label: venue.label,
+    })
+  )
 
   const {
     register,
@@ -57,10 +64,10 @@ export const Income = () => {
   const selectedWatch = watch('selectedVenues')
   const selected = selectedWatch.map((v) => v.id)
 
-  const hasVenuesData = venues.length > 0
-  const hasSingleVenue = venues.length === 1
+  const hasVenuesData = venueValues.length > 0
+  const hasSingleVenue = venueValues.length === 1
 
-  const onChange = (selectedOption: any[]) => {
+  const onChange = (selectedOption: Option[]) => {
     if (selectedOption.length === 0) {
       setError('selectedVenues', {
         message: 'Vous devez sélectionner au moins un partenaire',
@@ -139,11 +146,9 @@ export const Income = () => {
           )}
 
           {isIncomeLoading ? (
-            <div id={incomeResults} role="status">
-              <Spinner testId="income-spinner" />
-            </div>
+            <Spinner testId="income-spinner" />
           ) : incomeApiError ? (
-            <div id={incomeResults} role="alert">
+            <div role="alert">
               <IncomeError />
             </div>
           ) : !hasIncomeData ? (

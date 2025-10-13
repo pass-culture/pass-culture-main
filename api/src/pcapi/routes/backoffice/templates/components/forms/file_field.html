@@ -1,0 +1,12 @@
+<div class="form-file pc-field-{{ field.name }}">
+  {% set file_field_id = random_hash() %}
+  <input class="form-control value-element-form"
+         type="file"
+         name="{{ field.name }}"
+         data-original-name="{{ field.name }}"
+         {% if field.flags.required %}required {% endif +%}
+         id="{{ file_field_id }}" />
+  <div class="text-muted">
+    <small>{{ field.label.text }}</small>
+  </div>
+</div>

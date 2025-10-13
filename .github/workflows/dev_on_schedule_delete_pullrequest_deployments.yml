@@ -22,9 +22,9 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -32,14 +32,14 @@ jobs:
       # Get github api token
       - name: "Get secrets (github)"
         id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
@@ -54,7 +54,7 @@ jobs:
           permission-contents: write
 
       # Checkout rendered-manifests repository
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: pass-culture/rendered-manifests
           token: ${{ steps.github-token.outputs.token }}
@@ -62,14 +62,14 @@ jobs:
           ref: "pcapi/pullrequests"
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
           workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
 
       # Set up Cloud SDK
       - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v2"
+        uses: "google-github-actions/setup-gcloud@v3"
         with:
           version: ">= 363.0.0"
 

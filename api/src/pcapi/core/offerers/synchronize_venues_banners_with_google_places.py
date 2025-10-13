@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.search import async_index_venue_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 
 
@@ -168,7 +169,7 @@ def synchronize_venues_banners_with_google_places(
     for venue in venues:
         try:
             if venue.googlePlacesInfo:
-                if (datetime.datetime.utcnow() - venue.googlePlacesInfo.updateDate).days > 62:
+                if (date_utils.get_naive_utc_now() - venue.googlePlacesInfo.updateDate).days > 62:
                     continue
             else:
                 # TODO: CLEAN_OA - remove these conditions when there is no virtual Venue anymore

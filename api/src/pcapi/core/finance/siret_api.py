@@ -1,4 +1,3 @@
-import datetime
 from collections import defaultdict
 from decimal import Decimal
 
@@ -11,6 +10,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -244,7 +244,7 @@ def remove_siret(
 ) -> None:
     check_can_remove_siret(venue, comment, override_revenue_check=override_revenue_check)
     old_siret = venue.siret
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     new_siret: str | None = None
     if new_pricing_point_id:
@@ -319,7 +319,7 @@ def remove_siret(
 
 
 def _force_close_custom_reimbursement_rules_for_venue(venue: offerers_models.Venue) -> None:
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     custom_reimbursement_rules = db.session.query(finance_models.CustomReimbursementRule).filter(
         finance_models.CustomReimbursementRule.venueId == venue.id,
@@ -364,7 +364,7 @@ def remove_pricing_point_link(
 ) -> None:
     check_can_remove_pricing_point(venue, override_revenue_check)
 
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
 
     try:
         # End this pricing point

@@ -17,6 +17,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -291,24 +292,24 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
             (
                 "co",
                 {
-                    f"Temps costaud - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                    f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
                 3,
             ),
             (
                 "fort",
                 {
-                    f"Temps Fôrt - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                    f"Temps Fôrt - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
                 3,
             ),
             (
                 "1",
                 {
-                    f"Temps costaud - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" - {datetime.datetime.strftime((datetime.datetime.utcnow() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
+                    f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
                 },
                 3,
             ),

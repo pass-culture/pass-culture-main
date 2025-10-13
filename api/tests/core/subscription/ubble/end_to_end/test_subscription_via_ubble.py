@@ -19,6 +19,7 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.validation.routes import ubble as ubble_routes
 
@@ -35,7 +36,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
     def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client):
-        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
+        seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(
             dateOfBirth=seventeen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,

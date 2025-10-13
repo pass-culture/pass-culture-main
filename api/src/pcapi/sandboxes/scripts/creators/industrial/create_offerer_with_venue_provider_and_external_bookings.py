@@ -18,6 +18,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -99,7 +100,7 @@ def _create_offers(provider: Provider) -> Venue:
             CinemaStockProviderFactory.create(offer=offer_with_past_stock)
             CinemaStockProviderFactory.create(
                 offer=offer_with_past_stock,
-                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+                beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
                 - datetime.timedelta(days=5),
             )
     return venue

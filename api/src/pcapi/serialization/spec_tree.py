@@ -1,7 +1,9 @@
+import logging
 from copy import deepcopy
 from typing import Any
 from typing import Callable
 
+from pydantic import BaseModel as BaseModelV2
 from pydantic.v1 import BaseModel
 from spectree import Response
 from spectree import SpecTree
@@ -10,17 +12,18 @@ from spectree import Tag
 from pcapi.models.feature import FeatureToggle
 
 
+logger = logging.getLogger(__name__)
+
 _AUTHENTICATION_ATTRIBUTE = "requires_authentication"
 _FEATURE_FLAG_ATTRIBUTE = "feature_flag"
 
 
-def get_model_key(model: type[BaseModel]) -> str:
+def get_model_key(model: type[BaseModel] | type[BaseModelV2]) -> str:
     return model.__name__
 
 
-def get_model_schema(model: type[BaseModel]) -> dict:
-    assert issubclass(model, BaseModel)
-    return model.schema(ref_template="#/components/schemas/{model}")
+def get_nested_key(_: str, child: str) -> str:
+    return child
 
 
 def add_security_scheme(route_function: Callable, auth_key: str, scopes: list[str] | None = None) -> None:
@@ -48,7 +51,9 @@ class ExtendedSpecTree(SpecTree):
         :tags:  An sorted list of tags to structure the swagger and the redoc generated
                 by spectree.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(
+            *args, **{"naming_strategy": get_model_key, "nested_naming_strategy": get_nested_key, **kwargs}
+        )
         self.humanize_operation_id = humanize_operation_id
         self.tags = tags or []
 
@@ -86,21 +91,32 @@ class ExtendedSpecTree(SpecTree):
 
         return spec
 
-    def _add_model(self, model: type[BaseModel]) -> str:
-        model_key = get_model_key(model=model)
-        self.models[model_key] = deepcopy(get_model_schema(model=model))
-
-        return model_key
-
-    def _get_model_definitions(self) -> dict:
+    def _get_model_definitions(self) -> dict[str, Any]:
+        """
+        Return the result from SpecTree._get_model_definitions
+        Raise an error if we see the same model key twice with different values
+        """
         definitions = {}
-        for _name, schema in self.models.items():
-            if "definitions" in schema:
-                for key, value in schema["definitions"].items():
-                    definitions[key] = value
-                del schema["definitions"]
+        errors = []
 
-        return definitions
+        # inspired from SpecTree._get_model_definitions
+        for name, schema in self.models.items():
+            for def_key in ["definitions", "$defs"]:
+                if def_key in schema:
+                    for key, value in schema[def_key].items():
+                        composed_key = self.nested_naming_strategy(name, key)
+
+                        if composed_key not in definitions:
+                            definitions[composed_key] = value
+                        elif value != definitions[composed_key]:
+                            errors.append(composed_key)
+
+        if errors:
+            raise ValueError(
+                f"Some models appeared multiple times in the definitions with different values: {','.join(errors)}"
+            )
+
+        return super()._get_model_definitions()
 
 
 class ExtendResponse(Response):

@@ -27,6 +27,7 @@ from pcapi.local_providers.movie_festivals import constants as movie_festivals_c
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 ACCEPTED_MEDIA_OPTIONS_TICKET_LABEL = {
@@ -83,7 +84,7 @@ class CDSStocks(LocalProvider):
 
         venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
         offer_providable_info = self.create_providable_info(
-            offers_models.Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+            offers_models.Offer, venue_movie_unique_id, date_utils.get_naive_utc_now(), venue_movie_unique_id
         )
         providable_information_list.append(offer_providable_info)
 
@@ -92,7 +93,7 @@ class CDSStocks(LocalProvider):
                 self.movie_information.id, self.venue, show["show_information"]
             )
             stock_providable_info = self.create_providable_info(
-                offers_models.Stock, stock_showtime_unique_id, datetime.utcnow(), stock_showtime_unique_id
+                offers_models.Stock, stock_showtime_unique_id, date_utils.get_naive_utc_now(), stock_showtime_unique_id
             )
             providable_information_list.append(stock_providable_info)
 

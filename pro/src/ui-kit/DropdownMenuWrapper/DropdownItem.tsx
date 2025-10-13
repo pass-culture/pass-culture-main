@@ -44,8 +44,7 @@ type DropdownItemProps = DropdownMenu.DropdownMenuItemProps & {
  * </DropdownItem>
  *
  * @accessibility
- * - **Disabled State**: The dropdown item can be disabled using the `disabled` prop, which ensures it is not selectable and visually indicates its inactive state.
- * - **Title Attribute**: The `title` attribute provides additional context for the dropdown item, making it more accessible.
+ * - If present, the `title` attribute provides additional context for the dropdown item.
  */
 export function DropdownItem({
   title,

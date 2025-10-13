@@ -22,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms
@@ -167,7 +168,7 @@ def generate_user() -> utils.BackofficeResponse:
     )
     expiration_date = (
         token.get_expiration_date_from_token()
-        or datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
     expiration_timestamp = int(expiration_date.timestamp())
     return redirect(
@@ -283,7 +284,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
         params["accessToken"] = token.encoded_token
         expiration_date = (
             token.get_expiration_date_from_token()
-            or datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+            or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
         )
         params["expirationTimestamp"] = str(int(expiration_date.timestamp()))
         params["email"] = user.email

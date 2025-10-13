@@ -44,10 +44,6 @@ export type PaginationProps = {
  *   onPreviousPageClick={() => console.log('Previous page clicked')}
  *   onNextPageClick={() => console.log('Next page clicked')}
  * />
- *
- * @accessibility
- * - **Button Labels**: The previous and next buttons have descriptive `alt` text, such as "Page précédente" and "Page suivante", to ensure they are accessible to screen readers.
- * - **Disabled State**: Buttons are disabled when the current page is the first or last page to prevent unnecessary navigation.
  */
 export const Pagination = ({
   currentPage,

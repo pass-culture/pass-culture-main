@@ -5,6 +5,7 @@ from contextlib import contextmanager
 
 from pcapi.connectors.dms import models as ds_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.lock import lock
 
 
@@ -26,7 +27,7 @@ def import_ds_applications(
         .first()
     )
     if last_import and last_import.isProcessing:
-        if datetime.datetime.utcnow() < last_import.latestImportDatetime + datetime.timedelta(days=1):
+        if date_utils.get_naive_utc_now() < last_import.latestImportDatetime + datetime.timedelta(days=1):
             logger.info("[DS] Procedure %s is already being processed.", procedure_number)
         else:
             last_import.isProcessing = False
@@ -50,7 +51,7 @@ def import_ds_applications(
 
         current_import = ds_models.LatestDmsImport(
             procedureId=procedure_number,
-            latestImportDatetime=datetime.datetime.utcnow(),
+            latestImportDatetime=date_utils.get_naive_utc_now(),
             isProcessing=True,
             processedApplications=[],
         )

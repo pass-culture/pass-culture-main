@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -18,6 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
         db.session.query(users_models.GdprUserDataExtract)
         .filter(
             users_models.GdprUserDataExtract.id == extract_id,
-            users_models.GdprUserDataExtract.expirationDate > datetime.utcnow(),
+            users_models.GdprUserDataExtract.expirationDate > date_utils.get_naive_utc_now(),
         )
         .options(joinedload(users_models.GdprUserDataExtract.user).load_only(users_models.User.email))
         .one_or_none()

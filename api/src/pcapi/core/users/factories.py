@@ -31,6 +31,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions
 from pcapi.utils import repository
 
@@ -57,7 +58,7 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    dateCreated = LazyFunction(datetime.utcnow)
+    dateCreated = LazyFunction(date_utils.get_naive_utc_now)
     dateOfBirth = LazyAttribute(
         lambda o: datetime.combine((o.dateCreated - relativedelta(years=o.age)).date(), time.min)
     )
@@ -155,7 +156,7 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
             obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(
                 subscription_factories.PhoneValidationFraudCheckFactory.create(
-                    user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
+                    user=obj, dateCreated=kwargs.get("dateCreated", date_utils.get_naive_utc_now())
                 )
             )
         return fraud_checks
@@ -210,7 +211,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         import pcapi.core.subscription.factories as subscription_factories
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
-        profile_completion_kwargs: dict = {"dateCreated": kwargs.get("dateCreated", datetime.utcnow())}
+        profile_completion_kwargs: dict = {"dateCreated": kwargs.get("dateCreated", date_utils.get_naive_utc_now())}
         if "eligibilityType" in kwargs:
             profile_completion_kwargs["eligibilityType"] = kwargs["eligibilityType"]
         fraud_checks.append(
@@ -310,7 +311,7 @@ class HonorStatementValidatedUserFactory(IdentityValidatedUserFactory):
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         fraud_checks.append(
             subscription_factories.HonorStatementFraudCheckFactory.create(
-                user=obj, dateCreated=kwargs.get("dateCreated", datetime.utcnow())
+                user=obj, dateCreated=kwargs.get("dateCreated", date_utils.get_naive_utc_now())
             )
         )
         return fraud_checks
@@ -595,8 +596,8 @@ class BeneficiaryGrant18Factory(BaseFactory):
     email = factory.LazyFunction(lambda: f"jeanne.doux_{uuid.uuid4()}@example.com")
     address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
-    lastConnectionDate = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now())
+    lastConnectionDate = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=1))
     dateOfBirth = LazyAttribute(  # LazyAttribute to allow freez_time overrides
         lambda _: datetime.combine(date.today(), time(0, 0))
         - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, months=1)
@@ -1023,7 +1024,7 @@ class DepositGrantFactory(BaseFactory):
     class Meta:
         model = finance_models.Deposit
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow())
+    dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now())
     source = "factory"
     user = factory.SubFactory(UserFactory)
 
@@ -1041,7 +1042,7 @@ class DepositGrantFactory(BaseFactory):
             age = 18  # The calling functions are responsible for setting the correct age. If age is not in the range, we generate a deposit for 18yo.
 
         if "type" not in kwargs:
-            date_created = kwargs.get("dateCreated", datetime.utcnow())
+            date_created = kwargs.get("dateCreated", date_utils.get_naive_utc_now())
             if date_created >= settings.CREDIT_V3_DECREE_DATETIME:
                 kwargs["type"] = finance_models.DepositType.GRANT_17_18
             else:
@@ -1216,8 +1217,8 @@ class UserAccountUpdateRequestFactory(BaseFactory):
         firstName="Instructeur",
         lastName="du Backoffice",
     )
-    dateLastUserMessage = LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=1))
-    dateLastInstructorMessage = factory.LazyAttribute(lambda _: datetime.utcnow() - relativedelta(days=3))
+    dateLastUserMessage = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=1))
+    dateLastInstructorMessage = factory.LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=3))
 
 
 class EmailUpdateRequestFactory(UserAccountUpdateRequestFactory):
@@ -1246,7 +1247,7 @@ class GdprUserDataExtractBeneficiaryFactory(BaseFactory):
     class Meta:
         model = models.GdprUserDataExtract
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
     authorUser = factory.SubFactory(AdminFactory)
 
@@ -1255,7 +1256,7 @@ class GdprUserAnonymizationFactory(BaseFactory):
     class Meta:
         model = models.GdprUserAnonymization
 
-    dateCreated = LazyAttribute(lambda _: datetime.utcnow() - timedelta(days=1))
+    dateCreated = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - timedelta(days=1))
     user = factory.SubFactory(BeneficiaryFactory)
 
 

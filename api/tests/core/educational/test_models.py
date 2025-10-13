@@ -26,6 +26,7 @@ from pcapi.core.educational.models import HasImageMixin
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
@@ -52,7 +53,7 @@ class EducationalDepositTest:
 
 class CollectiveStockIsBookableTest:
     def test_not_bookable_if_booking_limit_datetime_has_passed(self) -> None:
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         collective_stock = factories.CollectiveStockFactory(bookingLimitDatetime=past)
         assert not collective_stock.isBookable
 
@@ -73,7 +74,7 @@ class CollectiveStockIsBookableTest:
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_offer_is_event_with_passed_start_datetime(self) -> None:
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         collective_stock = factories.CollectiveStockFactory(startDatetime=past)
         assert not collective_stock.isBookable
 
@@ -93,135 +94,6 @@ class CollectiveStockIsBookableTest:
         assert not collective_stock.isBookable
 
 
-class CollectiveOfferIsSoldOutTest:
-    def test_is_sold_out_property_false(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        assert not offer.isSoldOut
-
-    def test_offer_property_is_not_sold_out_when_booking_is_cancelled(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        assert not offer.isSoldOut
-
-    def test_offer_property_is_sold_out(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-
-        assert offer.isSoldOut
-
-    def test_offer_property_is_sold_out_when_some_booking_are_cancelled(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-
-        assert offer.isSoldOut
-
-    def test_is_sold_out_query_false(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer)
-
-        soldout_offer = factories.CollectiveOfferFactory()
-        soldout_stock = factories.CollectiveStockFactory(collectiveOffer=soldout_offer)
-        factories.CollectiveBookingFactory(collectiveStock=soldout_stock)
-
-        results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(False)).all()
-
-        assert len(results) == 1
-        assert results[0].id == offer.id
-
-    def test_offer_query_is_not_sold_out_when_booking_is_cancelled(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-
-        soldout_offer = factories.CollectiveOfferFactory()
-        soldout_stock = factories.CollectiveStockFactory(collectiveOffer=soldout_offer)
-        factories.CollectiveBookingFactory(collectiveStock=soldout_stock)
-
-        results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(False)).all()
-
-        assert len(results) == 1
-        assert results[0].id == offer.id
-
-    def test_offer_query_is_sold_out(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-
-        undsold_offer = factories.CollectiveOfferFactory()
-        undsold_stock = factories.CollectiveStockFactory(collectiveOffer=undsold_offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-
-        results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(True)).all()
-
-        assert len(results) == 1
-        assert results[0].id == offer.id
-
-    def test_offer_query_is_sold_out_when_some_booking_are_cancelled(self) -> None:
-        offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-
-        undsold_offer = factories.CollectiveOfferFactory()
-        undsold_stock = factories.CollectiveStockFactory(collectiveOffer=undsold_offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-
-        results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(True)).all()
-
-        assert len(results) == 1
-        assert results[0].id == offer.id
-
-    def test_offer_query_is_sold_out_on_realistic_case(self) -> None:
-        offer_1 = factories.CollectiveOfferFactory()
-        stock_1 = factories.CollectiveStockFactory(collectiveOffer=offer_1)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1, status=CollectiveBookingStatus.CANCELLED)
-        offer_2 = factories.CollectiveOfferFactory()
-        stock_2 = factories.CollectiveStockFactory(collectiveOffer=offer_2)
-        factories.CollectiveBookingFactory(collectiveStock=stock_2)
-
-        offer_3 = factories.CollectiveOfferFactory()
-        stock_3 = factories.CollectiveStockFactory(collectiveOffer=offer_3)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock_3)
-        offer_4 = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer_4)
-
-        results = (
-            db.session.query(CollectiveOffer)
-            .filter(CollectiveOffer.isSoldOut.is_(True))
-            .order_by(CollectiveOffer.id)
-            .all()
-        )
-
-        assert len(results) == 2
-        assert results[0].id == offer_1.id
-        assert results[1].id == offer_2.id
-
-        results = (
-            db.session.query(CollectiveOffer)
-            .filter(CollectiveOffer.isSoldOut.is_(False))
-            .order_by(CollectiveOffer.id)
-            .all()
-        )
-
-        assert len(results) == 2
-        assert results[0].id == offer_3.id
-        assert results[1].id == offer_4.id
-
-
 class CollectiveOfferIsArchiveTest:
     @pytest.mark.parametrize("state", OfferValidationStatus)
     def test_date_archive_for_status(self, state) -> None:
@@ -230,13 +102,13 @@ class CollectiveOfferIsArchiveTest:
         assert offer.isArchived == False
 
         offer.publicationDatetime = None
-        offer.dateArchived = datetime.datetime.utcnow()
+        offer.dateArchived = date_utils.get_naive_utc_now()
 
         assert offer.isArchived == True
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ARCHIVED
 
     def test_query_is_archived(self) -> None:
-        offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=datetime.datetime.utcnow())
+        offer_archived = factories.CollectiveOfferFactory(isActive=False, dateArchived=date_utils.get_naive_utc_now())
         offer_not_archived = factories.CollectiveOfferFactory(dateArchived=None)
 
         results = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.isArchived.is_(True)).all()
@@ -542,12 +414,12 @@ class EducationalInstitutionProgramTest:
 
         institution = factories.EducationalInstitutionFactory()
 
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
         factories.EducationalInstitutionProgramAssociationFactory(
             institution=institution, program=program1, timespan=db_utils.make_timerange(past, None)
         )
 
-        assert institution.programs_at_date(datetime.datetime.utcnow()) == [program1]
+        assert institution.programs_at_date(date_utils.get_naive_utc_now()) == [program1]
 
         before_meg_start = datetime.datetime(2020, 1, 1)
         assert institution.programs_at_date(before_meg_start) == []
@@ -557,8 +429,8 @@ class EducationalInstitutionProgramTest:
 
         institution = factories.EducationalInstitutionFactory()
 
-        today = datetime.datetime.utcnow()
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        today = date_utils.get_naive_utc_now()
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
         futur_date = today + datetime.timedelta(days=365)
         factories.EducationalInstitutionProgramAssociationFactory(
             institution=institution, program=program, timespan=(db_utils.make_timerange(start=past, end=futur_date))
@@ -595,15 +467,15 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
 
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        futur = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         stock.bookingLimitDatetime = futur
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.PREBOOKED
 
     def test_get_displayed_status_for_offer_when_in_between_startDatetime_endDatetime(self):
         offer = factories.CollectiveOfferFactory()
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        futur = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         stock = factories.CollectiveStockFactory(
             collectiveOffer=offer, startDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
         )
@@ -612,14 +484,14 @@ class CollectiveOfferDisplayedStatusTest:
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
 
     def test_get_displayed_status_for_offer_with_cancelled_booking(self):
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
 
         offer = factories.CollectiveOfferFactory()
         stock = factories.CollectiveStockFactory(collectiveOffer=offer, startDatetime=yesterday, endDatetime=yesterday)
         factories.CancelledCollectiveBookingFactory(
             collectiveStock=stock, dateCreated=yesterday - datetime.timedelta(days=3)
         )
-        factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.utcnow())
+        factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=date_utils.get_naive_utc_now())
 
         assert offer.lastBooking.status == CollectiveBookingStatus.REIMBURSED
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
@@ -636,8 +508,8 @@ class CollectiveOfferTemplateDisplayedStatusTest:
             validation=OfferValidationStatus.APPROVED,
             isActive=False,
             dateRange=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=4),
-                end=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
+                end=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1),
             ),
         )
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
@@ -718,10 +590,10 @@ class CollectiveOfferAllowedActionsTest:
         offer = factories.CollectiveOfferFactory()
         factories.CollectiveStockFactory(collectiveOffer=offer)
 
-        assert offer.collectiveStock.endDatetime > datetime.datetime.utcnow()
+        assert offer.collectiveStock.endDatetime > date_utils.get_naive_utc_now()
         assert not offer.is_two_days_past_end()
 
-        offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        offer.collectiveStock.endDatetime = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end()
 
     @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
@@ -770,7 +642,7 @@ class CollectiveOfferTemplateHasEndDatePassedTest:
         assert offer_with_range.dateRange is not None
         assert not offer_with_range.hasEndDatePassed
 
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         date_range = db_utils.make_timerange(
             start=now - datetime.timedelta(days=3),
             end=now - datetime.timedelta(days=1),
@@ -823,8 +695,8 @@ class CollectiveBookingTest:
 
     def test_uncancel_booking_to_used(self):
         booking = factories.CancelledCollectiveBookingFactory(
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=4),
-            collectiveStock__endDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
+            collectiveStock__endDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
         )
         booking.uncancel_booking()
 

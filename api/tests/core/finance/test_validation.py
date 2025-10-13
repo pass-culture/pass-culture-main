@@ -8,6 +8,7 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import validation
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -15,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class CustomReimbursementRuleValidationTest:
     def _make_rule(self, **kwargs):
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         kwargs.setdefault("offererId", 1)
         kwargs.setdefault("rate", 0.8)
         kwargs.setdefault("subcategories", [])

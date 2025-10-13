@@ -2,7 +2,6 @@ import hashlib
 import json
 import logging
 import uuid
-from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
@@ -17,6 +16,7 @@ from pcapi import settings
 from pcapi.core import token as token_tools
 from pcapi.core.users.exceptions import InvalidToken
 from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -36,7 +36,7 @@ class TokenTest:
         assert token.type_ == self.token_type
         assert token.encoded_token is not None
         assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
-            datetime.utcnow() + self.ttl
+            date_utils.get_naive_utc_now() + self.ttl
         ).isoformat(timespec="hours")
 
     def test_create_token_with_no_data_no_ttl(self):
@@ -62,7 +62,7 @@ class TokenTest:
         assert token.type_ == old_token.type_
         assert token.encoded_token == old_token.encoded_token
         assert token_tools.Token.get_expiration_date(self.token_type, self.user_id).isoformat(timespec="hours") == (
-            datetime.utcnow() + self.ttl
+            date_utils.get_naive_utc_now() + self.ttl
         ).isoformat(timespec="hours")
 
     def test_get_expiration_date_used_token(self):
@@ -245,7 +245,7 @@ class AsymetricTokenTest:
         assert token_tools.AsymetricToken.get_expiration_date(
             self.token_type,
             token.key_suffix,
-        ).isoformat(timespec="hours") == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ).isoformat(timespec="hours") == (date_utils.get_naive_utc_now() + self.ttl).isoformat(timespec="hours")
 
     @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=wrong_private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_creating_and_verifying_signature_with_mismatch_private_and_public_keys(self):
@@ -273,7 +273,7 @@ class AsymetricTokenTest:
         assert token.encoded_token == old_token.encoded_token
         assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
             timespec="hours"
-        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ) == (date_utils.get_naive_utc_now() + self.ttl).isoformat(timespec="hours")
 
         token = token_tools.AsymetricToken.load_without_checking(
             old_token.encoded_token,
@@ -283,7 +283,7 @@ class AsymetricTokenTest:
         assert token.encoded_token == old_token.encoded_token
         assert token_tools.AsymetricToken.get_expiration_date(self.token_type, token.key_suffix).isoformat(
             timespec="hours"
-        ) == (datetime.utcnow() + self.ttl).isoformat(timespec="hours")
+        ) == (date_utils.get_naive_utc_now() + self.ttl).isoformat(timespec="hours")
 
     @pytest.mark.settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
     def test_load_without_checking_wrong_public_key(self):
@@ -355,7 +355,7 @@ class PasswordLessLoginTokenTest:
         jti = str(mocked_uuid())
         ttl = timedelta(hours=8)
         sub = 1
-        issued_at = datetime.utcnow() - timedelta(hours=5)
+        issued_at = date_utils.get_naive_utc_now() - timedelta(hours=5)
         expiration_date = issued_at + ttl
         exp = int(expiration_date.timestamp())
         iat = int(issued_at.timestamp())

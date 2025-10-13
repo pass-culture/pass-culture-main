@@ -22,6 +22,7 @@
             {% endif %}
             {% call badges.badges_container() %}
               {% for tag in user.tags %}{{ (tag.label or tag.name) | format_badge("secondary") }}{% endfor %}
+              {% if is_user_expired %}{{ "Informations expirées" | format_badge("warning") }}{% endif %}
             {% endcall %}
             {% if duplicate_user_id %}
               <small><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"

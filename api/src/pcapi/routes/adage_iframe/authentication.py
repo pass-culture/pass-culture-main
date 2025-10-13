@@ -1,5 +1,3 @@
-import datetime
-
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import adage as educational_api_adage
@@ -18,6 +16,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import (
 )
 from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -83,5 +82,5 @@ def _get_programs(institution: educational_models.EducationalInstitution | None)
         return []
     return [
         EducationalInstitutionProgramModel.from_orm(program)
-        for program in institution.programs_at_date(datetime.datetime.utcnow())
+        for program in institution.programs_at_date(date_utils.get_naive_utc_now())
     ]

@@ -4,10 +4,10 @@ version = "0.0.0"
 description = "The backend of the pass Culture"
 license = "MPL-2.0"
 authors = [{ name = "Equipe pass Culture", email = "<contact@passculture.app>" }]
-requires-python = ">=3.12,<4.0"
+requires-python = ">=3.13,<4.0"
 
 [tool.poetry.dependencies]
-alembic = "1.16.5"
+alembic = "1.17.0"
 algoliasearch = "3.0.0"
 authlib = "1.6.5"
 babel = "2.17.0"
@@ -47,11 +47,11 @@ jinja2 = "^3.1.6"
 libsass = "0.23.0"
 markupsafe = "3.0.3"
 openpyxl = "^3.1.5"
-phonenumberslite = "9.0.15"
+phonenumberslite = "9.0.16"
 pillow = "11.3.0"
 prometheus-flask-exporter = "^0.23.2"
 protobuf = "6.32.1"
-psycopg2 = "^2.9.10"
+psycopg2 = "^2.9.11"
 py7zr = "^1.0.0"
 # required by schwifty upgraded manually because of setuptools
 pycountry = "24.6.1"
@@ -61,7 +61,7 @@ pyopenssl = "25.3.0"
 pypdf = "6.1.1"
 pyproj = "3.7.2"
 pysaml2 = "^7.5.0"
-pyshp = "^2.3.1"        # Used for iris importation
+pyshp = "^3.0.2"        # Used for iris importation
 python-dateutil = "2.9.0.post0"
 python-dotenv = "1.1.1"
 pytz = "2025.2"
@@ -71,14 +71,11 @@ requests = "2.32.5"
 rq = "2.6.0"
 schwifty = "2025.9.0"
 semver = "3.0.4"
-sentry-sdk = { version = "2.40.0", extras = ["flask"] }
+sentry-sdk = { version = "2.41.0", extras = ["flask"] }
 shapely = "^2.1.2"      # Used for iris importation
 slack-sdk = "3.37.0"
 spectree = "1.5.7"
-# Do not use 1.4.46 that has a new
-# deprecation warning for which we're not ready
-# (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
-sqlalchemy = { version = "2.0.43", extras = ["mypy"] }
+sqlalchemy = { version = "2.0.44", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "2.19.0"
 transitions = "^0.9.3"
@@ -141,7 +138,7 @@ exclude = """
 """
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 120
 
 [tool.ruff.lint]
@@ -212,8 +209,9 @@ extend-select = [
   # "PLR0914",  # too-many-locals -> preview mode only
   # "PLR0915",  # too-many-statements
   # "PLR0917",  # too-many-positional-arguments -> preview mode only
-  "S704",   # unsafe-markup-use
-  "TID251", # banned-api (requests)
+  "S704",    # unsafe-markup-use
+  "TID251",  # banned-api (requests)
+  "DTZ003",  # call-datetime-utcnow
 ]
 
 ignore = [
@@ -232,7 +230,14 @@ ignore = [
 case-sensitive = true
 force-single-line = true
 lines-after-imports = 2
-section-order = ["future", "standard-library", "third-party", "first-party", "tests", "local-folder"]
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "tests",
+  "local-folder",
+]
 
 [tool.ruff.lint.isort.sections]
 tests = ["tests"]

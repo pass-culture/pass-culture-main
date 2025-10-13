@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
+from pcapi.utils import date as date_utils
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
@@ -26,13 +27,13 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             ean="1234567890123",
         )
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=2),
             stock=product_stock,
         )
         return offer, booking
@@ -65,14 +66,14 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        in_3_days = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        in_3_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_3_days)
         booking = bookings_factories.BookingFactory(
             dateCreated=yesterday,
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
-            user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=2),
             stock=stock,
         )
 
@@ -86,12 +87,12 @@ class CancelBookingByTokenTest(PublicAPIVenueEndpointHelper):
         [
             (
                 # booking are not cancellable less than 48h before the event
-                datetime.datetime.utcnow() + datetime.timedelta(hours=36),  # less than 48h from now
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),  # yesterday
+                date_utils.get_naive_utc_now() + datetime.timedelta(hours=36),  # less than 48h from now
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),  # yesterday
             ),
             (  # after 2 days, event booking are not cancellable
-                datetime.datetime.utcnow() + datetime.timedelta(weeks=1),  # in 1 week
-                datetime.datetime.utcnow() - datetime.timedelta(days=2),  # 2 days ago
+                date_utils.get_naive_utc_now() + datetime.timedelta(weeks=1),  # in 1 week
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=2),  # 2 days ago
             ),
         ],
     )

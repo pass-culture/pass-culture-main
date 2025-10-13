@@ -14,6 +14,7 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 
 
@@ -198,14 +199,14 @@ class BankAccountRulesTest:
         factories.BankAccountStatusHistoryFactory(
             bankAccount=bank_account,
             status=models.BankAccountApplicationStatus.DRAFT,
-            timespan=(datetime.datetime.utcnow(),),
+            timespan=(date_utils.get_naive_utc_now(),),
         )
 
         with pytest.raises(sa_exc.IntegrityError):
             factories.BankAccountStatusHistoryFactory(
                 bankAccount=bank_account,
                 status=models.BankAccountApplicationStatus.ON_GOING,
-                timespan=(datetime.datetime.utcnow(),),
+                timespan=(date_utils.get_naive_utc_now(),),
             )
 
 

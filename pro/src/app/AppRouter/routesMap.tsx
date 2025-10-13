@@ -385,7 +385,7 @@ export const routes: CustomRouteObject[] = [
   {
     lazy: () => import('@/pages/SignupJourneyRoutes/SignupJourneyRoutes'),
     path: '/inscription/structure',
-    title: 'Parcours de souscription',
+    title: "Parcours d'inscription",
     children: routesSignupJourney,
   },
   {

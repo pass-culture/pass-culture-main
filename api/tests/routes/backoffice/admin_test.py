@@ -16,6 +16,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models import feature as feature_models
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -504,12 +505,12 @@ class GetBoUserTest(GetEndpointHelper):
 
     def test_get_suspended_bo_user_with_history(self, authenticated_client, legit_user):
         user = users_factories.AdminFactory(
-            isActive=False, roles=[], dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=180)
+            isActive=False, roles=[], dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=180)
         )
 
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.USER_SUSPENDED,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             authorUser=legit_user,
             user=user,
             extraData={"reason": users_constants.SuspensionReason.END_OF_CONTRACT},

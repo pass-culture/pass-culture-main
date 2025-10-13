@@ -24,6 +24,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -349,7 +350,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert offer.lastValidationDate == initially_rejected[offer.id]["date"]
             else:
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
-                assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+                assert date_utils.get_naive_utc_now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
     @pytest.mark.usefixtures("db_session")
     def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
@@ -398,7 +399,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         )
 
         cancelled_booking = bookings_factories.CancelledBookingFactory(
-            stock=stock, dateUsed=factory.LazyFunction(datetime.datetime.utcnow)
+            stock=stock, dateUsed=factory.LazyFunction(date_utils.get_naive_utc_now)
         )
         finance_event = finance_factories.UsedBookingFinanceEventFactory(
             booking=cancelled_booking,
@@ -435,7 +436,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
-        assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+        assert date_utils.get_naive_utc_now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
         assert (
             db.session.query(bookings_models.Booking).filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2

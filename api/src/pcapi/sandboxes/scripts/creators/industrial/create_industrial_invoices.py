@@ -26,6 +26,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ def create_industrial_invoices() -> None:
 
     finance_api.price_events()
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     cashflows_created = db.session.query(finance_models.Cashflow).count()
     logger.info("Created %s Cashflows", cashflows_created)
 
@@ -83,7 +84,7 @@ def create_free_invoice() -> None:
         for finance_event in booking.finance_events:
             finance_api.price_event(finance_event)
 
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
 
     cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
@@ -195,7 +196,7 @@ def create_specific_invoice() -> None:
     incident_events = []
     for booking_finance_incident in booking_incidents:
         incident_events += finance_api._create_finance_events_from_incident(
-            booking_finance_incident, incident_validation_date=datetime.utcnow()
+            booking_finance_incident, incident_validation_date=date_utils.get_naive_utc_now()
         )
 
     for event in incident_events:
@@ -218,7 +219,7 @@ def create_specific_invoice() -> None:
     for booking in bookings:
         event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
@@ -413,7 +414,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
 
     offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
-        syncDate=datetime.utcnow(),
+        syncDate=date_utils.get_naive_utc_now(),
         table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(daily_views=daily_views),
     )
@@ -424,7 +425,7 @@ def create_specific_cashflow_batch_without_invoice() -> None:
 
     offerers_factories.OffererStatsFactory.create(
         offerer=offerer,
-        syncDate=datetime.utcnow(),
+        syncDate=date_utils.get_naive_utc_now(),
         table=TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE,
         jsonData=offerers_models.OffererStatsData(
             top_offers=[
@@ -482,6 +483,6 @@ def create_specific_cashflow_batch_without_invoice() -> None:
     for booking in bookings:
         event = db.session.query(finance_models.FinanceEvent).filter_by(booking=booking).one()
         finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
 
     logger.info("Created specific CashflowBatch")

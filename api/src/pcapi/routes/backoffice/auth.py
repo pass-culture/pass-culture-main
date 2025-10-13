@@ -20,6 +20,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.flask_app import backoffice_oauth
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from . import blueprint
 from . import utils
@@ -43,7 +44,7 @@ def login() -> utils.BackofficeResponse:
         if not local_admin:
             local_admin = create_local_admin_user(local_admin_email, "Local", "Admin")
 
-        local_admin.lastConnectionDate = datetime.datetime.utcnow()
+        local_admin.lastConnectionDate = date_utils.get_naive_utc_now()
         local_admin.add_admin_role()
         backoffice_api.upsert_roles(local_admin, list(perm_models.Roles))
         db.session.flush()
@@ -98,7 +99,7 @@ def authorize() -> utils.BackofficeResponse:
             last_name=google_user["family_name"],
         )
 
-    user.lastConnectionDate = datetime.datetime.utcnow()
+    user.lastConnectionDate = date_utils.get_naive_utc_now()
     user.add_admin_role()
     backoffice_api.upsert_roles(user, roles)
     db.session.flush()

@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 import pcapi.core.mails.transactional as transactional_mails
@@ -10,6 +9,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.users import models as users_models
+from pcapi.utils import date as date_utils
 
 from . import exceptions
 from . import messages
@@ -28,7 +28,7 @@ def handle_educonnect_authentication(
         first_name=educonnect_user.first_name,
         ine_hash=educonnect_user.ine_hash,
         last_name=educonnect_user.last_name,
-        registration_datetime=datetime.datetime.utcnow(),
+        registration_datetime=date_utils.get_naive_utc_now(),
         school_uai=educonnect_user.school_uai,
         student_level=educonnect_user.student_level,
     )

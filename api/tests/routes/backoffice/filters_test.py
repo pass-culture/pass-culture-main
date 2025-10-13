@@ -9,6 +9,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import filters
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -60,7 +61,7 @@ class FormatRoleTest:
     def test_ex_beneficiaries(self, age, deposit_type, expected):
         user = users_factories.BeneficiaryFactory(age=age)
         user.deposits[0].type = deposit_type
-        user.deposits[0].expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        user.deposits[0].expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         result = filters.format_role(user.roles[0], user.deposits)
         assert result == expected
 

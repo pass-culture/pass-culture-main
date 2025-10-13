@@ -74,10 +74,6 @@ const LIST_ICON_SIZE = '16'
  *   variant={ListIconButtonVariant.PRIMARY}
  *   onClick={() => console.log('Button clicked')}
  * />
- *
- * @accessibility
- * - **Tooltip**: The button includes a tooltip for additional context, which is hidden when not needed.
- * - **Keyboard Navigation**: The button and link can be focused and activated using the keyboard, ensuring accessibility.
  */
 export const ListIconButton = forwardRef(
   (

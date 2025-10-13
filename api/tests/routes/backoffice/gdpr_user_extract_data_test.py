@@ -12,6 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 
 from tests.test_utils import StorageFolderManager
 
@@ -29,11 +30,11 @@ pytestmark = [
 @pytest.fixture(scope="function", name="list_of_gdpr_user_extract_data")
 def gdpr_user_extract_data_fixture() -> tuple:
     gdpr_1 = users_factories.GdprUserDataExtractBeneficiaryFactory()
-    gdpr_2 = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+    gdpr_2 = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
     gdpr_3 = users_factories.GdprUserDataExtractBeneficiaryFactory()
     gdpr_4 = users_factories.GdprUserDataExtractBeneficiaryFactory()
     gdpr_5 = users_factories.GdprUserDataExtractBeneficiaryFactory(
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8)
     )
     return gdpr_5, gdpr_4, gdpr_3, gdpr_2, gdpr_1
 
@@ -72,7 +73,7 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
             assert list_of_gdpr_user_extract_data[4].id not in row
 
     def test_display_download_button_when_extract_is_processed(self, authenticated_client):
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
@@ -112,7 +113,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
     expected_num_queries = 3
 
     def test_download_public_account_extract(self, authenticated_client):
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
 
         expected_data = randbytes(4096)
         with open(self.storage_folder / f"{extract.id}.zip", "wb") as fp:
@@ -142,8 +143,8 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
 
     def test_extract_expired(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(
-            dateProcessed=datetime.datetime.utcnow(),
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+            dateProcessed=date_utils.get_naive_utc_now(),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         )
 
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
@@ -161,7 +162,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
         assert "L'extraction demandée n'existe pas ou a expiré" in html_parser.extract_alerts(redirection.data)
 
     def test_no_file_in_bucket(self, authenticated_client):
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
 
         expected_url = url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract")
         response = self.post_to_endpoint(
@@ -183,7 +184,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_delete_gdpr_user_extract(self, authenticated_client):
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
         with open(self.storage_folder / f"{extract.id}.zip", "wb"):
             pass
 
@@ -221,7 +222,7 @@ class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
         assert "L'extrait demandé n'existe pas." in html_parser.extract_alert(response.data)
 
     def test_delete_gdpr_user_extract_ready_but_without_zip_file(self, authenticated_client):
-        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.utcnow())
+        extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
 
         response = self.post_to_endpoint(authenticated_client, gdpr_id=extract.id)
         assert response.status_code == 302

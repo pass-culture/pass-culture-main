@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 from datetime import timedelta
 from io import StringIO
 
@@ -10,6 +9,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -24,7 +24,7 @@ class Returns200Test:
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
         venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
 
-        booked_date = datetime.utcnow()
+        booked_date = date_utils.get_naive_utc_now()
 
         booking1 = bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue1)
         bookings_factories.BookingFactory(dateCreated=booked_date, stock__offer__venue=venue2)

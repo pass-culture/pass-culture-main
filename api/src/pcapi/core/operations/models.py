@@ -9,13 +9,14 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils.db import MagicEnum
 
 
 class SpecialEvent(PcObject, Model):
     __tablename__ = "special_event"
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     externalId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), index=True, unique=True, nullable=False)
     title: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)

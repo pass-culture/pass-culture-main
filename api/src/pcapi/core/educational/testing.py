@@ -1,7 +1,13 @@
+import typing
+
 from pcapi.core.educational import models
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveRequest
 from pcapi.core.educational.schemas import EducationalBookingResponse
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offerers.models import OffererAddress
 
 
 AdageRequestItem = (
@@ -136,3 +142,27 @@ ADDRESS_DICT = {
     "postalCode": "75001",
     "street": "3 Rue de Valois",
 }
+
+
+def get_serialized_address(offerer_address: "OffererAddress", label: str, is_linked_to_venue: bool) -> dict:
+    address = offerer_address.address
+
+    return {
+        "address": {
+            "id": address.id,
+            "id_oa": offerer_address.id,
+            "inseeCode": address.inseeCode,
+            "isLinkedToVenue": is_linked_to_venue,
+            "isManualEdition": False,
+            "city": address.city,
+            "label": label,
+            "latitude": float(address.latitude),
+            "longitude": float(address.longitude),
+            "postalCode": address.postalCode,
+            "departmentCode": address.departmentCode,
+            "street": address.street,
+            "banId": address.banId,
+        },
+        "locationComment": None,
+        "locationType": "ADDRESS",
+    }

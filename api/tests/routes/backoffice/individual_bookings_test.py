@@ -27,6 +27,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.bookings import forms
+from pcapi.utils import date as date_utils
 
 from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
@@ -60,7 +61,7 @@ def bookings_fixture() -> tuple:
         stock__offer__name="Guide du Routard Sainte-Hélène",
         stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         stock__offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
         validationAuthorType=bookings_models.BookingValidationAuthorType.BACKOFFICE,
     )
     offerers_factories.UserOffererFactory(offerer=used.offerer)
@@ -71,8 +72,8 @@ def bookings_fixture() -> tuple:
         amount=12.5,
         token="CNCL02",
         stock__offer__subcategoryId=subcategories.FESTIVAL_SPECTACLE.id,
-        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=11),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+        stock__beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=11),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
     )
     confirmed = bookings_factories.BookingFactory(
         id=1000003,
@@ -83,16 +84,16 @@ def bookings_fixture() -> tuple:
         stock__quantity="2",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
-        cancellation_limit_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
+        cancellation_limit_date=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     reimbursed = bookings_factories.ReimbursedBookingFactory(
         id=1000004,
         user=user3,
         token="REIMB3",
         stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
-        stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
-        dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        stock__beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=12),
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     booked = bookings_factories.BookingFactory(
         id=1000005,
@@ -103,7 +104,7 @@ def bookings_fixture() -> tuple:
         stock__quantity="1",
         stock__offer__name="Guide Ile d'Elbe 1814 Petit Futé",
         stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        dateCreated=datetime.datetime.utcnow(),
+        dateCreated=date_utils.get_naive_utc_now(),
     )
 
     return used, cancelled, confirmed, reimbursed, booked
@@ -119,7 +120,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     # - fetch user (1 query)
     expected_num_queries_when_no_query = 2
     # - fetch individual bookings with extra data (1 query)
-    expected_num_queries = expected_num_queries_when_no_query + 1
+    # - fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries_when_no_query):
@@ -172,8 +174,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
         users_factories.DepositGrantFactory(
             bookings=[booking],
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -272,7 +274,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["ID résa"] == str(bookings[0].id)
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
-        with assert_num_queries(self.expected_num_queries):
+        # `- 1` because `build_pc_pro_offer_path` is not called here (= no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check)
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
             assert response.status_code == 200
 
@@ -490,7 +493,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         offer_id = offer.id
 
         expired_deposit_booking = bookings_factories.UsedBookingFactory(token="EXPIRD", stock__offer=offer)
-        expired_deposit_booking.deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        expired_deposit_booking.deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         db.session.flush()
 
         bookings_factories.UsedBookingFactory(token="ACTIVE", stock__offer=offer)
@@ -513,8 +516,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         )
         users_factories.DepositGrantFactory(
             bookings=[expired_deposit_booking],
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+            expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
 
         new_user = users_factories.BeneficiaryFactory()
@@ -803,7 +806,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
             ),
         )
 
@@ -1054,7 +1057,7 @@ class CancelBookingTest(PostEndpointHelper):
         stock = offers_factories.EventStockFactory(
             offer=offer,
             idAtProviders="1111%2222%EMS#3333",
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         )
         booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
         external_bookings_factories.ExternalBookingFactory(
@@ -1139,7 +1142,7 @@ class CancelBookingTest(PostEndpointHelper):
         stock = offers_factories.StockFactory(
             lastProvider=cgr_provider,
             idAtProviders="123%12354114%CGR#111",
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             offer=offer,
         )
         booking_to_cancel = bookings_factories.BookingFactory(stock=stock)
@@ -1249,7 +1252,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         expired_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
             ),
         )
         other_booking = bookings_factories.BookingFactory(status=bookings_models.BookingStatus.CANCELLED)
@@ -1305,7 +1308,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         insufficient_stock_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
             ),
             stock__quantity=0,
         )
@@ -1358,7 +1361,7 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         insufficient_stock_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
-                expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
             ),
             stock__quantity=0,
         )
@@ -1519,12 +1522,12 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
         bookings = bookings_factories.BookingFactory.create_batch(3)
         bookings.append(
             bookings_factories.FraudulentBookingTagFactory(
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4)
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
             ).booking
         )
         bookings.append(
             bookings_factories.FraudulentBookingTagFactory(
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4)
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
             ).booking
         )
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
@@ -1550,7 +1553,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
             db.session.query(bookings_models.FraudulentBookingTag)
             .filter(
                 bookings_models.FraudulentBookingTag.dateCreated
-                > datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                > date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
             )
             .all()
         )
@@ -1565,11 +1568,11 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
         booking_with_other_email = bookings_factories.BookingFactory(stock__offer__bookingEmail="email2@example.com")
         already_fraudulent_booking_with_other_email = bookings_factories.FraudulentBookingTagFactory(
             booking__stock__offer__bookingEmail="email2@example.com",
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
         ).booking
         already_fraudulent_booking_with_different_email = bookings_factories.FraudulentBookingTagFactory(
             booking__stock__offer__bookingEmail="email3@example.com",
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
         ).booking
 
         bookings = (
@@ -1601,7 +1604,7 @@ class BatchTagFraudulentBookingsTest(PostEndpointHelper):
             db.session.query(bookings_models.FraudulentBookingTag)
             .filter(
                 bookings_models.FraudulentBookingTag.dateCreated
-                > datetime.datetime.utcnow() - datetime.timedelta(days=1)
+                > date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
             )
             .all()
         )

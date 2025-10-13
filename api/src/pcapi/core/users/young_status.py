@@ -1,9 +1,9 @@
 import dataclasses
 import enum
-from datetime import datetime
 
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models
+from pcapi.utils import date as date_utils
 
 
 class YoungStatusType(enum.Enum):
@@ -61,7 +61,7 @@ def young_status(user: models.User) -> YoungStatus:
         return Suspended()
 
     if user.is_beneficiary:
-        if user.deposit_expiration_date and user.deposit_expiration_date < datetime.utcnow():
+        if user.deposit_expiration_date and user.deposit_expiration_date < date_utils.get_naive_utc_now():
             return ExBeneficiary()
 
         return Beneficiary()

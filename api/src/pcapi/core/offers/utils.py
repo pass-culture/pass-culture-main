@@ -1,5 +1,9 @@
 import dataclasses
+import itertools
+import typing
 from decimal import Decimal
+
+from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.educational.models import CollectiveOffer
@@ -50,3 +54,19 @@ def get_offer_address(offer: Offer) -> CalculatedOfferAddress:
         postalCode=None,
         street=None,
     )
+
+
+def yield_field_batch_from_query[T](
+    query: sa_orm.query.RowReturningQuery[tuple[T]], chunk_size: int
+) -> typing.Iterator[list[T]]:
+    """
+    Emulates pagination for indexation while not using order by and reducing memory consumption
+    """
+    ret: list[T] = []
+    for (result,), i in zip(query.yield_per(chunk_size), itertools.count(1)):
+        ret.append(result)
+        if i % chunk_size == 0:
+            yield ret
+            ret = []
+    if ret:
+        yield ret

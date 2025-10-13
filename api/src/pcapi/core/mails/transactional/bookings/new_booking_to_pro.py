@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -13,6 +11,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -31,7 +30,7 @@ def get_new_booking_to_pro_email_data(
             offerers_models.VenueBankAccountLink,
             sa.and_(
                 offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(

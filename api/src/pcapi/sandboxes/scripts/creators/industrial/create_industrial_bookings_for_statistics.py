@@ -13,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offers import models as offers_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -161,7 +162,7 @@ def _create_booking_for_statistics_with_offer_no_revenue() -> None:
 
 
 def _create_bookings(offers: list[offers_models.Offer]) -> None:
-    january_first = datetime.utcnow().replace(month=1, day=1)
+    january_first = date_utils.get_naive_utc_now().replace(month=1, day=1)
     for offer in offers:
         dates_used = [january_first, january_first - timedelta(days=500), january_first - timedelta(days=800)]
         # Current year in the past, 2 years ago, 3 years ago
@@ -176,8 +177,8 @@ def _create_bookings(offers: list[offers_models.Offer]) -> None:
 
         # Current year in the future, next year
         dates_programmed = [
-            datetime.utcnow().replace(month=12, day=31),
-            datetime.utcnow().replace(month=12, day=31) + timedelta(days=20),
+            date_utils.get_naive_utc_now().replace(month=12, day=31),
+            date_utils.get_naive_utc_now().replace(month=12, day=31) + timedelta(days=20),
         ]
         if isinstance(offer, offers_models.Offer):
             for date_programmed in dates_programmed:

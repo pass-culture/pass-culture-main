@@ -25,6 +25,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.crea
     create_collective_api_provider,
 )
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
 
@@ -247,7 +248,7 @@ def create_offers_base_list(
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory.create(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -268,7 +269,7 @@ def create_offers_base_list(
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory.create(email="eac_1_lieu@example.com"),
                 collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -280,7 +281,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             add_image_to_offer(stock.collectiveOffer, next(image_iterator))
             offers.append(stock.collectiveOffer)
@@ -312,7 +313,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=institution,
                 collectiveOffer__teacher=redactor,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -327,7 +328,7 @@ def create_offers_base_list(
                 collectiveOffer__interventionArea=[],
                 collectiveOffer__provider=provider,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -339,8 +340,8 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                bookingLimitDatetime=datetime.utcnow() - timedelta(days=2),
-                startDatetime=datetime.utcnow(),
+                bookingLimitDatetime=date_utils.get_naive_utc_now() - timedelta(days=2),
+                startDatetime=date_utils.get_naive_utc_now(),
             )
             offers.append(stock.collectiveOffer)
 
@@ -353,13 +354,13 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__validation=OfferValidationStatus.PENDING,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
     if offers_next_year:
-        current_year = datetime.utcnow().year
-        target_year = current_year + 2 if datetime.utcnow().month >= 9 else current_year + 1
+        current_year = date_utils.get_naive_utc_now().year
+        target_year = current_year + 2 if date_utils.get_naive_utc_now().month >= 9 else current_year + 1
         for _ in range(size):
             stock = educational_factories.CollectiveStockFactory.create(
                 collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
@@ -381,7 +382,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["56"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -394,7 +395,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["91"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
-                startDatetime=datetime.utcnow() + timedelta(days=60),
+                startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
 
@@ -423,7 +424,7 @@ def create_offers_base_list(
                     collectiveOffer__institution=next(institution_iterator),
                     collectiveOffer__nationalProgram=next(national_program_iterator),
                     collectiveOffer__bookingEmails=["toto@totoland.com"],
-                    startDatetime=datetime.utcnow() + timedelta(days=60),
+                    startDatetime=date_utils.get_naive_utc_now() + timedelta(days=60),
                 )
 
     if image_template:
@@ -478,15 +479,15 @@ def create_collective_offers_with_different_displayed_status(
     current_ansco = (
         db.session.query(educational_models.EducationalYear)
         .filter(
-            educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
-            educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
+            educational_models.EducationalYear.beginningDate <= date_utils.get_naive_utc_now(),
+            educational_models.EducationalYear.expirationDate >= date_utils.get_naive_utc_now(),
         )
         .one()
     )
     domains_iterator = cycle(domains)
     institution_iterator = cycle(institutions)
 
-    today = datetime.utcnow()
+    today = date_utils.get_naive_utc_now()
     in_two_weeks = today + timedelta(days=14)
     in_four_weeks = today + timedelta(days=28)
 
@@ -717,7 +718,7 @@ def create_collective_offer_templates_with_different_displayed_status(
 ) -> None:
     domains_iterator = cycle(domains)
 
-    now = datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     two_weeks_ago = now - timedelta(days=14)
     yesterday = now - timedelta(days=1)
     in_two_weeks = now + timedelta(days=14)
@@ -854,8 +855,8 @@ def create_booking_base_list(
     current_ansco = (
         db.session.query(educational_models.EducationalYear)
         .filter(
-            educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
-            educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
+            educational_models.EducationalYear.beginningDate <= date_utils.get_naive_utc_now(),
+            educational_models.EducationalYear.expirationDate >= date_utils.get_naive_utc_now(),
         )
         .one()
     )
@@ -870,15 +871,15 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"PENDING offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(15),
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + timedelta(15),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.PENDING,
                 confirmationDate=None,
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=17),
-                confirmationLimitDate=datetime.utcnow() + timedelta(days=15),
-                dateCreated=datetime.utcnow() - timedelta(days=30),
+                cancellationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=17),
+                confirmationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=15),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=30),
             )
 
     if booked_booking:
@@ -887,15 +888,15 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"BOOKED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.CONFIRMED,
-                confirmationDate=datetime.utcnow() - timedelta(days=1),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=17),
-                confirmationLimitDate=datetime.utcnow() + timedelta(days=15),
-                dateCreated=datetime.utcnow() - timedelta(days=30),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=1),
+                cancellationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=17),
+                confirmationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=15),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=30),
             )
     if confirmed_booking:
         for _i in range(size):
@@ -903,15 +904,15 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CONFIRMED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=5),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - timedelta(days=5),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.CONFIRMED,
-                confirmationDate=datetime.utcnow() - timedelta(days=3),
-                cancellationLimitDate=datetime.utcnow(),
-                confirmationLimitDate=datetime.utcnow() - timedelta(days=2),
-                dateCreated=datetime.utcnow() - timedelta(days=30),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=3),
+                cancellationLimitDate=date_utils.get_naive_utc_now(),
+                confirmationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=2),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=30),
             )
     if used_booking:
         for i in range(size):
@@ -919,17 +920,17 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow()
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now()
                 - timedelta(days=i + 2),  # all USED booking must be at least 2 days old
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=15),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.USED,
-                dateUsed=datetime.utcnow(),
-                confirmationDate=datetime.utcnow() - timedelta(days=5),
-                cancellationLimitDate=datetime.utcnow() - timedelta(days=2),
-                confirmationLimitDate=datetime.utcnow() - timedelta(days=3),
-                dateCreated=datetime.utcnow() - timedelta(days=30),
+                dateUsed=date_utils.get_naive_utc_now(),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=5),
+                cancellationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=2),
+                confirmationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=3),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=30),
             )
             finance_factories.UsedBookingFinanceEventFactory.create(collectiveBooking=booking)
     if reimbursed_booking:
@@ -938,17 +939,17 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"REIMBURSED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() - timedelta(days=15),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=18),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() - timedelta(days=15),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - timedelta(days=18),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.REIMBURSED,
-                dateCreated=datetime.utcnow() - timedelta(days=20),
-                dateUsed=datetime.utcnow() - timedelta(days=15),
-                confirmationDate=datetime.utcnow() - timedelta(days=18),
-                cancellationLimitDate=datetime.utcnow() - timedelta(days=16),
-                confirmationLimitDate=datetime.utcnow() - timedelta(days=18),
-                reimbursementDate=datetime.utcnow() - timedelta(days=12),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=20),
+                dateUsed=date_utils.get_naive_utc_now() - timedelta(days=15),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=18),
+                cancellationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=16),
+                confirmationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=18),
+                reimbursementDate=date_utils.get_naive_utc_now() - timedelta(days=12),
             )
 
             finance_factories.CollectivePricingFactory.create(
@@ -960,17 +961,17 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY AC offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.CANCELLED,
                 cancellationReason=educational_models.CollectiveBookingCancellationReasons.OFFERER,
-                cancellationDate=datetime.utcnow() - timedelta(days=1),
-                dateCreated=datetime.utcnow() - timedelta(days=20),
-                confirmationDate=datetime.utcnow() - timedelta(days=12),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=17),
-                confirmationLimitDate=datetime.utcnow() + timedelta(days=15),
+                cancellationDate=date_utils.get_naive_utc_now() - timedelta(days=1),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=20),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=12),
+                cancellationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=17),
+                confirmationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=15),
             )
     if cancelled_institution:
         for _i in range(size):
@@ -978,17 +979,17 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED BY EPLE offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() + timedelta(days=15),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() + timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.CANCELLED,
                 cancellationReason=educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
-                cancellationDate=datetime.utcnow() - timedelta(days=1),
-                dateCreated=datetime.utcnow() - timedelta(days=20),
-                confirmationDate=datetime.utcnow() - timedelta(days=12),
-                cancellationLimitDate=datetime.utcnow() + timedelta(days=17),
-                confirmationLimitDate=datetime.utcnow() + timedelta(days=15),
+                cancellationDate=date_utils.get_naive_utc_now() - timedelta(days=1),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=20),
+                confirmationDate=date_utils.get_naive_utc_now() - timedelta(days=12),
+                cancellationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=17),
+                confirmationLimitDate=date_utils.get_naive_utc_now() + timedelta(days=15),
             )
 
     if cancelled_expired:
@@ -997,17 +998,17 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"CANCELLED AUTOMATICALLY offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__startDatetime=datetime.utcnow() + timedelta(days=20),
-                collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=15),
+                collectiveStock__startDatetime=date_utils.get_naive_utc_now() + timedelta(days=20),
+                collectiveStock__bookingLimitDatetime=date_utils.get_naive_utc_now() - timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
                 status=educational_models.CollectiveBookingStatus.CANCELLED,
                 cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED,
-                cancellationDate=datetime.utcnow() - timedelta(days=5),
-                dateCreated=datetime.utcnow() - timedelta(days=20),
+                cancellationDate=date_utils.get_naive_utc_now() - timedelta(days=5),
+                dateCreated=date_utils.get_naive_utc_now() - timedelta(days=20),
                 confirmationDate=None,
-                cancellationLimitDate=datetime.utcnow() - timedelta(days=3),
-                confirmationLimitDate=datetime.utcnow() - timedelta(days=5),
+                cancellationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=3),
+                confirmationLimitDate=date_utils.get_naive_utc_now() - timedelta(days=5),
             )
 
 

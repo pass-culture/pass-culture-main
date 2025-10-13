@@ -20,6 +20,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -28,7 +29,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @time_machine.travel("2032-10-15 12:48:00")
 def test_sendinblue_send_email():
-    booking = BookingFactory(stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow())
+    booking = BookingFactory(
+        stock=offers_factories.EventStockFactory(price=1.99), dateCreated=date_utils.get_naive_utc_now()
+    )
     send_individual_booking_confirmation_email_to_beneficiary(booking)
 
     assert len(mails_testing.outbox) == 1
@@ -84,7 +87,9 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
 
 @time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_an_event_sendinblue():
-    booking = BookingFactory(stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow())
+    booking = BookingFactory(
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=date_utils.get_naive_utc_now()
+    )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
 
@@ -95,7 +100,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event_send
 @time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
     booking = BookingFactory(
-        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
+        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=date_utils.get_naive_utc_now(), quantity=2
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -119,7 +124,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendi
         offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         offer__name="Super bien culturel",
     )
-    booking = BookingFactory(stock=stock, dateCreated=datetime.utcnow())
+    booking = BookingFactory(stock=stock, dateCreated=date_utils.get_naive_utc_now())
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
@@ -146,7 +151,7 @@ def test_should_use_public_name_when_available_sendinblue():
     booking = BookingFactory(
         stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
         stock__offer__venue__publicName="Librairie Colbert",
-        dateCreated=datetime.utcnow(),
+        dateCreated=date_utils.get_naive_utc_now(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -166,7 +171,7 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
     withdrawal_details = "Conditions de retrait spécifiques."
     booking = BookingFactory(
         stock__offer__withdrawalDetails=withdrawal_details,
-        dateCreated=datetime.utcnow(),
+        dateCreated=date_utils.get_naive_utc_now(),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -184,7 +189,7 @@ def test_should_return_withdrawal_details_when_available_sendinblue():
 @time_machine.travel("2032-10-15 12:48:00")
 def test_should_return_offer_tags():
     booking = BookingFactory(
-        dateCreated=datetime.utcnow(),
+        dateCreated=date_utils.get_naive_utc_now(),
         stock__offer__criteria=[
             criteria_factories.CriterionFactory(name="Tagged_offer"),
         ],
@@ -209,7 +214,7 @@ def test_should_return_offer_features():
         price=23.99,
     )
     booking = BookingFactory(
-        dateCreated=datetime.utcnow(),
+        dateCreated=date_utils.get_naive_utc_now(),
         stock=stock,
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
@@ -249,7 +254,7 @@ class DigitalOffersSendinblueTest:
             stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__url="http://example.com",
             stock__offer__name="Super offre numérique",
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -325,7 +330,7 @@ class DigitalOffersSendinblueTest:
             stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__url="http://example.com?token={token}&offerId={offerId}&email={email}",
             stock__offer__name="Super offre numérique",
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
@@ -361,7 +366,7 @@ class DigitalOffersSendinblueTest:
             stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__url="http://example.com",
             stock__offer__name="Super offre numérique",
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         offers_factories.ActivationCodeFactory(
             stock=booking.stock,
@@ -422,7 +427,7 @@ class BooksBookingExpirationDateTestSendinblue:
         booking = BookingFactory(
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__name="Super livre",
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -450,7 +455,7 @@ class BookingWithWithdrawalTypeTest:
         booking = BookingFactory(
             stock__offer__withdrawalType=withdrawal_type,
             stock__offer__withdrawalDelay=withdrawal_delay,
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
 
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)

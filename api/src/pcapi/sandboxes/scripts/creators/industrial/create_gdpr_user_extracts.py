@@ -1,10 +1,10 @@
 import logging
-from datetime import datetime
 
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ def create_gdpr_user_extract_data() -> None:
     users_factories.GdprUserDataExtractBeneficiaryFactory.create(user=list_beneficiary[0], authorUser=author)
     users_factories.GdprUserDataExtractBeneficiaryFactory.create(user=list_underage_beneficiary, authorUser=author)
     users_factories.GdprUserDataExtractBeneficiaryFactory.create(
-        user=list_beneficiary[1], authorUser=author, dateProcessed=datetime.utcnow()
+        user=list_beneficiary[1], authorUser=author, dateProcessed=date_utils.get_naive_utc_now()
     )
 
     logger.info("created GDPR users extract data")

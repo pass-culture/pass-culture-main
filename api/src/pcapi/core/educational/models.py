@@ -25,6 +25,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.phone_number import ParsedPhoneNumber
@@ -512,12 +513,12 @@ class CollectiveOffer(
     durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     dateArchived: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
 
     students: sa_orm.Mapped[list[StudentLevels]] = sa_orm.mapped_column(
@@ -656,32 +657,6 @@ class CollectiveOffer(
         return self.providerId is not None
 
     @hybrid_property
-    def hasEndDatePassed(self) -> bool:
-        return False
-
-    @hasEndDatePassed.inplace.expression
-    @classmethod
-    def _hasEndDatePassedExpression(cls) -> sa_elements.False_:
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def isSoldOut(self) -> bool:
-        if self.collectiveStock:
-            return self.collectiveStock.isSoldOut
-        return True
-
-    @isSoldOut.inplace.expression
-    def _isSoldOutExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        aliased_collective_booking = sa_orm.aliased(CollectiveBooking)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_booking.collectiveStockId == aliased_collective_stock.id)
-            .where(aliased_collective_booking.status != CollectiveBookingStatus.CANCELLED)
-        )
-
-    @hybrid_property
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
@@ -740,42 +715,23 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasStartDatetimePassed.is_(True))
         )
 
-    @hybrid_property
+    @property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if not self.collectiveStock:
             return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
-    @hasBookingLimitDatetimesPassed.inplace.expression
-    def _hasBookingLimitDatetimesPassedExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_stock.hasBookingLimitDatetimePassed.is_(True))
-        )
-
-    @hybrid_property
+    @property
     def hasEndDatetimePassed(self) -> bool:
         if not self.collectiveStock:
             return False
         return self.collectiveStock.hasEndDatetimePassed
 
-    @hasEndDatetimePassed.inplace.expression
-    @classmethod
-    def _hasEndDatetimePassedExpression(cls) -> sa_selectable.Exists:
-        aliased_collective_stock = sa_orm.aliased(CollectiveStock)
-        return (
-            sa.exists()
-            .where(aliased_collective_stock.collectiveOfferId == cls.id)
-            .where(aliased_collective_stock.hasEndDatetimePassed.is_(True))
-        )
-
     def get_days_until_booking_limit(self) -> int | None:
         if not self.collectiveStock:
             return None
 
-        delta = self.collectiveStock.bookingLimitDatetime - datetime.datetime.utcnow()
+        delta = self.collectiveStock.bookingLimitDatetime - date_utils.get_naive_utc_now()
         return delta.days
 
     def get_sort_criterion(self) -> tuple[bool, int, datetime.datetime]:
@@ -1024,11 +980,11 @@ class CollectiveOfferTemplate(
     durationMinutes = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
 
     students: sa_orm.Mapped[list[StudentLevels]] = sa_orm.mapped_column(
@@ -1243,7 +1199,7 @@ class CollectiveOfferTemplate(
     def hasEndDatePassed(self) -> bool:
         if not self.end:
             return False
-        return self.end < datetime.datetime.utcnow()
+        return self.end < date_utils.get_naive_utc_now()
 
     @hasEndDatePassed.inplace.expression
     @classmethod
@@ -1254,39 +1210,6 @@ class CollectiveOfferTemplate(
         )
 
     @hybrid_property
-    def hasBookingLimitDatetimesPassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasBookingLimitDatetimesPassed.inplace.expression
-    @classmethod
-    def _hasBookingLimitDatetimesPassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def hasStartDatetimePassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasStartDatetimePassed.inplace.expression
-    @classmethod
-    def _hasStartDatetimePassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
-    def hasEndDatetimePassed(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @hasEndDatetimePassed.inplace.expression
-    @classmethod
-    def _hasEndDatetimePassedExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
-
-    @hybrid_property
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
@@ -1294,17 +1217,6 @@ class CollectiveOfferTemplate(
     @classmethod
     def _isArchivedExpression(cls) -> sa.BinaryExpression[bool]:
         return cls.dateArchived.is_not(sa.null())
-
-    @hybrid_property
-    def isSoldOut(self) -> bool:
-        # this property is here for compatibility reasons
-        return False
-
-    @isSoldOut.inplace.expression
-    @classmethod
-    def _isSoldOutExpression(cls) -> sa_elements.False_:
-        # this property is here for compatibility reasons
-        return sa.sql.expression.false()
 
     @property
     def isReleased(self) -> bool:
@@ -1332,29 +1244,25 @@ class CollectiveOfferTemplate(
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"
 
-    @property
-    def is_cancellable_from_offerer(self) -> bool:
-        return False
-
     @hybrid_property
     def is_expired(self) -> bool:
-        return self.hasStartDatetimePassed
+        return False
 
     @is_expired.inplace.expression
     @classmethod
-    def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
-        return cls.hasStartDatetimePassed
+    def _is_expired_expression(cls) -> sa.False_:
+        return sa.sql.expression.false()
 
 
 class CollectiveStock(PcObject, models.Model):
     __tablename__ = "collective_stock"
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
 
     dateModified: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
 
     startDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
@@ -1405,7 +1313,7 @@ class CollectiveStock(PcObject, models.Model):
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self) -> bool:
-        return self.bookingLimitDatetime <= datetime.datetime.utcnow()
+        return self.bookingLimitDatetime <= date_utils.get_naive_utc_now()
 
     @hasBookingLimitDatetimePassed.inplace.expression
     @classmethod
@@ -1414,7 +1322,7 @@ class CollectiveStock(PcObject, models.Model):
 
     @hybrid_property
     def hasStartDatetimePassed(self) -> bool:
-        return self.startDatetime <= datetime.datetime.utcnow()
+        return self.startDatetime <= date_utils.get_naive_utc_now()
 
     @hasStartDatetimePassed.inplace.expression
     @classmethod
@@ -1423,7 +1331,7 @@ class CollectiveStock(PcObject, models.Model):
 
     @hybrid_property
     def hasEndDatetimePassed(self) -> bool:
-        return self.endDatetime <= datetime.datetime.utcnow()
+        return self.endDatetime <= date_utils.get_naive_utc_now()
 
     @hasEndDatetimePassed.inplace.expression
     @classmethod
@@ -1432,7 +1340,7 @@ class CollectiveStock(PcObject, models.Model):
 
     @hybrid_property
     def isEventExpired(self) -> bool:
-        return self.startDatetime <= datetime.datetime.utcnow()
+        return self.startDatetime <= date_utils.get_naive_utc_now()
 
     @isEventExpired.inplace.expression
     @classmethod
@@ -1453,7 +1361,7 @@ class CollectiveStock(PcObject, models.Model):
         return non_cancelled_bookings[0] if non_cancelled_bookings else None
 
     def is_two_days_past_end(self) -> bool:
-        return self.endDatetime + datetime.timedelta(days=2) < datetime.datetime.utcnow()
+        return self.endDatetime + datetime.timedelta(days=2) < date_utils.get_naive_utc_now()
 
     @property
     def isSoldOut(self) -> bool:
@@ -1582,7 +1490,7 @@ class EducationalDeposit(PcObject, models.Model):
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
 
     isFinal: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=True)
@@ -1651,7 +1559,7 @@ class CollectiveBooking(PcObject, models.Model):
     __tablename__ = "collective_booking"
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     sa.Index("ix_collective_booking_date_created", dateCreated)
 
@@ -1764,7 +1672,7 @@ class CollectiveBooking(PcObject, models.Model):
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         self.status = CollectiveBookingStatus.CANCELLED
-        self.cancellationDate = datetime.datetime.utcnow()
+        self.cancellationDate = date_utils.get_naive_utc_now()
         self.cancellationReason = reason
         self.cancellationUserId = author_id
         self.dateUsed = None
@@ -1780,7 +1688,7 @@ class CollectiveBooking(PcObject, models.Model):
         if self.confirmationDate:
             if self.collectiveStock.is_two_days_past_end():
                 self.status = CollectiveBookingStatus.USED
-                self.dateUsed = datetime.datetime.utcnow()
+                self.dateUsed = date_utils.get_naive_utc_now()
             else:
                 self.status = CollectiveBookingStatus.CONFIRMED
         else:
@@ -1791,16 +1699,16 @@ class CollectiveBooking(PcObject, models.Model):
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = CollectiveBookingStatus.CONFIRMED
-        self.confirmationDate = datetime.datetime.utcnow()
+        self.confirmationDate = date_utils.get_naive_utc_now()
 
     @hybrid_property
     def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate <= datetime.datetime.utcnow()
+        return self.cancellationLimitDate <= date_utils.get_naive_utc_now()
 
     @isConfirmed.inplace.expression
     @classmethod
     def _isConfirmedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.cancellationLimitDate <= datetime.datetime.utcnow()
+        return cls.cancellationLimitDate <= date_utils.get_naive_utc_now()
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
@@ -1838,10 +1746,13 @@ class CollectiveBooking(PcObject, models.Model):
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= datetime.datetime.utcnow()
+        return self.confirmationLimitDate <= date_utils.get_naive_utc_now()
 
     def mark_as_refused(self) -> None:
-        if self.status != CollectiveBookingStatus.PENDING and self.cancellationLimitDate <= datetime.datetime.utcnow():
+        if (
+            self.status != CollectiveBookingStatus.PENDING
+            and self.cancellationLimitDate <= date_utils.get_naive_utc_now()
+        ):
             raise exceptions.EducationalBookingNotRefusable()
         cancellation_reason = (
             CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -2139,7 +2050,7 @@ class NationalProgram(PcObject, models.Model):
     __tablename__ = "national_program"
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     domains: sa_orm.Mapped[list["EducationalDomain"]] = sa_orm.relationship(
         "EducationalDomain",

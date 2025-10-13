@@ -45,6 +45,7 @@ from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequest
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -919,7 +920,7 @@ def check_can_move_collective_offer_venue(
             .with_entities(models.CollectiveStock.id)
             .filter(
                 models.CollectiveStock.collectiveOfferId == collective_offer.id,
-                models.CollectiveStock.startDatetime < datetime.datetime.utcnow(),
+                models.CollectiveStock.startDatetime < date_utils.get_naive_utc_now(),
             )
             .count()
         )

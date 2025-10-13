@@ -55,17 +55,24 @@ def generate_hmac_signature(
 def convert_real_booking_dates_utc_to_venue_timezone(
     date_without_timezone: datetime | None, booking: "CollectiveBooking"
 ) -> datetime | None:
-    if booking.venue.departementCode:
+    # TODO: CLEAN_OA - remove these tests and always use location when offererAddress is not nullable in Venue
+    if booking.venue.offererAddress:
         return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venue.departementCode
+            naive_datetime=date_without_timezone, departement_code=booking.venue.offererAddress.address.departmentCode
         )
-    offerer_department_code = postal_code_utils.PostalCode(booking.offerer.postalCode).get_departement_code()
-    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
+    if booking.offerer.postalCode:
+        offerer_department_code = postal_code_utils.PostalCode(booking.offerer.postalCode).get_departement_code()
+        return _apply_departement_timezone(
+            naive_datetime=date_without_timezone, departement_code=offerer_department_code
+        )
+    return None
 
 
-def _apply_departement_timezone(naive_datetime: datetime | None, departement_code: str) -> datetime | None:
+def _apply_departement_timezone(naive_datetime: datetime | None, departement_code: str | None) -> datetime | None:
+    if naive_datetime is None or departement_code is None:
+        return None
     departement_tz = tz.gettz(date_utils.get_department_timezone(departement_code))
-    return naive_datetime.astimezone(departement_tz) if naive_datetime is not None else None
+    return naive_datetime.astimezone(departement_tz)
 
 
 def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime, booking: "Booking") -> datetime | None:
@@ -92,7 +99,7 @@ def convert_collective_booking_dates_utc_to_venue_timezone(
 
 
 def get_cooldown_datetime_by_subcategories(sub_category_id: str) -> datetime:
-    return datetime.utcnow() - timedelta(
+    return date_utils.get_naive_utc_now() - timedelta(
         seconds=(
             SUGGEST_REACTION_COOLDOWN_IN_SECONDS[sub_category_id]
             if sub_category_id in SUGGEST_REACTION_COOLDOWN_IN_SECONDS

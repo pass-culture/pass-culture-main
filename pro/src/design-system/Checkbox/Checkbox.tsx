@@ -1,11 +1,8 @@
 import classNames from 'classnames'
 import { type ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
 
+import { Asset, type AssetProps } from '../common/Asset/Asset'
 import styles from './Checkbox.module.scss'
-import {
-  CheckboxAsset,
-  type CheckboxAssetProps,
-} from './CheckboxAsset/CheckboxAsset'
 
 type CheckboxBaseProps = {
   /**
@@ -66,7 +63,7 @@ export type CheckboxProps = CheckboxBaseProps &
         /**
          * Asset element displayed on the right of the checkbox.
          */
-        asset?: CheckboxAssetProps
+        asset?: AssetProps
         /**
          * Content collapsed, displayed under the checkbox input when the checkbox is checked.
          */
@@ -159,7 +156,7 @@ export const Checkbox = forwardRef(
             </div>
             {asset && (
               <div className={styles['checkbox-label-row-right']}>
-                <CheckboxAsset
+                <Asset
                   {...asset}
                   className={classNames(styles['checkbox-asset'], {
                     [styles[asset.variant]]: asset.variant,

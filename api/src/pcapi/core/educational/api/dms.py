@@ -8,6 +8,7 @@ from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import models as educational_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ def import_dms_applications(procedure_number: int, ignore_previous: bool = False
     """import dms applications for eac status"""
     previous_import = _get_previous_import(procedure_number)
     if previous_import and previous_import.isProcessing:
-        if datetime.datetime.utcnow() < previous_import.latestImportDatetime + datetime.timedelta(days=1):
+        if date_utils.get_naive_utc_now() < previous_import.latestImportDatetime + datetime.timedelta(days=1):
             logger.info(
                 "[DMS] Procedure %s is already being processed.",
                 procedure_number,
@@ -65,7 +66,7 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
 
     current_import = dms_models.LatestDmsImport(
         procedureId=procedure_number,
-        latestImportDatetime=datetime.datetime.utcnow(),
+        latestImportDatetime=date_utils.get_naive_utc_now(),
         isProcessing=True,
         processedApplications=[],
     )

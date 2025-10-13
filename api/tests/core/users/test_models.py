@@ -25,6 +25,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.repository import transaction
 
@@ -38,17 +39,17 @@ class UserTest:
             assert user.deposit is None
 
         def test_return_expired_deposit_if_only_expired_deposits_exists(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
+            user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18))
             user.add_beneficiary_role()
-            yesterday = datetime.utcnow() - timedelta(days=1)
+            yesterday = date_utils.get_naive_utc_now() - timedelta(days=1)
             users_factories.DepositGrantFactory(user=user, expirationDate=yesterday)
 
             assert user.deposit.type == finance_models.DepositType.GRANT_17_18
 
         def test_return_last_expired_deposit_if_only_expired_deposits_exists(self):
-            with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
+            with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=3)):
                 user = users_factories.UnderageBeneficiaryFactory(
-                    deposit__expirationDate=datetime.utcnow() + relativedelta(years=2)
+                    deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=2)
                 )
 
             users_factories.DepositGrantFactory(user=user)
@@ -246,13 +247,15 @@ class UserTest:
 
     class EligibilityTest:
         def test_not_eligible_when_19(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1))
+            user = users_factories.UserFactory(
+                dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, days=1)
+            )
             assert user.eligibility is None
 
         def test_eligible_when_19_with_subscription_attempt_at_18(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
+            user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19))
             subscription_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=datetime.utcnow() - relativedelta(years=1),
+                dateCreated=date_utils.get_naive_utc_now() - relativedelta(years=1),
                 user=user,
                 type=subscription_models.FraudCheckType.DMS,
                 status=subscription_models.FraudCheckStatus.KO,
@@ -261,9 +264,9 @@ class UserTest:
             assert user.eligibility is user_models.EligibilityType.AGE18
 
         def test_eligible_when_19_with_subscription_attempt_at_18_without_account(self):
-            user_19_yo_birth_date = datetime.utcnow() - relativedelta(years=19, months=3)
-            dms_registration_date_by_18_yo = datetime.utcnow() - relativedelta(months=6)
-            user_account_creation_date_by_19_yo = datetime.utcnow()
+            user_19_yo_birth_date = date_utils.get_naive_utc_now() - relativedelta(years=19, months=3)
+            dms_registration_date_by_18_yo = date_utils.get_naive_utc_now() - relativedelta(months=6)
+            user_account_creation_date_by_19_yo = date_utils.get_naive_utc_now()
 
             user = users_factories.UserFactory(dateOfBirth=user_19_yo_birth_date)
             dms_content_before_account_creation = subscription_factories.DMSContentFactory(
@@ -401,9 +404,9 @@ class UserWalletBalanceTest:
 @pytest.mark.usefixtures("db_session")
 class SQLFunctionsTest:
     def test_wallet_balance(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=16, deposit__expirationDate=datetime.utcnow() + relativedelta(months=2)
+                subscription_age=16, deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(months=2)
             )
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))
@@ -425,7 +428,7 @@ class SQLFunctionsTest:
 
     def test_wallet_balance_multiple_deposits(self):
         user = users_factories.UserFactory(age=18)
-        expiration_date = datetime.utcnow() + relativedelta(years=3)
+        expiration_date = date_utils.get_naive_utc_now() + relativedelta(years=3)
         users_factories.DepositGrantFactory(
             user=user,
             type=finance_models.DepositType.GRANT_15_17,
@@ -444,9 +447,9 @@ class SQLFunctionsTest:
         assert wallet_balance == newest_deposit.amount
 
     def test_wallet_balance_expired_deposit(self):
-        with time_machine.travel(datetime.utcnow() - relativedelta(years=2, days=2)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, days=2)):
             user = users_factories.UnderageBeneficiaryFactory(
-                subscription_age=16, deposit__expirationDate=datetime.utcnow() + relativedelta(months=2)
+                subscription_age=16, deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(months=2)
             )
             # disable trigger because deposit.expirationDate > now() is False in database time
             db.session.execute(sa.text("ALTER TABLE booking DISABLE TRIGGER booking_update;"))

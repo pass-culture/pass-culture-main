@@ -69,7 +69,7 @@ class BoostStocksTest:
         )
 
     def _get_product_by_allocine_id(self, allocine_id):
-        return db.session.query(Product).filter(Product.extraData["allocineId"] == str(allocine_id)).one()
+        return db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == str(allocine_id)).one()
 
     def _create_cinema_and_pivot(self):
         boost_provider = get_provider_by_local_class("BoostStocks")

@@ -36,10 +36,6 @@ interface AccessibilityLabelProps {
  *
  * @example
  * <AccessibilityLabel name={AccessibilityEnum.VISUAL} />
- *
- * @accessibility
- * - **Visual Icon**: Each icon is used to provide a visual indication of the type of accessibility supported. Make sure that the icons are recognizable and provide sufficient context.
- * - **Labeling**: The `labelData` object is used to associate the accessibility type with a specific label and icon to make the information more understandable for users.
  */
 export const AccessibilityLabel = ({
   className,

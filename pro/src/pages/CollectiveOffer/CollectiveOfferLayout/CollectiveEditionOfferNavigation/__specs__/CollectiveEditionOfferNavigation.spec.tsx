@@ -396,10 +396,24 @@ describe('CollectiveEditionOfferNavigation', () => {
     const duplicateOfferButton = screen.queryByRole('button', {
       name: 'Dupliquer',
     })
-    const previewButton = screen.queryByText('Aperçu dans ADAGE')
 
     expect(archiveButton).not.toBeInTheDocument()
     expect(duplicateOfferButton).not.toBeInTheDocument()
+  })
+
+  it('should not show preview button when offer is template and status is archived', () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: getCollectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.ARCHIVED,
+      }),
+    })
+
+    const previewButton = screen.queryByRole('button', {
+      name: 'Aperçu dans ADAGE',
+    })
+
     expect(previewButton).not.toBeInTheDocument()
   })
 })

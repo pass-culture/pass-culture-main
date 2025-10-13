@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -15,6 +14,7 @@ from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offe
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -42,7 +42,7 @@ class SendinblueSendOfferValidationTest:
     @time_machine.travel("2032-10-15 12:48:00")
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
-        publication_date = datetime.utcnow() + timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now() + timedelta(days=30)
         offer = offers_factories.OfferFactory(
             name="Ma petite offre", venue__name="Mon stade", publicationDatetime=publication_date
         )

@@ -11,20 +11,12 @@ export type SearchInputProps = Omit<
 
 export const SearchInput = forwardRef(
   (props: SearchInputProps, ref: ForwardedRef<HTMLInputElement>) => {
-    function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-      if (event.key === 'Escape') {
-        //  In case the search input is in a dropdown or in a modal
-        event.stopPropagation()
-      }
-    }
-
     return (
       <div className={styles['container']}>
         <TextInput
           spellCheck={false}
           autoComplete="off"
           ref={ref}
-          onKeyDown={handleKeyDown}
           {...props}
           type="search"
           icon={strokeSearchIcon}

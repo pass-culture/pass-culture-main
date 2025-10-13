@@ -1,8 +1,5 @@
 import { useState } from 'react'
 
-import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
-import { SafeImage } from '@/components/SafeImage/SafeImage'
-import { Tag } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -12,15 +9,9 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { VideoPreview } from '../VideoPreview/VideoPreview'
 import { ModalVideo } from './components/ModalVideo/ModalVideo'
 import styles from './VideoUploader.module.scss'
-
-function getDurationInMinutes(videoDuration: number) {
-  return Math.round(videoDuration / 60).toLocaleString('fr-FR', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 1,
-  })
-}
 
 export const VideoUploader = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -31,19 +22,11 @@ export const VideoUploader = () => {
     <div className={styles['video-uploader-container']}>
       {videoThumbnailUrl ? (
         <>
-          <div className={styles['video-uploader-with-video']}>
-            <SafeImage
-              alt={'Prévisualisation de l’image'}
-              className={styles['video-preview']}
-              src={videoThumbnailUrl}
-              placeholder={<ImagePlaceholder />}
-            />
-            <span className={styles['video-duration']}>
-              <Tag label={`${getDurationInMinutes(videoDuration ?? 0)} min`} />
-            </span>
-            <p className={styles['video-title']}>{videoTitle}</p>
-          </div>
-
+          <VideoPreview
+            videoDuration={videoDuration}
+            videoTitle={videoTitle}
+            videoThumbnailUrl={videoThumbnailUrl}
+          />
           <div className={styles['action-wrapper']}>
             <ModalVideo
               onOpenChange={setIsOpen}

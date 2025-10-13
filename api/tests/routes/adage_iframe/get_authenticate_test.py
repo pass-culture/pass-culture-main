@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LON
@@ -92,8 +93,8 @@ class AuthenticateTest:
             institutionId=institution.id,
             program=program,
             timespan=db_utils.make_timerange(
-                start=datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365),
-                end=datetime.datetime.utcnow() - datetime.timedelta(days=365),
+                start=date_utils.get_naive_utc_now() - datetime.timedelta(days=2 * 365),
+                end=date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
             ),
         )
 
@@ -116,7 +117,7 @@ class AuthenticateTest:
             collectiveOffer__institution=institution,
         )
         educational_factories.CollectiveStockFactory(
-            startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             collectiveOffer__institution=institution,
         )
 
@@ -197,7 +198,7 @@ class AuthenticateTest:
 
     def test_should_return_error_response_when_jwt_expired(self, client, valid_user):
         # Given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         expired_token = self._create_adage_valid_token_from_expiration_date(
             valid_user, expiration_date=now - datetime.timedelta(days=1)
         )

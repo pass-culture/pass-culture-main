@@ -8,6 +8,7 @@ from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import PriceCategoryFactory
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ def create_offer_with_thousand_stocks(offerer: Offerer) -> None:
         EventStockFactory.create(
             offer=offer_event,
             quantity=1,
-            beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+            beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
             - datetime.timedelta(days=100)
             + datetime.timedelta(days=i),
             priceCategory=price_category,

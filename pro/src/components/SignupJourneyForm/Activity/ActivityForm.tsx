@@ -63,7 +63,7 @@ export const ActivityForm = ({
         />
       </FormLayout.Row>
 
-      <FormLayout.Row>
+      <FormLayout.Row mdSpaceAfter>
         <PhoneNumberInput
           {...register('phoneNumber')}
           error={formState.errors.phoneNumber?.message}

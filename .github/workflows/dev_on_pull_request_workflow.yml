@@ -28,12 +28,12 @@ jobs:
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/**
@@ -44,29 +44,29 @@ jobs:
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: api/documentation/**
       - name: "Check api script test folder changes"
         id: check-api-script-test-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/tests/scripts/**/test_main.py
       - name: "Check pro folder changes"
         id: check-pro-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
       # checkout source branch of the pull request
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0

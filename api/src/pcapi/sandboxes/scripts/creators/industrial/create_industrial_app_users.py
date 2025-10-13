@@ -23,6 +23,7 @@ from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +57,7 @@ def create_industrial_app_users() -> dict[str, User]:
     other_users = create_industrial_app_other_users()
     general_public_users = create_industrial_app_general_public_users()
     short_email_users = create_short_email_beneficiaries()
+    create_special_users()
 
     app_users = dict(
         beneficiaries, **underage_beneficiaries, **other_users, **general_public_users, **short_email_users
@@ -86,7 +88,10 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             deposit__version=deposit_version,
         )
         users_factories.DepositGrantFactory.create(
-            user=user, expirationDate=datetime.utcnow(), source="sandbox", type=finance_models.DepositType.GRANT_15_17
+            user=user,
+            expirationDate=date_utils.get_naive_utc_now(),
+            source="sandbox",
+            type=finance_models.DepositType.GRANT_15_17,
         )
 
         user_key = f"jeune{departement_code} {tag} v{deposit_version}"
@@ -268,7 +273,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
         )
     )
-    with time_machine.travel(datetime.utcnow() - relativedelta(years=3)):
+    with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=3)):
         users.append(
             users_factories.UnderageBeneficiaryFactory.create(
                 email="exunderage_18@example.com",
@@ -287,7 +292,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
             firstName=fake.first_name(),
             lastName=fake.last_name(),
             needsToFillCulturalSurvey=False,
-            deposit__expirationDate=datetime.utcnow() + relativedelta(years=3),
+            deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=3),
         )
         if settings.DATABASE_HAS_SPECIFIC_ROLES:
             db.session.execute(sa.text("SELECT disable_booking_update_trigger();"))
@@ -305,7 +310,7 @@ def create_short_email_beneficiaries() -> dict[str, User]:
     users.append(beneficiary_and_exunderage)
 
     with time_machine.travel(
-        datetime.utcnow() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
+        date_utils.get_naive_utc_now() - relativedelta(years=finance_conf.GRANT_18_VALIDITY_IN_YEARS, months=5)
     ):
         users.append(
             users_factories.BeneficiaryGrant18Factory.create(
@@ -323,3 +328,19 @@ def create_short_email_beneficiaries() -> dict[str, User]:
         user_by_email[user.email] = user
 
     return user_by_email
+
+
+def create_special_users() -> None:
+    logger.info("create_industrial_app_special_beneficiaries")
+    users = 0
+
+    users_factories.BeneficiaryFactory.create(
+        dateCreated=datetime.combine(date.today(), time(0, 0)) - relativedelta(days=3),
+        firstName="Jeune",
+        lastName="Expiré",
+        deposit__source="sandbox",
+        beneficiaryFraudChecks__dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
+    )
+    users += 1
+
+    logger.info("created %d beneficiaries", users)

@@ -58,6 +58,7 @@ from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -102,7 +103,7 @@ def _load_current_deposit_data(query: sa_orm.Query, join_needed: bool = True) ->
             finance_models.Deposit,
             sa.and_(
                 users_models.User.id == finance_models.Deposit.userId,
-                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+                finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
             ),
         )
     return query.options(sa_orm.contains_eager(users_models.User.deposits))
@@ -398,7 +399,7 @@ def render_public_account_details(
     history = get_public_account_history(user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
-    user_current_eligibility = eligibility_api.get_eligibility_at_date(user.birth_date, datetime.datetime.utcnow())
+    user_current_eligibility = eligibility_api.get_eligibility_at_date(user.birth_date, date_utils.get_naive_utc_now())
 
     if user_current_eligibility is not None and user_current_eligibility.value in eligibility_history:
         subscription_items = [
@@ -489,6 +490,8 @@ def render_public_account_details(
         reverse=True,
     )
 
+    is_user_expired = users_api.has_profile_expired(user)
+
     search_form = account_forms.AccountSearchForm()  # values taken from request
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
         tag_account_form = account_forms.TagAccountForm(tags=user.tags)
@@ -520,6 +523,7 @@ def render_public_account_details(
         has_gdpr_extract=has_gdpr_extract(user=user),
         booking_fraudulent_form=account_forms.TagFraudulentBookingsForm(),
         booking_remove_fraudulent_form=empty_forms.EmptyForm(),
+        is_user_expired=is_user_expired,
         **kwargs,
     )
 

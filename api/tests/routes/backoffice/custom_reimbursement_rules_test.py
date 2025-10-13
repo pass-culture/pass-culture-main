@@ -38,8 +38,8 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_list_custom_reimbursement_rules(self, authenticated_client):
-        start = datetime.datetime.utcnow() - datetime.timedelta(days=365)
-        end = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        start = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+        end = date_utils.get_naive_utc_now() + datetime.timedelta(days=365)
         offer_rule = finance_factories.CustomReimbursementRuleFactory(amount=2700, timespan=(start, None))
         venue = offerers_factories.VenueFactory()
         venue_rule = finance_factories.CustomReimbursementRuleFactory(venue=venue, rate=0.98, timespan=(start, None))

@@ -14,14 +14,15 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models import db
 from pcapi.routes.serialization import collective_stock_serialize
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class EditCollectiveOfferStocksTest:
     def test_should_update_all_fields_when_all_changed(self) -> None:
         # Given
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
+        initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         educational_factories.EducationalYearFactory(
             beginningDate=initial_event_date - datetime.timedelta(days=100),
             expirationDate=initial_event_date + datetime.timedelta(days=100),
@@ -54,8 +55,8 @@ class EditCollectiveOfferStocksTest:
 
     def test_should_update_some_fields_and_keep_non_edited_ones(self) -> None:
         # Given
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
+        initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         educational_factories.EducationalYearFactory(
             beginningDate=initial_event_date - datetime.timedelta(days=100),
             expirationDate=initial_event_date + datetime.timedelta(days=100),
@@ -85,8 +86,8 @@ class EditCollectiveOfferStocksTest:
 
     def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self) -> None:
         # Given
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
+        initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         educational_factories.EducationalYearFactory(
             beginningDate=initial_event_date - datetime.timedelta(days=100),
             expirationDate=initial_event_date + datetime.timedelta(days=100),
@@ -114,8 +115,8 @@ class EditCollectiveOfferStocksTest:
         self,
     ) -> None:
         # Given
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
+        initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
+        initial_booking_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         educational_factories.EducationalYearFactory(
             beginningDate=initial_event_date - datetime.timedelta(days=100),
             expirationDate=initial_event_date + datetime.timedelta(days=100),
@@ -169,14 +170,14 @@ class EditCollectiveOfferStocksTest:
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
         )
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
-        cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        initial_event_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
+        cancellation_limit_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(startDatetime=initial_event_date)
         booking = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_to_be_updated,
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=cancellation_limit_date,
-            confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            confirmationLimitDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=30),
             educationalYear=educational_year,
         )
 
@@ -193,10 +194,10 @@ class EditCollectiveOfferStocksTest:
 
         # Then
         booking_updated = db.session.query(CollectiveBooking).filter_by(id=booking.id).one()
-        assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
+        assert booking_updated.cancellationLimitDate == date_utils.get_naive_utc_now()
 
     def test_should_update_expired_booking(self) -> None:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         limit = now - datetime.timedelta(days=2)
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=now + datetime.timedelta(days=5), bookingLimitDatetime=limit

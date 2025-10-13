@@ -21,7 +21,7 @@ from re import Pattern
 from string import Template
 from time import struct_time
 from types import FrameType, TracebackType
-from typing import Any, ClassVar, Generic, TextIO, TypeVar, overload
+from typing import Any, ClassVar, TextIO, overload
 from typing_extensions import Literal, Self, TypeAlias
 
 if sys.version_info >= (3, 11):
@@ -438,9 +438,7 @@ class LogRecord:
     # Allows setting contextual information on LogRecord objects as per the docs, see #7833
     def __setattr__(self, __name: str, __value: Any) -> None: ...
 
-_L = TypeVar("_L", bound=Logger | LoggerAdapter[Any])
-
-class LoggerAdapter(Generic[_L]):
+class LoggerAdapter[_L: Logger | LoggerAdapter[Any]]:
     logger: _L
     manager: Manager  # undocumented
     if sys.version_info >= (3, 10):
@@ -817,9 +815,7 @@ def setLogRecordFactory(factory: Callable[..., LogRecord]) -> None: ...
 
 lastResort: StreamHandler[Any] | None
 
-_StreamT = TypeVar("_StreamT", bound=SupportsWrite[str])
-
-class StreamHandler(Handler, Generic[_StreamT]):
+class StreamHandler[_StreamT: SupportsWrite[str]](Handler):
     stream: _StreamT  # undocumented
     terminator: str
     @overload

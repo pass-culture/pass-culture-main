@@ -176,6 +176,7 @@ class Returns201Test:
             "name",
             "isActive",
             "hasOffererProvider",
+            "enabledForPro",
         }
 
     @pytest.mark.usefixtures("db_session")

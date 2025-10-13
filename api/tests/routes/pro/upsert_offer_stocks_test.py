@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -47,7 +48,7 @@ class Returns204Test:
         stock_to_update = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("5"), quantity=10)
         stock_to_delete = offers_factories.ThingStockFactory(offer=offer, price=decimal.Decimal("7"), quantity=3)
 
-        updated_stock_booking_limit_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        updated_stock_booking_limit_datetime = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         payload = {
             "stocks": [
                 {

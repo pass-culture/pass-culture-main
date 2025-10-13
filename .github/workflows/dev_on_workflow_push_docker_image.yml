@@ -1,4 +1,5 @@
 name: '3 [on_workflow] push docker image'
+
 on:
   workflow_call:
     inputs:

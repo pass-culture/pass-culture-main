@@ -1,4 +1,3 @@
-from datetime import datetime
 from io import BytesIO
 
 import sqlalchemy.orm as sa_orm
@@ -27,6 +26,7 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.routes.serialization import reimbursement_csv_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils import urls
 from pcapi.utils.human_ids import humanize
 
@@ -94,7 +94,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
         db.session.query(offerers_models.VenueBankAccountLink)
         .filter(
             offerers_models.VenueBankAccountLink.bankAccountId == bank_account_id,
-            offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
         )
         .join(offerers_models.VenueBankAccountLink.venue)  # excludes soft-deleted
         .options(
@@ -191,7 +191,7 @@ def download_reimbursement_details(bank_account_id: int) -> utils.BackofficeResp
         for details in finance_repository.find_all_invoices_finance_details([invoice.id for invoice in invoices])
     ]
     export_data = reimbursement_csv_serialize.generate_reimbursement_details_csv(reimbursement_details)
-    export_date = datetime.utcnow().strftime("%Y-%m-%d-%H-%M")
+    export_date = date_utils.get_naive_utc_now().strftime("%Y-%m-%d-%H-%M")
     return send_file(
         BytesIO(export_data.encode("utf-8-sig")),
         as_attachment=True,

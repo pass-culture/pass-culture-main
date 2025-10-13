@@ -19,6 +19,7 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_thumb_mixin import HasThumbMixin
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.validation.models import entity_validator
 
@@ -301,7 +302,7 @@ class LocalProvider(Iterator):
         self.log_provider_event(providers_models.LocalProviderEventType.SyncEnd)
 
         if self.venue_provider is not None:
-            self.venue_provider.lastSyncDate = datetime.utcnow()
+            self.venue_provider.lastSyncDate = date_utils.get_naive_utc_now()
             repository.save(self.venue_provider)
 
     def postTreatment(self) -> None:

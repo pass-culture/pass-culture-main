@@ -4,17 +4,13 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import type {
   AggregatedRevenueModel,
-  GetOffererResponseModel,
-  GetOffererVenueResponseModel,
   StatisticsModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
-import {
-  defaultGetOffererResponseModel,
-  defaultGetOffererVenueResponseModel,
-} from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { statisticsFactory } from '@/commons/utils/factories/statisticsFactories'
 import {
   currentOffererFactory,
@@ -28,31 +24,23 @@ import { isCollectiveAndIndividualRevenue, isCollectiveRevenue } from './utils'
 
 const MOCK_DATA: {
   selectedOffererId: number
-  offerer: GetOffererResponseModel & {
-    managedVenues: Array<GetOffererVenueResponseModel>
-  }
+  venues: VenueListItemResponseModel[]
 } & StatisticsModel = {
   selectedOffererId: 100,
-  offerer: {
-    ...defaultGetOffererResponseModel,
-    managedVenues: [
-      {
-        ...defaultGetOffererVenueResponseModel,
-        id: 1,
-        name: 'mk2 - Bibliothèque',
-      },
-      {
-        ...defaultGetOffererVenueResponseModel,
-        id: 2,
-        name: 'mk2 - Odéon',
-      },
-      {
-        ...defaultGetOffererVenueResponseModel,
-        id: 3,
-        name: 'mk2 - Nation',
-      },
-    ],
-  },
+  venues: [
+    makeVenueListItem({
+      id: 1,
+      name: 'First Venue',
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+    makeVenueListItem({
+      id: 2,
+      name: 'Second Venue',
+      isPermanent: true,
+      hasCreatedOffer: true,
+    }),
+  ],
   ...statisticsFactory({
     emptyYear: '1994',
     individualRevenueOnlyYear: '1995',
@@ -86,7 +74,7 @@ const renderIncome = () => {
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getOfferer: vi.fn(),
+    getVenues: vi.fn(),
     getStatistics: vi.fn(),
   },
 }))
@@ -100,7 +88,7 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch venues data and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -109,14 +97,16 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByTestId('venues-spinner')).toBeInTheDocument()
       )
-      expect(api.getOfferer).toHaveBeenNthCalledWith(
+      expect(api.getVenues).toHaveBeenNthCalledWith(
         1,
+        true,
+        null,
         MOCK_DATA.selectedOffererId
       )
     })
 
     it('should display an error message if venues couldnt be fetched', async () => {
-      vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error('error'))
+      vi.spyOn(api, 'getVenues').mockRejectedValue(new Error('error'))
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -125,17 +115,16 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByText(LABELS.error)).toBeInTheDocument()
       )
-      expect(api.getOfferer).toHaveBeenNthCalledWith(
+      expect(api.getVenues).toHaveBeenNthCalledWith(
         1,
+        true,
+        null,
         MOCK_DATA.selectedOffererId
       )
     })
 
     it('should display an empty screen if no venues were found', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...MOCK_DATA.offerer,
-        managedVenues: [],
-      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -144,14 +133,16 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
       )
-      expect(api.getOfferer).toHaveBeenNthCalledWith(
+      expect(api.getVenues).toHaveBeenNthCalledWith(
         1,
+        true,
+        null,
         MOCK_DATA.selectedOffererId
       )
     })
 
     it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -163,12 +154,12 @@ describe('Income', () => {
       )
       expect(api.getStatistics).toHaveBeenNthCalledWith(
         1,
-        MOCK_DATA.offerer.managedVenues.map((venue) => venue.id)
+        MOCK_DATA.venues.map((venue) => venue.id)
       )
     })
 
     it('should display an error message if income couldnt be fetched', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockRejectedValue(new Error('error'))
       renderIncome()
 
@@ -178,7 +169,7 @@ describe('Income', () => {
     })
 
     it('should display an empty screen if no income data was found', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({ incomeByYear: {} })
       renderIncome()
 
@@ -188,9 +179,8 @@ describe('Income', () => {
     })
 
     it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...MOCK_DATA.offerer,
-        managedVenues: [MOCK_DATA.offerer.managedVenues[0]],
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [MOCK_DATA.venues[0]],
       })
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
@@ -217,7 +207,7 @@ describe('Income', () => {
     })
 
     it('should display a set of year filters with the last year selected by default', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -245,9 +235,8 @@ describe('Income', () => {
     })
 
     it('should auto-focus the last year filter if there is only one venue', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue({
-        ...MOCK_DATA.offerer,
-        managedVenues: [MOCK_DATA.offerer.managedVenues[0]],
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [MOCK_DATA.venues[0]],
       })
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
@@ -276,7 +265,7 @@ describe('Income', () => {
     })
 
     it('should display the income results', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -298,7 +287,7 @@ describe('Income', () => {
     })
 
     it('should display an error if no venues are selected and avoid fetching income data', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -336,7 +325,7 @@ describe('Income', () => {
     })
 
     it('should attempt to fetch income data with the selected venues and display a loading spinner meanwhile', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -360,7 +349,7 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
       )
-      const expectedLeftVenueIds = MOCK_DATA.offerer.managedVenues
+      const expectedLeftVenueIds = MOCK_DATA.venues
         .filter((v) => v.name !== unselectedVenue.textContent)
         .map((v) => v.id)
       expect(api.getStatistics).toHaveBeenNthCalledWith(2, expectedLeftVenueIds)
@@ -375,7 +364,7 @@ describe('Income', () => {
     })
 
     it('should display the income results for the selected year', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -443,7 +432,7 @@ describe('Income', () => {
     })
 
     it('should display en empty screen if no data is available for the selected year', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })
@@ -468,7 +457,7 @@ describe('Income', () => {
     })
 
     it('should display previsionnal income only for current year', async () => {
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(MOCK_DATA.offerer)
+      vi.spyOn(api, 'getVenues').mockResolvedValue(MOCK_DATA)
       vi.spyOn(api, 'getStatistics').mockResolvedValue({
         incomeByYear: MOCK_DATA.incomeByYear,
       })

@@ -28,6 +28,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import human_ids
 from pcapi.utils.repository import transaction
@@ -570,7 +571,7 @@ def _generate_finance_event_context(
     return event
 
 
-@time_machine.travel(datetime.datetime(datetime.datetime.utcnow().year, 2, 1, 12, 34, 26), tick=False)
+@time_machine.travel(datetime.datetime(date_utils.get_naive_utc_now().year, 2, 1, 12, 34, 26), tick=False)
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     # The contents of generated files is unit-tested in other test
@@ -583,10 +584,10 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
         booking__stock__offer__venue=venue,
-        valueDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
+        valueDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=1),
     )
-    factories.CashflowBatchFactory(cutoff=datetime.datetime.utcnow() - datetime.timedelta(days=15))
-    cutoff = datetime.datetime.utcnow()
+    factories.CashflowBatchFactory(cutoff=date_utils.get_naive_utc_now() - datetime.timedelta(days=15))
+    cutoff = date_utils.get_naive_utc_now()
     api.generate_cashflows_and_payment_files(cutoff)
 
     cashflow = db.session.query(models.Cashflow).one()
@@ -595,7 +596,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
 
-    current_year = datetime.datetime.utcnow().year
+    current_year = date_utils.get_naive_utc_now().year
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
         f"changing_bank_accounts_{current_year}0201_1334.csv",
@@ -604,7 +605,7 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
 
 
 def test_generate_changing_bank_accounts_file(clean_temp_files):
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     batch = factories.CashflowBatchFactory(cutoff=now)
     previous_batch = factories.CashflowBatchFactory(cutoff=now - datetime.timedelta(days=15))
 
@@ -902,11 +903,11 @@ def test_generate_payments_file(clean_temp_files):
     )
 
     # Now the user gets a GRANT_17_18, and his used bookings are transfered to the new deposit
-    underage_user.deposits[0].expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+    underage_user.deposits[0].expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=5)
     db.session.add(underage_user.deposits[0])
     db.session.commit()
     users_factories.DepositGrantFactory(
-        user=underage_user, expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        user=underage_user, expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
     )
 
     factories.PricingFactory(
@@ -1224,7 +1225,7 @@ def test_invoices_csv_commercial_gesture():
     commercial_gesture_finance_event = commercial_gesture_finance_events[0]
     api.price_event(commercial_gesture_finance_event)
 
-    cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    cutoff = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
     api.generate_invoices_and_debit_notes_legacy(batch)
     path = api.generate_invoice_file(batch)
@@ -1331,7 +1332,7 @@ def test_invoice_pdf_commercial_gesture(features, monkeypatch):
     assert len(commercial_gesture.booking_finance_incidents[0].finance_events) == 1
     api.price_event(commercial_gesture.booking_finance_incidents[0].finance_events[0])
 
-    cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    cutoff = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
     batch = api.generate_cashflows_and_payment_files(cutoff)
     api.generate_invoices_and_debit_notes_legacy(batch)
 
@@ -1438,7 +1439,7 @@ def test_generate_invoice_file(clean_temp_files):
     offerer1 = venue.managingOfferer
     bank_account_1 = factories.BankAccountFactory(offerer=offerer1)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=venue, bankAccount=bank_account_1, timespan=(datetime.datetime.utcnow(),)
+        venue=venue, bankAccount=bank_account_1, timespan=(date_utils.get_naive_utc_now(),)
     )
     pricing1 = factories.PricingFactory(
         status=models.PricingStatus.VALIDATED,
@@ -1530,7 +1531,7 @@ def test_generate_invoice_file(clean_temp_files):
     collective_pricing = factories.CollectivePricingFactory(
         amount=-3000,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+        collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -1557,7 +1558,7 @@ def test_generate_invoice_file(clean_temp_files):
     program_pricing = factories.CollectivePricingFactory(
         amount=-2345,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         collectiveBooking__educationalInstitution=educational_institution_with_program,
         collectiveBooking__educationalYear=deposit_with_program.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -1566,8 +1567,8 @@ def test_generate_invoice_file(clean_temp_files):
 
     # eac related to a program left
     #
-    one_year_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365)
-    two_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2 * 365)
+    one_year_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
+    two_years_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=2 * 365)
     educational_institution_with_program_left = educational_factories.EducationalInstitutionFactory(
         programAssociations=[
             educational_factories.EducationalInstitutionProgramAssociationFactory(
@@ -1583,7 +1584,7 @@ def test_generate_invoice_file(clean_temp_files):
     program_pricing_left = factories.CollectivePricingFactory(
         amount=-600,
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-        collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=8),
+        collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         collectiveBooking__educationalInstitution=educational_institution_with_program_left,
         collectiveBooking__educationalYear=deposit_with_program_left.educationalYear,
         status=models.PricingStatus.VALIDATED,
@@ -1593,7 +1594,7 @@ def test_generate_invoice_file(clean_temp_files):
     # Create booking for overpayment finance incident
     incident_booking = bookings_factories.ReimbursedBookingFactory(
         amount=18,
-        dateUsed=datetime.datetime.utcnow(),
+        dateUsed=date_utils.get_naive_utc_now(),
         stock__offer__name="Une histoire plutôt bien",
         stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         stock__offer__venue=venue,
@@ -1604,7 +1605,7 @@ def test_generate_invoice_file(clean_temp_files):
         booking=incident_booking,
         event=used_event,
         status=models.PricingStatus.INVOICED,
-        valueDate=datetime.datetime.utcnow(),
+        valueDate=date_utils.get_naive_utc_now(),
         amount=-1800,
     )
     factories.PricingLineFactory(pricing=incident_booking_original_pricing, amount=-1800)
@@ -1618,7 +1619,7 @@ def test_generate_invoice_file(clean_temp_files):
     booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(
         booking=incident_booking, newTotalAmount=1600
     )
-    incident_events = api._create_finance_events_from_incident(booking_finance_incident, datetime.datetime.utcnow())
+    incident_events = api._create_finance_events_from_incident(booking_finance_incident, date_utils.get_naive_utc_now())
 
     incidents_pricings = []
     for event in incident_events:
@@ -1649,7 +1650,7 @@ def test_generate_invoice_file(clean_temp_files):
     nc_offerer = nc_venue.managingOfferer
     nc_bank_account = factories.CaledonianBankAccountFactory(offerer=nc_offerer)
     offerers_factories.VenueBankAccountLinkFactory(
-        venue=nc_venue, bankAccount=nc_bank_account, timespan=(datetime.datetime.utcnow(),)
+        venue=nc_venue, bankAccount=nc_bank_account, timespan=(date_utils.get_naive_utc_now(),)
     )
     underage_user = users_factories.UnderageBeneficiaryFactory()
     nc_pricing = factories.PricingFactory(
@@ -1885,11 +1886,13 @@ class GenerateDebitNotesTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_event = api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
+        incident_event = api._create_finance_events_from_incident(
+            booking_total_incident, date_utils.get_naive_utc_now()
+        )
 
         api.price_event(incident_event[0])
 
-        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        batch = api.generate_cashflows_and_payment_files(date_utils.get_naive_utc_now())
 
         with pytest.raises(exceptions.NoInvoiceToGenerate):
             api.generate_invoices_and_debit_notes_legacy(batch)
@@ -2007,7 +2010,7 @@ class GenerateInvoicesTest:
         # Cashflows for booking1 and booking2 will be UNDER_REVIEW.
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        batch = api.generate_cashflows_and_payment_files(date_utils.get_naive_utc_now())
 
         api.generate_invoices_and_debit_notes_legacy(batch)
 
@@ -2028,7 +2031,7 @@ class GenerateInvoicesTest:
         factories.CustomReimbursementRuleFactory(rate=0, venue=finance_event.booking.venue)
 
         api.price_event(finance_event)
-        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        batch = api.generate_cashflows_and_payment_files(date_utils.get_naive_utc_now())
 
         api.generate_invoices_and_debit_notes_legacy(batch)
 
@@ -2119,7 +2122,7 @@ class GenerateInvoicesTest:
         #################################################
         # Invoice the booking and reimburse the offerer #
         #################################################
-        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow() + datetime.timedelta(days=3))
+        batch = api.generate_cashflows_and_payment_files(date_utils.get_naive_utc_now() + datetime.timedelta(days=3))
         assert len(batch.cashflows) == 1
 
         api.generate_invoices_and_debit_notes_legacy(batch)
@@ -2162,7 +2165,7 @@ class GenerateInvoiceTest:
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2209,7 +2212,7 @@ class GenerateInvoiceTest:
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2, booking__user=user_2)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2256,7 +2259,7 @@ class GenerateInvoiceTest:
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2288,7 +2291,7 @@ class GenerateInvoiceTest:
 
         stock = offers_factories.EventStockFactory(
             offer=offer,
-            beginningDatetime=datetime.datetime.utcnow(),
+            beginningDatetime=date_utils.get_naive_utc_now(),
             price=23,
         )
         booking = bookings_factories.UsedBookingFactory(stock=stock)
@@ -2300,7 +2303,7 @@ class GenerateInvoiceTest:
         )
 
         api.price_event(finance_event)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2331,7 +2334,7 @@ class GenerateInvoiceTest:
 
         offer1 = offers_factories.DigitalOfferFactory(venue=venue1)
         stock1 = offers_factories.EventStockFactory(
-            offer=offer1, beginningDatetime=datetime.datetime.utcnow(), price=10
+            offer=offer1, beginningDatetime=date_utils.get_naive_utc_now(), price=10
         )
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=50)
@@ -2340,7 +2343,7 @@ class GenerateInvoiceTest:
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2381,11 +2384,11 @@ class GenerateInvoiceTest:
             finance_events.append(finance_event)
         for finance_event in finance_events[:3]:
             api.price_event(finance_event)
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         for finance_event in finance_events[3:]:
             api.price_event(finance_event)
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2479,7 +2482,7 @@ class GenerateInvoiceTest:
         finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
         api.price_event(finance_event1)
         api.price_event(finance_event2)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
 
@@ -2511,7 +2514,7 @@ class GenerateInvoiceTest:
         indiv_booking1 = indiv_finance_event1.booking
         indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         indiv_booking2 = indiv_finance_event2.booking
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__startDatetime=past,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -2524,7 +2527,7 @@ class GenerateInvoiceTest:
         collective_booking2 = collective_finance_event2.collectiveBooking
         for e in (collective_finance_event1, collective_finance_event2, indiv_finance_event1, indiv_finance_event2):
             api.price_event(e)
-        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
         cashflow = db.session.query(models.Cashflow).one()
         pricings = db.session.query(models.Pricing).all()
@@ -2569,7 +2572,7 @@ class PrepareInvoiceContextTest:
                 booking__user=user,
             )
             api.price_event(finance_event)
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
         invoice = api._generate_invoice_legacy(
@@ -2636,7 +2639,7 @@ class PrepareInvoiceContextTest:
             booking__user=user,
         )
         api.price_event(finance_event)
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
         invoice = api._generate_invoice_legacy(
@@ -2691,7 +2694,9 @@ class GenerateDebitNoteHtmlTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=-incident_booking1_event.booking.total_amount * 100,
         )
-        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
+        incident_events += api._create_finance_events_from_incident(
+            booking_total_incident, date_utils.get_naive_utc_now()
+        )
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -2702,13 +2707,13 @@ class GenerateDebitNoteHtmlTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow()
+            booking_partial_incident, date_utils.get_naive_utc_now()
         )
 
         for event in incident_events:
             api.price_event(event)
 
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
 
         cashflows = db.session.query(models.Cashflow).order_by(models.Cashflow.id).all()
@@ -2787,7 +2792,7 @@ class GenerateInvoiceHtmlTest:
             incident_collective_booking_event = factories.UsedCollectiveBookingFinanceEventFactory(
                 collectiveBooking__collectiveStock__price=30,
                 collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-                pricingOrderingDate=datetime.datetime.utcnow(),
+                pricingOrderingDate=date_utils.get_naive_utc_now(),
             )
             api.price_event(incident_collective_booking_event)
 
@@ -2805,7 +2810,9 @@ class GenerateInvoiceHtmlTest:
             booking=incident_booking1_event.booking,
             newTotalAmount=0,
         )
-        incident_events += api._create_finance_events_from_incident(booking_total_incident, datetime.datetime.utcnow())
+        incident_events += api._create_finance_events_from_incident(
+            booking_total_incident, date_utils.get_naive_utc_now()
+        )
 
         # create partial overpayment incident
         booking_partial_incident = factories.IndividualBookingFinanceIncidentFactory(
@@ -2814,7 +2821,7 @@ class GenerateInvoiceHtmlTest:
             newTotalAmount=2000,
         )
         incident_events += api._create_finance_events_from_incident(
-            booking_partial_incident, datetime.datetime.utcnow()
+            booking_partial_incident, date_utils.get_naive_utc_now()
         )
 
         if not is_caledonian:
@@ -2825,13 +2832,13 @@ class GenerateInvoiceHtmlTest:
                 newTotalAmount=0,
             )
             incident_events += api._create_finance_events_from_incident(
-                collective_booking_total_incident, datetime.datetime.utcnow()
+                collective_booking_total_incident, date_utils.get_naive_utc_now()
             )
 
         for event in incident_events:
             api.price_event(event)
 
-        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflows = db.session.query(models.Cashflow).order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
@@ -2879,19 +2886,22 @@ class GenerateInvoiceHtmlTest:
         only_collective_booking_finance_event = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=666,
             collectiveBooking__collectiveStock__collectiveOffer__venue=only_educational_venue,
-            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now()
+            - datetime.timedelta(days=1),
             collectiveBooking__venue=only_educational_venue,
         )
         collective_booking_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=5000,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now()
+            - datetime.timedelta(days=1),
             collectiveBooking__venue=venue,
         )
         collective_booking_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__price=250,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
-            collectiveBooking__collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now()
+            - datetime.timedelta(days=1),
             collectiveBooking__venue=venue,
         )
         api.price_event(only_collective_booking_finance_event)

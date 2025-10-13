@@ -6,12 +6,13 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import shared
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class SharedTest:
     def test_update_cancellation_limit_date_naive(self) -> None:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         start = now + datetime.timedelta(days=35)
         stock = educational_factories.CollectiveStockFactory(startDatetime=start)
         booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock)

@@ -16,12 +16,13 @@ from pcapi import settings
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
 from pcapi.core.subscription.ubble import errors as ubble_errors
+from pcapi.utils import date as date_utils
 
 
 def build_user_with_ko_retryable_ubble_fraud_check(
     user: users_models.User | None = None,
     user_age: int = 18,
-    ubble_date_created: datetime.datetime = datetime.datetime.utcnow() - relativedelta(days=7),
+    ubble_date_created: datetime.datetime = date_utils.get_naive_utc_now() - relativedelta(days=7),
     ubble_eligibility: users_models.EligibilityType = users_models.EligibilityType.AGE17_18,
     reasonCodes: list[subscription_models.FraudReasonCode] = [
         subscription_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
@@ -34,7 +35,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     """
     if user is None:
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=user_age),
+            dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=user_age),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
     subscription_factories.BeneficiaryFraudCheckFactory(
@@ -57,7 +58,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
 @pytest.mark.usefixtures("db_session")
 class FindUsersThatFailedUbbleTest:
     def setup_method(self):
-        self.eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
+        self.eighteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=18)
         self.error_codes = (
             ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS
             + ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS
@@ -76,7 +77,7 @@ class FindUsersThatFailedUbbleTest:
     def should_not_find_users_to_remind(self):
         # Given
         build_user_with_ko_retryable_ubble_fraud_check(
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=6)
+            ubble_date_created=date_utils.get_naive_utc_now() - relativedelta(days=6)
         )
 
         # When
@@ -122,9 +123,9 @@ class FindUsersThatFailedUbbleTest:
     def should_find_users_when_they_had_ok_fraud_checks_of_another_eligibility(self, decree_month_offset):
         with time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME + relativedelta(months=decree_month_offset)):
             # Given
-            last_week = datetime.datetime.utcnow() - relativedelta(days=7)
+            last_week = date_utils.get_naive_utc_now() - relativedelta(days=7)
             user = build_user_with_ko_retryable_ubble_fraud_check(ubble_date_created=last_week)
-            year_when_user_was_underage = datetime.datetime.utcnow() - relativedelta(years=1)
+            year_when_user_was_underage = date_utils.get_naive_utc_now() - relativedelta(years=1)
             subscription_factories.BeneficiaryFraudCheckFactory(
                 user=user,
                 type=subscription_models.FraudCheckType.EDUCONNECT,
@@ -177,14 +178,14 @@ class FindUsersThatFailedUbbleTest:
 
     def should_find_correct_reason_codes(self):
         user = build_user_with_ko_retryable_ubble_fraud_check(
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=7)
+            ubble_date_created=date_utils.get_naive_utc_now() - relativedelta(days=7)
         )
         subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.UBBLE,
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE],
-            dateCreated=datetime.datetime.utcnow() - relativedelta(days=5),  # I want this one
+            dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=5),  # I want this one
         )
 
         result = _find_users_to_remind(days_ago=7, reason_codes_filter=self.error_codes)
@@ -231,7 +232,7 @@ class SendUbbleKoReminderReminderTest:
 
     @pytest.mark.settings(DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER=21)
     def should_send_21_days_reminders(self):
-        twenty_one_days_ago = datetime.datetime.utcnow() - relativedelta(days=21)
+        twenty_one_days_ago = date_utils.get_naive_utc_now() - relativedelta(days=21)
         user1 = build_user_with_ko_retryable_ubble_fraud_check(
             reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
             ubble_date_created=twenty_one_days_ago,
@@ -299,7 +300,7 @@ class SendUbbleKoReminderReminderTest:
     def should_send_email_for_long_action_to_user(self, reason_code):
         # Given
         user = build_user_with_ko_retryable_ubble_fraud_check(
-            reasonCodes=[reason_code], ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=21)
+            reasonCodes=[reason_code], ubble_date_created=date_utils.get_naive_utc_now() - relativedelta(days=21)
         )
 
         # When
@@ -334,7 +335,7 @@ class SendUbbleKoReminderReminderTest:
         # Given
         user = build_user_with_ko_retryable_ubble_fraud_check(
             reasonCodes=[reason_code, other_reason_code],
-            ubble_date_created=datetime.datetime.utcnow() - relativedelta(days=21),
+            ubble_date_created=date_utils.get_naive_utc_now() - relativedelta(days=21),
         )
 
         # When

@@ -17,6 +17,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.external_bookings.boost import client as boost_client
 from pcapi.utils import date
+from pcapi.utils import date as date_utils
 
 from tests.local_providers.cinema_providers.boost import fixtures
 
@@ -148,7 +149,7 @@ class AuthenticatedGetTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
-            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=10),
+            tokenExpirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(hours=10),
         )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
@@ -170,7 +171,7 @@ class AuthenticatedGetTest:
         assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
         assert json_data == {"key": "value"}
         assert cinema_details.token == "new-token"
-        assert cinema_details.tokenExpirationDate == datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        assert cinema_details.tokenExpirationDate == date_utils.get_naive_utc_now() + datetime.timedelta(hours=24)
 
     def test_should_raise_if_error(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(

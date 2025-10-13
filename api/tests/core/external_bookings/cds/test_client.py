@@ -13,6 +13,7 @@ import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cds import serializers as cds_serializers
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.utils import date as date_utils
 
 
 def create_show_cds(
@@ -23,7 +24,7 @@ def create_show_cds(
     is_empty_seatmap: str | bool = False,
     remaining_place: int = 88,
     internet_remaining_place: int = 100,
-    showtime: datetime.datetime = datetime.datetime.utcnow(),
+    showtime: datetime.datetime = date_utils.get_naive_utc_now(),
     shows_tariff_pos_type_ids=(),
     screen_id: int = 50,
     media_id: int = 52,
@@ -795,7 +796,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_empty_seatmap=True,
             remaining_place=88,
             internet_remaining_place=20,
-            showtime=datetime.datetime.utcnow(),
+            showtime=date_utils.get_naive_utc_now(),
             shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
             screen=cds_serializers.IdObjectCDS(id=1),
             media=cds_serializers.IdObjectCDS(id=52),
@@ -829,7 +830,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_empty_seatmap=False,
             remaining_place=88,
             internet_remaining_place=20,
-            showtime=datetime.datetime.utcnow(),
+            showtime=date_utils.get_naive_utc_now(),
             shows_tariff_pos_type_collection=[
                 cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
                 cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),

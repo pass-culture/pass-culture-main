@@ -13,3 +13,8 @@ export interface CustomRouteObject extends NonIndexRouteObject {
   children?: CustomRouteObject[]
   isErrorPage?: boolean
 }
+
+export interface RedirectionRouteObject extends NonIndexRouteObject {
+  path: string
+  featureName?: string
+}

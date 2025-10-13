@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: "Checkout 🛎️"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
       - name: "Count mypy ignore's on this branch and master"
@@ -35,20 +35,20 @@ jobs:
           echo "$EOF" | tee -a $GITHUB_OUTPUT
       - name: "Find Comment"
         id: "fc"
-        uses: peter-evans/find-comment@v3
+        uses: peter-evans/find-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: "mypy cop report"
       - name: "Create comment"
         if: ${{ steps.fc.outputs.comment-id == '' && steps.mypy-ignore-counter.outputs.this_branch_ignore_count != steps.mypy-ignore-counter.outputs.master_ignore_count }}
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.mypy-cop.outputs.body }}
       - name: "Update comment"
         if: ${{ steps.fc.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           edit-mode: replace

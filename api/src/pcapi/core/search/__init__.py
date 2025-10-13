@@ -21,6 +21,7 @@ from pcapi.core.search.backends import algolia
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 from pcapi.utils.transaction_manager import atomic
@@ -450,18 +451,12 @@ def index_offers_of_artists_in_queue() -> None:
             count=settings.REDIS_ARTIST_IDS_FOR_OFFERS_CHUNK_SIZE,
         ) as artist_ids:
             for artist_id in artist_ids:
-                page = 0
                 logger.info("Starting to index offers of artist", extra={"artist": artist_id})
-                while True:
-                    offer_ids = offers_repository.get_paginated_offer_ids_by_artist_id(
-                        limit=settings.ALGOLIA_OFFERS_BY_ARTIST_CHUNK_SIZE,
-                        page=page,
-                        artist_id=artist_id,
-                    )
-                    if not offer_ids:
-                        break
+                offer_ids_iterator = offers_repository.get_paginated_offer_ids_by_artist_id(
+                    artist_id=artist_id, chunk_size=settings.ALGOLIA_OFFERS_BY_ARTIST_CHUNK_SIZE
+                )
+                for offer_ids in offer_ids_iterator:
                     reindex_offer_ids(offer_ids, from_error_queue=False)
-                    page += 1
                 logger.info("Finished indexing offers of artist", extra={"artist": artist_id})
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
@@ -477,18 +472,13 @@ def index_offers_of_venues_in_queue() -> None:
             count=settings.REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE,
         ) as venue_ids:
             for venue_id in venue_ids:
-                page = 0
                 logger.info("Starting to index offers of venue", extra={"venue": venue_id})
-                while True:
-                    offer_ids = offers_repository.get_paginated_offer_ids_by_venue_id(
-                        limit=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE,
-                        page=page,
-                        venue_id=venue_id,
-                    )
-                    if not offer_ids:
-                        break
+                offer_ids_iterator = offers_repository.get_paginated_offer_ids_by_venue_id(
+                    venue_id=venue_id, chunk_size=settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE
+                )
+
+                for offer_ids in offer_ids_iterator:
                     reindex_offer_ids(offer_ids, from_error_queue=False)
-                    page += 1
                 logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
@@ -619,7 +609,7 @@ def get_offers_booking_count_by_id(
         .filter(
             offers_models.Offer.id.in_(offer_ids),
             offers_models.Offer.isActive,
-            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=days),
+            bookings_models.Booking.dateCreated >= date_utils.get_naive_utc_now() - datetime.timedelta(days=days),
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(offers_models.Offer.id)
@@ -808,6 +798,16 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
     _reindex_artists_from_offers(offer_ids)
+
+
+def unindex_all_artists() -> None:
+    backend = _get_backend()
+    try:
+        backend.unindex_all_artists()
+    except Exception:
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not unindex all artists")
 
 
 def unindex_all_offers() -> None:

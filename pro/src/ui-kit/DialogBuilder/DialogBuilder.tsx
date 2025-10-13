@@ -73,8 +73,8 @@ export type DialogBuilderProps = {
  * </DialogBuilder>
  *
  * @accessibility
- * - **Keyboard Navigation**: When using the trigger prop along with the `<Dialog.Close>` tag
- * around dialog validation buttons, the trigger button will automatically be re-focused on close.
+ * - Make sure that after closing the dialog, the focus is re-positionned to a coherent position.
+ * Most of the time, the focus should be re-placed on the trigger element.
  */
 export function DialogBuilder({
   trigger,

@@ -51,6 +51,7 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -234,8 +235,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
     banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
-    timezone: sa_orm.Mapped[str] = sa_orm.mapped_column(
-        sa.String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
+    timezone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
     publicName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -276,7 +277,9 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
     venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     withdrawalDetails: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
@@ -692,7 +695,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def current_pricing_point_id(self) -> int | None:
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
             .filter(
@@ -706,7 +709,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
         # avoids additional SQL query
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
 
         for link in self.pricing_point_links:
             lower = link.timespan.lower
@@ -726,7 +729,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def current_bank_account_link(self) -> "VenueBankAccountLink | None":
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
 
         for link in self.bankAccountLinks:
             lower = link.timespan.lower
@@ -889,7 +892,7 @@ class AccessibilityProvider(PcObject, Model):
         MutableDict.as_mutable(JSONB), nullable=True
     )
     lastUpdateAtProvider: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
 
@@ -1110,7 +1113,9 @@ class Offerer(
     __tablename__ = "offerer"
     thumb_path_component = "offerers"
 
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
 
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
 
@@ -1216,8 +1221,8 @@ class Offerer(
         return cls._address
 
     @hybrid_property
-    def departementCode(self) -> str:
-        return postal_code_utils.PostalCode(self.postalCode).get_departement_code()
+    def departementCode(self) -> str | None:
+        return postal_code_utils.PostalCode(self.postalCode).get_departement_code() if self.postalCode else None
 
     @departementCode.inplace.expression
     @classmethod
@@ -1247,7 +1252,7 @@ class Offerer(
         """
         if siren_utils.is_rid7(self.siren):
             return True
-        if self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
+        if self.postalCode and self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
             return True
         return False
 
@@ -1288,7 +1293,9 @@ class UserOfferer(PcObject, Model, ValidationStatusMixin):
     )
 
     # dateCreated will remain null for all rows already in this table before this field was added
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now
+    )
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -1308,7 +1315,7 @@ class ApiKey(PcObject, Model):
         "Provider", foreign_keys=[providerId], back_populates="apiKeys"
     )
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, server_default=sa.func.now()
     )
     prefix: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True, unique=True)
     secret: sa_orm.Mapped[bytes] = sa_orm.mapped_column(LargeBinary, nullable=True)
@@ -1400,7 +1407,9 @@ class OffererInvitation(PcObject, Model):
     )
     offerer: sa_orm.Mapped[Offerer] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), nullable=False, index=True
     )
@@ -1488,6 +1497,11 @@ class OffererStats(PcObject, Model):
     __table_args__ = (sa.Index("ix_offerer_stats_offererId", offererId),)
 
 
+class LocationType(enum.Enum):
+    VENUE_LOCATION = "VENUE_LOCATION"
+    OFFER_LOCATION = "OFFER_LOCATION"
+
+
 class OffererAddress(PcObject, Model):
     __tablename__ = "offerer_address"
     label: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
@@ -1499,13 +1513,60 @@ class OffererAddress(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
     )
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    type: sa_orm.Mapped[LocationType | None] = sa_orm.mapped_column(db_utils.MagicEnum(LocationType), nullable=True)
+    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
+    )
+    # TODO (prouzet, 2025-10-08) CLEAN_OA back_populates="offererAddress" -- currently in conflict with Venue.offererAddressId
+    venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
+    # TODO (prouzet, 2025-10-08) CLEAN_OA Remove relationship when venueId replaces usage of Venue.offererAddressId
     venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
         "Venue", foreign_keys="Venue.offererAddressId", back_populates="offererAddress"
     )
 
     _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
-    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
+    __table_args__ = (
+        # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
+        # sa.Index("ix_unique_offerer_address_per_label, "offererId", "addressId", "label", "type", "venueId", unique=True),
+        # probably with postgresql_nulls_not_distinct=True, because duplicate empty label should be on different venues.
+        #
+        # But this would break unique checking during transition because null values in type and venueId are distinct.
+        # Setting postgresql_nulls_not_distinct is not possible because :
+        # - null values must be distinct on label
+        # - null values should not be distinct on type and venueId
+        # so several partial indexes are created temporarily to ensure integrity during transition.
+        sa.Index(
+            "ix_unique_offerer_address_per_label",
+            "offererId",
+            "addressId",
+            "label",
+            postgresql_where=sa.and_(type.is_(None), venueId.is_(None)),
+            unique=True,
+        ),
+        # After label
+        sa.Index(
+            "ix_wip_unique_offerer_address_when_label_is_null",
+            "offererId",
+            "addressId",
+            "type",
+            "venueId",
+            unique=True,
+            postgresql_where=sa.and_(label.is_(None), venueId.is_not(None)),
+            postgresql_nulls_not_distinct=True,
+        ),
+        sa.Index(
+            "ix_wip_unique_offerer_address_when_label_is_not_null",
+            "offererId",
+            "addressId",
+            "label",
+            "type",
+            "venueId",
+            unique=True,
+            postgresql_where=label.is_not(None),
+            postgresql_nulls_not_distinct=True,
+        ),
+    )
 
     @hybrid_property
     def isLinkedToVenue(self) -> bool:
@@ -1586,7 +1647,9 @@ class NonPaymentNotice(PcObject, Model):
     dateReceived: sa_orm.Mapped[date] = sa_orm.mapped_column(
         sa.Date, nullable=False, server_default=sa.func.current_date()
     )
-    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
+    )
     emitterName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     emitterEmail: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     reference: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)

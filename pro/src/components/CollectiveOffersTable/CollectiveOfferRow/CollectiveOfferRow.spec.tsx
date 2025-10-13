@@ -211,7 +211,8 @@ describe('CollectiveOfferRow', () => {
         }),
       })
 
-      expect(screen.queryByText('Collège Bellevue - 30100')).toBeInTheDocument()
+      expect(screen.getByText('Collège Bellevue')).toBeInTheDocument()
+      expect(screen.getByText('30100')).toBeInTheDocument()
     })
 
     it('should display institution cell when offer is bookable', () => {
@@ -231,7 +232,8 @@ describe('CollectiveOfferRow', () => {
         }),
       })
 
-      expect(screen.getByText('Lycée Jean Moulin - 30100')).toBeInTheDocument()
+      expect(screen.getByText('Lycée Jean Moulin')).toBeInTheDocument()
+      expect(screen.getByText('30100')).toBeInTheDocument()
     })
 
     it('should not display institution cell when isTemplateTable is true', () => {

@@ -68,7 +68,7 @@ def _get_account_update_requests_query() -> sa_orm.Query:
             finance_models.Deposit,
             sa.and_(
                 finance_models.Deposit.userId == users_models.User.id,
-                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+                finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
             ),
         )
         .outerjoin(aliased_instructor, users_models.UserAccountUpdateRequest.lastInstructorId == aliased_instructor.id)
@@ -323,7 +323,7 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
             finance_models.Deposit,
             sa.and_(
                 finance_models.Deposit.userId == users_models.User.id,
-                finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+                finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
             ),
         )
         .options(

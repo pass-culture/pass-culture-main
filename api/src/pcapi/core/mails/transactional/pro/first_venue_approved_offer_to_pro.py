@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
@@ -14,6 +12,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueBankAccountLink
 from pcapi.core.offers.models import Offer
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.urls import build_pc_pro_offer_link
 
 
@@ -24,7 +23,8 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
         .outerjoin(
             VenueBankAccountLink,
             sa.and_(
-                Venue.id == VenueBankAccountLink.venueId, VenueBankAccountLink.timespan.contains(datetime.utcnow())
+                Venue.id == VenueBankAccountLink.venueId,
+                VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
             ),
         )
         .outerjoin(finance_models.BankAccount, VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id)

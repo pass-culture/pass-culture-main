@@ -1,5 +1,4 @@
 import dataclasses
-import datetime
 import re
 import typing
 
@@ -11,6 +10,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.users import models as users_models
 from pcapi.models.pc_object import PcObject
 from pcapi.routes.backoffice.forms import search as search_forms
+from pcapi.utils import date as date_utils
 
 
 class UrlForPartial(typing.Protocol):
@@ -78,7 +78,7 @@ def apply_filter_on_beneficiary_status(query: sa_orm.Query, account_search_filte
         finance_models.Deposit,
         sa.and_(
             users_models.User.id == finance_models.Deposit.userId,
-            finance_models.Deposit.expirationDate > datetime.datetime.utcnow(),
+            finance_models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
         ),
     )
 

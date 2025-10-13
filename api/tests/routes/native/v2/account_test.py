@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 from urllib.parse import parse_qs
@@ -13,6 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.native.v1.api_errors import account as account_errors
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -226,7 +226,7 @@ class EmailUpdateStatusTest:
         token.expire()
 
     def test_status_returns_new_email_selection_token(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = date_utils.get_naive_utc_now() + timedelta(days=-1)
         user = users_factories.BeneficiaryGrant18Factory()
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -252,7 +252,7 @@ class EmailUpdateStatusTest:
         token.expire()
 
     def test_status_returns_reset_password_token(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = date_utils.get_naive_utc_now() + timedelta(days=-1)
         user = users_factories.UserFactory(password=None)
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -278,7 +278,7 @@ class EmailUpdateStatusTest:
         reset_password_token.expire()
 
     def test_status_returns_recently_reset_password(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = date_utils.get_naive_utc_now() + timedelta(days=-1)
         user = users_factories.UserFactory(password=None)
         users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=yesterday, newUserEmail=None, newDomainEmail=None
@@ -303,7 +303,7 @@ class EmailUpdateStatusTest:
         recently_reset_password_token.expire()
 
     def test_new_email_selection_status(self, client):
-        yesterday = datetime.utcnow() + timedelta(days=-1)
+        yesterday = date_utils.get_naive_utc_now() + timedelta(days=-1)
         two_days_ago = yesterday + timedelta(days=-1)
         user = users_factories.BeneficiaryGrant18Factory()
         users_factories.EmailUpdateEntryFactory(

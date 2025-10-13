@@ -38,6 +38,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 
 from .helpers import button as button_helpers
@@ -105,13 +106,13 @@ def offers_fixture(criteria) -> tuple:
         quantity=10,
         dnBookedQuantity=0,
         offer=offer_with_limited_stock,
-        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
     )
     offers_factories.EventStockFactory(
         quantity=10,
         dnBookedQuantity=5,
         offer=offer_with_limited_stock,
-        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3),
     )
     return offer_with_unlimited_stock, offer_with_limited_stock, offer_with_two_criteria, offer_with_a_lot_of_types
 
@@ -132,13 +133,15 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+    expected_num_queries = 4
     # - fetch providers (selectinload: 1 query)
     expected_num_queries_with_provider = expected_num_queries + 1
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        with assert_num_queries(self.expected_num_queries - 1):
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -361,13 +364,13 @@ class ListOffersTest(GetEndpointHelper):
         [
             (
                 "DATE_FROM",
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ),
             (
                 "DATE_TO",
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
             ),
         ],
     )
@@ -524,14 +527,14 @@ class ListOffersTest(GetEndpointHelper):
         offers_factories.StockFactory(
             price=15,
             offer=offer_with_multiple_stocks_valid_and_not_valid,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
 
         offers_factories.StockFactory(
             price=16,
             offer=offer_with_multiple_stocks_valid_and_not_valid,
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
         )
 
         query_args = {
@@ -553,7 +556,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 120000.20,
         }
-        with assert_num_queries(self.expected_num_queries):
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -772,7 +776,7 @@ class ListOffersTest(GetEndpointHelper):
         for days_ago in (2, 4, 1, 3):
             offers_factories.OfferFactory(
                 name=f"Offre {days_ago}",
-                dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=days_ago),
+                dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=days_ago),
                 validation=offers_models.OfferValidationStatus.PENDING,
                 venue=validated_venue,
             )
@@ -888,7 +892,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-operator": "IN",
             "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
         }
-        with assert_num_queries(self.expected_num_queries):
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -1034,7 +1039,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": pro_categories.LIVRE.id,
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1046,7 +1052,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1069,7 +1076,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1085,7 +1093,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1100,7 +1109,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1112,7 +1122,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1134,7 +1145,8 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        with assert_num_queries(self.expected_num_queries):  # + rollback - fetch offers
+        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        with assert_num_queries(self.expected_num_queries - 1):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1195,19 +1207,19 @@ class ListOffersTest(GetEndpointHelper):
             offer=offer,
             quantity=7,
             dnBookedQuantity=2,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         offers_factories.EventStockFactory(
             offer=offer,
             quantity=9,
             dnBookedQuantity=3,
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         offers_factories.EventStockFactory(
             offer=offer,
             quantity=None,  # unlimited
             dnBookedQuantity=7,
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         query_args = self._get_query_args_by_id(offer.id)
         client = client.with_bo_session_auth(support_pro_n2_admin)
@@ -1336,7 +1348,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = self._get_query_args_by_id(offer.id)
 
         offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1346,7 +1358,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
 
         closest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1356,7 +1368,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == closest_stock.bookingLimitDatetime.strftime("%d/%m/%Y")
 
         furthest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1373,7 +1385,7 @@ class ListOffersTest(GetEndpointHelper):
         query_args = self._get_query_args_by_id(offer.id)
 
         offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1383,7 +1395,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == ""
 
         closest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=3)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1393,7 +1405,7 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Date(s) limite(s) de réservation"] == closest_stock.bookingLimitDatetime.strftime("%d/%m/%Y")
 
         furthest_stock = offers_factories.StockFactory(
-            offer=offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+            offer=offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -1679,7 +1691,8 @@ class BatchEditOfferTest(PostEndpointHelper):
         # 1 x update offers (for 3 offers)
         # 1 x insert into offer_criterion (for 3 insertions)
         # 1 x re-fetch to render updated rows
-        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=7)
+        # 1 x `build_pc_pro_offer_path` call with `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=8)
         assert response.status_code == 200
         # ensure rows are rendered
         html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
@@ -1726,7 +1739,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            with assert_num_queries(self.expected_num_queries):
+            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+            with assert_num_queries(self.expected_num_queries + 1):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(query="display", facetFilters=[], numericFilters=[], count=101)
@@ -1753,7 +1767,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            with assert_num_queries(self.expected_num_queries):
+            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+            with assert_num_queries(self.expected_num_queries + 1):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -1797,7 +1812,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            with assert_num_queries(self.expected_num_queries):
+            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+            with assert_num_queries(self.expected_num_queries + 1):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -1949,7 +1965,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=(offer_to_display.id,)
         ) as algolia_mock:
-            with assert_num_queries(self.expected_num_queries):
+            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+            with assert_num_queries(self.expected_num_queries + 1):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -2210,9 +2227,10 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # select offer (3 in 1 query)
         # update offer (3 in 1 query)
         # fetch the venues for AO label if needed (3 in 1 query)
+        # select FFs (1 query) because of `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` in `build_pc_pro_offer_path`
         # re-fetch updated offers to render updated rows
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=6 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=7 + additional_query_count
         )
 
         assert response.status_code == 200
@@ -2306,7 +2324,9 @@ class MoveOfferVenueButtonTest(button_helpers.ButtonHelper):
         offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.EventStockFactory(offer=offer)
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=3), isSoftDeleted=True
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
+            isSoftDeleted=True,
         )
         return url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id)
 
@@ -2376,9 +2396,13 @@ class EditOfferVenueTest(PostEndpointHelper):
 
         # other objects to validate queries filters
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7), isSoftDeleted=True
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=7),
+            isSoftDeleted=True,
         )
-        offers_factories.EventStockFactory(beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=7))
+        offers_factories.EventStockFactory(
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
+        )
         bookings_factories.ReimbursedBookingFactory()
 
         response = self.post_to_endpoint(
@@ -2514,10 +2538,10 @@ class EditOfferVenueTest(PostEndpointHelper):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
         offer = offers_factories.EventOfferFactory(venue=source_venue)
         offers_factories.EventStockFactory.create_batch(
-            2, offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            2, offer=offer, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         )
         offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            offer=offer, beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         )
 
         response = self.post_to_endpoint(authenticated_client, offer_id=offer.id, form={"venue": destination_venue.id})
@@ -2868,7 +2892,7 @@ class EditOfferStockTest(PostEndpointHelper):
         later_booking = bookings_factories.UsedBookingFactory(
             stock__offer__venue=venue,
             stock__offer__subcategoryId=subcategories.CONFERENCE.id,
-            stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=2),
+            stock__beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(hours=2),
         )
         later_event = finance_factories.FinanceEventFactory(
             booking=later_booking,
@@ -3388,6 +3412,7 @@ class ActivateOfferTest(PostEndpointHelper):
 
         expected_num_queries = self.expected_num_queries
         expected_num_queries += 1  # re-fetch to render updated offer
+        expected_num_queries += 1  # FFs check in `build_pc_pro_offer_path` (`WIP_ENABLE_NEW_OFFER_CREATION_FLOW`)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3482,6 +3507,8 @@ class DeactivateOfferTest(PostEndpointHelper):
         expected_num_queries = self.expected_num_queries
         # re-fetch offer to render again
         expected_num_queries += 1
+        # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+        expected_num_queries += 1
         response = self.post_to_endpoint(
             authenticated_client,
             offer_id=offer_to_deactivate.id,
@@ -3551,7 +3578,8 @@ class BatchOfferActivateTest(PostEndpointHelper):
     # get offers
     # update offers
     # re-fetch to render updated offer rows
-    expected_num_queries = 5
+    # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+    expected_num_queries = 6
 
     def test_batch_activate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
@@ -3581,7 +3609,8 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
     # get offers
     # update offers
     # re-fetch to render updated offer rows
-    expected_num_queries = 5
+    # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
+    expected_num_queries = 6
 
     def test_batch_deactivate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3)
@@ -3809,7 +3838,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_get_detail_validated_offer(self, legit_user, authenticated_client):
-        validation_date = datetime.datetime.utcnow()
+        validation_date = date_utils.get_naive_utc_now()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
             validation=offers_models.OfferValidationStatus.APPROVED,
@@ -3887,7 +3916,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert "Rejeter" in buttons
 
     def test_get_detail_rejected_offer(self, legit_user, authenticated_client):
-        validation_date = datetime.datetime.utcnow()
+        validation_date = date_utils.get_naive_utc_now()
         offer = offers_factories.OfferFactory(
             lastValidationDate=validation_date,
             validation=offers_models.OfferValidationStatus.REJECTED,
@@ -3943,7 +3972,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
 
         expired_stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1), price=6.66
+            offer=offer, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1), price=6.66
         )
 
         query_count = self.expected_num_queries_with_ff
@@ -3972,13 +4001,13 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer,
             quantity=100,
             dnBookedQuantity=70,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=2),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=2),
         )
         expired_stock_2 = offers_factories.EventStockFactory(
             offer=offer,
             quantity=None,
             dnBookedQuantity=25,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1),
         )
 
         query_count = self.expected_num_queries_with_ff
@@ -4135,7 +4164,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[3]["Prix"] == expected_price_4
 
     def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         offer = offers_factories.EventOfferFactory()
         stock1 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=5))
         stock2 = offers_factories.EventStockFactory(offer=offer, beginningDatetime=now + datetime.timedelta(days=9))

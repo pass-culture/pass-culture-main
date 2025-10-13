@@ -21,6 +21,7 @@ from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 
 from tests.test_utils import run_command
@@ -33,7 +34,7 @@ class ArchiveOldBookingsTest:
     @pytest.mark.usefixtures("clean_database")
     def test_basics(self, app):
         # given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         offer = offers_factories.OfferFactory(url="http://example.com")
@@ -62,7 +63,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived(self, app, subcategoryId):
         # given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         stock_free = offers_factories.StockFactory(
@@ -99,7 +100,7 @@ class ArchiveOldBookingsTest:
     )
     def test_old_subcategories_bookings_are_archived_when_no_longer_free(self, app, subcategoryId, client):
         # given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         recent = now - datetime.timedelta(days=29, hours=23)
         old = now - datetime.timedelta(days=30, hours=1)
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
@@ -176,7 +177,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             None,
         ]
 
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -191,7 +192,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         self,
         mock_get_booking_event_reminder_to_beneficiary_email_data,
     ):
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -211,7 +212,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         "pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary.get_booking_event_reminder_to_beneficiary_email_data"
     )
     def should_log_errors(self, mock_get_booking_event_reminder_to_beneficiary_email_data, caplog):
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
@@ -226,7 +227,7 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             assert caplog.records[0].extra["userId"] == individual_booking_with_error.userId
 
     def should_execute_one_query_only(self):
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=tomorrow)
         bookings_factories.BookingFactory.create_batch(3, stock=stock)
 

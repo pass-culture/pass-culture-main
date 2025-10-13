@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.users import constants
@@ -7,6 +5,7 @@ from pcapi.core.users.models import EmailHistoryEventTypeEnum
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 def _query_ordered_email_update_entry(user: User) -> sa_orm.Query:
@@ -17,7 +16,7 @@ def _query_ordered_email_update_entry(user: User) -> sa_orm.Query:
 
 
 def get_latest_pending_email_validation(user: User) -> None | UserEmailHistory:
-    creation_date_limit = datetime.utcnow() - constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    creation_date_limit = date_utils.get_naive_utc_now() - constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
     latest_entry = (
         _query_ordered_email_update_entry(user).filter(UserEmailHistory.creationDate >= creation_date_limit).first()
     )

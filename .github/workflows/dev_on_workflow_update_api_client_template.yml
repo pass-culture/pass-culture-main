@@ -40,11 +40,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: "Checkout 🛎️"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: 'google-github-actions/auth@v3'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -65,7 +65,7 @@ jobs:
           echo "::notice:: Running update api client template with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.PCAPI_DOCKER_TAG }}"
       - name: "Download artifact"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{ inputs.image }}-${{ inputs.PCAPI_DOCKER_TAG }}.tar
           path: ${{ runner.temp }}
@@ -84,7 +84,7 @@ jobs:
         run: docker-compose -f docker-compose-backend.yml up postgres redis -d
       - name: 'Set up Cloud SDK'
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        uses: 'google-github-actions/setup-gcloud@v2'
+        uses: 'google-github-actions/setup-gcloud@v3'
       - name: "Run API server"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |

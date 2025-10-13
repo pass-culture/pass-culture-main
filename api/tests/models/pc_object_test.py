@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 
 
 class TimeInterval(PcObject, Model):
@@ -26,4 +27,4 @@ class TestPcObject(PcObject, Model):
 time_interval = TimeInterval()
 time_interval.start = datetime(2018, 1, 1, 10, 20, 30, 111000)
 time_interval.end = datetime(2018, 2, 2, 5, 15, 25, 222000)
-now = datetime.utcnow()
+now = date_utils.get_naive_utc_now()

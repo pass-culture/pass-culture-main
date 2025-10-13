@@ -66,12 +66,6 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
  *   displayValue={true}
  *   displayMinMaxValues={true}
  * />
- *
- * @accessibility
- * - **Labels**: Always provide a meaningful label using the `label` prop or the `fieldName` for screen readers. Use `hideLabel` if the label should be visually hidden but still accessible.
- * - **Keyboard Accessibility**: Ensure that users can adjust the slider value using the keyboard (e.g., arrow keys).
- * - **ARIA Attributes**: The component uses standard `input[type="range"]` elements, ensuring native browser support for screen readers and accessibility tools. If the slider is required, consider adding `aria-required` manually.
- * - **Visual Feedback**: The `displayValue` prop provides instant feedback on the current value, improving usability for all users, including those with cognitive impairments.
  */
 export const Slider = ({
   scale = '',

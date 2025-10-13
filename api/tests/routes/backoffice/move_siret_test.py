@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 
 import pytest
@@ -13,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -171,9 +171,9 @@ class PostMoveSiretTest(MoveSiretTestHelper):
     @pytest.mark.parametrize(
         "start_date, end_date",
         [
-            (datetime.utcnow() - timedelta(days=10), None),
-            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10)),
-            (datetime.utcnow() + timedelta(days=10), None),
+            (date_utils.get_naive_utc_now() - timedelta(days=10), None),
+            (date_utils.get_naive_utc_now() - timedelta(days=10), date_utils.get_naive_utc_now() + timedelta(days=10)),
+            (date_utils.get_naive_utc_now() + timedelta(days=10), None),
         ],
     )
     def test_venue_custom_reimbursement_rule(self, authenticated_client, start_date, end_date):
@@ -224,7 +224,7 @@ class ApplyMoveSiretTest(MoveSiretTestHelper):
         target_venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=source_venue.managingOfferer)
         finance_factories.CustomReimbursementRuleFactory(
             venue=source_venue,
-            timespan=(datetime.utcnow() + timedelta(days=10), None),
+            timespan=(date_utils.get_naive_utc_now() + timedelta(days=10), None),
         )
         form = {
             "source_venue": source_venue.id,

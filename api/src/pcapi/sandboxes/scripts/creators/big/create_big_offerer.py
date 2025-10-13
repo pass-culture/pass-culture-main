@@ -8,6 +8,7 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ def create_big_offerer() -> None:
             stock = EventStockFactory.create(
                 offer=offer_event,
                 quantity=10,
-                beginningDatetime=datetime.datetime.utcnow().replace(second=0, microsecond=0)
+                beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0)
                 + datetime.timedelta(days=20),
             )
             BookingFactory.create(quantity=1, stock=stock)

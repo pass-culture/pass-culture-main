@@ -45,9 +45,6 @@ export interface ToggleProps {
  *   isActiveByDefault={true}
  *   handleClick={() => console.log('Toggle clicked')}
  * />
- *
- * @accessibility
- * - **Labeling**: Ensure the `label` prop is descriptive to inform users of the toggle's purpose.
  */
 export const Toggle = ({
   isActiveByDefault = false,

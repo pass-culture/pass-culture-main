@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import flash
@@ -15,6 +13,7 @@ from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import utils
@@ -115,7 +114,7 @@ def _render_confirmation_page(
             finance_models.CustomReimbursementRule.venueId == source_venue.id,
             sa.or_(
                 sa.func.upper(finance_models.CustomReimbursementRule.timespan).is_(None),
-                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= datetime.utcnow(),
+                sa.func.upper(finance_models.CustomReimbursementRule.timespan) >= date_utils.get_naive_utc_now(),
             ),
         )
         .exists()

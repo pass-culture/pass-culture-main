@@ -227,7 +227,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         return cls(
             id=offer.id,
             description=offer.description,
-            isExpired=offer.hasBookingLimitDatetimesPassed,
+            isExpired=False,
             isSoldOut=False,
             name=offer.name,
             venue=offer.venue,

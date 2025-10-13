@@ -96,7 +96,7 @@ export const TextInput = forwardRef(
           <FieldHeader
             description={description}
             descriptionId={descriptionId}
-            inputId={inputId}
+            fieldId={inputId}
             label={label}
             required={required}
             asterisk={asterisk}

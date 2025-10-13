@@ -13,6 +13,7 @@ from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -61,7 +62,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=5))
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmails = ["collectiveofferfactory+booking@example.com", "collectiveofferfactory+booking@example2.com"]
@@ -88,7 +89,7 @@ class CollectiveOfferFactory(BaseFactory[models.CollectiveOffer]):
                 kwargs["lastValidationType"] = OfferValidationType.AUTO
 
             if "lastValidationDate" not in kwargs:
-                stock_date_created = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+                stock_date_created = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
                 kwargs["lastValidationDate"] = stock_date_created + datetime.timedelta(minutes=10)
 
         return super()._create(model_class, *args, **kwargs)
@@ -121,7 +122,7 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
 
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=5))
     students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     contactPhone = "+33199006328"
@@ -130,8 +131,8 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
     locationType = models.CollectiveLocationType.TO_BE_DEFINED
     interventionArea = ["2A", "2B"]
     dateRange = db_utils.make_timerange(
-        start=datetime.datetime.utcnow() + datetime.timedelta(days=1),
-        end=datetime.datetime.utcnow() + datetime.timedelta(days=7),
+        start=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
+        end=date_utils.get_naive_utc_now() + datetime.timedelta(days=7),
     )
     formats = [EacFormat.PROJECTION_AUDIOVISUELLE]
 
@@ -183,11 +184,11 @@ class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
         model = models.CollectiveStock
 
     collectiveOffer = factory.SubFactory(CollectiveOfferFactory)
-    startDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+    startDatetime = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() + datetime.timedelta(days=1))
     endDatetime = factory.LazyAttribute(lambda o: o.startDatetime)
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.startDatetime - datetime.timedelta(minutes=60))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=3))
-    dateModified = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=3))
+    dateModified = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
     numberOfTickets = 25
     price = 100
     priceDetail = factory.LazyAttribute(lambda stock: f"Prix: {stock.price}€ pour {stock.numberOfTickets} tickets")
@@ -217,7 +218,7 @@ def _get_educational_year_beginning(date_time: datetime.datetime) -> int:
 
 
 def _get_current_educational_year() -> int:
-    current_date = datetime.datetime.utcnow()
+    current_date = date_utils.get_naive_utc_now()
 
     return _get_educational_year_beginning(current_date)
 
@@ -271,7 +272,7 @@ class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
         model = models.CollectiveBooking
 
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=2))
     offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
     venue = factory.SelfAttribute("collectiveStock.collectiveOffer.venue")
     cancellationLimitDate: factory.declarations.BaseDeclaration = factory.LazyAttribute(
@@ -280,47 +281,47 @@ class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
         )
     )
     confirmationLimitDate: factory.declarations.BaseDeclaration = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
     )
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     confirmationDate: factory.declarations.BaseDeclaration | None = factory.LazyFunction(
-        lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
     )
 
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(hours=1))
+    cancellationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(hours=1))
     cancellationReason = factory.Iterator(models.CollectiveBookingCancellationReasons)
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
+    cancellationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() + datetime.timedelta(days=10))
+    confirmationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() + datetime.timedelta(days=10))
     confirmationDate = None
     status = models.CollectiveBookingStatus.PENDING
 
 
 class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.USED
-    dateUsed = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=20))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=12))
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=6))
+    dateUsed = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=20))
+    confirmationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=12))
+    confirmationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=6))
 
 
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
     status = models.CollectiveBookingStatus.REIMBURSED
-    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    reimbursementDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
 
 
 class ConfirmedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CONFIRMED
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
+    cancellationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
+    confirmationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
+    confirmationLimitDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() + datetime.timedelta(days=1))
 
 
 class CollectiveDmsApplicationWithNoVenueFactory(BaseFactory[models.CollectiveDmsApplication]):
@@ -331,9 +332,9 @@ class CollectiveDmsApplicationWithNoVenueFactory(BaseFactory[models.CollectiveDm
     state = "en_construction"
     procedure = 1  # could be any positive integer
     application = factory.Sequence(int)
-    lastChangeDate = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
-    depositDate = datetime.datetime.utcnow() - datetime.timedelta(days=10)
-    expirationDate = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+    lastChangeDate = date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
+    depositDate = date_utils.get_naive_utc_now() - datetime.timedelta(days=10)
+    expirationDate = date_utils.get_naive_utc_now() + datetime.timedelta(days=365)
     buildDate = factory.SelfAttribute("lastChangeDate")
 
 
@@ -409,7 +410,7 @@ class CollectiveOfferBaseFactory(CollectiveOfferFactory):
 
 class ArchivedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     isActive = False
-    dateArchived = factory.LazyFunction(datetime.datetime.utcnow)
+    dateArchived = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
@@ -420,7 +421,7 @@ class RejectedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         # a rejected offer has a stock because it completed the creation process
         CollectiveStockFactory.create(
-            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+            startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10), collectiveOffer=self
         )
 
 
@@ -432,7 +433,7 @@ class UnderReviewCollectiveOfferFactory(CollectiveOfferBaseFactory):
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         # an offer under review has a stock because it completed the creation process
         CollectiveStockFactory.create(
-            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10), collectiveOffer=self
+            startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10), collectiveOffer=self
         )
 
 
@@ -446,13 +447,13 @@ class PublishedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
     @factory.post_generation
     def create_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        future = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        future = date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
         CollectiveStockFactory.create(startDatetime=future, collectiveOffer=self)
 
 
 class ArchivedPublishedCollectiveOfferFactory(PublishedCollectiveOfferFactory):
     isActive = False
-    dateArchived = factory.LazyFunction(datetime.datetime.utcnow)
+    dateArchived = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class HiddenCollectiveOfferFactory(CollectiveOfferBaseFactory):
@@ -464,7 +465,7 @@ class ExpiredWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
     @factory.post_generation
     def create_expired_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         CollectiveStockFactory.create(bookingLimitDatetime=yesterday, collectiveOffer=self)
 
 
@@ -473,7 +474,7 @@ class ExpiredWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
 
     @factory.post_generation
     def create_expired_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(bookingLimitDatetime=yesterday, collectiveOffer=self)
         PendingCollectiveBookingFactory.create(collectiveStock=stock)
 
@@ -481,7 +482,7 @@ class ExpiredWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class PrebookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_prebooked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=tomorrow, collectiveOffer=self)
         PendingCollectiveBookingFactory.create(collectiveStock=stock)
 
@@ -489,14 +490,14 @@ class PrebookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        in_past = date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
         CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
 
 
 class CancelledWithPendingBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_booking(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        in_past = date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
         stock = CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
         CancelledCollectiveBookingFactory.create(collectiveStock=stock, confirmationDate=None)
 
@@ -504,7 +505,7 @@ class CancelledWithPendingBookingCollectiveOfferFactory(CollectiveOfferBaseFacto
 class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        in_past = date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
         stock = CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
         CancelledCollectiveBookingFactory.create(
             collectiveStock=stock, cancellationReason=models.CollectiveBookingCancellationReasons.OFFERER
@@ -514,7 +515,7 @@ class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class CancelledDueToExpirationCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        in_past = date_utils.get_naive_utc_now() - datetime.timedelta(days=4)
         stock = CollectiveStockFactory.create(startDatetime=in_past, collectiveOffer=self)
         CancelledCollectiveBookingFactory.create(
             collectiveStock=stock, cancellationReason=models.CollectiveBookingCancellationReasons.EXPIRED
@@ -524,7 +525,7 @@ class CancelledDueToExpirationCollectiveOfferFactory(CollectiveOfferBaseFactory)
 class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_booked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=tomorrow, collectiveOffer=self)
         ConfirmedCollectiveBookingFactory.create(collectiveStock=stock)
 
@@ -532,7 +533,7 @@ class BookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class EndedCollectiveOfferConfirmedBookingFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_booking(self, _create: bool, _extracted: typing.Any, **kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         ConfirmedCollectiveBookingFactory.create(collectiveStock=stock)
 
@@ -540,7 +541,7 @@ class EndedCollectiveOfferConfirmedBookingFactory(CollectiveOfferBaseFactory):
 class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_booking(self, _create: bool, _extracted: typing.Any, **kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         UsedCollectiveBookingFactory.create(collectiveStock=stock)
 
@@ -548,14 +549,14 @@ class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
 class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
         ReimbursedCollectiveBookingFactory.create(collectiveStock=stock)
 
 
 class ArchivedReimbursedCollectiveOfferFactory(ReimbursedCollectiveOfferFactory):
     isActive = False
-    dateArchived = factory.LazyFunction(datetime.datetime.utcnow)
+    dateArchived = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class CollectiveOfferOnSchoolLocationFactory(PublishedCollectiveOfferFactory):
@@ -643,7 +644,7 @@ def create_collective_offer_template_by_status(
 ) -> models.CollectiveOfferTemplate:
     match status:
         case models.CollectiveOfferDisplayedStatus.ARCHIVED:
-            kwargs.update({"isActive": False, "dateArchived": datetime.datetime.utcnow()})
+            kwargs.update({"isActive": False, "dateArchived": date_utils.get_naive_utc_now()})
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
         case models.CollectiveOfferDisplayedStatus.REJECTED:
@@ -667,7 +668,7 @@ def create_collective_offer_template_by_status(
             return CollectiveOfferTemplateFactory.create(**kwargs)
 
         case models.CollectiveOfferDisplayedStatus.ENDED:
-            now = datetime.datetime.utcnow()
+            now = date_utils.get_naive_utc_now()
             start = now - datetime.timedelta(days=14)
             date_range = db_utils.make_timerange(start=start, end=now - datetime.timedelta(days=7))
             return CollectiveOfferTemplateFactory.create(**kwargs, dateRange=date_range, dateCreated=start)

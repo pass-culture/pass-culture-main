@@ -57,6 +57,7 @@ export type { CollectiveOfferResponseModel } from './models/CollectiveOfferRespo
 export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
 export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
+export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
 export type { CollectiveRevenue } from './models/CollectiveRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
@@ -171,6 +172,8 @@ export type { ListCollectiveBookingsQueryModel } from './models/ListCollectiveBo
 export type { ListCollectiveBookingsResponseModel } from './models/ListCollectiveBookingsResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
+export type { ListCollectiveOfferTemplatesQueryModel } from './models/ListCollectiveOfferTemplatesQueryModel';
+export type { ListCollectiveOfferTemplatesResponseModel } from './models/ListCollectiveOfferTemplatesResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export type { ListOffersOfferResponseModel } from './models/ListOffersOfferResponseModel';
 export type { ListOffersQueryModel } from './models/ListOffersQueryModel';
@@ -217,6 +220,7 @@ export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';
 export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
+export type { ProviderOfVenueResponse } from './models/ProviderOfVenueResponse';
 export type { ProviderResponse } from './models/ProviderResponse';
 export type { ReimbursementCsvByInvoicesModel } from './models/ReimbursementCsvByInvoicesModel';
 export type { ReimbursementCsvQueryModel } from './models/ReimbursementCsvQueryModel';

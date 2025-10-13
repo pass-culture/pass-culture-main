@@ -19,6 +19,7 @@ import {
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
   selectCurrentOfferer,
@@ -30,6 +31,7 @@ import {
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeString } from '@/commons/utils/pluralize'
+import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
@@ -170,6 +172,10 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
     CollectiveOfferAllowedAction.CAN_DUPLICATE
   )
 
+  const canPreviewOffer =
+    offer.displayedStatus !== CollectiveOfferDisplayedStatus.DRAFT &&
+    offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED
+
   const isBookingCancellable = isActionAllowedOnCollectiveOffer(
     offer,
     CollectiveOfferAllowedAction.CAN_CANCEL
@@ -271,8 +277,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 </li>
               )}
 
-              {offer.displayedStatus !==
-                CollectiveOfferDisplayedStatus.DRAFT && (
+              {canPreviewOffer && (
                 <li>
                   <ButtonLink
                     to={`/offre/${offer.id}/collectif/apercu`}
@@ -373,6 +378,17 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
           archiveButtonRef.current ? archiveButtonRef : duplicateButtonRef
         }
       />
+
+      <ActionsBarSticky>
+        <ActionsBarSticky.Left>
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to={computeCollectiveOffersUrl({})}
+          >
+            Retour à la liste des offres
+          </ButtonLink>
+        </ActionsBarSticky.Left>
+      </ActionsBarSticky>
     </BasicLayout>
   )
 }

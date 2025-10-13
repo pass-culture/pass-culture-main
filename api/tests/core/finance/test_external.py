@@ -1,4 +1,3 @@
-import datetime
 from unittest.mock import patch
 
 import pytest
@@ -11,6 +10,7 @@ from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_account
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = [
@@ -29,7 +29,7 @@ class ExternalFinanceTest:
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         assert bank_account.lastCegidSyncDate is None
 
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         with time_machine.travel(now, tick=False):
             external.push_bank_accounts(10)
         db.session.flush()

@@ -77,7 +77,7 @@ export const renderWithProviders = (
 
   const featuresList = (overrides?.features ?? []).map(
     (feature, index): FeatureResponseModel => ({
-      id: String(index),
+      id: index,
       isActive: true,
       nameKey: feature,
       name: feature,

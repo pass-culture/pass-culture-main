@@ -64,12 +64,10 @@ export const PhysicalLocationSubform = ({
       )
       setValue('address.postalCode', venue.address.postalCode)
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
-      // @ts-expect-error
       setValue('address.street', venue.address.street ?? null)
       setValue('address.label', venue.address.label ?? null)
       setValue('address.offerLocation', venue.address.id_oa.toString())
     } else {
-      // @ts-expect-error We have to initialize with empty values to reset the address form.
       setValue('address', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
     }
 
@@ -81,16 +79,13 @@ export const PhysicalLocationSubform = ({
     const willBeManualEdition = !isManualEdition
 
     if (willBeManualEdition) {
-      resetField('address')
-      setValue(
-        'address',
-        // @ts-expect-error We have to initialize with empty values to reset the address form.
-        {
+      resetField('address', {
+        defaultValue: {
           ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
           isManualEdition: true,
+          label: watch('address.label'),
         },
-        { shouldDirty: false }
-      )
+      })
     } else {
       setValue('address.isManualEdition', false)
     }

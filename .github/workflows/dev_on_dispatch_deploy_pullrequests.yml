@@ -44,7 +44,7 @@ jobs:
       # testing_label controls wether we connect to testing backend or a preview backend
       testing_label: ${{ steps.set_resource_label.outputs.testing_label }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-tags: false
           ref: ${{ github.ref_name }}
@@ -71,13 +71,13 @@ jobs:
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
         id: secrets
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
@@ -85,7 +85,7 @@ jobs:
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           create_credentials_file: false
           token_format: "access_token"
@@ -173,11 +173,11 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.1
+      - uses: actions/checkout@v5
         with:
           ref: ${{github.ref}}
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -185,14 +185,14 @@ jobs:
       # Get github api token that will be used to commit and push api_version to pass-culture-deployment repository
       - name: "Get secrets (github)"
         id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             DEPLOYMENT_SA:passculture-metier-ehp/pcapi-testing_deploy-service-account
             DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/gcp_metier_ehp_workload_identity_provider
 
       - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
         id: github-token
         with:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
@@ -208,7 +208,7 @@ jobs:
           permission-contents: write
 
       - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         id: google-auth
         with:
           create_credentials_file: true
@@ -332,19 +332,19 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Sync ArgoCD Pgsql application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.8.0
         with:
           app_name: postgresql-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: true
 
       - name: "Sync ArgoCD Redis application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.8.0
         with:
           app_name: redis-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: true
 
       - name: "Sync ArgoCD pcapi configmaps and secrets"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.8.0
         with:
           app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: false
@@ -379,7 +379,7 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
 
       - name: "Sync ArgoCD pcapi application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.7.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.8.0
         with:
           app_name: testing-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
           argocd_app_wait: true

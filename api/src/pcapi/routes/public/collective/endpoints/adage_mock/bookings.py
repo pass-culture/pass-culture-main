@@ -1,6 +1,5 @@
 import logging
 from contextlib import suppress
-from datetime import datetime
 
 import sqlalchemy.orm as sa_orm
 
@@ -25,6 +24,7 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -157,7 +157,7 @@ def use_collective_booking(booking_id: int) -> None:
         raise ForbiddenError({"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"})
 
     try:
-        booking.dateUsed = datetime.utcnow()
+        booking.dateUsed = date_utils.get_naive_utc_now()
         booking.status = models.CollectiveBookingStatus.USED
 
         finance_api.add_event(
@@ -259,7 +259,7 @@ def reimburse_collective_booking(booking_id: int) -> None:
 
     try:
         booking.status = models.CollectiveBookingStatus.REIMBURSED
-        booking.reimbursementDate = datetime.utcnow()
+        booking.reimbursementDate = date_utils.get_naive_utc_now()
 
         db.session.add(booking)
         db.session.flush()

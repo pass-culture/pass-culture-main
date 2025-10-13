@@ -16,6 +16,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import date as date_utils
 
 import tests
 
@@ -251,7 +252,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.utcnow(),
+                beginning=date_utils.get_naive_utc_now(),
                 booking_limit_datetime=None,
             )
 
@@ -265,7 +266,7 @@ class CheckRequiredDatesForStockTest:
         validation.check_required_dates_for_stock(
             offer,
             beginning=None,
-            booking_limit_datetime=datetime.datetime.utcnow(),
+            booking_limit_datetime=date_utils.get_naive_utc_now(),
         )
 
     def test_thing_offer_ok_without_booking_limit_datetime(self):
@@ -284,7 +285,7 @@ class CheckRequiredDatesForStockTest:
             validation.check_required_dates_for_stock(
                 offer,
                 beginning=None,
-                booking_limit_datetime=datetime.datetime.utcnow(),
+                booking_limit_datetime=date_utils.get_naive_utc_now(),
             )
         assert error.value.errors["beginningDatetime"] == ["Ce paramètre est obligatoire"]
 
@@ -294,7 +295,7 @@ class CheckRequiredDatesForStockTest:
         with pytest.raises(ApiErrors) as error:
             validation.check_required_dates_for_stock(
                 offer,
-                beginning=datetime.datetime.utcnow(),
+                beginning=date_utils.get_naive_utc_now(),
                 booking_limit_datetime=None,
             )
         assert error.value.errors["bookingLimitDatetime"] == ["Ce paramètre est obligatoire"]
@@ -304,8 +305,8 @@ class CheckRequiredDatesForStockTest:
 
         validation.check_required_dates_for_stock(
             offer,
-            beginning=datetime.datetime.utcnow(),
-            booking_limit_datetime=datetime.datetime.utcnow(),
+            beginning=date_utils.get_naive_utc_now(),
+            booking_limit_datetime=date_utils.get_naive_utc_now(),
         )
 
 
@@ -337,13 +338,13 @@ class CheckStockIsDeletableTest:
         assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
 
     def test_recently_begun_event_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        recently = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         validation.check_stock_is_deletable(stock)
 
     def test_long_begun_event_stock(self):
-        too_long_ago = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        too_long_ago = date_utils.get_naive_utc_now() - datetime.timedelta(days=3)
         stock = offers_factories.EventStockFactory(beginningDatetime=too_long_ago)
 
         with pytest.raises(exceptions.OfferException) as error:
@@ -395,7 +396,7 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_past_event_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+        recently = date_utils.get_naive_utc_now() - datetime.timedelta(minutes=1)
         stock = offers_factories.EventStockFactory(beginningDatetime=recently)
 
         with pytest.raises(ApiErrors) as error:
@@ -404,7 +405,7 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les évènements passés ne sont pas modifiables"]
 
     def test_past_event_draft_stock(self):
-        recently = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
+        recently = date_utils.get_naive_utc_now() - datetime.timedelta(minutes=1)
         stock = offers_factories.EventStockFactory(
             beginningDatetime=recently, offer__validation=OfferValidationStatus.DRAFT
         )
@@ -981,11 +982,11 @@ class CheckOfferIsBookableBeforeStockBookingLimitDatetimeTest:
 class CheckPublicationDateTest:
     def test_check_publication_date_should_raise(self):
         with pytest.raises(exceptions.OfferException):
-            validation.check_publication_date(datetime.datetime.utcnow() + datetime.timedelta(days=750))
+            validation.check_publication_date(date_utils.get_naive_utc_now() + datetime.timedelta(days=750))
 
     def test_check_publication_date_should_raise_not_raise(self):
         for i in [0, 15, 30, 45]:
-            publication_date = datetime.datetime.utcnow().replace(minute=0) + datetime.timedelta(hours=1, minutes=i)
+            publication_date = date_utils.get_naive_utc_now().replace(minute=0) + datetime.timedelta(hours=1, minutes=i)
             assert validation.check_publication_date(publication_date) is None
 
 
@@ -1073,4 +1074,54 @@ class CheckOfferCanHaveActivationCodesTest:
 
         assert exc.value.errors == {
             "global": ["Impossible de créer des codes d'activation sur une offre qui n'est pas un bien numérique"]
+        }
+
+
+class CheckActivationCodesExpirationDatetimeTest:
+    @pytest.mark.parametrize(
+        "activation_codes_expiration_datetime, booking_limit_datetime",
+        [
+            (None, None),
+            (None, datetime.datetime.now()),
+            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now()),
+            (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8), datetime.datetime.now()),
+            (datetime.datetime.now() + datetime.timedelta(days=8), datetime.datetime.now(datetime.timezone.utc)),
+            (
+                datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=8),
+                datetime.datetime.now(datetime.timezone.utc),
+            ),
+        ],
+    )
+    def test_check_activation_codes_expiration_datetime_should_not_raise(
+        self, activation_codes_expiration_datetime, booking_limit_datetime
+    ):
+        validation.check_activation_codes_expiration_datetime(
+            activation_codes_expiration_datetime, booking_limit_datetime
+        )
+
+    def test_check_activation_codes_expiration_datetime_should_raise_when_expiration_without_booking_limit(self):
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_activation_codes_expiration_datetime(datetime.datetime.now(), None)
+
+        assert exc.value.errors == {
+            "bookingLimitDatetime": [
+                "Une date limite de validité a été renseignée. Dans ce cas, il faut également renseigner une date limite de réservation qui doit être antérieure d'au moins 7 jours.",
+            ],
+        }
+
+    def test_check_activation_codes_expiration_datetime_should_raise_when_expiration_not_7_days_after_booking_limit(
+        self,
+    ):
+        booking_limit_datetime = datetime.datetime.now()
+        activation_codes_expiration_datetime = booking_limit_datetime + datetime.timedelta(days=6)
+
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_activation_codes_expiration_datetime(
+                activation_codes_expiration_datetime, booking_limit_datetime
+            )
+
+        assert exc.value.errors == {
+            "activationCodesExpirationDatetime": [
+                "La date limite de validité des codes d'activation doit être ultérieure d'au moins 7 jours à la date limite de réservation"
+            ]
         }

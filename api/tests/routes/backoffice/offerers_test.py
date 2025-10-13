@@ -37,6 +37,7 @@ from pcapi.routes.backoffice.filters import format_date
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.offerers import offerer_blueprint
 from pcapi.routes.backoffice.pro.forms import TypeOptions
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -130,7 +131,7 @@ class GetOffererTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_with_accepted_bank_account,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
                 None,
             ],
             bankAccount=finance_factories.BankAccountFactory(label="Nouveau compte", offererId=offerer.id),
@@ -139,14 +140,14 @@ class GetOffererTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_with_two_bank_accounts,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ],
             bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=offerer.id),
         )
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_with_two_bank_accounts,
-            timespan=[datetime.datetime.utcnow() - datetime.timedelta(days=1), None],
+            timespan=[date_utils.get_naive_utc_now() - datetime.timedelta(days=1), None],
             bankAccount=finance_factories.BankAccountFactory(label="Nouveau compte", offererId=offerer.id),
         )
 
@@ -154,8 +155,8 @@ class GetOffererTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(
             venue=venue_with_expired_bank_account,
             timespan=[
-                datetime.datetime.utcnow() - datetime.timedelta(days=365),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=365),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             ],
             bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=offerer.id),
         )
@@ -1167,7 +1168,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         history_factories.ActionHistoryFactory(
             # displayed because legit_user has fraud permission
             actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
             authorUser=pro_fraud_admin,
             offerer=offerer,
             comment=None,
@@ -1681,7 +1682,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_get_managed_venues(self, authenticated_client, offerer):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(
             name="Deuxième", publicName="Second", managingOfferer=offerer, isPermanent=True, isOpenToPublic=True
@@ -1849,21 +1850,21 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
             venue=venue_1,
             application=35,
             state="refuse",
-            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue_2, application=36, depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=2)
+            venue=venue_2, application=36, depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
         )
         educational_factories.CollectiveDmsApplicationFactory(
             venue=venue_1,
             application=37,
             state="accepte",
-            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=3),
+            depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
         )
         educational_factories.CollectiveDmsApplicationWithNoVenueFactory(
             siret="12345678900003",
             application=38,
-            depositDate=datetime.datetime.utcnow() - datetime.timedelta(days=4),
+            depositDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=4),
         )
         educational_factories.CollectiveDmsApplicationFactory(application=39)
         educational_factories.CollectiveDmsApplicationWithNoVenueFactory(siret="12345123456789")
@@ -1879,45 +1880,45 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert len(rows) == 4
 
         assert rows[0]["ID"] == "35"
-        assert rows[0]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime(
+        assert rows[0]["Date de dépôt"] == (date_utils.get_naive_utc_now() - datetime.timedelta(days=1)).strftime(
             "%d/%m/%Y"
         )
         assert rows[0]["État"] == "Refusé"
         assert rows[0]["Date de dernière mise à jour"] == (
-            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+            date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
         assert rows[0]["Partenaire culturel"] == venue_1.name
         assert rows[0]["SIRET"] == venue_1.siret
 
         assert rows[1]["ID"] == "36"
-        assert rows[1]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=2)).strftime(
+        assert rows[1]["Date de dépôt"] == (date_utils.get_naive_utc_now() - datetime.timedelta(days=2)).strftime(
             "%d/%m/%Y"
         )
         assert rows[1]["État"] == "En construction"
         assert rows[1]["Date de dernière mise à jour"] == (
-            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+            date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
         assert rows[1]["Partenaire culturel"] == venue_2.name
         assert rows[1]["SIRET"] == venue_2.siret
 
         assert rows[2]["ID"] == "37"
-        assert rows[2]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=3)).strftime(
+        assert rows[2]["Date de dépôt"] == (date_utils.get_naive_utc_now() - datetime.timedelta(days=3)).strftime(
             "%d/%m/%Y"
         )
         assert rows[2]["État"] == "Accepté"
         assert rows[2]["Date de dernière mise à jour"] == (
-            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+            date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
         assert rows[2]["Partenaire culturel"] == venue_1.name
         assert rows[2]["SIRET"] == venue_1.siret
 
         assert rows[3]["ID"] == "38"
-        assert rows[3]["Date de dépôt"] == (datetime.datetime.utcnow() - datetime.timedelta(days=4)).strftime(
+        assert rows[3]["Date de dépôt"] == (date_utils.get_naive_utc_now() - datetime.timedelta(days=4)).strftime(
             "%d/%m/%Y"
         )
         assert rows[3]["État"] == "En construction"
         assert rows[3]["Date de dernière mise à jour"] == (
-            datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+            date_utils.get_naive_utc_now() - datetime.timedelta(hours=1)
         ).strftime("%d/%m/%Y")
         assert rows[3]["Partenaire culturel"] == ""
         assert rows[3]["SIRET"] == "12345678900003"
@@ -1945,7 +1946,7 @@ class GetOffererBankAccountTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def test_get_bank_accounts(self, authenticated_client, offerer):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         offerer = offerers_factories.OffererFactory()
         bank1 = finance_factories.BankAccountFactory(
             offerer=offerer,
@@ -2595,7 +2596,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
                 actionType=history_models.ActionType.OFFERER_PENDING,
                 authorUser=other_instructor,
                 offerer=pending2,
@@ -2608,7 +2609,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             )
 
             history_factories.ActionHistoryFactory(
-                actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
                 actionType=history_models.ActionType.OFFERER_PENDING,
                 authorUser=instructor,
                 offerer=pending3,
@@ -2906,7 +2907,7 @@ class ValidateOffererTest(ActivateOffererHelper):
             venue__managingOfferer=offerer,
             validation=offer_mixin.OfferValidationStatus.APPROVED,
             lastValidationType=offer_mixin.OfferValidationType.AUTO,
-            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             lastValidationPrice=10.10,
         )
         draft_offer = offers_factories.DraftOfferFactory(
@@ -2921,7 +2922,7 @@ class ValidateOffererTest(ActivateOffererHelper):
         other_offer = offers_factories.OfferFactory(
             validation=offer_mixin.OfferValidationStatus.APPROVED,
             lastValidationType=offer_mixin.OfferValidationType.AUTO,
-            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             lastValidationPrice=10.10,
         )
 
@@ -2950,7 +2951,7 @@ class ValidateOffererTest(ActivateOffererHelper):
             venue__managingOfferer=offerer,
             validation=offer_mixin.OfferValidationStatus.APPROVED,
             lastValidationType=offer_mixin.OfferValidationType.AUTO,
-            lastValidationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            lastValidationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             lastValidationPrice=10.10,
         )
 
@@ -3416,7 +3417,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
             actionType=history_models.ActionType.USER_OFFERER_PENDING,
             authorUser=other_instructor,
             user=pending2.user,
@@ -3430,7 +3431,7 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
         )
 
         history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
             actionType=history_models.ActionType.USER_OFFERER_PENDING,
             authorUser=instructor,
             user=pending3.user,

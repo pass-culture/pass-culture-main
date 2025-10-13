@@ -44,14 +44,14 @@ def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, val
 
 
 def validate_start_datetime(start_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
     if start_datetime and start_datetime < datetime.now(timezone.utc):
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return start_datetime
 
 
 def validate_end_datetime(end_datetime: datetime, values: dict[str, Any], field: ModelField) -> datetime:
-    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    # we need a datetime with timezone information which is not provided by date_utils.get_naive_utc_now.
     start_datetime = values.get("start_datetime")
     if end_datetime and end_datetime < datetime.now(timezone.utc):
         raise ValueError("L'évènement ne peut se terminer dans le passé.")

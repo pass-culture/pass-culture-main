@@ -12,6 +12,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
+from pcapi.utils import date as date_utils
 from pcapi.utils.string import u_nbsp
 
 
@@ -318,7 +319,7 @@ class CulturalSurveyQuestionsTest:
         )
 
         assert not user.needsToFillCulturalSurvey
-        assert user.culturalSurveyFilledDate == datetime.datetime.utcnow()
+        assert user.culturalSurveyFilledDate == date_utils.get_naive_utc_now()
 
         assert len(testing.sendinblue_requests) == 1
         assert testing.sendinblue_requests[0]["email"] == user.email

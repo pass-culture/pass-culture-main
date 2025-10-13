@@ -9,6 +9,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -101,7 +102,7 @@ def create_accessibility_offers() -> dict:
         name="Offre cinéma - Audit Access42",
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
-        publicationDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     db.session.add(offer1)
     mediation1 = offers_factories.MediationFactory.build(offer=offer1, credit="Michèlle photo")
@@ -122,7 +123,7 @@ def create_accessibility_offers() -> dict:
         venue=venue,
         name="Offre livre - Audit Access42",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
-        publicationDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     db.session.add(offer2)
     mediation2 = offers_factories.MediationFactory.build(offer=offer2, credit="Michel photo")
@@ -133,7 +134,7 @@ def create_accessibility_offers() -> dict:
         venue=venue,
         name="Ne pas auditer - Offre livre - Audit Access42",
         subcategoryId=subcategories.CARTE_JEUNES.id,
-        publicationDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     db.session.add(offer3)
     mediation3 = offers_factories.MediationFactory.build(offer=offer3, credit="Andrée photo")
@@ -144,7 +145,7 @@ def create_accessibility_offers() -> dict:
         venue=venue,
         name="Ne pas auditer - Offre numérique - Audit Access42",
         subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
-        publicationDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
     db.session.add(offer4)
     mediation4 = offers_factories.MediationFactory.build(offer=offer4, credit="André photo")

@@ -19,6 +19,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.utils import date as date_utils
 
 
 if TYPE_CHECKING:
@@ -156,6 +157,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.READ_CHRONICLE,
         perm_models.Permissions.MANAGE_CHRONICLE,
+        perm_models.Permissions.READ_HIGHLIGHT,
+        perm_models.Permissions.MANAGE_HIGHLIGHT,
     ],
     "homologation": [
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -387,7 +390,7 @@ def venue_with_nor_contact_or_booking_email_fixture():
 def venue_provider_with_last_sync_fixture(venue_with_accepted_bank_account):
     venue_provider = providers_factories.VenueProviderFactory(
         venue=venue_with_accepted_bank_account,
-        lastSyncDate=datetime.datetime.utcnow(),
+        lastSyncDate=date_utils.get_naive_utc_now(),
     )
     return venue_provider
 
@@ -473,7 +476,7 @@ def offerer_expired_offers(offerer, venue_with_accepted_bank_account):
         size=4,
         offer=factory.Iterator(offers),
         isSoftDeleted=False,
-        bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+        bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
     )
     return offers
 
@@ -483,7 +486,7 @@ def offerer_expired_collective_offers(offerer, venue_with_accepted_bank_account)
     stocks = educational_factories.CollectiveStockFactory.create_batch(
         size=4,
         price=1337,
-        startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+        startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
     )
     return educational_factories.CollectiveOfferFactory.create_batch(
         size=4,

@@ -14,6 +14,7 @@ from pcapi.core.mails.transactional.users.suspicious_login_email import get_susp
 from pcapi.core.mails.transactional.users.suspicious_login_email import send_suspicious_login_email
 from pcapi.core.users import constants
 from pcapi.core.users.models import LoginDeviceHistory
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -32,7 +33,7 @@ class SendinblueSuspiciousLoginEmailTest:
     def setup_method(self):
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             self.user = users_factories.UserFactory()
-            current_time = datetime.utcnow()
+            current_time = date_utils.get_naive_utc_now()
             with time_machine.travel(current_time):
                 self.account_suspension_token = token_utils.Token.create(
                     token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,

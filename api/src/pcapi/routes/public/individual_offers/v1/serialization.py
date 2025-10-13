@@ -92,11 +92,11 @@ ShowTypeEnum = StrEnum(  # type: ignore[call-overload]
 )
 
 EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
+    "EventCategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
 )
 
 ProductCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "CategoryEnum", {subcategory.id: subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES}
+    "ProductCategoryEnum", {subcategory.id: subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES}
 )
 
 if typing.TYPE_CHECKING:

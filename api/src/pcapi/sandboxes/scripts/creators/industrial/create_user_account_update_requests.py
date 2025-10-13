@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 import factory
@@ -10,6 +9,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def create_user_account_update_requests() -> None:
     )
     history_factories.ActionHistoryFactory.create(
         actionType=history_models.ActionType.INFO_MODIFIED,
-        actionDate=datetime.datetime.utcnow(),
+        actionDate=date_utils.get_naive_utc_now(),
         user=accepted_request.user,
         authorUser=instructor,
         comment=None,

@@ -1,3 +1,4 @@
+import type { VideoData } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -8,34 +9,40 @@ import { SafeImage } from '@/components/SafeImage/SafeImage'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { VideoPreview } from '@/components/VideoPreview/VideoPreview'
 
 import styles from './MediaSection.module.scss'
 
 export interface MediaSectionProps {
   offerId: number
   imageUrl?: string | null
-  videoUrl?: string | null
-  shouldImageBeHidden?: boolean
+  videoData?: VideoData
+  isOnCreation?: boolean
 }
 
 export const MediaSection = ({
   offerId,
   imageUrl,
-  videoUrl,
-  shouldImageBeHidden = false,
+  videoData,
+  isOnCreation = false,
 }: MediaSectionProps) => {
+  const { videoDuration, videoTitle, videoThumbnailUrl, videoUrl } =
+    videoData ?? {}
+
   return (
     <SummarySection
       title="Image et vidéo"
       editLink={getIndividualOfferUrl({
         offerId,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,
-        mode: OFFER_WIZARD_MODE.EDITION,
+        mode: isOnCreation
+          ? OFFER_WIZARD_MODE.CREATION
+          : OFFER_WIZARD_MODE.EDITION,
       })}
       aria-label="Modifier l’image et la vidéo de l’offre"
       shouldShowDivider
     >
-      {!shouldImageBeHidden && (
+      {!isOnCreation && (
         <SummarySubSection title="Ajoutez une image" shouldShowDivider={false}>
           {imageUrl ? (
             <SafeImage
@@ -51,14 +58,22 @@ export const MediaSection = ({
         </SummarySubSection>
       )}
       <SummarySubSection title="Ajoutez une vidéo" shouldShowDivider={false}>
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: 'Lien URL de votre vidéo',
-              text: videoUrl || ' - ',
-            },
-          ]}
-        />
+        {videoThumbnailUrl ? (
+          <VideoPreview
+            videoDuration={videoDuration}
+            videoTitle={videoTitle}
+            videoThumbnailUrl={videoThumbnailUrl}
+          />
+        ) : (
+          <SummaryDescriptionList
+            descriptions={[
+              {
+                title: 'Lien URL de votre vidéo',
+                text: videoUrl || ' - ',
+              },
+            ]}
+          />
+        )}
       </SummarySubSection>
     </SummarySection>
   )

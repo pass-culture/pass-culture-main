@@ -73,6 +73,7 @@ import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPric
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
 import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
+import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { ListOffersResponseModel } from '../models/ListOffersResponseModel';
 import type { ListProviderResponse } from '../models/ListProviderResponse';
@@ -667,6 +668,51 @@ export class DefaultService {
       url: '/collective/offers',
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_collective_offer_templates <GET>
+   * @param name
+   * @param offererId
+   * @param status
+   * @param venueId
+   * @param periodBeginningDate
+   * @param periodEndingDate
+   * @param format
+   * @param locationType
+   * @param offererAddressId
+   * @returns ListCollectiveOfferTemplatesResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOfferTemplates(
+    name?: string | null,
+    offererId?: number | null,
+    status?: Array<CollectiveOfferDisplayedStatus> | null,
+    venueId?: number | null,
+    periodBeginningDate?: string | null,
+    periodEndingDate?: string | null,
+    format?: EacFormat | null,
+    locationType?: CollectiveLocationType | null,
+    offererAddressId?: number | null,
+  ): CancelablePromise<ListCollectiveOfferTemplatesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offers-template',
+      query: {
+        'name': name,
+        'offererId': offererId,
+        'status': status,
+        'venueId': venueId,
+        'periodBeginningDate': periodBeginningDate,
+        'periodEndingDate': periodEndingDate,
+        'format': format,
+        'locationType': locationType,
+        'offererAddressId': offererAddressId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

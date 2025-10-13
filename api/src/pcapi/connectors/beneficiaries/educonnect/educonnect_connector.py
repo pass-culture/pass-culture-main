@@ -16,6 +16,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 from . import exceptions
 from . import models
@@ -154,7 +155,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
 
     return users_factories.EduconnectUserFactory.create(
         birth_date=user.dateOfBirth.date(),
-        connection_datetime=datetime.utcnow(),
+        connection_datetime=date_utils.get_naive_utc_now(),
         educonnect_id=f"educonnect-id_perf-test_{user.id}",
         first_name="".join(random.choice(string.ascii_letters) for _ in range(10)),
         ine_hash=f"inehash_perf-test_{user.id}",

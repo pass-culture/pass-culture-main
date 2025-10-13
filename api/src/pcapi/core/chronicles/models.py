@@ -15,6 +15,7 @@ from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
 
@@ -80,7 +81,7 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     )
     content: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, default=datetime.datetime.utcnow
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
     # used to reconciliate data if the form changed on typeform
     identifierChoiceId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)

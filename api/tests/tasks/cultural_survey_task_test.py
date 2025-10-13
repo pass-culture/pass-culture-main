@@ -1,16 +1,16 @@
-from datetime import datetime
 from unittest.mock import patch
 
 from pcapi import settings
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
+from pcapi.utils import date as date_utils
 
 
 class CulturalSurveyAnswerTest:
     @patch("pcapi.tasks.cultural_survey_tasks.store_public_object")
     def test_cultural_survey_task(self, store_public_object_mock, client, db_session):
-        submit_time = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
-        submit_time_short = datetime.utcnow().strftime("%Y%m%d")
+        submit_time = date_utils.get_naive_utc_now().strftime("%Y-%m-%dT%H:%M:%S")
+        submit_time_short = date_utils.get_naive_utc_now().strftime("%Y%m%d")
         data = {
             "user_id": 1,
             "submitted_at": submit_time,

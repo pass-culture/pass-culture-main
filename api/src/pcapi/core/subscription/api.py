@@ -32,6 +32,7 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -598,7 +599,7 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
 
     future_age = users_utils.get_age_at_date(
         user.birth_date,
-        datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore[arg-type]
+        date_utils.get_naive_utc_now() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore[arg-type]
         user.departementCode,
     )
     eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]

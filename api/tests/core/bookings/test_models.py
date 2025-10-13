@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
@@ -20,6 +19,7 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 
 
@@ -129,7 +129,7 @@ class BookingCanReactTest:
         )
         booking = factories.UsedBookingFactory(
             stock__offer=offer,
-            dateUsed=datetime.utcnow(),
+            dateUsed=date_utils.get_naive_utc_now(),
         )
         assert booking.can_react == can_react
 
@@ -169,7 +169,7 @@ class BookingPopUpReactionTest:
         )
         booking = factories.UsedBookingFactory(
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=60 * 24 * 3600),
         )
         assert booking.enable_pop_up_reaction == True
 
@@ -189,7 +189,7 @@ class BookingPopUpReactionTest:
         )
         booking = factories.UsedBookingFactory(
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=60 * 24 * 3600),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=60 * 24 * 3600),
         )
         assert booking.enable_pop_up_reaction == pop_up_enabled
 
@@ -209,7 +209,7 @@ class BookingPopUpReactionTest:
         )
         booking = factories.UsedBookingFactory(
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=date_used_seconds),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=date_used_seconds),
         )
         assert booking.enable_pop_up_reaction == pop_up_enabled
 
@@ -221,7 +221,7 @@ class BookingPopUpReactionTest:
         booking = factories.UsedBookingFactory(
             user=user,
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=31 * 24 * 3600),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=31 * 24 * 3600),
         )
         assert booking.enable_pop_up_reaction == False
 
@@ -234,20 +234,20 @@ class BookingPopUpReactionTest:
         booking = factories.UsedBookingFactory(
             user=user,
             stock__offer=offer,
-            dateUsed=datetime.utcnow() - timedelta(seconds=24 * 3600),
+            dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=24 * 3600),
         )
         assert booking.enable_pop_up_reaction == False
 
 
 class BookingIsConfirmedPropertyTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - timedelta(days=1)
         booking = factories.BookingFactory(cancellation_limit_date=yesterday)
 
         assert booking.isConfirmed is True
 
     def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         booking = factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         assert booking.isConfirmed is False
@@ -260,7 +260,7 @@ class BookingIsConfirmedPropertyTest:
 
 class BookingIsConfirmedSqlQueryTest:
     def test_booking_is_confirmed_when_cancellation_limit_date_is_in_the_past(self):
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = date_utils.get_naive_utc_now() - timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=yesterday)
 
         query_result = db.session.query(Booking).filter(Booking.isConfirmed.is_(True)).all()
@@ -268,7 +268,7 @@ class BookingIsConfirmedSqlQueryTest:
         assert len(query_result) == 1
 
     def test_booking_is_not_confirmed_when_cancellation_limit_date_is_in_the_future(self):
-        tomorrow = datetime.utcnow() + timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + timedelta(days=1)
         factories.BookingFactory(cancellation_limit_date=tomorrow)
 
         query_result = db.session.query(Booking).filter(Booking.isConfirmed.is_(False)).all()
@@ -288,29 +288,29 @@ class BookingExpirationDateTest:
         user = BeneficiaryGrant18Factory()
         book_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         dvd_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         digital_book_booking = factories.BookingFactory(
             user=user,
-            dateCreated=datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             stock__price=10,
             stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
         )
 
         assert book_booking.expirationDate.strftime("%d/%m/%Y") == (
-            datetime.utcnow() + relativedelta(days=10)
+            date_utils.get_naive_utc_now() + relativedelta(days=10)
         ).strftime("%d/%m/%Y")
-        assert dvd_booking.expirationDate.strftime("%d/%m/%Y") == (datetime.utcnow() + relativedelta(days=30)).strftime(
-            "%d/%m/%Y"
-        )
+        assert dvd_booking.expirationDate.strftime("%d/%m/%Y") == (
+            date_utils.get_naive_utc_now() + relativedelta(days=30)
+        ).strftime("%d/%m/%Y")
         assert not digital_book_booking.expirationDate
 
 

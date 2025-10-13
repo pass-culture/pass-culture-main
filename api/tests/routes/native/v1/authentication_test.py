@@ -32,6 +32,7 @@ from pcapi.core.users.models import SingleSignOn
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 from pcapi.utils import crypto
+from pcapi.utils import date as date_utils
 
 from tests.scripts.beneficiary.fixture import make_single_application
 
@@ -1163,7 +1164,7 @@ class EmailValidationTest:
             application_number,
             dms_models.GraphQLApplicationStates.accepted,
             email=email,
-            construction_datetime=datetime.utcnow().isoformat(),
+            construction_datetime=date_utils.get_naive_utc_now().isoformat(),
         )
         response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 

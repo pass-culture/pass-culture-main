@@ -38,6 +38,7 @@ from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
+from pcapi.utils import date as date_utils
 from pcapi.utils import urls
 
 from .helpers import button as button_helpers
@@ -685,7 +686,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         bank_account = finance_factories.BankAccountFactory()
         venue = offerers_factories.VenueFactory(pricing_point="self")
         offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount=bank_account, timespan=(datetime.utcnow() - timedelta(days=1),)
+            venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now() - timedelta(days=1),)
         )
         url = url_for(self.endpoint, venue_id=venue.id)
 
@@ -695,7 +696,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         cards_content = html_parser.extract_cards_text(response.data)
         assert (
-            f"Compte bancaire : {bank_account.label} ({(datetime.utcnow() - timedelta(days=1)).strftime('%d/%m/%Y')})"
+            f"Compte bancaire : {bank_account.label} ({(date_utils.get_naive_utc_now() - timedelta(days=1)).strftime('%d/%m/%Y')})"
             in cards_content[2]
         )
 
@@ -1953,7 +1954,7 @@ class UpdateVenueTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(),
-            timespan=[datetime.utcnow() - timedelta(days=60), None],
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=60), None],
         )
 
         data = self._get_current_data(venue)
@@ -2478,7 +2479,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         history_factories.ActionHistoryFactory(
             # displayed because legit_user has fraud permission
             actionType=history_models.ActionType.FRAUD_INFO_MODIFIED,
-            actionDate=datetime.utcnow() - timedelta(days=2),
+            actionDate=date_utils.get_naive_utc_now() - timedelta(days=2),
             authorUser=pro_fraud_admin,
             venue=venue,
             comment="Sous surveillance",
@@ -2493,14 +2494,14 @@ class GetVenueHistoryTest(GetEndpointHelper):
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.COMMENT,
-            actionDate=datetime.utcnow() - timedelta(hours=3),
+            actionDate=date_utils.get_naive_utc_now() - timedelta(hours=3),
             authorUser=legit_user,
             venue=venue,
             comment=comment,
         )
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.INFO_MODIFIED,
-            actionDate=datetime.utcnow() - timedelta(hours=2),
+            actionDate=date_utils.get_naive_utc_now() - timedelta(hours=2),
             authorUser=legit_user,
             venue=venue,
             comment=None,
@@ -2719,10 +2720,10 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
         db.session.expire(venue)
 
         accepted_application = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue, depositDate=datetime.utcnow() - timedelta(days=10), state="accepte"
+            venue=venue, depositDate=date_utils.get_naive_utc_now() - timedelta(days=10), state="accepte"
         )
         expired_application = educational_factories.CollectiveDmsApplicationFactory(
-            venue=venue, depositDate=datetime.utcnow() - timedelta(days=5), state="refuse"
+            venue=venue, depositDate=date_utils.get_naive_utc_now() - timedelta(days=5), state="refuse"
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -2988,7 +2989,7 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=7), None],
         )
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
@@ -3190,7 +3191,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= date_utils.get_naive_utc_now()
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -3209,7 +3210,7 @@ class RemovePricingPointTest(PostEndpointHelper):
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer),
-            timespan=[datetime.utcnow() - timedelta(days=7), None],
+            timespan=[date_utils.get_naive_utc_now() - timedelta(days=7), None],
         )
 
         response = self.post_to_endpoint(
@@ -3282,7 +3283,7 @@ class RemovePricingPointTest(PostEndpointHelper):
 
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= date_utils.get_naive_utc_now()
 
 
 class GetRemoveSiretFormTest(GetEndpointHelper):
@@ -3352,9 +3353,9 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "start_date, end_date",
         [
-            (datetime.utcnow() - timedelta(days=10), None),
-            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10)),
-            (datetime.utcnow() + timedelta(days=10), None),
+            (date_utils.get_naive_utc_now() - timedelta(days=10), None),
+            (date_utils.get_naive_utc_now() - timedelta(days=10), date_utils.get_naive_utc_now() + timedelta(days=10)),
+            (date_utils.get_naive_utc_now() + timedelta(days=10), None),
         ],
     )
     def test_venue_custom_reimbursement_rule(self, authenticated_client, start_date, end_date):
@@ -3394,7 +3395,7 @@ class RemoveSiretTest(PostEndpointHelper):
 
         assert venue.siret is None
         assert venue.comment == "test"
-        assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue.pricing_point_links[0].timespan.upper <= date_utils.get_naive_utc_now()
         assert venue.current_pricing_point == target_venue
 
         action = db.session.query(history_models.ActionHistory).filter_by(venueId=venue.id).one()
@@ -3408,7 +3409,7 @@ class RemoveSiretTest(PostEndpointHelper):
             "pricingPointSiret": {"old_info": old_siret, "new_info": target_venue.siret},
         }
 
-        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert other_venue.pricing_point_links[0].timespan.upper <= date_utils.get_naive_utc_now()
         assert other_venue.current_pricing_point is None
 
         other_action = db.session.query(history_models.ActionHistory).filter_by(venueId=other_venue.id).one()
@@ -3424,9 +3425,13 @@ class RemoveSiretTest(PostEndpointHelper):
     @pytest.mark.parametrize(
         "start_date, end_date, update",
         [
-            (datetime.utcnow() - timedelta(days=10), None, True),
-            (datetime.utcnow() - timedelta(days=10), datetime.utcnow() + timedelta(days=10), True),
-            (datetime.utcnow() + timedelta(days=10), None, False),
+            (date_utils.get_naive_utc_now() - timedelta(days=10), None, True),
+            (
+                date_utils.get_naive_utc_now() - timedelta(days=10),
+                date_utils.get_naive_utc_now() + timedelta(days=10),
+                True,
+            ),
+            (date_utils.get_naive_utc_now() + timedelta(days=10), None, False),
         ],
     )
     def test_venue_with_custom_reimbursement_rule(self, authenticated_client, start_date, end_date, update):
@@ -3453,7 +3458,7 @@ class RemoveSiretTest(PostEndpointHelper):
         if update:
             assert len(rules) == 1
             assert rules[0].timespan.upper != end_date
-            assert rules[0].timespan.upper < datetime.utcnow() + timedelta(days=1)
+            assert rules[0].timespan.upper < date_utils.get_naive_utc_now() + timedelta(days=1)
 
     def test_venue_without_siret(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()

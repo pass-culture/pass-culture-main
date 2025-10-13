@@ -19,6 +19,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
@@ -289,10 +290,10 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
     def test_get_history(self, authenticated_client, pro_user):
         action1 = history_factories.ActionHistoryFactory(
-            user=pro_user, actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+            user=pro_user, actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
         )
         action2 = history_factories.ActionHistoryFactory(
-            actionDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=2),
+            actionDate=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=2),
             actionType=history_models.ActionType.USER_SUSPENDED,
             user=pro_user,
             comment="Test de suspension",
@@ -383,7 +384,7 @@ class GetProUserOfferersTest(GetEndpointHelper):
     def test_get_user_offerers(self, authenticated_client):
         pro_user = users_factories.ProFactory()
         offerer_1 = offerers_factories.UserOffererFactory(
-            user=pro_user, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            user=pro_user, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
         ).offerer
         offerer_2 = offerers_factories.NewUserOffererFactory(user=pro_user).offerer
         url = url_for(self.endpoint, user_id=pro_user.id)

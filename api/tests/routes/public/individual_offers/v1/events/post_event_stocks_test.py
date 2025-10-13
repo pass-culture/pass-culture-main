@@ -20,8 +20,8 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
 
     @staticmethod
     def _get_base_date_dict(price_category_id: int, id_at_provider: str | None = None) -> dict:
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         return {
             "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
@@ -87,8 +87,8 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             priceCategoryLabel__venue=venue_provider.venue,
         )
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        next_week = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        next_month = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         two_months_from_now = next_month + datetime.timedelta(days=30)
         two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")

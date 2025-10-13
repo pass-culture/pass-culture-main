@@ -14,6 +14,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -330,7 +331,7 @@ class Returns400Test:
         stock = offers_factories.StockFactory(
             offer__isActive=False,
             offer__validation=OfferValidationStatus.DRAFT,
-            beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -360,7 +361,7 @@ class Returns400Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) - datetime.timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now().replace(minute=0, second=0) - datetime.timedelta(days=30)
         response = client.patch(
             "/offers/publish",
             json={

@@ -166,7 +166,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
     def test_product_creation_with_full_body(self, clear_tests_assets_bucket, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes = date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(
+            minutes=10
+        )
         in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
         payload = {
             "location": {"type": "physical", "venueId": venue_provider.venue.id},

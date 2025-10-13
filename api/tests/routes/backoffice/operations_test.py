@@ -17,6 +17,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.utils import date as date_utils
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -240,7 +241,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00001",
             title="Énigme des enchanteurs",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         special_event_id = event.id
         name_question = operations_factories.SpecialEventQuestionFactory(
@@ -311,7 +312,7 @@ class GetEventDetailsTest(GetEndpointHelper):
     def test_filter_event_responses_by_response_status(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00002",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         operations_factories.SpecialEventResponseFactory.create_batch(
             size=2,
@@ -464,7 +465,7 @@ class GetEventDetailsTest(GetEndpointHelper):
     def test_filter_event_responses_by_eligibility(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00002",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         response_pass_18 = operations_factories.SpecialEventResponseFactory(
             event=event, user=users_factories.BeneficiaryFactory()
@@ -524,7 +525,7 @@ class GetEventDetailsTest(GetEndpointHelper):
         event = operations_factories.SpecialEventFactory(
             externalId="fake00001",
             title="A",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         special_event_id = event.id
         name_question = operations_factories.SpecialEventQuestionFactory(
@@ -564,17 +565,17 @@ class GetEventDetailsTest(GetEndpointHelper):
         users_factories.DepositGrantFactory(
             user=user,
             type=finance_models.DepositType.GRANT_15_17,
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            expirationDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=2),
         )
         users_factories.DepositGrantFactory(
             user=user,
             type=finance_models.DepositType.GRANT_18,
-            expirationDate=datetime.datetime.utcnow() + datetime.timedelta(days=300),
+            expirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=300),
         )
         event = operations_factories.SpecialEventFactory(
             externalId="fake00001",
             title="Énigme des enchanteurs",
-            eventDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
+            eventDate=date_utils.get_naive_utc_now() + datetime.timedelta(days=2),
         )
         special_event_id = event.id
         name_question = operations_factories.SpecialEventQuestionFactory(

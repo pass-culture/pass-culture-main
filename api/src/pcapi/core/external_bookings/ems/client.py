@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 
@@ -13,6 +12,7 @@ from pcapi.core.external_bookings.decorators import catch_cinema_provider_reques
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import date as date_utils
 from pcapi.utils.requests import exceptions as requests_exception
 
 from . import constants
@@ -73,7 +73,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                     {
                         "cinema_id": self.cinema_id,
                         "token": booking.token,
-                        "timestamp": datetime.datetime.utcnow().timestamp(),
+                        "timestamp": date_utils.get_naive_utc_now().timestamp(),
                     }
                 )
 

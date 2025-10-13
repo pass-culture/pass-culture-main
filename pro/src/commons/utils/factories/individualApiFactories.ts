@@ -462,6 +462,7 @@ export const defaultVenueProvider: VenueProviderResponse = {
     id: 12,
     hasOffererProvider: false,
     isActive: true,
+    enabledForPro: true,
   },
   quantity: 0,
   isDuo: true,

@@ -25,11 +25,14 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
+from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
+from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.decorators import retry
 
 from . import exceptions
 from . import models
+from . import utils
 
 
 logger = logging.getLogger(__name__)
@@ -649,7 +652,7 @@ def check_stock_consistency() -> list[int]:
 
 
 def find_event_stocks_happening_in_x_days(number_of_days: int) -> sa_orm.Query:
-    target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
+    target_day = date_utils.get_naive_utc_now() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
 
@@ -745,7 +748,7 @@ def get_available_activation_code(stock: models.Stock) -> models.ActivationCode 
             code
             for code in stock.activationCodes
             if code.bookingId is None
-            and (code.expirationDate is None or code.expirationDate > datetime.datetime.utcnow())
+            and (code.expirationDate is None or code.expirationDate > date_utils.get_naive_utc_now())
         ),
         None,
     )
@@ -818,7 +821,7 @@ def get_current_headline_offer(offerer_id: int) -> models.HeadlineOffer | None:
         )
         .filter(
             offerers_models.Offerer.id == offerer_id,
-            models.HeadlineOffer.timespan.contains(datetime.datetime.utcnow()),
+            models.HeadlineOffer.timespan.contains(date_utils.get_naive_utc_now()),
         )
         .one_or_none()
     )
@@ -844,7 +847,7 @@ def get_inactive_headline_offers() -> list[models.HeadlineOffer]:
             ),
             sa.or_(
                 # We don't want to fetch HeadlineOffers that have already been marked as finished
-                sa.func.upper(models.HeadlineOffer.timespan) > datetime.datetime.utcnow(),
+                sa.func.upper(models.HeadlineOffer.timespan) > date_utils.get_naive_utc_now(),
                 sa.func.upper(models.HeadlineOffer.timespan).is_(None),
             ),
         )
@@ -1063,7 +1066,7 @@ def get_filtered_stocks(
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        timezone = pytz.timezone(venue.timezone)
+        timezone = pytz.timezone(METROPOLE_TIMEZONE)
 
         if offer.offererAddress:
             timezone = pytz.timezone(offer.offererAddress.address.timezone)
@@ -1149,29 +1152,18 @@ def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
     return [offer_id for (offer_id,) in query]
 
 
-def get_paginated_offer_ids_by_artist_id(artist_id: str, limit: int, page: int = 0) -> list[int]:
+def get_paginated_offer_ids_by_artist_id(artist_id: str, chunk_size: int) -> typing.Iterator[list[int]]:
     query = (
-        db.session.query(models.Offer)
-        .with_entities(models.Offer.id)
+        db.session.query(models.Offer.id)
         .join(artist_models.ArtistProductLink, models.Offer.productId == artist_models.ArtistProductLink.product_id)
         .filter(artist_models.ArtistProductLink.artist_id == artist_id)
-        .order_by(models.Offer.id)
-        .offset(page * limit)  # first page is 0
-        .limit(limit)
     )
-    return [offer_id for (offer_id,) in query]
+    yield from utils.yield_field_batch_from_query(query, chunk_size)
 
 
-def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0) -> list[int]:
-    query = (
-        db.session.query(models.Offer)
-        .with_entities(models.Offer.id)
-        .filter(models.Offer.venueId == venue_id)
-        .order_by(models.Offer.id)
-        .offset(page * limit)  # first page is 0
-        .limit(limit)
-    )
-    return [offer_id for (offer_id,) in query]
+def get_paginated_offer_ids_by_venue_id(venue_id: int, chunk_size: int) -> typing.Iterator[list[int]]:
+    query = db.session.query(models.Offer.id).filter(models.Offer.venueId == venue_id)
+    yield from utils.yield_field_batch_from_query(query, chunk_size)
 
 
 def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> sa_orm.Query:

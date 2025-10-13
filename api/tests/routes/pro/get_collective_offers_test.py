@@ -6,38 +6,13 @@ import time_machine
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.testing import get_serialized_address
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-
-
-def _get_serialized_address(
-    offerer_address: offerers_models.OffererAddress, label: str, is_linked_to_venue: bool
-) -> dict:
-    address = offerer_address.address
-
-    return {
-        "address": {
-            "id": address.id,
-            "id_oa": offerer_address.id,
-            "inseeCode": address.inseeCode,
-            "isLinkedToVenue": is_linked_to_venue,
-            "isManualEdition": False,
-            "city": address.city,
-            "label": label,
-            "latitude": float(address.latitude),
-            "longitude": float(address.longitude),
-            "postalCode": address.postalCode,
-            "departmentCode": address.departmentCode,
-            "street": address.street,
-            "banId": address.banId,
-        },
-        "locationComment": None,
-        "locationType": "ADDRESS",
-    }
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -147,7 +122,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
         )
 
@@ -162,7 +137,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
         )
 
@@ -177,8 +152,8 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, institution=institution, nationalProgramId=national_program.id
         )
-        next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
-        in_two_weeks = datetime.datetime.utcnow() + datetime.timedelta(days=14)
+        next_week = date_utils.get_naive_utc_now() + datetime.timedelta(days=7)
+        in_two_weeks = date_utils.get_naive_utc_now() + datetime.timedelta(days=14)
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer, startDatetime=next_week, endDatetime=in_two_weeks
         )
@@ -211,8 +186,8 @@ class Returns200Test:
         user = users_factories.UserFactory()
 
         stock = educational_factories.CollectiveStockFactory(
-            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=125),
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=125),
+            startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=125),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
             collectiveStock=stock,
@@ -237,8 +212,8 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
-            startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
-            bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
             collectiveOffer__venue=venue,
         )
 
@@ -351,7 +326,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
         )
 
@@ -366,7 +341,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == _get_serialized_address(
+        assert offer_json["location"] == get_serialized_address(
             offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
         )
 
@@ -377,13 +352,13 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             imageId="00000125999998",
         )
 
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             imageId="00000125999999",
         )
 
@@ -418,9 +393,9 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
         )
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=date_utils.get_naive_utc_now())
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         client = client.with_session_auth(user.email)
@@ -437,15 +412,15 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=date_utils.get_naive_utc_now())
 
-        educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=date_utils.get_naive_utc_now())
         educational_factories.CollectiveStockFactory(
             collectiveOffer__venue=venue,
-            collectiveOffer__dateCreated=datetime.datetime.utcnow(),
+            collectiveOffer__dateCreated=date_utils.get_naive_utc_now(),
             startDatetime=datetime.datetime(2022, 8, 10),
         )
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, dateCreated=date_utils.get_naive_utc_now())
         educational_factories.CollectiveStockFactory(
             collectiveOffer=offer, startDatetime=datetime.datetime(2022, 10, 10)
         )
@@ -466,30 +441,32 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        offer_booked = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        offer_booked = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
+        )
         stock_booked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_booked, dateCreated=datetime.datetime.utcnow()
+            collectiveOffer=offer_booked, dateCreated=date_utils.get_naive_utc_now()
         )
         _booking_confirmed = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_booked,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
 
         offer_prebooked = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow()
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
         )
         stock_prebooked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_prebooked, dateCreated=datetime.datetime.utcnow()
+            collectiveOffer=offer_prebooked, dateCreated=date_utils.get_naive_utc_now()
         )
         _booking_cancelled = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_prebooked,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         _booking_pending = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_prebooked,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             status=educational_models.CollectiveBookingStatus.PENDING,
         )
 
@@ -518,36 +495,38 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer_not_booked = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow()
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
         )
         _stock_not_booked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_not_booked, dateCreated=datetime.datetime.utcnow()
+            collectiveOffer=offer_not_booked, dateCreated=date_utils.get_naive_utc_now()
         )
 
-        offer_booked = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        offer_booked = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
+        )
         stock_booked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_booked, dateCreated=datetime.datetime.utcnow()
+            collectiveOffer=offer_booked, dateCreated=date_utils.get_naive_utc_now()
         )
         _booking_confirmed = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_booked,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
 
         offer_prebooked = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow()
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
         )
         stock_prebooked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_prebooked, dateCreated=datetime.datetime.utcnow()
+            collectiveOffer=offer_prebooked, dateCreated=date_utils.get_naive_utc_now()
         )
         _booking_cancelled = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_prebooked,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             status=educational_models.CollectiveBookingStatus.CANCELLED,
         )
         _booking_pending = educational_factories.CollectiveBookingFactory(
             collectiveStock=stock_prebooked,
-            dateCreated=datetime.datetime.utcnow(),
+            dateCreated=date_utils.get_naive_utc_now(),
             status=educational_models.CollectiveBookingStatus.PENDING,
         )
 
@@ -589,9 +568,9 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=date_utils.get_naive_utc_now())
         template = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow()
+            venue=venue, dateCreated=date_utils.get_naive_utc_now()
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
@@ -616,66 +595,66 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer_created_10_days_ago = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=10)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=10)
         )
 
         offer_created_30_days_ago = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
 
         offer_created_20_days_ago = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=20)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=20)
         )
 
         archived_offer = educational_factories.CollectiveOfferFactory(
-            dateArchived=datetime.datetime.utcnow(),
+            dateArchived=date_utils.get_naive_utc_now(),
             venue=venue,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=15),
         )
 
         template_created_14_days_ago = educational_factories.CollectiveOfferTemplateFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=14)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=14)
         )
 
         offer_requiring_attention = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=35)
         )
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        futur = date_utils.get_naive_utc_now() + datetime.timedelta(days=5)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=futur, collectiveOffer=offer_requiring_attention
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
         published_offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=35)
         )
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=tomorrow, collectiveOffer=published_offer_requiring_urgent_attention
         )
 
         offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=35)
         )
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=tomorrow, collectiveOffer=offer_requiring_urgent_attention
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
         offer_booked = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=34)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=34)
         )
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=tomorrow, collectiveOffer=offer_booked
         )
         _booking = educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
         offer_requiring_not_urgent_confirmation = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=35)
         )
-        futur_far = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        futur_far = date_utils.get_naive_utc_now() + datetime.timedelta(days=10)
         stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=futur_far, collectiveOffer=offer_requiring_not_urgent_confirmation
         )
@@ -711,70 +690,72 @@ class Returns200Test:
         # IMPORTANT: When offers have the same urgency score, they are sorted by dateCreated (most recent first)
 
         archived_offer = educational_factories.CollectiveOfferFactory(
-            dateArchived=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            dateArchived=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             venue=venue,
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=15),
         )
         educational_factories.CollectiveStockFactory(collectiveOffer=archived_offer)
 
         old_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=30)
         )
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=old_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=20)
+            collectiveOffer=old_offer, bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=20)
         )
 
         recent_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5)
         )
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=recent_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=15)
+            collectiveOffer=recent_offer,
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=15),
         )
 
         booked_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=10)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=10)
         )
         stock_booked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=booked_offer, bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5)
+            collectiveOffer=booked_offer,
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=5),
         )
         educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock_booked)
 
         # Not urgent (booking limit > 7 days)
         pending_not_urgent_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=12)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=12)
         )
         stock_pending_not_urgent = educational_factories.CollectiveStockFactory(
             collectiveOffer=pending_not_urgent_offer,
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=10),
         )
         educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_not_urgent)
 
         # Medium urgency (booking limit between 2-7 days)
         pending_medium_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=8)
         )
         stock_pending_medium = educational_factories.CollectiveStockFactory(
             collectiveOffer=pending_medium_offer,
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=4),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=4),
         )
         educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_medium)
 
         # Expiring soon, created more recently than pending_urgent_offer
         expiring_soon_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=6)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=6)
         )
         educational_factories.CollectiveStockFactory(
             collectiveOffer=expiring_soon_offer,
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(hours=20),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(hours=20),
         )
 
         # Urgent, created less recently than expiring_soon_offer
         pending_urgent_offer = educational_factories.CollectiveOfferFactory(
-            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=7)
+            venue=venue, dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=7)
         )
         stock_pending_urgent = educational_factories.CollectiveStockFactory(
             collectiveOffer=pending_urgent_offer,
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=1),
         )
         educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock_pending_urgent)
 

@@ -11,6 +11,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.testing import assert_num_queries
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.mailing import get_event_datetime
@@ -60,7 +61,7 @@ class CancelCollectiveBookingTest:
 class CancelExpiredCollectiveBookingsTest:
     def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
         # Given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         expired_pending_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=yesterday)
@@ -72,7 +73,7 @@ class CancelExpiredCollectiveBookingsTest:
         # Then
         assert expired_pending_collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED
         assert expired_pending_collective_booking.cancellationDate.timestamp() == pytest.approx(
-            datetime.datetime.utcnow().timestamp(), rel=1
+            date_utils.get_naive_utc_now().timestamp(), rel=1
         )
         assert (
             expired_pending_collective_booking.cancellationReason
@@ -83,7 +84,7 @@ class CancelExpiredCollectiveBookingsTest:
         self, app
     ) -> None:
         # Given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         confirmed_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.CollectiveBookingFactory(confirmationLimitDate=yesterday)
@@ -99,7 +100,7 @@ class CancelExpiredCollectiveBookingsTest:
         self, app
     ) -> None:
         # Given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         tomorrow = now + datetime.timedelta(days=1)
         pending_collective_booking: educational_models.CollectiveBooking = (
             educational_factories.PendingCollectiveBookingFactory(confirmationLimitDate=tomorrow)
@@ -113,7 +114,7 @@ class CancelExpiredCollectiveBookingsTest:
 
     def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self, app) -> None:
         # Given
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         tomorrow = now + datetime.timedelta(days=1)
 
@@ -132,7 +133,7 @@ class CancelExpiredCollectiveBookingsTest:
         assert non_expired_pending_collective_booking.status == educational_models.CollectiveBookingStatus.PENDING
 
     def test_queries_performance_collective_bookings(self, app) -> None:
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         yesterday = now - datetime.timedelta(days=1)
         educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
         n_queries = +1 + 4 * (1)  # select collective_booking ids  # update collective_booking

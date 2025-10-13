@@ -10,6 +10,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
 
 
@@ -33,7 +34,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"Partenaire culturel {offerer.name} 56",
         reimbursement=True,
         adageId="123546",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="56",
@@ -50,7 +51,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name} 91",
         adageId="10837",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=5),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=5),
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
@@ -76,7 +77,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         managingOfferer=offerer,
         name=f"Partenaire culturel {offerer.name}",
         adageId="789456",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=30),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
@@ -88,7 +89,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         managingOfferer=offerer,
         name=f"real_venue 1 {offerer.name}",
         adageId="698748",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=13),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=13),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
@@ -226,7 +227,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         adageId="98762",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=30),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=30),
     )
     educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
@@ -249,18 +250,18 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
         adageId="98763",
-        adageInscriptionDate=datetime.utcnow(),
+        adageInscriptionDate=date_utils.get_naive_utc_now(),
     )
     educational_factories.CollectiveDmsApplicationFactory.create(
         venue=venue,
         application=next(application_id_generator),
         procedure=57189,
-        lastChangeDate=datetime.utcnow(),
+        lastChangeDate=date_utils.get_naive_utc_now(),
         depositDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
         expirationDate=datetime.fromisoformat("2025-11-08 14:09:31+00:00"),
         buildDate=datetime.fromisoformat("2022-05-17 14:43:22+00:00"),
         instructionDate=datetime.fromisoformat("2022-10-25 12:40:41+00:00"),
-        processingDate=datetime.utcnow(),
+        processingDate=date_utils.get_naive_utc_now(),
         state="accepte",
     )
     # eac_with_two_adage_venues
@@ -355,7 +356,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"{offerer.name} PC_PRO",
         reimbursement=True,
         adageId="123547",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="57",
@@ -372,7 +373,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"{offerer.name} PUBLIC_API",
         reimbursement=True,
         adageId="123548",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="57",
@@ -391,7 +392,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"{offerer.name} PC_PRO",
         reimbursement=True,
         adageId="123549",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="57",
@@ -408,7 +409,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         name=f"{offerer.name} PUBLIC_API",
         reimbursement=True,
         adageId="123550",
-        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
         departementCode="33",

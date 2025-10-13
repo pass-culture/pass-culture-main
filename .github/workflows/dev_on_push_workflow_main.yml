@@ -23,13 +23,13 @@ jobs:
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
       checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/**
@@ -38,24 +38,24 @@ jobs:
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: api/documentation/**
       - name: "Check pro folder changes"
         id: check-pro-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
       - name: "Check changes in Algolia configuration"
         id: check-algolia-config-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/src/pcapi/algolia_settings_collective_offers.json
@@ -87,18 +87,18 @@ jobs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: false
       - name: "Check maintenance-site folder changes"
         id: check-maintenance-site-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: maintenance-site/**
       - name: "Check db migration folder changes"
         id: check-db-migrations-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |-
             api/src/pcapi/alembic/versions/**
@@ -231,7 +231,7 @@ jobs:
       GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
       - name: Checkout ref
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - name: Configure git author
         run: |

@@ -14,6 +14,7 @@ from pcapi.core.categories.models import ReimbursementRuleChoices
 from pcapi.core.external import batch as push_notifications
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 
 from . import conf
@@ -40,7 +41,7 @@ def upsert_deposit(
         has_active_underage_deposit = (
             user.deposit
             and user.deposit.type == models.DepositType.GRANT_15_17
-            and (user.deposit.expirationDate is None or user.deposit.expirationDate >= datetime.datetime.utcnow())
+            and (user.deposit.expirationDate is None or user.deposit.expirationDate >= date_utils.get_naive_utc_now())
         )
         if has_active_underage_deposit:
             expire_current_deposit_for_user(user)
@@ -54,7 +55,7 @@ def upsert_deposit(
         and user.deposit.type == models.DepositType.GRANT_15_17
         and not user.has_active_deposit
     ):
-        user.deposit.expirationDate = datetime.datetime.utcnow() + relativedelta(hours=1)
+        user.deposit.expirationDate = date_utils.get_naive_utc_now() + relativedelta(hours=1)
 
     if not user.has_active_deposit:
         deposit = _create_deposit(user, deposit_source, eligibility)
@@ -73,8 +74,8 @@ def upsert_deposit(
 
 
 def recredit_users() -> None:
-    upper_date = datetime.datetime.utcnow() - relativedelta(years=17)
-    lower_date = datetime.datetime.utcnow() - relativedelta(years=19)
+    upper_date = date_utils.get_naive_utc_now() - relativedelta(years=17)
+    lower_date = date_utils.get_naive_utc_now() - relativedelta(years=19)
 
     user_ids = [
         result
@@ -260,13 +261,13 @@ def expire_current_deposit_for_user(user: users_models.User) -> None:
         db.session.query(models.Deposit)
         .filter(
             models.Deposit.userId == user.id,
-            models.Deposit.expirationDate > datetime.datetime.utcnow(),
+            models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
         )
         .with_for_update()
         .all()
     )
     for deposit in deposits:
-        deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
     db.session.flush()
 
 
@@ -495,7 +496,7 @@ def recredit_new_deposit_after_validation_of_incident_on_expired_deposit(
             return None
 
         if (
-            booking.deposit.expirationDate < datetime.datetime.utcnow()
+            booking.deposit.expirationDate < date_utils.get_naive_utc_now()
             and booking.deposit != booking.user.deposit
             and booking.user.deposit.type == models.DepositType.GRANT_17_18
         ):

@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 import sqlalchemy as sa
 
@@ -9,6 +8,7 @@ from pcapi.connectors.big_query.queries.offerer_stats import OffererDailyViewsLa
 from pcapi.connectors.big_query.queries.offerer_stats import OffererTopOffersAndTotalViewsLast30Days
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def update_offerer_daily_views_stats() -> None:
             offererId=daily_views_row.offererId,
             table=DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE,
             jsonData=dict(offerers_models.OffererStatsData(daily_views=list(daily_views_row.dailyViews[::-1]))),
-            syncDate=datetime.utcnow(),
+            syncDate=date_utils.get_naive_utc_now(),
         )
         daily_views.append(daily_views_model)
         counter += 1
@@ -66,7 +66,7 @@ def update_offerer_top_views_stats() -> None:
                     top_offers=top_offers_row.topOffers, total_views_last_30_days=top_offers_row.totalViews
                 )
             ),
-            syncDate=datetime.utcnow(),
+            syncDate=date_utils.get_naive_utc_now(),
         )
         top_offers.append(top_offers_model)
         counter += 1
@@ -87,7 +87,7 @@ def delete_offerer_old_stats() -> None:
         offerers_ids_chunk = [offerer_id for (offerer_id,) in offerers_ids_chunk]
         db.session.query(offerers_models.OffererStats).filter(
             offerers_models.OffererStats.offererId.in_(offerers_ids_chunk),
-            offerers_models.OffererStats.syncDate < datetime.utcnow().date(),
+            offerers_models.OffererStats.syncDate < date_utils.get_naive_utc_now().date(),
         ).delete()
         db.session.commit()
         index += step

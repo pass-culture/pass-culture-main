@@ -89,11 +89,11 @@ class Return200Test:
 
     def test_get_offerer_stats_with_no_public_offers(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        educational_factories.CollectiveOfferFactory.create_batch(
-            2, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+        educational_factories.PublishedCollectiveOfferFactory.create_batch(
+            2, venue__managingOfferer=user_offerer.offerer
         )
-        educational_factories.CollectiveOfferFactory.create_batch(
-            2, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
+        educational_factories.UnderReviewCollectiveOfferFactory.create_batch(
+            2, venue__managingOfferer=user_offerer.offerer
         )
 
         client = client.with_session_auth(user_offerer.user.email)

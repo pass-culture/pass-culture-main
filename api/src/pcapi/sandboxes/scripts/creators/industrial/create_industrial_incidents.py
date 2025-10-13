@@ -20,6 +20,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.finance import validation
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
@@ -162,7 +163,7 @@ def _create_one_individual_incident(
             finance_api.price_event(finance_event)
 
     # Mark incident bookings as `REIMBURSED`
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
@@ -208,7 +209,7 @@ def _create_one_individual_incident(
         for finance_event in booking_finance_incident.finance_events:
             finance_api.price_event(finance_event)
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
 
@@ -261,7 +262,7 @@ def _create_one_collective_incident(
             1,
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__price=decimal.Decimal("19990"),
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -270,7 +271,7 @@ def _create_one_collective_incident(
         size=2 if multiple_bookings else 1,
         collectiveStock__collectiveOffer__venue=other_venue or venue,
         collectiveStock__price=decimal.Decimal("30"),
-        collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
         educationalInstitution=deposit.educationalInstitution,
         educationalYear=deposit.educationalYear,
     )
@@ -284,7 +285,7 @@ def _create_one_collective_incident(
         finance_api.price_event(finance_event)
 
     # Mark incident bookings as `REIMBURSED`
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
     assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
@@ -296,7 +297,7 @@ def _create_one_collective_incident(
         new_booking = educational_factories.UsedCollectiveBookingFactory.create(
             collectiveStock__collectiveOffer__venue=other_venue or venue,
             collectiveStock__price=decimal.Decimal("20") + decimal.Decimal(i),
-            collectiveStock__startDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
             educationalInstitution=deposit.educationalInstitution,
             educationalYear=deposit.educationalYear,
         )
@@ -323,7 +324,7 @@ def _create_one_collective_incident(
             for finance_event in booking_finance_incident.finance_events:
                 finance_api.price_event(finance_event)
 
-    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
     finance_api.generate_invoices_and_debit_notes_legacy(batch)
 
 

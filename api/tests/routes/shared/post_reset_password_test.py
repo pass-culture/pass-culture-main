@@ -1,4 +1,3 @@
-from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -8,6 +7,7 @@ from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
 from pcapi.core import token as token_utils
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 class Returns400Test:
@@ -109,7 +109,7 @@ class Returns204Test:
         assert response.status_code == 204
         user = db.session.get(User, user.id)
         assert token_utils.Token.token_exists(token_utils.TokenType.RESET_PASSWORD, user.id)
-        now = datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         assert (
             (now + timedelta(hours=23))
             < token_utils.Token.get_expiration_date(token_utils.TokenType.RESET_PASSWORD, user.id)

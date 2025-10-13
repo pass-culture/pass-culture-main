@@ -21,6 +21,7 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_history_serialize
@@ -58,6 +59,43 @@ EmptyStringToNone = EmptyAsNullString | None
 class CollectiveOfferType(enum.Enum):
     offer = "offer"
     template = "template"
+
+
+# TODO: for now we duplicate fields and logic of ListCollectiveOffersQueryModel
+# once we have a separate route for collective offers we can factorize both query models
+class ListCollectiveOfferTemplatesQueryModel(ConfiguredBaseModel):
+    name: str | None
+    offerer_id: int | None
+    status: list[educational_models.CollectiveOfferDisplayedStatus] | None
+    venue_id: int | None
+    period_beginning_date: date | None
+    period_ending_date: date | None
+    format: EacFormat | None
+    location_type: educational_models.CollectiveLocationType | None
+    offerer_address_id: int | None
+
+    @validator("status", pre=True)
+    def parse_status(cls, status: typing.Any | None) -> list[typing.Any] | None:
+        # this is needed to handle the case of only one status in query filters
+        if status is None or isinstance(status, list):
+            return status
+
+        return [status]
+
+    @root_validator(skip_on_failure=True)
+    def validate_location_filter(cls, values: dict) -> dict:
+        location_type = values.get("location_type")
+        offerer_address_id = values.get("offerer_address_id")
+
+        if offerer_address_id is not None and location_type != educational_models.CollectiveLocationType.ADDRESS:
+            raise ValueError(
+                f"Cannot provide offerer_address_id when location_type is not {educational_models.CollectiveLocationType.ADDRESS.value}"
+            )
+
+        return values
+
+    class Config:
+        extra = "forbid"
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -245,16 +283,42 @@ def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffer
     )
 
 
-def _get_serialize_last_booking(
-    bookings: list[educational_models.CollectiveBooking],
-) -> CollectiveOffersBookingResponseModel | None:
-    if len(bookings) == 0:
-        return None
-    last_booking = sorted(bookings, key=lambda b: b.dateCreated, reverse=True)[0]
-    return CollectiveOffersBookingResponseModel(
-        id=last_booking.id,
-        booking_status=last_booking.status.value,
-    )
+class CollectiveOfferTemplateResponseModel(ConfiguredBaseModel):
+    id: int
+    isActive: bool
+    name: str
+    venue: base_serializers.ListOffersVenueResponseModel
+    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
+    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
+    imageUrl: str | None
+    dates: TemplateDatesModel | None
+    location: GetCollectiveOfferLocationModel
+
+    @classmethod
+    def build(
+        cls: type["CollectiveOfferTemplateResponseModel"], offer: educational_models.CollectiveOfferTemplate
+    ) -> "CollectiveOfferTemplateResponseModel":
+        start, end = offer.start, offer.end
+        if start is not None and end is not None:
+            dates = TemplateDatesModel(start=start, end=end)
+        else:
+            dates = None
+
+        return cls(
+            id=offer.id,
+            isActive=offer.isActive,
+            name=offer.name,
+            venue=_serialize_venue(offer.venue),
+            displayedStatus=offer.displayedStatus,
+            allowedActions=offer.allowedActions,
+            imageUrl=offer.imageUrl,
+            dates=dates,
+            location=get_collective_offer_location_model(offer),
+        )
+
+
+class ListCollectiveOfferTemplatesResponseModel(ConfiguredBaseModel):
+    __root__: list[CollectiveOfferTemplateResponseModel]
 
 
 class OfferDomain(BaseModel):
@@ -392,11 +456,20 @@ def get_collective_offer_location_model(
 
 class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        offer = self._obj
+
         if key == "location":
-            return get_collective_offer_location_model(self._obj)
+            return get_collective_offer_location_model(offer)
 
         if key == "history":
-            return collective_history_serialize.get_collective_offer_history(self._obj)
+            return collective_history_serialize.get_collective_offer_history(offer)
+
+        # we return these fields for a template for now
+        # we can remove this once the GET routes are separated
+        if key in ("hasBookingLimitDatetimesPassed", "isCancellable") and isinstance(
+            offer, educational_models.CollectiveOfferTemplate
+        ):
+            return False
 
         return super().get(key, default)
 

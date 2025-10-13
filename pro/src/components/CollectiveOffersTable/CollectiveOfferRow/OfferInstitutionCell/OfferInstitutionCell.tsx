@@ -21,20 +21,10 @@ export const OfferInstitutionCell = ({
   const { name, postalCode, institutionType, city } =
     educationalInstitution || {}
 
-  const getInstitutionLabel = () => {
-    if (name && postalCode) {
-      return `${name} - ${postalCode}`
-    }
-    if (institutionType || city) {
-      return `${institutionType} ${city}`
-    }
-
-    if (isTemplate) {
-      return 'Tous les établissements'
-    }
-
-    return '-'
-  }
+  const institutionLabel =
+    name ||
+    [institutionType, city].filter(Boolean).join(' ') ||
+    (isTemplate ? 'Tous les établissements' : '-')
 
   return (
     <td
@@ -48,8 +38,11 @@ export const OfferInstitutionCell = ({
       )}
       headers={`${rowId} ${getCellsDefinition().INSTITUTION.id}`}
     >
-      <div className={styles['text-overflow-ellipsis']}>
-        {getInstitutionLabel()}
+      <div>
+        <div className={styles['institution-label-ellipsis']}>
+          {institutionLabel}
+        </div>
+        {postalCode && <div> {postalCode}</div>}
       </div>
     </td>
   )

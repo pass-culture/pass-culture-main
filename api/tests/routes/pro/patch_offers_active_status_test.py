@@ -14,6 +14,7 @@ from pcapi.core import testing
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 now_datetime_with_tz = datetime.now(timezone.utc)
@@ -142,7 +143,7 @@ def is_around_now(dt: datetime) -> bool:
 @pytest.mark.usefixtures("db_session")
 class ActivateFutureOffersTest:
     def test_activate_future_offers_and_notify_users_with_reminders(self, client):
-        publication_date = datetime.utcnow() + timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now() + timedelta(days=30)
 
         offer_to_publish_1 = offers_factories.OfferFactory(isActive=False, publicationDatetime=publication_date)
         venue = offer_to_publish_1.venue
@@ -172,7 +173,7 @@ class ActivateFutureOffersTest:
         assert not offer3.publicationDatetime
 
     def test_deactivate_future_offers(self, client):
-        publication_date = datetime.utcnow() + timedelta(days=30)
+        publication_date = date_utils.get_naive_utc_now() + timedelta(days=30)
 
         offer_published_1 = offers_factories.OfferFactory(publicationDatetime=publication_date)
         venue = offer_published_1.venue

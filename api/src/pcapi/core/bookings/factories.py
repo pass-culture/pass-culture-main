@@ -10,6 +10,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.factories import BaseFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.token import random_token
 
 from . import api
@@ -96,19 +97,19 @@ class BookingFactory(BaseFactory):
 
 class UsedBookingFactory(BookingFactory):
     status = models.BookingStatus.USED
-    dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
+    dateUsed = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class CancelledBookingFactory(BookingFactory):
     status = models.BookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(datetime.datetime.utcnow)  # type: ignore[assignment]
+    cancellationDate = factory.LazyFunction(date_utils.get_naive_utc_now)  # type: ignore[assignment]
     cancellationReason = models.BookingCancellationReasons.BENEFICIARY
 
 
 class ReimbursedBookingFactory(BookingFactory):
     status = models.BookingStatus.REIMBURSED
-    dateUsed = factory.LazyFunction(datetime.datetime.utcnow)
-    reimbursementDate = factory.LazyFunction(datetime.datetime.utcnow)
+    dateUsed = factory.LazyFunction(date_utils.get_naive_utc_now)
+    reimbursementDate = factory.LazyFunction(date_utils.get_naive_utc_now)
 
 
 class ExternalBookingFactory(BaseFactory):

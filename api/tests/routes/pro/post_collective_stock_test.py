@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -400,7 +401,7 @@ class Return400Test:
             assert response.json == {"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}
 
     def should_not_accept_payload_with_dates_in_the_past(self, client):
-        past = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).isoformat() + "Z"
+        past = (date_utils.get_naive_utc_now() - datetime.timedelta(days=1)).isoformat() + "Z"
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 

@@ -13,6 +13,7 @@ from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as v1_serializers
 from pcapi.routes.native.v1.serialization import authentication as authentication_serializers
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -40,7 +41,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 
     return serializers.EmailUpdateStatusResponse(
         new_email=latest_email_update_event.newEmail,
-        expired=(email_api.get_active_token_expiration(user) or datetime.min) < datetime.utcnow(),
+        expired=(email_api.get_active_token_expiration(user) or datetime.min) < date_utils.get_naive_utc_now(),
         status=latest_email_update_event.eventType,
         token=new_email_selection_token.encoded_token if new_email_selection_token else None,
         reset_password_token=reset_password_token.encoded_token if reset_password_token else None,

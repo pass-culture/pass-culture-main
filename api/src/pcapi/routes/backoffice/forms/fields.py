@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import typing
 from functools import partial
 
@@ -489,3 +490,22 @@ class PCFormField(wtforms.FormField):
 class PCArtistTomSelectField(PCTomSelectField):
     def pre_validate(self, form: wtforms.Form) -> None:
         super(wtforms.SelectMultipleField, self).pre_validate(form)
+
+
+class PCFileField(wtforms.FileField):
+    widget = partial(widget, template="components/forms/file_field.html")
+    is_file_field = True
+
+
+class PCImageField(PCFileField):
+    def pre_validate(self, form: wtforms.Form) -> None:
+        if self.data:
+            if self.data.mimetype not in ("image/jpeg", "image/png"):
+                raise ValidationError("Format invalide, seules les images au format PNG ou JPEG sont acceptées")
+            MAX_IMAGE_SIZE = 1_000_000
+            self.data.seek(0, os.SEEK_END)
+            file_size = self.data.tell()
+            self.data.seek(0)
+            if file_size > MAX_IMAGE_SIZE:
+                raise ValidationError(f"Image trop grande, max : {int(MAX_IMAGE_SIZE / 1_000)} Ko")
+        super().pre_validate(form)

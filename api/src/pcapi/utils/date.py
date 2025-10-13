@@ -81,8 +81,9 @@ class FrenchParserInfo(parserinfo):
     ]
 
 
-def get_postal_code_timezone(postal_code: str) -> str:
-    return get_department_timezone(postal_code_utils.PostalCode(postal_code).get_departement_code())
+def get_postal_code_timezone(postal_code: str | None) -> str:
+    department_code = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
+    return get_department_timezone(department_code)
 
 
 def get_department_timezone(departement_code: str | None) -> str:

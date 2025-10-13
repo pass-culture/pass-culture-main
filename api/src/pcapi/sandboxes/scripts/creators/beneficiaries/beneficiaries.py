@@ -1,18 +1,18 @@
 import logging
-from datetime import datetime
 
 from dateutil.relativedelta import SA
 from dateutil.relativedelta import relativedelta
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
 
 
 def create_future_beneficiaries() -> None:
-    coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
+    coming_saturday = date_utils.get_naive_utc_now() + relativedelta(weekday=SA)
     eighteen_on_saturday = coming_saturday + relativedelta(years=-18)
     users_factories.UserFactory.create(
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
@@ -29,7 +29,7 @@ def create_future_beneficiaries() -> None:
 
 
 def create_expiring_beneficiary() -> None:
-    coming_saturday = datetime.utcnow() + relativedelta(weekday=SA)
+    coming_saturday = date_utils.get_naive_utc_now() + relativedelta(weekday=SA)
     users_factories.BeneficiaryGrant18Factory.create(
         email="pctest.beneficiary.deposit-expires-soon@example.com",
         deposit__expirationDate=coming_saturday,

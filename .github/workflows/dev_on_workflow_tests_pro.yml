@@ -21,7 +21,7 @@ jobs:
     name: "Code/Type/Style Quality check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version-file: "pro/package.json"
@@ -58,14 +58,14 @@ jobs:
         shardIndex: [1, 2]
         shardTotal: [2]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
         with:
           node-version-file: "pro/package.json"
 
       - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download allure reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: pro/allure-results
           pattern: allure-results-pro-unit-*
@@ -170,7 +170,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v5
         with:
@@ -198,7 +198,7 @@ jobs:
             yarn install --immutable
 
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: pro/.vitest-reports
           pattern: blob-report-*
@@ -208,7 +208,7 @@ jobs:
         run: npx vitest --merge-reports
 
       - name: Download coverage reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: pro/coverage
           pattern: coverage-report-*
@@ -220,14 +220,14 @@ jobs:
           npx nyc report -t coverage --report-dir coverage --reporter lcov
 
       - name: "OpenID Connect Authentication"
-        uses: "google-github-actions/auth@v2"
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       - name: "Get Secret"
         id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             SONAR_TOKEN:passculture-metier-ehp/passculture-main-sonar-token

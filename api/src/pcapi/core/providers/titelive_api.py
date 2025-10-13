@@ -15,10 +15,11 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
-from pcapi.connectors.serialization.titelive_serializers import TiteliveWorkType
+from pcapi.connectors.serialization.titelive_serializers import BaseTiteliveWork
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils import requests
 
@@ -45,7 +46,7 @@ def insert_local_provider_event_on_error(method: typing.Callable) -> typing.Call
     return method_with_local_provider_event
 
 
-class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
+class TiteliveSearchTemplate[TiteliveWorkType: BaseTiteliveWork](abc.ABC):
     titelive_base: titelive.TiteliveBase
 
     def __init__(self) -> None:
@@ -111,7 +112,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
     ) -> providers_models.LocalProviderEvent:
         message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
-            date=datetime.datetime.utcnow(),
+            date=date_utils.get_naive_utc_now(),
             payload=message,
             provider=self.provider,
             type=provider_event_type,
@@ -279,7 +280,7 @@ class TiteliveSearchTemplate(abc.ABC, typing.Generic[TiteliveWorkType]):
             db.session.delete(product_mediation)
 
 
-def filter_recent_products(
+def filter_recent_products[TiteliveWorkType: BaseTiteliveWork](
     titelive_product_page: list[TiteliveWorkType],
     from_date: datetime.date,
 ) -> list[TiteliveWorkType]:

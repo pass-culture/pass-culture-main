@@ -9,6 +9,7 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import repository
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -178,21 +179,21 @@ class HasReimbursementTest:
 
 class HasActiveOrFutureCustomRemibursementRuleTest:
     def test_active_rule(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         timespan = (now - datetime.timedelta(days=1), now + datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
         assert repository.has_active_or_future_custom_reimbursement_rule(offer)
 
     def test_future_rule(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         timespan = (now + datetime.timedelta(days=1), None)
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer
         assert repository.has_active_or_future_custom_reimbursement_rule(offer)
 
     def test_past_rule(self):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         timespan = (now - datetime.timedelta(days=2), now - datetime.timedelta(days=1))
         rule = factories.CustomReimbursementRuleFactory(timespan=timespan)
         offer = rule.offer

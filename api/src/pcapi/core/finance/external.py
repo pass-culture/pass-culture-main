@@ -1,4 +1,3 @@
-import datetime
 import logging
 import time
 
@@ -11,6 +10,7 @@ from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
 from pcapi.notifications.internal import send_internal_message
+from pcapi.utils import date as date_utils
 from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
@@ -60,7 +60,7 @@ def push_bank_accounts(count: int) -> None:
                 db.session.query(finance_models.BankAccount).filter(
                     finance_models.BankAccount.id == bank_account_id
                 ).update(
-                    {"lastCegidSyncDate": datetime.datetime.utcnow()},
+                    {"lastCegidSyncDate": date_utils.get_naive_utc_now()},
                     synchronize_session=False,
                 )
                 db.session.commit()

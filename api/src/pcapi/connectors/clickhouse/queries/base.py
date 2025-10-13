@@ -5,10 +5,7 @@ import pydantic.v1 as pydantic_v1
 import pcapi.connectors.clickhouse as clickhouse_connector
 
 
-ModelType = typing.TypeVar("ModelType", bound=pydantic_v1.BaseModel)
-
-
-class BaseQuery(typing.Generic[ModelType]):
+class BaseQuery[ModelType: pydantic_v1.BaseModel]:
     def __init__(self) -> None:
         self.backend = clickhouse_connector.get_backend()
 

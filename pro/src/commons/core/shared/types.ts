@@ -34,8 +34,8 @@ export interface Address {
 }
 
 export interface AddressFormValues {
-  'search-addressAutocomplete': string
-  addressAutocomplete: string
+  'search-addressAutocomplete': string | null
+  addressAutocomplete: string | null
   banId: string | null
   street: string | null
   postalCode: string

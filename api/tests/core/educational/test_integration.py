@@ -11,12 +11,13 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 
 @pytest.mark.usefixtures("db_session")
 class EducationalWorkflowTest:
     def test_collective_workflow(self, db_session):
-        now = datetime.datetime.utcnow()
+        now = date_utils.get_naive_utc_now()
         start_datetime = now + datetime.timedelta(days=1)
 
         venue = offerers_factories.VenueFactory(pricing_point="self")

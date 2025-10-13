@@ -22,6 +22,7 @@ from pcapi.core.providers.titelive_book_search import get_book_format
 from pcapi.core.providers.titelive_book_search import get_gtl_id
 from pcapi.core.providers.titelive_book_search import get_ineligibility_reasons
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.repository import transaction
 
 
@@ -59,7 +60,7 @@ class BigQueryProductSync:
     ) -> providers_models.LocalProviderEvent:
         message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
-            date=datetime.datetime.utcnow(),
+            date=date_utils.get_naive_utc_now(),
             payload=message,
             provider=provider,
             type=event_type,

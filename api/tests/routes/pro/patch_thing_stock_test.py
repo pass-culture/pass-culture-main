@@ -10,6 +10,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -23,7 +24,7 @@ class Returns200Test:
                 {
                     "price": 20,
                     "bookingLimitDatetime": format_into_utc_date(
-                        datetime.datetime.utcnow() + datetime.timedelta(days=1)
+                        date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
                     ),
                     "quantity": 10,
                 },
@@ -108,7 +109,7 @@ class Returns400Test:
         "input_json",
         [
             {"price": 20},
-            {"bookingLimitDatetime": format_into_utc_date(datetime.datetime.utcnow() + datetime.timedelta(days=1))},
+            {"bookingLimitDatetime": format_into_utc_date(date_utils.get_naive_utc_now() + datetime.timedelta(days=1))},
         ],
     )
     def test_should_raise_because_you_cannot_update_stock_attribute_except_quantity_for_synchronized_offers(

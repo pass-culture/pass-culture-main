@@ -76,6 +76,7 @@ from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import repository
@@ -789,7 +790,7 @@ def send_future_offer_reminders(booking_allowed_datetime: datetime.datetime | No
 def set_upper_timespan_of_inactive_headline_offers() -> None:
     inactive_headline_offers = offers_repository.get_inactive_headline_offers()
     for headline_offer in inactive_headline_offers:
-        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
         logger.info(
             "Headline Offer Deactivation",
             extra={
@@ -829,7 +830,9 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
     offers_validation.check_offerer_is_eligible_for_headline_offers(offer.venue.managingOffererId)
     offers_validation.check_offer_is_eligible_to_be_headline(offer)
     try:
-        headline_offer = models.HeadlineOffer(offer=offer, venue=offer.venue, timespan=(datetime.datetime.utcnow(),))
+        headline_offer = models.HeadlineOffer(
+            offer=offer, venue=offer.venue, timespan=(date_utils.get_naive_utc_now(),)
+        )
         db.session.add(headline_offer)
         # Note: We use flush and not commit to be compliant with atomic. At this moment,
         # the timespan is a str because the __init__ overloaded method of HeadlineOffer calls
@@ -857,7 +860,7 @@ def make_offer_headline(offer: models.Offer) -> models.HeadlineOffer:
 
 def remove_headline_offer(headline_offer: offers_models.HeadlineOffer) -> None:
     try:
-        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, datetime.datetime.utcnow())
+        headline_offer.timespan = db_utils.make_timerange(headline_offer.timespan.lower, date_utils.get_naive_utc_now())
         on_commit(
             partial(
                 search.async_index_offer_ids,
@@ -883,7 +886,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bo
             )
             return
         bookings = bookings_api.update_cancellation_limit_dates(bookings, stock.beginningDatetime)
-        date_in_two_days = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        date_in_two_days = date_utils.get_naive_utc_now() + datetime.timedelta(days=2)
         check_event_is_in_more_than_48_hours = stock.beginningDatetime > date_in_two_days
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
@@ -1236,7 +1239,7 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
 
     if user is not None:
         offer.author = user
-    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationDate = date_utils.get_naive_utc_now()
     offer.lastValidationType = OfferValidationType.AUTO
     offer.lastValidationAuthorUserId = None
 
@@ -1467,7 +1470,7 @@ def add_criteria_to_offers(
         ean = ean.replace("-", "").replace(" ", "")
         product_query = product_query.filter(models.Product.ean == ean)
     elif allocineId:
-        product_query = product_query.filter(models.Product.extraData["allocineId"] == str(allocineId))
+        product_query = product_query.filter(models.Product.extraData.op("->")("allocineId") == str(allocineId))
     elif visa:
         product_query = product_query.filter(models.Product.extraData["visa"].astext == visa)
 
@@ -1551,7 +1554,7 @@ def reject_inappropriate_products(
     offer_updated_counts = offers_query.update(
         values={
             "validation": models.OfferValidationStatus.REJECTED,
-            "lastValidationDate": datetime.datetime.utcnow(),
+            "lastValidationDate": date_utils.get_naive_utc_now(),
             "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
             "lastValidationAuthorUserId": author.id if author else None,
         },
@@ -1857,7 +1860,7 @@ def revalidate_offers_after_product_whitelist(product: offers_models.Product, us
         offers_query.update(
             values={
                 "validation": offers_models.OfferValidationStatus.APPROVED,
-                "lastValidationDate": datetime.datetime.utcnow(),
+                "lastValidationDate": date_utils.get_naive_utc_now(),
                 "lastValidationType": OfferValidationType.MANUAL,
                 "lastValidationAuthorUserId": user.id,
             },
@@ -2033,7 +2036,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
             offer_updated_counts = offers_query.update(
                 values={
                     "validation": models.OfferValidationStatus.APPROVED,
-                    "lastValidationDate": datetime.datetime.utcnow(),
+                    "lastValidationDate": date_utils.get_naive_utc_now(),
                     "lastValidationType": OfferValidationType.AUTO,
                 },
                 synchronize_session=False,
@@ -2110,7 +2113,7 @@ def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venu
         .with_entities(models.Stock.id)
         .filter(
             models.Stock.offerId == offer.id,
-            models.Stock.beginningDatetime < datetime.datetime.utcnow(),
+            models.Stock.beginningDatetime < date_utils.get_naive_utc_now(),
             models.Stock.isSoftDeleted.is_(False),
         )
         .count()
@@ -2851,15 +2854,16 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
 def extract_youtube_video_id(url: str) -> str | None:
     if not isinstance(url, str):
         return None
-    # This regex is a replicate of what exists frontend-side in isYoutubeValid.ts file
-    # Mind that frontend / backend controls regarding video url always match.
+    # This regex is a replicate of what exists frontend-side
+    # Mind that frontend / backend controls always match regarding video url.
     youtube_regex = (
-        r"(https?://)?"
+        r"^(https?://)"
         r"(www\.)?"
         r"(m\.)?"
-        r"(youtube\.com|youtu\.be)"
-        r'(/watch\?v=|/embed/|/v/|/e/|\/)?(?P<video_id>[^"&?\/\s]{11})\b'
+        r"(youtube\.com\b|youtu\.be\b)"
+        r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
     )
+
     pattern = re.compile(youtube_regex)
     if match := pattern.match(url):
         return match.group("video_id")
@@ -2889,7 +2893,7 @@ def upsert_highlight_requests(
     if any(not h.is_available for h in highlights):
         raise exceptions.UnavailableHighlightException()
 
-    now = datetime.datetime.utcnow()
+    now = date_utils.get_naive_utc_now()
     current_highlight_requests = (
         db.session.query(highlights_models.HighlightRequest)
         .join(highlights_models.HighlightRequest.highlight)
