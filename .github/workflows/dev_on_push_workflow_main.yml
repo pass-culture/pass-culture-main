@@ -29,7 +29,7 @@ jobs:
           fetch-tags: false
       - name: "Check api folder changes"
         id: check-api-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/**
@@ -38,24 +38,24 @@ jobs:
             !api/src/pcapi/scripts/**/main.sql
       - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: api/documentation/**
       - name: "Check pro folder changes"
         id: check-pro-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
       - name: "Check changes in Algolia configuration"
         id: check-algolia-config-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             api/src/pcapi/algolia_settings_collective_offers.json
@@ -93,12 +93,12 @@ jobs:
           fetch-tags: false
       - name: "Check maintenance-site folder changes"
         id: check-maintenance-site-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: maintenance-site/**
       - name: "Check db migration folder changes"
         id: check-db-migrations-changes
-        uses: tj-actions/changed-files@v46
+        uses: tj-actions/changed-files@v47
         with:
           files: |-
             api/src/pcapi/alembic/versions/**
