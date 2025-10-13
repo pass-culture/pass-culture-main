@@ -1,12 +1,9 @@
 import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullBoostedIcon from '@/icons/full-boosted.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
-
-import styles from './HeadlineOfferCell.module.scss'
 
 type HeadlineOfferCellProps = {
   offer: ListOffersOfferResponseModel
@@ -43,16 +40,11 @@ export function HeadlineOfferCell({
 
   return (
     <DropdownItem onSelect={onSelect} asChild>
-      <span>
-        <Button variant={ButtonVariant.TERNARY} icon={fullBoostedIcon}>
-          {offer.id === headlineOffer?.id
-            ? 'Ne plus mettre à la une'
-            : 'Mettre à la une'}
-        </Button>
-        <div className={styles['new-tag']}>
-          <Tag label="Nouveau" variant={TagVariant.NEW} />
-        </div>
-      </span>
+      <Button variant={ButtonVariant.TERNARY} icon={fullBoostedIcon}>
+        {offer.id === headlineOffer?.id
+          ? 'Ne plus mettre à la une'
+          : 'Mettre à la une'}
+      </Button>
     </DropdownItem>
   )
 }
