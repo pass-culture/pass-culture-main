@@ -10,6 +10,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.geography.models as geography_models
+import pcapi.core.highlights.models as highlights_models
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -68,6 +69,8 @@ def _create_postgis_extension() -> None:
 # Order of table to clean matters because of foreign key constraints
 # They will be deleted in this order
 tables_to_clean: list[type[Model]] = [
+    highlights_models.HighlightRequest,
+    highlights_models.Highlight,
     achievements_models.Achievement,
     artist_models.Artist,
     artist_models.ArtistAlias,
