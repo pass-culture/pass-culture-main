@@ -304,27 +304,19 @@ def create_pro_user_with_collective_offers() -> dict:
         formats=[EacFormat.CONCERT],
     )
 
-    offerPublished = educational_factories.CollectiveStockFactory.create(
-        collectiveOffer__name="Mon offre collective publiée réservable",
-        collectiveOffer__venue=venue1,
-        collectiveOffer__formats=[EacFormat.CONCERT],
-        startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
-        endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
-    )
-
     offerDraft = educational_factories.DraftCollectiveOfferFactory.create(
         name="Mon offre collective en brouillon réservable",
         venue=venue1,
         formats=[EacFormat.REPRESENTATION],
     )
 
-    offerInInstruction = educational_factories.UnderReviewCollectiveOfferFactory.create(
+    offerUnderReview = educational_factories.UnderReviewCollectiveOfferFactory.create(
         name="Mon offre collective en instruction réservable",
         venue=venue2,
         formats=[EacFormat.REPRESENTATION],
     )
 
-    offerNotConform = educational_factories.RejectedCollectiveOfferFactory.create(
+    offerRejected = educational_factories.RejectedCollectiveOfferFactory.create(
         name="Mon offre collective non conforme réservable",
         venue=venue2,
         formats=[EacFormat.REPRESENTATION],
@@ -334,6 +326,7 @@ def create_pro_user_with_collective_offers() -> dict:
         name="Mon offre collective archivée réservable",
         venue=venue2,
         formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
     )
 
     educational_factories.EducationalDomainFactory.create(
@@ -345,7 +338,16 @@ def create_pro_user_with_collective_offers() -> dict:
 
     educational_factories.EducationalCurrentYearFactory.create()
     educational_factories.EducationalYearFactory.create()
-    educational_factories.EducationalInstitutionFactory.create(name="COLLEGE 123")
+    educational_institution = educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
+
+    offerPublished = educational_factories.CollectiveStockFactory.create(
+        collectiveOffer__name="Mon offre collective publiée réservable",
+        collectiveOffer__venue=venue1,
+        collectiveOffer__formats=[EacFormat.CONCERT],
+        collectiveOffer__institution=educational_institution,
+        startDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
+        endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(weeks=2),
+    )
 
     return {
         "user": get_pro_user_helper(pro_user),
@@ -358,21 +360,23 @@ def create_pro_user_with_collective_offers() -> dict:
             "name": offerPublished.collectiveOffer.name,
             "venueName": offerPublished.collectiveOffer.venue.name,
             "venueFullAddress": offerPublished.collectiveOffer.venue.offererAddress.address.fullAddress,
+            "startDatetime": offerPublished.startDatetime,
+            "endDatetime": offerPublished.endDatetime,
         },
         "offerDraft": {
             "name": offerDraft.name,
             "venueName": offerDraft.venue.name,
             "venueFullAddress": offerDraft.venue.offererAddress.address.fullAddress,
         },
-        "offerInInstruction": {
-            "name": offerInInstruction.name,
-            "venueName": offerInInstruction.venue.name,
-            "venueFullAddress": offerInInstruction.venue.offererAddress.address.fullAddress,
+        "offerUnderReview": {
+            "name": offerUnderReview.name,
+            "venueName": offerUnderReview.venue.name,
+            "venueFullAddress": offerUnderReview.venue.offererAddress.address.fullAddress,
         },
-        "offerNotConform": {
-            "name": offerNotConform.name,
-            "venueName": offerNotConform.venue.name,
-            "venueFullAddress": offerNotConform.venue.offererAddress.address.fullAddress,
+        "offerRejected": {
+            "name": offerRejected.name,
+            "venueName": offerRejected.venue.name,
+            "venueFullAddress": offerRejected.venue.offererAddress.address.fullAddress,
         },
         "offerArchived": {
             "name": offerArchived.name,
