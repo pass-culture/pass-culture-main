@@ -398,6 +398,69 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(should_be_displayed_offer.id)
 
+    def test_list_offers_with_offerer_tag_filter_in(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory()
+        offer_to_display = offers_factories.OfferFactory()
+        offer_to_display.venue.managingOfferer.tags = [tag]
+        hidden_offer = offers_factories.OfferFactory()
+        hidden_offer.venue.managingOfferer.tags = [offerers_factories.OffererTagFactory()]
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "IN",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_offerer_tag_filter_not_in(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory()
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [tag]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "NOT_IN",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_offerer_tag_filter_not_exist(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory(name="plouf")
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [tag]
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [offerers_factories.OffererTagFactory()]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
     def test_list_offers_by_event_date(self, authenticated_client, offers):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.date.today())

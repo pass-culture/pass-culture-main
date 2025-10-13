@@ -299,8 +299,8 @@ def generate_search_query(
     _ignore_subquery_joins: internal signaling to manage subqueries
     """
     subquery_joins: dict = defaultdict(list)
-    inner_joins: set[tuple] = set()
-    outer_joins: set[tuple] = set()
+    inner_joins: set[str] = set()
+    outer_joins: set[str] = set()
     filters: list = []
     warnings: set[str] = set()
     for search_data in search_parameters:

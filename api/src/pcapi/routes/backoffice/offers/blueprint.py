@@ -171,6 +171,36 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "OFFERER_TAG": {
+        "field": "offerer_tags",
+        "column": offerers_models.OffererTagMapping.tagId,
+        "inner_join": "offerer_tag_mapping",
+        "custom_filters_inner_joins": {
+            "NOT_IN": ["offerer"],
+            "NOT_EXIST": ["offerer"],
+        },
+        "custom_filters": {
+            "NOT_IN": lambda values: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+                        offerers_models.OffererTagMapping.tagId.in_(values),
+                    )
+                )
+                .correlate(offerers_models.Offerer)
+                .is_(False)
+            ),
+            "NOT_EXIST": lambda values: (
+                sa.exists()
+                .where(
+                    offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+                )
+                .correlate(offerers_models.Offerer)
+                .is_(False)
+            ),
+        },
+    },
     "STATUS": {
         "field": "status",
         "column": offers_models.Offer.status,
@@ -303,6 +333,23 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "offerer",
             "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
+    ],
+    "offerer_tag_mapping": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+        {
+            "name": "offerer",
+            "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
+        {
+            "name": "offerer_tag_mapping",
+            "args": (
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            ),
         },
     ],
 }

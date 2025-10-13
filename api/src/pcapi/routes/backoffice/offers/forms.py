@@ -50,6 +50,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
+    OFFERER_TAG = "Tag sur l'entité juridique"
     HEADLINE = "Offres à la une"
     HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
@@ -83,6 +84,7 @@ form_field_configuration = {
     "MEDIATION": {"field": "boolean", "operator": ["NULLABLE"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "OFFERER_TAG": {"field": "offerer_tags", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "PRODUCT": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
@@ -179,6 +181,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "price",
                 "boolean",
                 "provider",
+                "offerer_tags",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -193,6 +196,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_addresses_choices(self.address)
         autocomplete.prefill_providers_choices(self.provider)
         autocomplete.prefill_highlights_choices(self.highlight)
+        autocomplete.prefill_offerer_tag_choices(self.offerer_tags)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -245,6 +249,16 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         coerce=int,
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_criteria",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    offerer_tags = fields.PCTomSelectField(
+        "Tag de l'entité juridique",
+        multiple=True,
+        choices=[],
+        coerce=int,
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerer_tags",
         search_inline=True,
         field_list_compatibility=True,
     )
