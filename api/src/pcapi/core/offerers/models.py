@@ -195,6 +195,37 @@ class Weekday(enum.Enum):
     SUNDAY = "SUNDAY"
 
 
+class Activity(enum.Enum):
+    """
+    Venue's Activity is the main business activity of an ERP (open to public) structure
+    For a non-ERP structure, the business is described through the Venue's list of EducationalDomain (venue.collectiveDomains)
+    """
+
+    ART_GALLERY = "ART_GALLERY"
+    ART_SCHOOL = "ART_SCHOOL"
+    ARTS_CENTRE = "ARTS_CENTRE"
+    BOOKSTORE = "BOOKSTORE"
+    CINEMA = "CINEMA"
+    COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
+    CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
+    CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    FESTIVAL = "FESTIVAL"
+    # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
+    GAMES_CENTRE = "GAMES_CENTRE"
+    HERITAGE_SITE = "HERITAGE_SITE"
+    LIBRARY = "LIBRARY"
+    MUSEUM = "MUSEUM"
+    MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
+    # 'NOT_ASSIGNED' is used for non-ERP structures (is_open_to_public=False) which have no main activity
+    NOT_ASSIGNED = "NOT_ASSIGNED"
+    # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
+    OTHER = "OTHER"
+    PERFORMANCE_HALL = "PERFORMANCE_HALL"
+    RECORD_STORE = "RECORD_STORE"
+    SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
+
+
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
     __tablename__ = "venue"
     thumb_path_component = "venues"
@@ -424,6 +455,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
+
+    activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(Activity, use_values=False), nullable=True
+    )
 
     __table_args__ = (
         sa.CheckConstraint(
