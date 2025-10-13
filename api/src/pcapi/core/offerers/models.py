@@ -1526,7 +1526,47 @@ class OffererAddress(PcObject, Model):
 
     _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
-    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
+    __table_args__ = (
+        # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
+        # sa.Index("ix_unique_offerer_address_per_label, "offererId", "addressId", "label", "type", "venueId", unique=True),
+        # probably with postgresql_nulls_not_distinct=True, because duplicate empty label should be on different venues.
+        #
+        # But this would break unique checking during transition because null values in type and venueId are distinct.
+        # Setting postgresql_nulls_not_distinct is not possible because :
+        # - null values must be distinct on label
+        # - null values should not be distinct on type and venueId
+        # so several partial indexes are created temporarily to ensure integrity during transition.
+        sa.Index(
+            "ix_unique_offerer_address_per_label",
+            "offererId",
+            "addressId",
+            "label",
+            postgresql_where=sa.and_(type.is_(None), venueId.is_(None)),
+            unique=True,
+        ),
+        # After label
+        sa.Index(
+            "ix_wip_unique_offerer_address_when_label_is_null",
+            "offererId",
+            "addressId",
+            "type",
+            "venueId",
+            unique=True,
+            postgresql_where=sa.and_(label.is_(None), venueId.is_not(None)),
+            postgresql_nulls_not_distinct=True,
+        ),
+        sa.Index(
+            "ix_wip_unique_offerer_address_when_label_is_not_null",
+            "offererId",
+            "addressId",
+            "label",
+            "type",
+            "venueId",
+            unique=True,
+            postgresql_where=label.is_not(None),
+            postgresql_nulls_not_distinct=True,
+        ),
+    )
 
     @hybrid_property
     def isLinkedToVenue(self) -> bool:
