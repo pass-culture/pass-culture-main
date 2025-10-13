@@ -125,9 +125,6 @@ jobs:
     with:
       image: pcapi
       push: false
-      # TODO: check me
-      # ref: ${{ github.sha }}
-      # tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
@@ -148,9 +145,6 @@ jobs:
     with:
       image: pcapi
       push: true
-      # TODO: check me
-      # commit-hash: ${{ github.sha }}
-      # checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
