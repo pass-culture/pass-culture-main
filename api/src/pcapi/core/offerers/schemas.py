@@ -168,6 +168,9 @@ class BannerMetaModel(typing.TypedDict, total=False):
     is_from_google: bool
 
 
+# [DEPRECATION NOTICE - ETA T1 2026]
+# This typology is to be replaced by Activity (Venue's main business activity) and EducationalDomains (Venue's cultural domains)
+# Once activity and domains are implemented and data migrated, this will be deleted
 # Keep this enum ordered and with the OTHER value first
 class VenueTypeCode(enum.Enum):
     OTHER = "Autre"
