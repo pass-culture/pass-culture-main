@@ -446,3 +446,4 @@ Lors d'un changement dans le fichier `requirements.py`, une nouvelle image docke
 docker image prune
 ```
 
+### Test workflow changes by using common workflow for docker images build and push
