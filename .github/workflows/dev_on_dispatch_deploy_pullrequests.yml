@@ -121,7 +121,7 @@ jobs:
     name: "[pcapi] build docker image."
     needs: [deploy-preview-env-init]
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image_new.yml
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi
       push: false
