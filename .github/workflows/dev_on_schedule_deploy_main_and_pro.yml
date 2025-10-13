@@ -91,6 +91,7 @@ jobs:
           echo "[pcapi] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-checksum-tag.outputs.tag-exists }}"
           echo "[pcapi-console] image tag ${{ steps.pcapi-tags.outputs.checksum-tag }} exists : ${{ steps.check-console-checksum-tag.outputs.tag-exists }}"
 
+  # TODO: continue to push into old artifact registry until we fully migrated to new one
   # Theses steps builds pcapi and pcapi-console image, tags them with the last commit sha then
   # pushes them to the registry
   build-pcapi:
@@ -106,6 +107,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  # TODO: continue to push into old artifact registry until we fully migrated to new one
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
