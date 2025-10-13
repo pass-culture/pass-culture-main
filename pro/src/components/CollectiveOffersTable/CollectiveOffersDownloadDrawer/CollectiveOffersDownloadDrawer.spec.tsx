@@ -12,7 +12,7 @@ import {
 } from '@/commons/core/Offers/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { DownloadBookableOffersButton } from './DownloadBookableOffersButton'
+import { CollectiveOffersDownloadDrawer } from './CollectiveOffersDownloadDrawer'
 
 vi.mock('@/commons/utils/downloadFile', () => ({ downloadFile: vi.fn() }))
 
@@ -48,7 +48,7 @@ const filters: CollectiveSearchFiltersParams = {
   format: EacFormat.CONCERT,
 }
 
-const renderDownloadButton = (
+const renderCollectiveOffersDownloadDrawer = (
   {
     isDisabled = false,
     filtersProp = filters,
@@ -57,7 +57,7 @@ const renderDownloadButton = (
   features = ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
 ) => {
   return renderWithProviders(
-    <DownloadBookableOffersButton
+    <CollectiveOffersDownloadDrawer
       isDisabled={isDisabled}
       filters={filtersProp}
       defaultFilters={defaultFiltersProp}
@@ -71,39 +71,22 @@ describe('DownloadBookableOffersButton', () => {
     vi.clearAllMocks()
   })
 
-  it('should render download button with dropdown options', async () => {
-    renderDownloadButton()
+  it('should render download button with drawer action', async () => {
+    renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
-    expect(downloadButton).toBeInTheDocument()
-    expect(downloadButton).toBeEnabled()
-
     await userEvent.click(downloadButton)
 
     expect(
-      screen.getByRole('menuitem', { name: 'Microsoft Excel (.xls)' })
+      screen.getByRole('button', { name: 'Télécharger format CSV' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('menuitem', { name: 'Fichier CSV (.csv)' })
+      screen.getByRole('button', { name: 'Télécharger format Excel' })
     ).toBeInTheDocument()
-  })
-
-  it('should not render download button when WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is not active', () => {
-    renderDownloadButton(
-      {
-        isDisabled: false,
-        filtersProp: filters,
-        defaultFiltersProp: defaultFilters,
-      },
-      []
-    )
-
-    const downloadButton = screen.queryByRole('button', { name: 'Télécharger' })
-    expect(downloadButton).not.toBeInTheDocument()
   })
 
   it('should be disabled when isDisabled prop is true', () => {
-    renderDownloadButton({
+    renderCollectiveOffersDownloadDrawer({
       isDisabled: true,
       filtersProp: filters,
       defaultFiltersProp: defaultFilters,
@@ -113,18 +96,18 @@ describe('DownloadBookableOffersButton', () => {
     expect(downloadButton).toBeDisabled()
   })
 
-  it('should download CSV file when CSV option is clicked', async () => {
+  it('should download CSV file when CSV button is clicked', async () => {
     const mockGetCollectiveOffersCsv = vi
       .spyOn(api, 'getCollectiveOffersCsv')
       .mockResolvedValueOnce('csv,data')
 
-    renderDownloadButton()
+    renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const csvButton = screen.getByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
+    const csvButton = screen.getByRole('button', {
+      name: 'Télécharger format CSV',
     })
     await userEvent.click(csvButton)
 
@@ -143,18 +126,18 @@ describe('DownloadBookableOffersButton', () => {
     )
   })
 
-  it('should download Excel file when Excel option is clicked', async () => {
+  it('should download Excel file when Excel button is clicked', async () => {
     const mockGetCollectiveOffersExcel = vi
       .spyOn(api, 'getCollectiveOffersExcel')
       .mockResolvedValueOnce(new Blob())
 
-    renderDownloadButton()
+    renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const excelButton = screen.getByRole('menuitem', {
-      name: 'Microsoft Excel (.xls)',
+    const excelButton = screen.getByRole('button', {
+      name: 'Télécharger format Excel',
     })
     await userEvent.click(excelButton)
 
@@ -178,13 +161,13 @@ describe('DownloadBookableOffersButton', () => {
       new Error('Download failed')
     )
 
-    renderDownloadButton()
+    renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const csvButton = screen.getByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
+    const csvButton = screen.getByRole('button', {
+      name: 'Télécharger format CSV',
     })
     await userEvent.click(csvButton)
 
@@ -203,13 +186,13 @@ describe('DownloadBookableOffersButton', () => {
       downloadPromise as any
     )
 
-    renderDownloadButton()
+    renderCollectiveOffersDownloadDrawer()
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const csvButton = screen.getByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
+    const csvButton = screen.getByRole('button', {
+      name: 'Télécharger format CSV',
     })
     await userEvent.click(csvButton)
 
@@ -241,7 +224,7 @@ describe('DownloadBookableOffersButton', () => {
       offererAddressId: '123',
     }
 
-    renderDownloadButton({
+    renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
       defaultFiltersProp: defaultFilters,
@@ -250,8 +233,8 @@ describe('DownloadBookableOffersButton', () => {
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const csvButton = screen.getByRole('menuitem', {
-      name: 'Fichier CSV (.csv)',
+    const csvButton = screen.getByRole('button', {
+      name: 'Télécharger format CSV',
     })
     await userEvent.click(csvButton)
 
@@ -280,7 +263,7 @@ describe('DownloadBookableOffersButton', () => {
       locationType: CollectiveLocationType.SCHOOL,
     }
 
-    renderDownloadButton({
+    renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
       defaultFiltersProp: defaultFilters,
@@ -289,8 +272,8 @@ describe('DownloadBookableOffersButton', () => {
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
     await userEvent.click(downloadButton)
 
-    const excelButton = screen.getByRole('menuitem', {
-      name: 'Microsoft Excel (.xls)',
+    const excelButton = screen.getByRole('button', {
+      name: 'Télécharger format Excel',
     })
     await userEvent.click(excelButton)
 
