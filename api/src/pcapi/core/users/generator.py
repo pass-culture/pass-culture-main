@@ -81,7 +81,7 @@ def _get_user_factory(user_data: GenerateUserData) -> type[users_factories.BaseU
             case GeneratedSubscriptionStep.EMAIL_VALIDATION:
                 Factory = users_factories.EmailValidatedUserFactory
             case GeneratedSubscriptionStep.PROFILE_COMPLETION:
-                Factory = users_factories.FreeBeneficiaryFactory
+                Factory = users_factories.ProfileCompletedUserFactory
             case GeneratedSubscriptionStep.BENEFICIARY:
                 Factory = users_factories.FreeBeneficiaryFactory
             case _:
