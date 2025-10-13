@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
+import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferHistory } from './CollectiveOfferHistory';
 import type { EacFormat } from './EacFormat';
@@ -16,7 +17,6 @@ import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferV
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
-import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
   allowedActions: Array<CollectiveOfferAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
@@ -26,7 +26,7 @@ export type GetCollectiveOfferResponseModel = {
   contactEmail?: string | null;
   contactPhone?: string | null;
   dateCreated: string;
-  dates?: TemplateDatesModel | null;
+  dates?: CollectiveOfferDatesModel | null;
   description: string;
   displayedStatus: CollectiveOfferDisplayedStatus;
   domains: Array<OfferDomain>;
