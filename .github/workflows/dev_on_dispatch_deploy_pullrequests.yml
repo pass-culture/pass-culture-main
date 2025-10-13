@@ -136,6 +136,8 @@ jobs:
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   # TODO: continue to push into old artifact registry until we fully migrated to new one
   push-pcapi:
@@ -157,6 +159,8 @@ jobs:
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-api:
     name: "Deploy pullrequest"

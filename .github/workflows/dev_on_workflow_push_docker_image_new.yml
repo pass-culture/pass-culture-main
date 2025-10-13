@@ -36,6 +36,12 @@ on:
       SERVICE_ACCOUNT:
         required: true
 
+      PRIVATE_KEY:
+        required: true
+
+      APP_ID:
+        required: true
+
 permissions:
   contents: read
   id-token: write
@@ -57,12 +63,12 @@ jobs:
         with:
           secrets: |-
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
-            PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+            PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - name: Authenticate through github app argo-wf
         id: github-token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          app-id: ${{ secrets.APP_ID }}
           private-key: ${{ steps.secrets.outputs.PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: |
