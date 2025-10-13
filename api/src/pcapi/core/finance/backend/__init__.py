@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
@@ -47,6 +49,11 @@ def get_bank_account(bank_account_id: int) -> dict | None:
 def get_invoice(reference: str) -> dict | None:
     backend = _get_backend()
     return backend.get_invoice(reference)
+
+
+def get_settlements(from_date: datetime.date | None, to_date: datetime.date | None) -> dict:
+    backend = _get_backend()
+    return backend.get_settlements(from_date, to_date)
 
 
 def get_time_to_sleep_between_two_sync_requests() -> int:

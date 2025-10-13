@@ -325,6 +325,26 @@ class CegidFinanceBackend(BaseFinanceBackend):
 
         return response_json[0]
 
+    def get_settlements(self, from_date: datetime.date | None, to_date: datetime.date | None) -> dict:
+        url = f"{self.base_url}/{self._interface}/PaymentStatus"
+        # Date filters transaction dates older or equal to value
+        # EndDate filters transaction dates earlier or equal to value
+        from_date_filter = from_date.strftime("%Y-%m-%d") if from_date else ""
+        to_date_filter = to_date.strftime("%Y-%m-%d") if to_date else ""
+        response = self._request(
+            "PUT",
+            url,
+            params={"$expand": "PaymentStatusDetails"},
+            json={"Date": {"value": from_date_filter}, "EndDate": {"value": to_date_filter}},
+        )
+
+        if response.status_code != 200:
+            raise exceptions.FinanceBackendUnexpectedResponse(response, "Unexpected response for PaymentStatus query")
+
+        response_json = response.json()
+
+        return response_json
+
     @property
     def is_configured(self) -> bool:
         return all(

@@ -1,6 +1,9 @@
+import datetime
+import decimal
 import logging
 import time
 
+import sqlalchemy as sa
 from flask import current_app as app
 
 from pcapi import settings
@@ -166,3 +169,142 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     ],
                     icon_emoji=":large_green_circle:",
                 )
+
+
+def get_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
+    try:
+        response_json = finance_backend.get_settlements(from_date, to_date)
+    except Exception as exc:
+        logger.exception(
+            "Unable to get settlements",
+            extra={"exc": str(exc)},
+        )
+    else:
+        settlements_by_bank_account: dict[str, list] = {}
+        for settlement in response_json["PaymentStatusDetails"]:
+            settlements_by_bank_account.setdefault(settlement["VendorID"]["value"], []).append(settlement)
+
+        for bank_account_id in settlements_by_bank_account:
+            bank_account = (
+                db.session.query(finance_models.BankAccount)
+                .filter(finance_models.BankAccount.id == int(bank_account_id))
+                .one_or_none()
+            )
+            if not bank_account:
+                logger.warning(
+                    "No bank account found on our side for this vendor id",
+                    extra={"vendor_id": settlement["VendorID"]["value"]},
+                )
+                continue
+
+            bill_settlements = [
+                settlement
+                for settlement in settlements_by_bank_account[bank_account_id]
+                if settlement["AdjgDocType"]["value"] == "Payment"
+            ]
+            bill_cancelling_settlements = [
+                settlement
+                for settlement in settlements_by_bank_account[bank_account_id]
+                if settlement["AdjgDocType"]["value"] == "Voided Payment"
+            ]
+
+            for settlement_data in bill_settlements:
+                invoice = (
+                    db.session.query(finance_models.Invoice)
+                    .filter(
+                        sa.or_(
+                            finance_models.Invoice.reference == settlement_data["RefFournFact"]["value"],
+                            f"R-{finance_models.Invoice.reference}" == settlement_data["RefFournFact"]["value"],
+                        )
+                    )
+                    .one_or_none()
+                )
+                if not invoice:
+                    logger.warning(
+                        "No invoice found on our side for this reference",
+                        extra={
+                            "invoice_reference": settlement_data["RefFournFact"]["value"],
+                            "vendor_id": settlement_data["VendorID"]["value"],
+                            "settlement_id": settlement_data["adjgRefNbr"]["value"],
+                        },
+                    )
+                    continue
+
+                # get_or_create_settlement_batch
+                if settlement_data["RefLot"] and settlement_data["RefLot"]["value"]:
+                    settlement_batch = (
+                        db.session.query(finance_models.SettlementBatch)
+                        .filter(
+                            finance_models.Settlement.name == (settlement_data["RefLot"]["value"]),
+                        )
+                        .one_or_none()
+                    )
+                    if not settlement_batch:
+                        settlement_batch = finance_models.SettlementBatch(
+                            name=settlement_data["RefLot"]["value"],
+                            label=settlement_data["DescLot"]["value"],
+                        )
+
+                # get_or_create_settlement
+                settlement = (
+                    db.session.query(finance_models.Settlement)
+                    .filter(
+                        finance_models.Settlement.cegidId == settlement_data["adjgRefNbr"]["value"],
+                        finance_models.Settlement.bankAccountId == int(settlement_data["VendorID"]["value"]),
+                    )
+                    .one_or_none()
+                )
+                if settlement:
+                    settlement.invoices.append(invoice)
+                else:
+                    settlement = finance_models.Settlement(
+                        settlementDate=datetime.date.fromisoformat(settlement_data["Date"]["value"]),
+                        cegidSettlementId=settlement_data["ref regl"]["value"],
+                        bankAccountId=int(settlement_data["VendorID"]["value"]),
+                        amount=int(decimal.Decimal(settlement_data["Amount"]["value"]) * 100),
+                        invoices=[invoice],
+                        batch=settlement_batch,
+                    )
+                    db.session.add(settlement)
+                db.session.flush()
+            for settlement_data in bill_cancelling_settlements:
+                invoice = (
+                    db.session.query(finance_models.Invoice)
+                    .filter((finance_models.Invoice.reference == settlement_data["RefFournFact"]["value"]))
+                    .one_or_none()
+                )
+                if not invoice:
+                    logger.warning(
+                        "No invoice found on our side for this reference",
+                        extra={
+                            "invoice_reference": settlement_data["RefFournFact"]["value"],
+                            "vendor_id": settlement_data["VendorID"]["value"],
+                            "settlement_id": settlement_data["adjgRefNbr"]["value"],
+                        },
+                    )
+                    continue
+
+                settlement = (
+                    db.session.query(finance_models.Settlement)
+                    .filter(
+                        finance_models.Settlement.cegidSettlementId == settlement_data["adjgRefNbr"]["value"],
+                    )
+                    .one_or_none()
+                )
+
+                if not settlement:
+                    logger.warning(
+                        "No settlement to cancel found",
+                        extra={
+                            "vendor_id": settlement_data["VendorID"]["value"],
+                            "settlement_id": settlement_data["adjgRefNbr"]["value"],
+                        },
+                    )
+                    continue
+                else:
+                    settlement.status = finance_models.SettlementStatus.REJECTED
+                    settlement.dateRejected = date_utils.get_naive_utc_now()
+                    db.session.flush()
+
+        db.session.commit()
+        # TODO add sync function to set Settlements to Validated
