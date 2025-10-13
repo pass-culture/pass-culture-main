@@ -133,9 +133,12 @@ export const OfferEducational = ({
         (isCollectiveOffer(response) || isCollectiveOfferTemplate(response))
       ) {
         await mutate(
-          offer.isTemplate
-            ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
-            : GET_COLLECTIVE_OFFER_QUERY_KEY,
+          [
+            offer.isTemplate
+              ? GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY
+              : GET_COLLECTIVE_OFFER_QUERY_KEY,
+            offer.id,
+          ],
           {
             ...response,
             imageUrl: imageOffer?.url,
