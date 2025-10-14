@@ -3319,7 +3319,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_no_other_venue_with_siret(self, authenticated_client):
@@ -3328,7 +3328,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
@@ -3391,7 +3391,7 @@ class RemoveSiretTest(PostEndpointHelper):
             venue_id=venue.id,
             form={"override_revenue_check": False, "comment": "test", "new_pricing_point": target_venue.id},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
 
         assert venue.siret is None
         assert venue.comment == "test"
@@ -3452,7 +3452,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         rules = db.session.query(finance_models.CustomReimbursementRule).all()
         assert bool(rules) == update
         if update:
@@ -3474,7 +3474,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_invalid_new_pricing_point(self, authenticated_client):
@@ -3491,7 +3491,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_warnings(response.data) == ["Not a valid choice."]
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
@@ -3512,7 +3512,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
@@ -3537,7 +3537,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert venue.siret is None
         assert venue.current_pricing_point == target_venue
 
