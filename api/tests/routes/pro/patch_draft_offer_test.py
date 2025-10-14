@@ -328,6 +328,7 @@ class Returns200Test:
             ),
         ],
     )
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_first_step_funnel_creation_shouldnt_create_offer_offerer_address(
         self,
         client,

@@ -1382,6 +1382,7 @@ class CreateDraftOfferTest:
         assert db.session.query(models.Offer).count() == 1
         assert offer.metaData is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1441,6 +1442,7 @@ class CreateDraftOfferTest:
 
         assert offer.withdrawalDetails == venue.withdrawalDetails
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1454,6 +1456,7 @@ class CreateDraftOfferTest:
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert error.value.errors["subcategory"] == [msg]
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
