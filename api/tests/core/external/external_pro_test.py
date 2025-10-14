@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from datetime import timedelta
 
 import pytest
 
@@ -9,12 +10,12 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.external.attributes.api import get_pro_attributes
 from pcapi.core.finance.models import BankAccountApplicationStatus
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import NotificationSubscriptions
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -28,7 +29,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 EXPECTED_PRO_ATTR_NUM_QUERIES = 6
 
 
-def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
+def _build_params(subs, virt, perman, draft, accep, offer, bookable, booking, attach, colloff, tploff, megoff):
     return pytest.param(
         subs,
         virt,
@@ -36,14 +37,15 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
         draft,
         accep,
         offer,
-        book,
+        bookable,
+        booking,
         attach,
         colloff,
         tploff,
         megoff,
         id=(
             f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, "
-            f"acc:{accep}, off:{offer}, boo:{book}, "
+            f"acc:{accep}, off:{offer}, abl:{bookable} boo:{booking}, "
             f"att:{attach}, colloff:{colloff}, tploff:{tploff}, megoff:{megoff}"
         ),
     )
@@ -51,16 +53,18 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
 
 @pytest.mark.parametrize(
     "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
-    "create_individual_offer,create_booking,attached,create_collective_offer,create_template_offer,create_collective_offer_meg",
+    "create_individual_offer,offer_is_bookable,create_booking,attached,"
+    "create_collective_offer,create_template_offer,create_collective_offer_meg",
     [
-        #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff
-        _build_params(False, False, False, False, False, False, False, "none", False, False, False),
-        _build_params(True, False, True, True, False, True, False, "one", True, False, False),
-        _build_params(False, True, False, False, True, True, False, "all", False, True, False),
-        _build_params(True, True, True, True, True, True, True, "none", True, True, False),
-        _build_params(False, True, True, False, True, False, False, "one", True, False, False),
-        _build_params(True, True, True, True, True, True, True, "all", True, True, False),
-        _build_params(False, False, False, False, False, False, False, "none", True, False, True),
+        #             subs, virt, perman, draft, accep, offer, bookable, booking, attach, colloff, tploff, megoff
+        _build_params(False, False, False, False, False, False, False, False, "none", False, False, False),
+        _build_params(True, False, True, True, False, True, True, False, "one", True, False, False),
+        _build_params(True, False, True, True, False, True, False, False, "one", True, False, False),
+        _build_params(False, True, False, False, True, True, True, False, "all", False, True, False),
+        _build_params(True, True, True, True, True, True, True, True, "none", True, True, False),
+        _build_params(False, True, True, False, True, False, False, False, "one", True, False, False),
+        _build_params(True, True, True, True, True, True, False, True, "all", True, True, False),
+        _build_params(False, False, False, False, False, False, False, False, "none", True, False, True),
     ],
 )
 def test_update_external_pro_user_attributes(
@@ -70,6 +74,7 @@ def test_update_external_pro_user_attributes(
     create_dms_draft,
     create_dms_accepted,
     create_individual_offer,
+    offer_is_bookable,
     create_booking,
     attached,
     create_collective_offer,
@@ -197,13 +202,18 @@ def test_update_external_pro_user_attributes(
     )
 
     if create_individual_offer:
-        offer1 = OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3)
-        stock1 = StockFactory(offer=offer1)
-        offer2 = OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3)
-        StockFactory(offer=offer2)
+        offer1 = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3)
+        stock1 = offers_factories.StockFactory(offer=offer1, quantity=2 if create_booking else 0)
         if create_booking:
-            for _ in range(5):
+            for _ in range(2):
                 BookingFactory(stock=stock1)
+        offer2 = offers_factories.EventOfferFactory(
+            validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3
+        )
+        offers_factories.EventStockFactory(
+            offer=offer2,
+            bookingLimitDatetime=date_utils.get_naive_utc_now() + timedelta(days=1 if offer_is_bookable else -1),
+        )
 
     if create_dms_draft:
         offerers_factories.VenueBankAccountLinkFactory(
@@ -319,10 +329,12 @@ def test_update_external_pro_user_attributes(
     assert attributes.isVirtual is create_virtual
     assert attributes.isPermanent is create_permanent
     assert attributes.isOpenToPublic is create_permanent
-    assert attributes.has_individual_offers is create_individual_offer
+    assert attributes.has_individual_offers is (create_individual_offer and offer_is_bookable)
     assert attributes.has_bookings is create_booking
     assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
-    assert attributes.has_offers == (create_individual_offer or create_collective_offer or create_template_offer)
+    assert attributes.has_offers == (
+        (create_individual_offer and offer_is_bookable) or create_collective_offer or create_template_offer
+    )
     assert attributes.is_eac_meg == create_collective_offer_meg
 
 
