@@ -52,7 +52,7 @@ jobs:
     name: Push Docker image
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      # - uses: actions/checkout@v5
       - name: "Debug service account value"
         run: |
           echo "🔍 Checking vars value..."
