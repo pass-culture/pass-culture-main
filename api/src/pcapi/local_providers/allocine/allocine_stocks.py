@@ -11,7 +11,6 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers.allocine import build_movie_id_at_providers
 from pcapi.core.providers.allocine import create_generic_movie
 from pcapi.core.providers.allocine import get_movie_poster
 from pcapi.core.providers.allocine import get_movies_showtimes
@@ -217,9 +216,8 @@ class AllocineStocks(LocalProvider):
 
     def get_or_create_movie_product(self, movie: allocine_serializers.AllocineMovie) -> offers_models.Product:
         assert self.provider  # helps mypy
-        id_at_providers = build_movie_id_at_providers(self.provider.id, movie.internalId)
         generic_movie = create_generic_movie(movie)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider)
         assert product
 
         return product

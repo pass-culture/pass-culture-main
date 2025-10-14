@@ -2449,7 +2449,7 @@ def _select_matching_product(
 
 
 def upsert_movie_product_from_provider(
-    movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
+    movie: offers_models.Movie, provider: providers_models.Provider
 ) -> offers_models.Product | None:
     if not movie.allocine_id and not movie.visa:
         logger.warning("Cannot create a movie product without allocineId nor visa")
@@ -2481,7 +2481,7 @@ def upsert_movie_product_from_provider(
         product = products[0]
         if _is_allocine(provider.id) or provider.id == product.lastProviderId:
             with transaction():
-                _update_movie_product(product, movie, provider.id, id_at_providers)
+                _update_movie_product(product, movie, provider.id)
         return product
 
     # Case 3: 2 products were returned
@@ -2513,7 +2513,7 @@ def upsert_movie_product_from_provider(
             )
             product = offers_repository.merge_products(product_with_allocine_id, product_with_visa)
             if _is_allocine(provider.id) or provider.id == product.lastProviderId:
-                _update_movie_product(product, movie, provider.id, id_at_providers)
+                _update_movie_product(product, movie, provider.id)
         else:
             # Case 3.2: the 2 products are DIFFERENT -> selection of the most coherent one
             # we do NOT update the product because if we reached this step, it means
@@ -2544,9 +2544,7 @@ def _is_allocine(provider_id: int) -> bool:
     return provider_id in (allocine_products_provider_id, allocine_stocks_provider_id)
 
 
-def _update_movie_product(
-    product: offers_models.Product, movie: offers_models.Movie, provider_id: int, id_at_providers: str
-) -> None:
+def _update_movie_product(product: offers_models.Product, movie: offers_models.Movie, provider_id: int) -> None:
     product.description = movie.description
     product.durationMinutes = movie.duration
     product.lastProviderId = provider_id

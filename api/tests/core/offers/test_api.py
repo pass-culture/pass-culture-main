@@ -4290,7 +4290,7 @@ class UpsertMovieProductFromProviderTest:
     def test_creates_allocine_product_without_visa_if_does_not_exist(self):
         movie = self._get_movie(allocine_id="12345")
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData.get("visa") is None
@@ -4299,7 +4299,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345")
         movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert (
@@ -4311,7 +4311,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id=None, visa=None)
 
         with assert_num_queries(0):
-            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product is None
 
@@ -4319,7 +4319,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.id == new_product.id
 
@@ -4334,7 +4334,7 @@ class UpsertMovieProductFromProviderTest:
         offer = factories.OfferFactory(product=random_movie_with_visa)
 
         # When
-        api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         # Then
         assert allocine_movie.lastProvider.id == self.allocine_provider.id
@@ -4353,7 +4353,7 @@ class UpsertMovieProductFromProviderTest:
         movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
         offer = factories.OfferFactory(product=random_movie_with_visa)
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert allocine_movie.lastProvider.id == self.allocine_provider.id
 
@@ -4369,7 +4369,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345")
 
         # When
-        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost")
+        api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         # Then
         assert product.lastProvider.id == self.allocine_provider.id
@@ -4378,7 +4378,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.lastProvider.id == self.allocine_stocks_provider.id
 
@@ -4386,7 +4386,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
+        api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         assert product.lastProvider.id == self.boost_provider.id
 
@@ -4394,7 +4394,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"visa": "54321"})
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
 
@@ -4405,7 +4405,7 @@ class UpsertMovieProductFromProviderTest:
         )
         movie = self._get_movie(allocine_id="12345", visa="54322")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54322"
@@ -4417,7 +4417,7 @@ class UpsertMovieProductFromProviderTest:
         )
         movie = self._get_movie(allocine_id="12345", visa=None)
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54321"
@@ -4430,7 +4430,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa=None)
         movie.extra_data = None
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
 
@@ -4454,7 +4454,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
         with caplog.at_level(logging.INFO):
-            api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
+            api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert caplog.records[0].extra == {
             "allocine_id": "12345",
@@ -4506,7 +4506,7 @@ class UpsertMovieProductFromProviderTest:
         accident_piano_movie_product_id = accident_piano_movie_product.id
 
         with caplog.at_level(logging.WARNING):
-            product = api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoostProducts")
+            product = api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         assert caplog.records[0].message == "Provider sent incoherent visa and allocineId"
         assert caplog.records[0].extra == {
