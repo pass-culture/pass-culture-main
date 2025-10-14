@@ -56,4 +56,4 @@ def test_build_pc_pro_offer_link():
 
     url = urls.build_pc_pro_offer_link(offer)
 
-    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/recapitulatif/details"
+    assert url == f"http://pcpro.com/offre/individuelle/{offer.id}/recapitulatif/description"

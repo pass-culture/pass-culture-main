@@ -11,6 +11,7 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -39,6 +40,7 @@ class Returns201Test:
         assert response_dict["isDuo"] == False
         assert not offer.product
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_created_offer_should_return_url_if_set(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -76,6 +78,7 @@ class Returns201Test:
         assert response_dict["isDuo"] == True
         assert not offer.product
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_created_offer_from_product_should_return_product_id(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -114,6 +117,7 @@ class Returns201Test:
         assert offer._durationMinutes is None
         assert offer.description == product.description
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_other_than_cd_without_EAN_code_should_succeed_for_record_store(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -138,6 +142,7 @@ class Returns201Test:
         assert response_dict["productId"] is None
         assert offer.product is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_cd_without_EAN_code_shoud_succeed_if_venue_is_not_record_store(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -162,6 +167,7 @@ class Returns201Test:
         assert response_dict["productId"] is None
         assert offer.product is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_record_store_cd_with_valid_ean_code(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -198,6 +204,7 @@ class Returns201Test:
         assert offer.description == product.description
         assert offer._description is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_on_venue_with_accessibility_informations(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=True,
@@ -223,6 +230,7 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_on_venue_with_no_accessibility_informations(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=None,
@@ -248,6 +256,7 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant is None
         assert offer.visualDisabilityCompliant is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_on_venue_with_external_accessibility_provider_informations(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=None,
@@ -274,7 +283,6 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == True
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_create_offer_accepts_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=False,
@@ -304,7 +312,6 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == True
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_create_offer_skip_url_field_requirement(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -330,6 +337,7 @@ class Returns201Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     @pytest.mark.parametrize(
         "partial_body,expected_status_code, expected_json",
         [
@@ -440,6 +448,7 @@ class Returns400Test:
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert response.json["subcategory"] == [msg]
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_offer_require_url_field(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -459,7 +468,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_fail_when_body_is_missing_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer

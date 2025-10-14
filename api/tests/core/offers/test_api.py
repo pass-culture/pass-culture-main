@@ -1362,6 +1362,7 @@ class CreateMediationV2Test:
 
 @pytest.mark.usefixtures("db_session")
 class CreateDraftOfferTest:
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1391,6 +1392,7 @@ class CreateDraftOfferTest:
         with pytest.raises(exceptions.OfferException):
             api.create_draft_offer(body, venue=venue)
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
         # have acceslibre accessibility informations
@@ -1426,6 +1428,7 @@ class CreateDraftOfferTest:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == False
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
@@ -1537,6 +1540,7 @@ class UpdateDraftOfferTest:
         assert offer.name == "Name"
         assert offer.description == "description"
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_update_digital_offer_without_setting_url_when_not_yet_set(self):
         """When the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should raise an error."""
         offer = factories.OfferFactory(
@@ -1553,7 +1557,6 @@ class UpdateDraftOfferTest:
             'Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'
         ]
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_can_update_digital_offer_without_setting_url_if_not_yet_set_under_ff(self):
         """Under FF, when the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should pass."""
         offer = factories.OfferFactory(
@@ -1590,7 +1593,6 @@ class UpdateDraftOfferTest:
     def test_cannot_remove_digital_offer_url(self):
         self._test_cannot_remove_digital_offer_url()
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_cannot_remove_digital_offer_url_under_ff(self):
         self._test_cannot_remove_digital_offer_url()
 

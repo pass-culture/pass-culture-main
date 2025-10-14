@@ -35,7 +35,7 @@ class SendinblueSendOfferValidationTest:
             "OFFER_NAME": "Ma petite offre",
             "PUBLICATION_DATE": "vendredi 15 octobre 2032",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "OFFER_ADDRESS": offer.fullAddress,
         }
 
@@ -56,7 +56,7 @@ class SendinblueSendOfferValidationTest:
             "OFFER_NAME": "Ma petite offre",
             "PUBLICATION_DATE": "dimanche 14 novembre 2032",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "OFFER_ADDRESS": offer.fullAddress,
         }
 
@@ -81,7 +81,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
             "PUBLICATION_DATE": "vendredi 15 octobre 2032",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "VENUE_NAME": venue.name,
             "OFFER_ADDRESS": offer.fullAddress,
         }
@@ -99,7 +99,7 @@ class SendinblueSendOfferValidationTest:
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "OFFER_ADDRESS": offer.fullAddress,
         }
 
@@ -152,7 +152,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "CREATION_DATE": "vendredi 15 octobre 2032",
         }
 
@@ -178,7 +178,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "VENUE_NAME": venue.name,
         }
 
@@ -204,7 +204,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["params"] == {
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
-            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/details",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif/description",
             "VENUE_NAME": venue.name,
             "OFFER_ADDRESS": offer.fullAddress,
         }
