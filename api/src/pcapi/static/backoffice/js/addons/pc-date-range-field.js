@@ -10,6 +10,7 @@
  * - `reset_to_blank`: if `true`, cancel button will have text "Réinitialiser" and set value to empty string
  * - `calendar_start_date`: if a `datetime.date` is passed, it will set calendar start date when opening calendar
  * - `calendar_end_date`: if a `datetime.date` is passed, it will set calendar end date when opening calendar
+ * - `drops`: if `drops` is passed, il will override down drop default when opening calendar
  *
  * @example
  * from_to_date = fields.PCDateRangeField(
@@ -59,6 +60,7 @@ class PcDateRangeField extends PcAddOn {
             autoApply: false,
             alwaysShowCalendars: true,
             linkedCalendars: false,
+            drops: 'auto'
         }
 
         this.$$dateRange.forEach(($dateRange) => {
@@ -67,6 +69,7 @@ class PcDateRangeField extends PcAddOn {
                 resetToBlank,
                 calendarStartDate,
                 calendarEndDate,
+                drops,
             } = $dateRange.dataset
             const dateRangePicker = new DateRangePicker($dateRange, {
                 ...options,
@@ -74,7 +77,8 @@ class PcDateRangeField extends PcAddOn {
                 locale: {
                     ...options.locale,
                     cancelLabel: resetToBlank ? 'Réinitialiser' : PcDateRangeField.LOCALE_CANCEL_LABEL,
-                }
+                },
+                drops: drops
             })
             if (calendarStartDate) {
                 dateRangePicker.setStartDate(moment(calendarStartDate, PcDateRangeField.DATE_FORMAT))
