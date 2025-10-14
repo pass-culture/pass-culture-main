@@ -33,6 +33,7 @@ from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -365,8 +366,11 @@ class BaseOfferResponseGetterDict(GetterDict):
         if key == "video":
             if not (offer.metaData and offer.metaData.videoUrl):
                 return None
-
-            video_id = offer.metaData.videoExternalId or videos_api.extract_video_id(offer.metaData.videoUrl)
+            try:
+                video_external_id = videos_api.extract_video_id(offer.metaData.videoUrl)
+            except (videos_exceptions.UnsupportedVideoUrlError, videos_exceptions.InvalidYoutubeVideoUrl):
+                video_external_id = None
+            video_id = offer.metaData.videoExternalId or video_external_id
             if not video_id:
                 return None
 

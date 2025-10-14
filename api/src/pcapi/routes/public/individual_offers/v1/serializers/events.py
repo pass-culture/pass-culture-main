@@ -90,14 +90,14 @@ class EventOfferCreation(v1_serialization.OfferCreationBase):
         return price_categories
 
     @pydantic_v1.validator("video_url")
-    def check_video_is_from_youtube(
+    def check_video_is_valid(
         cls,
         video_url: pydantic_v1.HttpUrl | None,
     ) -> pydantic_v1.HttpUrl | None:
         if video_url:
             try:
                 videos_api.extract_video_id(video_url)
-            except videos_exceptions.InvalidVideoUrl:
+            except (videos_exceptions.UnsupportedVideoUrlError, videos_exceptions.InvalidYoutubeVideoUrl):
                 raise ValueError(
                     "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
                 )
@@ -112,14 +112,14 @@ class EventOfferEdition(v1_serialization.OfferEditionBase):
     video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
     @pydantic_v1.validator("video_url")
-    def check_video_is_from_youtube(
+    def check_video_is_valid(
         cls,
         video_url: pydantic_v1.HttpUrl | None,
     ) -> pydantic_v1.HttpUrl | None:
         if video_url:
             try:
                 videos_api.extract_video_id(video_url)
-            except videos_exceptions.InvalidVideoUrl:
+            except (videos_exceptions.UnsupportedVideoUrlError, videos_exceptions.InvalidYoutubeVideoUrl):
                 raise ValueError(
                     "Your video must be from the Youtube plateform, it should be public and should not be a short nor a user's profile"
                 )

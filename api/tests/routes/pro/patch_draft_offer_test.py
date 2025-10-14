@@ -14,7 +14,7 @@ from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import platforms as videos_platforms
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -49,8 +49,9 @@ class Returns200Test:
             "extraData": {"gtl_id": "07000000"},
             "videoUrl": video_url,
         }
+        video_platform = videos_platforms.YouTubePlatform
         app.redis_client.set(
-            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{video_platform.CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -441,8 +442,9 @@ class Returns200Test:
 
         video_id = "l73rmrLTHQc"
         video_url = f"https://www.youtube.com/watch?v={video_id}"
+        video_platform = videos_platforms.YouTubePlatform
         app.redis_client.set(
-            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{video_platform.CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -475,8 +477,9 @@ class Returns200Test:
 
         video_id = "l73rmrLTHQc"
         video_url = f"https://www.youtube.com/watch?v={video_id}"
+        video_platform = videos_platforms.YouTubePlatform
         app.redis_client.set(
-            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{video_platform.CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
