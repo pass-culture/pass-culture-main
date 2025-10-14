@@ -220,7 +220,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
       - name: "Build documentation"
