@@ -1,4 +1,5 @@
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
+import { Footer } from '@/components/Footer/Footer'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { Callout } from '@/ui-kit/Callout/Callout'
 
@@ -27,6 +28,7 @@ const NonAttached = () => {
       </Callout>
       <br />
       <Newsletter />
+      <Footer layout={'basic'} />
     </FunnelLayout>
   )
 }
