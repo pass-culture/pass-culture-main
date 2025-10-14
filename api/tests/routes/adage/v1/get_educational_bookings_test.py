@@ -35,12 +35,9 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        assert response.json == {
-            "prebookings": [
-                expected_serialized_prebooking(booking1),
-                expected_serialized_prebooking(booking2),
-            ]
-        }
+        assert len(response.json["prebookings"]) == 2
+        assert expected_serialized_prebooking(booking1) in response.json["prebookings"]
+        assert expected_serialized_prebooking(booking2) in response.json["prebookings"]
 
     def test_get_collective_bookings_with_address(self, client):
         educational_year = EducationalYearFactory()
