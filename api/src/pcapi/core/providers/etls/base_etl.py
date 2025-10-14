@@ -72,7 +72,7 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
         """
         Step 3: Load data into DB
 
-        :return: the set of offer_ids to be reindexed on algolia, a list of product with there
+        :return: the set of offer_ids to be reindexed on algolia, a list of product with their
                  poster url for post load treatment.
         """
         products_with_poster: list[tuple[offers_models.Product, str]] = []
@@ -97,20 +97,17 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
         loadable_movie: LoadableMovie,
         price_category_labels_by_label: dict[str, offers_models.PriceCategoryLabel],
     ) -> tuple[offers_models.Model, tuple[offers_models.Product, str] | None]:
+        # Product - Create Or Update
         product = offers_api.upsert_movie_product_from_provider(
             loadable_movie["movie_data"],
             self.venue_provider.provider,
         )
-        offer = offers_repository.get_venue_offer_by_movie_uuid(
+
+        # Offer - Create Or Update
+        offer = offers_repository.get_offer_by_venue_and_movie_uuid(
             venue_id=self.venue_provider.venueId,
             movie_uuid=loadable_movie["movie_uuid"],
         )
-
-        price_categories_by_label_price = {}
-        if offer:
-            for price_category in offer.priceCategories:
-                label_price_key = f"{price_category.label}-{price_category.price}"
-                price_categories_by_label_price[label_price_key] = price_category
 
         if not offer:  # create offer
             offer = offers_models.Offer()
@@ -149,8 +146,15 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
             offer.durationMinutes = movie_data.duration
         db.session.flush()
 
+        # Stock - Create Or Update
+        price_categories_by_label_price = {}
+
+        for price_category in offer.priceCategories:
+            label_price_key = f"{price_category.label}-{price_category.price}"
+            price_categories_by_label_price[label_price_key] = price_category
+
         for stock_data in loadable_movie["stocks_data"]:
-            stock = offers_repository.get_movie_offer_stock_by_uuid(stock_data["stock_uuid"])
+            stock = offers_repository.get_stock_by_movie_stock_uuid(stock_data["stock_uuid"])
 
             # `stock.beginningDatetime` has changed
             if stock and stock.beginningDatetime != stock_data["show_datetime"]:
