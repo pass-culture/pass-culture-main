@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
@@ -213,12 +212,7 @@ export const PriceTableForm = ({
         const entry = watch(`entries.${index}`)
 
         return (
-          <div
-            key={field.id}
-            className={classNames(styles['row'], {
-              [styles['event']]: offer.isEvent,
-            })}
-          >
+          <div key={field.id} className={styles['row']}>
             {offer.isEvent && (
               <div className={styles['input-label']}>
                 <TextInput
@@ -232,7 +226,6 @@ export const PriceTableForm = ({
                   error={errors.entries?.[index]?.label?.message}
                   label="Intitulé du tarif"
                   maxCharactersCount={PRICE_TABLE_ENTRY_MAX_LABEL_LENGTH}
-                  description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
                 />
               </div>
             )}
@@ -354,7 +347,11 @@ export const PriceTableForm = ({
                     icon={fullCodeIcon}
                     onClick={() => setActivationCodeEntryIndexToUpload(index)}
                     ref={activationCodeButtonRef}
-                    tooltipContent="Ajouter des codes d'activation"
+                    tooltipContent={
+                      entry.hasActivationCode
+                        ? "Remplacer les codes d'activation"
+                        : "Ajouter des codes d'activation"
+                    }
                   />
                 </div>
               )}
