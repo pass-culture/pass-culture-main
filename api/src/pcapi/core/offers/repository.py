@@ -1182,7 +1182,7 @@ def get_venue_price_category_labels(venue_id: int) -> list[models.PriceCategoryL
     return db.session.query(models.PriceCategoryLabel).filter(models.PriceCategoryLabel.venueId == venue_id).all()
 
 
-def get_venue_offer_by_movie_uuid(venue_id: int, movie_uuid: str) -> models.Offer | None:
+def get_offer_by_venue_and_movie_uuid(venue_id: int, movie_uuid: str) -> models.Offer | None:
     return (
         db.session.query(models.Offer)
         .filter(models.Offer.idAtProvider == movie_uuid, models.Offer.venueId == venue_id)
@@ -1190,7 +1190,7 @@ def get_venue_offer_by_movie_uuid(venue_id: int, movie_uuid: str) -> models.Offe
     )
 
 
-def get_movie_offer_stock_by_uuid(stock_uuid: str) -> models.Stock | None:
+def get_stock_by_movie_stock_uuid(stock_uuid: str) -> models.Stock | None:
     return db.session.query(models.Stock).filter(models.Stock.idAtProviders == stock_uuid).one_or_none()
 
 
