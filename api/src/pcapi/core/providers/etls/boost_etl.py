@@ -4,13 +4,25 @@ import enum
 import logging
 import typing
 
+import PIL
+
+import pcapi.core.finance.api as finance_api
 from pcapi import settings
+from pcapi.core import search
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import serializers as boost_serializers
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models
+from pcapi.core.search import models as search_models
+from pcapi.models import db
+from pcapi.utils.date import get_naive_utc_now
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +49,7 @@ class ShowStockData(typing.TypedDict):
     price_label: str
 
 
-class LoadableData(typing.TypedDict):
+class LoadableMovie(typing.TypedDict):
     movie_uuid: str
     movie_data: offers_models.Movie
     stocks_data: list[ShowStockData]
@@ -69,19 +81,15 @@ class BoostETLProcess:
         """
         Step 1: Fetch data from Boost API
         """
-        try:
-            cinema_attributes = self.api_client.get_cinemas_attributs()
-            showtimes = self.api_client.get_showtimes()
-        except Exception as exc:
-            self._log(logging.WARNING, "Step 1 - Extract failed", {"exc": exc.__class__.__name__})
-            raise
+        cinema_attributes = self.api_client.get_cinemas_attributs()
+        showtimes = self.api_client.get_showtimes()
 
         return {
             "cinema_attributes": cinema_attributes,
             "showtimes": showtimes,
         }
 
-    def _transform(self, extract_result: ExtractResult) -> list[LoadableData]:
+    def _transform(self, extract_result: ExtractResult) -> list[LoadableMovie]:
         """
         Step 2:
 
@@ -89,7 +97,7 @@ class BoostETLProcess:
             - grouping shows by movie
             - formatting shows and movie information
         """
-        loadable_data_by_movie_uuid: dict[str, LoadableData] = {}
+        loadable_data_by_movie_uuid: dict[str, LoadableMovie] = {}
 
         ice_immersive_attribute_id = self._get_ice_immersive_attribute_id(extract_result["cinema_attributes"])
 
@@ -129,6 +137,171 @@ class BoostETLProcess:
                     "movie_uuid": movie_uuid,
                 }
         return list(loadable_data_by_movie_uuid.values())
+
+    def _load(self, loadable_movies: list[LoadableMovie]) -> tuple[set[int], list[tuple[offers_models.Product, str]]]:
+        """
+        Step 3: Load data into DB
+
+        :return: the set of offer_ids to be reindexed on algolia, a list of product with there
+                 poster url for post load treatment.
+        """
+        products_with_poster: list[tuple[offers_models.Product, str]] = []
+        offers_ids = set()
+        price_category_labels_by_label = {
+            price_category_label.label: price_category_label
+            for price_category_label in self.venue_provider.venue.priceCategoriesLabel
+        }
+
+        for loadable_movie in loadable_movies:
+            with atomic():
+                offer, product_with_poster = self._load_movie_and_stocks(loadable_movie, price_category_labels_by_label)
+
+            offers_ids.add(offer.id)
+            if product_with_poster:
+                products_with_poster.append(product_with_poster)
+
+        return offers_ids, products_with_poster
+
+    def _load_movie_and_stocks(
+        self,
+        loadable_movie: LoadableMovie,
+        price_category_labels_by_label: dict[str, offers_models.PriceCategoryLabel],
+    ) -> tuple[offers_models.Model, tuple[offers_models.Product, str] | None]:
+        product = offers_api.upsert_movie_product_from_provider(
+            loadable_movie["movie_data"],
+            self.venue_provider.provider,
+        )
+        offer = offers_repository.get_venue_offer_by_movie_uuid(
+            venue_id=self.venue_provider.venueId,
+            movie_uuid=loadable_movie["movie_uuid"],
+        )
+
+        price_categories_by_label_price = {}
+        if offer:
+            for price_category in offer.priceCategories:
+                label_price_key = f"{price_category.label}-{price_category.price}"
+                price_categories_by_label_price[label_price_key] = price_category
+
+        if not offer:  # create offer
+            offer = offers_models.Offer()
+            offer.idAtProvider = loadable_movie["movie_uuid"]
+            offer.venueId = self.venue_provider.venueId
+            offer.isDuo = self.venue_provider.isDuoOffers or False
+            db.session.add(offer)
+
+            self._log(
+                logging.DEBUG,
+                "Step 3 - New offer to be created",
+                {
+                    "id_at_provider": loadable_movie["movie_uuid"],
+                    "name": loadable_movie["movie_data"].title,
+                },
+            )
+
+        # fill generic information
+        offer.offererAddress = self.venue_provider.venue.offererAddress
+        offer.bookingEmail = self.venue_provider.venue.bookingEmail
+        offer.withdrawalDetails = self.venue_provider.venue.withdrawalDetails
+        offer.subcategoryId = subcategories.SEANCE_CINE.id
+        offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
+        offer.dateModifiedAtLastProvider = get_naive_utc_now()
+
+        # fill product information
+        offer.product = product
+        if product:
+            offer.name = product.name
+            offer._description = None
+            offer._durationMinutes = None
+            offer._extraData = {}
+        else:
+            movie_data = loadable_movie["movie_data"]
+            offer.name = movie_data.title
+            offer.durationMinutes = movie_data.duration
+        db.session.flush()
+
+        for stock_data in loadable_movie["stocks_data"]:
+            stock = offers_repository.get_movie_offer_stock_by_uuid(stock_data["stock_uuid"])
+
+            # `stock.beginningDatetime` has changed
+            if stock and stock.beginningDatetime != stock_data["show_datetime"]:
+                stock.beginningDatetime = stock_data["show_datetime"]
+                finance_api.update_finance_event_pricing_date(stock)
+
+            if not stock:  # create stock
+                stock = offers_models.Stock()
+                stock.dnBookedQuantity = 0  # initialize value
+                stock.idAtProviders = stock_data["stock_uuid"]
+                db.session.add(stock)
+
+                self._log(
+                    logging.DEBUG,
+                    "Step 3 - New stock to be created",
+                    {
+                        "id_at_provider": stock_data["stock_uuid"],
+                        "beginningDatetime": stock_data["show_datetime"],
+                    },
+                )
+
+            stock.offer = offer
+            stock.beginningDatetime = stock_data["show_datetime"]
+            stock.bookingLimitDatetime = stock_data["show_datetime"]
+            stock.quantity = stock_data["remaining_quantity"] + stock.dnBookedQuantity
+            stock.features = stock_data["features"]
+            stock.price = stock_data["price"]
+            stock.dateModifiedAtLastProvider = get_naive_utc_now()
+
+            label_price_key = f"{stock_data['price_label']}-{stock_data['price']}"
+
+            if label_price_key not in price_categories_by_label_price:  # create missing price category
+                if stock_data["price_label"] not in price_category_labels_by_label:
+                    # create missing price category label
+                    price_category_label = offers_models.PriceCategoryLabel(
+                        venue=self.venue_provider.venue,
+                        label=stock_data["price_label"],
+                    )
+                    db.session.add(price_category_label)
+                    price_category_labels_by_label[stock_data["price_label"]] = price_category_label
+
+                price_category = offers_models.PriceCategory(
+                    priceCategoryLabel=price_category_labels_by_label[stock_data["price_label"]],
+                    price=stock_data["price"],
+                    offer=offer,
+                )
+                db.session.add(price_category)
+                price_categories_by_label_price[label_price_key] = price_category
+
+            stock.priceCategory = price_categories_by_label_price[label_price_key]
+
+        db.session.flush()
+
+        if product and loadable_movie["movie_data"].poster_url:
+            return offer, (product, loadable_movie["movie_data"].poster_url)
+
+        return offer, None
+
+    def _post_load_product_poster_update(self, product_with_poster: list[tuple[offers_models.Product, str]]) -> None:
+        """
+        For each product, if the product does not already have an image, this function fetches the movie poster
+        on given `poster_url` and creates a `ProductMediation` of type poster.
+        """
+        for product, poster_url in product_with_poster:
+            if product.productMediations:
+                continue  # we don't update movie poster for now
+
+            image = self.api_client.get_movie_poster(poster_url)
+
+            if image:
+                try:
+                    with atomic():
+                        offers_api.create_movie_poster(product, self.venue_provider.provider, image)
+
+                    self._log(
+                        logging.DEBUG,
+                        "Post load - New movie poster created",
+                        {"poster_url": poster_url, "product_id": product.id},
+                    )
+                except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
+                    self._log(logging.WARNING, "Post load - Failed to create movie poster", {"reason": str(e)})
 
     def _get_ice_immersive_attribute_id(self, cinema_attributes: list[boost_serializers.CinemaAttribut]) -> int | None:
         for cinema_attribute in cinema_attributes:
@@ -180,7 +353,11 @@ class BoostETLProcess:
             raise exceptions.InactiveVenueProvider()
 
         # Step 1 : Extract (API calls)
-        result = self._extract()
+        try:
+            result = self._extract()
+        except Exception as exc:
+            self._log(logging.WARNING, "Step 1 - Extract failed", {"exc": exc.__class__.__name__})
+            raise
 
         self._log(
             logging.DEBUG,
@@ -192,9 +369,30 @@ class BoostETLProcess:
         )
 
         # Step 2 : Transform
-        transform_result = self._transform(result)
+        loadable_movies = self._transform(result)
 
-        self._log(logging.DEBUG, " Step 2 - Transform done", transform_result)
+        self._log(logging.DEBUG, " Step 2 - Transform done", loadable_movies)
+
+        # Step 3 : Load
+        try:
+            offers_ids, products_with_poster = self._load(loadable_movies)
+        except Exception as exc:
+            self._log(logging.WARNING, "Step 3 - Load failed", {"exc": exc.__class__.__name__})
+            raise
+
+        self._log(logging.DEBUG, " Step 3 - Load done", loadable_movies)
+
+        # Step 4 : Post Load actions
+        search.async_index_offer_ids(
+            offers_ids,
+            reason=search_models.IndexationReason.STOCK_UPDATE,
+            log_extra={
+                "source": "provider_api",
+                "venue_id": self.venue_provider.venueId,
+                "provider_id": self.venue_provider.providerId,
+            },
+        )
+        self._post_load_product_poster_update(products_with_poster)
 
     def _log(self, level: int, message: str, data: dict | list | None = None) -> None:
         """
