@@ -1997,7 +1997,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     Deletes a price category and its related stocks, by cascade, if the offer is still in draft.
     The stock is truly deleted instead of being soft deleted.
     """
-    validation.check_price_categories_deletable(offer)
+    validation.check_price_categories_deletable(offer, price_category)
     db.session.delete(price_category)
     db.session.flush()
 
