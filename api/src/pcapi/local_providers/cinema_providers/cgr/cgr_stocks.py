@@ -232,8 +232,7 @@ class CGRStocks(LocalProvider):
     def get_or_create_movie_product(self, movie: cgr_serializers.Film) -> offers_models.Product | None:
         assert self.provider  # helps mypy
         generic_movie = movie.to_generic_movie()
-        id_at_providers = _build_movie_uuid_for_offer(movie.IDFilmAlloCine, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider)
 
         return product
 
