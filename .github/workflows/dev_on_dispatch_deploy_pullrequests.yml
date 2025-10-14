@@ -137,6 +137,7 @@ jobs:
     with:
       image: pcapi
       push: true
+      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
       registry: europe-west1
@@ -151,8 +152,7 @@ jobs:
   deploy-api:
     name: "Deploy pullrequest"
     runs-on: ubuntu-latest
-    needs:
-      [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
+    needs: [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
     if: always() && !failure() && !cancelled() && inputs.front-only == false
     environment: pullrequest
     permissions:

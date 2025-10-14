@@ -10,6 +10,10 @@ on:
         required: true
         type: boolean
 
+      artifact_registry_workload_identity_provider:
+        required: false
+        type: string
+
       artifact_registry_service_account:
         required: false
         type: string
@@ -60,12 +64,13 @@ jobs:
           token_format: access_token
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-      - name: Get Secret from secret manager
+      - name: Get Secret
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v2
         with:
           secrets: |-
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
       - name: Authenticate through github app argo-wf
         id: github-token
@@ -85,7 +90,7 @@ jobs:
           build_secrets: |
             github-token=${{ steps.github-token.outputs.token }}
           context: .
-          gcp_workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           artifact_registry_service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
           cosign_kms_key: ${{ steps.secrets.outputs.COSIGN_KMS_KEY }}
           docker_registry_region: ${{ inputs.registry }}
