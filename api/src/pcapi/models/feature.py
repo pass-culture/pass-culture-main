@@ -154,6 +154,7 @@ class FeatureToggle(enum.Enum):
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
+    WIP_SWITCH_VENUE = "Activer la gestion du portail PRO par venue sans passer par l'offerer"
     WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     # TODO (prouzet, 2025-09-25) Remove feature flag after pass Culture is launched in NC
@@ -229,6 +230,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
+    FeatureToggle.WIP_SWITCH_VENUE,
     # Please keep alphabetic order
 )
 
