@@ -5051,6 +5051,21 @@ class DeleteOffersAndAllRelatedObjectsTest:
         assert stock_with_wrong_category.priceCategory == category_1
         assert category_1.offer == stock_with_wrong_category.offer
 
+    def test_do_not_delete_price_category_not_related_to_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = factories.ThingOfferFactory(
+            isActive=False, validation=models.OfferValidationStatus.DRAFT, venue__managingOfferer=user_offerer.offerer
+        )
+        factories.PriceCategoryFactory(offer=offer)
+        other_price_category = factories.PriceCategoryFactory()
+
+        response = client.with_session_auth(user_offerer.user.email).delete(
+            f"/offers/{offer.id}/price_categories/{other_price_category.id}"
+        )
+
+        assert response.status_code == 400
+        assert db.session.query(models.PriceCategory).count() == 2
+
 
 @pytest.mark.usefixtures("db_session")
 class DeleteUnbookableUnusedOldOffersTest:
