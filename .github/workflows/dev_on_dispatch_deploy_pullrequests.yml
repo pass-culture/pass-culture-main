@@ -122,18 +122,12 @@ jobs:
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
+      ref: ${{ github.sha }}
       image: pcapi
-      push: false
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
-      registry: europe-west1
-      project_id: passculture-infra-prod
-      repository: pass-culture-artifact-registry
+      tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi:
     name: "Push pcapi docker image to artifact registry europe-west1"
