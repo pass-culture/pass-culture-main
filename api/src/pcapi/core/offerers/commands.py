@@ -13,7 +13,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import synchronize_venues_banners_with_google_places as banner_url_synchronizations
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.core.offerers import update_offerer_stats as offerers_stats
-from pcapi.core.offerers.tasks import handle_closed_offerer
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import siren as siren_utils
@@ -60,8 +59,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
             close_or_tag_when_inactive=not dry_run,
             must_fill_in_codir_report=codir_report_is_enabled,
         )
-        offerers_tasks.check_offerer_siren_task.delay(payload)
-        # Do not flood Sirene API (max. 30 per minute for the whole product)
+        offerers_tasks.check_offerer_siren_task(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
@@ -81,7 +79,7 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
     except api_sirene.InseeException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
         return
-    known_siren_list = (
+    known_offerers = (
         db.session.query(offerers_models.Offerer)
         .filter(
             offerers_models.Offerer.siren.in_([elem["siren"] for elem in siren_list]),
@@ -97,15 +95,15 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
     )
     logger.info(
         "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
-        len(known_siren_list),
+        len(known_offerers),
         query_date.isoformat(),
-        extra={"siren": [x.siren for x in known_siren_list]},
+        extra={"siren": [x.siren for x in known_offerers]},
     )
 
     if close_or_tag_when_inactive:
-        for offerer in known_siren_list:
+        for offerer in known_offerers:
             closure_date = [x["closure_date"] for x in siren_list if x["siren"] == offerer.siren][0]
-            handle_closed_offerer(offerer, closure_date)
+            offerers_api.handle_closed_offerer(offerer, closure_date)
 
 
 @blueprint.cli.command("delete_user_offerers_on_closed_offerers")

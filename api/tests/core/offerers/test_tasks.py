@@ -1,5 +1,4 @@
 import datetime
-from dataclasses import asdict
 from unittest.mock import patch
 
 import pytest
@@ -8,11 +7,7 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors.entreprise.models import SirenInfo
 from pcapi.core.history import models as history_models
-from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.tasks import handle_closed_offerer
 from pcapi.models import db
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
@@ -213,7 +208,7 @@ class CheckOffererTest:
         mock_append_to_spreadsheet.assert_not_called()
 
     @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
-    @patch("pcapi.core.offerers.tasks.handle_closed_offerer")
+    @patch("pcapi.core.offerers.api.handle_closed_offerer")
     @time_machine.travel("2025-01-21 12:00:00")
     def test_inactive_offerer_is_handled(self, mock_handle_closed_offerer, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory(siren="109599001")
@@ -248,7 +243,7 @@ class CheckOffererTest:
         )
 
     @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
-    @patch("pcapi.core.offerers.tasks.handle_closed_offerer")
+    @patch("pcapi.core.offerers.api.handle_closed_offerer")
     def test_inactive_offerer_not_closed_when_flag_is_false(self, mock_handle_closed_offerer, client, siren_caduc_tag):
         offerer = offerers_factories.OffererFactory(siren="109599001")
         closure_date = datetime.date(2025, 1, 16)
@@ -308,102 +303,3 @@ class CheckOffererTest:
 
         assert response.status_code == 204
         assert caplog.records[0].message == "Invalid SIREN format in the database"
-
-
-class CheckHandlecloseOffererTest:
-    pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
-
-    @patch("pcapi.core.offerers.api.close_offerer")
-    @time_machine.travel("2025-01-21 12:00:00")
-    def test_tag_offerer_no_delete(
-        self,
-        mock_close_offerer,
-        client,
-        siren_caduc_tag,
-    ):
-        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109599001")
-
-        handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
-
-        assert offerer.tags == [siren_caduc_tag]
-        mock_close_offerer.assert_not_called()
-
-    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
-    @patch("pcapi.core.offerers.api.close_offerer")
-    def test_inactive_offerer_already_tagged(
-        self,
-        mock_close_offerer,
-        client,
-        siren_caduc_tag,
-    ):
-        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
-
-        handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
-
-        assert offerer.tags == [siren_caduc_tag]
-        assert db.session.query(history_models.ActionHistory).count() == 0  # tag already set, no change made
-        mock_close_offerer.assert_called_once()
-
-    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
-    @patch("pcapi.core.offerers.api.close_offerer")
-    @time_machine.travel("2025-03-10 12:00:00")
-    def test_close_inactive_offerer_already_tagged(self, mock_close_offerer, client, siren_caduc_tag):
-        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
-        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
-
-        handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
-        assert offerer.tags == [siren_caduc_tag]
-        mock_close_offerer.assert_called_once_with(
-            offerer,
-            closure_date=datetime.date(2025, 1, 16),
-            author_user=None,
-            comment="L'entité juridique est détectée comme fermée le 16/01/2025 via l'API Entreprise (données INSEE)",
-        )
-
-    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
-    def test_reject_inactive_offerer_waiting_for_validation(
-        self,
-        client,
-        siren_caduc_tag,
-    ):
-        offerer = offerers_factories.PendingOffererFactory(siren="100099001")
-        user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
-
-        handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
-
-        assert offerer.isRejected
-        assert offerer.tags == [siren_caduc_tag]
-
-        offerer_action = (
-            db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
-            .one()
-        )
-        assert offerer_action.actionDate is not None
-        assert offerer_action.authorUserId is None
-        assert offerer_action.userId == user_offerer.user.id
-        assert offerer_action.offererId == offerer.id
-        assert offerer_action.extraData == {
-            "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
-            "rejection_reason": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
-        }
-
-        user_offerer_action = (
-            db.session.query(history_models.ActionHistory)
-            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
-            .one()
-        )
-        assert user_offerer_action.actionDate is not None
-        assert user_offerer_action.authorUserId is None
-        assert user_offerer_action.userId == user_offerer.user.id
-        assert user_offerer_action.offererId == offerer.id
-
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
-        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
-        assert mails_testing.outbox[0]["params"] == {
-            "OFFERER_NAME": offerer.name,
-            "REJECTION_REASON": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
-        }

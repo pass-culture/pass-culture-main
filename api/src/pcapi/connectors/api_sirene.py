@@ -10,7 +10,7 @@ Use Enterprise API instead to find:
 import datetime
 import json
 import logging
-from typing import Any
+from typing import TypedDict
 
 from pcapi import settings
 from pcapi.utils import cache as cache_utils
@@ -55,7 +55,12 @@ def _get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def get_siren_closed_at_date(date_closed: datetime.date) -> list[dict[str, Any]]:
+class SirenClosureInfo(TypedDict):
+    siren: str
+    closure_date: datetime.date
+
+
+def get_siren_closed_at_date(date_closed: datetime.date) -> list[SirenClosureInfo]:
     """Returns the list of SIREN :
     -which closure has been declared on the given date. Closure date may be the same day or in the past.
     -which closure date is on the given date (even if closure has been declared in the past).
@@ -64,12 +69,12 @@ def get_siren_closed_at_date(date_closed: datetime.date) -> list[dict[str, Any]]
 
 
 class BaseBackend:
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         return [
             {"siren": "000099002", "closure_date": date_closed - datetime.timedelta(days=5)},
             {"siren": "900099003", "closure_date": date_closed - datetime.timedelta(days=10)},
@@ -134,7 +139,7 @@ class InseeBackend(BaseBackend):
             closure_date = periode["dateDebut"]
         return datetime.date.fromisoformat(closure_date) if closure_date else None
 
-    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[dict[str, Any]]:
+    def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         results = []
         cursor = "*"
         while True:
@@ -149,7 +154,7 @@ class InseeBackend(BaseBackend):
             for item in data["unitesLegales"]:
                 closure_date = self._get_closure_date_from_siren_data(item, date_closed)
                 if closure_date is not None:
-                    results.append({"siren": item["siren"], "closure_date": closure_date})
+                    results.append(SirenClosureInfo(siren=item["siren"], closure_date=closure_date))
             if (
                 data["header"]["nombre"] == data["header"]["total"]
                 or data["header"]["curseurSuivant"] == data["header"]["curseur"]
