@@ -86,11 +86,11 @@ jobs:
         id: build
         uses: pass-culture/common-workflows/actions/build-docker-image@build-docker-image/v0.2.0
         with:
-          image: ${{ inputs.image }}
           push: true
+          image: ${{ inputs.image }}
+          context: ${{ inputs.context }}
           build_secrets: |
             github-token=${{ steps.github-token.outputs.token }}
-          context: ${{ inputs.context }}
           gcp_workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           artifact_registry_service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
           cosign_kms_key: ${{ steps.secrets.outputs.COSIGN_KMS_KEY }}
