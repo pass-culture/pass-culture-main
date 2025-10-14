@@ -120,7 +120,7 @@ export const IndividualOfferPriceTableScreen = ({
             <FormLayout.Section title="Tarifs">
               {offerSubcategory.reimbursementRule ===
                 REIMBURSEMENT_RULES.NOT_REIMBURSED && <NonRefundableCallout />}
-              {offer.isDigital && <ActivationCodeCallout />}
+              {!offer.isEvent && offer.isDigital && <ActivationCodeCallout />}
 
               <PriceTableForm
                 isCaledonian={isCaledonian}

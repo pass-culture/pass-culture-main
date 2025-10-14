@@ -37,6 +37,10 @@ $icon-button-height: rem.torem(32px);
     flex-direction: row;
     gap: var(--size-spacing-l);
 
+    > .input-label {
+      width: rem.torem(360px);
+    }
+
     > .input-readonly {
       max-width: rem.torem(120px);
 
@@ -59,18 +63,5 @@ $icon-button-height: rem.torem(32px);
           (#{size.$input-min-height} - $icon-button-height) / 2
       );
     }
-  }
-
-  .row.event .input-price {
-    margin-top: var(--typography-body-xs-line-height);
-  }
-
-  .row.event .button-action {
-    margin-top: calc(
-      #{var(--typography-body-line-height)} +
-        #{forms.$label-space-before-ds-input} +
-        #{var(--typography-body-xs-line-height)} +
-        (#{size.$input-min-height} - $icon-button-height) / 2
-    );
   }
 }
