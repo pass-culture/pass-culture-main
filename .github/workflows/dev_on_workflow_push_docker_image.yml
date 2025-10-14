@@ -6,9 +6,10 @@ on:
       image:
         required: true
         type: string
-      push:
+
+      context:
         required: true
-        type: boolean
+        type: string
 
       artifact_registry_workload_identity_provider:
         required: false
@@ -86,10 +87,10 @@ jobs:
         uses: pass-culture/common-workflows/actions/build-docker-image@build-docker-image/v0.2.0
         with:
           image: ${{ inputs.image }}
-          push: ${{ inputs.push }}
+          push: true
           build_secrets: |
             github-token=${{ steps.github-token.outputs.token }}
-          context: .
+          context: ${{ inputs.context }}
           gcp_workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           artifact_registry_service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
           cosign_kms_key: ${{ steps.secrets.outputs.COSIGN_KMS_KEY }}
