@@ -52,6 +52,7 @@ jobs:
     name: Push Docker image
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v5
       - name: Authentification to Google
         uses: google-github-actions/auth@v3
         with:
@@ -59,7 +60,7 @@ jobs:
           token_format: access_token
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-      - name: Get Secret
+      - name: Get Secret from secret manager
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v2
         with:
