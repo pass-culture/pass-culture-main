@@ -308,8 +308,8 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             offerers_names.add(venue.managingOfferer.name)
             offerers_tags.update(tag.name for tag in venue.managingOfferer.tags)
 
-        has_collective_offers = offerers_repository.venues_have_collective_offers(*venues)
-        has_individual_offers = offerers_repository.venues_have_individual_offers(*venues)
+        has_bookable_collective_offers = offerers_repository.venues_have_bookable_collective_offers(*venues)
+        has_bookable_individual_offers = offerers_repository.venues_have_bookable_individual_offers(*venues)
 
         has_banner_url = all(venue._bannerUrl for venue in venues if venue.isOpenToPublic)
         attributes.update(
@@ -319,9 +319,9 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
                 "isOpenToPublic": any(venue.isOpenToPublic for venue in venues),
-                "has_offers": has_individual_offers or has_collective_offers,
-                "has_collective_offers": has_collective_offers,
-                "has_individual_offers": has_individual_offers,
+                "has_offers": has_bookable_individual_offers or has_bookable_collective_offers,
+                "has_collective_offers": has_bookable_collective_offers,
+                "has_individual_offers": has_bookable_individual_offers,
                 "has_bookings": bookings_repository.venues_have_bookings(*venues),
                 "has_banner_url": has_banner_url,
             }

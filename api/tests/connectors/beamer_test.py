@@ -40,6 +40,7 @@ BEAMER_ATTRIBUTES = {
     "DMS_APPLICATION_APPROVED": True,
     "HAS_BANNER_URL": False,
     "HAS_BOOKINGS": False,
+    "HAS_COLLECTIVE_OFFERS": False,
     "HAS_OFFERS": False,
     "HAS_INDIVIDUAL_OFFERS": False,
     "IS_ACTIVE_PRO": True,
