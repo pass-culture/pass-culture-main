@@ -101,6 +101,7 @@ def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> di
         "DMS_APPLICATION_SUBMITTED": pro_attributes.dms_application_submitted,
         "HAS_BANNER_URL": pro_attributes.has_banner_url,
         "HAS_BOOKINGS": pro_attributes.has_bookings,
+        "HAS_COLLECTIVE_OFFERS": pro_attributes.has_collective_offers,
         "HAS_OFFERS": pro_attributes.has_offers,
         "HAS_INDIVIDUAL_OFFERS": pro_attributes.has_individual_offers,
         "IS_ACTIVE_PRO": pro_attributes.is_active_pro,
