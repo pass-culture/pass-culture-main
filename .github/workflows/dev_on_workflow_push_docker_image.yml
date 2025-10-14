@@ -59,30 +59,19 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
-      - name: "Debug private key content"
-        run: |
-          if [ -z "${{ secrets.PRIVATE_KEY }}" ]; then
-            echo "❌ PRIVATE_KEY is empty or not set"
-          else
-            echo "✅ PRIVATE_KEY is present"
-            echo "Length: $(echo '${{ secrets.PRIVATE_KEY }}' | wc -c)"
-            echo "Starts with: $(echo '${{ secrets.PRIVATE_KEY }}' | cut -c1-20)"
-            echo "Ends with: $(echo '${{ secrets.PRIVATE_KEY }}' | tail -c 20)"
-          fi
-
       - name: Get Secret
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v2
         with:
           secrets: |-
-            COSIGN_KMS_KEY:${{ inputs.cosign_kms_key }}
-            PRIVATE_KEY:${{ secrets.PRIVATE_KEY }}
+            COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+            # PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - name: Authenticate through github app argo-wf
         id: github-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ steps.secrets.outputs.PRIVATE_KEY }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: |
             pass-culture-main
