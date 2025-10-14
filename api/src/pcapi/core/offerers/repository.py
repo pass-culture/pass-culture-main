@@ -335,19 +335,28 @@ def find_new_offerer_user_email(offerer_id: int) -> str:
     raise exceptions.CannotFindOffererUserEmail()
 
 
-def venues_have_individual_offers(*venues: models.Venue) -> bool:
-    """At least one venue which has email as bookingEmail has at least one active offer"""
+def venues_have_bookable_individual_offers(*venues: models.Venue) -> bool:
+    """
+    At least one venue which has email as bookingEmail has at least one active bookable offer.
+    Function is called with venues managed by an active and validated offerer, so offer.isReleased is already True.
+    """
     return db.session.query(
         db.session.query(offers_models.Offer)
         .filter(
             offers_models.Offer.venueId.in_([venue.id for venue in venues]),
             offers_models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name,
+            sa.exists()
+            .where(offers_models.Stock.offerId == offers_models.Offer.id)
+            .where(offers_models.Stock._bookable),
         )
         .exists()
     ).scalar()
 
 
-def venues_have_collective_offers(*venues: models.Venue) -> bool:
+def venues_have_bookable_collective_offers(*venues: models.Venue) -> bool:
+    """
+    Bookable include pre-booked offers (information used by marketing team for campaigns)
+    """
     venue_ids = [venue.id for venue in venues]
 
     collective_offer_query: sa_orm.Query = db.session.query(educational_models.CollectiveOffer.id).filter(
@@ -359,9 +368,6 @@ def venues_have_collective_offers(*venues: models.Venue) -> bool:
         statuses=[
             educational_models.CollectiveOfferDisplayedStatus.PUBLISHED,
             educational_models.CollectiveOfferDisplayedStatus.PREBOOKED,
-            educational_models.CollectiveOfferDisplayedStatus.BOOKED,
-            educational_models.CollectiveOfferDisplayedStatus.ENDED,
-            educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
         ],
     )
 
