@@ -65,7 +65,6 @@ jobs:
         with:
           secrets: |-
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
-            # PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - name: Authenticate through github app argo-wf
         id: github-token
         uses: actions/create-github-app-token@v1
