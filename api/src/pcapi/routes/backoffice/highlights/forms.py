@@ -55,10 +55,12 @@ class CreateHighlightForm(FlaskForm):
         validators=(
             wtforms.validators.InputRequired("Les dates de disponibilité sur l'espace partenaire sont obligatoires"),
         ),
+        drops="up",
     )
     highlight_timespan = fields.PCDateRangeField(
         "Dates du temps fort",
         validators=(wtforms.validators.InputRequired("Les dates du temps fort sont obligatoires"),),
+        drops="up",
     )
     image = fields.PCImageField(
         "Image du temps fort (max. 1 Mo)",

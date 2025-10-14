@@ -766,6 +766,7 @@ Implemented:
 *   `reset_to_blank`: if `true`, cancel button will have text "Réinitialiser" and set value to empty string
 *   `calendar_start_date`: if a `datetime.date` is passed, it will set calendar start date when opening calendar
 *   `calendar_end_date`: if a `datetime.date` is passed, it will set calendar end date when opening calendar
+*   `drops`: if `drops` is passed, il will override 'down' drop default when opening calendar
 
 ### Examples
 
@@ -777,6 +778,7 @@ from_to_date = fields.PCDateRangeField(
     reset_to_blank=False,
     calendar_start_date=datetime.date.today() - timedelta(days=60),
     calendar_end_date=datetime.date.today() - timedelta(days=30),
+    drops='up'
 )
 ```
 
