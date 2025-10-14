@@ -293,6 +293,7 @@ class Returns200Test:
             "speaker": "",
         }
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     @pytest.mark.parametrize(
         "is_venue_address,address_payload,",
         [
@@ -400,7 +401,6 @@ class Returns200Test:
         assert response.json["address"]["id_oa"] == updated_draft_offer.offererAddressId
         assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_update_offer_accepts_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -622,6 +622,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_fail_when_body_has_null_url_field(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -657,7 +658,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_fail_when_body_has_null_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
