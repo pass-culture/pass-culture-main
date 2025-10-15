@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core.videos import api
 from pcapi.core.videos import exceptions
+from pcapi.core.videos import platforms
 from pcapi.utils.requests import ExternalAPIException
 
 
@@ -58,8 +59,9 @@ class GetVideoMetadataFromCacheTest:
     def test_get_video_metadata_from_cache_with_data_in_cache(self, app):
         video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
         video_id = api.extract_video_id(video_url)
+        video_platform = platforms.YouTubePlatform
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{video_platform.CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
