@@ -7,6 +7,7 @@ import typing
 import PIL
 
 import pcapi.core.finance.api as finance_api
+from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
@@ -47,7 +48,11 @@ class LoadableMovie(typing.TypedDict):
     stocks_data: list[ShowStockData]
 
 
-class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
+class ETLProcessException(Exception):
+    pass
+
+
+class BaseETLProcess[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector, ExtractResult]:
     def __init__(self, venue_provider: models.VenueProvider, api_client: APIClient):
         self.venue_provider = venue_provider
         self.api_client = api_client
