@@ -14,7 +14,6 @@ from sqlalchemy.sql.selectable import ScalarSelect
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import schemas
-from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -36,7 +35,6 @@ COLLECTIVE_BOOKING_STATUS_LABELS = {
     models.CollectiveBookingStatus.REIMBURSED: "remboursé",
     "confirmed": "confirmé",
 }
-
 
 BOOKING_DATE_STATUS_MAPPING: dict[models.CollectiveBookingStatusFilter, sa_orm.InstrumentedAttribute] = {
     models.CollectiveBookingStatusFilter.BOOKED: models.CollectiveBooking.dateCreated,
@@ -993,79 +991,6 @@ def list_public_collective_offers(
     return query.all()
 
 
-def _get_filtered_collective_bookings_pro(
-    pro_user: User,
-    period: tuple[date, date] | None = None,
-    status_filter: models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
-    venue_id: int | None = None,
-) -> sa_orm.Query[models.CollectiveBooking]:
-    bookings_query = (
-        _get_filtered_collective_bookings_query(
-            pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            extra_joins=(
-                (models.CollectiveStock.collectiveOffer,),
-                (models.CollectiveBooking.educationalInstitution,),
-            ),
-        )
-        .options(sa_orm.joinedload(models.CollectiveBooking.collectiveStock))
-        .options(
-            sa_orm.joinedload(models.CollectiveBooking.collectiveStock).joinedload(
-                models.CollectiveStock.collectiveOffer
-            )
-        )
-        .options(sa_orm.joinedload(models.CollectiveBooking.educationalInstitution))
-        .options(sa_orm.joinedload(models.CollectiveBooking.venue))
-        .options(sa_orm.joinedload(models.CollectiveBooking.offerer))
-        .distinct(models.CollectiveBooking.id)
-    )
-    return bookings_query
-
-
-def find_collective_bookings_by_pro_user(
-    *,
-    user: User,
-    booking_period: tuple[date, date] | None = None,
-    status_filter: models.CollectiveBookingStatusFilter | None = None,
-    event_date: datetime | None = None,
-    venue_id: int | None = None,
-    page: int = 1,
-    per_page_limit: int = 1000,
-) -> tuple[int, list[models.CollectiveBooking]]:
-    total_collective_bookings = (
-        _get_filtered_collective_bookings_query(
-            pro_user=user,
-            period=booking_period,
-            status_filter=status_filter,
-            event_date=event_date,
-            venue_id=venue_id,
-        )
-        .with_entities(models.CollectiveBooking.id)
-        .count()
-    )
-
-    collective_bookings_query = _get_filtered_collective_bookings_pro(
-        pro_user=user,
-        period=booking_period,
-        status_filter=status_filter,
-        event_date=event_date,
-        venue_id=venue_id,
-    )
-    collective_bookings_page = (
-        collective_bookings_query.order_by(
-            models.CollectiveBooking.id.desc(), models.CollectiveBooking.dateCreated.desc()
-        )
-        .offset((page - 1) * per_page_limit)
-        .limit(per_page_limit)
-        .all()
-    )
-    return total_collective_bookings, collective_bookings_page
-
-
 def get_filtered_collective_booking_report(
     pro_user: User,
     period: tuple[date, date] | None,
@@ -1274,15 +1199,6 @@ def get_collective_offer_templates_for_playlist_query(
         ),
     ).populate_existing()
     return query
-
-
-def user_has_bookings(user: User) -> bool:
-    bookings_query = (
-        db.session.query(models.CollectiveBooking)
-        .join(models.CollectiveBooking.offerer)
-        .join(offerers_models.Offerer.UserOfferers)
-    )
-    return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> models.CollectiveOffer:
@@ -1542,27 +1458,6 @@ def get_paginated_active_collective_offer_template_ids(batch_size: int, page: in
         .limit(batch_size)
     )
     return [offer_id for (offer_id,) in query]
-
-
-def get_booking_related_bank_account(booking_id: int) -> offerers_models.VenueBankAccountLink | None:
-    return (
-        db.session.query(finance_models.BankAccount)
-        .join(
-            offerers_models.VenueBankAccountLink,
-            sa.and_(
-                offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
-                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
-            ),
-        )
-        .join(offerers_models.Venue, offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id)
-        .join(
-            models.CollectiveBooking,
-            models.CollectiveBooking.venueId == offerers_models.Venue.id,
-        )
-        .filter(models.CollectiveBooking.id == booking_id)
-        .options(sa_orm.load_only(finance_models.BankAccount.status, finance_models.BankAccount.dsApplicationId))
-        .one_or_none()
-    )
 
 
 def get_educational_institution_public(

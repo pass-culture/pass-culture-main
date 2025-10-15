@@ -1,31 +1,15 @@
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
 
 import { EMPTY_FILTER_VALUE } from '../Filters/constants'
 import type { BookingsFilters } from '../types'
 
-const doesOfferNameMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
+const doesOfferNameMatchFilter = <T extends BookingRecapResponseModel>(
   offerName: string,
   booking: T
 ): boolean => {
   if (offerName !== EMPTY_FILTER_VALUE) {
     const offerNameFromBooking = _sanitize(booking.stock.offerName)
     return offerNameFromBooking.includes(_sanitize(offerName))
-  }
-  return true
-}
-
-const doesBookingIdMatchFilter = <T extends CollectiveBookingResponseModel>(
-  bookingId: string,
-  booking: T
-): boolean => {
-  if (bookingId !== EMPTY_FILTER_VALUE) {
-    const offerNameFromBooking = _sanitize(booking.bookingId)
-    return offerNameFromBooking.includes(_sanitize(bookingId))
   }
   return true
 }
@@ -70,25 +54,7 @@ const doesBookingBeneficiaryMatchFilter = (
   return true
 }
 
-const doesBookingInstitutionMatchFilter = (
-  bookingInstitution: string,
-  booking: CollectiveBookingResponseModel
-): boolean => {
-  if (bookingInstitution === EMPTY_FILTER_VALUE) {
-    return true
-  }
-
-  const institutionSanitarized = _sanitize(bookingInstitution)
-  const institutionFromBooking = _sanitize(
-    `${booking.institution.institutionType} ${booking.institution.name}`.trim()
-  )
-
-  return institutionFromBooking.includes(institutionSanitarized)
-}
-
-const doesBookingTokenMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
+const doesBookingTokenMatchFilter = <T extends BookingRecapResponseModel>(
   bookingToken: string,
   booking: T
 ): boolean => {
@@ -104,9 +70,7 @@ const doesBookingTokenMatchFilter = <
   }
 }
 
-const doesEANMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
+const doesEANMatchFilter = <T extends BookingRecapResponseModel>(
   ean: string,
   booking: T
 ): boolean => {
@@ -116,9 +80,7 @@ const doesEANMatchFilter = <
   return true
 }
 
-const doesBookingStatusMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
+const doesBookingStatusMatchFilter = <T extends BookingRecapResponseModel>(
   statuses: string[] | '',
   booking: T
 ): boolean => {
@@ -128,13 +90,7 @@ const doesBookingStatusMatchFilter = <
   return true
 }
 
-const isBookingCollectiveBooking = (
-  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
-): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
-
-export const filterBookingsRecap = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
+export const filterBookingsRecap = <T extends BookingRecapResponseModel>(
   bookingsRecap: T[],
   filters: BookingsFilters
 ): T[] => {
@@ -144,22 +100,12 @@ export const filterBookingsRecap = <
     offerISBN,
     offerName,
     bookingStatus,
-    bookingInstitution,
-    bookingId,
   } = filters
 
   return bookingsRecap.filter((booking) => {
     const matchFilters =
       doesOfferNameMatchFilter(offerName, booking) &&
       doesBookingStatusMatchFilter(bookingStatus, booking)
-
-    if (isBookingCollectiveBooking(booking)) {
-      return (
-        matchFilters &&
-        doesBookingInstitutionMatchFilter(bookingInstitution, booking) &&
-        doesBookingIdMatchFilter(bookingId, booking)
-      )
-    }
 
     return (
       matchFilters &&
