@@ -4,7 +4,6 @@ import { add, addDays } from 'date-fns'
 
 import { EacFormat } from '@/apiClient/adage'
 import {
-  type CollectiveBookingCollectiveStockResponseModel,
   CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
@@ -216,20 +215,6 @@ export const getCollectiveOfferManagingOffererFactory = (
     ...customGetCollectiveOfferManagingOfferer,
   }
 }
-
-export const collectiveBookingCollectiveStockFactory = (
-  customCollectiveBookingCollectiveStock: Partial<CollectiveBookingCollectiveStockResponseModel> = {}
-): CollectiveBookingCollectiveStockResponseModel => ({
-  bookingLimitDatetime: new Date().toISOString(),
-  eventStartDatetime: new Date().toISOString(),
-  eventEndDatetime: new Date().toISOString(),
-  numberOfTickets: 1,
-  offerId: 1,
-  offerIsEducational: true,
-  offerEan: null,
-  offerName: 'ma super offre collective',
-  ...customCollectiveBookingCollectiveStock,
-})
 
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
   {

@@ -2,10 +2,7 @@ import classNames from 'classnames'
 import { type FormEvent, useCallback, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import type {
-  CollectivePreFiltersParams,
-  PreFiltersParams,
-} from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { Audience } from '@/commons/core/shared/types'
@@ -23,8 +20,6 @@ import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/Filte
 import { FilterByEventDate } from './FilterByEventDate'
 import { FilterByVenue } from './FilterByVenue'
 import styles from './PreFilters.module.scss'
-import { downloadCollectiveBookingsCSVFile } from './utils/downloadCollectiveBookingsCSVFile'
-import { downloadCollectiveBookingsXLSFile } from './utils/downloadCollectiveBookingsXLSFile'
 import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
 import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
 
@@ -74,12 +69,11 @@ export const PreFilters = ({
 
   const downloadBookingsFilters = { ...selectedPreFilters, page: 1 }
 
-  type DownloadParams =
-    | { audience: Audience.INDIVIDUAL; filters: PreFiltersParams }
-    | {
-        audience: Audience.COLLECTIVE
-        filters: CollectivePreFiltersParams
-      }
+  type DownloadParams = {
+    audience: Audience.INDIVIDUAL
+    filters: PreFiltersParams
+  }
+
   const downloadBookingsCSV = useCallback(
     async ({ audience, filters }: DownloadParams, type: 'CSV' | 'XLS') => {
       setIsDownloadingCSV(true)
@@ -91,12 +85,6 @@ export const PreFilters = ({
             await downloadIndividualBookingsCSVFile(filters)
           } else {
             await downloadIndividualBookingsXLSFile(filters)
-          }
-        } else {
-          if (type === 'CSV') {
-            await downloadCollectiveBookingsCSVFile(filters)
-          } else {
-            await downloadCollectiveBookingsXLSFile(filters)
           }
         }
       } catch {

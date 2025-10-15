@@ -21,7 +21,6 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.routes.serialization import collective_bookings_serialize
@@ -224,48 +223,6 @@ def get_collective_booking_report(
     if export_type == bookings_models.BookingExportType.EXCEL:
         return collective_bookings_serialize.serialize_collective_booking_excel_report(bookings_query)
     return collective_bookings_serialize.serialize_collective_booking_csv_report(bookings_query)
-
-
-def get_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking:
-    collective_booking = (
-        db.session.query(educational_models.CollectiveBooking)
-        .filter(educational_models.CollectiveBooking.id == booking_id)
-        .options(
-            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock).load_only(
-                educational_models.CollectiveStock.price,
-                educational_models.CollectiveStock.startDatetime,
-                educational_models.CollectiveStock.endDatetime,
-                educational_models.CollectiveStock.numberOfTickets,
-            ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.collectiveStock)
-            .joinedload(educational_models.CollectiveStock.collectiveOffer)
-            .load_only(educational_models.CollectiveOffer.students),
-            sa_orm.joinedload(educational_models.CollectiveBooking.educationalRedactor).load_only(
-                educational_models.EducationalRedactor.id,
-                educational_models.EducationalRedactor.email,
-                educational_models.EducationalRedactor.civility,
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-            ),
-            sa_orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
-            sa_orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
-                offerers_models.Venue.postalCode,
-                offerers_models.Venue.managingOffererId,
-            ),
-        )
-        .options(
-            sa_orm.load_only(
-                educational_models.CollectiveBooking.id,
-                educational_models.CollectiveBooking.venueId,
-                educational_models.CollectiveBooking.offererId,
-                educational_models.CollectiveBooking.status,
-            )
-        )
-        .one_or_none()
-    )
-    if not collective_booking:
-        raise exceptions.EducationalBookingNotFound()
-    return collective_booking
 
 
 def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:
