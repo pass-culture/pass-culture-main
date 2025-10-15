@@ -127,7 +127,6 @@ jobs:
     with:
       image: pcapi
       context: api
-      checksum_tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
@@ -148,7 +147,6 @@ jobs:
     with:
       image: pcapi-console
       context: api
-      checksum_tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
       artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
