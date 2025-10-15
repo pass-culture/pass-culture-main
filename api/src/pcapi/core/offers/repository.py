@@ -324,6 +324,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
             sa_orm.joinedload(models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isPermanent,

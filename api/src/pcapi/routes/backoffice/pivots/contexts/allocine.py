@@ -30,6 +30,7 @@ class AllocineContext(PivotContext):
     def list_pivots(cls, query_string: str | None = None) -> list[providers_models.AllocinePivot]:
         query = db.session.query(providers_models.AllocinePivot).options(
             sa_orm.joinedload(providers_models.AllocinePivot.venue).load_only(
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
             )
         )

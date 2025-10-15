@@ -274,6 +274,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,

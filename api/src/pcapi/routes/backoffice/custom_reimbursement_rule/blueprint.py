@@ -63,6 +63,7 @@ def _get_custom_reimbursement_rules_query() -> sa_orm.Query:
             sa_orm.joinedload(finance_models.CustomReimbursementRule.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
@@ -80,6 +81,7 @@ def _get_custom_reimbursement_rules_query() -> sa_orm.Query:
             .joinedload(offers_models.Offer.venue)
             .load_only(
                 offerers_models.Venue.name,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,

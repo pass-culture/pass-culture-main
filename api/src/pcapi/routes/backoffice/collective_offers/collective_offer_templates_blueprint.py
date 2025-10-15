@@ -62,6 +62,7 @@ def _get_collective_offer_templates_query() -> sa_orm.Query:
             sa_orm.contains_eager(educational_models.CollectiveOfferTemplate.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.managingOffererId,
+                    offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                 ),

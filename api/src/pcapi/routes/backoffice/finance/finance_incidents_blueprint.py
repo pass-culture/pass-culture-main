@@ -65,6 +65,7 @@ def _get_incidents_by_id(incidents_ids: list[int] | sa.sql.Select) -> list[finan
             sa_orm.joinedload(finance_models.FinanceIncident.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
             )
@@ -1414,7 +1415,12 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
         .options(
             # Venue info
             sa_orm.contains_eager(finance_models.FinanceIncident.venue)
-            .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName)
+            .load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
+            )
             .options(
                 sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
                 .load_only(offerers_models.VenueBankAccountLink.timespan)

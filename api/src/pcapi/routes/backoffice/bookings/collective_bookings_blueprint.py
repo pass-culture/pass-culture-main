@@ -82,6 +82,7 @@ def _get_collective_bookings_query() -> sa_orm.Query:
             sa_orm.joinedload(educational_models.CollectiveBooking.venue).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
