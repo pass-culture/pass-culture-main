@@ -105,6 +105,7 @@ jobs:
             pass-culture-main
             rendered-manifests
             pc-connect
+            pc-firestore-cli
             pc-render-manifests
           permission-contents: write
 
@@ -316,7 +317,9 @@ jobs:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
           private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: pc-connect
+          repositories: |
+            pc-connect
+            pc-firestore-cli
           permission-contents: read
 
       - name: "Get secrets"

@@ -186,6 +186,7 @@ jobs:
             rendered-manifests
             pc-render-manifests
             pc-connect
+            pc-firestore-cli
           permission-contents: write
 
       - name: "Authentification to Google"
