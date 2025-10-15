@@ -11,6 +11,10 @@ on:
         required: true
         type: string
 
+      checksum_tag:
+        required: true
+        type: string
+
       artifact_registry_workload_identity_provider:
         required: false
         type: string
@@ -58,6 +62,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
+
       - name: Authentification to Google
         uses: google-github-actions/auth@v3
         with:
@@ -65,6 +70,7 @@ jobs:
           token_format: access_token
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
       - name: Get Secret
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v2
@@ -73,6 +79,7 @@ jobs:
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
+
       - name: Authenticate through github app argo-wf
         id: github-token
         uses: actions/create-github-app-token@v1
@@ -82,7 +89,23 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: |
             pass-culture-main
-      - name: Build image
+
+      - name: Download artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
+          path: ${{ runner.temp }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - name: Load docker image from artifact
+        run: |
+          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
+
+      - name: Build and push docker image
         id: build
         uses: pass-culture/common-workflows/actions/build-docker-image@build-docker-image/v0.2.0
         with:
