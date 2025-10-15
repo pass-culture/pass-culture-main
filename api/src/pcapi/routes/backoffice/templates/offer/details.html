@@ -96,7 +96,7 @@
     {% call nav_section("info", "Détails de l'offre") %}
       <div class="d-flex gap-1">
         <div class="flex-grow-1">
-          {% if offer.idAtProvider or offer.ean %}
+          {% if offer.product or offer.ean %}
             <h5>Informations techniques</h5>
             {% if offer.idAtProvider %}
               {% call description_detail_horizontal("Identifiant chez le fournisseur") %}
@@ -104,7 +104,20 @@
                 {{ clipboard.copy_to_clipboard(offer.idAtProvider, "Copier") }}
               {% endcall %}
             {% endif %}
-            {% if offer.ean %}
+            {% if offer.product and offer.product.extraData and offer.product.extraData.allocineId %}
+              {% call description_detail_horizontal("Allociné ID") %}
+                <a href="{{ url_for('backoffice_web.product.get_product_details', product_id=offer.product.id) }}"
+                   class="link-primary">{{ offer.product.extraData.allocineId }}</a>
+                {{ clipboard.copy_to_clipboard(offer.product.extraData.allocineId, "Copier") }}
+              {% endcall %}
+            {% endif %}
+            {% if offer.product.ean %}
+              {% call description_detail_horizontal("EAN") %}
+                <a href="{{ url_for('backoffice_web.product.get_product_details', product_id=offer.product.id) }}"
+                   class="link-primary">{{ offer.product.ean }}</a>
+                {{ clipboard.copy_to_clipboard(offer.product.ean, "Copier") }}
+              {% endcall %}
+            {% elif offer.ean %}
               {% call description_detail_horizontal("EAN") %}
                 {{ offer.ean }}
                 {{ clipboard.copy_to_clipboard(offer.ean, "Copier") }}

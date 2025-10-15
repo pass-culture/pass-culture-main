@@ -53,6 +53,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     HEADLINE = "Offres à la une"
     HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
+    ALLOCINE_ID = "Identifiant Allociné"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -72,6 +73,7 @@ operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "ADDRESS": {"field": "address", "operator": ["IN", "NOT_IN"]},
+    "ALLOCINE_ID": {"field": "integer", "operator": ["EQUALS"]},
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
