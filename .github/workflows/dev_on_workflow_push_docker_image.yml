@@ -80,7 +80,7 @@ jobs:
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
 
-      - name: Authenticate through github app argo-wf
+      - name: Authenticate through github app ghactionci
         id: github-token
         uses: actions/create-github-app-token@v1
         with:
