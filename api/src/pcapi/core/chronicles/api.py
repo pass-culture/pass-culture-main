@@ -162,7 +162,7 @@ def save_chronicle(
         if product_identifier:
             products = (
                 db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["allocineId"].astext == product_identifier)
+                .filter(offers_models.Product.extraData.op("->")("allocineId") == product_identifier)
                 .all()
             )
 
