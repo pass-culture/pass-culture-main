@@ -332,6 +332,21 @@ jobs:
           prune: true
           extra_flags: --resource ':ConfigMap:*' --resource '*:ExternalSecret:*'
 
+      # Set up Cloud SDK
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v3"
+        with:
+          version: ">= 363.0.0"
+
+      - name: "Bind K8s Service Account to GCP Service Account"
+        run: |
+          set -xe
+          namespace=pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }}
+          gcloud projects add-iam-policy-binding projects/passculture-metier-ehp \
+          --role="roles/iam.workloadIdentityUser" \
+          --member=principal://iam.googleapis.com/projects/427121120704/locations/global/workloadIdentityPools/passculture-metier-ehp.svc.id.goog/subject/ns/${namespace}/sa/testing-pcapi \
+          --condition=None
+
       - name: "Init local database"
         run: |
           set -e
