@@ -10,6 +10,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import db as db_utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -147,6 +148,123 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json == []
+
+    def test_with_date_filters(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        factories.CollectiveOfferTemplateFactory(
+            venue=venue,
+            dateCreated=datetime.datetime(2022, 8, 10),
+            dateRange=db_utils.make_timerange(
+                start=datetime.datetime(2022, 8, 10),
+                end=datetime.datetime(2022, 8, 15),
+            ),
+        )
+        offer_with_no_date = factories.CollectiveOfferTemplateFactory(
+            venue=venue, dateCreated=datetime.datetime(2022, 8, 10), dateRange=None
+        )
+
+        # no filters date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers-template")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 2
+
+        # filters date range including date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                "/collective/offers-template?periodBeginningDate=2022-08-09&periodEndingDate=2022-08-17"
+            )
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 2
+
+        # filters date range not including date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                "/collective/offers-template?periodBeginningDate=2022-10-08&periodEndingDate=2022-10-12"
+            )
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["id"] == offer_with_no_date.id
+
+        # filters date range including the lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                "/collective/offers-template?periodBeginningDate=2022-08-08&periodEndingDate=2022-08-12"
+            )
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 2
+
+        # filters date range excluding the lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(
+                "/collective/offers-template?periodBeginningDate=2022-08-13&periodEndingDate=2022-08-20"
+            )
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["id"] == offer_with_no_date.id
+
+        # filters beginning date before lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers-template?periodBeginningDate=2022-08-10")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 2
+
+        # filters beginning date after lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers-template?periodBeginningDate=2022-08-12")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["id"] == offer_with_no_date.id
+
+        # filters ending date after lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers-template?periodEndingDate=2022-08-12")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 2
+
+        # filters ending date before lower date range
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/collective/offers-template?periodEndingDate=2022-08-09")
+            assert response.status_code == 200
+
+        response_json = response.json
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["id"] == offer_with_no_date.id
 
     def test_offers_sorting(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
