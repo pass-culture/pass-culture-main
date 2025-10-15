@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
-import * as reactRouter from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
@@ -11,7 +10,6 @@ import {
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -332,28 +330,7 @@ describe('IndividualOfferLayout', () => {
         initialRouterEntries: ['/onboarding/offre/creation'],
       }
 
-      it("Should redirect to homepage if the user can't access it and is on onboarding url", async () => {
-        const NavigateSpy = vi.spyOn(reactRouter, 'Navigate')
-        vi.spyOn(
-          useHasAccessToDidacticOnboarding,
-          'useHasAccessToDidacticOnboarding'
-        ).mockReturnValue(false)
-
-        const props = { offer: nonEventOffer }
-
-        renderIndividualOfferLayout({ options, props })
-
-        await waitFor(() => {
-          expect(NavigateSpy).toHaveBeenCalledWith({ to: '/accueil' }, {})
-        })
-      })
-
       it('Should display the page if the user can access onboarding and is on onboarding url', async () => {
-        vi.spyOn(
-          useHasAccessToDidacticOnboarding,
-          'useHasAccessToDidacticOnboarding'
-        ).mockReturnValue(true)
-
         const props = { offer: nonEventOffer }
 
         renderIndividualOfferLayout({ options, props })

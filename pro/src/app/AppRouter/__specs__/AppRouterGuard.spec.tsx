@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import * as react_router from 'react-router'
 
 import { AppRouterGuard } from '@/app/AppRouter/AppRouterGuard'
-import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import type { UserAccess } from '@/commons/store/user/reducer'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -35,10 +34,6 @@ const renderGuard = (
 
 describe('AppRouterGuard', () => {
   beforeEach(() => {
-    vi.spyOn(
-      useHasAccessToDidacticOnboarding,
-      'useHasAccessToDidacticOnboarding'
-    ).mockReturnValue(true)
     // Mock Navigate behavior to check if the right route is called.
     // @ts-expect-error
     vi.spyOn(react_router, 'Navigate').mockImplementation((props) => (
@@ -72,24 +67,10 @@ describe('AppRouterGuard', () => {
     expect(screen.getByText('/rattachement-en-cours')).toBeInTheDocument()
   })
 
-  it('should redirect onboarding if user is not onboarded and FF is on', () => {
+  it('should redirect onboarding if user is not onboarded', () => {
     renderGuard('no-onboarding', '/accueil')
 
     expect(screen.getByText('/onboarding')).toBeInTheDocument()
-  })
-
-  it('should not redirect onboarding if user is not onboarded and FF is off', () => {
-    vi.spyOn(
-      useHasAccessToDidacticOnboarding,
-      'useHasAccessToDidacticOnboarding'
-    ).mockReturnValue(false)
-    renderGuard('no-onboarding', '/accueil')
-
-    expect(screen.queryByText('/rattachement-en-cours')).not.toBeInTheDocument()
-    expect(screen.queryByText('/onboarding')).not.toBeInTheDocument()
-    expect(
-      screen.queryByText('/inscription/structure/recherche')
-    ).not.toBeInTheDocument()
   })
 
   it('should redirect to home if user is onboarded and access onboarding pages', () => {

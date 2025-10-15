@@ -2,12 +2,10 @@
 import cn from 'classnames'
 import type React from 'react'
 import { useSelector } from 'react-redux'
-import { Navigate } from 'react-router'
 
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Footer } from '@/components/Footer/Footer'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
@@ -49,12 +47,7 @@ export const OnboardingLayout = ({
   verticallyCentered = false,
   isEntryScreen = false,
 }: OnboardingLayoutProps) => {
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
   const currentUser = useSelector(selectCurrentUser)
-
-  if (isDidacticOnboardingEnabled === false) {
-    return <Navigate to="/accueil" />
-  }
 
   const mainHeadingWrapper = (
     <MainHeading
