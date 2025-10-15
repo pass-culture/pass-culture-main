@@ -295,7 +295,7 @@ class DigitalOfferFactory(OfferFactory):
         lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id)
     )
     url = factory.Sequence("http://example.com/offer/{}".format)
-    venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     offererAddress: factory.declarations.BaseDeclaration | None = None
 
 

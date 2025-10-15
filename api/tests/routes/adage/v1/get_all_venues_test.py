@@ -62,7 +62,6 @@ class Returns200Test:
 
     def test_get_all_venues_pagination(self, client, db_session) -> None:
         first_venues = offerers_factories.VenueFactory.create_batch(2, isPermanent=True)
-        offerers_factories.VirtualVenueFactory(isPermanent=True)
         last_venues = offerers_factories.VenueFactory.create_batch(8, isPermanent=True)
 
         client.with_eac_token()

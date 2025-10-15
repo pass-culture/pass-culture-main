@@ -961,7 +961,7 @@ class Returns200Test:
 
     def when_creating_new_thing_offer(self, client):
         # Given
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -1154,7 +1154,7 @@ class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         # Given
         users_factories.ProFactory(email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         data = {

@@ -1097,19 +1097,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["siret"] == ["SIRET is no longer active"]
 
-    def test_cannot_update_virtual_venue_name(self, client):
-        user = users_factories.UserFactory()
-        offerer = offerers_factories.OffererFactory(siren="000000000")
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        http_client = client.with_session_auth(email=user.email)
-
-        response = http_client.patch(f"/venues/{virtual_venue.id}", json={"name": "Toto"})
-
-        assert response.status_code == 400
-        assert response.json["venue"] == ["Vous ne pouvez pas modifier un lieu Offre Numérique."]
-
     @pytest.mark.parametrize("venue_data", [{"name": "New name"}, {"name": None}])
     def test_name_is_not_editable(self, venue_data, app, client) -> None:
         # Given
