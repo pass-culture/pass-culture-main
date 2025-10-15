@@ -1129,7 +1129,7 @@ class FinanceIncidentRequestOrigin(enum.Enum):
 class FinanceIncident(PcObject, Model):
     __tablename__ = "finance_incident"
     kind: sa_orm.Mapped[IncidentType] = sa_orm.mapped_column(
-        sa.Enum(IncidentType, native_enum=False, create_contraint=False),
+        sa.Enum(IncidentType, native_enum=False, create_constraint=False),
         nullable=False,
     )
     status: sa_orm.Mapped[IncidentStatus] = sa_orm.mapped_column(
