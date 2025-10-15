@@ -32,7 +32,7 @@ class VenueModelConstraintsTest:
             venue.comment = None
             db.session.add(venue)
             db.session.flush()
-        assert "check_has_siret_xor_comment_xor_isVirtual" in str(err.value)
+        assert "check_has_siret_or_comment" in str(err.value)
 
     def test_physical_venue_must_have_an_offerer_address(self):
         with pytest.raises(IntegrityError) as err:
