@@ -363,9 +363,19 @@ class BaseOfferResponseGetterDict(GetterDict):
             )  # FIXME (bpeyrou): to be removed when min app version stop using publicationDate
 
         if key == "video":
+            # FIXME: (ogeber 15-10-25) extract_video_id raises an error if videoUrl doesn't match the REGEX
+            # After PC-37832, this section should look like this:
+            # if not (offer.metaData and offer.metaData.videoExternalId):
+            #     return None
+            #
+            # return OfferVideo(
+            #     id=offer.metaData.videoExternalId,
+            #     title=offer.metaData.videoTitle,
+            #     thumbUrl=offer.metaData.videoThumbnailUrl,
+            #     durationSeconds=offer.metaData.videoDuration,
+            # )
             if not (offer.metaData and offer.metaData.videoUrl):
                 return None
-
             video_id = offer.metaData.videoExternalId or videos_api.extract_video_id(offer.metaData.videoUrl)
             if not video_id:
                 return None
