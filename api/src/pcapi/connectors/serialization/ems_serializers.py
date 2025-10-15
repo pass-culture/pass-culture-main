@@ -30,12 +30,16 @@ class Event(BaseModel):
         return value
 
     def to_generic_movie(self) -> offers_models.Movie:
+        poster_url = self.bill_url
+        if poster_url:
+            poster_url = poster_url.replace("/120/", "/600/")
+
         return offers_models.Movie(
             allocine_id=str(self.allocine_id) if self.allocine_id else None,
             duration=self.duration,
             description=self.synopsis,
             extra_data=None,
-            poster_url=None,
+            poster_url=poster_url,
             title=self.title,
             visa=None,
         )
