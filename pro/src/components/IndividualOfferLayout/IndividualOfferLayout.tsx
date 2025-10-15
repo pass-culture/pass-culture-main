@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
@@ -8,7 +8,6 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -39,9 +38,6 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -64,10 +60,6 @@ export const IndividualOfferLayout = ({
 
   const notify = useNotification()
   const navigate = useNavigate()
-
-  if (isOnboarding && isDidacticOnboardingEnabled === false) {
-    return <Navigate to="/accueil" />
-  }
 
   const onDeleteOfferWithAlreadyExistingEan = async () => {
     if (!offer) {

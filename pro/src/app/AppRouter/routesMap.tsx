@@ -162,7 +162,6 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/OfferType/OfferType'),
     path: '/onboarding/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     meta: {
       onboardingOnly: true,
     },
@@ -439,7 +438,6 @@ export const routes: CustomRouteObject[] = [
       ),
     path: '/onboarding',
     title: 'Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     meta: {
       onboardingOnly: true,
     },
@@ -451,7 +449,6 @@ export const routes: CustomRouteObject[] = [
       ),
     path: '/onboarding/individuel',
     title: 'Offre à destination des jeunes - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     meta: {
       onboardingOnly: true,
     },

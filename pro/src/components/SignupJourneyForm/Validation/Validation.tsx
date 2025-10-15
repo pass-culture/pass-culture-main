@@ -17,7 +17,6 @@ import {
   SAVED_OFFERER_ID_KEY,
 } from '@/commons/core/shared/constants'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
@@ -60,7 +59,6 @@ export const Validation = (): JSX.Element => {
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
   const currentOffererId = useSelector(selectCurrentOffererId)
   const currentOfferer = useSelector(selectCurrentOfferer, shallowEqual)
 
@@ -154,43 +152,27 @@ export const Validation = (): JSX.Element => {
         }
       }
 
-      // Checks if user should see the didactic onboarding (FF + A/B Test)
-      if (isDidacticOnboardingEnabled) {
-        // If currentOffererId is null, offerer is not onboarded yet
-        if (currentOffererId === null) {
-          fullOfferer = await api.getOfferer(response.id)
-          dispatch(updateCurrentOfferer(fullOfferer))
-          dispatch(updateUserAccess('no-onboarding'))
-        }
-
-        // Else, we should get the new offererId onboarded status (to redirect to /onboarding or /accueil)
-        fullOfferer = await getOffererData(response.id, currentOfferer, () =>
-          api.getOfferer(response.id)
-        )
+      // If currentOffererId is null, offerer is not onboarded yet
+      if (currentOffererId === null) {
+        fullOfferer = await api.getOfferer(response.id)
         dispatch(updateCurrentOfferer(fullOfferer))
-        dispatch(
-          updateUserAccess(
-            offerers?.offerersNames.length > 0
-              ? fullOfferer?.isOnboarded
-                ? 'full'
-                : 'no-onboarding'
-              : 'no-offerer'
-          )
-        )
-      } else {
-        notify.success('Votre structure a bien été créée')
-        dispatch(
-          updateUserAccess(
-            offerers?.offerersNames.length > 0
-              ? fullOfferer?.isOnboarded
-                ? 'full'
-                : 'no-onboarding'
-              : 'no-offerer'
-          )
-        )
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate('/accueil')
+        dispatch(updateUserAccess('no-onboarding'))
       }
+
+      // Else, we should get the new offererId onboarded status (to redirect to /onboarding or /accueil)
+      fullOfferer = await getOffererData(response.id, currentOfferer, () =>
+        api.getOfferer(response.id)
+      )
+      dispatch(updateCurrentOfferer(fullOfferer))
+      dispatch(
+        updateUserAccess(
+          offerers?.offerersNames.length > 0
+            ? fullOfferer?.isOnboarded
+              ? 'full'
+              : 'no-onboarding'
+            : 'no-offerer'
+        )
+      )
     } catch (e: unknown) {
       if (
         (isErrorAPIError(e) && e.status === 403) ||

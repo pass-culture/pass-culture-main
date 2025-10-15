@@ -14,7 +14,6 @@ import {
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import type { Address } from '@/commons/core/shared/types'
-import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
@@ -29,11 +28,6 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
   },
-}))
-
-const useHasAccessToDidacticOnboarding = vi.hoisted(() => vi.fn())
-vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding', () => ({
-  useHasAccessToDidacticOnboarding,
 }))
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
@@ -199,31 +193,6 @@ describe('ValidationScreen', () => {
       await userEvent.click(screen.getAllByText('Modifier')[1])
 
       expect(screen.getByText('Activite')).toBeInTheDocument()
-    })
-
-    describe('form validation', () => {
-      beforeEach(() => {
-        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue({
-          id: 1,
-        } as PostOffererResponseModel)
-        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
-          remove: vi.fn(),
-        } as unknown as HTMLScriptElement)
-        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-          offerersNames: [getOffererNameFactory({ id: 10 })],
-        })
-      })
-
-      it("should redirect to home after submit if user doesn't have access to onBoarding", async () => {
-        useHasAccessToDidacticOnboarding.mockReturnValue(false)
-        renderValidationScreen(contextValue)
-        await waitForElementToBeRemoved(() =>
-          screen.queryAllByTestId('spinner')
-        )
-        await userEvent.click(screen.getByText('Valider et créer ma structure'))
-        expect(await screen.findByText('accueil')).toBeInTheDocument()
-      })
     })
   })
 
