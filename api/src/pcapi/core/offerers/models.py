@@ -72,12 +72,6 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
-    (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
-    OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
-    OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
-"""
-
 
 PERMENANT_VENUE_TYPES = [
     VenueTypeCode.CREATIVE_ARTS_STORE,
@@ -285,9 +279,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
         sa.TEXT,
-        sa.CheckConstraint(
-            CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL, name="check_has_siret_xor_comment_xor_isVirtual"
-        ),
         nullable=True,
     )
 
@@ -465,6 +456,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
             name="check_physical_venue_has_offerer_address",
         ),
+        sa.CheckConstraint("(siret IS NOT NULL) OR (comment IS NOT NULL)", name="check_has_siret_or_comment"),
         sa.Index(
             "ix_venue_trgm_unaccent_public_name",
             sa.func.immutable_unaccent("publicName"),
