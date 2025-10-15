@@ -7,6 +7,7 @@ import typing
 import PIL
 
 import pcapi.core.finance.api as finance_api
+from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core import search
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.models import ExternalBookingsClientAPI
@@ -35,7 +36,7 @@ class ShowFeatures(enum.StrEnum):
 class ShowStockData(typing.TypedDict):
     stock_uuid: str
     show_datetime: datetime.datetime
-    remaining_quantity: int
+    remaining_quantity: int | None
     features: list
     price: decimal.Decimal
     price_label: str
@@ -47,7 +48,11 @@ class LoadableMovie(typing.TypedDict):
     stocks_data: list[ShowStockData]
 
 
-class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
+class ETLProcessException(Exception):
+    pass
+
+
+class BaseETLProcess[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector, ExtractResult]:
     def __init__(self, venue_provider: models.VenueProvider, api_client: APIClient):
         self.venue_provider = venue_provider
         self.api_client = api_client
@@ -144,6 +149,7 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
             movie_data = loadable_movie["movie_data"]
             offer.name = movie_data.title
             offer.durationMinutes = movie_data.duration
+            offer.description = movie_data.description
         db.session.flush()
 
         # Stock - Create Or Update
@@ -179,7 +185,10 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI, ExtractResult]:
             stock.offer = offer
             stock.beginningDatetime = stock_data["show_datetime"]
             stock.bookingLimitDatetime = stock_data["show_datetime"]
-            stock.quantity = stock_data["remaining_quantity"] + stock.dnBookedQuantity
+            if stock_data["remaining_quantity"] is None:
+                stock.quantity = None
+            else:
+                stock.quantity = stock_data["remaining_quantity"] + stock.dnBookedQuantity
             stock.features = stock_data["features"]
             stock.price = stock_data["price"]
             stock.dateModifiedAtLastProvider = get_naive_utc_now()
