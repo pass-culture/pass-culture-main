@@ -51,6 +51,7 @@ jobs:
             pass-culture-main
             rendered-manifests
             pc-connect
+            pc-firestore-cli
           permission-contents: write
 
       # Checkout rendered-manifests repository
