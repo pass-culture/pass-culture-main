@@ -304,6 +304,43 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
         assert rows[1]["Date/Heure"].startswith(link_action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[1]["Auteur"] == legit_user.full_name
 
+    def test_get_action_with_soft_deleted_venue(self, authenticated_client, legit_user):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Soft-deleted Venue")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=bank_account,
+            timespan=(
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+            ),
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            authorUser=None,
+            offerer=offerer,
+            venue=venue,
+            bankAccount=bank_account,
+            comment=None,
+        )
+        venue.isSoftDeleted = True
+        db.session.flush()
+
+        url = url_for(self.endpoint, bank_account_id=bank_account.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Partenaire culturel dissocié d'un compte bancaire"
+        assert rows[0]["Commentaire"] == "Partenaire culturel : Soft-deleted Venue (supprimé)"
+        assert rows[0]["Auteur"] == ""
+
 
 class GetBankAccountInvoicesTest(GetEndpointHelper):
     endpoint = "backoffice_web.bank_account.get_invoices"

@@ -99,6 +99,7 @@ def _get_individual_bookings_query() -> sa_orm.Query:
             sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,

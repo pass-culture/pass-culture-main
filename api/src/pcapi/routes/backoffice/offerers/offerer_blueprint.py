@@ -614,6 +614,13 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
+            # joinedload includes soft-deleted venues
+            sa_orm.joinedload(history_models.ActionHistory.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ),
         )
         .all()
     )
@@ -930,6 +937,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
@@ -1136,6 +1144,7 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
             ),
             sa_orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,

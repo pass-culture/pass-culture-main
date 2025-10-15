@@ -37,6 +37,7 @@ class PivotContext:
             .joinedload(providers_models.CinemaProviderPivot.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
             )
         )

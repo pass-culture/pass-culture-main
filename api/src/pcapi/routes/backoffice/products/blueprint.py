@@ -128,6 +128,7 @@ def get_product_details(product_id: int) -> utils.BackofficeResponse:
         sa_orm.joinedload(offers_models.Offer.venue).options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
             )

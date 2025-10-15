@@ -32,12 +32,16 @@
      target="_top">{{ finance_incident[text_attr] }}</a>
 {% endmacro %}
 {% macro build_venue_name_to_details_link(venue, text_attr="common_name", active_tab=None) %}
-  <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
-     class="link-primary"
-     data-bs-toggle="tooltip"
-     data-bs-placement="top"
-     data-bs-title="Voir le partenaire culturel"
-     target="_top">{{ venue[text_attr] }}</a>
+  {% if venue.isSoftDeleted %}
+    {{ venue[text_attr] }} (supprimé)
+  {% else %}
+    <a href="{{ url_for('backoffice_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
+       class="link-primary"
+       data-bs-toggle="tooltip"
+       data-bs-placement="top"
+       data-bs-title="Voir le partenaire culturel"
+       target="_top">{{ venue[text_attr] }}</a>
+  {% endif %}
 {% endmacro %}
 {% macro build_offer_name_to_details_link(offer, text_attr="name") %}
   <a href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}"

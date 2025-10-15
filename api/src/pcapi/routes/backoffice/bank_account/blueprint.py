@@ -100,6 +100,7 @@ def get_linked_venues(bank_account_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.contains_eager(offerers_models.VenueBankAccountLink.venue).load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,
@@ -136,8 +137,12 @@ def get_history(bank_account_id: int) -> utils.BackofficeResponse:
             ),
         )
         .options(
+            # joinedload includes soft-deleted venues
             sa_orm.joinedload(history_models.ActionHistory.venue).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.publicName
+                offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
+                offerers_models.Venue.name,
+                offerers_models.Venue.publicName,
             )
         )
         .all()

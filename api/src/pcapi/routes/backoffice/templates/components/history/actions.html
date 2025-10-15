@@ -64,10 +64,7 @@
                   <span class="fw-bold">Informations modifiées :</span>
                   {% if show_venue and action.venueId %}
                     sur le partenaire culturel
-                    {% if action.venue %}
-                      {# FIXME (rpaoloni): understand why venue can be None sometime #}
-                      {{ links.build_venue_name_to_details_link(action.venue) }}
-                    {% endif %}
+                    {{ links.build_venue_name_to_details_link(action.venue) }}
                     ({{ action.venueId }})
                   {% endif %}
                 </div>

@@ -327,6 +327,7 @@ def get_event_details(special_event_id: int) -> utils.BackofficeResponse:
             ),
             sa_orm.joinedload(operations_models.SpecialEvent.venue).load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
             ),

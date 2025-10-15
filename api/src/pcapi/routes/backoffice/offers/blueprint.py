@@ -643,6 +643,7 @@ def _get_offers_by_ids(
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.id,
+                    offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                 ),
@@ -1251,6 +1252,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(offers_models.Offer.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.id,
+                    offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.managingOffererId,

@@ -80,6 +80,7 @@ def _get_venues_base_query() -> sa_orm.Query:
     return db.session.query(offerers_models.Venue).options(
         sa_orm.load_only(
             offerers_models.Venue.id,
+            offerers_models.Venue.isSoftDeleted,
             offerers_models.Venue.name,
             offerers_models.Venue.publicName,
             offerers_models.Venue.dateCreated,
