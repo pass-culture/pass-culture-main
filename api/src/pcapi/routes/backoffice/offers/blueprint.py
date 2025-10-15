@@ -245,6 +245,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "ALLOCINE_ID": {
+        "field": "integer",
+        "inner_join": "product",
+        "special": str,
+        "column": offers_models.Product.extraData.op("->")("allocineId"),  # use the index
+    },
     "SHOW_TYPE": {
         "facet": "offer.showType",
         "field": "show_type",
@@ -252,6 +258,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "product": [
+        {
+            "name": "product",
+            "args": (offers_models.Product, offers_models.Offer.product),
+        },
+    ],
     "criterion": [
         {
             "name": "criterion",
@@ -639,6 +651,7 @@ def _get_offers_by_ids(
                 offers_models.Offer.publicationDatetime,
                 offers_models.Offer._extraData,
                 offers_models.Offer.lastProviderId,
+                offers_models.Offer.ean,
             ),
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(
@@ -670,6 +683,10 @@ def _get_offers_by_ids(
             .load_only(
                 geography_models.Address.departmentCode,
                 geography_models.Address.timezone,
+            ),
+            sa_orm.joinedload(offers_models.Offer.product).load_only(
+                offers_models.Product.ean,
+                offers_models.Product.extraData,
             ),
         )
     )

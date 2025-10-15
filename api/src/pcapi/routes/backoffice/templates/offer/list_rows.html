@@ -78,6 +78,15 @@
     </td>
     <td>{{ links.build_offer_details_link(offer) }}</td>
     <td>{{ build_connect_as_link(connect_as[offer.id], offer.name, "link-primary") }}</td>
+    <td>
+      {% if offer.product and offer.product.extraData and offer.product.extraData.allocineId %}
+        {{ offer.product.extraData.allocineId }}
+      {% elif offer.product and offer.product.ean %}
+        {{ offer.product.ean }}
+      {% elif offer.ean %}
+        {{ offer.ean }}
+      {% endif %}
+    </td>
     <td>{{ offer.subcategoryId | format_offer_category }}</td>
     <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
     {% if not has_permission("PRO_FRAUD_ACTIONS") %}
