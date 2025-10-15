@@ -90,20 +90,20 @@ jobs:
           repositories: |
             pass-culture-main
 
-      - name: Download artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: ${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
-          path: ${{ runner.temp }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-
-      - name: Load docker image from artifact
-        run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
+#      - name: Download artifact
+#        uses: actions/download-artifact@v5
+#        with:
+#          name: ${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
+#          path: ${{ runner.temp }}
+#
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v3
+#        with:
+#          driver: docker
+#
+#      - name: Load docker image from artifact
+#        run: |
+#          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum_tag }}.tar
 
       - name: Build and push docker image
         id: build
