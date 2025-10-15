@@ -2,10 +2,7 @@ import cn from 'classnames'
 import type React from 'react'
 import { type ChangeEvent, useId, useRef, useState } from 'react'
 
-import type {
-  BookingRecapResponseModel,
-  CollectiveBookingResponseModel,
-} from '@/apiClient/v1'
+import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Audience } from '@/commons/core/shared/types'
@@ -45,7 +42,7 @@ const getAvailableBookingStatuses = (audience: Audience) => {
 }
 
 export interface FilterByBookingStatusProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
+  T extends BookingRecapResponseModel,
 > {
   bookingStatuses: string[]
   bookingsRecap: T[]
@@ -53,9 +50,7 @@ export interface FilterByBookingStatusProps<
   audience: Audience
 }
 
-export const FilterByBookingStatus = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->({
+export const FilterByBookingStatus = <T extends BookingRecapResponseModel>({
   bookingStatuses,
   updateGlobalFilters,
   audience,

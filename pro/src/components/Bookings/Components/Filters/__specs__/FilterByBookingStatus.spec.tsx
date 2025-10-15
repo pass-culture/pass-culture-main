@@ -4,7 +4,6 @@ import { userEvent } from '@testing-library/user-event'
 import {
   type BookingRecapResponseModel,
   BookingRecapStatus,
-  type CollectiveBookingResponseModel,
 } from '@/apiClient/v1'
 import { Audience } from '@/commons/core/shared/types'
 import {
@@ -19,15 +18,11 @@ import {
 } from '../FilterByBookingStatus'
 
 const renderFilterByBookingStatus = (
-  props: FilterByBookingStatusProps<
-    BookingRecapResponseModel | CollectiveBookingResponseModel
-  >
+  props: FilterByBookingStatusProps<BookingRecapResponseModel>
 ) => renderWithProviders(<FilterByBookingStatus {...props} />)
 
 describe('components | FilterByBookingStatus', () => {
-  let props: FilterByBookingStatusProps<
-    BookingRecapResponseModel | CollectiveBookingResponseModel
-  >
+  let props: FilterByBookingStatusProps<BookingRecapResponseModel>
   beforeEach(() => {
     props = {
       bookingsRecap: [

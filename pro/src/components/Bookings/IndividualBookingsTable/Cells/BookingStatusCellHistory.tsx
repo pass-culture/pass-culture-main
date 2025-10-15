@@ -1,26 +1,19 @@
 import { format } from 'date-fns-tz'
 
-import type {
-  BookingRecapResponseBookingStatusHistoryModel,
-  BookingStatusHistoryResponseModel,
-} from '@/apiClient/v1'
+import type { BookingRecapResponseBookingStatusHistoryModel } from '@/apiClient/v1'
 import { toDateStrippedOfTimezone } from '@/commons/utils/date'
 
 import { getBookingStatusDisplayInformations } from '../../Components/utils/bookingStatusConverter'
 import styles from './BookingStatusCellHistory.module.scss'
 
 const computeDateForStatus = (
-  item:
-    | BookingRecapResponseBookingStatusHistoryModel
-    | BookingStatusHistoryResponseModel,
+  item: BookingRecapResponseBookingStatusHistoryModel,
   dateFormat: string
 ) => (item.date ? format(toDateStrippedOfTimezone(item.date), dateFormat) : '-')
 
 export interface BookingStatusCellHistoryProps {
   index: number
-  bookingStatusHistory:
-    | BookingRecapResponseBookingStatusHistoryModel[]
-    | BookingStatusHistoryResponseModel[]
+  bookingStatusHistory: BookingRecapResponseBookingStatusHistoryModel[]
 }
 
 export const BookingStatusCellHistory = ({

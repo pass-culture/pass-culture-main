@@ -24,7 +24,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'booked',
+          status: BookingRecapStatus.BOOKED,
           date: '2020-01-04T20:31:12+02:00',
         },
       ],
@@ -39,7 +39,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'booked',
+          status: BookingRecapStatus.BOOKED,
           date: '2020-01-04T20:31:12+01:00',
         },
       ],
@@ -54,7 +54,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'validated',
+          status: BookingRecapStatus.VALIDATED,
           date: '2020-01-05T20:31:12+01:00',
         },
       ],
@@ -71,7 +71,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'reimbursed',
+          status: BookingRecapStatus.REIMBURSED,
           date: '2020-01-06T20:31:12+01:00',
         },
       ],
@@ -86,7 +86,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'confirmed',
+          status: BookingRecapStatus.CONFIRMED,
           date: '2020-01-06T20:31:12+01:00',
         },
       ],
@@ -103,7 +103,7 @@ describe('bookings status history cell', () => {
     const props = {
       bookingStatusHistory: [
         {
-          status: 'reimbursed',
+          status: BookingRecapStatus.REIMBURSED,
           date: '2020-01-06T20:31:12+01:00',
         },
       ],
