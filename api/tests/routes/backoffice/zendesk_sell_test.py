@@ -42,21 +42,6 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
             }
         ]
 
-    def test_sync_only_virtual_offerer(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Cette entité juridique ne gère que des partenaires culturels virtuels"
-        )
-
-        assert not testing.zendesk_sell_requests
-
     @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_offerer_matching_several_contacts(self, mock_get_offerer_by_id, authenticated_client):
         offerer = offerers_factories.OffererFactory()
@@ -227,20 +212,6 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
 
     def test_sync_non_open_to_public_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=False)
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
-        assert (
-            html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
-        )
-
-        assert not testing.zendesk_sell_requests
-
-    def test_sync_virtual_venue(self, authenticated_client):
-        venue = offerers_factories.VirtualVenueFactory()
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id)
 

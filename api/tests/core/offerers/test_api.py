@@ -2905,7 +2905,6 @@ class CreateFromOnboardingDataTest:
 
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
-        _virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         _venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031")
         user = users_factories.UserFactory()
         user.add_non_attached_pro_role()
@@ -2921,7 +2920,7 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.user.has_non_attached_pro_role
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         # Venue has not been created
-        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(offerers_models.Venue).count() == 1
         # Action logs
         assert db.session.query(history_models.ActionHistory).count() == 1
         offerer_action = (
@@ -3414,16 +3413,16 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
     def test_count_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         count = offerers_api.count_open_to_public_venues_with_accessibility_provider()
         assert count == 1
 
     def test_get_open_to_public_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         venues_list = offerers_api.get_open_to_public_venues_with_accessibility_provider(batch_size=10, batch_num=0)
@@ -3431,8 +3430,8 @@ class AccessibilityProviderTest:
         assert venues_list[0] == venue
 
     def test_get_open_to_public_venues_without_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         venues_list = offerers_api.get_open_to_public_venues_without_accessibility_provider()
@@ -3472,10 +3471,9 @@ class AccessibilityProviderTest:
             activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE,
         )
 
-        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True)]
         venue = offerers_factories.VenueFactory(
             isOpenToPublic=True,
-            isVirtual=False,
             name="Un lieu",
             offererAddress__address__postalCode="75001",
             offererAddress__address__city="Paris",
@@ -3488,10 +3486,9 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
     def test_acceslibre_matching(self):
-        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True)]
         venue = offerers_factories.VenueFactory(
             isOpenToPublic=True,
-            isVirtual=False,
             name="Un lieu",
             offererAddress__address__postalCode="75001",
             offererAddress__address__city="Paris",

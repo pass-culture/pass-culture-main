@@ -1605,7 +1605,7 @@ class CreateOfferTest:
     def test_create_digital_offer_from_scratch(
         self,
     ):
-        venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
+        venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
         body = offers_schemas.CreateOffer(
@@ -2128,9 +2128,8 @@ class UpdateOfferTest:
     def test_offer_update_accordingly_of_its_digitalness(self, hasUrl):
         kwargs = {}
         if hasUrl:
-            kwargs["isVirtual"] = True
-            kwargs["offererAddress"] = None
             kwargs["siret"] = None
+            kwargs["comment"] = "Digital venue"
         venue = offerers_factories.VenueFactory(**kwargs)
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
         offer = factories.OfferFactory(

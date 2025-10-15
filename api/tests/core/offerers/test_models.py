@@ -26,41 +26,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class VenueModelConstraintsTest:
-    def test_virtual_venue_cannot_have_siret(self):
-        venue = factories.VirtualVenueFactory()
-        with pytest.raises(IntegrityError) as err:
-            venue.siret = "siret"
-            db.session.add(venue)
-            db.session.flush()
-        assert "check_has_siret_xor_comment_xor_isVirtual" in str(err.value)
-
-    def test_non_virtual_without_siret_must_have_comment(self):
+    def test_venue_without_siret_must_have_comment(self):
         venue = factories.VenueWithoutSiretFactory()
         with pytest.raises(IntegrityError) as err:
             venue.comment = None
             db.session.add(venue)
             db.session.flush()
         assert "check_has_siret_xor_comment_xor_isVirtual" in str(err.value)
-
-    def test_at_most_one_virtual_venue_per_offerer(self):
-        virtual_venue1 = factories.VirtualVenueFactory()
-        offerer = virtual_venue1.managingOfferer
-        factories.VenueFactory(managingOfferer=offerer)
-
-        # Cannot add new venue (or change the offerer of an existing one).
-        virtual_venue2 = factories.VirtualVenueFactory.build(managingOfferer=offerer)
-        with pytest.raises(ApiErrors) as err:
-            repository.save(virtual_venue2)
-        assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
-
-        # Cannot change isVirtual on an existing one.
-        venue3 = factories.VenueFactory(managingOfferer=offerer)
-        venue3.isVirtual = True
-        venue3.address = venue3.postalCode = venue3.city = venue3.departementCode = None
-        venue3.siret = None
-        with pytest.raises(ApiErrors) as err:
-            repository.save(venue3)
-        assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
 
     def test_physical_venue_must_have_an_offerer_address(self):
         with pytest.raises(IntegrityError) as err:
@@ -79,11 +51,6 @@ class VenueTimezonePropertyTest:
 
         assert venue.timezone == "America/Cayenne"
 
-    def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
-        venue = factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
-
-        assert venue.timezone == "America/Cayenne"
-
 
 class VenueTimezoneSqlQueryTest:
     def test_europe_paris_is_default_timezone(self):
@@ -92,10 +59,6 @@ class VenueTimezoneSqlQueryTest:
 
     def test_return_timezone_given_venue_departement_code(self):
         factories.VenueFactory(postalCode="97300")
-        assert db.session.query(models.Venue).filter_by(timezone="America/Cayenne").count() == 1
-
-    def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
-        factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
         assert db.session.query(models.Venue).filter_by(timezone="America/Cayenne").count() == 1
 
 
@@ -175,7 +138,6 @@ class VenueIsEligibleForSearchTest:
     )
     def test_legacy_is_eligible_for_search(self, permanent, active, venue_type_code, is_eligible_for_search):
         venue = factories.VenueFactory(
-            isVirtual=False,
             managingOfferer__isActive=active,
             isPermanent=permanent,
             venueTypeCode=venue_type_code,
@@ -208,7 +170,6 @@ class VenueIsEligibleForSearchTest:
         is_eligible_for_search,
     ):
         venue = factories.VenueFactory(
-            isVirtual=False,
             isOpenToPublic=open_to_public,
             managingOfferer__isActive=active,
             managingOfferer__validationStatus=validation_status,
@@ -661,11 +622,6 @@ class VenueIsCaledonianTest:
         venue = factories.CaledonianVenueFactory()
         assert venue.is_caledonian
 
-    def test_virtual_venue_is_caledonian(self):
-        offerer = factories.CaledonianOffererFactory(siren="123456789", postalCode="98800")
-        venue = factories.VirtualVenueFactory(managingOfferer=offerer)
-        assert venue.is_caledonian
-
     def test_offerer_is_not_caledonian(self):
         venue = factories.VenueFactory()
         assert not venue.is_caledonian
@@ -673,23 +629,17 @@ class VenueIsCaledonianTest:
 
 class VenueHasPartnerPageTest:
     @pytest.mark.parametrize(
-        "active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        "active_offerer,permanent_venue,at_least_one_offer,has_partner_page",
         [
-            (False, True, False, True, False),
-            (True, False, False, True, False),
-            (True, True, True, True, False),
-            (True, True, False, False, False),
-            (True, True, False, True, True),
+            (False, True, True, False),
+            (True, False, True, False),
+            (True, True, False, False),
+            (True, True, True, True),
         ],
     )
-    def test_has_partner_page(
-        self, active_offerer, permanent_venue, virtual_venue, at_least_one_offer, has_partner_page
-    ):
+    def test_has_partner_page(self, active_offerer, permanent_venue, at_least_one_offer, has_partner_page):
         offerer = factories.OffererFactory(isActive=active_offerer)
-        if virtual_venue:
-            venue = factories.VirtualVenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        else:
-            venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        venue = factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
         if at_least_one_offer:
             offers_factories.OfferFactory(venue=venue)
         assert venue.has_partner_page is has_partner_page

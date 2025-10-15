@@ -387,7 +387,7 @@ class FindByProUserTest:
         offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.ThingOfferFactory(venue=venue, ean="9876543234999")
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -455,7 +455,7 @@ class FindByProUserTest:
         offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)

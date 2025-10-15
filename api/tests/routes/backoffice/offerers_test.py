@@ -172,7 +172,6 @@ class GetOffererTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId="1234")
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):

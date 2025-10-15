@@ -258,37 +258,3 @@ class OfferersBankAccountTest:
         assert managed_venues[0]["hasPricingPoint"] is True
         assert managed_venues[1]["hasPricingPoint"] is True
         assert managed_venues[2]["hasPricingPoint"] is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_user_should_only_see_non_virtual_venue_and_virtual_venues_that_have_at_least_one_offer(self, client):
-        pro_user = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerer_id = offerer.id
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
-        non_virtual_venue_with_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.StockFactory(price=0, offer__venue=non_virtual_venue_with_offer)
-
-        non_virtual_without_any_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        virtual_venue_with_offer = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offers_factories.StockFactory(price=0, offer__venue=virtual_venue_with_offer)
-
-        _virtual_venue_without_any_offer = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        http_client = client.with_session_auth(pro_user.email)
-
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # Check user permission on offerer
-        num_queries += 1  # Fetch offerer, bank_accounts and related/linked venues
-        with testing.assert_num_queries(num_queries):
-            response = http_client.get(f"/offerers/{offerer_id}/bank-accounts")
-            assert response.status_code == 200
-
-        offerer = response.json
-        assert not offerer["bankAccounts"]
-        managedVenues = sorted(offerer["managedVenues"], key=lambda v: v["id"])
-        assert len(managedVenues) == 3
-        assert managedVenues[0]["id"] == non_virtual_venue_with_offer.id
-        assert managedVenues[1]["id"] == non_virtual_without_any_offer.id
-        assert managedVenues[2]["id"] == virtual_venue_with_offer.id

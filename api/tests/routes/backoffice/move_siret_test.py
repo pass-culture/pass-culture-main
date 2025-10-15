@@ -96,7 +96,7 @@ class MoveSiretTestHelper(PostEndpointHelper):
     def test_move_siret_not_matching_venue(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
-        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue2 = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
 
         self._assert_error_400(
             authenticated_client,
@@ -104,18 +104,6 @@ class MoveSiretTestHelper(PostEndpointHelper):
             venue2,
             siret="12345678900002",
             expected_alert=f"Le SIRET 12345678900002 ne correspond pas au partenaire culturel {venue1.id}",
-        )
-
-    def test_move_siret_virtual_venue(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory(siren="123456789")
-        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678900001")
-        venue2 = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        self._assert_error_400(
-            authenticated_client,
-            venue1,
-            venue2,
-            expected_alert=f"Le partenaire culturel cible {venue2.name} (ID {venue2.id}) est un partenaire culturel virtuel",
         )
 
     def test_move_siret_different_offerer(self, authenticated_client):

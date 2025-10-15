@@ -160,32 +160,3 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "VENUE_NAME": venue.name,
             "OFFER_ADDRESS": booking1.stock.offer.fullAddress,
         }
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_numerique_when_venue_is_virtual(self):
-        # Given
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue)
-        booking1 = bookings_factories.CancelledBookingFactory(stock=stock, quantity=2)
-
-        # When
-        email_data = get_booking_cancellation_by_beneficiary_to_pro_email_data(booking1)
-
-        # Then
-        assert email_data.template == TransactionalEmail.BOOKING_CANCELLATION_BY_BENEFICIARY_TO_PRO.value
-        assert email_data.params == {
-            "EVENT_DATE": "",
-            "EVENT_HOUR": "",
-            "EXTERNAL_BOOKING_INFORMATION": None,
-            "IS_EVENT": False,
-            "IS_EXTERNAL": False,
-            "OFFER_NAME": stock.offer.name,
-            "PRICE": stock.price,
-            "FORMATTED_PRICE": "10,10 €",
-            "PROVIDER_NAME": None,
-            "QUANTITY": booking1.quantity,
-            "USER_EMAIL": booking1.email,
-            "USER_NAME": booking1.userName,
-            "VENUE_NAME": virtual_venue.name,
-            "OFFER_ADDRESS": booking1.stock.offer.fullAddress,
-        }

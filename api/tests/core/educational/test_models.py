@@ -5,7 +5,6 @@ from unittest import mock
 import pytest
 from sqlalchemy import exc as sa_exc
 
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
@@ -356,10 +355,7 @@ class HasImageMixinTest:
 class CollectiveOfferTemplateIsEligibleForSearchTest:
     def test_is_eligible_for_search(self):
         searchable_offer = factories.CollectiveOfferTemplateFactory()
-        virtual_venue = offerers_factories.VirtualVenueFactory()
-        unsearchable_offer = factories.CollectiveOfferTemplateFactory(venue=virtual_venue)
         assert searchable_offer.is_eligible_for_search
-        assert not unsearchable_offer.is_eligible_for_search
 
     @pytest.mark.parametrize(
         "validation_status,is_eligible_for_search",
