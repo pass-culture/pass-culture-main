@@ -162,18 +162,40 @@ def find_offerer_by_id(offerer_id: int) -> models.Offerer | None:
     return db.session.query(models.Offerer).filter_by(id=offerer_id).one_or_none()
 
 
-def find_venue_by_id(venue_id: int, load_address: bool = False) -> models.Venue | None:
-    query = (
+def find_offerer_by_id_with_venues_addresses(offerer_id: int) -> models.Offerer | None:
+    return (
+        db.session.query(models.Offerer)
+        .filter_by(id=offerer_id)
+        .options(
+            sa_orm.joinedload(models.Offerer.managedVenues)
+            .joinedload(models.Venue.offererAddress)
+            .joinedload(models.OffererAddress.address)
+        )
+        .one_or_none()
+    )
+
+
+def find_venue_by_id(venue_id: int) -> models.Venue | None:
+    return (
         db.session.query(models.Venue)
         .filter_by(id=venue_id)
         .options(sa_orm.joinedload(models.Venue.venueLabel))
         .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .one_or_none()
     )
 
-    if load_address:
-        query = query.options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
 
-    return query.one_or_none()
+def find_venue_by_id_with_address(venue_id: int) -> models.Venue | None:
+    return (
+        db.session.query(models.Venue)
+        .filter_by(id=venue_id)
+        .options(
+            sa_orm.joinedload(models.Venue.venueLabel),
+            sa_orm.joinedload(models.Venue.managingOfferer),
+            sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address),
+        )
+        .one_or_none()
+    )
 
 
 def find_venue_and_provider_by_id(venue_id: int) -> models.Venue | None:
@@ -210,12 +232,16 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
 
 
 def find_venue_by_siret(siret: str, load_address: bool = False) -> models.Venue | None:
-    query = db.session.query(models.Venue).filter_by(siret=siret)
+    return db.session.query(models.Venue).filter_by(siret=siret).one_or_none()
 
-    if load_address:
-        query = query.options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
 
-    return query.one_or_none()
+def find_venue_by_siret_with_address(siret: str) -> models.Venue | None:
+    return (
+        db.session.query(models.Venue)
+        .filter_by(siret=siret)
+        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+        .one_or_none()
+    )
 
 
 def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
