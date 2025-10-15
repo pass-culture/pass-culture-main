@@ -142,8 +142,6 @@ class FeatureToggle(enum.Enum):
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
-    WIP_ENABLE_PRO_DIDACTIC_ONBOARDING = "Activer le parcours d'onboarding didactique des acteurs culturels"
-    WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST = "Activer l'A/B test du parcours d'onboarding didactique"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
@@ -224,7 +222,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OHO,
-    FeatureToggle.WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST,
     FeatureToggle.WIP_HIGHLIGHT,
     FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
