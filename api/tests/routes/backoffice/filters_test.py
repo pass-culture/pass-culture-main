@@ -145,3 +145,8 @@ class FormatDateTimeTest:
             '<i class="bi bi-clock-history text-body" data-bs-toggle="tooltip" data-bs-placement="top"'
             ' data-bs-title="Fuseau horaire : Noumea (14/07 à 20h30&nbsp;à&nbsp;Paris)"></i>'
         )
+
+    def test_format_empty_date_time(self):
+        address = geography_factories.OverseasAddressFactory()
+        result = filters.format_date_time(None, address)
+        assert result == ""

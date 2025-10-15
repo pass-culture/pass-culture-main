@@ -235,10 +235,12 @@ def format_date(
     return data.strftime(strformat)
 
 
-def format_date_time(data: datetime.date | datetime.datetime, address: geography_models.Address | None = None) -> str:
+def format_date_time(
+    data: datetime.date | datetime.datetime | None, address: geography_models.Address | None = None
+) -> str:
     local_date_time = format_date(data, strformat="%d/%m/%Y à %Hh%M", address=address)
 
-    if not address or address.timezone == METROPOLE_TIMEZONE:
+    if not local_date_time or not address or address.timezone == METROPOLE_TIMEZONE:
         return local_date_time
 
     split_timezone = address.timezone.split("/")
