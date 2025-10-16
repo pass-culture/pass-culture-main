@@ -12,8 +12,6 @@ import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
 import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel';
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CheckTokenBodyModel } from '../models/CheckTokenBodyModel';
-import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
-import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
 import type { CollectiveLocationType } from '../models/CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
@@ -71,7 +69,6 @@ import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2Response
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
-import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
 import type { ListCollectiveOfferBookableResponseModel } from '../models/ListCollectiveOfferBookableResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
@@ -483,150 +480,6 @@ export class DefaultService {
         'format': format,
         'locationType': locationType,
         'offererAddressId': offererAddressId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_collective_bookings_csv <GET>
-   * @param page
-   * @param venueId
-   * @param eventDate
-   * @param bookingStatusFilter
-   * @param bookingPeriodBeginningDate
-   * @param bookingPeriodEndingDate
-   * @returns any OK
-   * @throws ApiError
-   */
-  public getCollectiveBookingsCsv(
-    page: number = 1,
-    venueId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: CollectiveBookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-  ): CancelablePromise<any> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/bookings/csv',
-      query: {
-        'page': page,
-        'venueId': venueId,
-        'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
-        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
-        'bookingPeriodEndingDate': bookingPeriodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_collective_bookings_excel <GET>
-   * @param page
-   * @param venueId
-   * @param eventDate
-   * @param bookingStatusFilter
-   * @param bookingPeriodBeginningDate
-   * @param bookingPeriodEndingDate
-   * @returns any OK
-   * @throws ApiError
-   */
-  public getCollectiveBookingsExcel(
-    page: number = 1,
-    venueId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: CollectiveBookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-  ): CancelablePromise<any> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/bookings/excel',
-      query: {
-        'page': page,
-        'venueId': venueId,
-        'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
-        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
-        'bookingPeriodEndingDate': bookingPeriodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_collective_bookings_pro <GET>
-   * @param page
-   * @param venueId
-   * @param eventDate
-   * @param bookingStatusFilter
-   * @param bookingPeriodBeginningDate
-   * @param bookingPeriodEndingDate
-   * @returns ListCollectiveBookingsResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveBookingsPro(
-    page: number = 1,
-    venueId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: CollectiveBookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-  ): CancelablePromise<ListCollectiveBookingsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/bookings/pro',
-      query: {
-        'page': page,
-        'venueId': venueId,
-        'eventDate': eventDate,
-        'bookingStatusFilter': bookingStatusFilter,
-        'bookingPeriodBeginningDate': bookingPeriodBeginningDate,
-        'bookingPeriodEndingDate': bookingPeriodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_user_has_collective_bookings <GET>
-   * @returns UserHasBookingResponse OK
-   * @throws ApiError
-   */
-  public getUserHasCollectiveBookings(): CancelablePromise<UserHasBookingResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/bookings/pro/userHasBookings',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_collective_booking_by_id <GET>
-   * @param bookingId
-   * @returns CollectiveBookingByIdResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveBookingById(
-    bookingId: number,
-  ): CancelablePromise<CollectiveBookingByIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/bookings/{booking_id}',
-      path: {
-        'booking_id': bookingId,
       },
       errors: {
         403: `Forbidden`,

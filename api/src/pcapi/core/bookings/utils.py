@@ -52,22 +52,6 @@ def generate_hmac_signature(
     return hmac.new(hmac_key.encode(), data.encode(), sha256).hexdigest()
 
 
-def convert_real_booking_dates_utc_to_venue_timezone(
-    date_without_timezone: datetime | None, booking: "CollectiveBooking"
-) -> datetime | None:
-    # TODO: CLEAN_OA - remove these tests and always use location when offererAddress is not nullable in Venue
-    if booking.venue.offererAddress:
-        return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=booking.venue.offererAddress.address.departmentCode
-        )
-    if booking.offerer.postalCode:
-        offerer_department_code = postal_code_utils.PostalCode(booking.offerer.postalCode).get_departement_code()
-        return _apply_departement_timezone(
-            naive_datetime=date_without_timezone, departement_code=offerer_department_code
-        )
-    return None
-
-
 def _apply_departement_timezone(naive_datetime: datetime | None, departement_code: str | None) -> datetime | None:
     if naive_datetime is None or departement_code is None:
         return None

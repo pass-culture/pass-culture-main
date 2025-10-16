@@ -1,8 +1,5 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import type {
-  CollectivePreFiltersParams,
-  PreFiltersParams,
-} from '@/commons/core/Bookings/types'
+import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -16,10 +13,10 @@ type MultiDownloadButtonsModalType = {
   isLocalLoading: boolean
   isFiltersDisabled: boolean
   downloadFunction: (
-    filters: PreFiltersParams | CollectivePreFiltersParams,
+    filters: PreFiltersParams,
     type: 'CSV' | 'XLS'
   ) => Promise<void>
-  filters: PreFiltersParams | CollectivePreFiltersParams
+  filters: PreFiltersParams
 }
 
 export const MultiDownloadButtonsModal = ({

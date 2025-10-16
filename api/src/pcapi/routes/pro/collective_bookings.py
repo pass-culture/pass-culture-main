@@ -1,155 +1,22 @@
 import logging
-import math
-from datetime import datetime
-from typing import cast
 
-from dateutil import parser
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.educational import exceptions as collective_exceptions
-from pcapi.core.educational import repository as collective_repository
 from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import collective_bookings_serialize
-from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 
-from ..serialization.collective_bookings_serialize import serialize_collective_booking
 from . import blueprint
 
 
 logger = logging.getLogger(__name__)
-
-
-@private_api.route("/collective/bookings/pro", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=collective_bookings_serialize.ListCollectiveBookingsResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def get_collective_bookings_pro(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> collective_bookings_serialize.ListCollectiveBookingsResponseModel:
-    per_page_limit = 1000
-    page = query.page
-    venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
-    booking_status = query.booking_status_filter
-    booking_period = None
-    if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
-        )
-    total_collective_bookings, collective_bookings_page = collective_repository.find_collective_bookings_by_pro_user(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
-        booking_period=booking_period,
-        status_filter=booking_status,
-        event_date=event_date,
-        venue_id=venue_id,
-        page=int(page),
-        per_page_limit=per_page_limit,
-    )
-
-    return collective_bookings_serialize.ListCollectiveBookingsResponseModel(
-        bookingsRecap=[serialize_collective_booking(booking) for booking in collective_bookings_page],
-        page=page,
-        pages=int(math.ceil(total_collective_bookings / per_page_limit)),
-        total=total_collective_bookings,
-    )
-
-
-@private_api.route("/collective/bookings/<int:booking_id>", methods=["GET"])
-@login_required
-@spectree_serialize(
-    response_model=collective_bookings_serialize.CollectiveBookingByIdResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def get_collective_booking_by_id(booking_id: int) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
-    try:
-        booking = educational_api_booking.get_collective_booking_by_id(booking_id)
-    except collective_exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, booking.offererId)
-    return collective_bookings_serialize.CollectiveBookingByIdResponseModel.from_orm(booking)
-
-
-@private_api.route("/collective/bookings/csv", methods=["GET"])
-@login_required
-@spectree_serialize(
-    json_format=False,
-    response_headers={
-        "Content-Type": "text/csv; charset=utf-8-sig;",
-        "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.csv",
-    },
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def get_collective_bookings_csv(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> bytes:
-    return _create_collective_bookings_export_file(query, BookingExportType.CSV)
-
-
-@private_api.route("/collective/bookings/excel", methods=["GET"])
-@login_required
-@spectree_serialize(
-    json_format=False,
-    response_headers={
-        "Content-Type": "application/vnd.ms-excel",
-        "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.xlsx",
-    },
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def get_collective_bookings_excel(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> bytes:
-    return _create_collective_bookings_export_file(query, BookingExportType.EXCEL)
-
-
-def _create_collective_bookings_export_file(
-    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel, export_type: BookingExportType
-) -> bytes:
-    venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
-    booking_period = None
-    if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
-        )
-    booking_status = query.booking_status_filter
-
-    export_data = educational_api_booking.get_collective_booking_report(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
-        booking_period=booking_period,
-        status_filter=booking_status,
-        event_date=event_date,
-        venue_id=venue_id,
-        export_type=export_type,
-    )
-    if export_type == BookingExportType.CSV:
-        return cast(str, export_data).encode("utf-8-sig")
-    return cast(bytes, export_data)
-
-
-@private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
-@login_required
-@spectree_serialize(response_model=UserHasBookingResponse, api=blueprint.pro_private_schema)
-@atomic()
-def get_user_has_collective_bookings() -> UserHasBookingResponse:
-    user = current_user._get_current_object()
-    return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
 
 
 @private_api.route("/collective/offers/<int:offer_id>/cancel_booking", methods=["PATCH"])

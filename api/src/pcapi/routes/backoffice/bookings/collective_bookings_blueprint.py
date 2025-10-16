@@ -11,7 +11,6 @@ from markupsafe import Markup
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import NotFound
 
-from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -171,8 +170,6 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_collective_bookings(form)
 
-    pro_visualisation_link = f"{settings.PRO_URL}/collective/bookings{form.pro_view_args}" if form.pro_view_args else ""
-
     bookings = utils.limit_rows(
         bookings,
         form.limit.data,
@@ -201,7 +198,6 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=booking_forms.CancelCollectiveBookingForm(),
-        pro_visualisation_link=pro_visualisation_link,
         connect_as=connect_as,
     )
 

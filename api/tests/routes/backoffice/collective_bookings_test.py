@@ -234,28 +234,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert "Raison de l'annulation" in extra_data
         assert expected_text in extra_data
 
-    @pytest.mark.parametrize(
-        "query_args",
-        [
-            {},
-            {
-                "event_from_date": datetime.date(1970, 1, 1),
-            },
-            {
-                "event_to_date": datetime.date(2037, 12, 31),
-            },
-            {
-                "event_from_date": datetime.date(1970, 1, 1),
-                "event_to_date": datetime.date(2037, 12, 31),
-            },
-        ],
-    )
-    def test_display_download_link(self, authenticated_client, collective_bookings, query_args):
-        venue_id = [collective_bookings[0].venueId]
-        kwargs = {**query_args, "venue": venue_id}
-        response = authenticated_client.get(url_for(self.endpoint, **kwargs))
-        assert (b"pc-clipboard" in response.data) == (not query_args)
-
     def test_list_bookings_by_name(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="Visite des locaux primitifs du pass Culture"))
