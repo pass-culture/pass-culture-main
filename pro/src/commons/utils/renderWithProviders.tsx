@@ -11,7 +11,7 @@ import type {
   SharedCurrentUserResponseModel,
 } from '@/apiClient/v1'
 import type { DeepPartial } from '@/commons/custom_types/utils'
-import type { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 
 import type { AnyObject } from './types'

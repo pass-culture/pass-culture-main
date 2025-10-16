@@ -28,7 +28,7 @@ import {
   getIndividualOfferUrl,
 } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import type { DeepPartial } from '@/commons/custom_types/utils'
-import type { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/store'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   defaultGetOffererResponseModel,
