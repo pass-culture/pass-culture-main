@@ -883,6 +883,12 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         )
 
+    @property
+    def hasNoneFreeOffers(self) -> bool:
+        from pcapi.core.offerers.repository import has_venue_non_free_offers
+
+        return has_venue_non_free_offers(self.id)
+
 
 class GooglePlacesInfo(PcObject, Model):
     __tablename__ = "google_places_info"

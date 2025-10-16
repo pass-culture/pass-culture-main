@@ -269,3 +269,34 @@ class GetOffererHeadlineOfferTest:
 
         with pytest.raises(sa_orm.exc.NoResultFound):
             repository.get_offerer_headline_offer(offerer.id)
+
+
+class HasVenueNoneFreeOffersTest:
+    def test_venue_with_no_offers_returns_false(self):
+        venue = offerers_factories.VenueFactory()
+        assert not repository.has_venue_non_free_offers(venue.id)
+
+    def test_unknown_venue_returns_false(self):
+        assert not repository.has_venue_non_free_offers(-1)
+
+    def test_venue_with_non_free_inactive_offers_return_false(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory(price=100, offer__isActive=False, offer__venue=venue)
+        assert not repository.has_venue_non_free_offers(venue.id)
+
+    def test_venue_with_non_free_soft_deleted_offers_return_false(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory(price=100, isSoftDeleted=True, offer__venue=venue)
+        assert not repository.has_venue_non_free_offers(venue.id)
+
+    def test_venue_with_at_least_one_non_free_offer_returns_true(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory(price=100, offer__venue=venue)
+        offers_factories.StockFactory(price=0, offer__venue=venue)
+        assert repository.has_venue_non_free_offers(venue.id)
+
+    def test_venue_with_only_non_free_offer_returns_true(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory(price=100, offer__venue=venue)
+        offers_factories.StockFactory(price=200, offer__venue=venue)
+        assert repository.has_venue_non_free_offers(venue.id)
