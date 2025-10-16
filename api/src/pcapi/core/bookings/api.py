@@ -16,6 +16,7 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
+import pcapi.core.geography.models as geography_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.exceptions as offers_exceptions
@@ -198,6 +199,66 @@ def classify_and_sort_bookings(
         ),
     )
     return (sorted_ended_bookings, sorted_ongoing_bookings)
+
+
+def get_individual_bookings_by_status(user: users_models.User, status: str) -> list[models.Booking]:
+    query = (
+        db.session.query(models.Booking)
+        .filter_by(userId=user.id)
+        .join(models.Booking.stock)
+        .join(offers_models.Stock.offer)
+        .outerjoin(models.Booking.activationCode)
+        .options(
+            sa_orm.load_only(
+                models.Booking.dateCreated,
+                models.Booking.quantity,
+            ),
+            sa_orm.joinedload(models.Booking.activationCode).load_only(
+                offers_models.ActivationCode.code,
+                offers_models.ActivationCode.expirationDate,
+            ),
+            sa_orm.joinedload(models.Booking.stock)
+            .load_only(offers_models.Stock.beginningDatetime)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(
+                offers_models.Offer.name,
+                offers_models.Offer.subcategoryId,
+                offers_models.Offer.withdrawalDelay,
+                offers_models.Offer.withdrawalType,
+                offers_models.Offer.isDuo,
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.product),
+                sa_orm.joinedload(offers_models.Offer.mediations),
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.timezone),
+            ),
+            sa_orm.joinedload(models.Booking.venue)
+            .load_only(
+                offerers_models.Venue.name,
+                offerers_models.Venue.city,
+                offerers_models.Venue.timezone,
+            )
+            .joinedload(offerers_models.Venue.venueLabel),
+        )
+    )
+
+    query_filter = sa.or_(
+        sa.and_(models.Booking.activationCode != None, models.Booking.displayAsEnded.is_(True)),
+        sa.and_(
+            offers_models.Offer.isPermanent.is_(False),
+            models.Booking.status.in_(
+                [models.BookingStatus.USED, models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED]
+            ),
+        ),
+    )
+
+    if status == "ended":
+        return query.filter(query_filter).all()
+    return query.filter(sa.not_(query_filter)).all()
 
 
 def _book_offer(

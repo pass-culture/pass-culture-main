@@ -399,6 +399,335 @@ class GetBookingsTest:
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["venue"]["isOpenToPublic"] is True
 
+    def test_get_bookings_list_with_ongoing_status(self, client):
+        OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+        venue1 = offerers_factories.VenueFactory(
+            city="Paris",
+            name="fnac",
+            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
+            timezone="Europe/Paris",
+        )
+
+        venue2 = offerers_factories.VenueFactory(
+            city="Marseille",
+            name="fnac",
+            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
+            timezone="Europe/Paris",
+        )
+
+        offer = offers_factories.OfferFactory(
+            venue=venue1,
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.now() + timedelta(days=2),
+            offer=offer,
+        )
+
+        ongoing_booking = booking_factories.BookingFactory(stock=stock, user=user)
+
+        ended_booking_1 = booking_factories.UsedBookingFactory(
+            user=user,
+            stock__offer__venue=venue2,
+            displayAsEnded=True,
+            dateUsed=datetime(2023, 3, 2),
+            stock__offer__url=OFFER_URL,
+            stock__offer__name="ended booking - offer 1",
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            stock__features=["VO"],
+            stock__offer__extraData=None,
+            cancellation_limit_date=datetime(2023, 3, 2),
+        )
+
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+
+        second_activation_code = digital_stock.activationCodes[1]
+
+        ended_booking_2 = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            stock__offer__name="ended booking - offer 2",
+            stock=digital_stock,
+            activationCode=second_activation_code,
+        )
+
+        ongoing_booking_mediation = offers_factories.MediationFactory(
+            id=1, offer=ongoing_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+        offers_factories.MediationFactory(id=2, offer=ended_booking_1.stock.offer, thumbCount=1, credit="photo credit")
+        offers_factories.MediationFactory(id=3, offer=ended_booking_2.stock.offer, thumbCount=1, credit="photo credit")
+
+        with assert_num_queries(3):  # user + bookings + offer
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ongoing")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+        assert booking_response["id"] == ongoing_booking.id
+        assert booking_response["quantity"] == ongoing_booking.quantity
+        assert booking_response["activationCode"] is None
+        assert booking_response["dateCreated"] == ongoing_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+        booking_stock_response = booking_response["stock"]
+        assert booking_stock_response["beginningDatetime"] == ongoing_booking.stock.beginningDatetime.strftime(
+            "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+
+        booking_stock_offer_response = booking_stock_response["offer"]
+        assert booking_stock_offer_response["id"] == ongoing_booking.stock.offer.id
+        assert booking_stock_offer_response["name"] == ongoing_booking.stock.offer.name
+        assert booking_stock_offer_response["imageUrl"] == ongoing_booking_mediation.thumbUrl
+        assert booking_stock_offer_response["subcategoryId"] == ongoing_booking.stock.offer.subcategoryId
+        assert booking_stock_offer_response["withdrawalType"] == ongoing_booking.stock.offer.withdrawalType.value
+        assert booking_stock_offer_response["withdrawalDelay"] == ongoing_booking.stock.offer.withdrawalDelay
+        assert booking_stock_offer_response["isPermanent"] == False
+        assert booking_stock_offer_response["isDigital"] == False
+        assert (
+            booking_stock_offer_response["address"]["timezone"]
+            == ongoing_booking.stock.offer.offererAddress.address.timezone
+        )
+
+        booking_stock_offer_venue_response = booking_stock_offer_response["venue"]
+        assert booking_stock_offer_venue_response["id"] == ongoing_booking.stock.offer.venue.id
+        assert booking_stock_offer_venue_response["label"] == ongoing_booking.stock.offer.venue.venueLabel.label
+        assert booking_stock_offer_venue_response["name"] == ongoing_booking.stock.offer.venue.name
+        assert booking_stock_offer_venue_response["city"] == ongoing_booking.stock.offer.venue.city
+        assert booking_stock_offer_venue_response["timezone"] == ongoing_booking.stock.offer.venue.timezone
+
+    def test_get_bookings_list_with_ended_status(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+
+        paris_timezone = "Europe/Paris"
+        offer = offers_factories.OfferFactory(
+            venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
+                timezone=paris_timezone,
+            ),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.now() + timedelta(days=2),
+            offer=offer,
+        )
+
+        ongoing_booking = booking_factories.BookingFactory(stock=stock, user=user)
+
+        booking_start_date = datetime(2023, 3, 2)
+        ended_booking = booking_factories.UsedBookingFactory(
+            user=user,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=True,
+            dateUsed=booking_start_date,
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            stock__beginningDatetime=booking_start_date,
+            cancellation_limit_date=booking_start_date - timedelta(days=2),
+        )
+
+        cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
+            user=user,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Lille"),
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+            cancellation_date=datetime(2023, 3, 10),
+        )
+
+        cancelled_booking = booking_factories.CancelledBookingFactory(
+            user=user,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Evreux"),
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            cancellation_date=datetime(2023, 3, 8),
+        )
+
+        digital_stock = offers_factories.StockWithActivationCodesFactory(
+            offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Domont"),
+                timezone=paris_timezone,
+            ),
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.BY_EMAIL,
+            offer__withdrawalDelay=60 * 30,
+        )
+
+        activation_code = digital_stock.activationCodes[1]
+
+        ended_digital_booking = booking_factories.UsedBookingFactory(
+            user=user,
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=True,
+            stock=digital_stock,
+            activationCode=activation_code,
+        )
+
+        offers_factories.MediationFactory(id=1, offer=ongoing_booking.stock.offer, thumbCount=1, credit="photo credit")
+        ended_booking_mediation = offers_factories.MediationFactory(
+            id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+        offers_factories.MediationFactory(
+            id=3, offer=cancelled_permanent_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+        cancelled_booking_mediation = offers_factories.MediationFactory(
+            id=4, offer=cancelled_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+        ended_digital_booking_mediation = offers_factories.MediationFactory(
+            id=5, offer=ended_digital_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+
+        with assert_num_queries(8):
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+
+        ended_bookings_response = response.json["bookings"]
+        assert len(ended_bookings_response) == 3  # ended_booking + cancelled_booking + ended_digital_booking
+
+        assert [b["id"] for b in ended_bookings_response] == [
+            ended_booking.id,
+            cancelled_booking.id,
+            ended_digital_booking.id,
+        ]
+
+        assert [b["quantity"] for b in ended_bookings_response] == [
+            ended_booking.quantity,
+            cancelled_booking.quantity,
+            ended_digital_booking.quantity,
+        ]
+
+        activation_codes_from_response = [b["activationCode"] for b in ended_bookings_response]
+        assert activation_codes_from_response[0] is None
+        assert activation_codes_from_response[1] is None
+        assert activation_codes_from_response[2] == {
+            "code": ended_digital_booking.activationCode.code,
+            "expirationDate": ended_digital_booking.activationCode.expirationDate,
+        }
+
+        assert [b["dateCreated"] for b in ended_bookings_response] == [
+            ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            cancelled_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            ended_digital_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        ]
+
+        beginning_datetimes_from_response = [b["stock"]["beginningDatetime"] for b in ended_bookings_response]
+        assert beginning_datetimes_from_response[0] == ended_booking.stock.beginningDatetime.strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+        assert beginning_datetimes_from_response[1] is None
+        assert beginning_datetimes_from_response[2] is None
+
+        assert [b["stock"]["offer"]["name"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.name,
+            cancelled_booking.stock.offer.name,
+            ended_digital_booking.stock.offer.name,
+        ]
+
+        assert [b["stock"]["offer"]["subcategoryId"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.subcategoryId,
+            cancelled_booking.stock.offer.subcategoryId,
+            ended_digital_booking.stock.offer.subcategoryId,
+        ]
+
+        assert [b["stock"]["offer"]["imageUrl"] for b in ended_bookings_response] == [
+            ended_booking_mediation.thumbUrl,
+            cancelled_booking_mediation.thumbUrl,
+            ended_digital_booking_mediation.thumbUrl,
+        ]
+
+        withdrawal_type_from_response = [b["stock"]["offer"]["withdrawalType"] for b in ended_bookings_response]
+        withdrawal_type_from_response[0] is None
+        withdrawal_type_from_response[1] is None
+        withdrawal_type_from_response[2] == ended_digital_booking.stock.offer.withdrawalType
+
+        withdrawal_delay_from_response = [b["stock"]["offer"]["withdrawalDelay"] for b in ended_bookings_response]
+        withdrawal_delay_from_response[0] is None
+        withdrawal_delay_from_response[1] is None
+        withdrawal_delay_from_response[2] == ended_digital_booking.stock.offer.withdrawalDelay
+
+        isPermanent_from_response = [b["stock"]["offer"]["isPermanent"] for b in ended_bookings_response]
+        isPermanent_from_response[0] is False
+        isPermanent_from_response[1] is False
+        isPermanent_from_response[2] is True
+
+        isDigital_from_response = [b["stock"]["offer"]["isDigital"] for b in ended_bookings_response]
+        isDigital_from_response[0] is True
+        isDigital_from_response[1] is False
+        isDigital_from_response[2] is True
+
+        assert [b["stock"]["offer"]["address"]["timezone"] for b in ended_bookings_response] == [
+            (
+                ended_booking.stock.offer.offererAddress or ended_booking.stock.offer.venue.offererAddress
+            ).address.timezone,
+            (
+                cancelled_booking.stock.offer.offererAddress or cancelled_booking.stock.offer.venue.offererAddress
+            ).address.timezone,
+            (
+                ended_digital_booking.stock.offer.offererAddress
+                or ended_digital_booking.stock.offer.venue.offererAddress
+            ).address.timezone,
+        ]
+
+        assert [b["stock"]["offer"]["venue"]["label"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.venue.venueLabel.label,
+            cancelled_booking.stock.offer.venue.venueLabel.label,
+            ended_digital_booking.stock.offer.venue.venueLabel.label,
+        ]
+
+        assert [b["stock"]["offer"]["venue"]["name"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.venue.name,
+            cancelled_booking.stock.offer.venue.name,
+            ended_digital_booking.stock.offer.venue.name,
+        ]
+
+        assert [b["stock"]["offer"]["venue"]["city"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.venue.city,
+            cancelled_booking.stock.offer.venue.city,
+            ended_digital_booking.stock.offer.venue.city,
+        ]
+
+        assert [b["stock"]["offer"]["venue"]["timezone"] for b in ended_bookings_response] == [
+            ended_booking.stock.offer.venue.timezone,
+            cancelled_booking.stock.offer.venue.timezone,
+            ended_digital_booking.stock.offer.venue.timezone,
+        ]
+
+    def test_get_bookings_list_with_invalid_status_returns_422(self, client):
+        users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        response = client.with_token(self.identifier).get("/native/v2/bookings/invalid_status")
+
+        assert response.status_code == 422
+
+        assert response.json == {
+            "status": "Statut invalide 'invalid_status'. Les statuts valides sont : 'ongoing' ou 'ended'."
+        }
+
 
 class GetBookingTicketTest:
     identifier = "pascal.ture@example.com"
