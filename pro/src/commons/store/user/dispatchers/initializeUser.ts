@@ -25,13 +25,14 @@ import {
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 import type { AppThunkApiConfig } from '../../store'
-import { logout } from './logout'
 
 export const initializeUser = createAsyncThunk<
-  void,
+  {
+    success: true
+  },
   SharedCurrentUserResponseModel,
   AppThunkApiConfig
->('user/initializeUser', async (user, { dispatch }) => {
+>('user/initializeUser', async (user, { dispatch, rejectWithValue }) => {
   try {
     const initializeSelectedOffererAndVenue = async (
       offererId: number,
@@ -55,9 +56,6 @@ export const initializeUser = createAsyncThunk<
               : 'no-offerer'
           )
         )
-
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, String(offererId))
-        localStorage.setItem(SAVED_VENUE_ID_KEY, String(venueId))
       } catch (e: unknown) {
         if (isErrorAPIError(e) && e.status === 403) {
           // Do nothing at this point,
@@ -80,16 +78,12 @@ export const initializeUser = createAsyncThunk<
 
     const firstOffererId = offerers.offerersNames.at(0)?.id
     const firstVenueId = firstOffererId
-      ? venuesResponse.venues.find(
-          (venue) => venue.managingOffererId === firstOffererId
-        )?.id
+      ? venuesResponse.venues
+          .filter((venue) => venue.managingOffererId === firstOffererId)
+          .at(0)?.id
       : undefined
-
     if (firstOffererId && firstVenueId) {
       if (storageAvailable('localStorage')) {
-        // TODO (igabriele, 2025-10-21): We need to validate that:
-        // - In case the user somehow managed to switch accounts with uncompatible saved IDs.
-        // - In case `SAVED_OFFERER_ID_KEY` is not `SAVED_VENUE_ID_KEY` managingOffererId.
         const savedSelectedOffererId = Number(
           localStorage.getItem(SAVED_OFFERER_ID_KEY)
         )
@@ -115,7 +109,24 @@ export const initializeUser = createAsyncThunk<
     }
 
     dispatch(updateUser(user))
-  } catch (_err: unknown) {
-    await dispatch(logout()).unwrap()
+
+    return { success: true }
+  } catch (error: unknown) {
+    // In case of error, cancel all state modifications
+    dispatch(updateOffererNames(null))
+    dispatch(updateCurrentOfferer(null))
+    dispatch(setSelectedVenue(null))
+    dispatch(setVenues(null))
+    dispatch(updateUser(null))
+
+    if (isErrorAPIError(error)) {
+      return rejectWithValue({
+        error: 'API_ERROR',
+        status: error.status,
+        body: error.message,
+      })
+    }
+
+    return rejectWithValue({ error: 'UNKNOWN_ERROR' })
   }
 })
