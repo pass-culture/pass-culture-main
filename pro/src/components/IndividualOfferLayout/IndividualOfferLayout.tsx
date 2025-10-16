@@ -21,6 +21,7 @@ import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './IndividualOfferLayout.module.scss'
 import { IndividualOfferNavigation } from './IndividualOfferNavigation/IndividualOfferNavigation'
+import { OfferHighlightBanner } from './OfferHighlightBanner/OfferHighlightBanner'
 import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
 import { Status } from './Status/Status'
@@ -42,6 +43,7 @@ export const IndividualOfferLayout = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
+  const isHighlightsFeatureActive = true // useActiveFeature('WIP_HIGHLIGHTS_FEATURE')
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -61,6 +63,12 @@ export const IndividualOfferLayout = ({
 
   const shouldDisplayActionOnStatus =
     withStepper && !displayUpdatePublicationAndBookingDates
+
+  const shouldDisplayHighlightsBanner =
+    !!offer &&
+    isHighlightsFeatureActive &&
+    offer.isEvent &&
+    ![OfferStatus.PENDING, OfferStatus.REJECTED].includes(offer.status)
 
   const notify = useNotification()
   const navigate = useNavigate()
@@ -137,6 +145,12 @@ export const IndividualOfferLayout = ({
             Supprimer ce brouillon
           </Button>
         </Callout>
+      )}
+
+      {shouldDisplayHighlightsBanner && (
+        <div className={styles['banner-container']}>
+          <OfferHighlightBanner offerId={offer.id} />
+        </div>
       )}
 
       {offer?.lastProvider?.name && (
