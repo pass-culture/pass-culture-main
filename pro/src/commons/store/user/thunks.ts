@@ -5,13 +5,23 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type {
   GetOffererNameResponseModel,
   SharedCurrentUserResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
+import {
+  SAVED_OFFERER_ID_KEY,
+  SAVED_VENUE_ID_KEY,
+} from '@/commons/core/shared/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import {
   updateCurrentOfferer,
   updateOffererNames,
 } from '@/commons/store/offerer/reducer'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
+import {
+  setSelectedVenue,
+  setVenues,
+  updateUser,
+  updateUserAccess,
+} from '@/commons/store/user/reducer'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export const initializeUserThunk = createAsyncThunk(
@@ -21,17 +31,23 @@ export const initializeUserThunk = createAsyncThunk(
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const initializeOfferer = async (
+      const initializeSelectedOffererAndVenue = async (
         offererId: number,
-        offerersNames: GetOffererNameResponseModel[]
+        venueId: number,
+        offerersNames: GetOffererNameResponseModel[],
+        venues: VenueListItemResponseModel[]
       ) => {
         try {
-          const response = await api.getOfferer(offererId)
-          dispatch(updateCurrentOfferer(response))
+          const selectedOfferer = await api.getOfferer(offererId)
+          const selectedVenue = venues.find((venue) => venue.id === venueId)
+          assertOrFrontendError(selectedVenue, '`selectedVenue` is undefined.')
+
+          dispatch(updateCurrentOfferer(selectedOfferer))
+          dispatch(setSelectedVenue(selectedVenue))
           dispatch(
             updateUserAccess(
               offerersNames
-                ? response.isOnboarded
+                ? selectedOfferer.isOnboarded
                   ? 'full'
                   : 'no-onboarding'
                 : 'no-offerer'
@@ -52,19 +68,38 @@ export const initializeUserThunk = createAsyncThunk(
       }
 
       const offerers = await api.listOfferersNames()
-      const firstOffererId = offerers.offerersNames[0]?.id
+      const venuesResponse = await api.getVenues()
 
-      if (firstOffererId) {
-        dispatch(updateOffererNames(offerers.offerersNames))
+      dispatch(updateOffererNames(offerers.offerersNames))
+      dispatch(setVenues(venuesResponse.venues))
 
+      const firstOffererId = offerers.offerersNames.at(0)?.id
+      const firstVenueId = firstOffererId
+        ? venuesResponse.venues
+            .filter((venue) => venue.managingOffererId === firstOffererId)
+            .at(0)?.id
+        : undefined
+      if (firstOffererId && firstVenueId) {
         if (storageAvailable('localStorage')) {
-          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-          await initializeOfferer(
-            savedOffererId ? Number(savedOffererId) : firstOffererId,
-            offerers.offerersNames
+          const savedSelectedOffererId = Number(
+            localStorage.getItem(SAVED_OFFERER_ID_KEY)
+          )
+          const savedSelectedVenueId = Number(
+            localStorage.getItem(SAVED_VENUE_ID_KEY)
+          )
+          await initializeSelectedOffererAndVenue(
+            savedSelectedOffererId || firstOffererId,
+            savedSelectedVenueId || firstVenueId,
+            offerers.offerersNames,
+            venuesResponse.venues
           )
         } else {
-          await initializeOfferer(firstOffererId, offerers.offerersNames)
+          await initializeSelectedOffererAndVenue(
+            firstOffererId,
+            firstVenueId,
+            offerers.offerersNames,
+            venuesResponse.venues
+          )
         }
       } else {
         dispatch(updateUserAccess('no-offerer'))
@@ -77,6 +112,8 @@ export const initializeUserThunk = createAsyncThunk(
       // In case of error, cancel all state modifications
       dispatch(updateOffererNames(null))
       dispatch(updateCurrentOfferer(null))
+      dispatch(setSelectedVenue(null))
+      dispatch(setVenues(null))
       dispatch(updateUser(null))
 
       if (isErrorAPIError(error)) {
