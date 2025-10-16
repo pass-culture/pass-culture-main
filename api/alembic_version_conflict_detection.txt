@@ -1,2 +1,6 @@
 1ed8548280cd (pre) (head)
+<<<<<<< HEAD
 69abcb004075 (post) (head)
+=======
+5e5e3e71c42c (post) (head)
+>>>>>>> ff0e3aa466 ((PC-38257)[API] feat: enforce all venue to have a location (OA))

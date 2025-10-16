@@ -402,10 +402,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OpeningHours", foreign_keys="OpeningHours.venueId", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True, index=True
+    offererAddressId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=False, index=True
     )
-    offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
     )
 
@@ -452,10 +452,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     __table_args__ = (
-        sa.CheckConstraint(
-            '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
-            name="check_physical_venue_has_offerer_address",
-        ),
         sa.CheckConstraint("(siret IS NOT NULL) OR (comment IS NOT NULL)", name="check_has_siret_or_comment"),
         sa.Index(
             "ix_venue_trgm_unaccent_public_name",
