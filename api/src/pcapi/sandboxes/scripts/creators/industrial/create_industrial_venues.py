@@ -61,7 +61,15 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         venue_accessibility = ACCESSIBILITY_MOCK[mock_accessibility_index % len(ACCESSIBILITY_MOCK)]
 
         if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO == 0:
-            venue = None
+            # This used to be a virtual only venue offerer.
+            # Not sure how to deal with it now that there are no more virtual venues but
+            # we still need at least one venue with the offerer.
+            virtual_venue_name = "{} (Offre numérique)"
+            venue_by_name[virtual_venue_name] = offerers_factories.VenueWithoutSiretFactory.create(
+                managingOfferer=offerer,
+                name=virtual_venue_name.format(venue_name),
+            )
+
         else:
             if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
                 comment = None
@@ -123,13 +131,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             mock_accessibility_index += 1
 
         mock_index += 1
-
-        virtual_venue_name = "{} (Offre numérique)"
-        venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory.create(
-            managingOfferer=offerer,
-            name=virtual_venue_name.format(venue_name),
-            pricing_point=venue,
-        )
 
     # Venue Allocine
 
