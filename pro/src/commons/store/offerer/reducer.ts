@@ -13,6 +13,7 @@ const initialState: OffererState = {
   currentOfferer: null,
 }
 
+// TODO (igabriele, 2025-10-16): Merge that into user slice (it's user-dependent).
 const offererSlice = createSlice({
   name: 'offerer',
   initialState,

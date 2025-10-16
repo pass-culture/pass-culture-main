@@ -1,17 +1,19 @@
 import { api } from '@/apiClient/api'
-import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 
+import { configureTestStore } from '../../testUtils'
 import { initializeUserThunk } from '../thunks'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
+    getVenues: vi.fn(),
   },
 }))
 
@@ -20,27 +22,42 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
 }))
 
 describe('initializeUserThunk', () => {
-  const mockUser = sharedCurrentUserFactory()
-
-  const mockOfferers = {
-    offerersNames: [getOffererNameFactory()],
-  }
+  const sharedCurrentUser = sharedCurrentUserFactory()
 
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
+
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({
+          id: 1,
+          name: 'Offerer A',
+        }),
+      ],
+    })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({
+          id: 2,
+          managingOffererId: 1,
+          name: 'Venue A1',
+        }),
+      ],
+    })
   })
 
   it('should dispatch updateUser when all API calls succeed', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOfferers)
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(
-      defaultGetOffererResponseModel
-    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 1,
+      name: 'Offerer A',
+    })
     const store = configureTestStore()
 
-    await store.dispatch(initializeUserThunk(mockUser))
+    await store.dispatch(initializeUserThunk(sharedCurrentUser))
 
-    expect(store.getState().user.currentUser).toEqual(mockUser)
+    expect(store.getState().user.currentUser).toEqual(sharedCurrentUser)
   })
 
   it('should dispatch all update functions with null and reject when API call fails', async () => {
@@ -48,9 +65,11 @@ describe('initializeUserThunk', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(mockUser))
+    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
+    expect(store.getState().user.selectedVenue).toBeNull()
+    expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
 
@@ -61,7 +80,7 @@ describe('initializeUserThunk', () => {
       meta: {
         aborted: false,
         condition: false,
-        arg: mockUser,
+        arg: sharedCurrentUser,
         requestStatus: 'rejected',
         requestId: expect.any(String),
         rejectedWithValue: true,
@@ -70,29 +89,29 @@ describe('initializeUserThunk', () => {
   })
 
   it('should handle getOfferer error and continue if status is 403', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOfferers)
     vi.spyOn(api, 'getOfferer').mockRejectedValue({
       status: 403,
       body: { error: 'Forbidden' },
     })
     const store = configureTestStore()
 
-    await store.dispatch(initializeUserThunk(mockUser))
+    await store.dispatch(initializeUserThunk(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
   })
 
   it('should handle getOfferer error and reject if status is not 403', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue(mockOfferers)
     vi.spyOn(api, 'getOfferer').mockRejectedValue({
       status: 500,
       body: { error: 'Internal Server Error' },
     })
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(mockUser))
+    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
+    expect(store.getState().user.selectedVenue).toBeNull()
+    expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
 
@@ -103,7 +122,7 @@ describe('initializeUserThunk', () => {
       meta: {
         aborted: false,
         condition: false,
-        arg: mockUser,
+        arg: sharedCurrentUser,
         requestStatus: 'rejected',
         requestId: expect.any(String),
         rejectedWithValue: true,
@@ -120,9 +139,11 @@ describe('initializeUserThunk', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockApiError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(mockUser))
+    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
+    expect(store.getState().user.selectedVenue).toBeNull()
+    expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
 
@@ -137,7 +158,7 @@ describe('initializeUserThunk', () => {
       meta: {
         aborted: false,
         condition: false,
-        arg: mockUser,
+        arg: sharedCurrentUser,
         requestStatus: 'rejected',
         requestId: expect.any(String),
         rejectedWithValue: true,
