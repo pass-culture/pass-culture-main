@@ -122,6 +122,8 @@ def get_filtered_venues(
     active_offerers_only: bool | None = False,
     offerer_id: int | None = None,
     validated_offerer: bool | None = None,
+    with_bank_account: bool = False,
+    with_stocks: bool = False,
 ) -> list[models.Venue]:
     query = (
         db.session.query(models.Venue)
@@ -150,6 +152,9 @@ def get_filtered_venues(
 
     if offerer_id:
         query = query.filter(models.Venue.managingOffererId == offerer_id)
+
+    if with_bank_account:
+        query = query.options(sa_orm.joinedload(models.Venue.bankAccountLinks))
 
     return query.order_by(models.Venue.name).all()
 

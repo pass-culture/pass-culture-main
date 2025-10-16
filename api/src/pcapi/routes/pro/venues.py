@@ -82,6 +82,7 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
         active_offerers_only=query.active_offerers_only,
         offerer_id=query.offerer_id,
         validated_offerer=query.validated,
+        with_bank_account=True,
     )
     ids_of_venues_with_offers = (
         offerers_repository.get_ids_of_venues_with_offers(list({venue.managingOffererId for venue in venue_list}))

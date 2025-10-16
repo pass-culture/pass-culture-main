@@ -446,6 +446,15 @@ class VenueListItemResponseGetterDict(GetterDict):
             }
             return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
 
+        if key == "isActive":
+            return venue.managingOfferer.isActive
+
+        if key == "isValidated":
+            return venue.managingOfferer.isValidated
+
+        if key == "bankAccountStatus":
+            return parse_venue_bank_account_status(venue)
+
         if key == "isCaledonian":
             return venue.is_caledonian
 
@@ -468,6 +477,10 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
     isCaledonian: bool
+    isActive: bool
+    # isValidated: bool
+    bankAccountStatus: SimplifiedBankAccountStatus | None
+    hasNoneFreeOffers: bool
 
     @classmethod
     def from_orm(
