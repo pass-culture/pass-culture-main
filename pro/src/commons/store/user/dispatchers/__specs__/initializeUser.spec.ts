@@ -75,7 +75,7 @@ describe('initializeUser', () => {
 
     expect(result).toEqual({
       error: { message: 'Rejected' },
-      type: 'user/initialize/rejected',
+      type: 'user/initializeUser/rejected',
       payload: { error: 'UNKNOWN_ERROR' },
       meta: {
         aborted: false,
@@ -117,7 +117,7 @@ describe('initializeUser', () => {
 
     expect(result).toEqual({
       error: { message: 'Rejected' },
-      type: 'user/initialize/rejected',
+      type: 'user/initializeUser/rejected',
       payload: { error: 'UNKNOWN_ERROR' },
       meta: {
         aborted: false,
@@ -149,7 +149,7 @@ describe('initializeUser', () => {
 
     expect(result).toEqual({
       error: { message: 'Rejected' },
-      type: 'user/initialize/rejected',
+      type: 'user/initializeUser/rejected',
       payload: {
         error: 'API_ERROR',
         status: 403,

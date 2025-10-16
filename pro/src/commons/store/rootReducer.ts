@@ -16,5 +16,3 @@ export const rootReducer = combineReducers({
   adageFilter: adageFilterReducer,
   offerer: offererReducer,
 })
-
-export type RootState = ReturnType<typeof rootReducer>

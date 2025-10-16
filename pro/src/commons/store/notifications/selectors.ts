@@ -1,5 +1,5 @@
 import type { Notification } from '@/commons/store/notifications/reducer'
-import type { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/store'
 
 export const notificationSelector = (state: RootState): Notification | null => {
   return state.notification.notification
