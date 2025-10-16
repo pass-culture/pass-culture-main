@@ -122,6 +122,7 @@ def get_filtered_venues(
     active_offerers_only: bool | None = False,
     offerer_id: int | None = None,
     validated_offerer: bool | None = None,
+    with_bank_account: bool = False,
 ) -> list[models.Venue]:
     query = (
         db.session.query(models.Venue)
@@ -150,6 +151,11 @@ def get_filtered_venues(
 
     if offerer_id:
         query = query.filter(models.Venue.managingOffererId == offerer_id)
+
+    if with_bank_account:
+        query = query.options(
+            sa_orm.selectinload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
+        )
 
     return query.order_by(models.Venue.name).all()
 
@@ -1086,17 +1092,20 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
     )
 
 
-def venue_has_non_free_offers(venue_id: int) -> bool:
-    return db.session.query(
-        db.session.query(offers_models.Stock)
-        .join(offers_models.Offer)
+def venues_have_non_free_offers(venue_ids: typing.Collection[int]) -> set[int]:
+    query = (
+        db.session.query(offers_models.Offer.venueId)
+        .select_from(offers_models.Offer)
+        .join(offers_models.Stock)
         .filter(
             sa.and_(
                 offers_models.Stock.price > 0,
                 offers_models.Stock.isSoftDeleted.is_(False),
                 offers_models.Offer.isActive,
-                offers_models.Offer.venueId == venue_id,
-            ),
+            )
         )
-        .exists()
-    ).scalar()
+        .filter(offers_models.Offer.venueId.in_(venue_ids))
+        .with_entities(offers_models.Offer.venueId)
+    )
+
+    return {row[0] for row in query}
