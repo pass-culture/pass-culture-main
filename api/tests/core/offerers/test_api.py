@@ -2965,7 +2965,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id not in (rejected_venue_id, rejected_venue_id_without_siret)
         assert venue.publicName == onboarding_data.publicName
 
-        actions = db.session.query(history_models.ActionHistory).all()
+        actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -3012,7 +3012,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id != rejected_venue_id
         assert venue.publicName == onboarding_data.publicName
 
-        actions = db.session.query(history_models.ActionHistory).all()
+        actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
