@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import * as thunks from '@/commons/store/user/thunks'
+import * as thunks from '@/commons/store/user/dispatchers/initializeUser'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -93,7 +93,7 @@ describe('src | components | pages | Signup | validation', () => {
     const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
     const user = sharedCurrentUserFactory()
     const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-    const initializeUserThunk = vi.spyOn(thunks, 'initializeUserThunk')
+    const initializeUser = vi.spyOn(thunks, 'initializeUser')
     const mockDispatch = vi.fn().mockImplementation(() => ({
       unwrap: () => Promise.resolve({ success: true }),
     }))
@@ -111,7 +111,7 @@ describe('src | components | pages | Signup | validation', () => {
 
     // … and the user is initialized
     await waitFor(() =>
-      expect(initializeUserThunk).toHaveBeenCalledExactlyOnceWith(user)
+      expect(initializeUser).toHaveBeenCalledExactlyOnceWith(user)
     )
 
     // The dispatch is called …

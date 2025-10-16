@@ -24,7 +24,7 @@ import {
 } from '@/commons/store/user/reducer'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
-export const initializeUserThunk = createAsyncThunk(
+export const initializeUser = createAsyncThunk(
   'user/initialize',
   async (
     user: SharedCurrentUserResponseModel,
