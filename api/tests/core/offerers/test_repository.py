@@ -272,30 +272,31 @@ class GetOffererHeadlineOfferTest:
 
 
 class HasVenueNoneFreeOffersTest:
-    def test_venue_with_no_offers_returns_false(self):
+    def test_venue_with_no_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
-        assert not repository.venue_has_non_free_offers(venue.id)
+        assert not repository.venues_have_non_free_offers([venue.id])
 
-    def test_unknown_venue_returns_false(self):
-        assert not repository.venue_has_non_free_offers(-1)
+    def test_unknown_venue_returns_nothing(self):
+        assert not repository.venues_have_non_free_offers([-1])
 
-    def test_venue_with_non_free_inactive_offers_return_false(self):
+    def test_venue_with_non_free_inactive_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__isActive=False, offer__venue=venue)
-        assert not repository.venue_has_non_free_offers(venue.id)
+        assert not repository.venues_have_non_free_offers([venue.id])
 
-    def test_venue_with_non_free_soft_deleted_offers_return_false(self):
+    def test_venue_with_non_free_soft_deleted_offers_returns_nothing(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, isSoftDeleted=True, offer__venue=venue)
-        assert not repository.venue_has_non_free_offers(venue.id)
+        assert not repository.venues_have_non_free_offers([venue.id])
 
-    def test_venue_with_at_least_one_non_free_offer_returns_true(self):
+    def test_venue_with_at_least_one_non_free_offer_returns_venue(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__venue=venue)
         offers_factories.StockFactory(price=0, offer__venue=venue)
-        assert repository.venue_has_non_free_offers(venue.id)
+        assert repository.venues_have_non_free_offers([venue.id]) == {venue.id}
 
-    def test_venue_with_only_non_free_offer_returns_true(self):
+    def test_venue_with_only_non_free_offer_returns_venue(self):
         venue = offerers_factories.VenueFactory()
         offers_factories.StockFactory(price=100, offer__venue=venue)
         offers_factories.StockFactory(price=200, offer__venue=venue)
+        assert repository.venues_have_non_free_offers([venue.id]) == {venue.id}
