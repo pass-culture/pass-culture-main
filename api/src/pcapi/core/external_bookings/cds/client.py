@@ -425,8 +425,14 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return payement_collection
 
-    def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> cds_serializers.VoucherTypeCDS | None:
-        pc_voucher_types = self.get_pc_voucher_types()
+    # TODO: (tcoudray-pass, 14/10/25) Move this method in `CineDigitalServiceETLProcess`
+    # when `CDSStocks` is removed
+    def get_voucher_type_for_show(
+        self,
+        show: cds_serializers.ShowCDS,
+        pc_voucher_types: list[cds_serializers.VoucherTypeCDS] | None = None,
+    ) -> cds_serializers.VoucherTypeCDS | None:
+        pc_voucher_types = pc_voucher_types or self.get_pc_voucher_types()
 
         show_pc_vouchers = []
         for show_tariff in show.shows_tariff_pos_type_collection:
