@@ -19,7 +19,7 @@ brevo-python = "1.2.0"
 celery = { version = "5.5.3", extras = ["redis"] }
 click = "8.3.0"
 clickhouse-sqlalchemy = "0.3.2"
-cryptography = "^46.0.2"
+cryptography = "^46.0.3"
 ecdsa = "0.19.1"                     # <0.20.0
 email-validator = "2.3.0"
 factory-boy = "3.3.3"
