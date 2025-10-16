@@ -502,6 +502,186 @@
                 "title": "BookingDisplayStatusRequest",
                 "type": "object"
             },
+            "BookingListItemOfferResponse": {
+                "type": "object",
+                "title": "BookingListItemOfferResponse",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "imageUrl": {
+                        "type": "string",
+                        "title": "Imageurl",
+                        "nullable": true
+                    },
+                    "address": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingListItemOfferResponseAddress"
+                            }
+                        ],
+                        "title": "BookingListItemOfferResponseAddress",
+                        "nullable": true
+                    },
+                    "isDigital": {
+                        "type": "boolean",
+                        "title": "Isdigital"
+                    },
+                    "isPermanent": {
+                        "type": "boolean",
+                        "title": "Ispermanent"
+                    },
+                    "withdrawalDelay": {
+                        "type": "integer",
+                        "title": "Withdrawaldelay",
+                        "nullable": true
+                    },
+                    "withdrawalType": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/WithdrawalTypeEnum"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "subcategoryId": {
+                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                    },
+                    "venue": {
+                        "$ref": "#/components/schemas/BookingListItemVenueResponse"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "isDigital",
+                    "isPermanent",
+                    "subcategoryId",
+                    "venue"
+                ]
+            },
+            "BookingListItemOfferResponseAddress": {
+                "type": "object",
+                "title": "BookingListItemOfferResponseAddress",
+                "properties": {
+                    "timezone": {
+                        "type": "string",
+                        "title": "Timezone"
+                    }
+                },
+                "required": [
+                    "timezone"
+                ]
+            },
+            "BookingListItemResponse": {
+                "title": "BookingListItemResponse",                
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "dateCreated": {
+                        "format": "date-time",
+                        "title": "Datecreated",
+                        "type": "string"
+                    },
+                    "activationCode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ActivationCodeResponse"
+                            }
+                        ],
+                        "title": "ActivationCodeResponse",
+                        "nullable": true
+                    },
+                    "quantity": {
+                        "title": "Quantity",
+                        "type": "integer"
+                    },
+                    "stock": {
+                        "$ref": "#/components/schemas/BookingListItemStockResponse"
+                    }
+                },
+                "required": [
+                    "id",
+                    "date_created",
+                    "quantity",
+                    "stock"
+                ]
+            },            
+            "BookingListItemStockResponse": {
+                "title": "BookingListItemStockResponse",
+                "type": "object",
+                "properties": {
+                    "beginningDatetime": {
+                        "format": "date-time",
+                        "title": "Beginningdatetime",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "offer": {
+                        "$ref": "#/components/schemas/BookingListItemOfferResponse"
+                    }
+                },
+                "required": [
+                    "offer"
+                ]
+            },            
+            "BookingListItemVenueResponse": {
+                "type": "object",
+                "title": "BookingListItemVenueResponse",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "title": "Id"
+                    },
+                    "city": {
+                        "type": "string",
+                        "title": "City",
+                        "nullable": true
+                    },
+                    "label": {
+                        "type": "string",
+                        "title": "Label"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "timezone": {
+                        "type": "string",
+                        "title": "Timezone"
+                    }
+                },
+                "required": [
+                    "id",
+                    "label",
+                    "name",
+                    "timezone"
+                ]
+            },
+            "BookingsListResponseV2": {
+                "properties": {
+                    "bookings": {
+                        "items": {
+                            "$ref": "#/components/schemas/BookingResponseList"
+                        },
+                        "title": "Bookings",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "bookings"
+                ],
+                "title": "BookingsListResponseV2",
+                "type": "object"
+            },
             "BookingOfferExtraData": {
                 "properties": {
                     "ean": {
@@ -8752,6 +8932,55 @@
                 "tags": []
             }
         },
+        "/native/v2/bookings/{status}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_bookings_{status}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "status",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingsListResponseV2"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_bookings_list <GET>",
+                "tags": []
+            }
+        },        
         "/native/v2/offer/{offer_id}": {
             "get": {
                 "description": "",

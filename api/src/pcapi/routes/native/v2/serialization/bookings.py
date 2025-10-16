@@ -301,3 +301,85 @@ class BookingsResponseV2(ConfiguredBaseModel):
     ended_bookings: list[BookingResponse]
     ongoing_bookings: list[BookingResponse]
     has_bookings_after_18: bool
+
+
+class BookingListItemVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "label":
+            if self._obj.venueLabel:
+                return self._obj.venueLabel.label
+            return None
+
+        return super().get(key, default)
+
+
+class BookingListItemVenueResponse(ConfiguredBaseModel):
+    id: int
+    city: str | None
+    label: str
+    name: str
+    timezone: str
+
+    class Config:
+        getter_dict = BookingListItemVenueResponseGetterDict
+
+
+class BookingListItemOfferResponseAddress(ConfiguredBaseModel):
+    timezone: str
+
+
+class BookingListItemOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "address":
+            offerer_address: OffererAddress | None
+            if self._obj.offererAddress:
+                offerer_address = self._obj.offererAddress
+            else:
+                offerer_address = self._obj.venue.offererAddress
+
+            if not offerer_address:
+                return None
+
+            address: Address = offerer_address.address
+
+            return BookingListItemOfferResponseAddress(
+                timezone=address.timezone,
+            )
+
+        elif key == "image_url":
+            return getattr(self._obj.image, "url", None)
+
+        return super().get(key, default)
+
+
+class BookingListItemOfferResponse(ConfiguredBaseModel):
+    id: int
+    name: str
+    image_url: str | None
+    address: BookingListItemOfferResponseAddress | None
+    is_digital: bool
+    is_permanent: bool
+    withdrawal_delay: int | None
+    withdrawal_type: WithdrawalTypeEnum | None
+    subcategory_id: SubcategoryIdEnum
+    venue: BookingListItemVenueResponse
+
+    class Config:
+        getter_dict = BookingListItemOfferResponseGetterDict
+
+
+class BookingListItemStockResponse(ConfiguredBaseModel):
+    beginning_datetime: datetime | None
+    offer: BookingListItemOfferResponse
+
+
+class BookingListItemResponse(ConfiguredBaseModel):
+    id: int
+    date_created: datetime
+    activation_code: ActivationCodeResponse | None
+    quantity: int
+    stock: BookingListItemStockResponse
+
+
+class BookingsListResponseV2(ConfiguredBaseModel):
+    bookings: list[BookingListItemResponse]
