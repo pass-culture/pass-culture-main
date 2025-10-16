@@ -6,8 +6,8 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 
-import { configureTestStore } from '../../testUtils'
-import { initializeUserThunk } from '../thunks'
+import { configureTestStore } from '../../../testUtils'
+import { initializeUser } from '../initializeUser'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -21,7 +21,7 @@ vi.mock('@/commons/utils/storageAvailable', () => ({
   storageAvailable: vi.fn().mockReturnValue(true),
 }))
 
-describe('initializeUserThunk', () => {
+describe('initializeUser', () => {
   const sharedCurrentUser = sharedCurrentUserFactory()
 
   beforeEach(() => {
@@ -55,7 +55,7 @@ describe('initializeUserThunk', () => {
     })
     const store = configureTestStore()
 
-    await store.dispatch(initializeUserThunk(sharedCurrentUser))
+    await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toEqual(sharedCurrentUser)
   })
@@ -65,7 +65,7 @@ describe('initializeUserThunk', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
+    const result = await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
@@ -95,7 +95,7 @@ describe('initializeUserThunk', () => {
     })
     const store = configureTestStore()
 
-    await store.dispatch(initializeUserThunk(sharedCurrentUser))
+    await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
   })
@@ -107,7 +107,7 @@ describe('initializeUserThunk', () => {
     })
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
+    const result = await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
@@ -139,7 +139,7 @@ describe('initializeUserThunk', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockApiError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUserThunk(sharedCurrentUser))
+    const result = await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
