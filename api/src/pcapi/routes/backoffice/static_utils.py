@@ -63,6 +63,7 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-fill-to-bottom.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-htmx-manager.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-sort-table.js"),
+    Path("src/pcapi/static/backoffice/js/addons/pc-flash.js"),
 ]
 CSS_BUNDLE = Path("src/pcapi/static/backoffice/css/bundle.css")
 CSS_FILES = [

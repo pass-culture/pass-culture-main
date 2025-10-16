@@ -1,27 +1,17 @@
 /**
  * JS to handle htmx interactions while waiting for backend's response:
- *  - refresh flash messages after each htmx request
  *  - refresh tom select inside newly loaded forms
  *  - display loader spinner while loading distant content
  */
 
 class PcHtmxManager extends PcAddOn {
-  static MESSAGES_DIV = "flash-messages"
-  static REFRESH_TRIGGER_EVENT = "refreshMessages"
-
   static LOADING_MODAL_ID = "loading-htmx-modal"
-  isLoadingFlashMessages = false
 
   initialize = () => {
     EventHandler.on(document.body, "htmx:beforeRequest", this.#displayLoadingSpinner)
-
-    EventHandler.on(document.body, "htmx:beforeRequest", this.#startLoadingFlashMessages)
-    EventHandler.on(document.body, "htmx:afterRequest", this.#finishLoadingFlashMessages)
-
     EventHandler.on(document.body, "htmx:afterRequest", this.#reloadPageOnUnauthorizedError)
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideLoadingSpinner)
     EventHandler.on(document.body, "htmx:afterRequest", this.#hideParentModalOnError)
-    EventHandler.on(document.body, "htmx:afterRequest", this.#triggerFetchFlashMessages)
     EventHandler.on(document.body, "htmx:beforeSwap", this.app.addons.pcTableManager.applyConfigurationOnLoadedLines)
     EventHandler.on(document.body, "htmx:afterRequest", this.app.bindEvents)
     EventHandler.on(document.body, "htmx:beforeRequest", this.app.unbindEvents)
@@ -31,20 +21,6 @@ class PcHtmxManager extends PcAddOn {
     const responseStatusCode = event?.detail?.xhr?.status
     if (responseStatusCode === 401) {
       window.location.reload()
-    }
-  }
-
-  #startLoadingFlashMessages = (event) => {
-    const triggeringEvent = event?.detail?.requestConfig?.triggeringEvent?.type
-    if (triggeringEvent === "refreshMessages") {
-      this.isLoadingFlashMessages = true
-    }
-  }
-
-  #finishLoadingFlashMessages = (event) => {
-    const triggeringEvent = event?.detail?.requestConfig?.triggeringEvent?.type
-    if (triggeringEvent === "refreshMessages") {
-      this.isLoadingFlashMessages = false
     }
   }
 
@@ -58,7 +34,7 @@ class PcHtmxManager extends PcAddOn {
         modal.hide()
       }, { once: true })
       $parentModal.addEventListener("hidden.bs.modal", event => {
-        this.#fetchFlashMessages()
+        this.app.pcFlash.fetchFlashMessages()
       }, {once: true })
     }
   }
@@ -66,7 +42,7 @@ class PcHtmxManager extends PcAddOn {
   #displayLoadingSpinner = (event) => {
     const modal = bootstrap.Modal.getInstance(`#${PcHtmxManager.LOADING_MODAL_ID}`)
     const targetId = event?.detail?.target?.id
-    if (!!targetId && targetId !== PcHtmxManager.MESSAGES_DIV && modal) {
+    if (!!targetId && targetId !== PcFlash.MESSAGES_DIV && modal) {
       modal.show()
     }
   }
@@ -78,21 +54,6 @@ class PcHtmxManager extends PcAddOn {
       $modal.addEventListener("shown.bs.modal", event => {
         modal.hide()
       })
-    }
-  }
-
-  #fetchFlashMessages = () => {
-    if (!this.isLoadingFlashMessages) {
-      htmx.trigger(`#${PcHtmxManager.MESSAGES_DIV}`, PcHtmxManager.REFRESH_TRIGGER_EVENT)
-    }
-  }
-
-  #triggerFetchFlashMessages = (event) => {
-    const verb = event?.detail?.requestConfig?.verb
-    const targetId = event?.detail?.target?.id
-
-    if (!!targetId && targetId !== PcHtmxManager.MESSAGES_DIV) {
-      this.#fetchFlashMessages()
     }
   }
 

@@ -2,7 +2,8 @@
   {% if messages %}
     {% for category, message in messages %}
       <div class="alert alert-{{ category }} alert-dismissible fade show mw-100"
-           role="alert">
+           role="alert"
+           id="alert-{{ random_hash() }}">
         {{ message | safe }}
         <button type="button"
                 class="btn-close"
