@@ -1075,8 +1075,17 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert expected_remaining_text in cards_text
         assert expected_digital_remaining_text in cards_text
 
-    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client):
-        free_beneficiary = users_factories.UserFactory(roles=[users_models.UserRole.FREE_BENEFICIARY])
+    @pytest.mark.parametrize(
+        "postal_code,expected_text",
+        [
+            ("97200", "0,00 € Crédit restant 0,00 €"),
+            ("98800", "0,00 € (0 CFP) Crédit restant 0,00 € (0 CFP)"),
+        ],
+    )
+    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client, postal_code, expected_text):
+        free_beneficiary = users_factories.UserFactory(
+            roles=[users_models.UserRole.FREE_BENEFICIARY], postalCode=postal_code
+        )
         users_factories.DepositGrantFactory(
             user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal("0")
         )
@@ -1086,7 +1095,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         assert response.status_code == 200
-        assert "0,00 € Crédit restant 0,00 €" in html_parser.extract_cards_text(response.data)
+        assert expected_text in html_parser.extract_cards_text(response.data)
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         _, _, _, _, random, _ = create_bunch_of_accounts()
