@@ -3,6 +3,7 @@ import logging
 from collections.abc import Generator
 from contextlib import contextmanager
 from time import time
+from typing import Type
 
 import click
 
@@ -16,6 +17,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 from .etls.boost_etl import BoostETLProcess
+from .etls.cds_etl import CineDigitalServiceETLProcess
 from .titelive_book_search import TiteliveBookSearch
 from .titelive_music_search import TiteliveMusicSearch
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -50,12 +52,18 @@ def test_etl_integration(venue_provider_id: int) -> None:
         db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
     )
 
-    if venue_provider.provider.localClass not in ["BoostStocks"]:
+    local_class_to_etl_mapping: dict[str, Type[BoostETLProcess] | Type[CineDigitalServiceETLProcess]] = {
+        "BoostStocks": BoostETLProcess,
+        "CDSStocks": CineDigitalServiceETLProcess,
+    }
+
+    if venue_provider.provider.localClass not in local_class_to_etl_mapping:
         logger.warning("ETL integration not available for %s", venue_provider.provider.localClass)
         return
 
     with _set_debug_level(logging.getLogger("pcapi"), level=logging.DEBUG):
-        etl_process = BoostETLProcess(venue_provider)
+        etl_class = local_class_to_etl_mapping[venue_provider.provider.localClass]
+        etl_process = etl_class(venue_provider)
         etl_process.execute()
 
 
