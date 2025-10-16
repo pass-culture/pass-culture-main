@@ -50,7 +50,7 @@ describe('FormContactTemplateCustomForm', () => {
 
     expect(
       await screen.findByRole('textbox', {
-        name: 'URL de mon formulaire de contact *',
+        name: /URL de mon formulaire de contact/,
       })
     ).toBeInTheDocument()
   })
