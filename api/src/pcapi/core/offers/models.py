@@ -12,7 +12,6 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.hybrid import _HybridClassLevelAccessor
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
@@ -1303,15 +1302,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description}"
-
-    @hybrid_property
-    def is_expired(self) -> bool:
-        return self.hasBookingLimitDatetimesPassed
-
-    @is_expired.inplace.expression
-    @classmethod
-    def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
-        return cls.hasBookingLimitDatetimesPassed
 
     @hybrid_property
     def status(self) -> OfferStatus:

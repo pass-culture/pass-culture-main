@@ -2060,12 +2060,28 @@ def get_offerer_total_revenue(offerer_id: int, only_current_year: bool = False) 
     return db.session.execute(total_revenue_query).scalar() or 0.0
 
 
+def _get_is_expired_method(
+    offer_class: type[offers_api.AnyOffer],
+) -> sa.ColumnElement[bool] | sa_orm.QueryableAttribute:
+    match offer_class:
+        case offers_models.Offer:
+            return offers_models.Offer.hasBookingLimitDatetimesPassed
+        case educational_models.CollectiveOffer:
+            return educational_models.CollectiveOffer.hasStartDatetimePassed
+        case educational_models.CollectiveOfferTemplate:
+            return sa.sql.expression.false()
+        case _:
+            raise ValueError("Unexpected offer class")
+
+
 def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
     def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
+        is_expired_method = _get_is_expired_method(offer_class)
+
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
+                    (sa.and_(offer_class.isActive, sa.not_(is_expired_method)), "active"),
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),
@@ -2127,10 +2143,12 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
 
 def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
     def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
+        is_expired_method = _get_is_expired_method(offer_class)
+
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(offer_class.is_expired)), "active"),
+                    (sa.and_(offer_class.isActive, sa.not_(is_expired_method)), "active"),
                     else_="inactive",
                 ).label("status"),
                 sa.func.count(offer_class.id).label("number"),

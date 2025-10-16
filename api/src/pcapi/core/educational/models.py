@@ -10,7 +10,6 @@ from psycopg2.extras import DateTimeRange
 from sqlalchemy import orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext import mutable as sa_mutable
-from sqlalchemy.ext.hybrid import _HybridClassLevelAccessor
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import elements as sa_elements
 from sqlalchemy.sql import selectable as sa_selectable
@@ -914,15 +913,6 @@ class CollectiveOffer(
         booking = self.lastBooking
         return booking.cancellationReason if booking else None
 
-    @hybrid_property
-    def is_expired(self) -> bool:
-        return self.hasStartDatetimePassed
-
-    @is_expired.inplace.expression
-    @classmethod
-    def _is_expired_expression(cls) -> _HybridClassLevelAccessor[bool]:
-        return cls.hasStartDatetimePassed
-
     def is_two_days_past_end(self) -> bool:
         if self.collectiveStock is None:
             return False
@@ -1248,15 +1238,6 @@ class CollectiveOfferTemplate(
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"
-
-    @hybrid_property
-    def is_expired(self) -> bool:
-        return False
-
-    @is_expired.inplace.expression
-    @classmethod
-    def _is_expired_expression(cls) -> sa.False_:
-        return sa.sql.expression.false()
 
     @property
     def address(self) -> geography_models.Address | None:
