@@ -16,7 +16,6 @@ import {
 } from '@/commons/store/offerer/selectors'
 import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -65,14 +64,11 @@ export const HeaderDropdown = () => {
   const hideProfile =
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
-  const selectedOffererId =
-    currentOffererId ??
-    getSavedOffererId(offererOptions) ??
-    (offererOptions.length > 0 ? offererOptions[0]?.value : '')
-
-  const selectedOffererName = offererNames?.find(
-    (offererOption) => offererOption.id === Number(selectedOffererId)
-  )
+  const selectedOffererName = currentOffererId
+    ? offererNames?.find(
+        (offererOption) => offererOption.id === currentOffererId
+      )
+    : undefined
   const handleChangeOfferer = (newOffererId: string): void => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
@@ -124,9 +120,9 @@ export const HeaderDropdown = () => {
           type="button"
         >
           <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
-          {offererOptions.length > 1 && (
+          {selectedOffererName && offererOptions.length > 1 && (
             <span className={styles['dropdown-button-name']}>
-              {selectedOffererName?.name}
+              {selectedOffererName.name}
             </span>
           )}
         </button>
@@ -157,9 +153,11 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Item>
             {offererOptions.length >= 1 && (
               <>
-                <div className={styles['menu-email']}>
-                  {selectedOffererName?.name}
-                </div>
+                {selectedOffererName && (
+                  <div className={styles['menu-email']}>
+                    {selectedOffererName.name}
+                  </div>
+                )}
 
                 <DropdownMenu.Sub open={subOpen}>
                   {offererOptions.length > 1 ? (
