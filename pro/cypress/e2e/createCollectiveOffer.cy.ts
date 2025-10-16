@@ -63,6 +63,9 @@ describe('Create collective offers', () => {
     cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
       'educationalOfferers'
     )
+    cy.intercept({ method: 'GET', url: '/collective/offers/redactors*' }).as(
+      'getInstitutionalRedactors'
+    )
     interceptSearch5Adresses()
   })
 
@@ -109,6 +112,7 @@ describe('Create collective offers', () => {
       data.institution
     )
     cy.get('#list-institution').findByText(new RegExp(data.institution)).click()
+    cy.wait('@getInstitutionalRedactors')
     cy.findByText('Enregistrer et continuer').click()
   }
 
