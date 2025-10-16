@@ -14,6 +14,7 @@ from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import ecdsa
+import factory
 import flask_sqlalchemy
 import pytest
 import requests_mock
@@ -758,3 +759,9 @@ def db_session(_db, mocker, request, app):
         session.remove()
         # resore old session
         db.session = old_session
+
+
+@pytest.fixture(autouse=True, scope="session")
+def set_faker_locale():
+    with factory.Faker.override_default_locale("fr_FR"):
+        yield
