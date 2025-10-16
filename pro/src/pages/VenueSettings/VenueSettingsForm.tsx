@@ -24,7 +24,7 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
-import type { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormContext, VenueSettingsFormValues } from './types'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
@@ -33,6 +33,7 @@ interface VenueFormProps {
   venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
+  formContext: VenueSettingsFormContext
 }
 
 export const VenueSettingsForm = ({
@@ -40,6 +41,7 @@ export const VenueSettingsForm = ({
   venueTypes,
   venueProviders,
   venue,
+  formContext,
 }: VenueFormProps) => {
   const methods = useFormContext<VenueSettingsFormValues>()
   const {
@@ -74,7 +76,10 @@ export const VenueSettingsForm = ({
         <FormLayout.Section title="Informations administratives">
           {!venue.isVirtual && (
             <FormLayout.Row>
-              <SiretOrCommentFields siren={offerer.siren} />
+              <SiretOrCommentFields
+                siren={offerer.siren}
+                formContext={formContext}
+              />
             </FormLayout.Row>
           )}
 

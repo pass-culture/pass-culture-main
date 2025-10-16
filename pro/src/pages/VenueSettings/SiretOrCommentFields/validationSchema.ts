@@ -1,11 +1,15 @@
 import * as yup from 'yup'
 
-import { unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { unhumanizeRidet, unhumanizeSiret } from '@/commons/core/Venue/utils'
 
 import type { VenueSettingsFormValues } from '../types'
 
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14
+
+export const validRidetLength = (ridet: string): boolean => {
+  return unhumanizeRidet(ridet).length === 14
+}
 
 export const isSiretStartingWithSiren = (
   siret: string,
@@ -14,6 +18,14 @@ export const isSiretStartingWithSiren = (
   siren !== null &&
   siren !== undefined &&
   unhumanizeSiret(siret).startsWith(siren)
+
+export const isRidetStartingWithSiren = (
+  ridet: string,
+  siren?: string | null
+) =>
+  siren !== null &&
+  siren !== undefined &&
+  unhumanizeRidet(ridet).startsWith(siren)
 
 export const generateSiretValidationSchema = (
   isVenueVirtual: boolean,
@@ -27,16 +39,35 @@ export const generateSiretValidationSchema = (
       : yup
           .string()
           .required('Veuillez renseigner un SIRET')
-          .test(
-            'len',
-            'Le SIRET doit comporter 14 caractères',
-            (siret) => Boolean(siret) && valideSiretLength(siret)
-          )
-          .test(
-            'correspondingToSiren',
-            'Le code SIRET doit correspondre à un établissement de votre structure',
-            (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
-          ),
+          .when(['$isCaledonian'], (vals, schema) => {
+            const [isCaledonian] = vals as [boolean]
+            if (isCaledonian) {
+              return schema
+                .required('Veuillez renseigner un SIRET')
+                .test('len', 'Le RIDET doit comporter 14 caractères', (siret) =>
+                  validRidetLength(siret)
+                )
+                .test(
+                  'correspondingToSiren',
+                  'Le code RIDET doit correspondre à un établissement de votre structure',
+                  (siret) =>
+                    Boolean(siret) && isRidetStartingWithSiren(siret, siren)
+                )
+            }
+
+            return schema
+              .test(
+                'len',
+                'Le SIRET doit comporter 14 caractères',
+                (siret) => Boolean(siret) && valideSiretLength(siret)
+              )
+              .test(
+                'correspondingToSiren',
+                'Le code SIRET doit correspondre à un établissement de votre structure',
+                (siret) =>
+                  Boolean(siret) && isSiretStartingWithSiren(siret, siren)
+              )
+          }),
   }
 
   const commentValidationSchema = {

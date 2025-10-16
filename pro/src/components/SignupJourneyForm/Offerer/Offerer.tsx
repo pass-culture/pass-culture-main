@@ -15,6 +15,7 @@ import {
 } from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -39,6 +40,10 @@ interface OffererFormValues {
   siret: string
 }
 
+type OffererFormContext = {
+  isCaledonian: boolean
+}
+
 export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -48,11 +53,18 @@ export const Offerer = (): JSX.Element => {
   const [isHigherEducation, setIsHigherEducation] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
+  const isCaledonian = useIsCaledonian()
+
+  const schemaValidationContext: OffererFormContext = {
+    isCaledonian,
+  }
+
   const initialValues: OffererFormValues = offerer
     ? { siret: offerer.siret }
     : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
 
   const hookForm = useForm({
+    context: schemaValidationContext,
     resolver: yupResolver(validationSchema),
     defaultValues: initialValues,
     mode: 'onBlur',

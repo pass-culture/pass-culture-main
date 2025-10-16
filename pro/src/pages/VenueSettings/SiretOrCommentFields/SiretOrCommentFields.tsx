@@ -2,22 +2,32 @@ import { useFormContext } from 'react-hook-form'
 
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
-import { unhumanizeSiret } from '@/commons/core/Venue/utils'
+import { unhumanizeRidet, unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import type { VenueSettingsFormValues } from '../types'
-import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
+import type {
+  VenueSettingsFormContext,
+  VenueSettingsFormValues,
+} from '../types'
+import {
+  isRidetStartingWithSiren,
+  isSiretStartingWithSiren,
+  valideSiretLength,
+  validRidetLength,
+} from './validationSchema'
 
 export type SiretOrCommentFieldsProps = {
   setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
   siren?: string | null
+  formContext: VenueSettingsFormContext
 }
 
 export const SiretOrCommentFields = ({
   setIsFieldNameFrozen,
   siren,
+  formContext,
 }: SiretOrCommentFieldsProps): JSX.Element => {
   const {
     setValue,
@@ -26,26 +36,44 @@ export const SiretOrCommentFields = ({
     watch,
     formState: { errors, defaultValues },
   } = useFormContext<VenueSettingsFormValues>()
+
   const hasSiret = (defaultValues?.siret ?? '').length > 0
   const formatSiret = (siret: string) => {
-    // remove character when it's not a number
-    // this way we're sure that this field only accept number
-    if (
-      watch('siret').length === 0 ||
-      siret.replace(/(\d|\s)*/, '').length > 0 ||
-      siret.length === 14
-    ) {
-      setValue('siret', unhumanizeSiret(siret))
+    if (formContext.isCaledonian) {
+      const _unhumanizeRidet = unhumanizeRidet(siret)
+      if (
+        watch('siret').length === 0 ||
+        _unhumanizeRidet.length >= 0 ||
+        _unhumanizeRidet.length === 14
+      ) {
+        setValue('siret', _unhumanizeRidet)
+      }
+    } else {
+      const _unhumanizedSiret = unhumanizeSiret(siret)
+      if (
+        watch('siret').length === 0 ||
+        _unhumanizedSiret.length > 0 ||
+        _unhumanizedSiret.length === 14
+      ) {
+        setValue('siret', _unhumanizedSiret)
+      }
     }
   }
 
   const onSiretChange = async (siret: string) => {
     formatSiret(siret)
 
-    if (!valideSiretLength(siret) || !isSiretStartingWithSiren(siret, siren)) {
+    let isValid =
+      valideSiretLength(siret) && isSiretStartingWithSiren(siret, siren)
+    if (formContext.isCaledonian) {
+      isValid =
+        validRidetLength(siret) && isRidetStartingWithSiren(siret, siren)
+    }
+    if (isValid) {
       setIsFieldNameFrozen?.(false)
       return
     }
+
     try {
       const response = await getSiretData(siret)
 
@@ -87,7 +115,7 @@ export const SiretOrCommentFields = ({
       {hasSiret ? (
         <TextInput
           {...register('siret')}
-          label="SIRET de la structure"
+          label={`${formContext.isCaledonian ? 'RIDET' : 'SIRET'} de la structure`}
           onChange={(e) => onSiretChange(e.target.value)}
           error={errors.siret?.message}
           required
@@ -95,7 +123,7 @@ export const SiretOrCommentFields = ({
       ) : (
         <TextArea
           {...register('comment')}
-          label="Commentaire de la structure sans SIRET"
+          label={`Commentaire de la structure sans ${formContext.isCaledonian ? 'RIDET' : 'SIRET'}`}
           description="Par exemple : la structure est un équipement culturel qui n’appartient pas à mon entitée juridique."
           required
           maxLength={500}

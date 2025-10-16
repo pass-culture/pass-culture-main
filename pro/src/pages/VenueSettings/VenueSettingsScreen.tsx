@@ -15,6 +15,7 @@ import type {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -24,7 +25,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { serializeEditVenueBodyModel } from './serializers'
-import type { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormContext, VenueSettingsFormValues } from './types'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 import { getValidationSchema } from './validationSchema'
@@ -50,6 +51,7 @@ export const VenueSettingsScreen = ({
   const [isSiretValued] = useState(Boolean(venue.siret))
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
+  const isCaledonian = useIsCaledonian()
 
   const formValidationSchema = getValidationSchema(venue.isVirtual).concat(
     generateSiretValidationSchema(
@@ -60,7 +62,12 @@ export const VenueSettingsScreen = ({
     )
   )
 
+  const formContext: VenueSettingsFormContext = {
+    isCaledonian,
+  }
+
   const methods = useForm<VenueSettingsFormValues>({
+    context: formContext,
     defaultValues: initialValues,
     resolver: yupResolver(formValidationSchema as any),
     mode: 'onBlur',
@@ -137,6 +144,7 @@ export const VenueSettingsScreen = ({
             venueProviders={venueProviders}
             venue={venue}
             offerer={offerer}
+            formContext={formContext}
           />
         </form>
       </FormProvider>
