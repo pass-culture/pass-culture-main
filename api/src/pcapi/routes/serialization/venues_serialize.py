@@ -445,6 +445,15 @@ class VenueListItemResponseGetterDict(GetterDict):
             }
             return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
 
+        if key == "isActive":
+            return venue.managingOfferer.isActive
+
+        if key == "isValidated":
+            return venue.managingOfferer.isValidated
+
+        if key == "bankAccountStatus":
+            return parse_venue_bank_account_status(venue)
+
         if key == "isCaledonian":
             return venue.is_caledonian
 
@@ -467,15 +476,21 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
     isCaledonian: bool
+    isActive: bool
+    isValidated: bool
+    bankAccountStatus: SimplifiedBankAccountStatus | None
+    hasNonFreeOffers: bool
 
     @classmethod
     def from_orm(
         cls,
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: typing.Iterable[int] = (),
+        venues_with_non_free_offers: set[int] = set(),
     ) -> "VenueListItemResponseModel":
         venue.offererName = venue.managingOfferer.name
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
+        venue.hasNonFreeOffers = venue.id in venues_with_non_free_offers
         if venue.accessibilityProvider:
             venue.externalAccessibilityData = (
                 acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(

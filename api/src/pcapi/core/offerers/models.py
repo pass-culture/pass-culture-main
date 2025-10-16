@@ -890,9 +890,15 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def hasNonFreeOffers(self) -> bool:
-        from pcapi.core.offerers.repository import venue_has_non_free_offers
+        from pcapi.core.offerers.repository import venues_have_non_free_offers
 
-        return venue_has_non_free_offers(self.id)
+        if hasattr(self, "_hasNonFreeOffers"):
+            return self._hasNonFreeOffers
+        return self.id in venues_have_non_free_offers([self.id])
+
+    @hasNonFreeOffers.setter
+    def hasNonFreeOffers(self, value: bool) -> None:
+        self._hasNonFreeOffers = value
 
 
 class GooglePlacesInfo(PcObject, Model):
