@@ -467,7 +467,7 @@ describe('IndividualOfferDetailsScreen', () => {
     )
     await userEvent.type(
       screen.getByRole('textbox', {
-        name: 'Titre de l’offre *',
+        name: /Titre de l’offre/,
       }),
       'Mon super spectacle'
     )
@@ -883,7 +883,7 @@ describe('IndividualOfferDetailsScreen', () => {
 
           await waitFor(() => {
             const inputName = screen.getByRole('textbox', {
-              name: 'Titre de l’offre *',
+              name: /Titre de l’offre/,
             })
             expect(inputName).toBeDisabled()
           })

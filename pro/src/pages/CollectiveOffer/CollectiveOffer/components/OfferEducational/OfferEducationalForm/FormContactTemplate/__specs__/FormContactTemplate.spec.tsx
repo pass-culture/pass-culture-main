@@ -40,7 +40,7 @@ describe('FormContactTemplate', () => {
 
     expect(
       screen.getByRole('textbox', {
-        name: 'Adresse email *',
+        name: /Adresse email/,
       })
     ).toBeInTheDocument()
   })

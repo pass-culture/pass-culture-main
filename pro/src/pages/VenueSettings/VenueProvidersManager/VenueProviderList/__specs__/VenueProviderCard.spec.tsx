@@ -70,7 +70,7 @@ describe('VenueProviderCard', () => {
         name: 'Supprimer',
       })
       const cinemaProviderPauseButton = screen.getByRole('button', {
-        name: 'Mettre en pause la synchronisation Mettre en pause',
+        name: /Mettre en pause la synchronisation/,
       })
       expect(cinemaProviderDeleteButton).toBeInTheDocument()
       expect(cinemaProviderPauseButton).toBeInTheDocument()

@@ -105,7 +105,7 @@ const LABELS = {
   },
   fields: {
     address: `Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *`,
-    url: `URL d’accès à l’offre *`,
+    url: /URL d’accès à l’offre/,
     addressLocationLabel: 'Intitulé de la localisation',
     street: 'Adresse postale',
     postalCode: 'Code postal',

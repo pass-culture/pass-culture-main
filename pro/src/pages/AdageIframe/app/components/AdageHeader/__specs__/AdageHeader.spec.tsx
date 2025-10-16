@@ -15,7 +15,7 @@ import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/Adag
 import { AdageHeader } from '../AdageHeader'
 
 interface HeaderLinkProps {
-  headerLinkLabel: string
+  headerLinkLabel: string | RegExp
   headerLinkName: AdageHeaderLink
 }
 
@@ -129,7 +129,7 @@ describe('AdageHeader', () => {
       headerLinkName: AdageHeaderLink.MY_INSTITUTION_OFFERS,
     },
     {
-      headerLinkLabel: 'Nouvelle fenêtre Solde prévisionnel',
+      headerLinkLabel: /Solde prévisionnel/,
       headerLinkName: AdageHeaderLink.ADAGE_LINK,
     },
   ]

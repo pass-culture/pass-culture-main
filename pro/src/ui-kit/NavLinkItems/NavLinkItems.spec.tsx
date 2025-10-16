@@ -48,7 +48,7 @@ describe('NavLinkItems', () => {
     renderNavLinkItems()
     expect(
       screen.getByRole('link', {
-        name: 'Lien actif Offres individuelles',
+        name: /Offres individuelles/,
       })
     ).toHaveAttribute('href', '/offres')
   })

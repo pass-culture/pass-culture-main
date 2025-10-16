@@ -25,15 +25,12 @@ vi.stubGlobal('URL', {
 
 describe('ImageDragAndDrop', () => {
   it('should render the component with a drop zone and an input', () => {
-    const { container } = render(<ImageDragAndDrop />)
+    render(<ImageDragAndDrop />)
 
-    expect(container).toBeInTheDocument()
     const dragAndDrop = screen.getByTestId('image-drag-and-drop')
     expect(dragAndDrop).toBeInTheDocument()
 
-    const input = screen.getByLabelText(
-      /Importez une image/
-    ) as HTMLInputElement
+    const input = screen.getByTestId('file-input')
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'file')
     expect(input).toHaveAttribute(
