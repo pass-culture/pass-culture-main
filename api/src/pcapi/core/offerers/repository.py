@@ -1068,3 +1068,19 @@ def get_offerer_headline_offer(offerer_id: int) -> offers_models.Offer:
         )
         .one()
     )
+
+
+def venue_has_non_free_offers(venue_id: int) -> bool:
+    return db.session.query(
+        db.session.query(offers_models.Stock)
+        .join(offers_models.Offer)
+        .filter(
+            sa.and_(
+                offers_models.Stock.price > 0,
+                offers_models.Stock.isSoftDeleted.is_(False),
+                offers_models.Offer.isActive,
+                offers_models.Offer.venueId == venue_id,
+            ),
+        )
+        .exists()
+    ).scalar()
