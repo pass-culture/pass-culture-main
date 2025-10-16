@@ -236,24 +236,6 @@ class GooglePlacesInfoFactory(BaseFactory):
     bannerMeta: dict | None = None
 
 
-class VirtualVenueFactory(VenueFactory):
-    isVirtual = True
-    street = None
-    departementCode = None
-    postalCode = None
-    city = None
-    latitude = None
-    longitude = None
-    siret = None
-    audioDisabilityCompliant = None
-    mentalDisabilityCompliant = None
-    motorDisabilityCompliant = None
-    visualDisabilityCompliant = None
-    venueTypeCode = models.VenueTypeCode.DIGITAL
-    offererAddress = None
-    comment = "Virtual venue"
-
-
 class VenueWithoutSiretFactory(VenueFactory):
     siret = None
     comment = "No SIRET"

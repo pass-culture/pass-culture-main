@@ -26,7 +26,6 @@ def create_new_pro_user() -> dict:
 def create_new_pro_user_and_offerer() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create(allowedOnAdage=True)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren}
 
 
@@ -34,7 +33,6 @@ def create_new_pro_user_and_offerer_with_venue() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     venue = offerers_factories.VenueFactory.create(managingOfferer=offerer, isPermanent=True)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     return {"user": get_pro_user_helper(pro_user), "siret": venue.siret}
 
 
@@ -50,7 +48,6 @@ def create_regular_pro_user() -> dict:
         offererAddress__address__postalCode="75002",
         offererAddress__address__city="Paris",
     )
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     offerers_factories.VenueLabelFactory.create(label="Musée de France")
 
     return {
@@ -68,7 +65,6 @@ def create_regular_pro_user_already_onboarded() -> dict:
     venue = offerers_factories.VenueFactory.create(
         name="Mon Lieu", managingOfferer=offerer, isPermanent=True, adageId="1337"
     )  # Adding an adageId will make this user onboarded
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     offerers_factories.VenueLabelFactory.create(label="Musée de France")
 
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren, "venueName": venue.name}
@@ -79,7 +75,6 @@ def create_pro_user_with_bookings() -> dict:
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     stock = offers_factories.StockFactory.create(offer__venue=venue)
     stock_event = offers_factories.EventStockFactory.create(offer__venue=venue)
 
@@ -114,12 +109,11 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
-    offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    virtual_venue = offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
-    offers_factories.OfferFactory.create(
+    venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offers_factories.DigitalOfferFactory.create(
         name="Mon offre virtuelle",
         subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
-        venue=virtual_venue,
+        venue=venue,
         url="http://www.example.com",
     )
     return {"user": get_pro_user_helper(pro_user)}
@@ -130,14 +124,12 @@ def create_pro_user_with_financial_data() -> dict:
     offerer_A = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_A)
     offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_A)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_A)
 
     offerer_B = offerers_factories.OffererFactory.create(
         name="Structure avec informations bancaires", allowedOnAdage=False
     )
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_B)
     venue_B = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_B)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_B)
     bank_account_B = finance_factories.BankAccountFactory.create(offerer=offerer_B)
     offerers_factories.VenuePricingPointLinkFactory.create(
         venue=venue_B,
@@ -158,7 +150,6 @@ def create_pro_user_with_financial_data_and_3_venues() -> dict:
     venue_C = offerers_factories.VenueFactory.create(name="Mon lieu 1", managingOfferer=offerer_C)
     venue_D = offerers_factories.VenueFactory.create(name="Mon lieu 2", managingOfferer=offerer_C)
     venue_E = offerers_factories.VenueFactory.create(name="Mon lieu 3", managingOfferer=offerer_C)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer_C)
     bank_account_C = finance_factories.BankAccountFactory.create(offerer=offerer_C)
     offerers_factories.VenuePricingPointLinkFactory.create(
         venue=venue_C,
@@ -223,7 +214,6 @@ def create_pro_user_with_individual_offers() -> dict:
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
     offer1 = offers_factories.ThingOfferFactory.create(venue=venue, name="Une super offre")
     offers_factories.StockFactory.create(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory.create(
@@ -296,7 +286,6 @@ def create_pro_user_with_collective_offers() -> dict:
         offererAddress__address__postalCode="75002",
         offererAddress__address__city="Paris",
     )
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
 
     offerPublishedTemplate = educational_factories.CollectiveOfferTemplateFactory.create(
         name="Mon offre collective publiée vitrine",
@@ -445,7 +434,6 @@ def create_pro_user_with_collective_bookings() -> dict:
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
-    offerers_factories.VirtualVenueFactory.create(managingOfferer=offerer)
 
     collectiveStock = educational_factories.CollectiveStockFactory.create(
         collectiveOffer__venue=venue,
