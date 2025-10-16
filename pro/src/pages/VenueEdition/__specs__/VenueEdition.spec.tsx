@@ -67,14 +67,15 @@ vi.mock('react-router', async () => ({
   useNavigate: () => mockUseNavigate,
 }))
 
-const mockDispatch = vi.fn()
-vi.mock('react-redux', async () => {
-  const actual = await vi.importActual('react-redux')
-  return {
-    ...actual,
-    useDispatch: () => mockDispatch,
-  }
-})
+const mockDispatch = vi.hoisted(() =>
+  vi.fn<typeof import('react-redux').useDispatch>()
+)
+vi.mock('react-redux', async () => ({
+  ...(await vi.importActual<typeof import('react-redux')>('react-redux')),
+  useDispatch: Object.assign(() => mockDispatch, {
+    withTypes: () => mockDispatch,
+  }),
+}))
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
 vi.mock('@/commons/store/offerer/selectors', async () => ({
