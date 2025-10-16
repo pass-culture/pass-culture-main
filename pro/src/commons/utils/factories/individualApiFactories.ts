@@ -259,6 +259,10 @@ export const venueListItemFactory = (
     audioDisabilityCompliant: true,
     isPermanent: true,
     isCaledonian: false,
+    isActive: true,
+    isValidated: true,
+    bankAccountStatus: null,
+    hasNonFreeOffers: true,
     ...customVenueListItem,
   }
 }

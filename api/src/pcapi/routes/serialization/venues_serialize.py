@@ -8,7 +8,6 @@ import pydantic.v1 as pydantic_v1
 from PIL import Image
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
-from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
@@ -260,6 +259,13 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "bankAccountStatus":
             return parse_venue_bank_account_status(venue)
 
+        if key == "hasNonFreeOffers":
+            # avoid some tricky circular import: schemas is not expected
+            # to import a related repository module.
+            from pcapi.core.offerers.repository import venues_have_non_free_offers
+
+            return venue.id in venues_have_non_free_offers([venue.id])
+
         return super().get(key, default)
 
 
@@ -420,37 +426,6 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
         return shared_offers.validate_students(students)
 
 
-class VenueListItemResponseGetterDict(GetterDict):
-    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        venue: offerers_models.Venue = self._obj
-
-        if key == "address":
-            offerer_address = venue.offererAddress
-            if not offerer_address:
-                return None
-            data: dict[str, typing.Any] = {
-                "id": offerer_address.addressId,
-                "id_oa": offerer_address.id,
-                "banId": offerer_address.address.banId,
-                "inseeCode": offerer_address.address.inseeCode,
-                "longitude": offerer_address.address.longitude,
-                "latitude": offerer_address.address.latitude,
-                "postalCode": offerer_address.address.postalCode,
-                "street": offerer_address.address.street,
-                "city": offerer_address.address.city,
-                "label": venue.common_name,
-                "isLinkedToVenue": True,
-                "isManualEdition": offerer_address.address.isManualEdition,
-                "departmentCode": offerer_address.address.departmentCode,
-            }
-            return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
-
-        if key == "isCaledonian":
-            return venue.is_caledonian
-
-        return super().get(key, default)
-
-
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: int
     managingOffererId: int
@@ -467,26 +442,75 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
     isCaledonian: bool
+    isActive: bool
+    isValidated: bool
+    bankAccountStatus: SimplifiedBankAccountStatus | None
+    hasNonFreeOffers: bool
 
     @classmethod
-    def from_orm(
+    def build(
         cls,
         venue: offerers_models.Venue,
         ids_of_venues_with_offers: typing.Iterable[int] = (),
+        venues_with_non_free_offers: set[int] = set(),
     ) -> "VenueListItemResponseModel":
-        venue.offererName = venue.managingOfferer.name
-        venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
-        if venue.accessibilityProvider:
-            venue.externalAccessibilityData = (
-                acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
-                    venue.accessibilityProvider.externalAccessibilityData
-                )
-            )
-        return super().from_orm(venue)
+        # map model fields (direct and inherited) to exact same venue fields
+        direct_mapping_venue_fields = {
+            field: getattr(venue, field) for field in cls.schema()["properties"].keys() if hasattr(venue, field)
+        }
 
-    class Config:
-        orm_mode = True
-        getter_dict = VenueListItemResponseGetterDict
+        # compute other missing model fields (direct and inherited)
+        extra = {
+            "offererName": venue.managingOfferer.name,
+            "hasCreatedOffer": venue.id in ids_of_venues_with_offers,
+            "externalAccessibilityData": cls.build_external_accessibility_data(venue),
+            "address": cls.build_address(venue),
+            "isCaledonian": venue.is_caledonian,
+            "isActive": venue.managingOfferer.isActive,
+            "isValidated": venue.managingOfferer.isValidated,
+            "bankAccountStatus": parse_venue_bank_account_status(venue),
+            "hasNonFreeOffers": venue.id in venues_with_non_free_offers,
+        }
+
+        # building a dict and expanding it after using ** is not needed
+        # but mypy disagrees: it sees two parameters sent instead of
+        # many kwargs
+        mypy_friendly_kwargs = {**direct_mapping_venue_fields, **extra}
+        return cls(**mypy_friendly_kwargs)
+
+    @classmethod
+    def build_external_accessibility_data(
+        cls, venue: offerers_models.Venue
+    ) -> acceslibre_serializers.ExternalAccessibilityDataModel | None:
+        if not venue.accessibilityProvider:
+            return None
+        return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
+            venue.accessibilityProvider.externalAccessibilityData
+        )
+
+    @classmethod
+    def build_address(
+        cls, venue: offerers_models.Venue
+    ) -> address_serialize.AddressResponseIsLinkedToVenueModel | None:
+        offerer_address = venue.offererAddress
+        if not offerer_address:
+            return None
+        data: dict[str, typing.Any] = {
+            "id": offerer_address.addressId,
+            "id_oa": offerer_address.id,
+            "banId": offerer_address.address.banId,
+            "inseeCode": offerer_address.address.inseeCode,
+            "longitude": offerer_address.address.longitude,
+            "latitude": offerer_address.address.latitude,
+            "postalCode": offerer_address.address.postalCode,
+            "street": offerer_address.address.street,
+            "city": offerer_address.address.city,
+            "label": venue.common_name,
+            "isLinkedToVenue": True,
+            "isManualEdition": offerer_address.address.isManualEdition,
+            "departmentCode": offerer_address.address.departmentCode,
+        }
+        return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
 
 
 class GetVenueListResponseModel(BaseModel):
