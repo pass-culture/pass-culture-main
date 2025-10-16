@@ -7,7 +7,7 @@ import { updateUser } from '@/commons/store/user/reducer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import type { AppDispatch } from '../store'
-import { initializeUserThunk } from '../user/thunks'
+import { initializeUser } from '../user/dispatchers/initializeUser'
 import styles from './StoreProvider.module.scss'
 
 interface StoreProviderProps {
@@ -47,7 +47,7 @@ export const StoreProvider = ({
         const user = await getUser()
         dispatch(updateUser(user))
         if (user) {
-          await dispatch(initializeUserThunk(user)).unwrap()
+          await dispatch(initializeUser(user)).unwrap()
         }
       }
 

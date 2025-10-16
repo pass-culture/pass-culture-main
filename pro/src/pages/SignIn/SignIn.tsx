@@ -14,8 +14,8 @@ import {
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import type { AppDispatch } from '@/commons/store/store'
+import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { updateUser } from '@/commons/store/user/reducer'
-import { initializeUserThunk } from '@/commons/store/user/thunks'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -69,7 +69,7 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
-      const result = await dispatch(initializeUserThunk(user)).unwrap()
+      const result = await dispatch(initializeUser(user)).unwrap()
 
       if (result.success) {
         setshouldRedirect(true)
