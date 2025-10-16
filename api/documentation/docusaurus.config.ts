@@ -32,7 +32,11 @@ const config: Config = {
   url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn'
+    }
+  },
   trailingSlash: false,
   i18n: {
     defaultLocale: 'en',
