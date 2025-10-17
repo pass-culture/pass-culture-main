@@ -28,7 +28,6 @@ import {
   selectCurrentOffererId,
 } from '@/commons/store/offerer/selectors'
 import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
-import { getOffererData } from '@/commons/utils/offererStoreHelper'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -43,7 +42,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
-export const Validation = (): JSX.Element => {
+export const Validation = (): JSX.Element | undefined => {
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -80,18 +79,18 @@ export const Validation = (): JSX.Element => {
       navigate('/inscription/structure/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity, offerer])
+  }, [activity, offerer, navigate])
 
   if (venueTypesQuery.isLoading) {
     return <Spinner />
   }
 
   if (!venueTypes) {
-    return <></>
+    return
   }
 
   if (activity === null || offerer === null) {
-    return <></>
+    return
   }
 
   const onSubmit = async () => {
@@ -141,28 +140,14 @@ export const Validation = (): JSX.Element => {
       const offerers = await api.listOfferersNames()
       dispatch(updateOffererNames(offerers.offerersNames))
 
-      let fullOfferer
-      // If API returns an offerer ID that is different from the one in the redux store, we must update it too
+      let fullOfferer = currentOfferer
       if (currentOffererId !== response.id) {
-        // Update the current offerer in the redux store and in the local storage if available
         fullOfferer = await api.getOfferer(response.id)
-        dispatch(updateCurrentOfferer(fullOfferer))
         if (storageAvailable('localStorage')) {
           localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
         }
       }
 
-      // If currentOffererId is null, offerer is not onboarded yet
-      if (currentOffererId === null) {
-        fullOfferer = await api.getOfferer(response.id)
-        dispatch(updateCurrentOfferer(fullOfferer))
-        dispatch(updateUserAccess('no-onboarding'))
-      }
-
-      // Else, we should get the new offererId onboarded status (to redirect to /onboarding or /accueil)
-      fullOfferer = await getOffererData(response.id, currentOfferer, () =>
-        api.getOfferer(response.id)
-      )
       dispatch(updateCurrentOfferer(fullOfferer))
       dispatch(
         updateUserAccess(

@@ -342,9 +342,27 @@ describe('ValidationScreen', () => {
     })
 
     it('should not render on venue types api error', async () => {
-      vi.spyOn(api, 'getVenueTypes').mockRejectedValue({})
+      vi.spyOn(api, 'getVenueTypes').mockRejectedValueOnce({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(
+        screen.queryByText('Informations structure')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render when no activity', () => {
+      // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+      const noActivityContext = { ...contextValue, activity: null }
+      renderValidationScreen(noActivityContext)
+      expect(
+        screen.queryByText('Informations structure')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render when no offerer', () => {
+      // biome-ignore lint/correctness/noUnusedVariables: <explanation>
+      const noOffererContext = { ...contextValue, offerer: null }
+      renderValidationScreen(noOffererContext)
       expect(
         screen.queryByText('Informations structure')
       ).not.toBeInTheDocument()
