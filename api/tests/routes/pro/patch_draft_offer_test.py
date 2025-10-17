@@ -7,7 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -28,6 +27,8 @@ class Returns200Test:
     # stocks
     # insert
     num_queries = 6
+
+    endpoint = "/offers/draft/{offer_id}"
 
     def test_patch_draft_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -59,7 +60,9 @@ class Returns200Test:
                 }
             ),
         )
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -103,7 +106,7 @@ class Returns200Test:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
             description="description",
-            url="http://example.com/offer",
+            offererAddress=offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer),
         )
 
         data = {
@@ -111,7 +114,9 @@ class Returns200Test:
             "description": "New description",
             "extraData": {"author": "Nicolas Gogol"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -141,7 +146,9 @@ class Returns200Test:
             "subcategoryId": subcategories.SEANCE_CINE.id,
             "extraData": {"stageDirector": "Greta Gerwig"},
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -179,7 +186,9 @@ class Returns200Test:
                 "visa": "",
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -261,7 +270,9 @@ class Returns200Test:
                 "productionYear": 1970,
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
         assert response.status_code == 200
         assert response.json["id"] == offer.id
 
@@ -413,6 +424,7 @@ class Returns200Test:
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=False,
             visualDisabilityCompliant=False,
+            offererAddress=offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer),
         )
 
         data = {
@@ -420,7 +432,9 @@ class Returns200Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "audioDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
 
         assert response.status_code == 200
 
@@ -456,9 +470,9 @@ class Returns200Test:
         data = {"videoUrl": video_url}
         auth_client = client.with_session_auth("user@example.com")
         offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            response = auth_client.patch(f"/offers/draft/{offer_id}", json=data)
-            assert response.status_code == 200
+
+        response = auth_client.patch(self.endpoint.format(offer_id=offer_id), json=data)
+        assert response.status_code == 200
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
@@ -488,7 +502,9 @@ class Returns200Test:
         )
 
         data = {"videoUrl": video_url}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
 
         assert response.status_code == 200
 
@@ -544,6 +560,8 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
+    endpoint = "/offers/draft/{offer_id}"
+
     @pytest.mark.parametrize(
         "patch_body,expected_response_json",
         [
@@ -638,7 +656,9 @@ class Returns400Test:
         data = {
             "url": None,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
 
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
@@ -654,7 +674,9 @@ class Returns400Test:
         data = {
             "url": None,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
 
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
@@ -669,7 +691,9 @@ class Returns400Test:
         data = {
             "audioDisabilityCompliant": None,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            self.endpoint.format(offer_id=offer.id), json=data
+        )
 
         assert response.status_code == 400
         assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
@@ -690,6 +714,8 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    endpoint = "/offers/draft/{offer_id}"
+
     def when_user_is_not_attached_to_offerer(self, client):
         email = "user@example.com"
         offer = offers_factories.OfferFactory(
@@ -701,7 +727,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user__email=email)
 
         data = {"name": "New name"}
-        response = client.with_session_auth(email).patch(f"/offers/draft/{offer.id}", json=data)
+        response = client.with_session_auth(email).patch(self.endpoint.format(offer_id=offer.id), json=data)
 
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."

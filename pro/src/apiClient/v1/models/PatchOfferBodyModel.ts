@@ -21,7 +21,9 @@ export type PatchOfferBodyModel = {
   name?: string | null;
   publicationDatetime?: (string | 'now') | null;
   shouldSendMail?: boolean | null;
+  subcategoryId?: string | null;
   url?: string | null;
+  videoUrl?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDelay?: number | null;
   withdrawalDetails?: string | null;
