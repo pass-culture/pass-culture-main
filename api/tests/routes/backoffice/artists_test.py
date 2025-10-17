@@ -294,8 +294,12 @@ class PostUnlinkProductTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
-    def test_unlink_product_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offer_ids")
+    def test_unlink_product_success(
+        self, mock_async_index_offer_ids, mock_async_index_artist_ids, db_session, authenticated_client
+    ):
         product = offers_factories.ProductFactory.create()
+        offer = offers_factories.OfferFactory.create(product=product)
         artist = artist_factories.ArtistFactory.create(products=[product])
 
         response = self.post_to_endpoint(
@@ -303,6 +307,7 @@ class PostUnlinkProductTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
+        mock_async_index_offer_ids.assert_called_once_with([offer.id], reason=IndexationReason.ARTIST_LINKS_UPDATE)
         assert response.data == b""
 
         link_exists = (
