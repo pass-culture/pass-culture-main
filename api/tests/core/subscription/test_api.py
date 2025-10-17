@@ -4,6 +4,7 @@ from datetime import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import psycopg2
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
@@ -2089,6 +2090,17 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert ex_free_beneficiary.has_underage_beneficiary_role
         assert not ex_free_beneficiary.has_free_beneficiary_role
         assert ex_free_beneficiary.deposit.type == finance_models.DepositType.GRANT_17_18
+
+    @patch("pcapi.core.subscription.api.activate_beneficiary_for_eligibility")
+    def test_activation_retry_on_query_canceled(self, mock_activate_beneficiary):
+        user = users_factories.HonorStatementValidatedUserFactory(age=18)
+        # QueryCanceled often means that locking a database table timed out
+        mock_activate_beneficiary.side_effect = psycopg2.errors.QueryCanceled
+
+        with pytest.raises(psycopg2.errors.QueryCanceled):
+            subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert len(mock_activate_beneficiary.mock_calls) == 3
 
 
 @pytest.mark.usefixtures("db_session")

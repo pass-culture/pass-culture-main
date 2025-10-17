@@ -3,6 +3,8 @@ import logging
 import typing
 from functools import partial
 
+import psycopg2
+
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.mails.transactional as transactional_mails
@@ -33,6 +35,7 @@ from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.decorators import retry
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers import apps_flyer_job
 
@@ -46,6 +49,11 @@ logger = logging.getLogger(__name__)
 FREE_ELIGIBILITY_DEPOSIT_SOURCE = "complétion du profil"
 
 
+@retry(
+    exception=psycopg2.errors.QueryCanceled,  # lock can be hard to take on user and booking tables
+    logger=logger,
+    max_attempts=3,
+)
 @pcapi_repository.atomic()  # ensure the FOR UPDATE lock is freed if anything arises
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     refreshed_user = users_repository.get_and_lock_user(user.id)
