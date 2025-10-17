@@ -658,19 +658,52 @@ def offerer_tags_fixture():
 def offerers_to_be_validated_fixture(offerer_tags):
     top_tag, collec_tag, public_tag, festival_tag = offerer_tags
 
-    no_tag = offerers_factories.NewOffererFactory(
-        name="A", siren="123001000", street=None, postalCode="35000", city="Rennes"
+    no_tag = offerers_factories.NewOffererFactory(name="A", siren="123001000")
+    offerers_factories.VenueFactory(
+        managingOfferer=no_tag,
+        offererAddress__address__postalCode="35000",
+        offererAddress__address__departmentCode="35",
+        offererAddress__address__city="Rennes",
     )
-    top = offerers_factories.PendingOffererFactory(name="B", siren="123002008", postalCode="29000", city="Quimper")
-    collec = offerers_factories.NewOffererFactory(
-        name="C", siren="123003006", postalCode="50170", city="Le Mont-Saint-Michel"
+
+    top = offerers_factories.PendingOffererFactory(name="B", siren="123002008")
+    offerers_factories.VenueFactory(
+        managingOfferer=top,
+        offererAddress__address__postalCode="29000",
+        offererAddress__address__departmentCode="29",
+        offererAddress__address__city="Quimper",
     )
-    public = offerers_factories.PendingOffererFactory(name="D", siren="123004004", postalCode="29300", city="Quimperlé")
-    top_collec = offerers_factories.NewOffererFactory(
-        name="E", siren="123005001", postalCode="35400", city="Saint-Malo"
+
+    collec = offerers_factories.NewOffererFactory(name="C", siren="123003006")
+    offerers_factories.VenueFactory(
+        managingOfferer=collec,
+        offererAddress__address__postalCode="50170",
+        offererAddress__address__departmentCode="50",
+        offererAddress__address__city="Le Mont-Saint-Michel",
     )
-    top_public = offerers_factories.PendingOffererFactory(
-        name="F", siren="123006009", postalCode="44000", city="Nantes"
+
+    public = offerers_factories.PendingOffererFactory(name="D", siren="123004004")
+    offerers_factories.VenueFactory(
+        managingOfferer=public,
+        offererAddress__address__postalCode="29300",
+        offererAddress__address__departmentCode="29",
+        offererAddress__address__city="Quimperlé",
+    )
+
+    top_collec = offerers_factories.NewOffererFactory(name="E", siren="123005001")
+    offerers_factories.VenueFactory(
+        managingOfferer=top_collec,
+        offererAddress__address__postalCode="35400",
+        offererAddress__address__departmentCode="35",
+        offererAddress__address__city="Saint-Malo",
+    )
+
+    top_public = offerers_factories.PendingOffererFactory(name="F", siren="123006009")
+    offerers_factories.VenueFactory(
+        managingOfferer=top_public,
+        offererAddress__address__postalCode="44000",
+        offererAddress__address__departmentCode="44",
+        offererAddress__address__city="Nantes",
     )
 
     for offerer in (top, top_collec, top_public):
@@ -713,34 +746,65 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
     no_tag = offerers_factories.NewUserOffererFactory(
         user__email="a@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
-        offerer__postalCode="97200",
-        offerer__city="Fort-de-France",
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=no_tag.offerer,
+        offererAddress__address__postalCode="97200",
+        offererAddress__address__departmentCode="972",
+        offererAddress__address__city="Fort-de-France",
+    )
+
     top = offerers_factories.PendingUserOffererFactory(
         user__email="b@example.com",
         offerer__validationStatus=ValidationStatus.NEW,
-        offerer__postalCode="97100",
-        offerer__city="Basse-Terre",
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=top.offerer,
+        offererAddress__address__postalCode="97100",
+        offererAddress__address__departmentCode="971",
+        offererAddress__address__city="Basse-Terre",
+    )
+
     collec = offerers_factories.NewUserOffererFactory(
-        user__email="c@example.com", offerer__postalCode="29200", offerer__city="Brest"
+        user__email="c@example.com",
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=collec.offerer,
+        offererAddress__address__postalCode="29200",
+        offererAddress__address__departmentCode="29",
+        offererAddress__address__city="Brest",
+    )
+
     public = offerers_factories.PendingUserOffererFactory(
         user__email="d@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
-        offerer__postalCode="97290",
-        offerer__city="Le Marin",
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=public.offerer,
+        offererAddress__address__postalCode="97290",
+        offererAddress__address__departmentCode="972",
+        offererAddress__address__city="Le Marin",
+    )
+
     top_collec = offerers_factories.NewUserOffererFactory(
         user__email="e@example.com",
         offerer__validationStatus=ValidationStatus.PENDING,
-        offerer__postalCode="06400",
-        offerer__city="Cannes",
     )
+    offerers_factories.VenueFactory(
+        managingOfferer=top_collec.offerer,
+        offererAddress__address__postalCode="06400",
+        offererAddress__address__departmentCode="06",
+        offererAddress__address__city="Cannes",
+    )
+
     top_public = offerers_factories.PendingUserOffererFactory(
         user__email="f@example.com",
-        offerer__postalCode="97400",
-        offerer__city="Saint-Denis",
+    )
+    offerers_factories.VenueFactory(
+        managingOfferer=top_public.offerer,
+        offererAddress__address__postalCode="97400",
+        offererAddress__address__departmentCode="974",
+        offererAddress__address__city="Saint-Denis",
     )
 
     for user_offerer in (top, top_collec, top_public):
