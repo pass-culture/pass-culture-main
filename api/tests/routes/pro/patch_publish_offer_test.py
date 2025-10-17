@@ -78,7 +78,7 @@ class Returns200Test:
         assert response.json["isNonFreeOffer"] is True
 
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
-        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz
         assert offer.finalizationDatetime == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         assert offer.validation == OfferValidationStatus.APPROVED
@@ -131,8 +131,8 @@ class Returns200Test:
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
-        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
-        assert offer.publicationDatetime == publication_date.replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz
+        assert offer.publicationDatetime == publication_date
         assert offer.publicationDate == offer.publicationDatetime
         assert not offer.bookingAllowedDatetime
         mock_async_index_offer_ids.assert_not_called()
@@ -173,7 +173,7 @@ class Returns200Test:
                 },
             )
 
-        expected_publication_date = publication_date.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        expected_publication_date = publication_date.astimezone(datetime.UTC)
         assert response.status_code == 200
         assert response.json["publicationDatetime"] == format_into_utc_date(publication_date)
         assert response.json["status"] == OfferStatus.SCHEDULED.name
@@ -183,7 +183,7 @@ class Returns200Test:
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
-        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz
         assert offer.publicationDatetime == expected_publication_date
         assert not offer.bookingAllowedDatetime
         assert response.json["isActive"] is False
@@ -226,7 +226,7 @@ class Returns200Test:
                 },
             )
 
-        expected_booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
+        expected_booking_allowed_datetime = booking_allowed_datetime
         assert response.status_code == 200
         assert response.json["bookingAllowedDatetime"] == format_into_utc_date(booking_allowed_datetime)
         assert response.json["status"] == OfferStatus.PUBLISHED.name
@@ -236,7 +236,7 @@ class Returns200Test:
         offer: offers_models.Offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.validation == OfferValidationStatus.APPROVED
         assert offer.lastValidationPrice is None
-        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz
         assert offer.publicationDatetime == offer.finalizationDatetime
         assert offer.bookingAllowedDatetime == expected_booking_allowed_datetime
         mock_async_index_offer_ids.assert_called_once()
@@ -279,15 +279,14 @@ class Returns200Test:
                 },
             )
 
-        expected_publication_datetime = publication_date.replace(tzinfo=None)
-        booking_allowed_datetime = booking_allowed_datetime.replace(tzinfo=None)
+        expected_publication_datetime = publication_date
 
         assert response.status_code == 200
         offer = db.session.get(offers_models.Offer, stock.offer.id)
         assert offer.publicationDate == expected_publication_datetime
         assert offer.publicationDatetime == expected_publication_datetime
         assert offer.bookingAllowedDatetime == booking_allowed_datetime
-        assert offer.finalizationDatetime == now_datetime_with_tz.replace(tzinfo=None)
+        assert offer.finalizationDatetime == now_datetime_with_tz
         first_finalization_datetime = offer.finalizationDatetime
         mock_async_index_offer_ids.assert_not_called()
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)

@@ -399,7 +399,7 @@ class BoostETLProcessTest:
         assert offer_1.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_1.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30)
+        assert offer_1.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_1.product
         assert offer_1.product.name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
@@ -412,7 +412,7 @@ class BoostETLProcessTest:
         assert offer_2.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_2.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_2.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30)
+        assert offer_2.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_2.product
         assert offer_2.product.name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
@@ -517,7 +517,9 @@ class BoostETLProcessTest:
         assert offer_1.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_1.publicationDatetime == datetime.datetime(2023, 7, 10, 10, 0, 15)  # should not have changed
+        assert offer_1.publicationDatetime == datetime.datetime(
+            2023, 7, 10, 10, 0, 15, tzinfo=datetime.UTC
+        )  # should not have changed
         assert offer_1.name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
 
         assert offer_1.product
@@ -577,8 +579,8 @@ class BoostETLProcessTest:
         assert offer_1.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_1.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30)
-        assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2023, 8, 12, 12, 41, 30)
+        assert offer_1.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.dateModifiedAtLastProvider == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_1.product
         assert offer_1.product.name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
@@ -594,8 +596,8 @@ class BoostETLProcessTest:
         assert offer_2.bookingEmail == venue_provider.venue.bookingEmail
         assert offer_2.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
-        assert offer_2.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30)
-        assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2023, 8, 12, 12, 41, 30)
+        assert offer_2.dateModifiedAtLastProvider == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_2.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
 
         assert offer_2.product
         assert offer_2.product.name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
