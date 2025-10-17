@@ -5,10 +5,12 @@ import { vi } from 'vitest'
 
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { OfferStatus } from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
 } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
@@ -762,5 +764,27 @@ describe('PriceTableForm', () => {
         name: LABELS.buttons.resetEntry,
       })
     ).not.toBeInTheDocument()
+  })
+
+  it('should log an event when the limit date is updated', async () => {
+    const mockLogEvent = vi.fn()
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
+    const offer = { ...nonEventOffer, status: OfferStatus.ACTIVE }
+
+    renderPriceTableForm({
+      offer,
+    })
+
+    const input = screen.getByLabelText('Date limite de réservation')
+    await userEvent.type(input, '2020-12-15')
+    await userEvent.click(screen.getByLabelText(/Prix/))
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.UPDATED_BOOKING_LIMIT_DATE,
+      expect.objectContaining({ bookingLimitDatetime: '2020-12-15' })
+    )
   })
 })
