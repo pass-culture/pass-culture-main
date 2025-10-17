@@ -23,12 +23,14 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_datetime
+from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
@@ -389,6 +391,12 @@ class IndividualOfferResponseGetterDict(GetterDict):
             extra_data_copy = self._obj.extraData.copy() if self._obj.extraData else {}
             extra_data_copy["ean"] = self._obj.ean
             return extra_data_copy
+        if key == "highlightRequests":
+            return [
+                highlight_request.highlight
+                for highlight_request in self._obj.highlight_requests
+                if highlight_request.highlight.highlight_timespan.upper >= date_utils.get_naive_utc_now()
+            ]
         return super().get(key, default)
 
 
@@ -447,6 +455,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     status: OfferStatus
     isNonFreeOffer: bool | None
     videoData: VideoData
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
 
     class Config:
         orm_mode = True
