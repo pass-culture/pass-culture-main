@@ -11,6 +11,7 @@ import {
   CollectiveOfferAllowedAction,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -18,6 +19,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
@@ -52,10 +54,12 @@ import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialo
 
 export interface CollectiveActionsCellsProps {
   rowId: string
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  deselectOffer: (offer: CollectiveOfferResponseModel) => void
+  deselectOffer: (
+    offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  ) => void
   isSelected: boolean
   className?: string
 }
@@ -86,9 +90,10 @@ export const CollectiveActionsCells = ({
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
+  const isTemplateTable = !isCollectiveOfferBookable(offer)
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isInTemplateOffersPage: offer.isShowcase,
+    isInTemplateOffersPage: isTemplateTable,
     urlSearchFilters,
     selectedOffererId: selectedOffererId?.toString(),
   })
@@ -118,7 +123,7 @@ export const CollectiveActionsCells = ({
   }
 
   const handleCreateOfferClick = async () => {
-    if (offer.isShowcase) {
+    if (isTemplateTable) {
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
@@ -195,7 +200,7 @@ export const CollectiveActionsCells = ({
       return
     }
     try {
-      if (offer.isShowcase) {
+      if (isTemplateTable) {
         await api.patchCollectiveOffersTemplateArchive({ ids: [offer.id] })
       } else {
         await api.patchCollectiveOffersArchive({ ids: [offer.id] })
@@ -236,7 +241,7 @@ export const CollectiveActionsCells = ({
 
   const canArchiveOffer = isActionAllowedOnCollectiveOffer(
     offer,
-    offer.isShowcase
+    isTemplateTable
       ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
       : CollectiveOfferAllowedAction.CAN_ARCHIVE
   )
@@ -260,16 +265,22 @@ export const CollectiveActionsCells = ({
     CollectiveOfferAllowedAction.CAN_CANCEL
   )
 
-  const activateOffer = async () => {
-    const { isActive, id } = offer
+  const hideOrPublishOffer = async () => {
+    const { id } = offer as CollectiveOfferTemplateResponseModel
+
+    const isActive = isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+    )
+
     try {
       await api.patchCollectiveOffersTemplateActiveStatus({
         ids: [id],
-        isActive: !isActive,
+        isActive,
       })
 
       notify.success(
-        !isActive
+        isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'
           : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
       )
@@ -338,7 +349,7 @@ export const CollectiveActionsCells = ({
             {canPublishOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}
-                onSelect={activateOffer}
+                onSelect={hideOrPublishOffer}
               >
                 <Button icon={strokeCheckIcon} variant={ButtonVariant.TERNARY}>
                   Publier
@@ -348,7 +359,7 @@ export const CollectiveActionsCells = ({
             {canHideOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}
-                onSelect={activateOffer}
+                onSelect={hideOrPublishOffer}
               >
                 <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
                   Mettre en pause

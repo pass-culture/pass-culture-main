@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -11,7 +13,6 @@ import {
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
@@ -48,12 +49,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     )
   }
 
-  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isInTemplateOffersPage: true,
-    urlSearchFilters: finalSearchFilters,
-    selectedOffererId: offererId ?? '',
-  })
-
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...finalSearchFilters,
@@ -61,23 +56,20 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
   delete apiFilters.page
 
-  const offersQuery = useSWR(
-    collectiveOffersQueryKeys,
+  const offersQuery = useSWR<CollectiveOfferTemplateResponseModel[]>(
+    [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
     () => {
       const params = serializeApiCollectiveFilters(
         apiFilters,
         DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
       )
-
-      return api.getCollectiveOffers(
+      return api.getCollectiveOfferTemplates(
         params.nameOrIsbn,
         params.offererId,
         params.status,
         params.venueId,
-        params.creationMode,
         params.periodBeginningDate,
         params.periodEndingDate,
-        params.collectiveOfferType,
         params.format,
         params.locationType,
         params.offererAddressId
@@ -96,7 +88,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offererId={offererId}
-          offers={offersQuery.data}
+          offers={offersQuery.data ?? []}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
         />
