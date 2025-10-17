@@ -1,6 +1,8 @@
-import type { CollectiveLocationType, EacFormat } from '@/apiClient/adage'
 import type {
+  CollectiveLocationType,
   CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  EacFormat,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   ListOffersOfferResponseModel,
@@ -93,4 +95,14 @@ export const isCollectiveOfferTemplate = (
 
 export enum CollectiveOffersSortingColumn {
   EVENT_DATE = 'EVENT_DATE',
+}
+
+export const isCollectiveOfferBookable = (
+  offer:
+    | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+): offer is CollectiveOfferResponseModel => {
+  return 'stocks' in offer
 }
