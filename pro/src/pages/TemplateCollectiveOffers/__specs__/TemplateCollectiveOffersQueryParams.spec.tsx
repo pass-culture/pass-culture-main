@@ -4,15 +4,14 @@ import * as router from 'react-router'
 
 import { api } from '@/apiClient/api'
 import type {
-  CollectiveOfferResponseModel,
-  CollectiveOffersStockResponseModel,
+  CollectiveOfferTemplateResponseModel,
   GetOffererAddressResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
@@ -55,7 +54,7 @@ const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
-      getCollectiveOffers: vi.fn(),
+      getCollectiveOfferTemplates: vi.fn(),
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getVenues: vi.fn(() => mockVenuesResponse),
@@ -105,14 +104,7 @@ vi.mock('repository/venuesService', async () => ({
 }))
 
 describe('route TemplateCollectiveOffers', () => {
-  let offersRecap: CollectiveOfferResponseModel[]
-  const stocks: Array<CollectiveOffersStockResponseModel> = [
-    {
-      startDatetime: String(new Date()),
-      hasBookingLimitDatetimePassed: false,
-      remainingQuantity: 1,
-    },
-  ]
+  let offersRecap: CollectiveOfferTemplateResponseModel[]
 
   const offererAddress: GetOffererAddressResponseModel[] = [
     offererAddressFactory({
@@ -126,8 +118,8 @@ describe('route TemplateCollectiveOffers', () => {
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory({ stocks, isShowcase: true })]
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
+    offersRecap = [collectiveOfferTemplateFactory()]
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -143,9 +135,11 @@ describe('route TemplateCollectiveOffers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory({ stocks })
+        collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
@@ -192,7 +186,9 @@ describe('route TemplateCollectiveOffers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
@@ -213,7 +209,9 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     it('should have the status in the url value when user filters by one status', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
 
       await userEvent.click(
@@ -234,7 +232,9 @@ describe('route TemplateCollectiveOffers', () => {
     })
 
     it('should have the status in the url value when user filters by multiple statuses', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
 
       await userEvent.click(

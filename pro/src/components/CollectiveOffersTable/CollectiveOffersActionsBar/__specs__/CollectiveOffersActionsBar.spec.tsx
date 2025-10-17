@@ -2,6 +2,10 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
+import type {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from '@/apiClient/v1'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
@@ -20,7 +24,9 @@ import {
 } from '../CollectiveOffersActionsBar'
 
 const renderActionsBar = (
-  props: CollectiveOffersActionsBarProps,
+  props: CollectiveOffersActionsBarProps<
+    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  >,
   features: string[] = []
 ) => {
   renderWithProviders(
@@ -57,7 +63,9 @@ vi.mock('swr', async () => ({
 const mockLogEvent = vi.fn()
 
 describe('ActionsBar', () => {
-  let props: CollectiveOffersActionsBarProps
+  let props: CollectiveOffersActionsBarProps<
+    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  >
   const offerIds = [1, 2]
   let stocks: Array<CollectiveOffersStockResponseModel>
 
@@ -314,7 +322,6 @@ describe('ActionsBar', () => {
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stocks,
-          isShowcase: true,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
@@ -326,12 +333,8 @@ describe('ActionsBar', () => {
     const confirmArchivingButton = screen.getByText('Archiver les offres')
     await userEvent.click(confirmArchivingButton)
 
-    expect(api.patchCollectiveOffersTemplateArchive).toHaveBeenLastCalledWith({
-      ids: [2],
-    })
-
     expect(api.patchCollectiveOffersArchive).toHaveBeenLastCalledWith({
-      ids: [1],
+      ids: [1, 2],
     })
 
     expect(

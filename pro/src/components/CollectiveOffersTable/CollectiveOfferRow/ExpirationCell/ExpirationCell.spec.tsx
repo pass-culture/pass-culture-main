@@ -1,26 +1,23 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
   const offer: CollectiveOfferResponseModel = collectiveOfferFactory()
 
-  function renderExpirationCell(offerParam = offer, bookingLimitDate: string) {
-    return render(
+  function renderExpirationCell(offerParam = offer) {
+    return renderWithProviders(
       <table>
         <tbody>
           <tr>
-            <ExpirationCell
-              offer={offerParam}
-              bookingLimitDate={bookingLimitDate}
-              rowId="rowId"
-            />
+            <ExpirationCell offer={offerParam} rowId="rowId" />
           </tr>
         </tbody>
       </table>
@@ -28,11 +25,19 @@ describe('ExpirationCell', () => {
   }
 
   it('should display a banner with the expiration date when it expires in 10 days', () => {
-    const offerExpiringIn10Days = { ...offer }
     const in10Days = new Date()
     in10Days.setDate(in10Days.getDate() + 10)
 
-    renderExpirationCell(offerExpiringIn10Days, in10Days.toISOString())
+    const offerExpiringIn10Days = {
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: in10Days.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    }
+    renderExpirationCell(offerExpiringIn10Days)
 
     expect(
       screen.getByText(
@@ -42,33 +47,56 @@ describe('ExpirationCell', () => {
   })
 
   it('should display a banner with the days left before expiration when it expires in less than 7 days', () => {
-    const offerExpiringIn5Days = { ...offer }
     const in5Days = new Date()
     in5Days.setDate(in5Days.getDate() + 5)
 
-    renderExpirationCell(offerExpiringIn5Days, in5Days.toISOString())
+    const offerExpiringIn5Days = {
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: in5Days.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    }
+
+    renderExpirationCell(offerExpiringIn5Days)
 
     expect(screen.getByText('expire dans 5 jours')).toBeInTheDocument()
   })
 
   it('should display a banner when it expires today', () => {
-    const offerExpiringToday = { ...offer }
     const today = new Date()
+    const offerExpiringToday = {
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: today.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    }
 
-    renderExpirationCell(offerExpiringToday, today.toISOString())
+    renderExpirationCell(offerExpiringToday)
 
     expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
   })
 
   it('should display a banner saying that the offer needs to be booked if it is already pre-booked', () => {
+    const today = new Date()
+
     const offerExpiring = {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+      stocks: [
+        {
+          bookingLimitDatetime: today.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
     }
-    offerExpiring.booking = { booking_status: 'PENDING', id: 1 }
-    const today = new Date()
 
-    renderExpirationCell(offerExpiring, today.toISOString())
+    renderExpirationCell(offerExpiring)
 
     expect(
       screen.getByText('En attente de réservation par le chef d’établissement')
@@ -79,19 +107,34 @@ describe('ExpirationCell', () => {
     const in10Days = new Date()
     in10Days.setDate(in10Days.getDate() + 10)
 
-    renderExpirationCell(offer, in10Days.toISOString())
+    renderExpirationCell({
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: in10Days.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    })
 
     expect(screen.queryByText(/expire dans/)).not.toBeInTheDocument()
   })
 
   it('should show "préréservation par l’enseignant" when offer is PUBLISHED', () => {
+    const today = new Date()
+
     const offerPublished = {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+      stocks: [
+        {
+          bookingLimitDatetime: today.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
     }
-    const today = new Date()
 
-    renderExpirationCell(offerPublished, today.toISOString())
+    renderExpirationCell(offerPublished)
 
     expect(
       screen.getByText('En attente de préréservation par l’enseignant')
@@ -102,7 +145,15 @@ describe('ExpirationCell', () => {
     const soon = new Date()
     soon.setDate(soon.getDate() + 2)
 
-    const { container } = renderExpirationCell(offer, soon.toISOString())
+    const { container } = renderExpirationCell({
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: soon.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    })
 
     expect(container.querySelector('.banner-expires-soon')).toBeInTheDocument()
   })
@@ -111,7 +162,15 @@ describe('ExpirationCell', () => {
     const yesterday = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
 
-    renderExpirationCell(offer, yesterday.toISOString())
+    renderExpirationCell({
+      ...offer,
+      stocks: [
+        {
+          bookingLimitDatetime: yesterday.toISOString(),
+          hasBookingLimitDatetimePassed: false,
+        },
+      ],
+    })
 
     expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
   })
