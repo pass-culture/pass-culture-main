@@ -68,24 +68,43 @@
     border-color: var(--color-border-brand-primary);
 
     &::after {
-      //  CSS variables do not work when used within a background-image SVG.
-      //  Thus the need to have the background be the check color
-      //  Also, the svg "fill" and "stroke" properties of the checks must be white because its a mask
-      background-color: var(--color-icon-inverted);
-      mask: url("./assets/checkbox-check.svg");
-      mask-position: center;
-      mask-repeat: no-repeat;
       content: "";
+      background-image: url("./assets/checkbox-check.svg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: var(--color-background-locked-brand-primary);
       height: 100%;
       position: absolute;
       width: 100%;
     }
 
-    &:indeterminate {
+    //  When the mask is supported we use it instead of background-image
+    //  Because we can't have a css variable inside a `background-image` SVG
+    @supports (mask: url("")) {
       &::after {
-        mask: url("./assets/checkbox-partial.svg");
+        background-image: none;
+
+        //  Since we use a mask, the background color is the check color
+        //  And the svg "fill" and "stroke" properties of the checks must be white because
+        background-color: var(--color-icon-inverted);
+        mask: url("./assets/checkbox-check.svg");
         mask-position: center;
         mask-repeat: no-repeat;
+      }
+    }
+
+    &:indeterminate {
+      &::after {
+        background-image: url("./assets/checkbox-partial.svg");
+      }
+
+      @supports (mask: url("")) {
+        &::after {
+          background-image: none;
+          mask: url("./assets/checkbox-partial.svg");
+          mask-position: center;
+          mask-repeat: no-repeat;
+        }
       }
     }
   }
