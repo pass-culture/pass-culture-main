@@ -341,7 +341,12 @@ class SearchOffererTest:
                 siren=str(123456000 + i),
                 validationStatus=validation_statuses[i % len(validation_statuses)],
                 isActive=bool(i % 4),
-                postalCode=postal_codes[i % len(postal_codes)],
+            )
+            postal_code = postal_codes[i % len(postal_codes)]
+            offerers_factories.VenueFactory(
+                managingOfferer=offerer,
+                offererAddress__address__postalCode=postal_code,
+                offererAddress__address__departmentCode=regions_utils.get_department_code_from_city_code(postal_code),
             )
             self.offerers.append(offerer)
 
@@ -796,7 +801,9 @@ class LogsTest:
     endpoint = "backoffice_web.pro.search_pro"
 
     def test_log_pro_search(self, authenticated_client, caplog):
-        offerers_factories.OffererFactory(name="Log à rythme", postalCode="02302")
+        offerer = offerers_factories.OffererFactory(name="Log à rythme")
+        offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="02")
+        offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="03")
 
         with caplog.at_level(logging.INFO):
             response = authenticated_client.get(
