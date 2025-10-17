@@ -2,6 +2,7 @@ import datetime
 import logging
 import typing
 
+import psycopg2
 from sqlalchemy import exc as sqlalchemy_exceptions
 
 import pcapi.core.finance.conf as finance_conf
@@ -33,6 +34,7 @@ from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.decorators import retry
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -45,6 +47,11 @@ logger = logging.getLogger(__name__)
 FREE_ELIGIBILITY_DEPOSIT_SOURCE = "complétion du profil"
 
 
+@retry(
+    exception=psycopg2.errors.QueryCanceled,  # lock can be hard to take on user and booking tables
+    logger=logger,
+    max_attempts=3,
+)
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     user_id = user.id  # keep id to avoid PendingRollbackError when falling into IntegrityError
 
