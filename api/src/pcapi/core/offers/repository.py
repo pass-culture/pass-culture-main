@@ -10,6 +10,7 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
+import pcapi.core.highlights.models as highlights_models
 from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
@@ -59,6 +60,7 @@ OFFER_LOAD_OPTIONS = typing.Iterable[
         "venue",
         "meta_data",
         "openingHours",
+        "highlight_requests",
     ]
 ]
 
@@ -967,6 +969,12 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "openingHours" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.openingHours))
+        if "highlight_requests" in load_options:
+            query = query.options(
+                sa_orm.joinedload(models.Offer.highlight_requests).joinedload(
+                    highlights_models.HighlightRequest.highlight
+                ),
+            )
 
         return query.one()
     except sa_orm.exc.NoResultFound:
@@ -994,6 +1002,9 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
                 offerers_models.OffererAddress.addressId,
             )
             .joinedload(offerers_models.OffererAddress.address),
+        )
+        .options(
+            sa_orm.joinedload(models.Offer.highlight_requests).joinedload(highlights_models.HighlightRequest.highlight)
         )
         .options(sa_orm.joinedload(models.Offer.venue))
         .options(sa_orm.joinedload(models.Offer.metaData))

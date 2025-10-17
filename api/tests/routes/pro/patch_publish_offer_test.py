@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 import pytest
 import time_machine
 
+import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -67,6 +68,8 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
         )
+        highlight = highlights_factories.HighlightFactory()
+        highlights_factories.HighlightRequestFactory(offer=stock.offer, highlight=highlight)
 
         client = client.with_session_auth("user@example.com")
         offer_id = stock.offerId

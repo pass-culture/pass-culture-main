@@ -8,6 +8,7 @@ import type { GetOfferMediationResponseModel } from './GetOfferMediationResponse
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
+import type { ShortHighlightResponseModel } from './ShortHighlightResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { VideoData } from './VideoData';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
@@ -28,6 +29,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
   hasPendingBookings: boolean;
   hasStocks: boolean;
+  highlightRequests: Array<ShortHighlightResponseModel>;
   id: number;
   isActive: boolean;
   isDigital: boolean;
