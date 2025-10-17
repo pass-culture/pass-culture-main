@@ -5,7 +5,6 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.utils import date as date_utils
@@ -17,8 +16,6 @@ logger = logging.getLogger(__name__)
 def create_big_offerer() -> None:
     logger.info("start create big offerer")
     user_offerer = UserOffererFactory.create(user__email="gros@example.com", offerer__name="Gros offerer")
-    # offerers have always a virtual venue so we have to create one to match reality
-    VirtualVenueFactory.create(name="Lieu virtuel du gros offerer", managingOfferer=user_offerer.offerer)
     logger.info(" you can connect to pro, before end of sandbox, with : gros@example.com")
     for i in range(0, 51):
         venue = VenueFactory.create(

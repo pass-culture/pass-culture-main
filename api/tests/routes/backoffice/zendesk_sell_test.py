@@ -219,7 +219,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
-            == "Ce partenaire culturel est virtuel ou n'est pas ouvert au public"
+            == "Ce partenaire culturel n'est pas ouvert au public"
         )
 
         assert not testing.zendesk_sell_requests
