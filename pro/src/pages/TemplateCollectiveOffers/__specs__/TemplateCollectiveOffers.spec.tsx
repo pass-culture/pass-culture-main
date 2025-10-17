@@ -8,9 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
-  type CollectiveOffersStockResponseModel,
-  CollectiveOfferType,
+  type CollectiveOfferTemplateResponseModel,
   type GetOffererAddressResponseModel,
 } from '@/apiClient/v1'
 import {
@@ -19,7 +17,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
@@ -65,20 +63,13 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
-const stocks: Array<CollectiveOffersStockResponseModel> = [
-  {
-    startDatetime: String(new Date()),
-    hasBookingLimitDatetimePassed: false,
-    remainingQuantity: 1,
-  },
-]
-const offersRecap: CollectiveOfferResponseModel[] = [
-  collectiveOfferFactory({ stocks }),
+const offersRecap: CollectiveOfferTemplateResponseModel[] = [
+  collectiveOfferTemplateFactory(),
 ]
 
 describe('TemplateCollectiveOffers', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
@@ -106,7 +97,9 @@ describe('TemplateCollectiveOffers', () => {
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+          offersRecap
+        )
         await renderOffers()
 
         await userEvent.click(
@@ -122,7 +115,7 @@ describe('TemplateCollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+          expect(api.getCollectiveOfferTemplates).toHaveBeenNthCalledWith(
             2,
             undefined,
             offererId,
@@ -131,8 +124,6 @@ describe('TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            CollectiveOfferType.TEMPLATE,
-            undefined,
             undefined,
             undefined
           )
@@ -140,7 +131,7 @@ describe('TemplateCollectiveOffers', () => {
       })
 
       it('should not display column titles when no offers are returned', async () => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
+        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce([])
 
         await renderOffers()
 
@@ -161,15 +152,13 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+          expect(api.getCollectiveOfferTemplates).toHaveBeenCalledWith(
             'Any word',
             offererId,
             undefined,
             undefined,
             undefined,
             undefined,
-            undefined,
-            CollectiveOfferType.TEMPLATE,
             undefined,
             undefined,
             undefined
@@ -187,15 +176,13 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
             undefined,
-            undefined,
             '2020-12-25',
             undefined,
-            CollectiveOfferType.TEMPLATE,
             undefined,
             undefined,
             undefined
@@ -212,15 +199,13 @@ describe('TemplateCollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
             undefined,
             undefined,
-            undefined,
             '2020-12-27',
-            CollectiveOfferType.TEMPLATE,
             undefined,
             undefined,
             undefined
@@ -233,24 +218,24 @@ describe('TemplateCollectiveOffers', () => {
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory({ stocks })
+        collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextIcon)
 
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory({ stocks })
+        collectiveOfferTemplateFactory()
       )
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       const previousIcon = screen.getByRole('button', {
@@ -260,18 +245,20 @@ describe('TemplateCollectiveOffers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOfferTemplates).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
     describe('when 101 offers are fetched', () => {
       const offersRecap = Array.from({ length: 101 }, () =>
-        collectiveOfferFactory({ stocks })
+        collectiveOfferTemplateFactory()
       )
 
       beforeEach(() => {
-        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
+        vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(
+          offersRecap
+        )
       })
 
       it('should have max number page of 10', async () => {
@@ -297,11 +284,11 @@ describe('TemplateCollectiveOffers', () => {
   })
 
   it('should show draft offers', async () => {
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-      collectiveOfferFactory({
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce([
+      collectiveOfferTemplateFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }),
-      collectiveOfferFactory({
+      collectiveOfferTemplateFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     ])

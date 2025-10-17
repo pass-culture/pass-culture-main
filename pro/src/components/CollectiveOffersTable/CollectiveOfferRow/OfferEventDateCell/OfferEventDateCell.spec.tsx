@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -61,14 +64,13 @@ describe('OfferEventDateCell', () => {
   })
 
   it('should display "Toute l’année scolaire" for OfferTemplate when dates are not defined', () => {
-    const eventOffer = collectiveOfferFactory({
-      isShowcase: true,
+    const offer = collectiveOfferTemplateFactory({
       name: 'Offre nom',
       dates: null,
     })
 
     renderOfferNameCell({
-      offer: eventOffer,
+      offer,
       rowId: 'rowId',
     })
 
