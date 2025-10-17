@@ -36,6 +36,7 @@ describe('OfferEventDateCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       rowId: 'rowId',
+      isTemplateTable: true,
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
@@ -54,6 +55,7 @@ describe('OfferEventDateCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       rowId: 'rowId',
+      isTemplateTable: false,
     })
 
     expect(screen.getByText('Du 05/08/2024')).toBeInTheDocument()
@@ -70,6 +72,7 @@ describe('OfferEventDateCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       rowId: 'rowId',
+      isTemplateTable: true,
     })
 
     expect(screen.getByText('Toute l’année scolaire')).toBeInTheDocument()
@@ -85,6 +88,7 @@ describe('OfferEventDateCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       rowId: 'rowId',
+      isTemplateTable: false,
     })
 
     expect(screen.getByText('-')).toBeInTheDocument()

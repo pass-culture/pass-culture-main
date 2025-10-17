@@ -37,6 +37,7 @@ describe('OfferNameCell', () => {
       offer: eventOffer,
       offerLink: '#',
       rowId: 'rowId',
+      isTemplateTable: true,
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -50,6 +51,7 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '#',
       rowId: 'rowId',
+      isTemplateTable: false,
     })
 
     expect(screen.queryByText('Offre vitrine')).not.toBeInTheDocument()
@@ -64,6 +66,7 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: true,
+      isTemplateTable: false,
     })
 
     expect(screen.getByRole('presentation')).toHaveAttribute(
@@ -80,6 +83,7 @@ describe('OfferNameCell', () => {
       offerLink: '#',
       rowId: 'rowId',
       displayThumb: false,
+      isTemplateTable: false,
     })
 
     expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
@@ -92,6 +96,7 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '/offre/123',
       rowId: 'rowId',
+      isTemplateTable: false,
     })
 
     expect(screen.getByRole('link')).toHaveAttribute('href', '/offre/123')
@@ -107,6 +112,7 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '/offre/123',
       rowId: 'rowId',
+      isTemplateTable: false,
     })
     const offerTitle = screen.getByRole('link', {
       name: `N°${offer.id} ${offer.name}`,
@@ -124,6 +130,7 @@ describe('OfferNameCell', () => {
       offer,
       offerLink: '/offre/123',
       rowId: 'rowId',
+      isTemplateTable: true,
     })
     const offerTitle = screen.getByRole('link', {
       name: `Offre vitrine ${offer.name}`,

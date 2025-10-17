@@ -1,6 +1,9 @@
 import cn from 'classnames'
 
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
+import type {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from '@/apiClient/v1'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 
@@ -8,7 +11,7 @@ import styles from '../Cells.module.scss'
 
 interface CollectiveOfferStatusCellProps {
   rowId: string
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   className?: string
 }
 
