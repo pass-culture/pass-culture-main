@@ -1820,7 +1820,15 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         return offerers.filter(sa.false())
 
     if departments:
-        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))
+        # At least one managed venue with SIRET in selected departments
+        offerers = offerers.filter(
+            sa.exists()
+            .where(models.Venue.managingOffererId == models.Offerer.id)
+            .where(models.Venue.siret.is_not(None))
+            .where(models.OffererAddress.id == models.Venue.offererAddressId)
+            .where(geography_models.Address.id == models.OffererAddress.addressId)
+            .where(geography_models.Address.departmentCode.in_(departments))
+        )
 
     if search_query.isnumeric():
         numeric_filter = models.Offerer.id == int(search_query)

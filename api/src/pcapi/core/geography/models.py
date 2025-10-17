@@ -32,7 +32,7 @@ class Address(PcObject, Model):
     banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     inseeCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
     street: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
-    postalCode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
+    postalCode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False, index=True)
     city: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text(), nullable=False)
     latitude: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=False)
     longitude: sa_orm.Mapped[Decimal] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=False)
@@ -72,6 +72,14 @@ class Address(PcObject, Model):
             "longitude",
             postgresql_nulls_not_distinct=True,
             unique=True,
+        ),
+        sa.Index(
+            "ix_address_trgm_unaccent_city",
+            sa.func.immutable_unaccent("city"),
+            postgresql_using="gin",
+            postgresql_ops={
+                "description": "gin_trgm_ops",
+            },
         ),
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),

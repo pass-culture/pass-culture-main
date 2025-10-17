@@ -1206,7 +1206,6 @@ class Offerer(
 
     __table_args__ = (
         sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin"),
-        sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin"),
     )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
