@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -28,8 +31,7 @@ const renderOfferNameCell = (
 
 describe('OfferNameCell', () => {
   it('should display a tag for offer template', () => {
-    const eventOffer = collectiveOfferFactory({
-      isShowcase: true,
+    const eventOffer = collectiveOfferTemplateFactory({
       name: 'Offre nom',
     })
 
@@ -115,9 +117,8 @@ describe('OfferNameCell', () => {
   })
 
   it('should not show offer id when offer is template', () => {
-    const offer = collectiveOfferFactory({
+    const offer = collectiveOfferTemplateFactory({
       name: 'Link test',
-      isShowcase: true,
     })
 
     renderOfferNameCell({

@@ -10,10 +10,14 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { getToday } from '@/commons/utils/date'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -33,7 +37,9 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 const renderOfferItem = (
-  props: CollectiveOfferRowProps,
+  props: CollectiveOfferRowProps<
+    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  >,
   options?: RenderWithProvidersOptions
 ) =>
   renderWithProviders(
@@ -64,7 +70,9 @@ const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
   stocks,
   location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
 })
-const props: CollectiveOfferRowProps = {
+const props: CollectiveOfferRowProps<
+  CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+> = {
   offer,
   selectOffer: vi.fn(),
   isSelected: false,
@@ -113,15 +121,21 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should contain a link with the offer name and details link when offer is template', () => {
-      renderOfferItem({ ...props, offer: { ...props.offer, isShowcase: true } })
+      renderOfferItem({
+        ...props,
+        offer: collectiveOfferTemplateFactory({
+          name: 'My template offer',
+          id: 1,
+        }),
+      })
 
       const offerTitle = screen.getByRole('link', {
-        name: `Offre vitrine ${props.offer.name}`,
+        name: `Offre vitrine My template offer`,
       })
       expect(offerTitle).toBeInTheDocument()
       expect(offerTitle).toHaveAttribute(
         'href',
-        `/offre/T-${props.offer.id}/collectif/recapitulatif`
+        `/offre/T-1/collectif/recapitulatif`
       )
     })
   })
@@ -182,7 +196,7 @@ describe('CollectiveOfferRow', () => {
     it('should not display institution cell when isTemplateTable is true', () => {
       renderOfferItem({
         ...props,
-        isTemplateTable: true,
+        offer: collectiveOfferTemplateFactory(),
       })
 
       expect(
@@ -213,11 +227,11 @@ describe('CollectiveOfferRow', () => {
     it('should display a tag when offer is template', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({ isShowcase: true, stocks }),
+        offer: collectiveOfferTemplateFactory(),
       })
 
       const rowHeader = screen.getAllByRole('rowheader')[0]
-      expect(within(rowHeader).getByText(/Offre vitrine/i)).toBeInTheDocument()
+      expect(within(rowHeader).getByText('Offre vitrine')).toBeInTheDocument()
     })
 
     it('should not display a tag when offer is not template', () => {
@@ -228,7 +242,7 @@ describe('CollectiveOfferRow', () => {
 
       const rowHeader = screen.getAllByRole('rowheader')[0]
       expect(
-        within(rowHeader).queryByText(/Offre vitrine/i)
+        within(rowHeader).queryByText('Offre vitrine')
       ).not.toBeInTheDocument()
     })
   })
@@ -237,9 +251,7 @@ describe('CollectiveOfferRow', () => {
     it('should display confirm dialog when clicking on duplicate button when user did not see the modal', async () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          stocks,
+        offer: collectiveOfferTemplateFactory({
           allowedActions: [
             CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
           ],
@@ -464,9 +476,10 @@ describe('CollectiveOfferRow', () => {
   })
 
   it('should display "-" if educationalInstitution is null', () => {
-    props.offer.educationalInstitution = null
-
-    const { container } = renderOfferItem(props)
+    const { container } = renderOfferItem({
+      ...props,
+      offer: collectiveOfferFactory({ educationalInstitution: null }),
+    })
 
     const cell = container.querySelector('td.cell-institution')
 
@@ -525,16 +538,7 @@ describe('CollectiveOfferRow', () => {
   it('should not display price and participants cell when isTemplateTable is true', () => {
     renderOfferItem({
       ...props,
-      offer: collectiveOfferFactory({
-        stocks: [
-          {
-            price: 10,
-            numberOfTickets: 2,
-            hasBookingLimitDatetimePassed: false,
-          },
-        ],
-      }),
-      isTemplateTable: true,
+      offer: collectiveOfferTemplateFactory({}),
     })
 
     expect(screen.queryByText('10€')).not.toBeInTheDocument()
