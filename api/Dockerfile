@@ -128,9 +128,23 @@ FROM lib AS lib-dev
 
 COPY --from=builder-dev /home/pcapi/.local /home/pcapi/.local
 
-######### DEV ##########
+######### DEV PROXY ##########
 
-FROM lib-dev AS api-flask
+FROM lib-dev AS api-flask-proxy
+
+COPY /cacert.pem /cacert.pem
+
+USER root
+
+RUN apt update && apt --no-install-recommends -y install curl postgresql-client libgdal-dev
+
+USER pcapi
+
+RUN REQUESTS_CA_BUNDLE=/cacert.pem pip install --no-cache-dir --user -e .
+
+######### DEV DEFAULT ##########
+
+FROM lib-dev AS api-flask-default
 
 USER root
 
@@ -139,6 +153,10 @@ RUN apt update && apt --no-install-recommends -y install curl postgresql-client 
 USER pcapi
 
 RUN pip install --no-cache-dir --user -e .
+
+######### DEV #########
+
+FROM api-flask-${network_mode} AS api-flask
 
 ######### PRODUCTION #########
 
