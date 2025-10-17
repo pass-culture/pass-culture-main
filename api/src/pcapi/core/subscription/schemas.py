@@ -236,24 +236,6 @@ class IdentityCheckContent(pydantic_v1.BaseModel):
     def get_registration_datetime(self) -> datetime.datetime | None:
         return None
 
-    def get_eligibility_type_at_registration(self) -> users_models.EligibilityType | None:
-        from pcapi.core.users import eligibility_api
-        from pcapi.utils import postal_code as postal_code_utils
-
-        registration_datetime = self.get_registration_datetime()
-        birth_date = self.get_birth_date()
-
-        if registration_datetime is None or birth_date is None:
-            return None
-
-        postal_code = self.get_postal_code()
-        department = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
-        eligibility_at_registration = eligibility_api.get_eligibility_at_date(
-            birth_date, registration_datetime, department
-        )
-
-        return eligibility_at_registration
-
 
 class InternalReviewSource(enum.Enum):
     BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
