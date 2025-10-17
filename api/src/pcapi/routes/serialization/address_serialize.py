@@ -38,29 +38,19 @@ class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
 class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
         venue = self._obj
-        latitude = None
-        longitude = None
-        city = None
-        postalCode = None
-        address = None
-        departmentCode = None
-        if venue.offererAddress:
-            latitude = venue.offererAddress.address.latitude
-            longitude = venue.offererAddress.address.longitude
-            city = venue.offererAddress.address.city
-            postalCode = venue.offererAddress.address.postalCode
-            address = venue.offererAddress.address.street
-            departmentCode = venue.offererAddress.address.departmentCode
         if key == "coordinates":
-            return {"latitude": latitude, "longitude": longitude}
+            return {
+                "latitude": venue.offererAddress.address.latitude,
+                "longitude": venue.offererAddress.address.longitude,
+            }
         if key == "address" or key == "street":
-            return address
+            return venue.offererAddress.address.street
         if key == "city":
-            return city
+            return venue.offererAddress.address.city
         if key == "postalCode":
-            return postalCode
+            return venue.offererAddress.address.postalCode
         if key == "departmentCode" or key == "departementCode":
-            return departmentCode
+            return venue.offererAddress.address.departmentCode
 
         return super().get(key, default)
 

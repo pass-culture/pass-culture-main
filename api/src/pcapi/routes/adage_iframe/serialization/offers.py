@@ -68,32 +68,18 @@ class OfferVenueResponse(BaseModel):
 
     @classmethod
     def from_orm(cls: type["OfferVenueResponse"], venue: offerers_models.Venue) -> "OfferVenueResponse":
-        if venue.offererAddress is not None:
-            source_address = venue.offererAddress.address
-            address = source_address.street
-            city = source_address.city
-            postal_code = source_address.postalCode
-            department_code = source_address.departmentCode
-            coordinates = common_models.Coordinates(
-                latitude=source_address.latitude, longitude=source_address.longitude
-            )
-        else:
-            # TODO(OA): remove this when the virtual venues are migrated
-            address = None
-            city = None
-            postal_code = None
-            department_code = None
-            coordinates = common_models.Coordinates(latitude=None, longitude=None)
-
         return cls(
             id=venue.id,
-            address=address,
-            city=city,
+            address=venue.offererAddress.address.street,
+            city=venue.offererAddress.address.city,
             name=venue.name,
-            postalCode=postal_code,
-            departmentCode=department_code,
+            postalCode=venue.offererAddress.address.postalCode,
+            departmentCode=venue.offererAddress.address.departmentCode,
             publicName=venue.publicName,
-            coordinates=coordinates,
+            coordinates=common_models.Coordinates(
+                latitude=venue.offererAddress.address.latitude,
+                longitude=venue.offererAddress.address.longitude,
+            ),
             managingOfferer=venue.managingOfferer,
             adageId=venue.adageId,
             imgUrl=venue.bannerUrl,

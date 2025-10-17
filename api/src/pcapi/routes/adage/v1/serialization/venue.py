@@ -76,19 +76,6 @@ class VenueModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: Venue) -> "VenueModel":
-        if venue.offererAddress is not None:
-            venue_address = venue.offererAddress.address
-            address = venue_address.street
-            latitude = float(venue_address.latitude)
-            longitude = float(venue_address.longitude)
-            city = venue_address.city
-        else:
-            # TODO(OA): remove this when the virtual venues are migrated
-            address = None
-            latitude = None
-            longitude = None
-            city = None
-
         contact = venue.contact
 
         email: str | None = None
@@ -114,10 +101,10 @@ class VenueModel(BaseModel):
         return cls(
             name=venue.name,
             siret=venue.siret,
-            address=address,
-            latitude=latitude,
-            longitude=longitude,
-            city=city,
+            address=venue.offererAddress.address.street,
+            latitude=float(venue.offererAddress.address.latitude),
+            longitude=float(venue.offererAddress.address.longitude),
+            city=venue.offererAddress.address.city,
             publicName=venue.publicName,
             description=venue.description,
             collectiveDescription=venue.collectiveDescription,
