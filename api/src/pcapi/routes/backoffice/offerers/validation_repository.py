@@ -10,6 +10,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
@@ -28,6 +29,17 @@ def _join_venue(query: sa_orm.Query, is_venue_table_joined: bool = False) -> tup
     if not is_venue_table_joined:
         query = query.join(offerers_models.Venue)
     return query, True
+
+
+def _build_address_filter(condition: sa.ColumnElement[bool]) -> sa.Exists:
+    return (
+        sa.exists()
+        .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
+        .where(offerers_models.Venue.siret.is_not(None))
+        .where(offerers_models.OffererAddress.id == offerers_models.Venue.offererAddressId)
+        .where(geography_models.Address.id == offerers_models.OffererAddress.addressId)
+        .where(condition)
+    )
 
 
 def _apply_query_filters(
@@ -91,7 +103,8 @@ def _apply_query_filters(
         department_codes: list[str] = []
         for region in regions:
             department_codes += get_department_codes_for_region(region)
-        query = query.filter(offerers_models.Offerer.departementCode.in_(department_codes))
+        # At least one managed with SIRET venue in selected regions
+        query = query.filter(_build_address_filter(geography_models.Address.departmentCode.in_(department_codes)))
 
     if q:
         sanitized_q = email_utils.sanitize_email(q)
@@ -107,9 +120,9 @@ def _apply_query_filters(
             elif num_digits == siren_utils.RID7_LENGTH:
                 query = query.filter(offerers_models.Offerer.siren == siren_utils.rid7_to_siren(sanitized_q))
             elif num_digits == 5:
-                query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
+                query = query.filter(_build_address_filter(geography_models.Address.postalCode == sanitized_q))
             elif num_digits in (2, 3):
-                query = query.filter(offerers_models.Offerer.departementCode == sanitized_q)
+                query = query.filter(_build_address_filter(geography_models.Address.departmentCode == sanitized_q))
             else:
                 raise ApiErrors(
                     {
@@ -134,7 +147,7 @@ def _apply_query_filters(
             query = query.filter(
                 sa.or_(
                     sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(name_query),
-                    sa.func.immutable_unaccent(offerers_models.Offerer.city).ilike(name_query),
+                    _build_address_filter(sa.func.immutable_unaccent(geography_models.Address.city).ilike(name_query)),
                 )
             ).union(
                 query.filter(
