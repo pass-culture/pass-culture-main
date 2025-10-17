@@ -8,8 +8,10 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -27,10 +29,10 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { CollectiveDeactivationConfirmDialog } from './CollectiveDeactivationConfirmDialog'
 
-export type CollectiveOffersActionsBarProps = {
+export type CollectiveOffersActionsBarProps<T> = {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
-  selectedOffers: CollectiveOfferResponseModel[]
+  selectedOffers: T[]
   areTemplateOffers: boolean
   searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
@@ -43,11 +45,17 @@ const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   return `${nbSelectedOffers} ${successMessage}`
 }
 
-const toggleCollectiveOffersActiveInactiveStatus = async (
+const toggleCollectiveOffersActiveInactiveStatus = async <
+  T extends {
+    id: string | number
+    displayedStatus: CollectiveOfferDisplayedStatus
+  },
+>(
   newStatus:
     | CollectiveOfferDisplayedStatus.PUBLISHED
     | CollectiveOfferDisplayedStatus.HIDDEN,
-  selectedOffers: CollectiveOfferResponseModel[],
+  selectedOffers: T[],
+  areTemplateOffers: boolean = false,
   notify: ReturnType<typeof useNotification>
 ) => {
   //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
@@ -56,7 +64,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
     selectedOffers.some(
       (offer) =>
         offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED ||
-        !offer.isShowcase
+        !areTemplateOffers
     )
   ) {
     const msg = `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? 'la publication' : 'la désactivation'} des offres sélectionnées`
@@ -74,13 +82,15 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
   }
 }
 
-export function CollectiveOffersActionsBar({
+export function CollectiveOffersActionsBar<
+  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+>({
   selectedOffers,
   clearSelectedOfferIds,
   areAllOffersSelected,
   areTemplateOffers,
   searchButtonRef,
-}: CollectiveOffersActionsBarProps) {
+}: CollectiveOffersActionsBarProps<T>) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const notify = useNotification()
@@ -114,6 +124,7 @@ export function CollectiveOffersActionsBar({
             await toggleCollectiveOffersActiveInactiveStatus(
               CollectiveOfferDisplayedStatus.PUBLISHED,
               selectedOffers,
+              areTemplateOffers,
               notify
             )
             await mutate(collectiveOffersQueryKeys)
@@ -134,6 +145,7 @@ export function CollectiveOffersActionsBar({
           await toggleCollectiveOffersActiveInactiveStatus(
             CollectiveOfferDisplayedStatus.HIDDEN,
             selectedOffers,
+            areTemplateOffers,
             notify
           )
           await mutate(collectiveOffersQueryKeys)
@@ -178,7 +190,7 @@ export function CollectiveOffersActionsBar({
     const archivableOffers = selectedOffers.filter((offer) => {
       return isActionAllowedOnCollectiveOffer(
         offer,
-        offer.isShowcase
+        areTemplateOffers
           ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
           : CollectiveOfferAllowedAction.CAN_ARCHIVE
       )
@@ -249,7 +261,7 @@ export function CollectiveOffersActionsBar({
     const collectiveOfferTemplateIds = []
 
     for (const offer of selectedOffers) {
-      if (offer.isShowcase) {
+      if (areTemplateOffers) {
         collectiveOfferTemplateIds.push(offer.id)
       } else {
         collectiveOfferIds.push(offer.id)
@@ -287,7 +299,12 @@ export function CollectiveOffersActionsBar({
     ) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
     }
-    if (selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)) {
+    if (
+      selectedOffers.some(
+        (offer) =>
+          isCollectiveOffer(offer) && offer.hasBookingLimitDatetimesPassed
+      )
+    ) {
       return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
     }
     return ''

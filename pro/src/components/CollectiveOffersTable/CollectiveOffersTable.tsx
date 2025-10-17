@@ -1,8 +1,10 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
+import type {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SortingMode } from '@/commons/hooks/useColumnSorting'
-import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { OffersTable } from '@/components/CollectiveOffersTable/OffersTable/OffersTable'
 import {
   type Columns,
@@ -13,29 +15,33 @@ import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cel
 import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
 import styles from './CollectiveOffersTable.module.scss'
 
-type CollectiveOffersTableProps = {
+type CollectiveOffersTableProps<
+  T extends CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
+> = {
   hasFiltersOrNameSearch: boolean
   areAllOffersSelected: boolean
   hasOffers: boolean
   isLoading: boolean
   resetFilters: () => void
-  setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
+  setSelectedOffer: (offer: T) => void
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isAtLeastOneOfferChecked: boolean
-  selectedOffers: CollectiveOfferResponseModel[]
-  offers: CollectiveOfferResponseModel[]
+  selectedOffers: T[]
+  offers: T[]
   onColumnHeaderClick: (
     headersName: CollectiveOffersSortingColumn
   ) => SortingMode
   currentSortingColumn: CollectiveOffersSortingColumn | null
   currentSortingMode: SortingMode
-  currentPageItems: CollectiveOfferResponseModel[]
+  currentPageItems: T[]
   isTemplateTable?: boolean
   downloadButton?: React.ReactNode
 }
 
-export const CollectiveOffersTable = ({
+export const CollectiveOffersTable = <
+  T extends CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
+>({
   hasFiltersOrNameSearch,
   areAllOffersSelected,
   hasOffers,
@@ -53,7 +59,7 @@ export const CollectiveOffersTable = ({
   currentPageItems,
   isTemplateTable,
   downloadButton,
-}: CollectiveOffersTableProps) => {
+}: CollectiveOffersTableProps<T>) => {
   const columns: Columns[] = [
     { ...getCellsDefinition().INFO_ON_EXPIRATION, isVisuallyHidden: true },
     { ...getCellsDefinition().NAME, isVisuallyHidden: false },
@@ -84,22 +90,20 @@ export const CollectiveOffersTable = ({
       downloadButton={downloadButton}
     >
       <OffersTableHead columns={columns} />
-
       <tbody className={styles['collective-tbody']}>
         {currentPageItems.map((offer, index) => {
-          const isSelected = selectedOffers.some((selectedOffer) =>
-            isSameOffer(selectedOffer, offer)
+          const isSelected = selectedOffers.some(
+            (selectedOffer) => selectedOffer.id === offer.id
           )
 
           return (
             <CollectiveOfferRow
               isSelected={isSelected}
-              key={`${offer.isShowcase ? 'T-' : ''}${offer.id}`}
+              key={`${offer.id}`}
               offer={offer}
               selectOffer={setSelectedOffer}
               urlSearchFilters={urlSearchFilters}
               isFirstRow={index === 0}
-              isTemplateTable={isTemplateTable}
             />
           )
         })}

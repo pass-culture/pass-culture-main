@@ -1,7 +1,9 @@
 import { useLocation } from 'react-router'
 
 import type {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
@@ -10,20 +12,25 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
 
-interface OfferEducationalModalProps {
+interface Offer {
+  id: string | number
+  displayedStatus: CollectiveOfferDisplayedStatus
+}
+interface OfferEducationalModalProps<T extends Offer> {
   onDismiss(): void
   onValidate(): void
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel
   hasMultipleOffers?: boolean
-  selectedOffers?: CollectiveOfferResponseModel[]
+  selectedOffers?: T[]
   isDialogOpen: boolean
   refToFocusOnClose?: React.RefObject<HTMLButtonElement | HTMLAnchorElement>
 }
 
-export const ArchiveConfirmationModal = ({
+export const ArchiveConfirmationModal = <T extends Offer>({
   onDismiss,
   onValidate,
   hasMultipleOffers = false,
@@ -31,7 +38,7 @@ export const ArchiveConfirmationModal = ({
   offer,
   isDialogOpen,
   refToFocusOnClose,
-}: OfferEducationalModalProps): JSX.Element => {
+}: OfferEducationalModalProps<T>): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
 

@@ -7,14 +7,12 @@ import styles from '../Cells.module.scss'
 
 export interface OfferInstitutionCellProps {
   rowId: string
-  isTemplate: boolean
   educationalInstitution?: EducationalInstitutionResponseModel | null
   className?: string
 }
 
 export const OfferInstitutionCell = ({
   rowId,
-  isTemplate,
   educationalInstitution,
   className,
 }: OfferInstitutionCellProps) => {
@@ -22,9 +20,7 @@ export const OfferInstitutionCell = ({
     educationalInstitution || {}
 
   const institutionLabel =
-    name ||
-    [institutionType, city].filter(Boolean).join(' ') ||
-    (isTemplate ? 'Tous les établissements' : '-')
+    name || [institutionType, city].filter(Boolean).join(' ') || '-'
 
   return (
     <td
