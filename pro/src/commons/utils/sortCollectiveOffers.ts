@@ -1,4 +1,3 @@
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
 
@@ -9,8 +8,10 @@ const sortByDate = (dateA: string, dateB: string, mode: SortingMode) => {
   )
 }
 
-export function sortCollectiveOffers(
-  offers: CollectiveOfferResponseModel[],
+export function sortCollectiveOffers<
+  T extends { dates?: { start?: string; end?: string } | null },
+>(
+  offers: T[],
   currentSortingColumn: CollectiveOffersSortingColumn | null,
   sortingMode: SortingMode
 ) {

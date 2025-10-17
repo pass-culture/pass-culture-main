@@ -10,6 +10,7 @@ import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
   type DMSApplicationForEAC,
   DMSApplicationstatus,
   type EducationalInstitutionResponseModel,
@@ -33,6 +34,7 @@ let venueId = 1
 let offererId = 1
 let offerBookingId = 1
 let institutionId = 1
+let offerTemplateId = 1
 
 export const collectiveOfferFactory = (
   customCollectiveOffer: Partial<CollectiveOfferResponseModel> = {}
@@ -64,6 +66,31 @@ export const collectiveOfferFactory = (
     ...customCollectiveOffer,
   }
 }
+
+export const collectiveOfferTemplateFactory = (
+  customCollectiveOfferTemplate: Partial<CollectiveOfferTemplateResponseModel> = {}
+): CollectiveOfferTemplateResponseModel => {
+  const currentId = offerTemplateId++
+
+  return {
+    id: currentId,
+    displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+    name: `Offre vitrine ${currentId}`,
+    venue: listOffersVenueFactory(),
+    dates: {
+      start: new Date().toISOString(),
+      end: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    },
+    allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+    location: {
+      locationType: CollectiveLocationType.SCHOOL,
+      address: null,
+      locationComment: null,
+    },
+    ...customCollectiveOfferTemplate,
+  }
+}
+
 export const listOffersVenueFactory = (
   customListOffersVenue: Partial<ListOffersVenueResponseModel> = {}
 ): ListOffersVenueResponseModel => ({
