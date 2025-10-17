@@ -18,6 +18,11 @@ class HighlightGetterDict(pydantic_v1.utils.GetterDict):
         return super().get(key, default)
 
 
+class ShortHighlightResponseModel(ConfiguredBaseModel):
+    id: int
+    name: str
+
+
 class HighlightResponseModel(ConfiguredBaseModel):
     id: int
     availability_timespan: tuple[datetime, datetime]

@@ -5,6 +5,7 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -12,6 +13,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils import date as date_utils
+from pcapi.utils import db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -160,6 +162,7 @@ class Returns200Test:
             "hasBookingLimitDatetimesPassed": False,
             "hasPendingBookings": False,
             "hasStocks": True,
+            "highlightRequests": [],
             "isActive": True,
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -434,3 +437,35 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["hasPendingBookings"] == has_pending_bookings
+
+    def test_returns_highlight_requests(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offer_id = offer.id
+
+        highlight = highlights_factories.HighlightFactory()
+        highlight_name = highlight.name
+        highlight_id = highlight.id
+        highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight)
+
+        highlight2 = highlights_factories.HighlightFactory()
+        highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight2)
+        highlight2_name = highlight2.name
+        highlight2_id = highlight2.id
+
+        highlight3 = highlights_factories.HighlightFactory(
+            highlight_timespan=db_utils.make_timerange(
+                start=date_utils.get_naive_utc_now() - timedelta(days=10),
+                end=date_utils.get_naive_utc_now() - timedelta(days=9),
+            )
+        )
+        highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight3)
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        data = response.json
+        assert {"name": highlight_name, "id": highlight_id} in data["highlightRequests"]
+        assert {"name": highlight2_name, "id": highlight2_id} in data["highlightRequests"]
