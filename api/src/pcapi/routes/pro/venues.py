@@ -142,7 +142,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     location_modifications = {
         field: value
         for field, value in update_location_attrs.items()
-        if venue.offererAddress and venue.offererAddress.address.field_exists_and_has_changed(field, value)
+        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     validation.check_venue_edition(modifications, venue)
 

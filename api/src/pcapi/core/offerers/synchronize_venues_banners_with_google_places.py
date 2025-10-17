@@ -172,10 +172,9 @@ def synchronize_venues_banners_with_google_places(
                 if (date_utils.get_naive_utc_now() - venue.googlePlacesInfo.updateDate).days > 62:
                     continue
             else:
-                # TODO: CLEAN_OA - remove these conditions when there is no virtual Venue anymore
-                street = venue.offererAddress.address.street if venue.offererAddress else None
-                city = venue.offererAddress.address.city if venue.offererAddress else None
-                postal_code = venue.offererAddress.address.postalCode if venue.offererAddress else None
+                street = venue.offererAddress.address.street
+                city = venue.offererAddress.address.city
+                postal_code = venue.offererAddress.address.postalCode
                 place_id = get_place_id(venue.common_name, street, city, postal_code)
                 venue.googlePlacesInfo = offerers_models.GooglePlacesInfo(placeId=place_id)
 

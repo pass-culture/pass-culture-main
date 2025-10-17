@@ -276,11 +276,7 @@ def _serialize_stock(stock: educational_models.CollectiveStock | None) -> Collec
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
-    if venue.offererAddress is not None:
-        department_code = venue.offererAddress.address.departmentCode
-    else:
-        # TODO(OA): remove this when the virtual venues are migrated
-        department_code = None
+    department_code = venue.offererAddress.address.departmentCode
 
     return base_serializers.ListOffersVenueResponseModel(
         id=venue.id,
@@ -402,14 +398,8 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveOfferVenueResponseModel":
-        if venue.offererAddress is not None:
-            department_code = venue.offererAddress.address.departmentCode
-        else:
-            # TODO(OA): remove this when the virtual venues are migrated
-            department_code = None
-
         return cls(
-            departementCode=department_code,
+            departementCode=venue.offererAddress.address.departmentCode,
             id=venue.id,
             managingOfferer=venue.managingOfferer,
             name=venue.name,
