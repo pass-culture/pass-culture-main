@@ -580,6 +580,13 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
 def get_collective_offers_template_by_filters(
     filters: schemas.CollectiveOffersFilter,
 ) -> sa_orm.Query[models.CollectiveOfferTemplate]:
+    """
+    Filters
+        period_beginning_date:
+            Applied on the lower part of dateRange.
+        period_ending_date
+            Applied on the lower part of dateRange.
+    """
     query = (
         db.session.query(models.CollectiveOfferTemplate)
         .join(models.CollectiveOfferTemplate.venue)
@@ -590,9 +597,6 @@ def get_collective_offers_template_by_filters(
             offerers_models.UserOfferer.isValidated,
         )
     )
-
-    if filters.period_beginning_date is not None or filters.period_ending_date is not None:
-        query = query.filter(sa.false())
 
     if filters.offerer_id is not None:
         query = query.filter(offerers_models.Venue.managingOffererId == filters.offerer_id)
@@ -611,6 +615,19 @@ def get_collective_offers_template_by_filters(
         template_statuses = set(filters.statuses) & set(models.COLLECTIVE_OFFER_TEMPLATE_STATUSES)
         status_values = [status.value for status in template_statuses]
         query = query.filter(models.CollectiveOfferTemplate.displayedStatus.in_(status_values))
+
+    date_filters = []
+    if filters.period_beginning_date is not None or filters.period_ending_date is not None:
+        if filters.period_beginning_date is not None:
+            date_filters.append(
+                sa.func.lower(models.CollectiveOfferTemplate.dateRange) >= filters.period_beginning_date
+            )
+        if filters.period_ending_date is not None:
+            date_filters.append(
+                sa.func.lower(models.CollectiveOfferTemplate.dateRange)
+                <= datetime.combine(filters.period_ending_date, time.max),
+            )
+        query = query.filter(sa.or_(models.CollectiveOfferTemplate.dateRange == None, sa.and_(*date_filters)))
 
     if filters.formats:
         query = query.filter(
