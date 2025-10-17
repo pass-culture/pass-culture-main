@@ -86,7 +86,7 @@ export const IndividualOfferContextProvider = ({
 
   //  Get the offer on the venue with the same EAN if it exists
   const offerEan = offer?.extraData?.ean
-  const offerVenueId = offer?.venue.id
+  const offerVenueId = offer?.venue?.id
   const isProductBased = isOfferProductBased(offer)
   const publishedOfferWithSameEANQuery = useSWR(
     isProductBased && offerEan && offerVenueId
