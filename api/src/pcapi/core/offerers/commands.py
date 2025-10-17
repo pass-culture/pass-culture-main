@@ -53,26 +53,21 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
 
     logger.info("check_active_offerers will check %s offerers in cloud tasks today", len(offerers))
 
-    _create_check_offerer_tasks(
-        [offerer.siren for offerer in offerers], dry_run=dry_run, fill_in_codir_report=codir_report_is_enabled
-    )
-
-
-def _create_check_offerer_tasks(siren_list: list[str], *, dry_run: bool, fill_in_codir_report: bool = False) -> None:
-    # Do not flood Sirene API (max. 30 per minute for the whole product)
-    for siren in siren_list:
+    for offerer in offerers:
         payload = offerers_tasks.CheckOffererSirenRequest(
-            siren=siren,
+            siren=offerer.siren,
             close_or_tag_when_inactive=not dry_run,
-            fill_in_codir_report=fill_in_codir_report,
+            must_fill_in_codir_report=codir_report_is_enabled,
         )
-        offerers_tasks.check_offerer_siren_task.delay(payload)
+        offerers_tasks.check_offerer_siren_task(payload)
 
 
 @blueprint.cli.command("check_closed_offerers")
 @click.option("--dry-run", is_flag=True)
 @click.option("--date-closed", type=str, required=False, default=None)
 def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None) -> None:
+    # This command is called everyday from a cron. its goal is to close offerers which have declared closure in the siren API.
+    close_or_tag_when_inactive = not dry_run
     if date_closed:
         query_date = datetime.date.fromisoformat(date_closed)
     else:
@@ -83,40 +78,32 @@ def check_closed_offerers(dry_run: bool = False, date_closed: str | None = None)
         siren_list = api_sirene.get_siren_closed_at_date(query_date)
     except api_sirene.InseeException as exc:
         logger.error("Could not fetch closed SIREN from Sirene API", extra={"date": query_date.isoformat(), "exc": exc})
-    else:
-        known_siren_list = [
-            siren
-            for (siren,) in db.session.query(offerers_models.Offerer)
-            .filter(
-                offerers_models.Offerer.siren.in_(siren_list),
-                offerers_models.Offerer.isActive,
-                sa.not_(offerers_models.Offerer.isRejected),
+        return
+    known_offerers = (
+        db.session.query(offerers_models.Offerer)
+        .filter(
+            offerers_models.Offerer.siren.in_([elem["siren"] for elem in siren_list]),
+            offerers_models.Offerer.isActive,
+            sa.not_(offerers_models.Offerer.isRejected),
+        )
+        .options(
+            sa_orm.joinedload(offerers_models.Offerer.tags).load_only(
+                offerers_models.OffererTag.id, offerers_models.OffererTag.name
             )
-            .with_entities(offerers_models.Offerer.siren)
-            .all()
-        ]
-
-        logger.info(
-            "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
-            len(known_siren_list),
-            query_date.isoformat(),
-            extra={"siren": known_siren_list},
         )
-
-        _create_check_offerer_tasks(known_siren_list, dry_run=dry_run)
-
-    # Scheduled SIREN
-    scheduled_siren_list = offerers_tasks.get_scheduled_siren_to_check(
-        query_date if date_closed else datetime.date.today()
+        .all()
     )
-    if scheduled_siren_list:
-        logger.info(
-            "check_closed_offerers found %s scheduled SIREN to check on %s",
-            len(scheduled_siren_list),
-            query_date.isoformat(),
-            extra={"siren": scheduled_siren_list},
-        )
-        _create_check_offerer_tasks(scheduled_siren_list, dry_run=dry_run)
+    logger.info(
+        "check_closed_offerers found %s active SIREN which active/closed status has been updated on %s",
+        len(known_offerers),
+        query_date.isoformat(),
+        extra={"siren": [x.siren for x in known_offerers]},
+    )
+
+    if close_or_tag_when_inactive:
+        for offerer in known_offerers:
+            closure_date = [x["closure_date"] for x in siren_list if x["siren"] == offerer.siren][0]
+            offerers_api.handle_closed_offerer(offerer, closure_date)
 
 
 @blueprint.cli.command("delete_user_offerers_on_closed_offerers")
