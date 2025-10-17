@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
@@ -16,7 +16,6 @@ import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearc
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
@@ -38,7 +37,7 @@ export type TemplateCollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  offers: CollectiveOfferResponseModel[]
+  offers: CollectiveOfferTemplateResponseModel[]
 }
 
 export const TemplateCollectiveOffersScreen = ({
@@ -52,7 +51,7 @@ export const TemplateCollectiveOffersScreen = ({
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
   const [selectedOffers, setSelectedOffers] = useState<
-    CollectiveOfferResponseModel[]
+    CollectiveOfferTemplateResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
@@ -100,11 +99,12 @@ export const TemplateCollectiveOffersScreen = ({
     currentSortingMode
   )
 
-  const { page, currentPageItems, setPage } = usePagination(
-    sortedOffers,
-    NUMBER_OF_OFFERS_PER_PAGE,
-    urlSearchFilters.page
-  )
+  const { page, currentPageItems, setPage } =
+    usePagination<CollectiveOfferTemplateResponseModel>(
+      sortedOffers,
+      NUMBER_OF_OFFERS_PER_PAGE,
+      urlSearchFilters.page
+    )
 
   const applyUrlFiltersAndRedirect = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -131,9 +131,9 @@ export const TemplateCollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
-    const matchingOffer = selectedOffers.find((selectedOffer) =>
-      isSameOffer(offer, selectedOffer)
+  function onSetSelectedOffer(offer: CollectiveOfferTemplateResponseModel) {
+    const matchingOffer = selectedOffers.find(
+      (selectedOffer) => offer.id === selectedOffer.id
     )
 
     if (matchingOffer) {

@@ -3,7 +3,9 @@ import classNames from 'classnames'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
+import { isCollectiveBookable } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -19,17 +21,19 @@ import { OfferLocationCell } from './OfferLocationCell/OfferLocationCell'
 import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
-export type CollectiveOfferRowProps = {
+export type CollectiveOfferRowProps<
+  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+> = {
   isSelected: boolean
-  offer: CollectiveOfferResponseModel
-  selectOffer: (offer: CollectiveOfferResponseModel) => void
+  offer: T
+  selectOffer: (offer: T) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   isFirstRow: boolean
   isTemplateTable?: boolean
 }
 
 function isCollectiveOfferPublishedOrPreBooked(
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 ) {
   return (
     offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
@@ -37,15 +41,17 @@ function isCollectiveOfferPublishedOrPreBooked(
   )
 }
 
-export const CollectiveOfferRow = ({
+export const CollectiveOfferRow = <
+  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+>({
   offer,
   isSelected,
   selectOffer,
   urlSearchFilters,
   isFirstRow,
-  isTemplateTable,
-}: CollectiveOfferRowProps) => {
-  const id = computeURLCollectiveOfferId(offer.id, Boolean(offer.isShowcase))
+  isTemplateTable = false,
+}: CollectiveOfferRowProps<T>) => {
+  const id = computeURLCollectiveOfferId(offer.id, isTemplateTable)
 
   const rowId = `collective-offer-${id}`
 
@@ -57,10 +63,12 @@ export const CollectiveOfferRow = ({
 
   const editionOfferLink = draftOfferLink || `/offre/${id}/collectif/edition`
 
-  const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
+  const bookingLimitDate = isCollectiveBookable(offer)
+    ? offer.stocks[0]?.bookingLimitDatetime
+    : null
 
   const hasExpirationRow =
-    !offer.isShowcase &&
+    isCollectiveBookable(offer) &&
     isCollectiveOfferPublishedOrPreBooked(offer) &&
     !!bookingLimitDate
 
@@ -88,22 +96,27 @@ export const CollectiveOfferRow = ({
           rowId={rowId}
           offer={offer}
           offerLink={offerLink}
+          isTemplateTable={isTemplateTable}
           className={styles['collective-cell-name']}
           displayThumb={true}
         />
         <OfferEventDateCell
           rowId={rowId}
           offer={offer}
+          isTemplateTable={isTemplateTable}
           className={styles['collective-cell-event-date']}
         />
-        {isTemplateTable ? null : (
-          <PriceAndParticipantsCell rowId={rowId} offer={offer} />
-        )}
+        {isTemplateTable
+          ? null
+          : isCollectiveBookable(offer) && (
+              <PriceAndParticipantsCell rowId={rowId} offer={offer} />
+            )}
         {!isTemplateTable && (
           <OfferInstitutionCell
             rowId={rowId}
-            isTemplate={offer.isShowcase}
-            educationalInstitution={offer.educationalInstitution}
+            educationalInstitution={
+              isCollectiveBookable(offer) ? offer.educationalInstitution : null
+            }
             className={styles['collective-cell-institution']}
           />
         )}
@@ -121,6 +134,7 @@ export const CollectiveOfferRow = ({
           isSelected={isSelected}
           deselectOffer={() => selectOffer(offer)}
           className={styles['collective-cell-actions']}
+          isTemplateTable={isTemplateTable}
         />
       </tr>
       {hasExpirationRow && (
@@ -129,7 +143,6 @@ export const CollectiveOfferRow = ({
           <ExpirationCell
             rowId={rowId}
             offer={offer}
-            bookingLimitDate={bookingLimitDate}
             className={styles['collective-cell-expiration']}
           />
         </tr>

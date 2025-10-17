@@ -11,6 +11,7 @@ import {
   CollectiveOfferAllowedAction,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -52,11 +53,14 @@ import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialo
 
 export interface CollectiveActionsCellsProps {
   rowId: string
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   editionOfferLink: string
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  deselectOffer: (offer: CollectiveOfferResponseModel) => void
+  deselectOffer: (
+    offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  ) => void
   isSelected: boolean
+  isTemplateTable: boolean
   className?: string
 }
 
@@ -69,6 +73,7 @@ export const CollectiveActionsCells = ({
   urlSearchFilters,
   deselectOffer,
   isSelected,
+  isTemplateTable,
   className,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
@@ -88,7 +93,7 @@ export const CollectiveActionsCells = ({
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isInTemplateOffersPage: offer.isShowcase,
+    isInTemplateOffersPage: isTemplateTable,
     urlSearchFilters,
     selectedOffererId: selectedOffererId?.toString(),
   })
@@ -118,7 +123,7 @@ export const CollectiveActionsCells = ({
   }
 
   const handleCreateOfferClick = async () => {
-    if (offer.isShowcase) {
+    if (isTemplateTable) {
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: COLLECTIVE_OFFER_DUPLICATION_ENTRIES.OFFERS,
@@ -195,7 +200,7 @@ export const CollectiveActionsCells = ({
       return
     }
     try {
-      if (offer.isShowcase) {
+      if (isTemplateTable) {
         await api.patchCollectiveOffersTemplateArchive({ ids: [offer.id] })
       } else {
         await api.patchCollectiveOffersArchive({ ids: [offer.id] })
@@ -236,7 +241,7 @@ export const CollectiveActionsCells = ({
 
   const canArchiveOffer = isActionAllowedOnCollectiveOffer(
     offer,
-    offer.isShowcase
+    isTemplateTable
       ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
       : CollectiveOfferAllowedAction.CAN_ARCHIVE
   )
@@ -261,15 +266,20 @@ export const CollectiveActionsCells = ({
   )
 
   const activateOffer = async () => {
-    const { isActive, id } = offer
+    const { id, allowedActions } = offer as CollectiveOfferTemplateResponseModel
+
+    const isActive = allowedActions.includes(
+      CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
+    )
+
     try {
       await api.patchCollectiveOffersTemplateActiveStatus({
         ids: [id],
-        isActive: !isActive,
+        isActive,
       })
 
       notify.success(
-        !isActive
+        isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'
           : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
       )
