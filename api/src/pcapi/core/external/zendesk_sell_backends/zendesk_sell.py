@@ -364,8 +364,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
             pc_pro_status = "Acteur en cours d'inscription"
 
         social_medias = getattr(venue.contact, "social_medias", {})
-        # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` `if venue.offererAddress else None` when non nullable
-        department_code = venue.offererAddress.address.departmentCode if venue.offererAddress else None
+        department_code = venue.offererAddress.address.departmentCode
         params: dict = {
             "data": {
                 "is_organization": True,
@@ -379,10 +378,9 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
                 "twitter": social_medias.get("twitter", ""),
                 "facebook": social_medias.get("facebook", ""),
                 "address": {
-                    # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` `if venue.offererAddress else None` when non nullable
-                    "line1": venue.offererAddress.address.street if venue.offererAddress else None,
-                    "city": venue.offererAddress.address.city if venue.offererAddress else None,
-                    "postal_code": venue.offererAddress.address.postalCode if venue.offererAddress else None,
+                    "line1": venue.offererAddress.address.street,
+                    "city": venue.offererAddress.address.city,
+                    "postal_code": venue.offererAddress.address.postalCode,
                 },
                 "custom_fields": {
                     ZendeskCustomFieldsNames.DEPARTEMENT.value: department_code,
@@ -413,10 +411,7 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
     def _get_offerer_data(self, offerer: offerers_models.Offerer, created: bool = False) -> dict:
         # Fill in offerer department/region in Zendesk Sell only when venues are located in a single department/region
         venues_departments = {
-            # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` and venue.offererAddress` when non nullable
-            venue.offererAddress.address.departmentCode
-            for venue in offerer.managedVenues
-            if venue.siret and venue.offererAddress
+            venue.offererAddress.address.departmentCode for venue in offerer.managedVenues if venue.siret
         }
         venues_regions = {get_region_name_from_department(department).upper() for department in venues_departments}
         params: dict = {

@@ -172,10 +172,8 @@ def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressRespo
     offerer_address = None
     if offer.offererAddress:
         offerer_address = offer.offererAddress
-    elif offer.venue.offererAddress:
+    else:
         offerer_address = offer.venue.offererAddress
-    if not offerer_address:  # The only offers without oa neither in themselves nor in venues are the numerics ones.
-        return None
     label = offer.venue.common_name if offerer_address._isLinkedToVenue else offerer_address.label
     return AddressResponseIsLinkedToVenueModel(
         **retrieve_address_info_from_oa(offerer_address), label=label, isLinkedToVenue=offerer_address._isLinkedToVenue

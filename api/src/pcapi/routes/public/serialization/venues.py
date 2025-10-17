@@ -55,9 +55,9 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             # TODO CLEAN_OA remove check when virtual venues are gone
             location=(
                 VenuePhysicalLocation(
-                    address=venue.offererAddress.address.street if venue.offererAddress else None,
-                    city=venue.offererAddress.address.city if venue.offererAddress else None,
-                    postalCode=venue.offererAddress.address.postalCode if venue.offererAddress else None,
+                    address=venue.offererAddress.address.street,
+                    city=venue.offererAddress.address.city,
+                    postalCode=venue.offererAddress.address.postalCode,
                 )
                 if not venue.isVirtual
                 else VenueDigitalLocation()

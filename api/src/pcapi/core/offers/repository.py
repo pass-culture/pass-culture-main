@@ -1071,7 +1071,7 @@ def get_filtered_stocks(
 
         if offer.offererAddress:
             timezone = pytz.timezone(offer.offererAddress.address.timezone)
-        elif venue.offererAddress:
+        else:
             timezone = pytz.timezone(venue.offererAddress.address.timezone)
 
         address_time = dt.replace(tzinfo=pytz.utc).astimezone(timezone).time()

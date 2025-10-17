@@ -353,20 +353,12 @@ class AlgoliaSerializationMixin:
         social_medias = getattr(venue.contact, "social_medias", {})
         has_at_least_one_bookable_offer = offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
-        address = None
-        city = None
-        postalCode = None
-        if venue.offererAddress is not None:
-            address = venue.offererAddress.address.street
-            city = venue.offererAddress.address.city
-            postalCode = venue.offererAddress.address.postalCode
-
         return {
             "_geoloc": position(venue),
-            "adress": address,
+            "adress": venue.offererAddress.address.street,
             "audio_disability": venue.audioDisabilityCompliant,
             "banner_url": venue.bannerUrl,
-            "city": city,
+            "city": venue.offererAddress.address.city,
             "date_created": venue.dateCreated.timestamp(),
             "description": venue.description,
             "email": getattr(venue.contact, "email", None),
@@ -379,7 +371,7 @@ class AlgoliaSerializationMixin:
             "objectID": venue.id,
             "offerer_name": venue.managingOfferer.name,
             "phone_number": getattr(venue.contact, "phone_number", None),
-            "postalCode": postalCode,
+            "postalCode": venue.offererAddress.address.postalCode,
             "snapchat": social_medias.get("snapchat"),
             "tags": [criterion.name for criterion in venue.criteria],
             "twitter": social_medias.get("twitter"),
@@ -395,12 +387,7 @@ class AlgoliaSerializationMixin:
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
-
-        if venue.offererAddress is not None:
-            department_code = venue.offererAddress.address.departmentCode
-        else:
-            # TODO(OA): remove this when the virtual venues are migrated
-            department_code = None
+        department_code = venue.offererAddress.address.departmentCode
 
         coordinates = _get_collective_offer_template_coordinates(collective_offer_template)
 
@@ -442,14 +429,9 @@ def position(venue: offerers_models.Venue, offer: offers_models.Offer | None = N
     if offer and offer.offererAddress:
         latitude = offer.offererAddress.address.latitude
         longitude = offer.offererAddress.address.longitude
-    elif venue.offererAddress is not None:
+    else:
         latitude = venue.offererAddress.address.latitude
         longitude = venue.offererAddress.address.longitude
-    else:
-        # FIXME (dramelet, 03/02/2025): This can be removed once Venue table is sanitized
-        # and location columns dropped
-        latitude = venue.latitude
-        longitude = venue.longitude
     return format_coordinates(latitude, longitude)
 
 

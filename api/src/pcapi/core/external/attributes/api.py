@@ -360,12 +360,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         departement_code={
             venue.offererAddress.address.departmentCode
             for venue in all_venues
-            if venue.offererAddress and venue.offererAddress.address.departmentCode
+            if venue.offererAddress.address.departmentCode
         },
         postal_code={
-            venue.offererAddress.address.postalCode
-            for venue in all_venues
-            if venue.offererAddress and venue.offererAddress.address.postalCode
+            venue.offererAddress.address.postalCode for venue in all_venues if venue.offererAddress.address.postalCode
         },
         is_eac_meg=is_eac_meg,
         **attributes,

@@ -24,7 +24,7 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
         departement_code = stock.offer.venue.departementCode
         if stock.offer.offererAddress is not None:
             departement_code = stock.offer.offererAddress.address.departmentCode
-        elif stock.offer.venue.offererAddress is not None:
+        else:
             departement_code = stock.offer.venue.offererAddress.address.departmentCode
     else:
         departement_code = stock.collectiveOffer.venue.departementCode
