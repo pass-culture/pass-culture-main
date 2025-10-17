@@ -225,11 +225,7 @@ def get_venue(venue_id: int) -> sa.engine.Row:
 
 def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
     venue = venue_row.Venue
-    region = (
-        regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
-        if venue.offererAddress.address.postalCode
-        else ""
-    )
+    region = regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
 
     if not edit_venue_form:
         if venue.isVirtual:
