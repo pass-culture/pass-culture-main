@@ -11,6 +11,7 @@ export type VenueListItemResponseModel = {
   bookingEmail?: string | null;
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   hasCreatedOffer: boolean;
+  hasPartnerPage: boolean;
   id: number;
   isCaledonian: boolean;
   isPermanent: boolean;

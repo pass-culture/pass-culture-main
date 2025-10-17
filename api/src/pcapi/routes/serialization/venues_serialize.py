@@ -410,6 +410,9 @@ class VenueListItemResponseGetterDict(GetterDict):
         if key == "isCaledonian":
             return venue.is_caledonian
 
+        if key == "hasPartnerPage":
+            return venue.has_partner_page
+        
         return super().get(key, default)
 
 
@@ -429,6 +432,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
     isPermanent: bool
     isCaledonian: bool
+    hasPartnerPage: bool
 
     @classmethod
     def from_orm(
