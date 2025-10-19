@@ -127,7 +127,7 @@ jobs:
       tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
 
   push-pcapi:
-    name: Push pcapi docker image to artifact registry europe-west1.docker.pkg.dev
+    name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev
     needs: [deploy-preview-env-init, build-pcapi]
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
@@ -136,7 +136,7 @@ jobs:
       commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
       tag-latest: true
-      registry: europe-west1.docker.pkg.dev
+      registry: europe-west1-docker.pkg.dev
       project_id: passculture-infra-prod
       repository: pass-culture-artifact-registry
       artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
