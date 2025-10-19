@@ -134,17 +134,15 @@ jobs:
     with:
       image: pcapi
       context: api
-      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key: passculture-metier-ehp/cosign_kms_key
-      registry: europe-west1
+      registry: europe-west1.docker.pkg.dev
       project_id: passculture-infra-prod
       repository: pass-culture-artifact-registry
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-api:
     name: "Deploy pullrequest"

@@ -25,12 +25,12 @@ on:
         type: boolean
         default: false
 
-      artifact_registry_workload_identity_provider:
+      artifact_registry_workload_identity_provider_secret_name:
         required: false
         type: string
         default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
 
-      artifact_registry_service_account:
+      artifact_registry_service_account_secret_name:
         required: false
         type: string
         default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
@@ -78,8 +78,8 @@ jobs:
         uses: google-github-actions/get-secretmanager-secrets@v3
         with:
           secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider }}
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account }}
+            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider_secret_name }}
+            ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account_secret_name }}
             COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
 
       - name: OpenID Connect Authentication
