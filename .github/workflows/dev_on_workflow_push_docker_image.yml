@@ -102,8 +102,8 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.10.0
 
-      - name: Compute built docker image name and tag which is saved in artifact
-        id: compute-built-image-name
+      - name: Compute source docker image name and tag which is saved in artifact
+        id: compute-source-image-name
         run: echo "image_name=${{ inputs.image }}:${{ inputs.checksum-tag }}" | tee -a ${GITHUB_OUTPUT}
 
       - name: Compute target docker image name and tag to push to Artifact Registry
@@ -116,22 +116,24 @@ jobs:
           name: ${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
           path: ${{ runner.temp }}
 
-      - name: Load and push docker image
+      - name: Load docker image from artifact
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
-          
-          docker image tag ${{ steps.compute-built-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.commit-hash }}"
-          docker image tag ${{ steps.compute-built-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.prefix-tag }}-${{ inputs.commit-hash }}"
+
+      - name: Push docker images
+        run: |
+          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.commit-hash }}"
+          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.prefix-tag }}-${{ inputs.commit-hash }}"
           
           if [ ${{ inputs.tag-latest }} == 'true' ]; then
-            docker image tag ${{ steps.compute-built-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
+            docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
           fi
           
           docker image push --all-tags ${{ steps.compute-target-image-name.outputs.image_name }}
 
       - name: Get the image digest
         id: get_digest
-        run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-built-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
+        run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-source-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
 
       - name: Sign image with a kms key
         run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ steps.get_digest.outputs.digest }}
