@@ -119,6 +119,7 @@ jobs:
       - name: Load docker image from artifact
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
+          docker images
 
       - name: Push docker images
         run: |
@@ -129,6 +130,7 @@ jobs:
             docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
           fi
           
+          docker images
           docker image push --all-tags ${{ steps.compute-target-image-name.outputs.image_name }}
 
       - name: Get the image digest
