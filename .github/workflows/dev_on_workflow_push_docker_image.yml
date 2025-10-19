@@ -108,7 +108,7 @@ jobs:
 
       - name: Compute target docker image name and tag to push to Artifact Registry
         id: compute-target-image-name
-        run: echo "image_name="${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.image }}" | tee -a ${GITHUB_OUTPUT}
+        run: echo "image_name=${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.image }}" | tee -a ${GITHUB_OUTPUT}
 
       - name: Download artifact
         uses: actions/download-artifact@v5
