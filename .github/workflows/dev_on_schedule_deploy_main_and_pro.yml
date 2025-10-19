@@ -114,44 +114,44 @@ jobs:
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
 
   push-pcapi:
-    name: "Push pcapi docker image to artifact registry europe-west1"
+    name: Push pcapi docker image to artifact registry europe-west1.docker.pkg.dev
     needs: [build-pcapi, pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      context: api
-      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
-      registry: europe-west1
+      commit-hash: ${{ github.sha }}
+      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag-latest: true
+      registry: europe-west1.docker.pkg.dev
       project_id: passculture-infra-prod
       repository: pass-culture-artifact-registry
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   push-pcapi-console:
-    name: "Push pcapi-console docker image to artifact registry europe-west1"
+    name: Push pcapi-console docker image to artifact registry europe-west1.docker.pkg.dev
     needs: [build-pcapi-console, pcapi-init-job]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
-      context: api
-      artifact_registry_workload_identity_provider: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key: passculture-metier-ehp/cosign_kms_key
-      registry: europe-west1
+      commit-hash: ${{ github.sha }}
+      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag-latest: true
+      registry: europe-west1.docker.pkg.dev
       project_id: passculture-infra-prod
       repository: pass-culture-artifact-registry
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-to-testing:
     name: "Deploy to testing"
