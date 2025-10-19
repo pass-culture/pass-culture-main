@@ -35,7 +35,7 @@ on:
         type: string
         default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
 
-      cosign_kms_key:
+      cosign_kms_key_secret_name:
         required: false
         type: string
         default: passculture-metier-ehp/cosign_kms_key
@@ -80,7 +80,7 @@ jobs:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider_secret_name }}
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account_secret_name }}
-            COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key }}
+            COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key_secret_name }}
 
       - name: OpenID Connect Authentication
         id: openid-auth
