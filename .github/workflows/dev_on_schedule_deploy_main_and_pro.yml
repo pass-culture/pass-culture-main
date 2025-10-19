@@ -102,9 +102,6 @@ jobs:
       ref: ${{ github.sha }}
       image: pcapi
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
