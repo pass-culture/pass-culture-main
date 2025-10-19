@@ -125,9 +125,6 @@ jobs:
       ref: ${{ github.sha }}
       image: pcapi
       tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi:
     name: Push pcapi docker image to artifact registry europe-west1
