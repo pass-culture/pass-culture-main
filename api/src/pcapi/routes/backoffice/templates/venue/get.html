@@ -112,7 +112,7 @@
               <p class="mb-1">
                 <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
               </p>
-              {% if not venue.managingOfferer.is_caledonian %}
+              {% if not venue.is_caledonian %}
                 <p class="mb-1">
                   <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
                 </p>
@@ -272,7 +272,7 @@
                   <span class="fw-bold">Offres BO :</span>
                   <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
                      class="link-primary">individuelles</a>
-                  {% if not venue.managingOfferer.is_caledonian %}
+                  {% if not venue.is_caledonian %}
                     | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
     class="link-primary">collectives</a>
                     | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
@@ -285,7 +285,7 @@
                   <span class="fw-bold">Réservations BO :</span>
                   <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
                      class="link-primary">individuelles</a>
-                  {% if not venue.managingOfferer.is_caledonian %}
+                  {% if not venue.is_caledonian %}
                     | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
     class="link-primary">collectives</a>
                   {% endif %}
@@ -364,7 +364,7 @@
           {% if venue.siret and not venue.ridet and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
           {% endif %}
-          {% if venue.siret and not venue.managingOfferer.is_caledonian %}
+          {% if venue.siret and not venue.is_caledonian %}
             {{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}
           {% endif %}
         {% endcall %}
@@ -383,7 +383,7 @@
               </div>
             {% endcall %}
           {% endif %}
-          {% if venue.siret and not venue.managingOfferer.is_caledonian %}
+          {% if venue.siret and not venue.is_caledonian %}
             {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
               <div id="venue_collective_dms_applications_frame"
                    hx-trigger="intersect once"

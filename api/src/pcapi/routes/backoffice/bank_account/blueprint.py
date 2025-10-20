@@ -167,7 +167,7 @@ def get_invoices(bank_account_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(finance_models.Invoice.bankAccount, innerjoin=True)
             .load_only(finance_models.BankAccount.id)
             .joinedload(finance_models.BankAccount.offerer, innerjoin=True)
-            .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
+            .load_only(offerers_models.Offerer.siren),
         )
         .order_by(finance_models.Invoice.date.desc())
     ).all()

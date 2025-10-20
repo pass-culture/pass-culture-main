@@ -426,9 +426,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
             .load_only(offerers_models.VenueBankAccountLink.timespan)
             .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
             .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
-            ),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
         )
     )
 
@@ -451,12 +449,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
-        .options(
-            sa_orm.load_only(offerers_models.Venue.id),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
-            ),
-        )
+        .options(sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.siret))
         .one_or_none()
     )
 

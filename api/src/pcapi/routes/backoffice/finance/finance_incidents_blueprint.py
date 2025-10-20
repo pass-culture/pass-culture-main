@@ -68,13 +68,13 @@ def _get_incidents_by_id(incidents_ids: list[int] | sa.sql.Select) -> list[finan
                 offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
-                offerers_models.Offerer.postalCode,
             ),
             sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).options(
                 sa_orm.load_only(
@@ -422,9 +422,9 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
                 sa_orm.joinedload(bookings_models.Booking.venue)
-                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name)
+                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret)
                 .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
+                .load_only(offerers_models.Offerer.siren),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -488,9 +488,9 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
                 sa_orm.joinedload(bookings_models.Booking.venue)
-                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name)
+                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret)
                 .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(offerers_models.Offerer.siren, offerers_models.Offerer.postalCode),
+                .load_only(offerers_models.Offerer.siren),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -1420,15 +1420,14 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
+                offerers_models.Venue.siret,
             )
             .options(
                 sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
                 .load_only(offerers_models.VenueBankAccountLink.timespan)
                 .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
                 .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                    offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
-                ),
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
             ),
             # Booking incidents info
             sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)

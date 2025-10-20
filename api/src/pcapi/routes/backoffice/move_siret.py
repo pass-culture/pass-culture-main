@@ -42,11 +42,7 @@ def _validate_move_siret_form() -> tuple[
     source_venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=form.source_venue.data)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
-            )
-        )
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren))
         .one_or_none()
     )
     if not source_venue:
@@ -61,11 +57,7 @@ def _validate_move_siret_form() -> tuple[
     target_venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=form.target_venue.data)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
-                offerers_models.Offerer.siren, offerers_models.Offerer.postalCode
-            )
-        )
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren))
         .one_or_none()
     )
     if not target_venue:

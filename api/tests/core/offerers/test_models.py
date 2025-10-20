@@ -575,14 +575,12 @@ class OffererIsCaledonianTest:
     def test_offerer_with_rid7_is_caledonian(self):
         offerer = factories.CaledonianOffererFactory(siren="NC1234567")
         assert offerer.is_caledonian
-
-    def test_offerer_with_siren_is_caledonian(self):
-        offerer = factories.CaledonianOffererFactory(siren="123456789", postalCode="98800")
-        assert offerer.is_caledonian
+        assert db.session.query(models.Offerer).filter(models.Offerer.is_caledonian).one() == offerer
 
     def test_offerer_is_not_caledonian(self):
         offerer = factories.OffererFactory()
         assert not offerer.is_caledonian
+        assert db.session.query(models.Offerer).filter(models.Offerer.is_caledonian).count() == 0
 
 
 class OffererIdentifierTest:
@@ -624,7 +622,7 @@ class VenueIsCaledonianTest:
         venue = factories.CaledonianVenueFactory()
         assert venue.is_caledonian
 
-    def test_offerer_is_not_caledonian(self):
+    def test_venue_is_not_caledonian(self):
         venue = factories.VenueFactory()
         assert not venue.is_caledonian
 

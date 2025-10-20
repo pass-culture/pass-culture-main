@@ -750,13 +750,12 @@ def _get_offers_by_ids(
                     offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
+                    offerers_models.Venue.siret,
                 ),
                 sa_orm.contains_eager(offerers_models.Venue.managingOfferer).options(
                     sa_orm.load_only(
                         offerers_models.Offerer.id,
                         offerers_models.Offerer.name,
-                        offerers_models.Offerer.siren,
-                        offerers_models.Offerer.postalCode,
                     ),
                 ),
             ),
@@ -1364,6 +1363,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.managingOffererId,
+                    offerers_models.Venue.siret,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).options(
                     sa_orm.load_only(
@@ -1372,7 +1372,6 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                         offerers_models.Offerer.isActive,
                         offerers_models.Offerer.validationStatus,
                         offerers_models.Offerer.siren,
-                        offerers_models.Offerer.postalCode,
                     ),
                     sa_orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                         offerers_models.OffererConfidenceRule.confidenceLevel
