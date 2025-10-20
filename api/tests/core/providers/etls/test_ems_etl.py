@@ -144,6 +144,7 @@ class EMSExtractTransformLoadProcessTest:
                     ),
                 ],
             ),
+            "version": 86400,
         }
 
     def test_transform_should_return_loadable_result(self, requests_mock):

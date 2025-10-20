@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Type
 from unittest.mock import patch
 
 import pytest
@@ -20,6 +21,7 @@ from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.etls.cds_etl import CineDigitalServiceETLProcess
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 
@@ -54,6 +56,7 @@ def setup_cinema() -> tuple[providers_models.CDSCinemaDetails, providers_models.
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.settings(CDS_API_URL="fakeUrl/")
 class CDSStocksTest:
     def _create_products(self):
         offers_factories.ProductFactory(
@@ -69,9 +72,21 @@ class CDSStocksTest:
             extraData={"allocineId": 2133},
         )
 
+    def execute_import(
+        self,
+        ProcessClass: Type[CineDigitalServiceETLProcess] | Type[CDSStocks],
+        venue_provider,
+    ) -> CineDigitalServiceETLProcess | CDSStocks:
+        boost_stocks = ProcessClass(venue_provider=venue_provider)
+        if isinstance(boost_stocks, CDSStocks):
+            boost_stocks.updateObjects()
+        else:
+            boost_stocks.execute()
+
+        return boost_stocks
+
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_get_venue_movies(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         cds_details, venue_provider = setup_cinema()
@@ -93,7 +108,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_return_providable_info_on_next(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         cds_details, venue_provider = setup_cinema()
@@ -128,7 +142,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_not_return_providable_info_on_next_when_no_stocks_for_movies(
         self, mock_get_venue_movies, mock_get_shows, requests_mock
     ):
@@ -156,7 +169,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -176,18 +188,15 @@ class CDSStocksTest:
         requests_mock.get("https://example.com/coupez.png", content=bytes())
         requests_mock.get("https://example.com/topgun.png", content=bytes())
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
-
-        # When
-        cds_stocks.updateObjects()
-
-        # Then
+        CDSStocks(venue_provider=venue_provider).updateObjects()
         assert db.session.query(Offer).count() == 2
 
     @time_machine.travel(datetime(2022, 3, 19), tick=False)
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def should_fill_offer_and_stock_informations_for_each_movie(self, mock_get_venue_movies, requests_mock):
+    def should_fill_offer_and_stock_informations_for_each_movie(
+        self, mock_get_venue_movies, ProcessClass, requests_mock
+    ):
         # Given
         self._create_products()
         _cds_details, venue_provider = setup_cinema()
@@ -212,10 +221,11 @@ class CDSStocksTest:
             synchronize_session=False
         )
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks = self.execute_import(ProcessClass, venue_provider)
 
-        # When
-        cds_stocks.updateObjects()
+        if isinstance(cds_stocks, CDSStocks):
+            assert cds_stocks.erroredObjects == 0
+            assert cds_stocks.erroredThumbs == 0
 
         # Then
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
@@ -274,16 +284,13 @@ class CDSStocksTest:
         )
         assert created_price_category_label.label == "pass Culture"
 
-        assert cds_stocks.erroredObjects == 0
-        assert cds_stocks.erroredThumbs == 0
-
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(
-        self, mock_get_venue_movies, requests_mock
+        self, mock_get_venue_movies, ProcessClass, requests_mock
     ):
         # Given
         self._create_products()
@@ -305,12 +312,12 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks = self.execute_import(ProcessClass, venue_provider)
 
-        # When
-        cds_stocks.updateObjects()
+        if isinstance(cds_stocks, CDSStocks):
+            assert cds_stocks.erroredObjects == 0
+            assert cds_stocks.erroredThumbs == 0
 
-        # Then
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
@@ -362,15 +369,14 @@ class CDSStocksTest:
         )
         assert created_price_category_label.label == "pass Culture"
 
-        assert cds_stocks.erroredObjects == 0
-        assert cds_stocks.erroredThumbs == 0
-
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def test_synchronization_shouldnt_build_idatproviders_using_showtime(self, mock_get_venue_movies, requests_mock):
+    def test_synchronization_shouldnt_build_idatproviders_using_showtime(
+        self, mock_get_venue_movies, ProcessClass, requests_mock
+    ):
         # Given
         _cds_details, venue_provider = setup_cinema()
         get_cinemas_adapter = requests_mock.get(
@@ -390,12 +396,11 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks = self.execute_import(ProcessClass, venue_provider)
+        if isinstance(cds_stocks, CDSStocks):
+            assert cds_stocks.erroredObjects == 0
+            assert cds_stocks.erroredThumbs == 0
 
-        # When
-        cds_stocks.updateObjects()
-
-        # Then
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
         created_price_category_label = db.session.query(PriceCategoryLabel).one()
@@ -411,15 +416,14 @@ class CDSStocksTest:
         )
         assert created_price_category_label.label == "pass Culture"
 
-        assert cds_stocks.erroredObjects == 0
-        assert cds_stocks.erroredThumbs == 0
-
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
-    def test_synchronization_shouldnt_not_fail_if_api_returns_no_show(self, mock_get_venue_movies, requests_mock):
+    def test_synchronization_shouldnt_not_fail_if_api_returns_no_show(
+        self, mock_get_venue_movies, ProcessClass, requests_mock
+    ):
         _, venue_provider = setup_cinema()
         requests_mock.get(
             "https://account_id.fakeurl/cinemas?api_token=token",
@@ -435,13 +439,12 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
-        cds_stocks.updateObjects()
+        self.execute_import(ProcessClass, venue_provider)
 
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_synchronization_do_not_duplicate_stocks_when_beginning_datetime_changed(
-        self, mock_get_venue_movies, requests_mock
+        self, mock_get_venue_movies, ProcessClass, requests_mock
     ):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -476,12 +479,11 @@ class CDSStocksTest:
             json=[fixtures.VOUCHER_TYPE_PC_1, fixtures.VOUCHER_TYPE_PC_2],
         )
 
-        cds_stocks = CDSStocks(venue_provider=venue_provider)
+        cds_stocks = self.execute_import(ProcessClass, venue_provider)
+        if isinstance(cds_stocks, CDSStocks):
+            assert cds_stocks.erroredObjects == 0
+            assert cds_stocks.erroredThumbs == 0
 
-        # When
-        cds_stocks.updateObjects()
-
-        # Then
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
         created_price_categories = db.session.query(PriceCategory).order_by(PriceCategory.id).all()
         created_price_category_label = db.session.query(PriceCategoryLabel).one()
@@ -501,15 +503,11 @@ class CDSStocksTest:
         )
         assert created_price_category_label.label == "pass Culture"
 
-        assert cds_stocks.erroredObjects == 0
-        assert cds_stocks.erroredThumbs == 0
-
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_fill_stocks_and_price_categories_for_a_movie(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         self._create_products()
@@ -587,7 +585,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_update_stock_with_movie_festival_rate(
         self, mock_get_venue_movies, mock_get_shows, should_apply_movie_festival_rate_mock, requests_mock
     ):
@@ -635,7 +632,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_reuse_price_category(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -665,7 +661,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_should_create_product_mediation(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
@@ -711,7 +706,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_should_not_create_product_mediation(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
@@ -744,7 +738,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_create_offer_even_if_incorrect_thumb(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
@@ -787,7 +780,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_handle_error_on_movie_poster(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
@@ -821,7 +813,6 @@ class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_not_update_thumbnail_more_then_once_a_day(
         self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
     ):
@@ -847,7 +838,6 @@ class CDSStocksTest:
 
         assert mocked_get_movie_poster.call_count == 1
 
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_use_new_cache_for_each_synchronisation(self, requests_mock):
         _cds_details, venue_provider = setup_cinema()
 
@@ -877,7 +867,6 @@ class CDSStocksTest:
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_link_offer_with_known_visa_to_product(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         _cds_details, venue_provider = setup_cinema()
         requests_mock.get(
@@ -910,10 +899,10 @@ class CDSStocksTest:
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.settings(CDS_API_URL="fakeUrl/")
 class CDSStocksQuantityTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
-    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def should_update_cds_stock_with_correct_stock_quantity(self, mock_get_venue_movies, mock_get_shows, requests_mock):
         # Given
         _cds_details, venue_provider = setup_cinema()
