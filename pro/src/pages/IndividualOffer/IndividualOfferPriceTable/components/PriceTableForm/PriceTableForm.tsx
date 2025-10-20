@@ -5,7 +5,9 @@ import type {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/isOfferSynchronized'
@@ -56,6 +58,7 @@ export const PriceTableForm = ({
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
+  const { logEvent } = useAnalytics()
 
   const {
     control,
@@ -63,7 +66,7 @@ export const PriceTableForm = ({
     watch,
     register,
     setValue,
-    formState: { errors },
+    formState: { errors, defaultValues },
   } = useFormContext<PriceTableFormValues>()
   const { fields, append, remove, update } = useFieldArray({
     control,
@@ -268,6 +271,19 @@ export const PriceTableForm = ({
                 label="Date limite de réservation"
                 maxDate={computeEntryConstraints(entry).bookingLimitDatetimeMax}
                 minDate={computeEntryConstraints(entry).bookingLimitDatetimeMin}
+                onBlur={() => {
+                  if (
+                    defaultValues?.entries?.[index]?.bookingLimitDatetime !==
+                    getValues(`entries.${index}.bookingLimitDatetime`)
+                  ) {
+                    logEvent(Events.UPDATED_BOOKING_LIMIT_DATE, {
+                      from: location.pathname,
+                      bookingLimitDatetime:
+                        getValues(`entries.${index}.bookingLimitDatetime`) ||
+                        '',
+                    })
+                  }
+                }}
               />
             )}
 

@@ -132,6 +132,7 @@ export const getIndividualOfferFactory = (
     videoData: {
       videoUrl: undefined,
     },
+    highlightRequests: [],
     ...customGetIndividualOffer,
   }
 }

@@ -109,29 +109,19 @@ class OfferStockResponse(ConfiguredBaseModel):
 class OfferVenueResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         venue = self._obj
-        latitude = None
-        longitude = None
-        city = None
-        postalCode = None
-        address = None
-        timezone = venue.timezone
-        if venue.offererAddress:
-            latitude = venue.offererAddress.address.latitude
-            longitude = venue.offererAddress.address.longitude
-            city = venue.offererAddress.address.city
-            postalCode = venue.offererAddress.address.postalCode
-            timezone = venue.offererAddress.address.timezone
-            address = venue.offererAddress.address.street
         if key == "coordinates":
-            return {"latitude": latitude, "longitude": longitude}
+            return {
+                "latitude": venue.offererAddress.address.latitude,
+                "longitude": venue.offererAddress.address.longitude,
+            }
         if key == "address":
-            return address
+            return venue.offererAddress.address.street
         if key == "city":
-            return city
+            return venue.offererAddress.address.city
         if key == "postalCode":
-            return postalCode
+            return venue.offererAddress.address.postalCode
         if key == "timezone":
-            return timezone
+            return venue.offererAddress.address.timezone
         if key == "name":
             return venue.common_name
 

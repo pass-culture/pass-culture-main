@@ -496,9 +496,6 @@ class OffererAddressOfVenueFactory(OffererAddressFactory):
 
 
 def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:
-    if venue.offererAddress is None:
-        return None
-
     oa = (
         db.session.query(models.OffererAddress)
         .filter_by(address=venue.offererAddress.address, offerer=venue.managingOfferer, label=venue.common_name)

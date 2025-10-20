@@ -112,10 +112,8 @@ def _get_collective_offer_export_data(
 
     if collective_offer.offererAddress is not None:
         timezone = collective_offer.offererAddress.address.timezone
-    elif venue.offererAddress is not None:
-        timezone = venue.offererAddress.address.timezone
     else:
-        timezone = None
+        timezone = venue.offererAddress.address.timezone
 
     if institution is not None:
         result.institution_name = institution.full_name

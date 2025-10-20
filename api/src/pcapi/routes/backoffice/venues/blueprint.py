@@ -225,13 +225,7 @@ def get_venue(venue_id: int) -> sa.engine.Row:
 
 def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
     venue = venue_row.Venue
-    region = ""
-    if venue.offererAddress:
-        region = (
-            regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
-            if venue.offererAddress.address.postalCode
-            else ""
-        )
+    region = regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
 
     if not edit_venue_form:
         if venue.isVirtual:
@@ -299,7 +293,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
         has_fraudulent_booking=venue_row.has_fraudulent_booking,
-        address=venue.offererAddress.address if venue.offererAddress else None,
+        address=venue.offererAddress.address,
         edit_venue_form=edit_venue_form,
         region=region,
         delete_form=delete_form,
@@ -812,13 +806,11 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         for field in form
         if field.name and to_camelcase(field.name) in location_fields
     }
-    location_modifications = {}
-    if venue.offererAddress:
-        location_modifications = {
-            field: value
-            for field, value in update_location_attrs.items()
-            if venue.offererAddress.address.field_exists_and_has_changed(field, value)
-        }
+    location_modifications = {
+        field: value
+        for field, value in update_location_attrs.items()
+        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+    }
     criteria = (
         db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.tags.data)).all()
     )

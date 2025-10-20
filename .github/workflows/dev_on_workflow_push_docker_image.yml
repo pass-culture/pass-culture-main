@@ -100,7 +100,7 @@ jobs:
           password: ${{ steps.openid-auth.outputs.access_token }}
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.10.0
+        uses: sigstore/cosign-installer@v4.0.0
 
       - name: Compute source docker image name and tag which is saved in artifact
         id: compute-source-image-name

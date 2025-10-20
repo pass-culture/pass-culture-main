@@ -251,6 +251,7 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch price categories
     success_num_queries += 1  # fetch offerer address
     success_num_queries += 1  # fetch offer meta data
+    success_num_queries += 1  # fetch highlight requests
     success_num_queries += 1  # fetch user
     success_num_queries += 1  # fetch offerer
     success_num_queries += 1  # check national program (?)

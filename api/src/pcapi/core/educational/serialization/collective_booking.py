@@ -5,7 +5,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
 from pcapi.core.offers.utils import offer_app_link
-from pcapi.utils.date import METROPOLE_TIMEZONE
 
 
 def get_collective_bookings_per_year_response(
@@ -21,9 +20,7 @@ def get_collective_bookings_per_year_response(
             totalAmount=booking.collectiveStock.price,
             startDatetime=booking.collectiveStock.startDatetime,
             endDatetime=booking.collectiveStock.endDatetime,
-            venueTimezone=booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone
-            if booking.collectiveStock.collectiveOffer.venue.offererAddress
-            else METROPOLE_TIMEZONE,  # TODO(OA): remove this when the virtual venues are migrated
+            venueTimezone=booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone,
             name=booking.collectiveStock.collectiveOffer.name,
             redactorEmail=booking.educationalRedactor.email,
             domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
@@ -55,12 +52,6 @@ def serialize_collective_booking(
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
-
-    if venue.offererAddress is not None:
-        venue_timezone = venue.offererAddress.address.timezone
-    else:
-        # TODO(OA): remove this when the virtual venues are migrated
-        venue_timezone = venue.timezone or METROPOLE_TIMEZONE
 
     return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
@@ -95,7 +86,7 @@ def serialize_collective_booking(
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
         cancellationReason=collective_booking.cancellationReason,
-        venueTimezone=venue_timezone,
+        venueTimezone=venue.offererAddress.address.timezone,
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
@@ -157,12 +148,6 @@ def serialize_reimbursement_notification(
     domains = offer.domains
     venue = offer.venue
 
-    if venue.offererAddress is not None:
-        venue_timezone = venue.offererAddress.address.timezone
-    else:
-        # TODO(OA): remove this when the virtual venues are migrated
-        venue_timezone = venue.timezone or METROPOLE_TIMEZONE
-
     return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=adage_serialize.get_collective_offer_address(offer),
@@ -196,7 +181,7 @@ def serialize_reimbursement_notification(
         UAICode=collective_booking.educationalInstitution.institutionId,
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
-        venueTimezone=venue_timezone,
+        venueTimezone=venue.offererAddress.address.timezone,
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
