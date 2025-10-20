@@ -1226,10 +1226,7 @@ def _notify_offerers_of_expired_individual_bookings(expired_on: datetime.date | 
     notified_offerers = []
 
     for offerer, bookings in expired_individual_bookings_grouped_by_offerer.items():
-        transactional_mails.send_bookings_expiration_to_pro_email(
-            offerer,
-            bookings,
-        )
+        transactional_mails.send_bookings_expiration_to_pro_email(bookings)
         notified_offerers.append(offerer)
 
     logger.info(

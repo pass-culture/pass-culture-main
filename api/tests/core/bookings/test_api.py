@@ -2393,14 +2393,8 @@ class NotifyOfferersOfExpiredBookingsTest:
         api._notify_offerers_of_expired_individual_bookings()
 
         assert mocked_send_email_recap.call_count == 2
-        assert mocked_send_email_recap.call_args_list[0][0] == (
-            expired_today_vinyle_booking.offerer,
-            [expired_today_vinyle_booking],
-        )
-        assert mocked_send_email_recap.call_args_list[1][0] == (
-            expired_today_cd_booking.offerer,
-            [expired_today_cd_booking],
-        )
+        assert mocked_send_email_recap.call_args_list[0][0] == ([expired_today_vinyle_booking],)
+        assert mocked_send_email_recap.call_args_list[1][0] == ([expired_today_cd_booking],)
 
 
 @pytest.mark.usefixtures("db_session")

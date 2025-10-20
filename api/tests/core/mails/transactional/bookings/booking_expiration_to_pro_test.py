@@ -13,22 +13,24 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SendExpiredBookingsRecapEmailToOffererTest:
     @pytest.mark.parametrize(
-        "offerer_factory, formatted_price",
+        "venue_factory, formatted_price",
         [
-            (offerers_factories.OffererFactory, "10,10 €"),
-            (offerers_factories.CaledonianOffererFactory, "1205 F"),
+            (offerers_factories.VenueFactory, "10,10 €"),
+            (offerers_factories.CaledonianVenueFactory, "1205 F"),
         ],
     )
-    def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app, offerer_factory, formatted_price):
-        offerer = offerer_factory()
+    def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app, venue_factory, formatted_price):
+        venue = venue_factory()
         expired_today_dvd_booking = bookings_factories.BookingFactory(
-            stock__offer__bookingEmail="offerer.booking@example.com"
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__venue=venue,
         )
         expired_today_cd_booking = bookings_factories.BookingFactory(
-            stock__offer__bookingEmail="offerer.booking@example.com"
+            stock__offer__bookingEmail="offerer.booking@example.com",
+            stock__offer__venue=venue,
         )
 
-        send_bookings_expiration_to_pro_email(offerer, [expired_today_cd_booking, expired_today_dvd_booking])
+        send_bookings_expiration_to_pro_email([expired_today_cd_booking, expired_today_dvd_booking])
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         assert mails_testing.outbox[0]["params"]
@@ -54,7 +56,7 @@ class SendExpiredBookingsRecapEmailToOffererTest:
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
-        send_bookings_expiration_to_pro_email(offerer, [expired_today_dvd_booking, expired_today_book_booking])
+        send_bookings_expiration_to_pro_email([expired_today_dvd_booking, expired_today_book_booking])
 
         assert len(mails_testing.outbox) == 2
         email1, email2 = mails_testing.outbox

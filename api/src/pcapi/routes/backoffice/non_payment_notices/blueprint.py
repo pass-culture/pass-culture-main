@@ -106,12 +106,12 @@ def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPa
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.managingOffererId,
+                offerers_models.Venue.siret,
             ),
             sa_orm.joinedload(offerers_models.NonPaymentNotice.offerer).load_only(
                 offerers_models.Offerer.id,
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
-                offerers_models.Offerer.postalCode,
             ),
             sa_orm.joinedload(offerers_models.NonPaymentNotice.batch).load_only(finance_models.CashflowBatch.label),
         )

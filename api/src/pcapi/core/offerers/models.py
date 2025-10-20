@@ -52,7 +52,6 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
-from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
@@ -837,7 +836,13 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_caledonian(self) -> bool:
-        return self.managingOfferer.is_caledonian
+        """
+        Note that Caledonian venues may be registered with a SIRET.
+        Complete check should include cases where:
+        `self.offererAddress.address.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE)`
+        However, all venues imported in New Caledonia are registered with a RIDET => avoid complex requests with joins.
+        """
+        return siren_utils.is_ridet(self.siret)
 
     @property
     def has_headline_offer(self) -> bool:
@@ -1269,23 +1274,16 @@ class Offerer(
     @hybrid_property
     def is_caledonian(self) -> bool:
         """
-        Note that caledonian offerers may have a SIREN and be registered with their SIREN.
-        Caledonian offerers with SIREN can be checked on "Annuaire des Entreprises" or Sirene API, but cannot create
-        collective offers or apply on Adage. Check `rid7` or `is_caledonian` property depending on purpose.
+        Note that Caledonian offerers may be registered with their SIREN.
+        However, all offerers imported in New Caledonia are registered with a RID7 => avoid complex requests with joins
+        on venue, offerer_address and address to check department code.
         """
-        if siren_utils.is_rid7(self.siren):
-            return True
-        if self.postalCode and self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
-            return True
-        return False
+        return siren_utils.is_rid7(self.siren)
 
     @is_caledonian.inplace.expression
     @classmethod
     def _is_caledonian_expression(cls) -> sa.ColumnElement[bool]:
-        return sa.or_(
-            cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%"),
-            cls.postalCode.ilike(f"{regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE}%"),
-        )
+        return cls.siren.ilike(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")
 
     @property
     def identifier_name(self) -> str:
