@@ -20,8 +20,8 @@ from pcapi.core.finance import external as finance_external
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
+from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notification_emails
 from pcapi.utils.blueprint import Blueprint
-from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -76,7 +76,7 @@ def generate_cashflows_and_payment_files(
                 icon_emoji=":large_green_circle:",
             )
         if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-            export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
+            export_csv_and_send_notification_emails(batch.id, batch.label)
 
 
 @blueprint.cli.command("generate_invoices")
@@ -116,7 +116,8 @@ def generate_invoices(batch_id: int) -> None:
             ],
             icon_emoji=":large_green_circle:",
         )
-    export_csv_and_send_notification_emails_job.delay(batch_id, batch.label)
+    if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
+        export_csv_and_send_notification_emails(batch_id, batch.label)
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")

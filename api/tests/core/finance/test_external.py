@@ -66,21 +66,6 @@ class ExternalFinanceTest:
         assert len(dummy_invoices) == 1
         assert dummy_invoices[0] == invoice1
 
-    @pytest.mark.settings(GENERATE_CGR_KINEPOLIS_INVOICES=True)
-    @patch(
-        "pcapi.workers.export_csv_and_send_notification_emails_job.export_csv_and_send_notification_emails_job.delay"
-    )
-    def test_publish_invoices_calls_export_csv_and_send_notification_emails_job(
-        self, mock_export_csv_and_send_notification_emails_job
-    ):
-        invoices = finance_factories.InvoiceFactory.create_batch(
-            5, status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
-        )
-        external.push_invoices(10)
-        batch_id = invoices[0].cashflows[0].batch.id
-        batch_label = invoices[0].cashflows[0].batch.label
-        mock_export_csv_and_send_notification_emails_job.assert_called_once_with(batch_id, batch_label)
-
     @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
     @patch("pcapi.core.finance.external.send_internal_message")
     def test_publish_invoices_sends_slack_notification(self, mock_send_internal_message):
