@@ -1,7 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -9,11 +8,14 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
+import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
@@ -40,10 +42,12 @@ import { resetAllStoredFilterConfig } from './utils/resetAllStoredFilterConfig'
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const currentOffererId = useSelector(selectCurrentOffererId)
-  const currentUser = useSelector(selectCurrentUser)
-  const offererNames = useSelector(selectOffererNames)
+  const dispatch = useAppDispatch()
+  const currentOffererId = useAppSelector(selectCurrentOffererId)
+  const currentUser = useAppSelector(selectCurrentUser)
+  const offererNames = useAppSelector(selectOffererNames)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
   const sideOffset =
@@ -69,17 +73,22 @@ export const HeaderDropdown = () => {
         (offererOption) => offererOption.id === currentOffererId
       )
     : undefined
-  const handleChangeOfferer = (newOffererId: string): void => {
+
+  const handleChangeOfferer = async (newOffererId: string) => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
-    // Updates offerer id in storage
-    if (storageAvailable('localStorage')) {
-      localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
-    }
+    if (withSwitchVenueFeature) {
+      await dispatch(setCurrentOffererById(newOffererId)).unwrap()
+    } else {
+      // Updates offerer id in storage
+      if (storageAvailable('localStorage')) {
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
+      }
 
-    // Hard refresh to homepage after offerer change
-    hardRefresh('/accueil')
+      // Hard refresh to homepage after offerer change
+      hardRefresh('/accueil')
+    }
   }
 
   useEffect(() => {
@@ -93,8 +102,6 @@ export const HeaderDropdown = () => {
       window.removeEventListener('resize', handleResize)
     }
   }, [])
-
-  const dispatch = useDispatch()
 
   const logout = () => {
     logEvent(Events.CLICKED_LOGOUT, {
