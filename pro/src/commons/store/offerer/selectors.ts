@@ -1,4 +1,3 @@
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import type { RootState } from '@/commons/store/store'
 
 export const selectOffererNames = (state: RootState) =>
@@ -9,12 +8,3 @@ export const selectCurrentOfferer = (state: RootState) =>
 
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.currentOfferer?.id ?? null
-
-export const ensureCurentOfferer = (state: RootState) => {
-  assertOrFrontendError(
-    state.offerer.currentOfferer,
-    '`state.offerer.currentOfferer` is null.'
-  )
-
-  return state.offerer.currentOfferer
-}
