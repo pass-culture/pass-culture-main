@@ -31,7 +31,7 @@ REQUEST_BODY = {
     "createVenueWithoutSiret": False,
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
-    "isOpenToPublic": False,
+    "isOpenToPublic": True,
     "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
     "token": "token",
 }
@@ -67,6 +67,7 @@ class Returns200Test:
         assert created_venue.publicName == "Pass Culture"
         assert created_venue.siret == "85331845900031"
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
+        assert created_venue.activity == offerers_models.Activity.CINEMA
         assert created_venue.withdrawalDetails is None
         assert created_venue.adageId is None
         assert created_venue.adageInscriptionDate is None
@@ -132,6 +133,7 @@ class Returns200Test:
         assert created_venue.publicName == "Pass Culture"
         assert created_venue.siret == "85331845900031"
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
+        assert created_venue.activity == offerers_models.Activity.CINEMA
         assert created_venue.withdrawalDetails is None
         assert created_venue.adageId is None
         assert created_venue.adageInscriptionDate is None

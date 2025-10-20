@@ -203,6 +203,7 @@ class Activity(enum.Enum):
     COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
     CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
     CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    DISTRIBUTION_STORE = "DISTRIBUTION_STORE"
     FESTIVAL = "FESTIVAL"
     # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
     GAMES_CENTRE = "GAMES_CENTRE"
