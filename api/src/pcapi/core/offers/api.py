@@ -68,12 +68,10 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.videos import api as videos_api
-from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -268,20 +266,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
     if "videoUrl" in fields:
         if new_video_url := fields.pop("videoUrl", None):
-            try:
-                videos_api.upsert_video_and_metadata(new_video_url, offer)
-            except videos_exceptions.InvalidVideoUrl:
-                raise ApiErrors(
-                    errors={
-                        "videoUrl": [
-                            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
-                        ]
-                    }
-                )
-            except videos_exceptions.YoutubeVideoNotFound:
-                raise ApiErrors(
-                    errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
-                )
+            videos_api.upsert_video_and_metadata(new_video_url, offer)
         elif offer.metaData and offer.metaData.videoUrl:
             videos_api.remove_video_data_from_offer_metadata(
                 offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
@@ -2001,12 +1986,7 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
         .one_or_none()
     )
     if data is None:
-        raise ApiErrors(
-            errors={
-                "global": ["L'offre en cours de création ne possède aucun Stock"],
-            },
-            status_code=404,
-        )
+        raise exceptions.OfferHasNoStock()
 
     return StocksStats(*data)
 
