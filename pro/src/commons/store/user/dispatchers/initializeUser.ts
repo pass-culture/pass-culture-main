@@ -28,12 +28,10 @@ import type { AppThunkApiConfig } from '../../store'
 import { logout } from './logout'
 
 export const initializeUser = createAsyncThunk<
-  {
-    success: true
-  },
+  void,
   SharedCurrentUserResponseModel,
   AppThunkApiConfig
->('user/initializeUser', async (user, { dispatch, rejectWithValue }) => {
+>('user/initializeUser', async (user, { dispatch }) => {
   try {
     const initializeSelectedOffererAndVenue = async (
       offererId: number,
@@ -89,6 +87,9 @@ export const initializeUser = createAsyncThunk<
 
     if (firstOffererId && firstVenueId) {
       if (storageAvailable('localStorage')) {
+        // TODO (igabriele, 2025-10-21): We need to validate that:
+        // - In case the user somehow managed to switch accounts with uncompatible saved IDs.
+        // - In case `SAVED_OFFERER_ID_KEY` is not `SAVED_VENUE_ID_KEY` managingOffererId.
         const savedSelectedOffererId = Number(
           localStorage.getItem(SAVED_OFFERER_ID_KEY)
         )
@@ -114,20 +115,8 @@ export const initializeUser = createAsyncThunk<
     }
 
     dispatch(updateUser(user))
-
-    return { success: true }
-  } catch (error: unknown) {
+  } catch (_err: unknown) {
     // In case of error, cancel all state modifications
-    await dispatch(logout()).unwrap()
-
-    if (isErrorAPIError(error)) {
-      return rejectWithValue({
-        error: 'API_ERROR',
-        status: error.status,
-        body: error.message,
-      })
-    }
-
-    return rejectWithValue({ error: 'UNKNOWN_ERROR' })
+    dispatch(logout())
   }
 })

@@ -74,16 +74,16 @@ export const HeaderDropdown = () => {
       )
     : undefined
 
-  const handleChangeOfferer = async (newOffererId: string) => {
+  const handleChangeOfferer = async (nextCurrentOffererId: string) => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
     if (withSwitchVenueFeature) {
-      await dispatch(setCurrentOffererById(newOffererId)).unwrap()
+      await dispatch(setCurrentOffererById({ nextCurrentOffererId })).unwrap()
     } else {
       // Updates offerer id in storage
       if (storageAvailable('localStorage')) {
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, nextCurrentOffererId)
       }
 
       // Hard refresh to homepage after offerer change
@@ -103,12 +103,12 @@ export const HeaderDropdown = () => {
     }
   }, [])
 
-  const logEventAndLogout = async () => {
+  const logEventAndLogout = () => {
     logEvent(Events.CLICKED_LOGOUT, {
       from: pathname,
     })
 
-    await dispatch(logout()).unwrap()
+    dispatch(logout())
   }
 
   return (

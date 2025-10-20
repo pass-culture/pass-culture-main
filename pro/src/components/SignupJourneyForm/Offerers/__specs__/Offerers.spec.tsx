@@ -26,10 +26,26 @@ import { Offerers } from '../Offerers'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getVenuesOfOffererFromSiret: vi.fn(),
     createOfferer: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenues: vi.fn(),
+    getVenuesOfOffererFromSiret: vi.fn(),
     listOfferersNames: vi.fn(),
   },
+}))
+vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
+  setCurrentOffererById: vi.fn(() => () => {
+    const action = {
+      type: 'user/setCurrentOffererById/fulfilled',
+      payload: undefined,
+    }
+
+    // biome-ignore lint/suspicious/noExplicitAny: Only way to mock unwrap
+    const p: any = Promise.resolve(action)
+    p.unwrap = () => Promise.resolve(action.payload)
+
+    return p
+  }),
 }))
 
 const renderOfferersScreen = (
@@ -480,6 +496,8 @@ describe('screens:SignupJourney::Offerers', () => {
       renderOfferersScreen(contextValue)
       vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'getVenues').mockResolvedValue(expect.anything())
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(expect.anything())
 
       await userEvent.click(await screen.findByText('Rejoindre cet espace'))
 

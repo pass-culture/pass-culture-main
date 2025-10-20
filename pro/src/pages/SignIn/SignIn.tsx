@@ -75,7 +75,7 @@ export const SignIn = (): JSX.Element => {
       }
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        await dispatch(logout()).unwrap()
+        dispatch(logout())
 
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })

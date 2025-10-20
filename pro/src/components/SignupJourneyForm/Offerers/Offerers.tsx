@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -14,16 +13,12 @@ import {
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
-import {
-  updateCurrentOfferer,
-  updateOffererNames,
-} from '@/commons/store/offerer/reducer'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
+import { updateUser } from '@/commons/store/user/reducer'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import fullDownIcon from '@/icons/full-down.svg'
@@ -42,7 +37,7 @@ export const Offerers = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { currentUser } = useCurrentUser()
 
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
@@ -116,24 +111,24 @@ export const Offerers = (): JSX.Element => {
     /* istanbul ignore next: venuesOfOfferer will always be defined here or else,
      the user would have been redirected */
     try {
+      // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
       const request: CreateOffererQueryModel = {
         city: offerer.city,
         name: venuesOfOfferer?.offererName ?? '',
         postalCode: offerer.postalCode,
         siren: offerer.siren ?? '',
       }
-      const response = await api.createOfferer(request)
+      const createdOfferer = await api.createOfferer(request)
+
+      // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Validation.tsx`).
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
+      await dispatch(
+        setCurrentOffererById({
+          nextCurrentOffererId: createdOfferer.id,
+          shouldRefetch: true,
+        })
+      ).unwrap()
 
-      const { offerersNames } = await api.listOfferersNames()
-      dispatch(updateOffererNames(offerersNames))
-
-      const isLocalStorageAvailable = storageAvailable('localStorage')
-      if (isLocalStorageAvailable) {
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
-      }
-      dispatch(updateCurrentOfferer(null))
-      dispatch(updateUserAccess('unattached'))
       navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {
       notify.error(

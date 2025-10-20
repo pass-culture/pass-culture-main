@@ -182,9 +182,11 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'the offerer is created' })
 
-      cy.visit('/accueil')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
+      cy.location('pathname', { timeout: 30 * 1000 }).should(
+        'eq',
+        '/rattachement-en-cours'
+      )
       cy.contains(
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
@@ -265,10 +267,12 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@createOfferer')
 
       cy.stepLog({ message: 'the offerer is created' })
-      cy.visit('/accueil')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
       cy.stepLog({ message: 'the attachment is in progress' })
+      cy.location('pathname', { timeout: 30 * 1000 }).should(
+        'eq',
+        '/rattachement-en-cours'
+      )
       cy.contains(
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')
@@ -292,6 +296,12 @@ describe('Signup journey with known offerer...', () => {
       cy.findByTestId('confirm-dialog-button-confirm').click()
       cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
 
+      cy.findByText('Accéder à votre espace').click()
+
+      cy.location('pathname', { timeout: 30 * 1000 }).should(
+        'eq',
+        '/rattachement-en-cours'
+      )
       cy.contains(
         'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       ).should('be.visible')

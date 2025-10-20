@@ -11,31 +11,45 @@ import {
 } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
-import { updateCurrentOfferer } from '../../offerer/reducer'
-import { ensureCurentOfferer } from '../../offerer/selectors'
+import { updateCurrentOfferer, updateOffererNames } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
-import { setSelectedVenue, updateUserAccess } from '../reducer'
+import { setSelectedVenue, setVenues, updateUserAccess } from '../reducer'
 import { ensureVenues } from '../selectors'
 
 export const setCurrentOffererById = createAsyncThunk<
   void,
-  number | string,
+  { nextCurrentOffererId: number | string; shouldRefetch?: boolean },
   AppThunkApiConfig
 >(
   'user/setCurrentOffererById',
-  async (nextCurrentOffererId, { dispatch, getState }) => {
+  async (
+    { nextCurrentOffererId, shouldRefetch = false },
+    { dispatch, getState }
+  ) => {
     try {
       const state = getState()
-      const currentOfferer = ensureCurentOfferer(state)
-      if (Number(nextCurrentOffererId) === currentOfferer.id) {
+      const previousSelectedOfferer = state.offerer.currentOfferer
+      if (Number(nextCurrentOffererId) === previousSelectedOfferer?.id) {
         return
       }
-      const venues = ensureVenues(state)
+
+      const venues = shouldRefetch
+        ? (await api.getVenues()).venues
+        : ensureVenues(state)
+      if (shouldRefetch) {
+        const offererNames = await api.listOfferersNames()
+
+        dispatch(updateOffererNames(offererNames.offerersNames))
+        dispatch(setVenues(venues))
+      }
 
       const nextCurrentOfferer = await api.getOfferer(
         Number(nextCurrentOffererId)
       )
-
+      assertOrFrontendError(
+        nextCurrentOfferer,
+        '`nextCurrentOfferer` is undefined.'
+      )
       const nextSelectedVenue = venues
         .filter(
           (venue) => venue.managingOffererId === Number(nextCurrentOffererId)
@@ -44,11 +58,6 @@ export const setCurrentOffererById = createAsyncThunk<
       assertOrFrontendError(
         nextSelectedVenue,
         '`nextSelectedVenue` is undefined.'
-      )
-
-      assertOrFrontendError(
-        nextCurrentOfferer,
-        '`nextCurrentOfferer` is undefined.'
       )
 
       dispatch(
