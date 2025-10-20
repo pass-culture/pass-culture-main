@@ -18,12 +18,3 @@ export const ensureCurentOfferer = (state: RootState) => {
 
   return state.offerer.currentOfferer
 }
-
-export const ensureOffererNames = (state: RootState) => {
-  assertOrFrontendError(
-    state.offerer.offererNames,
-    '`state.offerer.offererNames` is null.'
-  )
-
-  return state.offerer.offererNames
-}
