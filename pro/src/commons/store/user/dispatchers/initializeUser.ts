@@ -25,6 +25,7 @@ import {
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 import type { AppThunkApiConfig } from '../../store'
+import { logout } from './logout'
 
 export const initializeUser = createAsyncThunk<
   {
@@ -85,6 +86,7 @@ export const initializeUser = createAsyncThunk<
           .filter((venue) => venue.managingOffererId === firstOffererId)
           .at(0)?.id
       : undefined
+
     if (firstOffererId && firstVenueId) {
       if (storageAvailable('localStorage')) {
         const savedSelectedOffererId = Number(
@@ -116,11 +118,7 @@ export const initializeUser = createAsyncThunk<
     return { success: true }
   } catch (error: unknown) {
     // In case of error, cancel all state modifications
-    dispatch(updateOffererNames(null))
-    dispatch(updateCurrentOfferer(null))
-    dispatch(setSelectedVenue(null))
-    dispatch(setVenues(null))
-    dispatch(updateUser(null))
+    await dispatch(logout()).unwrap()
 
     if (isErrorAPIError(error)) {
       return rejectWithValue({

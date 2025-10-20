@@ -3,20 +3,18 @@ import cn from 'classnames'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
 import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
+import { logout } from '@/commons/store/user/dispatchers/logout'
 import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
@@ -48,8 +46,10 @@ export const HeaderDropdown = () => {
   const currentOffererId = useAppSelector(selectCurrentOffererId)
   const currentUser = useAppSelector(selectCurrentUser)
   const offererNames = useAppSelector(selectOffererNames)
+
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
+
   const sideOffset =
     windowWidth >= 673
       ? 20
@@ -103,19 +103,12 @@ export const HeaderDropdown = () => {
     }
   }, [])
 
-  const logout = () => {
+  const logEventAndLogout = async () => {
     logEvent(Events.CLICKED_LOGOUT, {
       from: pathname,
     })
 
-    api.signout()
-
-    if (storageAvailable('localStorage')) {
-      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-    }
-    dispatch(updateUser(null))
-    dispatch(updateCurrentOfferer(null))
-    dispatch(updateUserAccess(null))
+    await dispatch(logout()).unwrap()
   }
 
   return (
@@ -325,7 +318,7 @@ export const HeaderDropdown = () => {
               <Button
                 icon={fullLogoutIcon}
                 variant={ButtonVariant.TERNARY}
-                onClick={() => logout()}
+                onClick={logEventAndLogout}
               >
                 Se déconnecter
               </Button>
