@@ -8,8 +8,6 @@ from types import TracebackType
 
 import sqlalchemy as sa
 from flask import g
-from psycopg2 import InternalError as psycopg2_InternalError
-from sqlalchemy import exc as sa_exc
 
 from pcapi.models import Model
 from pcapi.models import db
@@ -164,12 +162,6 @@ def _finalize_managed_session() -> None:
             if not callback():
                 break
     g.pop("_on_commit_callbacks", None)
-
-    try:
-        db.session.execute(sa.text("SELECT NOW()"))
-    except (sa_exc.InternalError, psycopg2_InternalError):
-        db.session.rollback()
-        raise
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:

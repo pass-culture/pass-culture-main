@@ -1,6 +1,4 @@
 import logging
-import os
-import signal
 import uuid
 from datetime import datetime
 
@@ -8,7 +6,6 @@ import flask
 import werkzeug.datastructures
 from flask import current_app as app
 from flask_login import logout_user
-from sqlalchemy.exc import InternalError
 
 import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.models as users_models
@@ -46,19 +43,7 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
 
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
-    try:
-        user_session = (
-            db.session.query(users_models.UserSession).filter_by(userId=user_id, uuid=session_uuid).one_or_none()
-        )
-    except InternalError as exception:
-        logger.error(
-            "The connection seems corrupted, killing the worker (SIGINT)",
-            extra={
-                "exc": str(exception),
-            },
-            exc_info=True,
-        )
-        os.kill(os.getpid(), signal.SIGINT)
+    user_session = db.session.query(users_models.UserSession).filter_by(userId=user_id, uuid=session_uuid).one_or_none()
 
     if not user_session:
         return None
