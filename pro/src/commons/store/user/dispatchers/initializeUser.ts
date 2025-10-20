@@ -56,6 +56,9 @@ export const initializeUser = createAsyncThunk<
               : 'no-offerer'
           )
         )
+
+        localStorage.setItem(SAVED_OFFERER_ID_KEY, String(offererId))
+        localStorage.setItem(SAVED_VENUE_ID_KEY, String(venueId))
       } catch (e: unknown) {
         if (isErrorAPIError(e) && e.status === 403) {
           // Do nothing at this point,
