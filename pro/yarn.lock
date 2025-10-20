@@ -206,10 +206,10 @@
     "@csstools/css-tokenizer" "^3.0.4"
     lru-cache "^11.2.1"
 
-"@asamuzakjp/dom-selector@^6.5.4":
-  version "6.6.2"
-  resolved "https://registry.yarnpkg.com/@asamuzakjp/dom-selector/-/dom-selector-6.6.2.tgz#ba786cc4071bae093b346d9081126d32169ef1bc"
-  integrity sha512-+AG0jN9HTwfDLBhjhX1FKi6zlIAc/YGgEHlN/OMaHD1pOPFsC5CpYQpLkPX0aFjyaVmoq9330cQDCU4qnSL1qA==
+"@asamuzakjp/dom-selector@^6.7.2":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/@asamuzakjp/dom-selector/-/dom-selector-6.7.2.tgz#bce7e730e969610ce8574b98ff3dd69db6ac9e6a"
+  integrity sha512-ccKogJI+0aiDhOahdjANIc9SDixSud1gbwdVrhn7kMopAtLXqsz9MKmQQtIl6Y5aC2IYq+j4dz/oedL2AVMmVQ==
   dependencies:
     "@asamuzakjp/nwsapi" "^2.3.9"
     bidi-js "^1.0.3"
@@ -2867,7 +2867,7 @@ cssfontparser@^1.2.1:
   resolved "https://registry.yarnpkg.com/cssfontparser/-/cssfontparser-1.2.1.tgz#f4022fc8f9700c68029d542084afbaf425a3f3e3"
   integrity sha512-6tun4LoZnj7VN6YeegOVb67KBX/7JJsqvj+pv3ZA7F878/eN33AbGa5b/S/wXxS/tcp8nc40xRUrsPlxIyNUPg==
 
-cssstyle@^5.3.0:
+cssstyle@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/cssstyle/-/cssstyle-5.3.1.tgz#f55a9cc73d12705da8a341261d5e85003fe3a441"
   integrity sha512-g5PC9Aiph9eiczFpcgUhd9S4UUO3F+LHGRIi5NUMZ+4xtoIYbHNZwZnWA2JsFGe8OU8nl4WyaEFiZuGuxlutJQ==
@@ -2991,7 +2991,7 @@ debug@^3.1.0:
   dependencies:
     ms "^2.1.1"
 
-decimal.js@^10.5.0:
+decimal.js@^10.6.0:
   version "10.6.0"
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.6.0.tgz#e649a43e3ab953a72192ff5983865e509f37ed9a"
   integrity sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==
@@ -4115,20 +4115,20 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
 
-jsdom@27.0.0:
-  version "27.0.0"
-  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-27.0.0.tgz#831fb76bcfde14b0d92aec1c2bfd8ea462f17eb9"
-  integrity sha512-lIHeR1qlIRrIN5VMccd8tI2Sgw6ieYXSVktcSHaNe3Z5nE/tcPQYQWOq00wxMvYOsz+73eAkNenVvmPC6bba9A==
+jsdom@27.0.1:
+  version "27.0.1"
+  resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-27.0.1.tgz#72f3ff263ccc128da40d8526943a7df253eeea93"
+  integrity sha512-SNSQteBL1IlV2zqhwwolaG9CwhIhTvVHWg3kTss/cLE7H/X4644mtPQqYvCfsSrGQWt9hSZcgOXX8bOZaMN+kA==
   dependencies:
-    "@asamuzakjp/dom-selector" "^6.5.4"
-    cssstyle "^5.3.0"
+    "@asamuzakjp/dom-selector" "^6.7.2"
+    cssstyle "^5.3.1"
     data-urls "^6.0.0"
-    decimal.js "^10.5.0"
+    decimal.js "^10.6.0"
     html-encoding-sniffer "^4.0.0"
     http-proxy-agent "^7.0.2"
     https-proxy-agent "^7.0.6"
     is-potential-custom-element-name "^1.0.1"
-    parse5 "^7.3.0"
+    parse5 "^8.0.0"
     rrweb-cssom "^0.8.0"
     saxes "^6.0.0"
     symbol-tree "^3.2.4"
@@ -4137,8 +4137,8 @@ jsdom@27.0.0:
     webidl-conversions "^8.0.0"
     whatwg-encoding "^3.1.1"
     whatwg-mimetype "^4.0.0"
-    whatwg-url "^15.0.0"
-    ws "^8.18.2"
+    whatwg-url "^15.1.0"
+    ws "^8.18.3"
     xml-name-validator "^5.0.0"
 
 jsesc@^3.0.2:
@@ -4670,10 +4670,10 @@ parse-json@^5.0.0, parse-json@^5.2.0:
     json-parse-even-better-errors "^2.3.0"
     lines-and-columns "^1.1.6"
 
-parse5@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/parse5/-/parse5-7.3.0.tgz#d7e224fa72399c7a175099f45fc2ad024b05ec05"
-  integrity sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==
+parse5@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-8.0.0.tgz#aceb267f6b15f9b6e6ba9e35bfdd481fc2167b12"
+  integrity sha512-9m4m5GSgXjL4AjumKzq1Fgfp3Z8rsvjRNbnkVwfu2ImRqE5D0LnY2QfDen18FSY9C573YU5XxSapdHZTZ2WolA==
   dependencies:
     entities "^6.0.0"
 
@@ -6166,7 +6166,7 @@ whatwg-mimetype@^4.0.0:
   resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-4.0.0.tgz#bc1bf94a985dc50388d54a9258ac405c3ca2fc0a"
   integrity sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==
 
-whatwg-url@^15.0.0:
+whatwg-url@^15.0.0, whatwg-url@^15.1.0:
   version "15.1.0"
   resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-15.1.0.tgz#5c433439b9a5789eeb3806bbd0da89a8bd40b8d7"
   integrity sha512-2ytDk0kiEj/yu90JOAp44PVPUkO9+jVhyf+SybKlRHSDlvOOZhdPIrr7xTH64l4WixO2cP+wQIcgujkGBPPz6g==
@@ -6250,7 +6250,7 @@ write-file-atomic@^5.0.1:
     imurmurhash "^0.1.4"
     signal-exit "^4.0.1"
 
-ws@^8.18.0, ws@^8.18.2:
+ws@^8.18.0, ws@^8.18.3:
   version "8.18.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
   integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
