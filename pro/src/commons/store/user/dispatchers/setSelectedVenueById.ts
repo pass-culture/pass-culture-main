@@ -23,8 +23,8 @@ export const setSelectedVenueById = createAsyncThunk<
   async (nextSelectedVenueId, { dispatch, getState }) => {
     try {
       const state = getState()
-      const selectedVenue = ensureSelectedVenue(state)
-      if (Number(nextSelectedVenueId) === selectedVenue.id) {
+      const previousSelectedVenue = ensureSelectedVenue(state)
+      if (Number(nextSelectedVenueId) === previousSelectedVenue.id) {
         return
       }
       const venues = ensureVenues(state)
@@ -38,7 +38,7 @@ export const setSelectedVenueById = createAsyncThunk<
       )
 
       const nextCurrentOfferer = await api.getOfferer(
-        selectedVenue.managingOffererId
+        nextSelectedVenue.managingOffererId
       )
       assertOrFrontendError(
         nextCurrentOfferer,

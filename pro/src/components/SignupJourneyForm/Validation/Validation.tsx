@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
-import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { isError, isErrorAPIError } from '@/apiClient/helpers'
 import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -14,22 +12,14 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
-  SAVED_OFFERER_ID_KEY,
 } from '@/commons/core/shared/constants'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
-import {
-  updateCurrentOfferer,
-  updateOffererNames,
-} from '@/commons/store/offerer/reducer'
-import {
-  selectCurrentOfferer,
-  selectCurrentOffererId,
-} from '@/commons/store/offerer/selectors'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
+import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
+import { updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import fullEditIcon from '@/icons/full-edit.svg'
@@ -56,10 +46,8 @@ export const Validation = (): JSX.Element | undefined => {
   )
   const venueTypes = venueTypesQuery.data
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { currentUser } = useCurrentUser()
-  const currentOffererId = useSelector(selectCurrentOffererId)
-  const currentOfferer = useSelector(selectCurrentOfferer, shallowEqual)
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -124,53 +112,17 @@ export const Validation = (): JSX.Element | undefined => {
         },
         token,
       }
+      const createdOfferer = await api.saveNewOnboardingData(data)
 
-      // NOTE: the code below IS dirty. It will be cleaned up in a future PR.
-
-      // Sending offerer data…
-      const response = await api.saveNewOnboardingData(data)
-
+      // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-
-      // In the redux store, we can have 2 values for the currentOffererId:
-      // - null (means that it's the first time the user creates an offerer)
-      // - an offerer ID (means that the user already has an offerer, and is currently adding a new structure)
-
-      // Update the offerer names list
-      const offerers = await api.listOfferersNames()
-      dispatch(updateOffererNames(offerers.offerersNames))
-
-      let fullOfferer = currentOfferer
-      if (currentOffererId !== response.id) {
-        fullOfferer = await api.getOfferer(response.id)
-        if (storageAvailable('localStorage')) {
-          localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
-        }
-      }
-
-      dispatch(updateCurrentOfferer(fullOfferer))
-      dispatch(
-        updateUserAccess(
-          offerers?.offerersNames.length > 0
-            ? fullOfferer?.isOnboarded
-              ? 'full'
-              : 'no-onboarding'
-            : 'no-offerer'
-        )
-      )
+      await dispatch(
+        setCurrentOffererById({
+          nextCurrentOffererId: createdOfferer.id,
+          shouldRefetch: true,
+        })
+      ).unwrap()
     } catch (e: unknown) {
-      if (
-        (isErrorAPIError(e) && e.status === 403) ||
-        (isError(e) && e.message.indexOf('Failed to fetch') >= 0)
-      ) {
-        // Do nothing at this point,
-        // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
-        // But we must let him sign in
-        dispatch(updateUserAccess('unattached'))
-
-        return
-      }
-
       if (e === RECAPTCHA_ERROR) {
         notify.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
