@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 import decimal
 from io import BytesIO
+from itertools import count
 from operator import itemgetter
 from unittest import mock
 from unittest.mock import patch
@@ -69,6 +70,10 @@ def offers_fixture(criteria) -> tuple:
         author=users_factories.ProFactory(),
         extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
         lastProvider=providers_factories.ProviderFactory(name="Music Provider"),
+        product=offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            extraData={"musicType": 501, "musicSubType": 510, "gtl_id": "02050000"},
+        ),
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
@@ -181,6 +186,7 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(offers[0].id)
         assert rows[0]["Nom de l'offre"] == offers[0].name
+        assert rows[0]["EAN / Allociné ID"] == offers[0].product.ean
         assert rows[0]["Catégorie"] == offers[0].category.pro_label
         assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
         assert rows[0]["État"] == "• Validée"
@@ -290,6 +296,32 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert int(rows[0]["ID"]) == offers[2].id
 
+    def test_list_offers_by_allocine_id(self, authenticated_client):
+        allocine_id = 123456789
+        offer = offers_factories.OfferFactory(
+            product=offers_factories.ProductFactory(
+                extraData={"allocineId": allocine_id},
+            ),
+        )
+        offers_factories.OfferFactory(
+            product=offers_factories.ProductFactory(
+                extraData={"allocineId": 111111111111},
+            ),
+        )
+
+        query_args = {
+            "search-0-search_field": "ALLOCINE_ID",
+            "search-0-operator": "EQUALS",
+            "search-0-integer": int(allocine_id),
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert int(rows[0]["ID"]) == offer.id
+
     def test_list_offers_by_creation_date(self, authenticated_client, offers):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
@@ -397,6 +429,133 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
         assert rows[0]["ID"] == str(should_be_displayed_offer.id)
+
+    def test_list_offers_with_offerer_tag_filter_in(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory()
+        offer_to_display = offers_factories.OfferFactory()
+        offer_to_display.venue.managingOfferer.tags = [tag]
+        hidden_offer = offers_factories.OfferFactory()
+        hidden_offer.venue.managingOfferer.tags = [offerers_factories.OffererTagFactory()]
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "IN",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_offerer_tag_filter_not_in(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory()
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [tag]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "NOT_IN",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_offerer_tag_filter_not_exist(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory(name="plouf")
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [tag]
+        offers_factories.OfferFactory().venue.managingOfferer.tags = [offerers_factories.OffererTagFactory()]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "OFFERER_TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-0-offerer_tags": tag.id,
+        }
+
+        # +1 because of reloading selected tag in the form when tag arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_venue_criterion_filter_in(self, authenticated_client):
+        should_be_displayed_offer = offers_factories.OfferFactory()
+        tag = criteria_factories.CriterionFactory()
+        should_be_displayed_offer.venue.criteria = [tag]
+        hidden_offer = offers_factories.OfferFactory()
+        hidden_offer.venue.criteria = [criteria_factories.CriterionFactory()]
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "IN",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(should_be_displayed_offer.id)
+
+    def test_list_offers_with_venue_criterion_filter_not_in(self, authenticated_client):
+        tag = criteria_factories.CriterionFactory()
+        offers_factories.OfferFactory().venue.criteria = [tag]
+        offer_to_display = offers_factories.OfferFactory()
+        offer_to_display.venue.criteria = [criteria_factories.CriterionFactory()]
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "NOT_IN",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_venue_criterion_filter_no_exist(self, authenticated_client):
+        tag = criteria_factories.CriterionFactory()
+        offers_factories.OfferFactory().venue.criteria = [tag]
+        offers_factories.OfferFactory().venue.criteria = [criteria_factories.CriterionFactory()]
+        offer_to_display = offers_factories.OfferFactory()
+
+        query_args = {
+            "search-0-search_field": "VENUE_TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-0-criteria": tag.id,
+        }
+
+        # +1 because of reloading selected criterion in the form when criterion arg is set
+        with assert_num_queries(self.expected_num_queries + 1):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
 
     def test_list_offers_by_event_date(self, authenticated_client, offers):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
@@ -1555,33 +1714,35 @@ class EditOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_edit.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 24
-        assert cells[0] == ""  # Checkbox
-        assert cells[1] == (  # Actions
+        assert len(cells) == 25
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
         )
-        assert cells[2] == ""  # Image
-        assert cells[3] == str(offer_to_edit.id)  # ID
-        assert cells[4] == offer_to_edit.name  # Nom de l'offre
-        assert cells[5] == offer_to_edit.category.pro_label  # Catégorie
-        assert cells[6] == offer_to_edit.subcategory.pro_label  # Sous-catégorie
-        assert cells[7] == ""  # Règles de conformité
-        assert cells[8] == ""  # Score data
-        assert cells[9] == ""  # Predicition du validation_status (data)
-        assert cells[10] == "-"  # Tarif
-        assert cells[11] == f"{criteria[0].name} {criteria[1].name}"  # Tag
-        assert cells[12] == ""  # Date(s) de l'évènement
-        assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Créateur de l'offre
-        assert cells[15] == "22"  # Pondération
-        assert cells[16] == "• Validée"  # État
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_edit.offererAddress.address.departmentCode  # Département
-        assert cells[20] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
-        assert cells[21] == offer_to_edit.venue.name  # Partenaire culturel
-        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[23] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_edit.id)  # ID
+        assert cells[next(i)] == offer_to_edit.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_edit.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_edit.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "-"  # Tarif
+        assert cells[next(i)] == f"{criteria[0].name} {criteria[1].name}"  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == "22"  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == offer_to_edit.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_edit.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_edit.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
 
 
 class GetEditOfferFormTest(GetEndpointHelper):
@@ -2022,33 +2183,35 @@ class ValidateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_validate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 24
-        assert cells[0] == ""  # Checkbox
-        assert cells[1] == (  # Actions
+        assert len(cells) == 25
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
         )
-        assert cells[2] == ""  # Image
-        assert cells[3] == str(offer_to_validate.id)  # ID
-        assert cells[4] == offer_to_validate.name  # Nom de l'offre
-        assert cells[5] == offer_to_validate.category.pro_label  # Catégorie
-        assert cells[6] == offer_to_validate.subcategory.pro_label  # Sous-catégorie
-        assert cells[7] == ""  # Règles de conformité
-        assert cells[8] == ""  # Score data
-        assert cells[9] == ""  # Predicition du validation_status (data)
-        assert cells[10] == "1,01 € - 10,10 €"  # Tarif
-        assert cells[11] == ""  # Tag
-        assert cells[12] == ""  # Date(s) de l'évènement
-        assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Créateur de l'offre
-        assert cells[15] == ""  # Pondération
-        assert cells[16] == "• Validée"  # État
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[19] == offer_to_validate.offererAddress.address.departmentCode  # Département
-        assert cells[20] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
-        assert cells[21] == offer_to_validate.venue.name  # Partenaire culturel
-        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[23] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_validate.id)  # ID
+        assert cells[next(i)] == offer_to_validate.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_validate.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_validate.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "1,01 € - 10,10 €"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[next(i)] == offer_to_validate.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_validate.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_validate.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_validate)
         assert offer_to_validate.isActive is True
@@ -2137,33 +2300,35 @@ class RejectOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_reject.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 24
-        assert cells[0] == ""  # Checkbox
-        assert cells[1] == (  # Actions
+        assert len(cells) == 25
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
         )
-        assert cells[2] == ""  # Image
-        assert cells[3] == str(offer_to_reject.id)  # ID
-        assert cells[4] == offer_to_reject.name  # Nom de l'offre
-        assert cells[5] == offer_to_reject.category.pro_label  # Catégorie
-        assert cells[6] == offer_to_reject.subcategory.pro_label  # Sous-catégorie
-        assert cells[7] == ""  # Règles de conformité
-        assert cells[8] == ""  # Score data
-        assert cells[9] == ""  # Predicition du validation_status (data)
-        assert cells[10] == "10,10 €"  # Tarif
-        assert cells[11] == ""  # Tag
-        assert cells[12] == ""  # Date(s) de l'évènement
-        assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Créateur de l'offre
-        assert cells[15] == ""  # Pondération
-        assert cells[16] == "• Rejetée"  # État
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[18] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
-        assert cells[19] == offer_to_reject.offererAddress.address.departmentCode  # Département
-        assert cells[20] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
-        assert cells[21] == offer_to_reject.venue.name  # Partenaire culturel
-        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[23] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_reject.id)  # ID
+        assert cells[next(i)] == offer_to_reject.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_reject.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_reject.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "10,10 €"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Rejetée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Dérnière validation
+        assert cells[next(i)] == offer_to_reject.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_reject.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_reject.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
 
         assert offer_to_reject.isActive is False
         assert offer_to_reject.validation == offers_models.OfferValidationStatus.REJECTED
@@ -3424,33 +3589,35 @@ class ActivateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_activate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 24
-        assert cells[0] == ""  # Checkbox
-        assert cells[1] == (  # Actions
+        assert len(cells) == 25
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
         )
-        assert cells[2] == ""  # Image
-        assert cells[3] == str(offer_to_activate.id)  # ID
-        assert cells[4] == offer_to_activate.name  # Nom de l'offre
-        assert cells[5] == offer_to_activate.category.pro_label  # Catégorie
-        assert cells[6] == offer_to_activate.subcategory.pro_label  # Sous-catégorie
-        assert cells[7] == ""  # Règles de conformité
-        assert cells[8] == ""  # Score data
-        assert cells[9] == ""  # Predicition du validation_status (data)
-        assert cells[10] == "-"  # Tarif
-        assert cells[11] == ""  # Tag
-        assert cells[12] == ""  # Date(s) de l'évènement
-        assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Créateur de l'offre
-        assert cells[15] == ""  # Pondération
-        assert cells[16] == "• Validée"  # État
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_activate.offererAddress.address.departmentCode  # Département
-        assert cells[20] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
-        assert cells[21] == offer_to_activate.venue.name  # Partenaire culturel
-        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[23] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_activate.id)  # ID
+        assert cells[next(i)] == offer_to_activate.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_activate.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_activate.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "-"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == offer_to_activate.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_activate.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_activate.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_activate)
         assert offer_to_activate.isActive is True
@@ -3519,33 +3686,35 @@ class DeactivateOfferTest(PostEndpointHelper):
         # ensure that the row is rendered
         row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_deactivate.id}", is_xml=True)
         cells = html_parser.extract(row, "td", is_xml=True)
-        assert len(cells) == 24
-        assert cells[0] == ""  # Checkbox
-        assert cells[1] == (  # Actions
+        assert len(cells) == 25
+        i = count()
+        assert cells[next(i)] == ""  # Checkbox
+        assert cells[next(i)] == (  # Actions
             "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
         )
-        assert cells[2] == ""  # Image
-        assert cells[3] == str(offer_to_deactivate.id)  # ID
-        assert cells[4] == offer_to_deactivate.name  # Nom de l'offre
-        assert cells[5] == offer_to_deactivate.category.pro_label  # Catégorie
-        assert cells[6] == offer_to_deactivate.subcategory.pro_label  # Sous-catégorie
-        assert cells[7] == ""  # Règles de conformité
-        assert cells[8] == ""  # Score data
-        assert cells[9] == ""  # Predicition du validation_status (data)
-        assert cells[10] == "-"  # Tarif
-        assert cells[11] == ""  # Tag
-        assert cells[12] == ""  # Date(s) de l'évènement
-        assert cells[13] == ""  # Date(s) limite(s) de réservation
-        assert cells[14] == ""  # Créateur de l'offre
-        assert cells[15] == ""  # Pondération
-        assert cells[16] == "• Validée"  # État
-        assert cells[17] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
-        assert cells[18] == ""  # Dérnière validation
-        assert cells[19] == offer_to_deactivate.offererAddress.address.departmentCode  # Département
-        assert cells[20] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
-        assert cells[21] == offer_to_deactivate.venue.name  # Partenaire culturel
-        assert cells[22] == "Voir toutes les offres"  # Offres du partenaire culturel
-        assert cells[23] == ""  # Partenaire technique
+        assert cells[next(i)] == ""  # Image
+        assert cells[next(i)] == str(offer_to_deactivate.id)  # ID
+        assert cells[next(i)] == offer_to_deactivate.name  # Nom de l'offre
+        assert cells[next(i)] == ""  # EAN / Allociné ID
+        assert cells[next(i)] == offer_to_deactivate.category.pro_label  # Catégorie
+        assert cells[next(i)] == offer_to_deactivate.subcategory.pro_label  # Sous-catégorie
+        assert cells[next(i)] == ""  # Règles de conformité
+        assert cells[next(i)] == ""  # Score data
+        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == "-"  # Tarif
+        assert cells[next(i)] == ""  # Tag
+        assert cells[next(i)] == ""  # Date(s) de l'évènement
+        assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
+        assert cells[next(i)] == ""  # Créateur de l'offre
+        assert cells[next(i)] == ""  # Pondération
+        assert cells[next(i)] == "• Validée"  # État
+        assert cells[next(i)] == datetime.date.today().strftime("%d/%m/%Y")  # Date de création
+        assert cells[next(i)] == ""  # Dérnière validation
+        assert cells[next(i)] == offer_to_deactivate.offererAddress.address.departmentCode  # Département
+        assert cells[next(i)] == offer_to_deactivate.venue.managingOfferer.name  # Entité juridique
+        assert cells[next(i)] == offer_to_deactivate.venue.name  # Partenaire culturel
+        assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
+        assert cells[next(i)] == ""  # Partenaire technique
 
         db.session.refresh(offer_to_deactivate)
         assert offer_to_deactivate.isActive is False

@@ -25,7 +25,7 @@ class GetOffererTest:
     num_queries += 1  # check user_offerer exists
     num_queries += 1  # select offerer
     num_queries += 1  # select venue
-    num_queries += 1  # check offerer has non free offers
+    num_queries += 1  # check offerer has non free offers (select venue ?)
     num_queries += 1  # select venue_id
     num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
@@ -95,7 +95,7 @@ class GetOffererTest:
                     ],
                     "id": venue.id,
                     "isPermanent": venue.isPermanent,
-                    "isVirtual": venue.isVirtual,
+                    "isVirtual": False,
                     "hasAdageId": bool(venue.adageId),
                     "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                     "hasPartnerPage": False,
@@ -679,14 +679,13 @@ class GetOffererTest:
         assert response.json["managedVenues"][0]["hasPartnerPage"] is False
 
     @pytest.mark.parametrize(
-        "validation_status,active_offerer,permanent_venue,virtual_venue,at_least_one_offer,has_partner_page",
+        "validation_status,active_offerer,permanent_venue,at_least_one_offer,has_partner_page",
         [
-            (ValidationStatus.VALIDATED, False, True, False, True, False),
-            (ValidationStatus.VALIDATED, True, False, False, True, False),
-            (ValidationStatus.VALIDATED, True, True, True, True, False),
-            (ValidationStatus.VALIDATED, True, True, False, False, False),
-            (ValidationStatus.VALIDATED, True, True, False, True, True),
-            (ValidationStatus.CLOSED, True, True, False, True, False),
+            (ValidationStatus.VALIDATED, False, True, True, False),
+            (ValidationStatus.VALIDATED, True, False, True, False),
+            (ValidationStatus.VALIDATED, True, True, False, False),
+            (ValidationStatus.VALIDATED, True, True, True, True),
+            (ValidationStatus.CLOSED, True, True, True, False),
         ],
     )
     def test_offerer_has_partner_page(
@@ -695,17 +694,13 @@ class GetOffererTest:
         validation_status,
         active_offerer,
         permanent_venue,
-        virtual_venue,
         at_least_one_offer,
         has_partner_page,
     ):
         offerer = offerers_factories.OffererFactory(validationStatus=validation_status, isActive=active_offerer)
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
-        if virtual_venue:
-            venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
-        else:
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=permanent_venue)
         if at_least_one_offer:
             offers_factories.OfferFactory(venue=venue)
 

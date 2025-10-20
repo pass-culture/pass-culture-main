@@ -63,7 +63,7 @@ class Returns200Test:
 
     def test_patch_virtual_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
@@ -87,7 +87,7 @@ class Returns200Test:
         assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
-        assert response.json["venue"]["street"] == None
+        assert response.json["venue"]["street"] == venue.offererAddress.address.street
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "New name"
@@ -125,7 +125,7 @@ class Returns200Test:
         response_publication_datetime,
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
@@ -133,6 +133,7 @@ class Returns200Test:
             url="test@test.com",
             description="description",
             publicationDatetime=initial_publication_datetime,
+            offererAddress=None,
         )
 
         response = client.with_session_auth("user@example.com").patch(
@@ -171,7 +172,7 @@ class Returns200Test:
         response_booking_allowed_datetime,
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
@@ -180,6 +181,7 @@ class Returns200Test:
             description="description",
             publicationDatetime=datetime.datetime(2025, 6, 23),
             bookingAllowedDatetime=initial_booking_allowed_datetime,
+            offererAddress=None,
         )
 
         response = client.with_session_auth("user@example.com").patch(

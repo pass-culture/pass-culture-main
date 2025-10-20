@@ -6,7 +6,6 @@ import {
 
 import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
-import * as useHasAccessToDidacticOnboarding from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import {
   defaultGetOffererVenueResponseModel,
   listOffersOfferFactory,
@@ -54,14 +53,9 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.mock('@/commons/hooks/useHasAccessToDidacticOnboarding')
 describe('<OnboardingOfferIndividual />', () => {
   beforeEach(() => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
-    vi.spyOn(
-      useHasAccessToDidacticOnboarding,
-      'useHasAccessToDidacticOnboarding'
-    ).mockResolvedValue(true)
   })
 
   it('should propose how to create the 1st offer', async () => {

@@ -72,12 +72,6 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
-    (siret IS NULL AND comment IS NULL AND "isVirtual" IS TRUE)
-    OR (siret IS NULL AND comment IS NOT NULL AND "isVirtual" IS FALSE)
-    OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
-"""
-
 
 PERMENANT_VENUE_TYPES = [
     VenueTypeCode.CREATIVE_ARTS_STORE,
@@ -195,6 +189,37 @@ class Weekday(enum.Enum):
     SUNDAY = "SUNDAY"
 
 
+class Activity(enum.Enum):
+    """
+    Venue's Activity is the main business activity of an ERP (open to public) structure
+    For a non-ERP structure, the business is described through the Venue's list of EducationalDomain (venue.collectiveDomains)
+    """
+
+    ART_GALLERY = "ART_GALLERY"
+    ART_SCHOOL = "ART_SCHOOL"
+    ARTS_CENTRE = "ARTS_CENTRE"
+    BOOKSTORE = "BOOKSTORE"
+    CINEMA = "CINEMA"
+    COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
+    CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
+    CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    FESTIVAL = "FESTIVAL"
+    # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
+    GAMES_CENTRE = "GAMES_CENTRE"
+    HERITAGE_SITE = "HERITAGE_SITE"
+    LIBRARY = "LIBRARY"
+    MUSEUM = "MUSEUM"
+    MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
+    # 'NOT_ASSIGNED' is used for non-ERP structures (is_open_to_public=False) which have no main activity
+    NOT_ASSIGNED = "NOT_ASSIGNED"
+    # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
+    OTHER = "OTHER"
+    PERFORMANCE_HALL = "PERFORMANCE_HALL"
+    RECORD_STORE = "RECORD_STORE"
+    SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
+
+
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
     __tablename__ = "venue"
     thumb_path_component = "venues"
@@ -239,7 +264,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
-    publicName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
+    publicName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
 
     isVirtual: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean,
@@ -254,9 +279,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
         sa.TEXT,
-        sa.CheckConstraint(
-            CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL, name="check_has_siret_xor_comment_xor_isVirtual"
-        ),
         nullable=True,
     )
 
@@ -425,11 +447,16 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
+    activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
+        db_utils.MagicEnum(Activity, use_values=False), nullable=True
+    )
+
     __table_args__ = (
         sa.CheckConstraint(
             '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
             name="check_physical_venue_has_offerer_address",
         ),
+        sa.CheckConstraint("(siret IS NOT NULL) OR (comment IS NOT NULL)", name="check_has_siret_or_comment"),
         sa.Index(
             "ix_venue_trgm_unaccent_public_name",
             sa.func.immutable_unaccent("publicName"),

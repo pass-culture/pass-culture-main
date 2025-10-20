@@ -50,9 +50,12 @@ class IndividualOffersSearchAttributes(enum.Enum):
     STATUS = "Statut"
     OFFERER = "Entité juridique"
     TAG = "Tag"
+    VENUE_TAG = "Tag sur le partenaire culturel"
+    OFFERER_TAG = "Tag sur l'entité juridique"
     HEADLINE = "Offres à la une"
     HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
+    ALLOCINE_ID = "Identifiant Allociné"
 
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
@@ -72,6 +75,7 @@ operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "ADDRESS": {"field": "address", "operator": ["IN", "NOT_IN"]},
+    "ALLOCINE_ID": {"field": "integer", "operator": ["EQUALS"]},
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
     "CREATION_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
@@ -83,11 +87,13 @@ form_field_configuration = {
     "MEDIATION": {"field": "boolean", "operator": ["NULLABLE"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "OFFERER_TAG": {"field": "offerer_tags", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "PRODUCT": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
+    "VENUE_TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE_TYPE": {"field": "venue_type", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
@@ -179,6 +185,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
                 "price",
                 "boolean",
                 "provider",
+                "offerer_tags",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -193,6 +200,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         autocomplete.prefill_addresses_choices(self.address)
         autocomplete.prefill_providers_choices(self.provider)
         autocomplete.prefill_highlights_choices(self.highlight)
+        autocomplete.prefill_offerer_tag_choices(self.offerer_tags)
 
     search_field = fields.PCSelectWithPlaceholderValueField(
         "Champ de recherche",
@@ -245,6 +253,16 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         coerce=int,
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_criteria",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    offerer_tags = fields.PCTomSelectField(
+        "Tag de l'entité juridique",
+        multiple=True,
+        choices=[],
+        coerce=int,
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerer_tags",
         search_inline=True,
         field_list_compatibility=True,
     )

@@ -4,9 +4,7 @@ import decimal
 import difflib
 import enum
 import functools
-import json
 import logging
-import re
 import time
 import typing
 import uuid
@@ -44,7 +42,6 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
-from pcapi.connectors import youtube
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.serialization.titelive_serializers import TiteliveImage
 from pcapi.connectors.thumb_storage import create_thumb
@@ -70,6 +67,8 @@ from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.reminders.external import reminders_notifications
 from pcapi.core.search.models import IndexationReason
+from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -111,9 +110,6 @@ OFFER_LIKE_MODELS = {
     "CollectiveOffer",
     "CollectiveOfferTemplate",
 }
-
-VIDEO_URL_CACHE_TTL = 24 * 60 * 60  # 24 hours
-YOUTUBE_INFO_CACHE_PREFIX = "youtube_video_"
 
 
 class T_UNCHANGED(enum.Enum):
@@ -258,9 +254,6 @@ def create_draft_offer(
         product=product,
     )
 
-    if body.video_url:
-        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-        db.session.add(offer_metadata)
     db.session.add(offer)
     db.session.flush()
 
@@ -269,112 +262,30 @@ def create_draft_offer(
     return offer
 
 
-def remove_video_data_from_offer_metadata(
-    offer_meta_data: offers_models.OfferMetaData,
-    offer_id: int,
-    venue_id: int,
-    video_url: str,
-    provider_id: int | None = None,
-) -> None:
-    video_metadata_fields = ["videoDuration", "videoExternalId", "videoThumbnailUrl", "videoTitle", "videoUrl"]
-    for field in video_metadata_fields:
-        setattr(offer_meta_data, field, None)
-    logger.info(
-        "Video has been deleted from offer",
-        extra={
-            "offer_id": offer_id,
-            "venue_id": venue_id,
-            "video_url": video_url,
-            "provider_id": provider_id,
-        },
-        technical_message_id="offer.video.deleted",
-    )
-
-
-def get_video_metadata_from_cache(video_url: str) -> youtube.YoutubeVideoMetadata | None:
-    video_id = extract_youtube_video_id(video_url)
-    if video_id is None:
-        return None
-    cached_video_metadata = current_app.redis_client.get(f"{YOUTUBE_INFO_CACHE_PREFIX}{video_id}")
-    if cached_video_metadata is None:
-        video_metadata = youtube.get_video_metadata(video_id=video_id)
-        if video_metadata is not None:
-            json_video_metadata = json.dumps(
-                {
-                    "title": video_metadata.title,
-                    "thumbnail_url": video_metadata.thumbnail_url,
-                    "duration": video_metadata.duration,
-                }
-            )
-            current_app.redis_client.set(
-                f"{YOUTUBE_INFO_CACHE_PREFIX}{video_metadata.id}", json_video_metadata, ex=VIDEO_URL_CACHE_TTL
-            )  # 24 hours
-    else:
-        video_metadata_dict = json.loads(cached_video_metadata)
-        video_metadata = youtube.YoutubeVideoMetadata(
-            id=video_id,
-            title=video_metadata_dict["title"],
-            thumbnail_url=video_metadata_dict["thumbnail_url"],
-            duration=video_metadata_dict["duration"],
-        )
-    return video_metadata
-
-
-def update_video_and_metadata(video_url: str, offer: offers_models.Offer, provider_id: int | None = None) -> None:
-    video_metadata = get_video_metadata_from_cache(video_url)
-    video_id = extract_youtube_video_id(video_url)
-    if video_metadata is not None:
-        if offer.metaData is None:
-            offer.metaData = models.OfferMetaData(offer=offer)
-            logger.info(
-                "Video has been added to offer",
-                extra={
-                    "offer_id": offer.id,
-                    "venue_id": offer.venueId,
-                    "video_url": video_url,
-                    "provider_id": provider_id,
-                },
-                technical_message_id="offer.video.added",
-            )
-        elif offer.metaData.videoUrl is None:
-            logger.info(
-                "Video has been added to offer",
-                extra={
-                    "offer_id": offer.id,
-                    "venue_id": offer.venueId,
-                    "video_url": video_url,
-                    "provider_id": provider_id,
-                },
-                technical_message_id="offer.video.added",
-            )
-        else:
-            logger.info(
-                "Video has been updated on offer",
-                extra={
-                    "offer_id": offer.id,
-                    "venue_id": offer.venueId,
-                    "video_url": video_url,
-                    "provider_id": provider_id,
-                },
-                technical_message_id="offer.video.updated",
-            )
-        offer.metaData.videoExternalId = video_id
-        offer.metaData.videoTitle = video_metadata.title
-        offer.metaData.videoThumbnailUrl = video_metadata.thumbnail_url
-        offer.metaData.videoDuration = video_metadata.duration
-        offer.metaData.videoUrl = video_url
-        db.session.add(offer.metaData)
-
-
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     if "videoUrl" in fields:
         if new_video_url := fields.pop("videoUrl", None):
-            update_video_and_metadata(new_video_url, offer)
+            try:
+                videos_api.upsert_video_and_metadata(new_video_url, offer)
+            except videos_exceptions.InvalidVideoUrl:
+                raise ApiErrors(
+                    errors={
+                        "videoUrl": [
+                            "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                        ]
+                    }
+                )
+            except videos_exceptions.YoutubeVideoNotFound:
+                raise ApiErrors(
+                    errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
+                )
         elif offer.metaData and offer.metaData.videoUrl:
-            remove_video_data_from_offer_metadata(offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl)
+            videos_api.remove_video_data_from_offer_metadata(
+                offer.metaData, offer.id, offer.venueId, offer.metaData.videoUrl
+            )
 
     body_ean = body.extra_data.get("ean", None) if body.extra_data else None
     if body_ean:
@@ -524,10 +435,6 @@ def create_offer(
         publicationDatetime=None,
     )
     repository.add_to_session(offer)
-
-    if body.video_url:
-        offer_metadata = models.OfferMetaData(offer=offer, videoUrl=body.video_url)
-        db.session.add(offer_metadata)
 
     db.session.flush()
 
@@ -1997,7 +1904,7 @@ def delete_price_category(offer: models.Offer, price_category: models.PriceCateg
     Deletes a price category and its related stocks, by cascade, if the offer is still in draft.
     The stock is truly deleted instead of being soft deleted.
     """
-    validation.check_price_categories_deletable(offer)
+    validation.check_price_categories_deletable(offer, price_category)
     db.session.delete(price_category)
     db.session.flush()
 
@@ -2449,7 +2356,7 @@ def _select_matching_product(
 
 
 def upsert_movie_product_from_provider(
-    movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
+    movie: offers_models.Movie, provider: providers_models.Provider
 ) -> offers_models.Product | None:
     if not movie.allocine_id and not movie.visa:
         logger.warning("Cannot create a movie product without allocineId nor visa")
@@ -2481,7 +2388,7 @@ def upsert_movie_product_from_provider(
         product = products[0]
         if _is_allocine(provider.id) or provider.id == product.lastProviderId:
             with transaction():
-                _update_movie_product(product, movie, provider.id, id_at_providers)
+                _update_movie_product(product, movie, provider.id)
         return product
 
     # Case 3: 2 products were returned
@@ -2513,7 +2420,7 @@ def upsert_movie_product_from_provider(
             )
             product = offers_repository.merge_products(product_with_allocine_id, product_with_visa)
             if _is_allocine(provider.id) or provider.id == product.lastProviderId:
-                _update_movie_product(product, movie, provider.id, id_at_providers)
+                _update_movie_product(product, movie, provider.id)
         else:
             # Case 3.2: the 2 products are DIFFERENT -> selection of the most coherent one
             # we do NOT update the product because if we reached this step, it means
@@ -2544,9 +2451,7 @@ def _is_allocine(provider_id: int) -> bool:
     return provider_id in (allocine_products_provider_id, allocine_stocks_provider_id)
 
 
-def _update_movie_product(
-    product: offers_models.Product, movie: offers_models.Movie, provider_id: int, id_at_providers: str
-) -> None:
+def _update_movie_product(product: offers_models.Product, movie: offers_models.Movie, provider_id: int) -> None:
     product.description = movie.description
     product.durationMinutes = movie.duration
     product.lastProviderId = provider_id
@@ -2849,26 +2754,6 @@ def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
         .where(reactions_models.Reaction.productId >= start, reactions_models.Reaction.productId < end)
         .group_by(reactions_models.Reaction.productId)
     )
-
-
-def extract_youtube_video_id(url: str) -> str | None:
-    if not isinstance(url, str):
-        return None
-    # This regex is a replicate of what exists frontend-side
-    # Mind that frontend / backend controls always match regarding video url.
-    youtube_regex = (
-        r"^(https?://)"
-        r"(www\.)?"
-        r"(m\.)?"
-        r"(youtube\.com\b|youtu\.be\b)"
-        r"(/watch\?v=|/embed/|/v/|/e/|/)(?P<video_id>[\w-]{11})\b"
-    )
-
-    pattern = re.compile(youtube_regex)
-    if match := pattern.match(url):
-        return match.group("video_id")
-
-    return None
 
 
 def upsert_highlight_requests(

@@ -11,10 +11,10 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers.schemas import VenueTypeCode
-from pcapi.core.offers import api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.videos import api as videos_api
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
@@ -31,7 +31,7 @@ class Returns200Test:
 
     def test_patch_draft_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
@@ -40,7 +40,8 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
+        video_id = "WtM4OW2qVjY"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         data = {
             "name": "New name",
             "description": "New description",
@@ -48,9 +49,8 @@ class Returns200Test:
             "extraData": {"gtl_id": "07000000"},
             "videoUrl": video_url,
         }
-        video_id = api.extract_youtube_video_id(video_url)
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -63,7 +63,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
-        assert response.json["venue"]["street"] == None
+        assert response.json["venue"]["street"]
         assert response.json["productId"] == None
 
         updated_offer = db.session.get(Offer, offer.id)
@@ -97,7 +97,7 @@ class Returns200Test:
 
     def test_patch_draft_offer_without_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -150,7 +150,7 @@ class Returns200Test:
 
     def test_patch_draft_offer_with_empty_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venue=venue)
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -293,6 +293,7 @@ class Returns200Test:
             "speaker": "",
         }
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     @pytest.mark.parametrize(
         "is_venue_address,address_payload,",
         [
@@ -327,6 +328,7 @@ class Returns200Test:
             ),
         ],
     )
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_first_step_funnel_creation_shouldnt_create_offer_offerer_address(
         self,
         client,
@@ -400,10 +402,9 @@ class Returns200Test:
         assert response.json["address"]["id_oa"] == updated_draft_offer.offererAddressId
         assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_update_offer_accepts_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -439,10 +440,10 @@ class Returns200Test:
         product = offers_factories.ProductFactory()
         offer = offers_factories.OfferFactory(venue=venue, product=product)
 
-        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = "l73rmrLTHQc"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -473,10 +474,10 @@ class Returns200Test:
             idAtProvider="id_at_provider",
         )
 
-        video_url = "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = "l73rmrLTHQc"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
+            f"{videos_api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
             json.dumps(
                 {
                     "title": "Title",
@@ -581,7 +582,11 @@ class Returns400Test:
             ),
             (
                 {"videoUrl": "http://coucou.com"},
-                {"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]},
+                {
+                    "videoUrl": [
+                        "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                    ]
+                },
             ),
         ],
     )
@@ -618,6 +623,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_fail_when_body_has_null_url_field(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
@@ -653,10 +659,9 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_fail_when_body_has_null_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
             venue=venue,
         )
@@ -668,6 +673,19 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
+
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_fetch_metadata_not_found_should_fail(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(venue=venue)
+
+        data = {"videoUrl": "https://www.youtube.com/watch?v=l73rmrLTHQc"}
+        auth_client = client.with_session_auth("user@example.com")
+        response = auth_client.patch(f"/offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["videoUrl"] == ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]
 
 
 @pytest.mark.usefixtures("db_session")

@@ -587,11 +587,11 @@ CARTE_MUSEE = Subcategory(
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
 )
 
-VISITE = Subcategory(
-    id="VISITE",
+VISITE_LIBRE = Subcategory(
+    id="VISITE",  # kept for backward compatibility
     category=pro_categories.MUSEE,
-    pro_label="Visite",
-    app_label="Visite",
+    pro_label="Visite libre",
+    app_label="Visite libre",
     homepage_label_name=HomepageLabels.VISITES.name,
     is_event=True,
     conditional_fields={},
@@ -1490,7 +1490,7 @@ ALL_SUBCATEGORIES = (
     TELECHARGEMENT_MUSIQUE,
     VISITE_GUIDEE,
     VISITE_VIRTUELLE,
-    VISITE,
+    VISITE_LIBRE,
     VOD,
 )
 ALL_SUBCATEGORIES_DICT = {subcategory.id: subcategory for subcategory in ALL_SUBCATEGORIES}

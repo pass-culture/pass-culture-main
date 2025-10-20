@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class PostDraftOfferBodyModelTest:
     def test_post_draft_offer_body_model(self):
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VenueFactory()
         _ = schemas.deprecated.PostDraftOfferBodyModel(
             name="Name",
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,

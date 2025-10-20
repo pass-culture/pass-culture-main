@@ -55,7 +55,7 @@ CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION btree_gist; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION btree_gist; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION btree_gist IS 'support for indexing common datatypes in GiST';
@@ -69,7 +69,7 @@ CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
@@ -83,7 +83,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
@@ -97,7 +97,7 @@ CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
@@ -111,7 +111,7 @@ CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder WITH SCHEMA tiger;
 
 
 --
--- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis_tiger_geocoder IS 'PostGIS tiger geocoder and reverse geocoder';
@@ -125,7 +125,7 @@ CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
 
 
 --
--- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
@@ -139,7 +139,7 @@ CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION unaccent; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION unaccent IS 'text search dictionary that removes accents';
@@ -8255,9 +8255,7 @@ INSERT INTO public.feature VALUES (123, 'VENUE_REGULARIZATION', 'Déplacement de
 INSERT INTO public.feature VALUES (124, 'WIP_ENABLE_OHO', 'Activer la création d''offre individuelle sur plages horaires', false);
 INSERT INTO public.feature VALUES (125, 'WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE', 'Permettre l''indexation et la réservation des offres en Nouvelle-Calédonie', false);
 INSERT INTO public.feature VALUES (126, 'WIP_ENABLE_NEW_FINANCE_WORKFLOW', 'Active le nouveau workflow finance', false);
-INSERT INTO public.feature VALUES (127, 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING_AB_TEST', 'Activer l''A/B test du parcours d''onboarding didactique', false);
 INSERT INTO public.feature VALUES (128, 'ENABLE_MARSEILLE', 'Activer Marseille en grand dans le front', true);
-INSERT INTO public.feature VALUES (129, 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING', 'Activer le parcours d''onboarding didactique des acteurs culturels', true);
 INSERT INTO public.feature VALUES (130, 'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE', 'Activer la nouvelle structure des offres et réservations collectives', false);
 INSERT INTO public.feature VALUES (131, 'ENABLE_VIRUSTOTAL', 'Active la vérification des liens externes par VirusTotal', false);
 INSERT INTO public.feature VALUES (132, 'ENABLE_RECURRENT_CRON', 'Si faux, aucune cron de synchronization, indexation et pricing ne sera lancé', true);

@@ -9,23 +9,21 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
 } from '@/commons/hooks/useMediaQuery'
+import { setOpenSection } from '@/commons/store/nav/reducer'
 import {
-  setIsCollectiveSectionOpen,
-  setIsIndividualSectionOpen,
-} from '@/commons/store/nav/reducer'
-import {
-  selectIsCollectiveSectionOpen,
-  selectIsIndividualSectionOpen,
+  openSection,
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -61,61 +59,60 @@ const COLLECTIVE_LINKS = [
   /structures\/\d+\/lieux\/\d+\/collectif/,
 ]
 
+const matches = (patterns: RegExp[], path: string) =>
+  patterns.some((rx) => rx.test(path))
+
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const location = useLocation()
-  const isNewCollectiveOffersStructureEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
   const dispatch = useDispatch()
-  const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
-  const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
+  const navOpenSection = useSelector(openSection)
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOfferer = useSelector(selectCurrentOfferer)
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
   const isCaledonian = useIsCaledonian()
 
-  const { data: selectedOfferer, error: offererApiError } = useOfferer(
-    selectedOffererId,
-    true
-  )
-  const isUserOffererValidated = !offererApiError
-
   const permanentVenues =
-    selectedOfferer?.managedVenues?.filter((venue) => venue.isPermanent) ?? []
+    selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
   const hasPartnerPageVenues =
-    selectedOfferer?.managedVenues?.filter((venue) => venue.hasPartnerPage) ??
-    []
+    selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
   const venueId = permanentVenues[0]?.id
 
+  // Keep: this makes the “resize → auto-collapse to matching section” work.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want the changes if the state changes
   useEffect(() => {
-    if (sideNavCollapseSize) {
-      for (const link of INDIVIDUAL_LINKS) {
-        if (link.test(location.pathname)) {
-          dispatch(setIsIndividualSectionOpen(true))
-          dispatch(setIsCollectiveSectionOpen(false))
-          return
-        }
-      }
-
-      for (const link of COLLECTIVE_LINKS) {
-        if (link.test(location.pathname)) {
-          dispatch(setIsCollectiveSectionOpen(true))
-          dispatch(setIsIndividualSectionOpen(false))
-          return
-        }
-      }
-
-      // If no link matches, we close both sections
-      dispatch(setIsIndividualSectionOpen(false))
-      dispatch(setIsCollectiveSectionOpen(false))
+    if (!sideNavCollapseSize) {
+      return
     }
-  }, [sideNavCollapseSize, dispatch, location.pathname])
+
+    const path = location.pathname
+    const openIndividual = matches(INDIVIDUAL_LINKS, path)
+    const openCollective = matches(COLLECTIVE_LINKS, path)
+
+    // Only dispatch if a change is actually needed
+    if (
+      openIndividual !== navOpenSection.individual ||
+      openCollective !== navOpenSection.collective
+    ) {
+      dispatch(
+        setOpenSection({
+          individual:
+            openIndividual !== navOpenSection.individual
+              ? openIndividual
+              : navOpenSection.individual,
+          collective:
+            openCollective !== navOpenSection.collective
+              ? openCollective
+              : navOpenSection.collective,
+        })
+      )
+    }
+  }, [sideNavCollapseSize, location.pathname, dispatch])
 
   const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
@@ -123,13 +120,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     selectedOffererId
   )
   const stillRelevantSavedPartnerPageVenueId = hasPartnerPageVenues
-    .find((venue) => venue.id.toString() === savedPartnerPageVenueId)
+    .find((v) => v.id.toString() === savedPartnerPageVenueId)
     ?.id.toString()
 
-  // At first, redux store is empty. We check local storage and use
-  // first partner page venue as defautl if local storage is empty too.
-  // If local storage changes from VenueEdition, we update redux store
-  // as well - and use the new selectedPartnerPageVenueId here.
   const selectedPartnerPageVenueId =
     reduxStoredPartnerPageId ||
     stillRelevantSavedPartnerPageVenueId ||
@@ -142,10 +135,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      {selectedOfferer && isUserOffererValidated && (
+      {selectedOfferer && (
         <div className={styles['nav-links-group']}>
           <div className={styles['nav-links-create-offer-wrapper']}>
-            {isNewOfferCreationFlowFFEnabled && (
+            {isNewOfferCreationFlowFFEnabled ? (
               <DropdownButton
                 name="Créer une offre"
                 triggerProps={{
@@ -180,11 +173,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   },
                 ]}
               />
-            )}
-            {!isNewOfferCreationFlowFFEnabled && (
+            ) : (
               <ButtonLink
                 variant={ButtonVariant.PRIMARY}
-                to={'/offre/creation'}
+                to="/offre/creation"
                 className={styles['nav-links-create-offer-wrapper-trigger']}
               >
                 Créer une offre
@@ -193,6 +185,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           </div>
         </div>
       )}
+
       <ul
         className={classnames(
           styles['nav-links-group'],
@@ -217,21 +210,29 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             <span className={styles['nav-links-item-title']}>Accueil</span>
           </NavLink>
         </li>
+
+        {/* INDIVIDUEL */}
         <li>
           <button
             type="button"
             onClick={() => {
-              const willOpenIndividualSection = !isIndividualSectionOpen
-              if (sideNavCollapseSize && willOpenIndividualSection) {
-                dispatch(setIsCollectiveSectionOpen(false))
-              }
-              dispatch(setIsIndividualSectionOpen(willOpenIndividualSection))
+              const willOpen = !navOpenSection.individual
+
+              dispatch(
+                setOpenSection({
+                  individual: willOpen,
+                  collective:
+                    sideNavCollapseSize && willOpen
+                      ? false
+                      : navOpenSection.collective,
+                })
+              )
             }}
             className={classnames(
               styles['nav-links-item'],
               styles['nav-section-button']
             )}
-            aria-expanded={isIndividualSectionOpen}
+            aria-expanded={navOpenSection.individual}
             aria-controls="individual-sublist"
             id="individual-sublist-button"
           >
@@ -243,14 +244,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             />
             <span className={styles['nav-section-title']}>Individuel</span>
             <SvgIcon
-              src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
+              src={navOpenSection.individual ? fullUpIcon : fullDownIcon}
               alt=""
               width="18"
               className={styles['nav-section-icon']}
             />
           </button>
 
-          {isIndividualSectionOpen && (
+          {navOpenSection.individual && (
             <ul
               id="individual-sublist"
               aria-labelledby="individual-sublist-button"
@@ -258,12 +259,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               <li>
                 <NavLink
                   to="/offres"
+                  end
                   className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
                       [styles['nav-links-item-active']]: isActive,
                     })
                   }
-                  end
                 >
                   <span className={styles['nav-links-item-without-icon']}>
                     Offres
@@ -303,12 +304,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 <li>
                   <NavLink
                     to={`/structures/${selectedOffererId}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
+                    end
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,
                       })
                     }
-                    end
                   >
                     <span className={styles['nav-links-item-without-icon']}>
                       Page sur l’application
@@ -319,23 +320,29 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             </ul>
           )}
         </li>
+
+        {/* COLLECTIF */}
         <li>
           <button
             type="button"
             onClick={() => {
-              const willdOpenCollectiveSection = !isCollectiveSectionOpen
-              if (sideNavCollapseSize && willdOpenCollectiveSection) {
-                dispatch(setIsIndividualSectionOpen(false))
-              }
+              const willOpen = !navOpenSection.collective
+
               dispatch(
-                dispatch(setIsCollectiveSectionOpen(willdOpenCollectiveSection))
+                setOpenSection({
+                  individual:
+                    sideNavCollapseSize && willOpen
+                      ? false
+                      : navOpenSection.individual,
+                  collective: willOpen,
+                })
               )
             }}
             className={classnames(
               styles['nav-links-item'],
               styles['nav-section-button']
             )}
-            aria-expanded={isCollectiveSectionOpen}
+            aria-expanded={navOpenSection.collective}
             aria-controls="collective-sublist"
             id="collective-sublist-button"
           >
@@ -347,33 +354,32 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             />
             <span className={styles['nav-section-title']}>Collectif</span>
             <SvgIcon
-              src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
+              src={navOpenSection.collective ? fullUpIcon : fullDownIcon}
               alt=""
               width="18"
               className={styles['nav-section-icon']}
             />
           </button>
-          {isCollectiveSectionOpen && (
+
+          {navOpenSection.collective && (
             <ul
               id="collective-sublist"
               aria-labelledby="collective-sublist-button"
             >
-              {isNewCollectiveOffersStructureEnabled && (
-                <li>
-                  <NavLink
-                    to="/offres/vitrines"
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Offres vitrines
-                    </span>
-                  </NavLink>
-                </li>
-              )}
+              <li>
+                <NavLink
+                  to="/offres/vitrines"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Offres vitrines
+                  </span>
+                </NavLink>
+              </li>
               <li>
                 <NavLink
                   to="/offres/collectives"
@@ -384,39 +390,21 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   }
                 >
                   <span className={styles['nav-links-item-without-icon']}>
-                    {isNewCollectiveOffersStructureEnabled
-                      ? 'Offres réservables'
-                      : 'Offres'}
+                    Offres réservables
                   </span>
                 </NavLink>
               </li>
-              {!isNewCollectiveOffersStructureEnabled && (
-                <li>
-                  <NavLink
-                    to="/reservations/collectives"
-                    end
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Réservations
-                    </span>
-                  </NavLink>
-                </li>
-              )}
+
               {venueId && (
                 <li>
                   <NavLink
                     to={`/structures/${selectedOffererId}/lieux/${venueId}/collectif`}
+                    end
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
                         [styles['nav-links-item-active']]: isActive,
                       })
                     }
-                    end
                   >
                     <span className={styles['nav-links-item-without-icon']}>
                       Page dans ADAGE
@@ -428,6 +416,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           )}
         </li>
       </ul>
+
       <div className={styles['nav-links-group']}>
         <div
           className={styles['nav-links-last-group-separator']}

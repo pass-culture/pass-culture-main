@@ -27,7 +27,7 @@
           <td>
             {{ build_connect_as_link(connect_as[booking_finance_incident.booking.id], booking_finance_incident.booking.stock.offer.name, "link-primary") }}
           </td>
-          <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+          <td>{{ booking_finance_incident.booking.dateCreated | format_date_time }}</td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.booking.id }}"
             data-bs-parent=".table">

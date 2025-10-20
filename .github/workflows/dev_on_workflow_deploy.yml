@@ -105,6 +105,7 @@ jobs:
             pass-culture-main
             rendered-manifests
             pc-connect
+            pc-firestore-cli
             pc-render-manifests
           permission-contents: write
 
@@ -220,7 +221,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
       - name: "Build documentation"
@@ -316,7 +317,9 @@ jobs:
           app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
           private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: pc-connect
+          repositories: |
+            pc-connect
+            pc-firestore-cli
           permission-contents: read
 
       - name: "Get secrets"

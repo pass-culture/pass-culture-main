@@ -191,7 +191,6 @@ export function logInAndSeeDidacticOnboarding(
 ) {
   doLogin(login, setDefaultCookieOrejime).then(() => {
     cy.stepLog({ message: `I open the /onboarding page` })
-    cy.visit('/onboarding')
 
     cy.findAllByTestId('spinner').should('not.exist')
 
@@ -241,7 +240,7 @@ export function homePageLoaded() {
  * interceptSearch5Adresses()
  * ...
  * cy.wait('@search5Address')
- * FIXME 22/04/25 bdalbianco: change this and constants.ts to reproduce proper api address call 
+ * FIXME 22/04/25 bdalbianco: change this and constants.ts to reproduce proper api address call
  */
 export function interceptSearch5Adresses() {
   cy.intercept(

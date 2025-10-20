@@ -20,14 +20,16 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         offerer_with_two_venues = offerers_factories.OffererFactory(
             name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
         )
-        digital_venue = offerers_factories.VirtualVenueFactory(
+        venue_without_siret = offerers_factories.VenueWithoutSiretFactory(
             managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16),
             name="Do you diji",
             publicName="Diji",
             venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
         )
-        providers_factories.VenueProviderFactory(venue=digital_venue, provider=provider, venueIdAtOfferProvider="Test")
+        providers_factories.VenueProviderFactory(
+            venue=venue_without_siret, provider=provider, venueIdAtOfferProvider="Test"
+        )
         physical_venue = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_two_venues,
             dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
@@ -61,7 +63,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         return (
             plain_api_key,
             offerer_with_two_venues,
-            digital_venue,
+            venue_without_siret,
             physical_venue,
             offerer_with_one_venue,
             other_physical_venue,
@@ -71,7 +73,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         (
             plain_api_key,
             offerer_with_two_venues,
-            digital_venue,
+            venue_without_siret,
             physical_venue,
             offerer_with_one_venue,
             other_physical_venue,
@@ -102,22 +104,27 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             "venues": [
                 {
                     "accessibility": {
-                        "audioDisabilityCompliant": None,
-                        "mentalDisabilityCompliant": None,
-                        "motorDisabilityCompliant": None,
-                        "visualDisabilityCompliant": None,
+                        "audioDisabilityCompliant": False,
+                        "mentalDisabilityCompliant": False,
+                        "motorDisabilityCompliant": False,
+                        "visualDisabilityCompliant": False,
                     },
                     "activityDomain": "ARTISTIC_COURSE",
                     "createdDatetime": "2023-01-16T00:00:00Z",
                     "bookingUrl": None,
                     "cancelUrl": None,
                     "notificationUrl": None,
-                    "id": digital_venue.id,
+                    "id": venue_without_siret.id,
                     "legalName": "Do you diji",
-                    "location": {"type": "digital"},
+                    "location": {
+                        "address": venue_without_siret.offererAddress.address.street,
+                        "city": venue_without_siret.offererAddress.address.city,
+                        "postalCode": venue_without_siret.offererAddress.address.postalCode,
+                        "type": "physical",
+                    },
                     "publicName": "Diji",
                     "siret": None,
-                    "siretComment": None,
+                    "siretComment": venue_without_siret.comment,
                 },
                 {
                     "accessibility": {
@@ -232,7 +239,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             response = self.make_request(plain_api_key, query_params={"siren": invalid_siren})
             assert response == 400
 
-        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+        assert response.json == {"siren": ['string does not match regex "^(\\d{9}|NC\\d{7})$"']}
 
     def test_when_no_venues(self):
         plain_api_key, _ = self.setup_provider()

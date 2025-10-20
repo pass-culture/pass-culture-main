@@ -140,9 +140,7 @@ describe('useFocus', () => {
     expect(
       screen.getByRole('heading', { name: 'Remboursements' })
     ).toBeInTheDocument()
-    await userEvent.click(
-      screen.getByRole('link', { name: 'Lien actif Justificatifs' })
-    )
+    await userEvent.click(screen.getByRole('link', { name: /Justificatifs/ }))
 
     expect(
       screen.getByRole('heading', { name: 'Remboursements' })

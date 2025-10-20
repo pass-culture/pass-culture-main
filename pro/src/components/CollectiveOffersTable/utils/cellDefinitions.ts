@@ -8,9 +8,7 @@ type CELLS =
   | 'INFO_ON_EXPIRATION'
   | 'NAME'
   | 'EVENT_DATE'
-  | 'VENUE'
   | 'LOCATION'
-  | 'STRUCTURE'
   | 'INSTITUTION'
   | 'COLLECTIVE_STATUS'
   | 'ACTIONS'
@@ -34,17 +32,9 @@ export function getCellsDefinition(): Record<CELLS, CellDefinition> {
       id: 'offer-head-event-date',
       title: 'Dates',
     },
-    VENUE: {
-      id: 'offer-head-venue',
-      title: 'Lieu',
-    },
     LOCATION: {
       id: 'offer-head-location',
       title: 'Localisation',
-    },
-    STRUCTURE: {
-      id: 'offer-head-structure',
-      title: 'Structure',
     },
     INSTITUTION: {
       id: 'offer-head-institution',

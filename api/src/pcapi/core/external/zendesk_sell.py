@@ -87,7 +87,7 @@ def create_venue(venue: offerers_models.Venue) -> None:
 
 def do_create_venue(venue_id: int) -> None:
     """Called asynchronously by GCP task"""
-    venue = offerers_repository.find_venue_by_id(venue_id, load_address=True)
+    venue = offerers_repository.find_venue_by_id_with_address(venue_id)
     if not venue:
         logger.error("Trying to create venue which does not exist", extra={"venue_id": venue_id})
         return
@@ -110,7 +110,7 @@ def update_venue(venue: offerers_models.Venue) -> None:
 
 def do_update_venue(venue_id: int) -> None:
     """Called asynchronously by GCP task"""
-    venue = offerers_repository.find_venue_by_id(venue_id, load_address=True)
+    venue = offerers_repository.find_venue_by_id_with_address(venue_id)
     if not venue:
         logger.error("Trying to update venue which does not exist", extra={"venue_id": venue_id})
         return
@@ -168,7 +168,7 @@ def update_offerer(offerer: offerers_models.Offerer) -> None:
 
 def do_update_offerer(offerer_id: int) -> None:
     """Called asynchronously by GCP task"""
-    offerer = offerers_repository.find_offerer_by_id(offerer_id)
+    offerer = offerers_repository.find_offerer_by_id_with_venues_addresses(offerer_id)
     if not offerer:
         logger.error("Trying to update offerer which does not exist", extra={"offerer_id": offerer_id})
         return

@@ -6,6 +6,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice import filters
@@ -117,3 +118,35 @@ class FormatDepositUsedTest:
         booking = bookings_factories.UsedBookingFactory(usedRecreditType=recredit_type)
         result = filters.format_deposit_used(booking)
         assert result == expected
+
+
+class FormatDateTimeTest:
+    def test_format_date_time_in_paris(self):
+        dt = datetime.datetime(2025, 7, 14, 23, 0)
+        result = filters.format_date_time(dt)
+        assert result == "15/07/2025 à 01h00"
+
+    def test_format_date_time_overseas_same_day(self):
+        dt = datetime.datetime(2025, 7, 14, 8, 15)
+        address = geography_factories.OverseasAddressFactory()
+        result = filters.format_date_time(dt, address)
+        assert result == (
+            "14/07/2025 à 04h15&nbsp;"
+            '<i class="bi bi-clock-history text-body" data-bs-toggle="tooltip" data-bs-placement="top"'
+            ' data-bs-title="Fuseau horaire : Martinique (10h15&nbsp;à&nbsp;Paris)"></i>'
+        )
+
+    def test_format_date_time_overseas_next_day(self):
+        dt = datetime.datetime(2025, 7, 14, 18, 30)
+        address = geography_factories.CaledonianAddressFactory()
+        result = filters.format_date_time(dt, address)
+        assert result == (
+            "15/07/2025 à 05h30&nbsp;"
+            '<i class="bi bi-clock-history text-body" data-bs-toggle="tooltip" data-bs-placement="top"'
+            ' data-bs-title="Fuseau horaire : Noumea (14/07 à 20h30&nbsp;à&nbsp;Paris)"></i>'
+        )
+
+    def test_format_empty_date_time(self):
+        address = geography_factories.OverseasAddressFactory()
+        result = filters.format_date_time(None, address)
+        assert result == ""

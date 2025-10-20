@@ -48,7 +48,7 @@
     </td>
     <td>{{ links.build_pro_user_name_to_details_link(collective_offer_template.authorId ,collective_offer_template.author.full_name) }}</td>
     <td data-pc-sort-table-value="{{ collective_offer_template.dateCreated.timestamp() }}">
-      {{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}
+      {{ collective_offer_template.dateCreated | format_date }}
     </td>
     <td data-pc-sort-table-value="{{ collective_offer_template.venue.managingOfferer.name  | lower }}">
       {{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}

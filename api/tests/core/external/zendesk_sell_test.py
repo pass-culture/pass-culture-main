@@ -18,7 +18,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_create_offerer():
-    offerer = offerers_factories.OffererFactory(postalCode="95300")
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="95")
 
     with requests_mock.Mocker() as mock:
         posted = mock.post(
@@ -29,11 +30,7 @@ def test_create_offerer():
     assert posted.call_count == 1
     posted_json = posted.last_request.json()
     assert posted_json["data"]["is_organization"] is True
-    assert posted_json["data"]["address"] == {
-        "line1": offerer.street,
-        "city": offerer.city,
-        "postal_code": offerer.postalCode,
-    }
+    assert "address" not in posted_json["data"]
     assert posted_json["data"]["custom_fields"]["Département"] == "95"
     assert posted_json["data"]["custom_fields"]["Région"] == "ÎLE-DE-FRANCE"
     assert posted_json["data"]["custom_fields"]["Typage"] == ["Structure"]
@@ -46,7 +43,8 @@ def test_create_offerer():
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_update_offerer():
     zendesk_id = 12
-    offerer = offerers_factories.OffererFactory(postalCode="20000")
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="20")
 
     with requests_mock.Mocker() as mock:
         put = mock.put(
@@ -59,11 +57,7 @@ def test_update_offerer():
     assert put.call_count == 1
     put_json = put.last_request.json()
     assert put_json["data"]["is_organization"] is True
-    assert put_json["data"]["address"] == {
-        "line1": offerer.street,
-        "city": offerer.city,
-        "postal_code": offerer.postalCode,
-    }
+    assert "address" not in put_json["data"]
     assert put_json["data"]["custom_fields"]["Département"] == "20"
     assert put_json["data"]["custom_fields"]["Région"] == "CORSE"
     assert put_json["data"]["custom_fields"]["Typage"] == ["Structure"]
@@ -224,7 +218,7 @@ def test_create_venue_without_parent_offerer():
 def test_create_venue_and_parent_offerer():
     # Offerer is not found in Zendesk, create it before the venue
     ret_id = 10
-    offerer = offerers_factories.OffererFactory(postalCode="97100")
+    offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(
         offererAddress__address__departmentCode="972",
         offererAddress__address__postalCode="97200",
@@ -251,13 +245,9 @@ def test_create_venue_and_parent_offerer():
 
     posted_offerer_json = posted.request_history[0].json()
     assert posted_offerer_json["data"]["is_organization"] is True
-    assert posted_offerer_json["data"]["address"] == {
-        "line1": offerer.street,
-        "city": offerer.city,
-        "postal_code": offerer.postalCode,
-    }
-    assert posted_offerer_json["data"]["custom_fields"]["Département"] == "971"
-    assert posted_offerer_json["data"]["custom_fields"]["Région"] == "GUADELOUPE"
+    assert "address" not in posted_offerer_json["data"]
+    assert posted_offerer_json["data"]["custom_fields"]["Département"] == "972"
+    assert posted_offerer_json["data"]["custom_fields"]["Région"] == "MARTINIQUE"
     assert posted_offerer_json["data"]["custom_fields"]["Typage"] == ["Structure"]
     assert posted_offerer_json["data"]["custom_fields"]["Produit Offerer ID"] == offerer.id
     assert posted_offerer_json["data"]["custom_fields"]["SIREN"] == offerer.siren

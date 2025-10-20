@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { isError, isErrorAPIError } from '@/apiClient/helpers'
 import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -16,7 +17,6 @@ import {
   SAVED_OFFERER_ID_KEY,
 } from '@/commons/core/shared/constants'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
@@ -27,8 +27,7 @@ import {
   selectCurrentOfferer,
   selectCurrentOffererId,
 } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
-import { getOffererData } from '@/commons/utils/offererStoreHelper'
+import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -43,7 +42,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
-export const Validation = (): JSX.Element => {
+export const Validation = (): JSX.Element | undefined => {
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -59,9 +58,8 @@ export const Validation = (): JSX.Element => {
 
   const dispatch = useDispatch()
   const { currentUser } = useCurrentUser()
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
   const currentOffererId = useSelector(selectCurrentOffererId)
-  const currentOfferer = useSelector(selectCurrentOfferer)
+  const currentOfferer = useSelector(selectCurrentOfferer, shallowEqual)
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -81,18 +79,18 @@ export const Validation = (): JSX.Element => {
       navigate('/inscription/structure/activite')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity, offerer])
+  }, [activity, offerer, navigate])
 
   if (venueTypesQuery.isLoading) {
     return <Spinner />
   }
 
   if (!venueTypes) {
-    return <></>
+    return
   }
 
   if (activity === null || offerer === null) {
-    return <></>
+    return
   }
 
   const onSubmit = async () => {
@@ -127,6 +125,8 @@ export const Validation = (): JSX.Element => {
         token,
       }
 
+      // NOTE: the code below IS dirty. It will be cleaned up in a future PR.
+
       // Sending offerer data…
       const response = await api.saveNewOnboardingData(data)
 
@@ -140,46 +140,38 @@ export const Validation = (): JSX.Element => {
       const offerers = await api.listOfferersNames()
       dispatch(updateOffererNames(offerers.offerersNames))
 
-      // If API returns an offerer ID that is different from the one in the redux store, we must update it too
+      let fullOfferer = currentOfferer
       if (currentOffererId !== response.id) {
-        // Update the current offerer in the redux store and in the local storage if available
-        const fullOfferer = await api.getOfferer(response.id)
-        dispatch(updateCurrentOfferer(fullOfferer))
+        fullOfferer = await api.getOfferer(response.id)
         if (storageAvailable('localStorage')) {
           localStorage.setItem(SAVED_OFFERER_ID_KEY, response.id.toString())
         }
       }
 
-      // Checks if user should see the didactic onboarding (FF + A/B Test)
-      if (isDidacticOnboardingEnabled) {
-        // If currentOffererId is null, offerer is not onboarded yet
-        if (currentOffererId === null) {
-          const fullOfferer = await api.getOfferer(response.id)
-          dispatch(updateCurrentOfferer(fullOfferer))
-          return navigate('/onboarding')
-        }
-
-        // Else, we should get the new offererId onboarded status (to redirect to /onboarding or /accueil)
-        const fullOfferer = await getOffererData(
-          response.id,
-          currentOfferer,
-          () => api.getOfferer(response.id)
+      dispatch(updateCurrentOfferer(fullOfferer))
+      dispatch(
+        updateUserAccess(
+          offerers?.offerersNames.length > 0
+            ? fullOfferer?.isOnboarded
+              ? 'full'
+              : 'no-onboarding'
+            : 'no-offerer'
         )
-        dispatch(updateCurrentOfferer(fullOfferer))
-        if (!fullOfferer?.isOnboarded) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate('/onboarding')
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          navigate('/accueil')
-        }
-      } else {
-        notify.success('Votre structure a bien été créée')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        navigate('/accueil')
+      )
+    } catch (e: unknown) {
+      if (
+        (isErrorAPIError(e) && e.status === 403) ||
+        (isError(e) && e.message.indexOf('Failed to fetch') >= 0)
+      ) {
+        // Do nothing at this point,
+        // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
+        // But we must let him sign in
+        dispatch(updateUserAccess('unattached'))
+
+        return
       }
-    } catch (error) {
-      if (error === RECAPTCHA_ERROR) {
+
+      if (e === RECAPTCHA_ERROR) {
         notify.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
         notify.error('Erreur lors de la création de votre structure')

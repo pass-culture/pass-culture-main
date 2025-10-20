@@ -112,4 +112,8 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
 
 
 class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
-    siren: str | None = pydantic_v1.Field(example="123456789", regex=r"^\d{9}$")
+    siren: str | None = pydantic_v1.Field(
+        example="123456789",
+        regex=r"^(\d{9}|NC\d{7})$",
+        description='Offerer SIREN or RID7 (in this case, it must be prefixed with `"NC"`, for instance `"NC1234567"`)',
+    )

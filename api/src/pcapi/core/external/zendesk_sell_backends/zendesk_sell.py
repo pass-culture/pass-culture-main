@@ -411,25 +411,30 @@ class ZendeskSellBackend(ZendeskSellReadOnlyBackend):
         return params
 
     def _get_offerer_data(self, offerer: offerers_models.Offerer, created: bool = False) -> dict:
+        # Fill in offerer department/region in Zendesk Sell only when venues are located in a single department/region
+        venues_departments = {
+            # TODO (prouzet, 2025-10-02) CLEAN_OA Remove ` and venue.offererAddress` when non nullable
+            venue.offererAddress.address.departmentCode
+            for venue in offerer.managedVenues
+            if venue.siret and venue.offererAddress
+        }
+        venues_regions = {get_region_name_from_department(department).upper() for department in venues_departments}
         params: dict = {
             "data": {
                 "is_organization": True,
                 # "name" is not updated because sometimes the name in the product is not the same in Zendesk Sell,
                 "last_name": "",
-                "address": {
-                    "line1": offerer.street,
-                    "city": offerer.city,
-                    "postal_code": offerer.postalCode,
-                },
                 "custom_fields": {
-                    ZendeskCustomFieldsNames.DEPARTEMENT.value: offerer.departementCode,
+                    ZendeskCustomFieldsNames.DEPARTEMENT.value: list(venues_departments)[0]
+                    if len(venues_departments) == 1
+                    else None,
                     ZendeskCustomFieldsNames.INTERNAL_COMMENT.value: "Mis à jour par le produit le %s"
                     % (datetime.date.today().strftime("%d/%m/%Y"),),
                     ZendeskCustomFieldsNames.JURIDIC_NAME.value: offerer.name,
                     ZendeskCustomFieldsNames.PRODUCT_OFFERER_ID.value: offerer.id,
-                    ZendeskCustomFieldsNames.REGION.value: get_region_name_from_department(
-                        offerer.departementCode
-                    ).upper(),
+                    ZendeskCustomFieldsNames.REGION.value: list(venues_regions)[0]
+                    if len(venues_regions) == 1
+                    else None,
                     ZendeskCustomFieldsNames.SIREN.value: offerer.siren,
                     ZendeskCustomFieldsNames.TYPAGE.value: ["Structure"],
                     ZendeskCustomFieldsNames.BACKOFFICE_LINK.value: urls.build_backoffice_offerer_link(offerer.id),

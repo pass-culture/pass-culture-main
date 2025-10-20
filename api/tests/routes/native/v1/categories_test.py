@@ -1763,7 +1763,7 @@ class SubcategoriesTest:
                 "id": "VISITE",
                 "categoryId": "MUSEE",
                 "nativeCategoryId": "VISITES_CULTURELLES",
-                "appLabel": "Visite",
+                "appLabel": "Visite libre",
                 "searchGroupName": "MUSEES_VISITES_CULTURELLES",
                 "homepageLabelName": "VISITES",
                 "isEvent": True,

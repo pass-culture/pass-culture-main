@@ -1,21 +1,22 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
-  CollectiveBookingStatus,
+  CancelablePromise,
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
+  type EducationalRedactors,
 } from '@/apiClient/v1'
 import { DEFAULT_VISIBILITY_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
-import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
 import {
-  getCollectiveOfferBookingFactory,
-  getCollectiveOfferFactory,
-} from '@/commons/utils/factories/collectiveApiFactories'
+  GET_DATA_ERROR_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -33,6 +34,27 @@ vi.mock('@/apiClient/api', () => ({
     patchCollectiveOffersEducationalInstitution: vi.fn(),
   },
 }))
+
+class Deferred<T> {
+  promise: CancelablePromise<T>
+  resolve!: (value: T | PromiseLike<T>) => void
+  reject!: ({
+    status,
+    message,
+    name,
+  }: {
+    status: number
+    message: string
+    name: string
+  }) => void
+
+  constructor() {
+    this.promise = new CancelablePromise<T>((resolve, reject) => {
+      this.resolve = resolve
+      this.reject = reject
+    })
+  }
+}
 
 vi.mock('use-debounce', async () => ({
   ...(await vi.importActual('use-debounce')),
@@ -103,6 +125,10 @@ describe('CollectiveOfferVisibility', () => {
     }
   })
 
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
   it('should show banner if generate from publicApi', () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
@@ -111,30 +137,10 @@ describe('CollectiveOfferVisibility', () => {
       mode: Mode.EDITION,
       offer,
     })
+
     expect(
       screen.getByText('Offre importée automatiquement')
     ).toBeInTheDocument()
-  })
-
-  it('should display booking link for sold out offer with pending booking', () => {
-    const offer = getCollectiveOfferFactory({
-      booking: getCollectiveOfferBookingFactory({
-        id: 76,
-        status: CollectiveBookingStatus.PENDING,
-      }),
-    })
-
-    renderVisibilityStep({
-      ...props,
-      mode: Mode.EDITION,
-      offer,
-    })
-
-    const bookingLink = screen.getByRole('link', {
-      name: 'Voir la préréservation',
-    })
-
-    expect(bookingLink).toBeInTheDocument()
   })
 
   it('should disable visibility form if institution is not editable', async () => {
@@ -192,17 +198,17 @@ describe('CollectiveOfferVisibility', () => {
       api,
       'patchCollectiveOffersEducationalInstitution'
     ).mockResolvedValueOnce(resultingOffer)
-    vi.spyOn(
-      api,
-      'getAutocompleteEducationalRedactorsForUai'
-    ).mockResolvedValueOnce([
-      {
-        email: 'compte.test@education.gouv.fr',
-        gender: 'Mr.',
-        name: 'REDA',
-        surname: 'KHTEUR',
-      },
-    ])
+
+    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+      .mockResolvedValueOnce([]) // redactors preloading
+      .mockResolvedValueOnce([
+        {
+          email: 'compte.test@education.gouv.fr',
+          gender: 'Mr.',
+          name: 'REDA',
+          surname: 'KHTEUR',
+        },
+      ])
 
     renderVisibilityStep(props)
 
@@ -212,8 +218,10 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.type(institutionInput, 'Collège Institution 1')
 
     await userEvent.keyboard('{ArrowDown}{Enter}')
+    expect(api.getAutocompleteEducationalRedactorsForUai).toHaveBeenCalledOnce()
 
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
+
     await userEvent.type(teacherInput, 'Red')
 
     await userEvent.keyboard('{ArrowDown}{Enter}')
@@ -243,8 +251,8 @@ describe('CollectiveOfferVisibility', () => {
       api,
       'patchCollectiveOffersEducationalInstitution'
     ).mockRejectedValueOnce(new Error('Ooops'))
-    const notifyError = vi.fn()
 
+    const notifyError = vi.fn()
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
@@ -252,6 +260,7 @@ describe('CollectiveOfferVisibility', () => {
       ...notifsImport,
       error: notifyError,
     }))
+
     renderVisibilityStep(props)
 
     await userEvent.click(
@@ -313,17 +322,16 @@ describe('CollectiveOfferVisibility', () => {
   it('should clear teacher suggestion when clearing teacher input', async () => {
     renderVisibilityStep(props)
 
-    vi.spyOn(
-      api,
-      'getAutocompleteEducationalRedactorsForUai'
-    ).mockResolvedValueOnce([
-      {
-        email: 'compte.test@education.gouv.fr',
-        gender: 'Mr.',
-        name: 'REDA',
-        surname: 'KHTEUR',
-      },
-    ])
+    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+      .mockResolvedValueOnce([]) // redactors preloading
+      .mockResolvedValueOnce([
+        {
+          email: 'compte.test@education.gouv.fr',
+          gender: 'Mr.',
+          name: 'REDA',
+          surname: 'KHTEUR',
+        },
+      ])
 
     const institutionInput = screen.getByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -348,17 +356,16 @@ describe('CollectiveOfferVisibility', () => {
 
   it('should clear teacher suggestion when clearing institution', async () => {
     renderVisibilityStep(props)
-    vi.spyOn(
-      api,
-      'getAutocompleteEducationalRedactorsForUai'
-    ).mockResolvedValueOnce([
-      {
-        email: 'compte.test@education.gouv.fr',
-        gender: 'Mr.',
-        name: 'REDA',
-        surname: 'KHTEUR',
-      },
-    ])
+    vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+      .mockResolvedValueOnce([]) // redactors preloading
+      .mockResolvedValueOnce([
+        {
+          email: 'compte.test@education.gouv.fr',
+          gender: 'Mr.',
+          name: 'REDA',
+          surname: 'KHTEUR',
+        },
+      ])
 
     const institutionInput = screen.getByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -419,17 +426,16 @@ describe('CollectiveOfferVisibility', () => {
         },
       })
 
-      vi.spyOn(
-        api,
-        'getAutocompleteEducationalRedactorsForUai'
-      ).mockResolvedValueOnce([
-        {
-          email: 'compte.test@education.gouv.fr',
-          gender: 'Mr.',
-          name: 'REDA',
-          surname: 'KHTEUR',
-        },
-      ])
+      vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+        .mockResolvedValueOnce([]) // redactors preloading
+        .mockResolvedValueOnce([
+          {
+            email: 'compte.test@education.gouv.fr',
+            gender: 'Mr.',
+            name: 'REDA',
+            surname: 'KHTEUR',
+          },
+        ])
 
       renderVisibilityStep({
         ...props,
@@ -536,5 +542,126 @@ describe('CollectiveOfferVisibility', () => {
       )
     ).toBeDisabled()
     expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
+  })
+
+  describe('redactors preloading', () => {
+    it('should preload redactors when institution is selected', async () => {
+      const resultingOffer = getCollectiveOfferFactory()
+      vi.spyOn(
+        api,
+        'patchCollectiveOffersEducationalInstitution'
+      ).mockResolvedValueOnce(resultingOffer)
+
+      const deferred = new Deferred<EducationalRedactors>()
+      vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
+        .mockImplementationOnce(
+          (_uai: string, _candidate: string) => deferred.promise
+        ) // redactors preloading
+        .mockResolvedValueOnce([
+          {
+            email: 'compte.test@education.gouv.fr',
+            gender: 'Mr.',
+            name: 'REDA',
+            surname: 'KHTEUR',
+          },
+        ])
+
+      renderVisibilityStep(props)
+
+      const institutionInput = screen.getByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      await userEvent.type(institutionInput, 'Collège Institution 1')
+
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+      expect(
+        api.getAutocompleteEducationalRedactorsForUai
+      ).toHaveBeenCalledOnce()
+
+      const teacherInput = screen.getByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+      expect(teacherInput).toBeDisabled()
+
+      await act(async () => await deferred.resolve([]))
+
+      await waitFor(() => {
+        expect(teacherInput).toBeEnabled()
+      })
+    })
+
+    it('should handle 404 Not Found error when fetching redactors', async () => {
+      vi.spyOn(
+        api,
+        'getAutocompleteEducationalRedactorsForUai'
+      ).mockRejectedValueOnce({
+        status: 404,
+        message: 'not found',
+        name: 'ApiError',
+      })
+      vi.spyOn(console, 'warn').mockImplementation(vi.fn())
+
+      renderVisibilityStep(props)
+
+      const institutionInput = screen.getByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      await userEvent.type(institutionInput, 'Collège Institution 1')
+
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+      expect(
+        api.getAutocompleteEducationalRedactorsForUai
+      ).toHaveBeenCalledOnce()
+
+      const teacherInput = screen.getByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+
+      expect(console.warn).toHaveBeenLastCalledWith('No redactors found')
+
+      await waitFor(() => {
+        expect(teacherInput).toBeEnabled()
+      })
+    })
+
+    it('should display an error if redactors fetching fails', async () => {
+      const notifyError = vi.fn()
+      const notifsImport = (await vi.importActual(
+        '@/commons/hooks/useNotification'
+      )) as ReturnType<typeof useNotification.useNotification>
+      vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+        ...notifsImport,
+        error: notifyError,
+      }))
+
+      vi.spyOn(
+        api,
+        'getAutocompleteEducationalRedactorsForUai'
+      ).mockRejectedValueOnce(new Error('Ooops'))
+
+      renderVisibilityStep(props)
+
+      const institutionInput = screen.getByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+      await userEvent.type(institutionInput, 'Collège Institution 1')
+
+      await userEvent.keyboard('{ArrowDown}{Enter}')
+      expect(
+        api.getAutocompleteEducationalRedactorsForUai
+      ).toHaveBeenCalledOnce()
+
+      const teacherInput = screen.getByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+
+      await waitFor(() =>
+        expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
+      )
+
+      await waitFor(() => {
+        expect(teacherInput).toBeEnabled()
+      })
+    })
   })
 })

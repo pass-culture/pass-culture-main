@@ -23,9 +23,8 @@ def synchronize_products() -> None:
     allocine_products_provider = get_allocine_products_provider()
     with transaction():
         for movie in movies:
-            id_at_providers = build_movie_id_at_providers(allocine_products_provider.id, movie.internalId)
             generic_movie = create_generic_movie(movie)
-            upsert_movie_product_from_provider(generic_movie, allocine_products_provider, id_at_providers)
+            upsert_movie_product_from_provider(generic_movie, allocine_products_provider)
 
 
 def create_generic_movie(movie: allocine_serializers.AllocineMovie) -> Movie:

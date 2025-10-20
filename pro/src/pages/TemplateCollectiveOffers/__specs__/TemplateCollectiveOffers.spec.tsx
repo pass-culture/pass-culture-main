@@ -20,10 +20,7 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
@@ -32,21 +29,6 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
-
-const proVenues = [
-  makeVenueListItem({
-    id: 1,
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  }),
-  makeVenueListItem({
-    id: 2,
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  }),
-]
 
 const offererAddress: GetOffererAddressResponseModel[] = [
   offererAddressFactory({
@@ -61,7 +43,11 @@ const renderOffers = async (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
-  const route = computeCollectiveOffersUrl(filters)
+  const route = computeCollectiveOffersUrl(
+    filters,
+    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    true
+  )
 
   const user = sharedCurrentUserFactory()
   renderWithProviders(<TemplateCollectiveOffers />, {
@@ -94,7 +80,6 @@ describe('TemplateCollectiveOffers', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       name: 'Mon offerer',
@@ -109,10 +94,11 @@ describe('TemplateCollectiveOffers', () => {
   it('should display the page', async () => {
     await renderOffers()
 
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalledWith(1)
-    })
-    expect(screen.getByText('Offres vitrines')).toBeInTheDocument()
+    expect(
+      screen.getByText('Offres vitrines', {
+        selector: 'h1',
+      })
+    ).toBeInTheDocument()
   })
 
   const offererId = '1'

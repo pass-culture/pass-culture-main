@@ -302,6 +302,7 @@ export const ImageDragAndDrop = forwardRef(
                     onMouseLeave={() => setIsHovered(false)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
+                    data-testid="file-input"
                     onClick={(e) => {
                       e.stopPropagation()
 

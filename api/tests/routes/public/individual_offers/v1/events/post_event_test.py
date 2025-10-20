@@ -260,7 +260,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
     @time_machine.travel(datetime(2025, 6, 25, 12, 30, tzinfo=timezone.utc), tick=False)
     @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_event_creation_with_full_body(self, get_video_metadata_from_cache_mock, clear_tests_assets_bucket):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
@@ -635,6 +635,28 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_video_metadata_not_found(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        payload = {
+            "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+            "accessibility": ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
+            "name": "Faire et refaire",
+            "hasTicket": True,
+            "bookingContact": "booking@conta.ct",
+            "videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU",
+        }
+
+        response = self.make_request(plain_api_key, json_body=payload)
+        assert response.status_code == 400, response.json
+
+        assert response.json == {
+            "videoUrl": [
+                "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
+            ]
+        }
 
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",

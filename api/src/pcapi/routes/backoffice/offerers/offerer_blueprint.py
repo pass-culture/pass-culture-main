@@ -614,6 +614,13 @@ def get_history(offerer_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(history_models.ActionHistory.authorUser).load_only(
                 users_models.User.id, users_models.User.firstName, users_models.User.lastName
             ),
+            # joinedload includes soft-deleted venues
+            sa_orm.joinedload(history_models.ActionHistory.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ),
         )
         .all()
     )
@@ -815,7 +822,9 @@ def delete_user_offerer(offerer_id: int, user_offerer_id: int) -> utils.Backoffi
     offerers_api.delete_offerer_attachment(user_offerer, current_user, form.comment.data)
 
     flash(
-        f"Le rattachement de {user_email} à l'entité juridique {offerer_name} a été supprimé",
+        Markup(
+            "Le rattachement de <b>{user_email}</b> à l'entité juridique <b>{offerer_name}</b> a été supprimé"
+        ).format(user_email=user_email, offerer_name=offerer_name),
         "success",
     )
     return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
@@ -848,6 +857,56 @@ def invite_user(offerer_id: int) -> utils.BackofficeResponse:
     return _self_redirect(offerer.id, active_tab="users", anchor="offerer_details_frame")
 
 
+@offerer_blueprint.route("/invitation/<int:invitation_id>/resend", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def resend_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeResponse:
+    invitation = (
+        db.session.query(offerers_models.OffererInvitation)
+        .filter(
+            offerers_models.OffererInvitation.id == invitation_id,
+            offerers_models.OffererInvitation.offererId == offerer_id,
+        )
+        .options(sa_orm.joinedload(offerers_models.OffererInvitation.offerer, innerjoin=True))
+        .one_or_none()
+    )
+    if not invitation:
+        raise NotFound()
+
+    try:
+        offerers_api.invite_member_again(invitation.offerer, invitation.email)
+    except offerers_exceptions.InviteAgainImpossibleException:
+        mark_transaction_as_invalid()
+        flash(Markup("L'invitation de <b>{email}</b> est déjà acceptée").format(email=invitation.email), "warning")
+    else:
+        flash(Markup("L'invitation a été renvoyée à <b>{email}</b>").format(email=invitation.email), "info")
+
+    return _self_redirect(invitation.offerer.id, active_tab="users", anchor="offerer_details_frame")
+
+
+@offerer_blueprint.route("/invitation/<int:invitation_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete_invitation(offerer_id: int, invitation_id: int) -> utils.BackofficeResponse:
+    invitation = (
+        db.session.query(offerers_models.OffererInvitation)
+        .filter(
+            offerers_models.OffererInvitation.id == invitation_id,
+            offerers_models.OffererInvitation.offererId == offerer_id,
+            offerers_models.OffererInvitation.status == offerers_models.InvitationStatus.PENDING,
+        )
+        .one_or_none()
+    )
+    if not invitation:
+        raise NotFound()
+
+    email = invitation.email
+
+    db.session.delete(invitation)
+    db.session.flush()
+
+    flash(Markup("L'invitation de <b>{email}</b> a été supprimée").format(email=email), "success")
+    return _self_redirect(offerer_id, active_tab="users", anchor="offerer_details_frame")
+
+
 @offerer_blueprint.route("/venues", methods=["GET"])
 def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
     if utils.has_current_user_permission(perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO):
@@ -878,6 +937,7 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
@@ -1084,6 +1144,7 @@ def get_collective_dms_applications(offerer_id: int) -> utils.BackofficeResponse
             ),
             sa_orm.joinedload(educational_models.CollectiveDmsApplication.venue).load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,

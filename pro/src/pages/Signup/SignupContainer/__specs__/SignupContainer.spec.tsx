@@ -8,7 +8,6 @@ import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import * as utils from '@/commons/utils/recaptcha'
 import {
   type RenderWithProvidersOptions,
@@ -73,13 +72,6 @@ describe('Signup', () => {
       ],
     })
     Element.prototype.scrollIntoView = vi.fn()
-  })
-
-  it('should redirect to accueil page if the user is logged in', async () => {
-    renderSignUp({ user: sharedCurrentUserFactory() })
-    await expect(
-      screen.findByText('I’m logged in as a pro user')
-    ).resolves.toBeInTheDocument()
   })
 
   describe('render', () => {

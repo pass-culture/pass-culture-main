@@ -82,6 +82,7 @@ def _get_venues_data_for_rules(rules: list[offers_models.OfferValidationRule]) -
         .options(
             sa_orm.load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,

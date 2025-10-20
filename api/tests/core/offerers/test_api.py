@@ -2905,7 +2905,6 @@ class CreateFromOnboardingDataTest:
 
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
-        _virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         _venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031")
         user = users_factories.UserFactory()
         user.add_non_attached_pro_role()
@@ -2921,7 +2920,7 @@ class CreateFromOnboardingDataTest:
         assert created_user_offerer.user.has_non_attached_pro_role
         assert created_user_offerer.validationStatus == ValidationStatus.NEW
         # Venue has not been created
-        assert db.session.query(offerers_models.Venue).count() == 2
+        assert db.session.query(offerers_models.Venue).count() == 1
         # Action logs
         assert db.session.query(history_models.ActionHistory).count() == 1
         offerer_action = (
@@ -2966,7 +2965,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id not in (rejected_venue_id, rejected_venue_id_without_siret)
         assert venue.publicName == onboarding_data.publicName
 
-        actions = db.session.query(history_models.ActionHistory).all()
+        actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -3013,7 +3012,7 @@ class CreateFromOnboardingDataTest:
         assert venue.id != rejected_venue_id
         assert venue.publicName == onboarding_data.publicName
 
-        actions = db.session.query(history_models.ActionHistory).all()
+        actions = db.session.query(history_models.ActionHistory).order_by(history_models.ActionHistory.id).all()
         assert len(actions) == 3
 
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
@@ -3302,6 +3301,25 @@ class AcceptOffererInvitationTest:
         assert db.session.query(history_models.ActionHistory).count() == 0
 
 
+class DeleteExpiredOffererInvitationsTest:
+    def test_delete_expired_offerer_invitations(self):
+        not_expired_pending_invitation_id = offerers_factories.OffererInvitationFactory(
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=29, hours=23)
+        ).id
+        _expired_pending_invitation_id = offerers_factories.OffererInvitationFactory(
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=31)
+        ).id
+        accepted_invitation_id = offerers_factories.OffererInvitationFactory(
+            status=offerers_models.InvitationStatus.ACCEPTED,
+            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=100),
+        ).id
+
+        offerers_api.delete_expired_offerer_invitations()
+
+        remaining_invitation_ids = {id_ for (id_,) in db.session.query(offerers_models.OffererInvitation.id).all()}
+        assert remaining_invitation_ids == {not_expired_pending_invitation_id, accepted_invitation_id}
+
+
 class AccessibilityProviderTest:
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(
@@ -3395,16 +3413,16 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityUrl == "https://nouvelle.adresse/nouveau-slug"
 
     def test_count_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         count = offerers_api.count_open_to_public_venues_with_accessibility_provider()
         assert count == 1
 
     def test_get_open_to_public_venues_with_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         venues_list = offerers_api.get_open_to_public_venues_with_accessibility_provider(batch_size=10, batch_num=0)
@@ -3412,8 +3430,8 @@ class AccessibilityProviderTest:
         assert venues_list[0] == venue
 
     def test_get_open_to_public_venues_without_accessibility_provider(self):
-        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True, isVirtual=False)
-        venue = offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)
+        offerers_factories.VenueFactory.create_batch(3, isOpenToPublic=True)
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.AccessibilityProviderFactory(venue=venue)
 
         venues_list = offerers_api.get_open_to_public_venues_without_accessibility_provider()
@@ -3453,10 +3471,9 @@ class AccessibilityProviderTest:
             activity=acceslibre_connector.AcceslibreActivity.BIBLIOTHEQUE,
         )
 
-        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True)]
         venue = offerers_factories.VenueFactory(
             isOpenToPublic=True,
-            isVirtual=False,
             name="Un lieu",
             offererAddress__address__postalCode="75001",
             offererAddress__address__city="Paris",
@@ -3469,10 +3486,9 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
     def test_acceslibre_matching(self):
-        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True, isVirtual=False)]
+        venues_list = [offerers_factories.VenueFactory(isOpenToPublic=True)]
         venue = offerers_factories.VenueFactory(
             isOpenToPublic=True,
-            isVirtual=False,
             name="Un lieu",
             offererAddress__address__postalCode="75001",
             offererAddress__address__city="Paris",

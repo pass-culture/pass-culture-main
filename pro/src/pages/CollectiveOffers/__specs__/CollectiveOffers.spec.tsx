@@ -12,21 +12,14 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOffersStockResponseModel,
   CollectiveOfferType,
+  EacFormat,
   type GetOffererAddressResponseModel,
-  type VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import {
-  ALL_OFFERERS_OPTION,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
@@ -35,21 +28,6 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOffers } from '../CollectiveOffers'
-
-const proVenues = [
-  makeVenueListItem({
-    id: 1,
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  }),
-  makeVenueListItem({
-    id: 2,
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  }),
-]
 
 const LABELS = {
   nameSearchInput: /Nom de l’offre/,
@@ -71,37 +49,28 @@ vi.mock('@/commons/hooks/useActiveFeature', () => ({
   useActiveFeature: vi.fn(),
 }))
 
-const mockVenuesResponse: { venues: VenueListItemResponseModel[] } = {
-  venues: [
-    makeVenueListItem({
-      id: 1,
-      name: 'First Venue',
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-    makeVenueListItem({
-      id: 2,
-      name: 'Second Venue',
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-  ],
-}
-
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
       getCollectiveOffers: vi.fn(),
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
-      getVenues: vi.fn(() => mockVenuesResponse),
       getOffererAddresses: vi.fn(),
     },
   }
 })
 
+const offererAddress: GetOffererAddressResponseModel[] = [
+  offererAddressFactory({
+    label: 'Label',
+  }),
+  offererAddressFactory({
+    city: 'New York',
+  }),
+]
+
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -109,7 +78,7 @@ const renderOffers = async (
   renderWithProviders(<CollectiveOffers />, {
     user,
     initialRouterEntries: [route],
-    features: features,
+    features,
     storeOverrides: {
       user: {
         currentUser: user,
@@ -127,14 +96,34 @@ describe('CollectiveOffers', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
     })
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
   })
 
   afterEach(() => {
     window.sessionStorage.clear()
+  })
+
+  it('should fetch only bookable offers', async () => {
+    await renderOffers()
+
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        offererId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        CollectiveOfferType.OFFER,
+        undefined,
+        undefined,
+        undefined
+      )
+    })
   })
 
   describe('filters', () => {
@@ -164,15 +153,11 @@ describe('CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
+            CollectiveOfferType.OFFER,
             undefined,
             undefined,
             undefined
           )
-        })
-
-        await waitFor(() => {
-          expect(api.getOfferer).toHaveBeenLastCalledWith(1)
         })
       })
 
@@ -207,7 +192,7 @@ describe('CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
+            CollectiveOfferType.OFFER,
             undefined,
             undefined,
             undefined
@@ -250,13 +235,107 @@ describe('CollectiveOffers', () => {
       })
     })
 
+    describe('location type filters', () => {
+      it('should send locationType ADDRESS and offererAddressId when an address is selected', async () => {
+        await renderOffers()
+        await userEvent.selectOptions(
+          screen.getByLabelText('Localisation'),
+          offererAddress[0].id.toString()
+        )
+        await userEvent.click(screen.getByText('Rechercher'))
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            offererId,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            CollectiveOfferType.OFFER,
+            undefined,
+            CollectiveLocationType.ADDRESS,
+            1
+          )
+        })
+      })
+
+      it('should send locationType TO_BE_DEFINED and offererAddressId undefined when "À déterminer" is selected', async () => {
+        await renderOffers()
+        const localisationSelect = await screen.findByLabelText('Localisation')
+        await userEvent.selectOptions(
+          localisationSelect,
+          CollectiveLocationType.TO_BE_DEFINED
+        )
+        await userEvent.click(screen.getByText('Rechercher'))
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            offererId,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            CollectiveOfferType.OFFER,
+            undefined,
+            CollectiveLocationType.TO_BE_DEFINED,
+            null
+          )
+        })
+      })
+
+      it('should send locationType SCHOOL and offererAddressId undefined when "En établissement scolaire" is selected', async () => {
+        await renderOffers()
+        const localisationSelect = await screen.findByLabelText('Localisation')
+        await userEvent.selectOptions(
+          localisationSelect,
+          CollectiveLocationType.SCHOOL
+        )
+        await userEvent.click(screen.getByText('Rechercher'))
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            offererId,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            CollectiveOfferType.OFFER,
+            undefined,
+            CollectiveLocationType.SCHOOL,
+            null
+          )
+        })
+      })
+
+      it('should send locationType and offererAddressId undefined when "all" is selected', async () => {
+        await renderOffers()
+        const localisationSelect = await screen.findByLabelText('Localisation')
+        await userEvent.selectOptions(localisationSelect, 'all')
+        await userEvent.click(screen.getByText('Rechercher'))
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            offererId,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            CollectiveOfferType.OFFER,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
+      })
+    })
+
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
         await renderOffers()
-
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
 
         const searchInput = screen.getByRole('searchbox', {
           name: LABELS.nameSearchInput,
@@ -274,36 +353,7 @@ describe('CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should load offers with selected venue filter', async () => {
-        await renderOffers()
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
-        const firstVenueOption = screen.getByRole('option', {
-          name: proVenues[0].name,
-        })
-        const venueSelect = screen.getByLabelText('Structure')
-        await userEvent.selectOptions(venueSelect, firstVenueOption)
-
-        await userEvent.click(screen.getByText('Rechercher'))
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-            undefined,
-            offererId,
-            undefined,
-            proVenues[0].id.toString(),
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            CollectiveOfferType.OFFER,
             undefined,
             undefined,
             undefined
@@ -329,7 +379,7 @@ describe('CollectiveOffers', () => {
             undefined,
             '2020-12-25',
             undefined,
-            undefined,
+            CollectiveOfferType.OFFER,
             undefined,
             undefined,
             undefined
@@ -354,41 +404,7 @@ describe('CollectiveOffers', () => {
             undefined,
             undefined,
             '2020-12-27',
-            undefined,
-            undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should load offers with selected offer type if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is not active', async () => {
-        await renderOffers()
-
-        await waitFor(() => {
-          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-        })
-
-        const offerTypeSelect = screen.getByLabelText('Type de l’offre')
-        await userEvent.selectOptions(
-          offerTypeSelect,
-          CollectiveOfferType.TEMPLATE
-        )
-
-        const button = screen.getByRole('button', { name: 'Rechercher' })
-
-        await userEvent.click(button)
-
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
-            offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            CollectiveOfferType.TEMPLATE,
+            CollectiveOfferType.OFFER,
             undefined,
             undefined,
             undefined
@@ -465,24 +481,12 @@ describe('CollectiveOffers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      vi.spyOn(api, 'getCollectiveOffers')
-        .mockResolvedValueOnce(offersRecap)
-        .mockResolvedValueOnce([])
-      // 3rd call is not made if filters are strictly the same
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
+
       const filters = {
-        venueId: '666',
+        format: EacFormat.ATELIER_DE_PRATIQUE,
       }
       await renderOffers(filters)
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-      const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-
-      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
-
-      await userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -490,31 +494,31 @@ describe('CollectiveOffers', () => {
         undefined,
         offererId,
         undefined,
-        '666',
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.OFFER,
+        'Atelier de pratique',
         undefined,
         undefined
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
       await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        2,
+        1,
         undefined,
         offererId,
         undefined,
-        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.OFFER,
+        'Atelier de pratique',
         undefined,
         undefined
       )
@@ -523,10 +527,10 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
       await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        3,
+        2,
         undefined,
         offererId,
         undefined,
@@ -534,7 +538,7 @@ describe('CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.OFFER,
         undefined,
         undefined,
         undefined
@@ -542,26 +546,13 @@ describe('CollectiveOffers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"  - except nameOrIsbn', async () => {
-      vi.spyOn(api, 'getCollectiveOffers')
-        .mockResolvedValueOnce(offersRecap)
-        .mockResolvedValueOnce([])
-      // 3rd call is not made if filters are strictly the same
-      const nameOrIsbn = 'Any word'
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
+      const nameOrIsbn = 'Any word'
       await renderOffers({
         nameOrIsbn,
-        venueId: '666',
+        format: EacFormat.ATELIER_DE_PRATIQUE,
       })
-      await waitFor(() => {
-        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
-      })
-      const venueOptionToSelect = screen.getByRole('option', {
-        name: proVenues[0].name,
-      })
-
-      const venueSelect = screen.getByDisplayValue(ALL_OFFERERS_OPTION.label)
-
-      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
@@ -569,17 +560,17 @@ describe('CollectiveOffers', () => {
         nameOrIsbn,
         offererId,
         undefined,
-        '666',
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.OFFER,
+        'Atelier de pratique',
         undefined,
         undefined
       )
 
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       await waitFor(() => {
         expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
@@ -588,30 +579,11 @@ describe('CollectiveOffers', () => {
         nameOrIsbn,
         offererId,
         undefined,
-        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,
         undefined,
-        undefined,
-        undefined,
-        undefined
-      )
-
-      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
-      })
-      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        3,
-        nameOrIsbn,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        CollectiveOfferType.OFFER,
         undefined,
         undefined,
         undefined
@@ -628,151 +600,8 @@ describe('CollectiveOffers', () => {
         displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     ])
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
+    await renderOffers()
 
     expect(screen.getByText('2 offres')).toBeInTheDocument()
-  })
-})
-
-describe('CollectiveOffers - FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', () => {
-  const offererAddress: GetOffererAddressResponseModel[] = [
-    offererAddressFactory({
-      label: 'Label',
-    }),
-    offererAddressFactory({
-      city: 'New York',
-    }),
-  ]
-
-  beforeEach(() => {
-    vi.mocked(useActiveFeature).mockReturnValue(true)
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
-  })
-
-  it('should fetch only bookable offers when the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {
-    await renderOffers({}, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        CollectiveOfferType.OFFER,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
-  })
-
-  it('should send locationType ADDRESS and offererAddressId when feature flag is active and an address is selected', async () => {
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-    await userEvent.selectOptions(
-      screen.getByLabelText('Localisation'),
-      offererAddress[0].id.toString()
-    )
-    await userEvent.click(screen.getByText('Rechercher'))
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        CollectiveOfferType.OFFER,
-        undefined,
-        CollectiveLocationType.ADDRESS,
-        1
-      )
-    })
-  })
-
-  it('should send locationType TO_BE_DEFINED and offererAddressId undefined when "À déterminer" is selected', async () => {
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-    const localisationSelect = await screen.findByLabelText('Localisation')
-    await userEvent.selectOptions(
-      localisationSelect,
-      CollectiveLocationType.TO_BE_DEFINED
-    )
-    await userEvent.click(screen.getByText('Rechercher'))
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        CollectiveOfferType.OFFER,
-        undefined,
-        CollectiveLocationType.TO_BE_DEFINED,
-        null
-      )
-    })
-  })
-
-  it('should send locationType SCHOOL and offererAddressId undefined when "En établissement scolaire" is selected', async () => {
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-    const localisationSelect = await screen.findByLabelText('Localisation')
-    await userEvent.selectOptions(
-      localisationSelect,
-      CollectiveLocationType.SCHOOL
-    )
-    await userEvent.click(screen.getByText('Rechercher'))
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        CollectiveOfferType.OFFER,
-        undefined,
-        CollectiveLocationType.SCHOOL,
-        null
-      )
-    })
-  })
-
-  it('should send locationType and offererAddressId undefined when "all" is selected', async () => {
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
-      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
-    ])
-    const localisationSelect = await screen.findByLabelText('Localisation')
-    await userEvent.selectOptions(localisationSelect, 'all')
-    await userEvent.click(screen.getByText('Rechercher'))
-    await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
-        offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        CollectiveOfferType.OFFER,
-        undefined,
-        undefined,
-        undefined
-      )
-    })
   })
 })

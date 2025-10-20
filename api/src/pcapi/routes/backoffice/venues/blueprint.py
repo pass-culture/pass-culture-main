@@ -5,6 +5,7 @@ from functools import partial
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask import Response
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -79,6 +80,7 @@ def _get_venues_base_query() -> sa_orm.Query:
     return db.session.query(offerers_models.Venue).options(
         sa_orm.load_only(
             offerers_models.Venue.id,
+            offerers_models.Venue.isSoftDeleted,
             offerers_models.Venue.name,
             offerers_models.Venue.publicName,
             offerers_models.Venue.dateCreated,
@@ -1305,17 +1307,14 @@ def _render_remove_siret_content(
     if active_custom_reimbursement_rule_exists:
         info = "Ce partenaire culturel est associé à au moins un tarif dérogatoire actif ou futur. Confirmer l'action mettra automatiquement fin à ce tarif dérogatoire."
 
-    return (
-        render_template(
-            "components/turbo/modal_form.html",
-            div_id="remove-venue-siret",  # must be consistent with parameter passed to build_lazy_modal
-            title=REMOVE_SIRET_TITLE,
-            additional_data=additional_data.items(),
-            alert=error,
-            info=info,
-            **kwargs,
-        ),
-        400 if error or (form and form.errors) else 200,
+    return render_template(
+        "components/dynamic/modal_form.html",
+        title=REMOVE_SIRET_TITLE,
+        additional_data=additional_data.items(),
+        alert=error,
+        info=info,
+        close_on_validation=False,
+        **kwargs,
     )
 
 
@@ -1358,4 +1357,10 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return _render_remove_siret_content(venue, form=form, error=str(exc))
 
-    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    return Response(
+        response="redirecting",
+        status=200,
+        headers={
+            "HX-Redirect": url_for("backoffice_web.venue.get", venue_id=venue_id),
+        },
+    )

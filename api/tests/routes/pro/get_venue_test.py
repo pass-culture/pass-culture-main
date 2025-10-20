@@ -144,7 +144,7 @@ class Returns200Test:
             "externalAccessibilityUrl": "https://site-d-accessibilite.com/erps/accessibility-slug/",
             "hasActiveIndividualOffer": True,
             "isPermanent": venue.isPermanent,
-            "isVirtual": venue.isVirtual,
+            "isVirtual": False,
             "managingOfferer": {
                 "city": venue.managingOfferer.city,
                 "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),

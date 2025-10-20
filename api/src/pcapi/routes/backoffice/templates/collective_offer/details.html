@@ -68,8 +68,8 @@
     {% call nav_section("info", "Informations pratiques") %}
       {% call description_detail_horizontal("Date de l'évènement") %}
         {% if collective_offer.collectiveStock %}
-          {% set start_date = collective_offer.start | format_date %}
-          {% set end_date = collective_offer.end | format_date %}
+          {% set start_date = collective_offer.start | format_date("%d/%m/%Y", collective_offer.address) %}
+          {% set end_date = collective_offer.end | format_date("%d/%m/%Y", collective_offer.address) %}
           {{ start_date }}
           {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
         {% endif %}

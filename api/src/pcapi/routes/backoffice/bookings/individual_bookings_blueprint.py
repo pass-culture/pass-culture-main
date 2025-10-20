@@ -82,19 +82,24 @@ def _get_individual_bookings_query() -> sa_orm.Query:
                 offers_models.Offer.isDuo,
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.withdrawalType,
-            ),
+            )
+            .joinedload(offers_models.Offer.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.timezone),
             sa_orm.joinedload(bookings_models.Booking.user).load_only(
                 users_models.User.id,
                 users_models.User.firstName,
                 users_models.User.lastName,
                 users_models.User.postalCode,
             ),
-            sa_orm.joinedload(bookings_models.Booking.offerer).load_only(
+            sa_orm.joinedload(bookings_models.Booking.offerer, innerjoin=True).load_only(
                 offerers_models.Offerer.id, offerers_models.Offerer.name
             ),
-            sa_orm.joinedload(bookings_models.Booking.venue).load_only(
+            sa_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).load_only(
                 # for name and link (build_pc_pro_venue_link)
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isVirtual,

@@ -1,10 +1,10 @@
 import { isEqual } from 'commons/utils/isEqual'
 
-import type {
-  ListCollectiveOffersQueryModel,
-  ListOffersQueryModel,
+import {
+  CollectiveOfferType,
+  type ListCollectiveOffersQueryModel,
+  type ListOffersQueryModel,
 } from '@/apiClient/v1'
-import { CollectiveOfferType } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
@@ -42,8 +42,7 @@ export const serializeApiFilters = (
 
 export const serializeApiCollectiveFilters = (
   searchFilters: Partial<CollectiveSearchFiltersParams>,
-  defaultFilters: CollectiveSearchFiltersParams,
-  isNewOffersAndBookingsActive?: boolean
+  defaultFilters: CollectiveSearchFiltersParams
 ): ListCollectiveOffersQueryModel => {
   const listOffersQueryKeys = [
     'nameOrIsbn',
@@ -85,16 +84,16 @@ export const serializeApiCollectiveFilters = (
       }
     }
 
-    if (isNewOffersAndBookingsActive && field === 'venueId') {
+    if (field === 'venueId') {
       accumulator.venueId = undefined
       return accumulator
     }
 
-    if (isNewOffersAndBookingsActive && field === 'collectiveOfferType') {
+    if (field === 'collectiveOfferType') {
       accumulator.collectiveOfferType =
-        defaultFilters.collectiveOfferType === 'offer'
+        filterValue === 'offer'
           ? CollectiveOfferType.OFFER
-          : defaultFilters.collectiveOfferType === 'template'
+          : filterValue === 'template'
             ? CollectiveOfferType.TEMPLATE
             : null
       return accumulator

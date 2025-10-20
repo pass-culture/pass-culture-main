@@ -6,7 +6,6 @@ class Returns200Test:
     def test_get_venues_from_name(self, client, db_session) -> None:
         venue1 = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            publicName=None,
             isPermanent=True,
         )
         venue2 = offerers_factories.VenueFactory(
@@ -17,10 +16,14 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
+        # Former virtual venue are now without siret & soft deleted.
+        # They should still not appear in the results.
+        former_virtual_venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            isPermanent=True,
         )
+        former_virtual_venue.isSoftDeleted = True
+        db_session.add(former_virtual_venue)
+        db_session.commit()
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20name")
@@ -33,17 +36,20 @@ class Returns200Test:
     def test_get_venues_from_name_case_incensitive(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautifUl name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
+        # Former virtual venue are now without siret & soft deleted.
+        # They should still not appear in the results.
+        former_virtual_venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
-            isPermanent=True,
         )
+        former_virtual_venue.isSoftDeleted = True
+        db_session.add(former_virtual_venue)
+        db_session.commit()
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful%20Name")
@@ -117,15 +123,10 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -147,10 +148,6 @@ class Returns200Test:
             name="not the same",
             isPermanent=True,
         )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
-            isPermanent=True,
-        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/a%20name%20with%20c")
@@ -163,15 +160,10 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_request(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a name with c",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -186,15 +178,10 @@ class Returns200Test:
     def test_get_venues_from_name_with_diacritic_in_name_in_request_and_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -209,15 +196,10 @@ class Returns200Test:
     def test_get_venues_ignore_union_request(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 
@@ -232,15 +214,10 @@ class Returns200Test:
     def test_get_venues_ignore_union_db(self, client, db_session) -> None:
         venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
-            publicName=None,
             isPermanent=True,
         )
         offerers_factories.VenueFactory(
             name="not the same",
-            isPermanent=True,
-        )
-        offerers_factories.VirtualVenueFactory(
-            name="somting completely diffetrent",
             isPermanent=True,
         )
 

@@ -16,8 +16,6 @@ const renderOfferers = (
     <Offerers
       offererOptions={[{ label: 'name', value: '1' }]}
       selectedOfferer={defaultGetOffererResponseModel}
-      isLoading={false}
-      isUserOffererValidated
       {...props}
     />,
     options

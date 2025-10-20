@@ -1075,7 +1075,6 @@ class BankAccountJourneyTest:
         siret = "85331845900049"
         siren = siret[:9]
         venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
-        offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
         mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.accepted.value
         )
@@ -1099,8 +1098,7 @@ class BankAccountJourneyTest:
     def test_validation_on_iban(self, mock_archive_dossier, mock_update_text_annotation, mock_dms_graphql_client):
         siret = "85331845900049"
         siren = siret[:9]
-        venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
-        offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenueFactory(pricing_point="self", managingOfferer__siren=siren)
 
         mock_dms_graphql_client.return_value = dms_creators.get_bank_info_response_procedure_v5(
             state=GraphQLApplicationStates.draft.value, iban="XR7630006000011234567890189"

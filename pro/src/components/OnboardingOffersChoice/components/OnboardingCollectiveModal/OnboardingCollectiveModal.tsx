@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router'
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
-import { updateCurrentOffererOnboardingStatus } from '@/commons/store/offerer/reducer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { updateUserAccess } from '@/commons/store/user/reducer'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
@@ -47,7 +47,7 @@ export const OnboardingCollectiveModal = ({
       setIsLoading(true)
       const eligibility = await api.getOffererEligibility(currentOffererId)
       if (eligibility.isOnboarded) {
-        dispatch(updateCurrentOffererOnboardingStatus(true))
+        dispatch(updateUserAccess('full'))
         return navigate('/accueil')
       }
 

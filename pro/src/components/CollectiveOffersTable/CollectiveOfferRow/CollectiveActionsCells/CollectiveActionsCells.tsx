@@ -8,16 +8,13 @@ import { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
 import {
-  CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
-  CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
-  CollectiveBookingsEvents,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
@@ -30,11 +27,6 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-  isDateValid,
-} from '@/commons/utils/date'
-import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -46,7 +38,6 @@ import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
 import fullHideIcon from '@/icons/full-hide.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
@@ -57,7 +48,6 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
 import styles from '../Cells.module.scss'
-import { BookingLinkCell } from './BookingLinkCell'
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 
 export interface CollectiveActionsCellsProps {
@@ -95,14 +85,9 @@ export const CollectiveActionsCells = ({
     !isLocalStorageAvailable ||
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
-  const isNewOffersAndBookingsActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive,
     isInTemplateOffersPage: offer.isShowcase,
     urlSearchFilters,
     selectedOffererId: selectedOffererId?.toString(),
@@ -111,14 +96,6 @@ export const CollectiveActionsCells = ({
   const { mutate } = useSWRConfig()
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-
-  const eventDateFormated = isDateValid(offer.stocks[0].startDatetime)
-    ? formatBrowserTimezonedDateAsUTC(
-        new Date(offer.stocks[0].startDatetime),
-        FORMAT_ISO_DATE_ONLY
-      )
-    : ''
-  const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${offer.booking?.id}`
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
@@ -307,11 +284,6 @@ export const CollectiveActionsCells = ({
     await mutate(collectiveOffersQueryKeys)
   }
 
-  const shouldDisplayBookingLink =
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED ||
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.BOOKED ||
-    offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED
-
   return (
     <td
       // biome-ignore lint/a11y: accepted for assistive tech
@@ -324,16 +296,6 @@ export const CollectiveActionsCells = ({
       headers={`${rowId} ${getCellsDefinition().ACTIONS.id}`}
     >
       <div className={styles['actions-column-container']}>
-        {shouldDisplayBookingLink &&
-          offer.booking &&
-          !isNewOffersAndBookingsActive && (
-            <BookingLinkCell
-              bookingId={offer.booking.id}
-              bookingStatus={offer.booking.booking_status}
-              offerEventDate={offer.stocks[0].startDatetime}
-              offerId={offer.id}
-            />
-          )}
         {!noActionsAllowed && (
           <DropdownMenuWrapper
             title="Voir les actions"
@@ -341,38 +303,6 @@ export const CollectiveActionsCells = ({
             triggerTooltip
             dropdownTriggerRef={dropdownTriggerRef}
           >
-            {shouldDisplayBookingLink &&
-              offer.booking &&
-              !isNewOffersAndBookingsActive && (
-                <>
-                  <DropdownMenu.Item className={styles['menu-item']} asChild>
-                    <ButtonLink
-                      to={bookingLink}
-                      icon={fullNextIcon}
-                      onClick={() =>
-                        logEvent(
-                          CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                          {
-                            from: location.pathname,
-                            offerId: offer.id,
-                            offerType: 'collective',
-                            offererId: selectedOffererId?.toString(),
-                          }
-                        )
-                      }
-                    >
-                      Voir la{' '}
-                      {offer.booking.booking_status ===
-                      CollectiveBookingStatus.PENDING
-                        ? 'préréservation'
-                        : 'réservation'}
-                    </ButtonLink>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Separator
-                    className={cn(styles['separator'], styles['tablet-only'])}
-                  />
-                </>
-              )}
             {canDuplicateOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}

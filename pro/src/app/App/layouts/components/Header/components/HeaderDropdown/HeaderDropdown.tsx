@@ -14,7 +14,7 @@ import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
-import { updateUser } from '@/commons/store/user/reducer'
+import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
 import { hardRefresh } from '@/commons/utils/hardRefresh'
@@ -42,8 +42,8 @@ export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
-  const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentUser = useSelector(selectCurrentUser)
   const offererNames = useSelector(selectOffererNames)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
@@ -87,18 +87,6 @@ export const HeaderDropdown = () => {
   }
 
   useEffect(() => {
-    if (offererOptions.length && !currentOffererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      handleChangeOfferer(selectedOffererId.toString())
-    }
-
-    if (offererOptions.length && !selectedOffererName) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      handleChangeOfferer(offererOptions[0]?.value)
-    }
-  })
-
-  useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
     }
@@ -124,6 +112,7 @@ export const HeaderDropdown = () => {
     }
     dispatch(updateUser(null))
     dispatch(updateCurrentOfferer(null))
+    dispatch(updateUserAccess(null))
   }
 
   return (

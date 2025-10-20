@@ -1,8 +1,7 @@
-import { Navigate, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
-import { useHasAccessToDidacticOnboarding } from '@/commons/hooks/useHasAccessToDidacticOnboarding'
 import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 
@@ -15,12 +14,7 @@ export const OfferType = (): JSX.Element => {
 
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const isDidacticOnboardingEnabled = useHasAccessToDidacticOnboarding()
   const allowedOnAdage = useIsAllowedOnAdage()
-
-  if (isOnboarding && isDidacticOnboardingEnabled === false) {
-    return <Navigate to="/accueil" />
-  }
 
   const mainHeading = `Créer une offre${collectiveOnly ? ' collective' : ''}`
   const children = <OfferTypeScreen collectiveOnly={collectiveOnly} />

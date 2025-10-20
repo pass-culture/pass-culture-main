@@ -171,6 +171,66 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "VENUE_TAG": {
+        "field": "criteria",
+        "column": offerers_models.VenueCriterion.criterionId,
+        "inner_join": "venue_criterion",
+        "custom_filters_inner_joins": {
+            "NOT_IN": ["venue"],
+            "NOT_EXIST": ["venue"],
+        },
+        "custom_filters": {
+            "NOT_IN": lambda values: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        criteria_models.VenueCriterion.venueId == offerers_models.Venue.id,
+                        criteria_models.VenueCriterion.criterionId.in_(values),
+                    )
+                )
+                .correlate(offerers_models.Venue)
+                .is_(False)
+            ),
+            "NOT_EXIST": lambda values: (
+                sa.exists()
+                .where(
+                    criteria_models.VenueCriterion.venueId == offerers_models.Venue.id,
+                )
+                .correlate(offerers_models.Venue)
+                .is_(False)
+            ),
+        },
+    },
+    "OFFERER_TAG": {
+        "field": "offerer_tags",
+        "column": offerers_models.OffererTagMapping.tagId,
+        "inner_join": "offerer_tag_mapping",
+        "custom_filters_inner_joins": {
+            "NOT_IN": ["offerer"],
+            "NOT_EXIST": ["offerer"],
+        },
+        "custom_filters": {
+            "NOT_IN": lambda values: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+                        offerers_models.OffererTagMapping.tagId.in_(values),
+                    )
+                )
+                .correlate(offerers_models.Offerer)
+                .is_(False)
+            ),
+            "NOT_EXIST": lambda values: (
+                sa.exists()
+                .where(
+                    offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+                )
+                .correlate(offerers_models.Offerer)
+                .is_(False)
+            ),
+        },
+    },
     "STATUS": {
         "field": "status",
         "column": offers_models.Offer.status,
@@ -245,6 +305,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
             )
         },
     },
+    "ALLOCINE_ID": {
+        "field": "integer",
+        "inner_join": "product",
+        "special": str,
+        "column": offers_models.Product.extraData.op("->")("allocineId"),  # use the index
+    },
     "SHOW_TYPE": {
         "facet": "offer.showType",
         "field": "show_type",
@@ -252,6 +318,12 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "product": [
+        {
+            "name": "product",
+            "args": (offers_models.Product, offers_models.Offer.product),
+        },
+    ],
     "criterion": [
         {
             "name": "criterion",
@@ -303,6 +375,36 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "offerer",
             "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
+    ],
+    "offerer_tag_mapping": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+        {
+            "name": "offerer",
+            "args": (offerers_models.Offerer, offerers_models.Venue.managingOfferer),
+        },
+        {
+            "name": "offerer_tag_mapping",
+            "args": (
+                offerers_models.OffererTagMapping,
+                offerers_models.OffererTagMapping.offererId == offerers_models.Offerer.id,
+            ),
+        },
+    ],
+    "venue_criterion": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        },
+        {
+            "name": "venue_criterion",
+            "args": (
+                offerers_models.VenueCriterion,
+                offerers_models.VenueCriterion.venueId == offerers_models.Venue.id,
+            ),
         },
     ],
 }
@@ -639,10 +741,12 @@ def _get_offers_by_ids(
                 offers_models.Offer.publicationDatetime,
                 offers_models.Offer._extraData,
                 offers_models.Offer.lastProviderId,
+                offers_models.Offer.ean,
             ),
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.id,
+                    offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                 ),
@@ -670,6 +774,10 @@ def _get_offers_by_ids(
             .load_only(
                 geography_models.Address.departmentCode,
                 geography_models.Address.timezone,
+            ),
+            sa_orm.joinedload(offers_models.Offer.product).load_only(
+                offers_models.Product.ean,
+                offers_models.Product.extraData,
             ),
         )
     )
@@ -1251,6 +1359,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             sa_orm.joinedload(offers_models.Offer.venue).options(
                 sa_orm.load_only(
                     offerers_models.Venue.id,
+                    offerers_models.Venue.isSoftDeleted,
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.managingOffererId,

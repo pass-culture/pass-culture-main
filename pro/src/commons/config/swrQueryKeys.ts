@@ -4,7 +4,6 @@ export const GET_BOOKINGS_QUERY_KEY = 'getBookings'
 export const GET_CATEGORIES_QUERY_KEY = 'getCategories'
 export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
 export const GET_COLLECTIVE_ACADEMIES = 'getCollectiveAcademies'
-export const GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY = 'getCollectiveBookingById'
 export const GET_COLLECTIVE_FAVORITES = 'getCollectiveFavorites'
 export const GET_COLLECTIVE_OFFER_QUERY_KEY = 'getCollectiveOffer'
 export const GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY =
@@ -20,6 +19,8 @@ export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
 export const GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY =
   'getCollectiveOfferRequestInformations'
+export const GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY =
+  'getAutocompleteEducationalRedactorsForUai'
 export const GET_EDUCATIONAL_DOMAINS_QUERY_KEY = 'listEducationalDomains'
 export const GET_EDUCATIONAL_OFFERERS_QUERY_KEY = 'listEducationalOfferers'
 export const GET_EDUCATIONAL_STATUSES_QUERY_KEY = 'getVenuesEducationalStatuses'

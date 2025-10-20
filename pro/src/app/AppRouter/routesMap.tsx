@@ -78,11 +78,6 @@ export const routes: CustomRouteObject[] = [
     title: 'Réservations individuelles',
   },
   {
-    lazy: () => import('@/pages/CollectiveBookings/CollectiveBookings'),
-    path: '/reservations/collectives',
-    title: 'Réservations collectives',
-  },
-  {
     lazy: () => import('@/pages/SignIn/SignIn'),
     path: '/connexion',
     title: 'Connectez-vous',
@@ -154,6 +149,9 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/VenueSettings/VenueSettings'),
     path: '/structures/:offererId/lieux/:venueId/parametres',
     title: 'Paramètres généraux',
+    meta: {
+      canBeOnboarding: true,
+    },
   },
   {
     lazy: () => import('@/pages/OfferType/OfferType'),
@@ -164,7 +162,9 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/OfferType/OfferType'),
     path: '/onboarding/offre/creation',
     title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
@@ -370,6 +370,9 @@ export const routes: CustomRouteObject[] = [
     path: '/onboarding/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesOnboardingIndividualOfferWizard,
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () => import('@/pages/Reimbursements/Reimbursements'),
@@ -381,6 +384,9 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/User/UserProfile'),
     path: '/profil',
     title: 'Profil',
+    meta: {
+      canBeOnboarding: true,
+    },
   },
   {
     lazy: () => import('@/pages/SignupJourneyRoutes/SignupJourneyRoutes'),
@@ -421,6 +427,9 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/Collaborators/Collaborators'),
     path: '/collaborateurs',
     title: 'Collaborateurs',
+    meta: {
+      canBeOnboarding: true,
+    },
   },
   {
     lazy: () =>
@@ -429,7 +438,9 @@ export const routes: CustomRouteObject[] = [
       ),
     path: '/onboarding',
     title: 'Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -438,12 +449,22 @@ export const routes: CustomRouteObject[] = [
       ),
     path: '/onboarding/individuel',
     title: 'Offre à destination des jeunes - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () => import('@/pages/Errors/NotFound/NotFound'),
     path: '/404',
     title: 'Erreur 404 - Page indisponible',
     isErrorPage: true,
+  },
+  {
+    lazy: () => import('@/pages/NonAttached/NonAttached'),
+    path: '/rattachement-en-cours',
+    title: 'Rattachement en cours de traitement',
+    meta: {
+      unattachedOnly: true,
+    },
   },
 ]

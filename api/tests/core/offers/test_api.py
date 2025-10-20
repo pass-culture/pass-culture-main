@@ -1,6 +1,5 @@
 import copy
 import decimal
-import json
 import logging
 import os
 import pathlib
@@ -62,7 +61,6 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import atomic
 
 import tests
@@ -1364,6 +1362,7 @@ class CreateMediationV2Test:
 
 @pytest.mark.usefixtures("db_session")
 class CreateDraftOfferTest:
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1383,6 +1382,7 @@ class CreateDraftOfferTest:
         assert db.session.query(models.Offer).count() == 1
         assert offer.metaData is None
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1393,6 +1393,7 @@ class CreateDraftOfferTest:
         with pytest.raises(exceptions.OfferException):
             api.create_draft_offer(body, venue=venue)
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
         # have acceslibre accessibility informations
@@ -1428,6 +1429,7 @@ class CreateDraftOfferTest:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == False
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
@@ -1440,6 +1442,7 @@ class CreateDraftOfferTest:
 
         assert offer.withdrawalDetails == venue.withdrawalDetails
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1453,6 +1456,7 @@ class CreateDraftOfferTest:
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert error.value.errors["subcategory"] == [msg]
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
@@ -1464,64 +1468,6 @@ class CreateDraftOfferTest:
             api.create_draft_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
-
-    def test_create_draft_offer_with_video_url(self):
-        venue = offerers_factories.VenueFactory()
-        body = offers_schemas.deprecated.PostDraftOfferBodyModel(
-            name="A pretty good offer",
-            subcategoryId=subcategories.SEANCE_CINE.id,
-            venueId=venue.id,
-            videoUrl="https://www.youtube.com/watch?v=uIR_vSRASxM",
-        )
-        offer = api.create_draft_offer(body, venue=venue)
-
-        assert offer.metaData.videoUrl == "https://www.youtube.com/watch?v=uIR_vSRASxM"
-
-
-@pytest.mark.usefixtures("db_session")
-class GetVideoMetadataFromCacheTest:
-    VIDEO_ID = "WtM4OW2qVjY"
-
-    def test_get_video_metadata_from_cache_no_video_id(self):
-        video_metadata = api.get_video_metadata_from_cache(None)
-        assert video_metadata is None
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
-    def test_get_video_metadata_from_cache_with_data_in_cache(self, app):
-        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
-        video_id = api.extract_youtube_video_id(video_url)
-        app.redis_client.set(
-            f"{api.YOUTUBE_INFO_CACHE_PREFIX}{video_id}",
-            json.dumps(
-                {
-                    "title": "Title",
-                    "thumbnail_url": "thumbnail url",
-                    "duration": 100,
-                }
-            ),
-        )
-        video_metadata = api.get_video_metadata_from_cache(video_url)
-        assert video_metadata.id == video_id
-        assert video_metadata.title == "Title"
-        assert video_metadata.thumbnail_url == "thumbnail url"
-        assert video_metadata.duration == 100
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeTestingBackend")
-    def test_get_video_metadata_from_cache_without_data_in_cache(self):
-        video_url = f"https://www.youtube.com/watch?v={self.VIDEO_ID}"
-
-        video_metadata = api.get_video_metadata_from_cache(video_url)
-        assert video_metadata.id == self.VIDEO_ID
-        assert video_metadata.title == "Mock Video Title"
-        assert video_metadata.thumbnail_url == f"https://example.com/vi/{self.VIDEO_ID}/default.jpg"
-        assert video_metadata.duration == 300
-
-    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeExceptionBackend")
-    def test_get_video_metadata_from_cache_without_data_in_cache_connector_raise_error(self):
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-
-        with pytest.raises(ExternalAPIException):
-            api.get_video_metadata_from_cache(video_url)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1542,10 +1488,10 @@ class UpdateDraftOfferTest:
         assert offer.name == "New name"
         assert offer.description == "New description"
 
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_new_video_url(self, get_video_metadata_from_cache_mock):
-        video_url = "https://www.youtube.com/watch?v=WtM4OW2qVjY"
-        video_id = api.extract_youtube_video_id(video_url)
+        video_id = "WtM4OW2qVjY"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
         get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
             id=video_id,
             title="Title",
@@ -1597,6 +1543,7 @@ class UpdateDraftOfferTest:
         assert offer.name == "Name"
         assert offer.description == "description"
 
+    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_update_digital_offer_without_setting_url_when_not_yet_set(self):
         """When the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should raise an error."""
         offer = factories.OfferFactory(
@@ -1613,7 +1560,6 @@ class UpdateDraftOfferTest:
             'Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'
         ]
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_can_update_digital_offer_without_setting_url_if_not_yet_set_under_ff(self):
         """Under FF, when the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should pass."""
         offer = factories.OfferFactory(
@@ -1650,7 +1596,6 @@ class UpdateDraftOfferTest:
     def test_cannot_remove_digital_offer_url(self):
         self._test_cannot_remove_digital_offer_url()
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_cannot_remove_digital_offer_url_under_ff(self):
         self._test_cannot_remove_digital_offer_url()
 
@@ -1660,7 +1605,7 @@ class CreateOfferTest:
     def test_create_digital_offer_from_scratch(
         self,
     ):
-        venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
+        venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
         body = offers_schemas.CreateOffer(
@@ -2183,9 +2128,8 @@ class UpdateOfferTest:
     def test_offer_update_accordingly_of_its_digitalness(self, hasUrl):
         kwargs = {}
         if hasUrl:
-            kwargs["isVirtual"] = True
-            kwargs["offererAddress"] = None
             kwargs["siret"] = None
+            kwargs["comment"] = "Digital venue"
         venue = offerers_factories.VenueFactory(**kwargs)
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
         offer = factories.OfferFactory(
@@ -4290,7 +4234,7 @@ class UpsertMovieProductFromProviderTest:
     def test_creates_allocine_product_without_visa_if_does_not_exist(self):
         movie = self._get_movie(allocine_id="12345")
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData.get("visa") is None
@@ -4299,7 +4243,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345")
         movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert (
@@ -4311,7 +4255,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id=None, visa=None)
 
         with assert_num_queries(0):
-            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product is None
 
@@ -4319,7 +4263,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert product.id == new_product.id
 
@@ -4334,7 +4278,7 @@ class UpsertMovieProductFromProviderTest:
         offer = factories.OfferFactory(product=random_movie_with_visa)
 
         # When
-        api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         # Then
         assert allocine_movie.lastProvider.id == self.allocine_provider.id
@@ -4353,7 +4297,7 @@ class UpsertMovieProductFromProviderTest:
         movie.title = "Chroniques fidèles survenues au siècle dernier à l’hôpital psychiatrique Blida-Joinville, au temps où le Docteur Frantz Fanon était chef de la cinquième division entre 1953 et 1956"
         offer = factories.OfferFactory(product=random_movie_with_visa)
 
-        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider)
 
         assert allocine_movie.lastProvider.id == self.allocine_provider.id
 
@@ -4369,7 +4313,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345")
 
         # When
-        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost")
+        api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         # Then
         assert product.lastProvider.id == self.allocine_provider.id
@@ -4378,7 +4322,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.lastProvider.id == self.allocine_stocks_provider.id
 
@@ -4386,7 +4330,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345})
         movie = self._get_movie(allocine_id="12345")
 
-        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
+        api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         assert product.lastProvider.id == self.boost_provider.id
 
@@ -4394,7 +4338,7 @@ class UpsertMovieProductFromProviderTest:
         product = factories.ProductFactory(lastProviderId=self.boost_provider.id, extraData={"visa": "54321"})
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
 
@@ -4405,7 +4349,7 @@ class UpsertMovieProductFromProviderTest:
         )
         movie = self._get_movie(allocine_id="12345", visa="54322")
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54322"
@@ -4417,7 +4361,7 @@ class UpsertMovieProductFromProviderTest:
         )
         movie = self._get_movie(allocine_id="12345", visa=None)
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData["allocineId"] == 12345
         assert product.extraData["visa"] == "54321"
@@ -4430,7 +4374,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa=None)
         movie.extra_data = None
 
-        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
 
@@ -4454,7 +4398,7 @@ class UpsertMovieProductFromProviderTest:
         movie = self._get_movie(allocine_id="12345", visa="54321")
 
         with caplog.at_level(logging.INFO):
-            api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
+            api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider)
 
         assert caplog.records[0].extra == {
             "allocine_id": "12345",
@@ -4506,7 +4450,7 @@ class UpsertMovieProductFromProviderTest:
         accident_piano_movie_product_id = accident_piano_movie_product.id
 
         with caplog.at_level(logging.WARNING):
-            product = api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoostProducts")
+            product = api.upsert_movie_product_from_provider(movie, self.boost_provider)
 
         assert caplog.records[0].message == "Provider sent incoherent visa and allocineId"
         assert caplog.records[0].extra == {
@@ -5051,6 +4995,21 @@ class DeleteOffersAndAllRelatedObjectsTest:
         assert stock_with_wrong_category.priceCategory == category_1
         assert category_1.offer == stock_with_wrong_category.offer
 
+    def test_do_not_delete_price_category_not_related_to_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = factories.ThingOfferFactory(
+            isActive=False, validation=models.OfferValidationStatus.DRAFT, venue__managingOfferer=user_offerer.offerer
+        )
+        factories.PriceCategoryFactory(offer=offer)
+        other_price_category = factories.PriceCategoryFactory()
+
+        response = client.with_session_auth(user_offerer.user.email).delete(
+            f"/offers/{offer.id}/price_categories/{other_price_category.id}"
+        )
+
+        assert response.status_code == 400
+        assert db.session.query(models.PriceCategory).count() == 2
+
 
 @pytest.mark.usefixtures("db_session")
 class DeleteUnbookableUnusedOldOffersTest:
@@ -5166,32 +5125,3 @@ class UpdateProductCountsTest:
         assert product_2.likesCount == 2
         assert product_1.chroniclesCount == 1
         assert product_2.headlinesCount == 1
-
-
-@pytest.mark.usefixtures("db_session")
-class VideoIdExtractionTest:
-    @pytest.mark.parametrize(
-        "url,video_id",
-        [
-            ("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://youtu.be/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("http://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10s", "dQw4w9WgXcQ"),
-            ("https://m.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://youtube.com/v/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/e/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLUMRshJ8e2c4oQ60D4Ew15A1LgN5C7Y3X", "dQw4w9WgXcQ"),
-            ("https://www.youtube.com/shorts/dQw4w9WgXcQ", None),  # we do not accept shorts
-            ("https://www.other.com", None),
-            ("dQw4w9WgXcQ", None),
-            ("https://www.youtube.com/@Msnight_fall", None),  # we do not accept channels
-            ("https://www.youtube.com.jesuiscool.fr", None),  # we do not accept subdomains, even if you are cool
-            ("https://www.youtube.comjesuisunvilainhacker", None),  # we do not accept hackers
-            ("m.youtube.com/watch?v=dQw4w9WgXcQ", None),  # we require https://
-            ("www.youtube.com/embed/dQw4w9WgXcQ", None),
-            ("youtube.com/v/dQw4w9WgXcQ", None),
-            ("ghtps://www.youtube.com/watch?v=dQw4w9WgXcQ", None),
-        ],
-    )
-    def test_extract_youtube_video_id_from_url(self, url, video_id):
-        assert api.extract_youtube_video_id(url) == video_id

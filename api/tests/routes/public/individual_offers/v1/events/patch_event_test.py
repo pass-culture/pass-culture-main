@@ -385,22 +385,6 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert offer.venueId == other_venue.id
         assert offer.venue.offererAddress.id == other_venue.offererAddress.id
 
-    def test_update_location_with_digital_location(self):
-        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
-        venue = venue_provider.venue
-        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider, digital=True)
-
-        other_venue = offerers_factories.VirtualVenueFactory(managingOfferer=venue.managingOfferer)
-        providers_factories.VenueProviderFactory(provider=venue_provider.provider, venue=other_venue)
-        json_data = {"location": {"type": "digital", "venueId": other_venue.id, "url": "https://oops.fr"}}
-
-        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200
-
-        assert offer.url == "https://oops.fr"
-        assert offer.venueId == other_venue.id
-        assert not offer.offererAddress
-
     def test_update_location_with_address(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
         venue = venue_provider.venue
@@ -422,7 +406,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert offer.offererAddress.addressId == address.id
 
-    @mock.patch("pcapi.core.offers.api.get_video_metadata_from_cache")
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
     def test_update_video(self, get_video_metadata_from_cache_mock):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
@@ -469,11 +453,28 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         json_data = {"videoUrl": None}
 
         response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
-        assert response.status_code == 200, response.json
+        assert response.status_code == 200
         assert offer.metaData.videoUrl == None
         assert offer.metaData.videoExternalId == None
 
         assert response.json["videoUrl"] == None
+
+    @pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+    def test_video_metadata_not_found(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue = venue_provider.venue
+        offer = self.setup_base_resource(venue=venue, provider=venue_provider.provider)
+
+        json_data = {"videoUrl": "https://www.youtube.com/watch?v=Mm-KMkg_hgU"}
+
+        response = self.make_request(plain_api_key, {"offer_id": offer.id}, json_body=json_data)
+        assert response.status_code == 400
+
+        assert response.json == {
+            "videoUrl": [
+                "This video cannot be found on youtube. It is most likely a private video. Please check your URL."
+            ]
+        }
 
     @pytest.mark.parametrize(
         "partial_request_json, expected_response_json",

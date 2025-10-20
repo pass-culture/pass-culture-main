@@ -37,8 +37,8 @@
         <div class="flex-grow-1">
           {% call description_detail_horizontal("Période de validitée") %}
             {% if collective_offer_template.dateRange and not collective_offer_template.dateRange.empty %}
-              {% set start_date = collective_offer_template.dateRange.lower | format_date_time %}
-              {% set end_date = collective_offer_template.dateRange.upper | format_date_time %}
+              {% set start_date = collective_offer_template.dateRange.lower | format_date_time(collective_offer_template.address) %}
+              {% set end_date = collective_offer_template.dateRange.upper | format_date_time(collective_offer_template.address) %}
               {{ start_date }}
               {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
             {% endif %}

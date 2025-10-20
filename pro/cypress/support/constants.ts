@@ -6,3 +6,23 @@ export const DEFAULT_AXE_CONFIG = {
 export const DEFAULT_AXE_RULES = {
   rules: {},
 }
+
+export const BOOKABLE_OFFERS_COLUMNS = [
+  '', // checkbox cell
+  '', // expiration cell
+  'Nom de l’offre',
+  'Dates',
+  'Prix et participants',
+  'Établissement',
+  'Localisation',
+  'Statut',
+]
+
+export const TEMPLATE_OFFERS_COLUMNS = [
+  '',
+  '',
+  'Nom de l’offre',
+  'Dates',
+  'Localisation',
+  'Statut',
+]

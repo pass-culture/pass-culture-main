@@ -14,7 +14,6 @@ export type PostDraftOfferBodyModel = {
   subcategoryId: string;
   url?: string | null;
   venueId: number;
-  videoUrl?: string | null;
   visualDisabilityCompliant?: boolean | null;
 };
 

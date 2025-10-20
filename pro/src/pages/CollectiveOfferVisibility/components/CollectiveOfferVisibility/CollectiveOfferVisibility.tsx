@@ -6,13 +6,17 @@ import { useDebouncedCallback } from 'use-debounce'
 import type { InferType } from 'yup'
 
 import { api } from '@/apiClient/api'
+import { isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
   type EducationalRedactor,
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
-import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
+  GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import {
   extractInitialVisibilityValues,
@@ -188,6 +192,37 @@ export const CollectiveOfferVisibilityScreen = ({
     formState: { isDirty, isSubmitting },
   } = form
 
+  const institution = watch('institution')
+  const selectedInstitution = institutionsOptions.find(
+    (_institution) => _institution.value === institution
+  )
+
+  const { isLoading: isPreloadingRedactors } = useSWR(
+    () =>
+      selectedInstitution?.institutionId
+        ? [
+            GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
+            selectedInstitution?.institutionId,
+          ]
+        : null,
+    async ([, institutionUai]) => {
+      try {
+        if (institutionUai) {
+          await api.getAutocompleteEducationalRedactorsForUai(
+            institutionUai,
+            'preload'
+          )
+        }
+      } catch (error) {
+        if (isErrorAPIError(error) && error.status === 404) {
+          console.warn('No redactors found')
+        } else {
+          notify.error(GET_DATA_ERROR_MESSAGE)
+        }
+      }
+    }
+  )
+
   useEffect(() => {
     if (!requestInformations) {
       return
@@ -259,7 +294,7 @@ export const CollectiveOfferVisibilityScreen = ({
     } catch {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
-  }, 1000)
+  }, 400)
 
   return (
     <>
@@ -325,7 +360,11 @@ export const CollectiveOfferVisibilityScreen = ({
                     setValue('teacher', '')
                   }}
                   onSearch={onSearchTeacher}
-                  disabled={!canEditInstitution || !watch('institution')}
+                  disabled={
+                    !canEditInstitution ||
+                    !watch('institution') ||
+                    isPreloadingRedactors
+                  }
                   onChange={(event) => {
                     setValue('teacher', event.target.value, {
                       shouldDirty: true,

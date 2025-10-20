@@ -24,7 +24,7 @@ export enum TimelineStepType {
 /**
  * Represents a single step in the timeline.
  */
-export interface TimelineStep {
+interface TimelineStep {
   /**
    * The type of the timeline step.
    */

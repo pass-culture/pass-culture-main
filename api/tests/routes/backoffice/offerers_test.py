@@ -172,7 +172,6 @@ class GetOffererTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId="1234")
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
@@ -1199,7 +1198,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert len(rows) == 2
 
         assert rows[0]["Type"] == "Commentaire interne"
-        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[0]["Date/Heure"].startswith(action.actionDate.strftime("%d/%m/%Y à "))
         assert rows[0]["Commentaire"] == action.comment
         assert rows[0]["Auteur"] == action.authorUser.full_name
 
@@ -1357,22 +1356,22 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert len(rows) == 4
 
         assert rows[0]["Type"] == "Entité juridique validée"
-        assert rows[0]["Date/Heure"] == "Le 06/10/2022 à 18h04"  # CET (Paris time)
+        assert rows[0]["Date/Heure"] == "06/10/2022 à 18h04"  # CET (Paris time)
         assert rows[0]["Commentaire"] == ""
         assert rows[0]["Auteur"] == admin.full_name
 
         assert rows[1]["Type"] == "Commentaire interne"
-        assert rows[1]["Date/Heure"] == "Le 05/10/2022 à 17h03"  # CET (Paris time)
+        assert rows[1]["Date/Heure"] == "05/10/2022 à 17h03"  # CET (Paris time)
         assert rows[1]["Commentaire"] == "Documents reçus"
         assert rows[1]["Auteur"] == legit_user.full_name
 
         assert rows[2]["Type"] == "Entité juridique mise en attente"
-        assert rows[2]["Date/Heure"] == "Le 04/10/2022 à 16h02"  # CET (Paris time)
+        assert rows[2]["Date/Heure"] == "04/10/2022 à 16h02"  # CET (Paris time)
         assert rows[2]["Commentaire"] == "Documents complémentaires demandés"
         assert rows[2]["Auteur"] == admin.full_name
 
         assert rows[3]["Type"] == "Nouvelle entité juridique"
-        assert rows[3]["Date/Heure"] == "Le 03/10/2022 à 15h01"  # CET (Paris time)
+        assert rows[3]["Date/Heure"] == "03/10/2022 à 15h01"  # CET (Paris time)
         assert rows[3]["Commentaire"] == ""
         assert rows[3]["Auteur"] == user_offerer.user.full_name
 
@@ -1428,6 +1427,43 @@ class GetOffererHistoryTest(GetEndpointHelper):
             "N° de ticket Zendesk : 12345 Document Drive : https://drive.example.com/path/to/document"
         )
         assert rows[0]["Auteur"] == bo_user.full_name
+
+    def test_get_action_with_soft_deleted_venue(self, authenticated_client, legit_user):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Soft-deleted Venue")
+        bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+        offerers_factories.VenueBankAccountLinkFactory(
+            venue=venue,
+            bankAccount=bank_account,
+            timespan=(
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=10),
+                date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
+            ),
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+            authorUser=None,
+            offerer=offerer,
+            venue=venue,
+            bankAccount=bank_account,
+            comment=None,
+        )
+        venue.isSoftDeleted = True
+        db.session.flush()
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Partenaire culturel dissocié d'un compte bancaire"
+        assert rows[0]["Commentaire"] == "Partenaire culturel : Soft-deleted Venue (supprimé)"
+        assert rows[0]["Auteur"] == ""
 
 
 class GetOffererUsersTest(GetEndpointHelper):
@@ -1699,7 +1735,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         )
 
         venue_2 = offerers_factories.VenueFactory(
-            name="Premier", publicName=None, managingOfferer=offerer, isOpenToPublic=False
+            name="Premier", publicName="NumeroUn", managingOfferer=offerer, isOpenToPublic=False
         )
         offerers_factories.VenueRegistrationFactory(venue=venue_2)
         educational_factories.CollectiveDmsApplicationFactory(venue=venue_2, application=35)
@@ -1720,7 +1756,7 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[0]["SIRET"] == venue_2.siret
         assert rows[0]["Permanent"] == ""
         assert rows[0]["Ouvert au public"] == ""
-        assert rows[0]["Nom"] == venue_2.name
+        assert rows[0]["Nom"] == venue_2.publicName
         assert rows[0]["Activité principale"] == venue_2.venueTypeCode.value
         assert not rows[0].get("Activité principale du partenaire")
         assert rows[0]["Présence web"] == "https://example.com https://pass.culture.fr"
@@ -3866,6 +3902,95 @@ class InviteUserTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Adresse email : Email obligatoire, doit contenir entre 3 et 128 caractères ;"
         )
         assert db.session.query(offerers_models.OffererInvitation).count() == 0
+
+
+class ResendInvitationTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.resend_invitation"
+    endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_resend_invitation(self, legit_user, authenticated_client, offerer):
+        invitation = offerers_factories.OffererInvitationFactory(offerer=offerer)
+        offerers_factories.OffererInvitationFactory(offerer=offerer)
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation a été renvoyée à {invitation.email}"
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == invitation.email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.__dict__
+        )
+
+    def test_resend_invitation_with_matching_user(self, legit_user, authenticated_client, offerer):
+        invited_email = "someone@example.com"
+        users_factories.ProFactory(email=invited_email)
+        invitation = offerers_factories.OffererInvitationFactory(offerer=offerer, email=invited_email)
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation a été renvoyée à {invited_email}"
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == invited_email
+        assert (
+            mails_testing.outbox[0]["template"]
+            == sendinblue_template_ids.TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.__dict__
+        )
+
+    def test_can_not_resend_accepted_invitation(self, authenticated_client, offerer):
+        invitation = offerers_factories.OffererInvitationFactory(
+            offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation.id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == f"L'invitation de {invitation.email} est déjà acceptée"
+        assert not mails_testing.outbox
+
+
+class DeleteInvitationTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.delete_invitation"
+    endpoint_kwargs = {"offerer_id": 1, "invitation_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    def test_delete_invitation(self, legit_user, authenticated_client, offerer):
+        invitation_1_id = offerers_factories.OffererInvitationFactory(offerer=offerer, email="invite@example.com").id
+        invitation_2_id = offerers_factories.OffererInvitationFactory(offerer=offerer).id
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation_1_id, follow_redirects=True
+        )
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == "L'invitation de invite@example.com a été supprimée"
+
+        assert db.session.query(offerers_models.OffererInvitation).with_entities(
+            offerers_models.OffererInvitation.id
+        ).all() == [(invitation_2_id,)]
+
+    def test_can_not_delete_accepted_invitation(self, authenticated_client, offerer):
+        invitation_id = offerers_factories.OffererInvitationFactory(
+            offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
+        ).id
+
+        response = self.post_to_endpoint(
+            authenticated_client, offerer_id=offerer.id, invitation_id=invitation_id, follow_redirects=True
+        )
+
+        assert response.status_code == 404  # no pending invitation (menu item is not available)
+        assert db.session.query(offerers_models.OffererInvitation).count() == 1
 
 
 class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):

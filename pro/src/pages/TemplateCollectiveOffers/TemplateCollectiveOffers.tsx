@@ -57,7 +57,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isNewOffersAndBookingsActive: true,
     isInTemplateOffersPage: true,
     urlSearchFilters: finalSearchFilters,
     selectedOffererId: offererId ?? '',
@@ -75,8 +74,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     () => {
       const params = serializeApiCollectiveFilters(
         apiFilters,
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-        true
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
       )
 
       return api.getCollectiveOffers(

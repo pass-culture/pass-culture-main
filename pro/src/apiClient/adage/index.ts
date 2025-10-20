@@ -22,6 +22,7 @@ export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferReq
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
 export type { CatalogViewBody } from './models/CatalogViewBody';
 export { CollectiveLocationType } from './models/CollectiveLocationType';
+export type { CollectiveOfferDatesModel } from './models/CollectiveOfferDatesModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
 export type { CollectiveRequestBody } from './models/CollectiveRequestBody';
@@ -62,7 +63,6 @@ export type { SearchBody } from './models/SearchBody';
 export type { StockIdBody } from './models/StockIdBody';
 export { StudentLevels } from './models/StudentLevels';
 export { SuggestionType } from './models/SuggestionType';
-export type { TemplateDatesModel } from './models/TemplateDatesModel';
 export type { TrackingAutocompleteSuggestionBody } from './models/TrackingAutocompleteSuggestionBody';
 export type { TrackingCTAShareBody } from './models/TrackingCTAShareBody';
 export type { TrackingFilterBody } from './models/TrackingFilterBody';

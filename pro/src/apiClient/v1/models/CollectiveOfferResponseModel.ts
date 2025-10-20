@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
+import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
@@ -10,11 +11,10 @@ import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemp
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
-import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
   allowedActions: (Array<CollectiveOfferAllowedAction> | Array<CollectiveOfferTemplateAllowedAction>);
   booking?: CollectiveOffersBookingResponseModel | null;
-  dates?: TemplateDatesModel | null;
+  dates?: CollectiveOfferDatesModel | null;
   displayedStatus: CollectiveOfferDisplayedStatus;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   hasBookingLimitDatetimesPassed: boolean;

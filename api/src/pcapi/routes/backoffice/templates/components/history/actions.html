@@ -18,7 +18,7 @@
           <th scope="row"></th>
           {# action can be an ActionHistory row from db or an AccountAction object from another table #}
           <td>{{ action.actionType | format_action_type }}</td>
-          <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+          <td>{{ action.actionDate | format_date_time }}</td>
           <td class="text-break">
             {% if action.userId and is_user_offerer_action_type(action) %}
               {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
@@ -64,10 +64,7 @@
                   <span class="fw-bold">Informations modifiées :</span>
                   {% if show_venue and action.venueId %}
                     sur le partenaire culturel
-                    {% if action.venue %}
-                      {# FIXME (rpaoloni): understand why venue can be None sometime #}
-                      {{ links.build_venue_name_to_details_link(action.venue) }}
-                    {% endif %}
+                    {{ links.build_venue_name_to_details_link(action.venue) }}
                     ({{ action.venueId }})
                   {% endif %}
                 </div>

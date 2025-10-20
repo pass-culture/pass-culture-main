@@ -421,3 +421,23 @@ class AutocompleteAddressesTest(AutocompleteTestBase):
 
         with mock.patch("pcapi.connectors.api_adresse.search_address", return_value=search_address_response):
             self._test_autocomplete(authenticated_client, search_query, expected_texts)
+
+
+class AutocompleteOffererTagTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_offerer_tags"
+
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("com", {"premiercom", "no-labelcom"}),
+            ("no-", {"no-labelcom"}),
+            ("prem", {"premiercom"}),
+            ("fir", {"premiercom"}),
+        ],
+    )
+    def test_autocomplete_offerers(self, authenticated_client, search_query, expected_texts):
+        offerers_factories.OffererTagFactory(name="first", label="premiercom")
+        offerers_factories.OffererTagFactory(name="no-labelcom")
+
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)

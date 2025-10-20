@@ -143,7 +143,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
     )  # should be ignored
     FavoriteFactory(
         user=user,
-        offer=OfferFactory(subcategoryId=subcategories.VISITE.id),
+        offer=OfferFactory(subcategoryId=subcategories.VISITE_LIBRE.id),
         dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=3),
     )
     FavoriteFactory(

@@ -11,7 +11,6 @@ import {
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
@@ -32,7 +31,6 @@ type UserEmailFormValues = {
 
 export const LostPassword = (): JSX.Element => {
   const [email, setEmail] = useState<string>('')
-  useRedirectLoggedUser()
   useInitReCaptcha()
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 

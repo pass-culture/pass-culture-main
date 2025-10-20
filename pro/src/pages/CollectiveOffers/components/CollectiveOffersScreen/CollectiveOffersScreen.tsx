@@ -6,11 +6,11 @@ import type {
 } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
-import { useDefaultCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
@@ -21,8 +21,8 @@ import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
+import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
-import { DownloadBookableOffersButton } from '@/components/CollectiveOffersTable/DownloadBookableOffersButton/DownloadBookableOffersButton'
 import { NoData } from '@/components/NoData/NoData'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
@@ -61,8 +61,6 @@ export const CollectiveOffersScreen = ({
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
 
-  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
-
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
@@ -71,8 +69,8 @@ export const CollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
-    defaultFilters: defaultCollectiveFilters,
-    ignore: ['nameOrIsbn'],
+    defaultFilters: DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+    ignore: ['nameOrIsbn', 'collectiveOfferType'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
@@ -128,7 +126,7 @@ export const CollectiveOffersScreen = ({
   const resetFilters = (resetNameOrIsbn = true) => {
     onResetFilters(resetNameOrIsbn)
     const newFilters = {
-      ...defaultCollectiveFilters,
+      ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
       ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
     }
     applyUrlFiltersAndRedirect(newFilters)
@@ -189,10 +187,10 @@ export const CollectiveOffersScreen = ({
             currentSortingMode={currentSortingMode}
             currentPageItems={currentPageItems}
             downloadButton={
-              <DownloadBookableOffersButton
+              <CollectiveOffersDownloadDrawer
                 isDisabled={userHasNoOffers}
                 filters={selectedFilters}
-                defaultFilters={defaultCollectiveFilters}
+                defaultFilters={DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS}
               />
             }
           />

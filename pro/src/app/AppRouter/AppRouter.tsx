@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { App } from '@/app/App/App'
+import { AppRouterGuard } from '@/app/AppRouter/AppRouterGuard'
 import { routes } from '@/app/AppRouter/routesMap'
 import { selectActiveFeatures } from '@/commons/store/features/selectors'
 
@@ -26,7 +27,11 @@ export const AppRouter = (): JSX.Element => {
     [
       {
         path: '/',
-        element: <App />,
+        element: (
+          <AppRouterGuard>
+            <App />
+          </AppRouterGuard>
+        ),
         errorElement: <ErrorBoundary />,
         hydrateFallbackElement: <></>,
         children: [

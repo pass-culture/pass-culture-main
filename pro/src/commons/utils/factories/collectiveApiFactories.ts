@@ -4,10 +4,7 @@ import { add, addDays } from 'date-fns'
 
 import { EacFormat } from '@/apiClient/adage'
 import {
-  CollectiveBookingBankAccountStatus,
-  type CollectiveBookingByIdResponseModel,
   type CollectiveBookingCollectiveStockResponseModel,
-  type CollectiveBookingResponseModel,
   CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
@@ -30,15 +27,12 @@ import {
   StudentLevels,
   VenueTypeCode,
 } from '@/apiClient/v1'
-import { BOOKING_STATUS } from '@/commons/core/Bookings/constants'
 
 let offerId = 1
 let stockId = 1
 let venueId = 1
 let offererId = 1
-let bookingId = 1
 let offerBookingId = 1
-let bookingDetailsId = 1
 let institutionId = 1
 
 export const collectiveOfferFactory = (
@@ -236,74 +230,6 @@ export const collectiveBookingCollectiveStockFactory = (
   offerName: 'ma super offre collective',
   ...customCollectiveBookingCollectiveStock,
 })
-
-export const collectiveBookingFactory = (
-  customCollectiveBooking: Partial<CollectiveBookingResponseModel> = {}
-): CollectiveBookingResponseModel => {
-  const currentBookingId = bookingId++
-  return {
-    bookingAmount: 1,
-    bookingCancellationLimitDate: new Date().toISOString(),
-    bookingConfirmationDate: new Date().toISOString(),
-    bookingConfirmationLimitDate: new Date().toISOString(),
-    bookingDate: new Date().toISOString(),
-    bookingId: currentBookingId.toString(),
-    bookingIsDuo: false,
-    bookingStatus: BOOKING_STATUS.PENDING,
-    bookingStatusHistory: [
-      { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
-    ],
-    bookingToken: null,
-    institution: {
-      city: 'PARIS',
-      id: 1,
-      institutionId: '1',
-      institutionType: null,
-      name: 'COLLEGE DE PARIS',
-      postalCode: '75001',
-      phoneNumber: '0601020304',
-    },
-    stock: collectiveBookingCollectiveStockFactory(),
-    ...customCollectiveBooking,
-  }
-}
-
-export const collectiveBookingByIdFactory = (
-  customCollectiveBookingById?: Partial<CollectiveBookingByIdResponseModel>
-): CollectiveBookingByIdResponseModel => {
-  const currentBookingDetailsId = bookingDetailsId++
-  return {
-    bankAccountStatus: CollectiveBookingBankAccountStatus.ACCEPTED,
-    startDatetime: new Date().toISOString(),
-    endDatetime: new Date().toISOString(),
-    educationalInstitution: {
-      city: 'Paris',
-      id: 1,
-      institutionId: '1',
-      institutionType: 'LYCEE',
-      name: 'De Paris',
-      phoneNumber: '0601020304',
-      postalCode: '75000',
-    },
-    educationalRedactor: {
-      civility: 'Mr',
-      email: 'test@example.com',
-      firstName: 'Jean',
-      id: 1,
-      lastName: 'Dupont',
-    },
-    id: currentBookingDetailsId,
-    isCancellable: true,
-    numberOfTickets: 1,
-    offererId: 1,
-    price: 100,
-    students: [StudentLevels.LYC_E_SECONDE],
-    venueDMSApplicationId: 1,
-    venueId: 1,
-    venuePostalCode: '75000',
-    ...customCollectiveBookingById,
-  }
-}
 
 export const defaultEducationalInstitution: EducationalInstitutionResponseModel =
   {

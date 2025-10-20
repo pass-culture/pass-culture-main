@@ -13,7 +13,6 @@ export interface OfferNameCellProps {
   rowId: string
   displayThumb?: boolean
   className?: string
-  isNewCollectiveOffersStructureActive: boolean
 }
 
 export const OfferNameCell = ({
@@ -22,7 +21,6 @@ export const OfferNameCell = ({
   rowId,
   displayThumb = false,
   className,
-  isNewCollectiveOffersStructureActive,
 }: OfferNameCellProps) => {
   return (
     <th
@@ -49,7 +47,7 @@ export const OfferNameCell = ({
         )}
         <div className={styles['title-column-name']}>
           {offer.isShowcase && <Tag label="Offre vitrine" />}
-          {!offer.isShowcase && isNewCollectiveOffersStructureActive ? (
+          {!offer.isShowcase ? (
             <span
               className={styles['title-column-offer-id']}
             >{`N°${offer.id}`}</span>

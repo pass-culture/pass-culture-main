@@ -325,6 +325,7 @@ class PCDateRangeField(wtforms.StringField):
         reset_to_blank: bool = False,
         calendar_start_date: datetime.date | None = None,
         calendar_end_date: datetime.date | None = None,
+        drops: str | None = None,
         **kwargs: typing.Any,
     ):
         super().__init__(label, **kwargs)
@@ -332,6 +333,7 @@ class PCDateRangeField(wtforms.StringField):
         self.reset_to_blank = reset_to_blank
         self.calendar_start_date = calendar_start_date
         self.calendar_end_date = calendar_end_date
+        self.drops = drops
 
 
 class PCSelectField(wtforms.SelectField):

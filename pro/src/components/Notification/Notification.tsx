@@ -11,8 +11,8 @@ import { NotificationToaster } from '@/ui-kit/NotificationToaster/NotificationTo
 
 export const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
-  const notification = useSelector(notificationSelector)
   const isStickyBarOpen = useSelector(isStickyBarOpenSelector)
+  const notification = useSelector(notificationSelector)
   const notificationHook = useNotification()
 
   useEffect(() => {

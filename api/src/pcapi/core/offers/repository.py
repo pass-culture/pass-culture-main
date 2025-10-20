@@ -324,6 +324,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
             sa_orm.joinedload(models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.isSoftDeleted,
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.isPermanent,
@@ -1180,6 +1181,18 @@ def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | N
 
 def get_venue_price_category_labels(venue_id: int) -> list[models.PriceCategoryLabel]:
     return db.session.query(models.PriceCategoryLabel).filter(models.PriceCategoryLabel.venueId == venue_id).all()
+
+
+def get_venue_offer_by_movie_uuid(venue_id: int, movie_uuid: str) -> models.Offer | None:
+    return (
+        db.session.query(models.Offer)
+        .filter(models.Offer.idAtProvider == movie_uuid, models.Offer.venueId == venue_id)
+        .one_or_none()
+    )
+
+
+def get_movie_offer_stock_by_uuid(stock_uuid: str) -> models.Stock | None:
+    return db.session.query(models.Stock).filter(models.Stock.idAtProviders == stock_uuid).one_or_none()
 
 
 def exclude_offers_from_inactive_venue_provider(query: sa_orm.Query) -> sa_orm.Query:

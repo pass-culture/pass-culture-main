@@ -1,36 +1,24 @@
 import cn from 'classnames'
-import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  CollectiveBookingStatus,
-  CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
-import { CollectiveBookingsEvents } from '@/commons/core/FirebaseEvents/constants'
-import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
+import { Mode } from '@/commons/core/OfferEducational/types'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from '@/commons/utils/date'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import fullHideIcon from '@/icons/full-hide.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import style from './OfferEducationalActions.module.scss'
 
@@ -47,28 +35,7 @@ export const OfferEducationalActions = ({
   offer,
   mode,
 }: OfferEducationalActionsProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const lastBookingId = isCollectiveOffer(offer) ? offer.booking?.id : null
-  const lastBookingStatus = isCollectiveOffer(offer)
-    ? offer.booking?.status
-    : null
-  const getBookingLink = () => {
-    const offerEventDate =
-      isCollectiveOffer(offer) && offer.collectiveStock
-        ? offer.collectiveStock.startDatetime
-        : null
-    if (offerEventDate && lastBookingId) {
-      const eventDateFormated = formatBrowserTimezonedDateAsUTC(
-        new Date(offerEventDate),
-        FORMAT_ISO_DATE_ONLY
-      )
-      return `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${lastBookingId}`
-    }
-    // istanbul ignore next: this case should never happen
-    return ''
-  }
 
   const { mutate } = useSWRConfig()
 
@@ -110,11 +77,6 @@ export const OfferEducationalActions = ({
   const shouldShowOfferActions =
     mode === Mode.EDITION || mode === Mode.READ_ONLY
 
-  const shouldDisplayBookingLink =
-    lastBookingId &&
-    (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
-      offer.displayedStatus === CollectiveOfferDisplayedStatus.EXPIRED)
-
   const canPublishOffer = isActionAllowedOnCollectiveOffer(
     offer,
     CollectiveOfferTemplateAllowedAction.CAN_PUBLISH
@@ -148,37 +110,6 @@ export const OfferEducationalActions = ({
             >
               Publier
             </Button>
-          )}
-
-          {shouldDisplayBookingLink && (
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
-              className={style['button-link']}
-              to={getBookingLink()}
-              icon={fullNextIcon}
-              iconPosition={IconPositionEnum.LEFT}
-              onClick={() =>
-                logEvent(
-                  CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                  {
-                    from: '/offre/collectif/recapitulatif',
-                    offerId: offer.id,
-                    offerType: 'collective',
-                    offererId: selectedOffererId?.toString(),
-                  }
-                )
-              }
-            >
-              Voir la{' '}
-              {lastBookingStatus === 'PENDING'
-                ? 'préréservation'
-                : 'réservation'}
-            </ButtonLink>
-          )}
-          {shouldDisplayBookingLink && (
-            <>
-              <div className={style.separator} />{' '}
-            </>
           )}
           <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
         </div>

@@ -54,7 +54,7 @@ ACHIEVEMENT_NAME_TO_SUBCATEGORY_IDS = {
         subcategories.FESTIVAL_SPECTACLE.id,
     ],
     achievements_models.AchievementEnum.FIRST_MUSEUM_BOOKING: [
-        subcategories.VISITE.id,
+        subcategories.VISITE_LIBRE.id,
         subcategories.CARTE_MUSEE.id,
         subcategories.MUSEE_VENTE_DISTANCE.id,
         subcategories.VISITE_GUIDEE.id,

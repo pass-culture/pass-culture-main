@@ -1,17 +1,32 @@
 import { addWeeks, format } from 'date-fns'
 
-import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
+  BOOKABLE_OFFERS_COLUMNS,
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
+} from '../support/constants.ts'
+import {
+  collectiveFormatEventDate,
   expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
+const institutionName = 'COLLEGE 123'
+
+// TODO: add tests for template collective offers search
 describe('Search collective offers', () => {
-  let offerPublishedTemplate: { name: string; venueName: string }
-  let offerPublished: { name: string; venueName: string }
+  let offerPublished: {
+    name: string
+    venueName: string
+    startDatetime: string
+    endDatetime: string
+  }
   let offerDraft: { name: string; venueName: string }
-  let offerInInstruction: { name: string; venueName: string }
-  let offerNotConform: { name: string; venueName: string }
+  let offerUnderReview: {
+    name: string
+    venueName: string
+  }
+  let offerRejected: { name: string; venueName: string }
   let offerArchived: { name: string; venueName: string }
 
   const formatName = 'Concert'
@@ -20,23 +35,19 @@ describe('Search collective offers', () => {
     cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
       'collectiveOffers'
     )
-    cy.intercept({ method: 'GET', url: '/venues?offererId*' }).as(
-      'venuesOffererId'
-    )
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_collective_offers',
       (response) => {
         logInAndGoToPage(response.body.user.email, '/accueil')
-        offerPublishedTemplate = response.body.offerPublishedTemplate
         offerPublished = response.body.offerPublished
         offerDraft = response.body.offerDraft
-        offerInInstruction = response.body.offerInInstruction
-        offerNotConform = response.body.offerNotConform
+        offerUnderReview = response.body.offerUnderReview
+        offerRejected = response.body.offerRejected
         offerArchived = response.body.offerArchived
         cy.visit('/offres/collectives')
-        cy.wait(['@collectiveOffers', '@venuesOffererId'])
+        cy.wait(['@collectiveOffers'])
         cy.findAllByTestId('spinner').should('not.exist')
       }
     )
@@ -56,15 +67,17 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
+
     const expectedResults = [
-      ['', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
         offerPublished.name,
-        '',
-        offerPublished.venueName,
-        '',
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
+        '100€25 participants',
+        institutionName,
+        'À déterminer',
         'publiée',
       ],
     ]
@@ -72,41 +85,32 @@ describe('Search collective offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it(`I should be able to search with a lieu and see expected results`, () => {
+  it(`I should be able to search with a location and see expected results`, () => {
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
 
     cy.stepLog({
-      message: `I search with the place "${offerArchived.venueName}"`,
+      message: `I search with the place "En établissement scolaire"`,
     })
-    cy.findByLabelText('Structure').select(offerArchived.venueName)
+    cy.findByLabelText('Localisation').select('En établissement scolaire')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: '3 results should be displayed' })
+    cy.stepLog({ message: '1 results should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
-        offerNotConform.name,
-        '',
-        offerNotConform.venueName,
-        '',
-        'non conforme',
+        offerArchived.name,
+        '-',
+        '-',
+        'DE LA TOUR',
+        "Dans l'établissement",
+        'archivée',
       ],
-      [
-        '',
-        '',
-        offerInInstruction.name,
-        '',
-        offerInInstruction.venueName,
-        '',
-        'en instruction',
-      ],
-      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -123,75 +127,19 @@ describe('Search collective offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: '2 results should be displayed' })
+    cy.stepLog({ message: '1 results should be displayed' })
     const expectedResults = [
-      ['', '', '', 'Titre', '', 'Adresse', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
         offerPublished.name,
-        '',
-        offerPublished.venueName,
-        '',
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
+        '100€25 participants',
+        institutionName,
+        'À déterminer',
         'publiée',
       ],
-      [
-        '',
-        '',
-        offerPublishedTemplate.name,
-        '',
-        offerPublishedTemplate.venueName,
-        '',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults)
-  })
-
-  it(`I should be able to search with a Type "Offre réservable" and see expected results`, () => {
-    cy.stepLog({ message: 'I open the filters' })
-    cy.findByText('Filtrer').click()
-
-    cy.stepLog({ message: 'I search with the Type "Offre réservable"' })
-    cy.findByLabelText('Type de l’offre').select('Offre réservable')
-
-    cy.stepLog({ message: 'I validate my filters' })
-    cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
-
-    cy.stepLog({ message: '5 results should be displayed' })
-    const expectedResults = [
-      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
-      [
-        '',
-        '',
-        offerNotConform.name,
-        '',
-        offerNotConform.venueName,
-        '',
-        'non conforme',
-      ],
-      [
-        '',
-        '',
-        offerInInstruction.name,
-        '',
-        offerInInstruction.venueName,
-        '',
-        'en instruction',
-      ],
-      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
-      [
-        '',
-        '',
-        offerPublished.name,
-        '',
-        offerPublished.venueName,
-        '',
-        'publiée',
-      ],
-      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -212,14 +160,15 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
         offerPublished.name,
-        '',
-        offerPublished.venueName,
-        '',
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
+        '100€25 participants',
+        institutionName,
+        'À déterminer',
         'publiée',
       ],
     ]
@@ -227,15 +176,15 @@ describe('Search collective offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('I should be able to search with a status "En instruction" and see expected results', () => {
+  it('I should be able to search with a status "Publiée" and see expected results', () => {
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
 
-    cy.stepLog({ message: 'I search with status "En instruction"' })
+    cy.stepLog({ message: 'I search with status "Publiée sur ADAGE"' })
     cy.findByRole('button', { name: 'Statut' }).click()
-    cy.findByText('En instruction').click()
+    cy.findByText('Publiée sur ADAGE').click()
     // We click outside the filter to close it
-    cy.findByRole('heading', { name: 'Offres collectives' }).click()
+    cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -243,15 +192,16 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
-        offerInInstruction.name,
-        '',
-        offerInInstruction.venueName,
-        '',
-        'en instruction',
+        offerPublished.name,
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
+        '100€25 participants',
+        institutionName,
+        'À déterminer',
+        'publiée',
       ],
     ]
 
@@ -263,9 +213,9 @@ describe('Search collective offers', () => {
     cy.findByText('Filtrer').click()
 
     cy.stepLog({
-      message: `I select ${offerDraft.venueName} in "Structure"`,
+      message: 'I select "À déterminer" in "Localisation"',
     })
-    cy.findByLabelText('Structure').select(offerDraft.venueName)
+    cy.findByLabelText('Localisation').select('À déterminer')
 
     cy.stepLog({ message: 'I select "Représentation" in "Format"' })
     cy.findByLabelText('Format').select('Représentation')
@@ -278,7 +228,7 @@ describe('Search collective offers', () => {
     cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
     // We click outside the filter to close it
-    cy.findByRole('heading', { name: 'Offres collectives' }).click()
+    cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my collective filters' })
     cy.findByText('Rechercher').click()
@@ -286,8 +236,17 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
-      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
-      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
+      BOOKABLE_OFFERS_COLUMNS,
+      [
+        '',
+        '',
+        offerDraft.name,
+        '-',
+        '-',
+        'DE LA TOUR',
+        'À déterminer',
+        'brouillon',
+      ],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults)
@@ -300,15 +259,11 @@ describe('Search collective offers', () => {
 
     cy.findByText('En instruction').should('not.be.checked')
 
-    cy.findByRole('combobox', { name: /Structure/ })
+    cy.findByRole('combobox', { name: /Localisation/ })
       .invoke('val')
       .should('eq', 'all')
 
     cy.findByRole('combobox', { name: /Format/ })
-      .invoke('val')
-      .should('eq', 'all')
-
-    cy.findByRole('combobox', { name: /Type de l’offre/ })
       .invoke('val')
       .should('eq', 'all')
 
@@ -319,47 +274,59 @@ describe('Search collective offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers')
 
-    cy.stepLog({ message: '6 results should be displayed' })
+    cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults2 = [
-      ['', '', 'Titre', '', 'Lieu', 'Établissement', 'Statut'],
+      BOOKABLE_OFFERS_COLUMNS,
       [
         '',
         '',
-        offerNotConform.name,
+        offerPublished.name,
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
+        '100€25 participants',
+        institutionName,
+        'À déterminer',
+        'publiée',
+      ],
+      [
         '',
-        offerNotConform.venueName,
         '',
+        offerRejected.name,
+        '',
+        '100€25 participants',
+        'DE LA TOUR',
+        'À déterminer',
         'non conforme',
       ],
       [
         '',
         '',
-        offerInInstruction.name,
+        offerUnderReview.name,
         '',
-        offerInInstruction.venueName,
-        '',
+        '100€25 participants',
+        'DE LA TOUR',
+        'À déterminer',
         'en instruction',
       ],
-      ['', '', offerDraft.name, '', offerDraft.venueName, '', 'brouillon'],
       [
         '',
         '',
-        offerPublished.name,
-        '',
-        offerPublished.venueName,
-        '',
-        'publiée',
+        offerDraft.name,
+        '-',
+        '-',
+        'DE LA TOUR',
+        'À déterminer',
+        'brouillon',
       ],
       [
         '',
         '',
-        offerPublishedTemplate.name,
-        '',
-        offerPublishedTemplate.venueName,
-        '',
-        'publiée',
+        offerArchived.name,
+        '-',
+        '-',
+        'DE LA TOUR',
+        "Dans l'établissement",
+        'archivée',
       ],
-      ['', '', offerArchived.name, '', offerArchived.venueName, '', 'archivée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

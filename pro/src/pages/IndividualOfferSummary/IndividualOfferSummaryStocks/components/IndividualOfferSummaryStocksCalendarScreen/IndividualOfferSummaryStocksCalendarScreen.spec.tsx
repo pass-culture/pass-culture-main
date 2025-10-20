@@ -16,7 +16,7 @@ describe('IndividualOfferSummaryStocksCalendarScreen', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Nouvelle fenêtre Comment reporter ou annuler un évènement ?',
+        name: /Comment reporter ou annuler un évènement ?/,
       })
     )
   })

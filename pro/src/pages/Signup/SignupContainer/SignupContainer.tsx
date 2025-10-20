@@ -15,7 +15,6 @@ import {
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from '@/commons/hooks/useLogEventOnUnload'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { useRedirectLoggedUser } from '@/commons/hooks/useRedirectLoggedUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -30,7 +29,6 @@ export const SignupContainer = (): JSX.Element => {
   const notification = useNotification()
   const { logEvent } = useAnalytics()
 
-  useRedirectLoggedUser()
   useInitReCaptcha()
 
   const hookForm = useForm<ProUserCreationBodyV2Model>({

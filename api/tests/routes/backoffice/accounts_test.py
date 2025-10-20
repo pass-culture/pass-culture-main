@@ -1075,8 +1075,17 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert expected_remaining_text in cards_text
         assert expected_digital_remaining_text in cards_text
 
-    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client):
-        free_beneficiary = users_factories.UserFactory(roles=[users_models.UserRole.FREE_BENEFICIARY])
+    @pytest.mark.parametrize(
+        "postal_code,expected_text",
+        [
+            ("97200", "0,00 € Crédit restant 0,00 €"),
+            ("98800", "0,00 € (0 CFP) Crédit restant 0,00 € (0 CFP)"),
+        ],
+    )
+    def test_get_grant_free_credit_does_not_divide_by_zero(self, authenticated_client, postal_code, expected_text):
+        free_beneficiary = users_factories.UserFactory(
+            roles=[users_models.UserRole.FREE_BENEFICIARY], postalCode=postal_code
+        )
         users_factories.DepositGrantFactory(
             user=free_beneficiary, type=finance_models.DepositType.GRANT_FREE, amount=decimal.Decimal("0")
         )
@@ -1086,7 +1095,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         assert response.status_code == 200
-        assert "0,00 € Crédit restant 0,00 €" in html_parser.extract_cards_text(response.data)
+        assert expected_text in html_parser.extract_cards_text(response.data)
 
     def test_get_non_beneficiary_credit(self, authenticated_client):
         _, _, _, _, random, _ = create_bunch_of_accounts()
@@ -1131,7 +1140,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[0]["Offreur"] == b2.offerer.name
         assert bookings[0]["Nom de l'offre"] == b2.stock.offer.name
         assert bookings[0]["Prix"] == expected_price_1
-        assert bookings[0]["Date de résa"].startswith(datetime.date.today().strftime("Le %d/%m/%Y"))
+        assert bookings[0]["Date de résa"].startswith(datetime.date.today().strftime("%d/%m/%Y"))
         assert bookings[0]["État"] == "Le jeune a consommé l'offre"
         assert bookings[0]["Contremarque"] == b2.token
         assert bookings[0]["Fraude"] == "Frauduleuse"
@@ -1141,7 +1150,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert bookings[1]["Nom de l'offre"] == b1.stock.offer.name
         assert bookings[1]["Prix"] == expected_price_2
         assert bookings[1]["Date de résa"].startswith(
-            (datetime.date.today() - relativedelta(days=2)).strftime("Le %d/%m/%Y")
+            (datetime.date.today() - relativedelta(days=2)).strftime("%d/%m/%Y")
         )
         assert bookings[1]["État"] == "L'offre n'a pas eu lieu"
         assert bookings[1]["Contremarque"] == b1.token
@@ -1269,28 +1278,28 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert len(history_rows) == 9
 
         assert history_rows[0]["Type"] == "Étape de vérification"
-        assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
         assert history_rows[0]["Commentaire"] == "honor_statement, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[0]["Auteur"]
 
         assert history_rows[1]["Type"] == "Étape de vérification"
-        assert history_rows[1]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[1]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
         assert history_rows[1]["Commentaire"] == "ubble, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[1]["Auteur"]
 
         assert history_rows[2]["Type"] == "Étape de vérification"
-        assert history_rows[2]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[2]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
         assert history_rows[2]["Commentaire"] == "profile_completion, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[2]["Auteur"]
 
         assert history_rows[3]["Type"] == "Étape de vérification"
-        assert history_rows[3]["Date/Heure"].startswith(datetime.date.today().strftime("Le %d/%m/%Y à"))
+        assert history_rows[3]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
         assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, [raison inconnue], None"
         assert not history_rows[3]["Auteur"]
 
         assert history_rows[4]["Type"] == "Modification des informations"
         assert history_rows[4]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=30)).strftime("Le %d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=30)).strftime("%d/%m/%Y à ")
         )
         assert history_rows[4]["Commentaire"].startswith("Informations modifiées :")
         assert "Nom : Pignon → Leblanc" in history_rows[4]["Commentaire"]
@@ -1300,21 +1309,21 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert history_rows[5]["Type"] == "Compte réactivé"
         assert history_rows[5]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=35)).strftime("Le %d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=35)).strftime("%d/%m/%Y à ")
         )
         assert history_rows[5]["Commentaire"] == unsuspended.comment
         assert history_rows[5]["Auteur"] == admin.full_name
 
         assert history_rows[6]["Type"] == "Création du compte"
         assert history_rows[6]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=40)).strftime("%d/%m/%Y à ")
         )
         assert not history_rows[6]["Commentaire"]
         assert history_rows[6]["Auteur"] == user.full_name
 
         assert history_rows[7]["Type"] == "Attribution d'un crédit"
         assert history_rows[7]["Date/Heure"].startswith(
-            (datetime.date.today() - relativedelta(days=40)).strftime("Le %d/%m/%Y à ")
+            (datetime.date.today() - relativedelta(days=40)).strftime("%d/%m/%Y à ")
         )
         assert history_rows[7]["Commentaire"] == "Attribution d'un crédit 17-18 de 150,00 €"
 

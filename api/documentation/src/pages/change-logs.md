@@ -19,6 +19,7 @@ You will have two dates at your disposal :
 ## October 2025
 
 - You can now add a `videoUrl` that comes from Youtube on your offers (endpoints : [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer), [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
+- You can now filter offerers by New Caledonian RID7 on [**Get Offerer Venues**](/rest-api#tag/Venues/operation/GetOffererVenues) and fetch new caledonian venues by RIDET on [**Get Venue**](/rest-api#tag/Venues/operation/GetVenueBySiret)
 
 ## September 2025
 

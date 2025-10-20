@@ -5,7 +5,6 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
 import {
-  CollectiveBookingStatus,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
@@ -625,49 +624,5 @@ describe('CollectiveActionsCells', () => {
       'Une erreur est survenue lors de l’archivage de l’offre',
       expect.any(Object)
     )
-  })
-
-  it('should not show action link to see pre-reservation when ff WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: false,
-          booking: {
-            id: 1,
-            booking_status: CollectiveBookingStatus.PENDING,
-          },
-          displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-        }),
-      },
-      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
-    )
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.queryByText('Voir la préréservation')).not.toBeInTheDocument()
-  })
-
-  it('should not show action link to see reservation when ff WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is active', async () => {
-    renderCollectiveActionsCell(
-      {
-        offer: collectiveOfferFactory({
-          isShowcase: false,
-          booking: {
-            id: 1,
-            booking_status: CollectiveBookingStatus.CONFIRMED,
-          },
-          displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-        }),
-      },
-      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
-    )
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
-
-    expect(screen.queryByText('Voir la réservation')).not.toBeInTheDocument()
   })
 })

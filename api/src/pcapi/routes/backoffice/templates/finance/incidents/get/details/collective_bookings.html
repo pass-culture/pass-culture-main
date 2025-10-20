@@ -27,7 +27,7 @@
           <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) }}</td>
           <td>
             {{ build_connect_as_link(connect_as[booking_finance_incident.collectiveBooking.id], booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer.name, "link-primary") }}
-            <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+            <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date_time }}</td>
           </tr>
           <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.collectiveBooking.id }}"
               data-bs-parent=".table">

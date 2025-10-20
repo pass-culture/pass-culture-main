@@ -129,16 +129,6 @@ export const DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS: CollectiveSearchFilters
     collectiveOfferType: CollectiveOfferTypeEnum.OFFER,
   }
 
-export const ALL_VENUES_OPTION: SelectOption = {
-  label: 'Tous les lieux',
-  value: ALL_VENUES,
-}
-
-export const ALL_OFFERERS_OPTION: SelectOption = {
-  label: 'Toutes les structures',
-  value: ALL_OFFERERS,
-}
-
 export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {
   label: 'Toutes',
   value: ALL_OFFERER_ADDRESSES,
@@ -158,10 +148,4 @@ export const CREATION_MODES_OPTIONS: SelectOption[] = [
   { label: 'Tous', value: ALL_CREATION_MODES },
   { label: 'Manuel', value: 'manual' },
   { label: 'Synchronisé', value: 'imported' },
-]
-
-export const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
-  { label: 'Tout', value: ALL_COLLECTIVE_OFFER_TYPE },
-  { label: 'Offre vitrine', value: 'template' },
-  { label: 'Offre réservable', value: 'offer' },
 ]

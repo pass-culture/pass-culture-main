@@ -209,7 +209,7 @@ class ListCollectiveOffersResponseModel(BaseModel):
 
 class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
     isFavorite: bool | None
-    dates: collective_offers_serialize.TemplateDatesModel | None
+    dates: collective_offers_serialize.CollectiveOfferDatesModel | None
     contactUrl: str | None
     contactForm: educational_models.OfferContactFormEnum | None
 
@@ -220,7 +220,7 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         is_favorite: bool,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:
-            dates = collective_offers_serialize.TemplateDatesModel(start=offer.start, end=offer.end)
+            dates = collective_offers_serialize.CollectiveOfferDatesModel(start=offer.start, end=offer.end)
         else:
             dates = None
 

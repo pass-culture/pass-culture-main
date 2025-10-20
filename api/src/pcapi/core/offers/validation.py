@@ -845,7 +845,9 @@ def check_publication_date(publication_date: datetime.datetime) -> None:
         )
 
 
-def check_price_categories_deletable(offer: models.Offer) -> None:
+def check_price_categories_deletable(offer: models.Offer, price_category: models.PriceCategory) -> None:
+    if price_category.offerId != offer.id:
+        raise api_errors.ApiErrors({"priceCategories": ["La catégorie de prix n'appartient pas à cette offre"]})
     if offer.validation != models.OfferValidationStatus.DRAFT:
         raise api_errors.ApiErrors(
             {"global": "Les catégories de prix ne sont pas supprimables sur les offres qui ne sont pas en brouillon"}

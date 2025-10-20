@@ -4206,9 +4206,10 @@
             "GetOfferersVenuesQuery": {
                 "properties": {
                     "siren": {
+                        "description": "Offerer SIREN or RID7 (in this case, it must be prefixed with `\"NC\"`, for instance `\"NC1234567\"`)",
                         "example": "123456789",
                         "nullable": true,
-                        "pattern": "^\\d{9}$",
+                        "pattern": "^(\\d{9}|NC\\d{7})$",
                         "title": "Siren",
                         "type": "string"
                     }
@@ -9053,7 +9054,7 @@
                 "type": "object"
             },
             "VISITE_create": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [
@@ -9070,7 +9071,7 @@
                 "type": "object"
             },
             "VISITE_edit": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [
@@ -9087,7 +9088,7 @@
                 "type": "object"
             },
             "VISITE_read": {
-                "description": "Visite",
+                "description": "Visite libre",
                 "properties": {
                     "category": {
                         "enum": [
@@ -11040,14 +11041,15 @@
                 "operationId": "GetOffererVenues",
                 "parameters": [
                     {
-                        "description": "",
+                        "description": "Offerer SIREN or RID7 (in this case, it must be prefixed with `\"NC\"`, for instance `\"NC1234567\"`)",
                         "in": "query",
                         "name": "siren",
                         "required": false,
                         "schema": {
+                            "description": "Offerer SIREN or RID7 (in this case, it must be prefixed with `\"NC\"`, for instance `\"NC1234567\"`)",
                             "example": "123456789",
                             "nullable": true,
-                            "pattern": "^\\d{9}$",
+                            "pattern": "^(\\d{9}|NC\\d{7})$",
                             "title": "Siren",
                             "type": "string"
                         }
@@ -11647,7 +11649,7 @@
         },
         "/public/offers/v1/venues/{siret}": {
             "get": {
-                "description": "Return venue corresponding to the given [**SIRET number (Syst\u00e8me d'identification du r\u00e9pertoire des \u00e9tablissements)**](https://www.economie.gouv.fr/cedef/numero-siret)",
+                "description": "Return venue corresponding to the given [**SIRET number (Syst\u00e8me d'identification du r\u00e9pertoire des \u00e9tablissements)**](https://www.economie.gouv.fr/cedef/numero-siret) or RIDET for a new caledonian venue.\n\nIn the case of a New Caledonian venue, the RIDET must be prefixed by `\"NC\"` and postfixed by `\"XX\"`. For instance, if the RIDET is `\"1234567001\"`, you should try a get request on `\"NC1234567001XX\"`.",
                 "operationId": "GetVenueBySiret",
                 "parameters": [
                     {

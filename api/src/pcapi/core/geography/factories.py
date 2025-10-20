@@ -50,6 +50,16 @@ class ManualAddressFactory(AddressFactory):
     isManualEdition = True
 
 
+class OverseasAddressFactory(AddressFactory):
+    banId = "97209_1395_01389"
+    inseeCode = "97209"
+    street = "1389 Avenue Paul Nardal"
+    postalCode = "97200"
+    city = "Fort-de-France"
+    latitude = 14.610069
+    longitude = -61.073229
+
+
 class CaledonianAddressFactory(AddressFactory):
     street: str | factory.declarations.BaseDeclaration | None = factory.Sequence(
         "{} Avenue James Cook".format

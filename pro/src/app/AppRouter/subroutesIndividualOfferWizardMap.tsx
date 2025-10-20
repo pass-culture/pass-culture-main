@@ -281,7 +281,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -290,7 +292,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/details',
     title: 'Détails de l’offre - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   //  Description
   {
@@ -300,7 +304,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -309,7 +315,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   //  Informations pratiques
   {
@@ -319,7 +327,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   //  Localisation
   {
@@ -329,7 +339,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
     title: 'Localisation - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -338,6 +350,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/media',
     title: 'Image et vidéo - Créer une offre individuelle - Onboarding',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -345,8 +360,10 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
         '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
     title: 'Tarifs - Créer une offre individuelle - Onboarding',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -355,7 +372,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/informations_pratiques',
     title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   //  Stocks
   {
@@ -365,7 +384,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/stocks',
     title: 'Stocks et prix - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   //  Timetable
   {
@@ -375,7 +396,9 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/horaires',
     title: 'Horaires - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
   {
     lazy: () =>
@@ -384,6 +407,8 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre individuelle - Onboarding',
-    featureName: 'WIP_ENABLE_PRO_DIDACTIC_ONBOARDING',
+    meta: {
+      onboardingOnly: true,
+    },
   },
 ]

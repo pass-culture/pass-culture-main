@@ -11,7 +11,6 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
 from pcapi.core.users import factories as users_factories
-from pcapi.models.offer_mixin import OfferStatus
 from pcapi.utils import date as date_utils
 
 
@@ -145,28 +144,6 @@ class FindNewOffererUserEmailTest:
             repository.find_new_offerer_user_email(offerer_id=1)
 
 
-class HasDigitalVenueWithAtLeastOneOfferTest:
-    def test_digital_venue_with_offer(self):
-        offerer = offerers_factories.OffererFactory()
-        digital_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offers_factories.DigitalOfferFactory(venue=digital_venue)
-
-        assert repository.has_digital_venue_with_at_least_one_offer(offerer.id)
-
-    def test_digital_venue_without_offer(self):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
-
-    def test_digital_venue_with_draft_offer(self):
-        offerer = offerers_factories.OffererFactory()
-        digital_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offers_factories.DigitalOfferFactory(venue=digital_venue, validation=OfferStatus.DRAFT.name)
-
-        assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
-
-
 class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
     def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
         five_days_ago = date_utils.get_naive_utc_now() - timedelta(days=5)
@@ -176,20 +153,10 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         offerers_factories.VenueFactory(managingOfferer=offerer_with_two_venues)
         offers_factories.OfferFactory(venue=venue_with_offers)
 
-        # Offerer with only virtual venue and no offer => venue should not be returned
-        offerer_with_only_virtual_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_only_virtual_venue)
-
         # Offerer with two physical venues and no offer => venus should be returned
         offerer_with_physical_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
         venue_without_offer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_with_physical_venue)
         venue_without_offer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_with_physical_venue)
-
-        # Offerer with virtual venue and one offer => venue should not be returned
-        offerer_with_virtual_offer = offerers_factories.OffererFactory(dateValidated=five_days_ago)
-        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_virtual_offer)
-        offerers_factories.VenueFactory(managingOfferer=offerer_with_virtual_offer)
-        offers_factories.OfferFactory(venue=virtual_venue)
 
         # Rejected offerer => venue should not ve returned
         rejected_offerer = offerers_factories.RejectedOffererFactory()

@@ -72,7 +72,7 @@ def venue_fixture(offerer) -> offerers_models.Venue:
 
 @pytest.fixture(scope="function", name="venue_with_no_siret")
 def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
-    venue = offerers_factories.VirtualVenueFactory(
+    venue = offerers_factories.VenueWithoutSiretFactory(
         venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
         contact__website="www.example.com",
     )
@@ -169,7 +169,6 @@ class ListVenuesTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory()
         matching_venues = [
             offerers_factories.VenueFactory(managingOfferer=offerer),
-            offerers_factories.VirtualVenueFactory(managingOfferer=offerer),
             offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer),
         ]
         soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -445,36 +444,6 @@ class GetVenueTest(GetEndpointHelper):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
         assert response.status_code == 200
         assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
-
-    def test_get_virtual_venue(self, authenticated_client):
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer__allowedOnAdage=True)
-
-        url = url_for(self.endpoint, venue_id=venue.id)
-
-        # if venue is not removed from the current session, any get
-        # query won't be executed because of this specific testing
-        # environment. this would tamper the real database queries
-        # count.
-        db.session.expire(venue)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert venue.name in response_text
-        assert "Nom d'usage :" not in response_text
-        assert f"Venue ID : {venue.id} " in response_text
-        assert f"Email : {venue.bookingEmail} " in response_text
-        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
-        assert "Peut créer une offre EAC : Oui" in response_text
-        assert "Cartographié sur ADAGE : Non" in response_text
-        assert "ID ADAGE" not in response_text
-        assert "Site web : https://my.website.com" in response_text
-
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Partenaire culturel" in badges
-        assert "Suspendu" not in badges
 
     @pytest.mark.parametrize(
         "factory, expected_text",
@@ -1811,24 +1780,6 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert len(venue.action_history) == 0
 
-    def test_update_virtual_venue(self, authenticated_client, offerer):
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-
-        data = {
-            "booking_email": venue.bookingEmail + ".update",
-            "phone_number": "+33102030456",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
-
-        db.session.refresh(venue)
-
-        assert venue.bookingEmail == data["booking_email"]
-        assert venue.contact.phone_number == data["phone_number"]
-
     def test_update_with_missing_data(self, authenticated_client, venue):
         data = {"email": venue.contact.email + ".update"}
 
@@ -3035,7 +2986,7 @@ class GetSetPricingPointFormTest(GetEndpointHelper):
     expected_num_queries = 3
 
     def get_set_pricing_point_form(self, authenticated_client):
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VenueWithoutSiretFactory()
 
         url = url_for(self.endpoint, venue_id=venue.id)
         with assert_num_queries(self.expected_num_queries):
@@ -3056,7 +3007,7 @@ class SetPricingPointTest(PostEndpointHelper):
     expected_num_queries = 8
 
     def test_set_pricing_point(self, authenticated_client):
-        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        venue_with_no_siret = offerers_factories.VenueWithoutSiretFactory()
         venue_with_siret = offerers_factories.VenueFactory(
             managingOfferer=venue_with_no_siret.managingOfferer,
         )
@@ -3078,7 +3029,7 @@ class SetPricingPointTest(PostEndpointHelper):
 
     def test_set_pricing_point_as_self(self, authenticated_client):
         venue_with_siret = offerers_factories.VenueFactory(pricing_point=None)
-        offerers_factories.VirtualVenueFactory(
+        offerers_factories.VenueWithoutSiretFactory(
             managingOfferer=venue_with_siret.managingOfferer, pricing_point=venue_with_siret
         )
         response = self.post_to_endpoint(
@@ -3103,7 +3054,7 @@ class SetPricingPointTest(PostEndpointHelper):
         assert response.status_code == 404
 
     def test_pricing_point_not_found(self, authenticated_client):
-        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        venue_with_no_siret = offerers_factories.VenueWithoutSiretFactory()
         response = self.post_to_endpoint(
             authenticated_client,
             venue_id=venue_with_no_siret.id,
@@ -3117,7 +3068,7 @@ class SetPricingPointTest(PostEndpointHelper):
         assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(redirected_response.data)
 
     def test_pricing_point_in_other_offerer(self, authenticated_client):
-        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        venue_with_no_siret = offerers_factories.VenueWithoutSiretFactory()
         venue_with_siret = offerers_factories.VenueFactory()
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3319,7 +3270,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_no_other_venue_with_siret(self, authenticated_client):
@@ -3328,7 +3279,7 @@ class GetRemoveSiretFormTest(GetEndpointHelper):
 
         response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "L'entité juridique gérant ce partenaire culturel n'a pas d'autre partenaire culturel avec SIRET"
@@ -3391,7 +3342,7 @@ class RemoveSiretTest(PostEndpointHelper):
             venue_id=venue.id,
             form={"override_revenue_check": False, "comment": "test", "new_pricing_point": target_venue.id},
         )
-        assert response.status_code == 303
+        assert response.status_code == 200
 
         assert venue.siret is None
         assert venue.comment == "test"
@@ -3452,7 +3403,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         rules = db.session.query(finance_models.CustomReimbursementRule).all()
         assert bool(rules) == update
         if update:
@@ -3474,7 +3425,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_alert(response.data) == "Ce partenaire culturel n'a pas de SIRET"
 
     def test_invalid_new_pricing_point(self, authenticated_client):
@@ -3491,7 +3442,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert html_parser.extract_warnings(response.data) == ["Not a valid choice."]
 
     def test_venue_with_high_yearly_revenue(self, authenticated_client):
@@ -3512,7 +3463,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 200
         assert (
             html_parser.extract_alert(response.data)
             == "Ce partenaire culturel a un chiffre d'affaires de l'année élevé : 10800.00"
@@ -3537,7 +3488,7 @@ class RemoveSiretTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 303
+        assert response.status_code == 200
         assert venue.siret is None
         assert venue.current_pricing_point == target_venue
 

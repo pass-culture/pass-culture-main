@@ -10,6 +10,9 @@
          {% if field.reset_to_blank %}data-reset-to-blank="true"{% endif %}
          {% if field.calendar_start_date %}data-calendar-start-date="{{ field.calendar_start_date|format_date }}"{% endif %}
          {% if field.calendar_end_date %}data-calendar-end-date="{{ field.calendar_end_date|format_date }}"{% endif %}
+         {%+ if field.drops %}
+         data-drops="{{ field.drops }}"
+         {% endif %}
          class="form-control value-element-form pc-date-range-field"
          value="{{ field.data|format_date_range if field.data else "" }}" />
   <label class="label-element-form"

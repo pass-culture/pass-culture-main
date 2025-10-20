@@ -39,7 +39,7 @@ jobs:
 
       - uses: technote-space/workflow-conclusion-action@v3
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
 
@@ -133,7 +133,7 @@ jobs:
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
             CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
 

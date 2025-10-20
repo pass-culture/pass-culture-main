@@ -10,6 +10,7 @@ from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
 class Returns201Test:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
@@ -55,22 +56,6 @@ class Returns201Test:
 
         assert response.status_code == 201
         assert response.json["url"] == "https://monsuperlivrenum.com/1345666"
-
-    def test_created_offer_should_return_video_url_if_set(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "Celeste",
-            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            "videoUrl": "https://www.youtube.com/watch?v=WtM4OW2qVjY",
-            "venueId": venue.id,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 201
-        assert response.json["videoData"]["videoUrl"] == "https://www.youtube.com/watch?v=WtM4OW2qVjY"
 
     def test_created_offer_should_have_is_duo_set_to_true_if_subcategory_is_event_and_can_be_duo(self, client):
         venue = offerers_factories.VenueFactory()
@@ -345,6 +330,7 @@ class Returns201Test:
 
 
 @pytest.mark.usefixtures("db_session")
+@pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
 class Returns400Test:
     @pytest.mark.parametrize(
         "partial_body,expected_status_code, expected_json",
@@ -382,16 +368,6 @@ class Returns400Test:
                 {"subcategoryId": subcategories.LIVRE_NUMERIQUE.id},
                 400,
                 {"url": ['Une offre de catégorie "Livre numérique, e-book" doit contenir un champ `url`']},
-            ),
-            (
-                {"videoUrl": "https://video"},
-                400,
-                {"videoUrl": ['L\'URL doit terminer par une extension (ex. ".fr")']},
-            ),
-            (
-                {"videoUrl": "https://video.com"},
-                400,
-                {"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]},
             ),
             # 404
             (
@@ -506,7 +482,7 @@ class Returns400Test:
 class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         users_factories.ProFactory(email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         data = {
             "name": "Les orphelins",

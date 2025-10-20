@@ -2,13 +2,16 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import type {
+  GetOffererNameResponseModel,
+  SharedCurrentUserResponseModel,
+} from '@/apiClient/v1'
 import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import {
   updateCurrentOfferer,
   updateOffererNames,
 } from '@/commons/store/offerer/reducer'
-import { updateUser } from '@/commons/store/user/reducer'
+import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
 export const initializeUserThunk = createAsyncThunk(
@@ -18,15 +21,29 @@ export const initializeUserThunk = createAsyncThunk(
     { dispatch, rejectWithValue }
   ) => {
     try {
-      const initializeOfferer = async (offererId: number) => {
+      const initializeOfferer = async (
+        offererId: number,
+        offerersNames: GetOffererNameResponseModel[]
+      ) => {
         try {
           const response = await api.getOfferer(offererId)
           dispatch(updateCurrentOfferer(response))
+          dispatch(
+            updateUserAccess(
+              offerersNames
+                ? response.isOnboarded
+                  ? 'full'
+                  : 'no-onboarding'
+                : 'no-offerer'
+            )
+          )
         } catch (e: unknown) {
           if (isErrorAPIError(e) && e.status === 403) {
             // Do nothing at this point,
             // Because a 403 means that the user is waiting for a "rattachement" to the offerer,
             // But we must let him sign in
+            dispatch(updateUserAccess('unattached'))
+
             return
           }
           // Else it's another error we should handle here at sign in
@@ -43,11 +60,14 @@ export const initializeUserThunk = createAsyncThunk(
         if (storageAvailable('localStorage')) {
           const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
           await initializeOfferer(
-            savedOffererId ? Number(savedOffererId) : firstOffererId
+            savedOffererId ? Number(savedOffererId) : firstOffererId,
+            offerers.offerersNames
           )
         } else {
-          await initializeOfferer(firstOffererId)
+          await initializeOfferer(firstOffererId, offerers.offerersNames)
         }
+      } else {
+        dispatch(updateUserAccess('no-offerer'))
       }
 
       dispatch(updateUser(user))

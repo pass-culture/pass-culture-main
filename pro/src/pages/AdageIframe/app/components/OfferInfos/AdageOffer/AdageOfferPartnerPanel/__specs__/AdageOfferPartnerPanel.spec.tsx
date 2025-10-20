@@ -47,7 +47,7 @@ describe('AdageOfferPartnerPanel', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Nouvelle fenêtre Voir la page partenaire',
+        name: /Voir la page partenaire/,
       })
     ).toBeInTheDocument()
   })

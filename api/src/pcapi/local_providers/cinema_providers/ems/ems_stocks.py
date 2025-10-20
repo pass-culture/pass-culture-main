@@ -131,8 +131,7 @@ class EMSStocks:
 
     def get_or_create_movie_product(self, movie: ems_serializers.Event) -> offers_models.Product | None:
         generic_movie = movie.to_generic_movie()
-        id_at_providers = _build_movie_uuid_for_offer(movie.id, self.venue)
-        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider)
 
         return product
 

@@ -117,18 +117,6 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
 
         assert email_data.params["VENUE_NAME"] == "Cinéma du bout de la rue"
 
-    def should_use_venue_name_when_public_name_is_unavailable(self):
-        booking = BookingFactory(
-            stock=offers_factories.EventStockFactory(
-                offer__venue__publicName=None,
-                offer__venue__name="Cinéma du bout de la rue",
-            )
-        )
-
-        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking)
-
-        assert email_data.params["VENUE_NAME"] == "Cinéma du bout de la rue"
-
     def should_use_activation_code_when_available(self):
         booking = BookingFactory(
             stock=offers_factories.EventStockFactory(),

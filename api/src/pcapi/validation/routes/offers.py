@@ -1,7 +1,8 @@
 from pydantic.v1 import HttpUrl
 
-from pcapi.core.offers import api
 from pcapi.core.offers import models
+from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models.api_errors import ApiErrors
 
 
@@ -17,10 +18,16 @@ def check_video_url(video_url: HttpUrl | None) -> str | None:
     if not video_url:
         return None
 
-    video_id = api.extract_youtube_video_id(video_url)
-    if not video_id:
-        raise ApiErrors(errors={"videoUrl": ["Veuillez renseigner une URL provenant de la plateforme Youtube"]})
-    return video_id
+    try:
+        return videos_api.extract_video_id(video_url)
+    except videos_exceptions.InvalidVideoUrl:
+        raise ApiErrors(
+            errors={
+                "videoUrl": [
+                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                ]
+            }
+        )
 
 
 def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:

@@ -20,11 +20,7 @@ const renderOffererBanners = (
   options: RenderWithProvidersOptions = {}
 ) => {
   renderWithProviders(
-    <OffererBanners
-      isUserOffererValidated={props.isUserOffererValidated ?? true}
-      offerer={defaultGetOffererResponseModel}
-      {...props}
-    />,
+    <OffererBanners offerer={defaultGetOffererResponseModel} {...props} />,
     options
   )
 }
@@ -50,16 +46,6 @@ describe('OffererBanners', () => {
     expect(
       screen.getByText(
         'Votre structure est en cours de traitement par les équipes du pass Culture'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should warn user offerer is being validated when user attachment to offerer is not yet validated', () => {
-    renderOffererBanners({ isUserOffererValidated: false })
-
-    expect(
-      screen.getByText(
-        'Votre rattachement est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeInTheDocument()
   })
