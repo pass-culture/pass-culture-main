@@ -10,8 +10,8 @@ from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
 from pcapi.notifications.internal import send_internal_message
+from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notification_emails
 from pcapi.utils import date as date_utils
-from pcapi.workers.export_csv_and_send_notification_emails_job import export_csv_and_send_notification_emails_job
 
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ def push_invoices(count: int) -> None:
             )
             batch = cashflow.batch
             if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-                export_csv_and_send_notification_emails_job.delay(batch.id, batch.label)
+                export_csv_and_send_notification_emails(batch.id, batch.label)
 
             if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
                 send_internal_message(
