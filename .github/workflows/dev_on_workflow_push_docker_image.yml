@@ -130,7 +130,6 @@ jobs:
             docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
           fi
           
-          docker images
           docker image push --all-tags ${{ steps.compute-target-image-name.outputs.image_name }}
 
       - name: Get the image digest
