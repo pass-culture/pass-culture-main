@@ -128,6 +128,10 @@ class ProductNotFound(Exception):
     pass
 
 
+class OfferHasNoStock(OfferException):
+    pass
+
+
 class CollectiveStockNotFound(Exception):
     pass
 
