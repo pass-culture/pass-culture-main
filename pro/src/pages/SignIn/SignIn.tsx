@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import { Navigate, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -11,11 +10,11 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
-import type { AppDispatch } from '@/commons/store/store'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
-import { updateUser } from '@/commons/store/user/reducer'
+import { logout } from '@/commons/store/user/dispatchers/logout'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -40,7 +39,7 @@ export const SignIn = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [shouldRedirect, setshouldRedirect] = useState(false)
   const [hasApiError, setHasApiError] = useState(false)
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   useInitReCaptcha()
 
@@ -76,7 +75,8 @@ export const SignIn = (): JSX.Element => {
       }
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        dispatch(updateUser(null))
+        await dispatch(logout()).unwrap()
+
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
         } else {

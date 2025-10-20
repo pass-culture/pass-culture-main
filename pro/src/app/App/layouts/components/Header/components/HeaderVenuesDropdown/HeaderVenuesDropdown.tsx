@@ -4,10 +4,6 @@ import cn from 'classnames'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
-import {
-  ensureSelectedVenue,
-  ensureVenues,
-} from '@/commons/store/user/selectors'
 import fullDownIcon from '@/icons/full-down.svg'
 import fulValidateIcon from '@/icons/full-validate.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -19,8 +15,12 @@ import styles from './HeaderVenuesDropdown.module.scss'
 
 export const HeaderVenuesDropdown = () => {
   const dispatch = useAppDispatch()
-  const selectedVenue = useAppSelector(ensureSelectedVenue)
-  const venues = useAppSelector(ensureVenues)
+  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
+  const venues = useAppSelector((state) => state.user.venues)
+
+  if (!venues?.length || !selectedVenue) {
+    return null
+  }
 
   return (
     <DropdownMenu.Root>

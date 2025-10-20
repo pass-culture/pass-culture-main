@@ -13,7 +13,7 @@ export const ensureSelectedVenue = (state: RootState) => {
 }
 
 export const ensureVenues = (state: RootState) => {
-  assertOrFrontendError(state.user.venues, '`state.user.venues` is null.')
+  // assertOrFrontendError(state.user.venues, '`state.user.venues` is null.')
 
-  return state.user.venues
+  return state.user.venues ?? []
 }
