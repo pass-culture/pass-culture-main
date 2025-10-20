@@ -8,9 +8,10 @@ from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import atomic
 
 from .base_etl import BaseETLProcess
-from .base_etl import ETLProcessException
+from .base_etl import ETLStopProcessException
 from .base_etl import LoadableMovie
 from .base_etl import ShowFeatures
 from .base_etl import ShowStockData
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class EMSExtractResult(typing.TypedDict):
     site_with_events: ems_serializers.SiteWithEvents
+    version: int
 
 
 class EMSExtractTransformLoadProcess(BaseETLProcess[EMSScheduleConnector, EMSExtractResult]):
@@ -29,20 +31,22 @@ class EMSExtractTransformLoadProcess(BaseETLProcess[EMSScheduleConnector, EMSExt
     linked to `EMS`.
     """
 
-    def __init__(self, venue_provider: models.VenueProvider):
+    def __init__(self, venue_provider: models.VenueProvider, *, from_last_version: bool = False):
         """
         :venue_provider: must be linked to EMS provider
         """
         super().__init__(venue_provider=venue_provider, api_client=EMSScheduleConnector())
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
-        ems_cinema_details = repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
-        self.last_version = ems_cinema_details.lastVersion
+        self.ems_cinema_details = repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
+        self.target_version = 0
+        if from_last_version:
+            self.target_version = self.ems_cinema_details.lastVersion
 
     def _extract(self) -> EMSExtractResult:
         """
         Step 1: Fetch data from EMS API
         """
-        schedules = self.api_client.get_schedules(self.last_version)
+        schedules = self.api_client.get_schedules(self.target_version)
 
         site_with_events = None
         for site in schedules.sites:
@@ -51,9 +55,9 @@ class EMSExtractTransformLoadProcess(BaseETLProcess[EMSScheduleConnector, EMSExt
                 break
 
         if not site_with_events:
-            raise ETLProcessException("No data on API")
+            raise ETLStopProcessException("No data on API")
 
-        return {"site_with_events": site_with_events}
+        return {"site_with_events": site_with_events, "version": schedules.version}
 
     def _transform(self, extract_result: EMSExtractResult) -> list[LoadableMovie]:
         loadable_data_by_movie_uuid: dict[str, LoadableMovie] = {}
@@ -115,4 +119,10 @@ class EMSExtractTransformLoadProcess(BaseETLProcess[EMSScheduleConnector, EMSExt
 
     def _extract_result_to_log_dict(self, extract_result: EMSExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
-        return {"site_with_events": extract_result["site_with_events"].dict()}
+        return {"site_with_events": extract_result["site_with_events"].dict(), "version": extract_result["version"]}
+
+    def _post_load_provider_specific_hook(self, extract_result: EMSExtractResult) -> None:
+        """EMS custom post load logic to update cinema_details version"""
+        with atomic():
+            version = extract_result["version"]
+            self.ems_cinema_details.lastVersion = version
