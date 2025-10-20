@@ -1,12 +1,12 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
-import { updateUser } from '@/commons/store/user/reducer'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
 
 import { EmailChangeValidationScreen } from './components/EmailChangeValidation/EmailChangeValidation'
@@ -14,7 +14,7 @@ import { EmailChangeValidationScreen } from './components/EmailChangeValidation/
 const EmailChangeValidation = (): JSX.Element => {
   const [isSuccess, setIsSuccess] = useState<boolean | undefined>(undefined)
   const location = useLocation()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     const changeEmail = async () => {
@@ -29,7 +29,7 @@ const EmailChangeValidation = (): JSX.Element => {
       try {
         await api.patchValidateEmail({ token: token })
         setIsSuccess(true)
-        dispatch(updateUser(null))
+        await dispatch(logout()).unwrap()
       } catch {
         setIsSuccess(false)
       }

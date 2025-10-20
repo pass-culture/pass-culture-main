@@ -6,7 +6,6 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import fullBurgerIcon from '@/icons/full-burger.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -38,7 +37,6 @@ export const Header = forwardRef(
   ) => {
     const { logEvent } = useAnalytics()
     const location = useLocation()
-    const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
     const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
@@ -93,7 +91,7 @@ export const Header = forwardRef(
               <div className={styles['tablet-and-above']}>
                 {isProFeedbackEnabled && <UserReviewDialog />}
               </div>
-              {withSwitchVenueFeature && selectedVenue && (
+              {withSwitchVenueFeature && (
                 <div className={styles['tablet-and-above']}>
                   <HeaderVenuesDropdown />
                 </div>
