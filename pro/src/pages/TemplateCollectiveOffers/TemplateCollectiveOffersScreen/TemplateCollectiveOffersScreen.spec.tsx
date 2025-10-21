@@ -10,7 +10,6 @@ import {
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -61,7 +60,7 @@ const offers = [collectiveOfferFactory()]
 const props = {
   currentPageNumber: 1,
   isLoading: false,
-  offerer: { ...defaultGetOffererResponseModel },
+  offererId: '1',
   offers,
   urlSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   initialSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,

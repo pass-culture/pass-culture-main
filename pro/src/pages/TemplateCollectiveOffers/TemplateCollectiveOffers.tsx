@@ -13,7 +13,6 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
-import { useOfferer } from '@/commons/hooks/swr/useOfferer'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import { TemplateCollectiveOffersScreen } from '@/pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
@@ -30,13 +29,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-
-  const { data: offerer } = useOfferer(
-    offererId !== DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId
-      ? offererId
-      : null,
-    true
-  )
 
   const redirectWithUrlFilters = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -103,7 +95,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
-          offerer={offerer}
+          offererId={offererId}
           offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
