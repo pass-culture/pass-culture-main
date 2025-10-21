@@ -35,6 +35,18 @@ on:
         type: string
         required: false
         default: "api/documentation"
+      new_infra:
+        type: bool
+        required: false
+        default: false
+      cluster_name:
+        type: string
+        required: false
+        default: gke-backend-tst-eu9
+      gcp_project_id:
+        type: string
+        required: false
+        default: pc-backend-tst
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -110,11 +122,17 @@ jobs:
           permission-contents: write
 
       - name: "Connect to cluster"
+        if: ${{ ! inputs.new_infra }}
         uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
         with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
           api_token_github: ${{ steps.github-token.outputs.token }}
+
+      - name: "Connect to cluster Infra V2"
+        if: ${{ inputs.new_infra }}
+        run: |
+          gcloud container clusters get-credentials ${{ inputs.cluster_name}} --dns-endpoint --location=europe-west9 --project=${{ inputs.gcp_project_id}}
 
       - name: "Play pre-migrations"
         uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
