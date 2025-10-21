@@ -116,7 +116,6 @@ export const initializeUser = createAsyncThunk<
 
     dispatch(updateUser(user))
   } catch (_err: unknown) {
-    // In case of error, cancel all state modifications
-    dispatch(logout())
+    await dispatch(logout()).unwrap()
   }
 })

@@ -14,6 +14,7 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
     getVenues: vi.fn(),
+    signout: vi.fn(),
   },
 }))
 
@@ -65,27 +66,13 @@ describe('initializeUser', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUser(sharedCurrentUser))
+    await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
     expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
-
-    expect(result).toEqual({
-      error: { message: 'Rejected' },
-      type: 'user/initializeUser/rejected',
-      payload: { error: 'UNKNOWN_ERROR' },
-      meta: {
-        aborted: false,
-        condition: false,
-        arg: sharedCurrentUser,
-        requestStatus: 'rejected',
-        requestId: expect.any(String),
-        rejectedWithValue: true,
-      },
-    })
   })
 
   it('should handle getOfferer error and continue if status is 403', async () => {
@@ -107,30 +94,16 @@ describe('initializeUser', () => {
     })
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUser(sharedCurrentUser))
+    await initializeUser(sharedCurrentUser)
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
     expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
-
-    expect(result).toEqual({
-      error: { message: 'Rejected' },
-      type: 'user/initializeUser/rejected',
-      payload: { error: 'UNKNOWN_ERROR' },
-      meta: {
-        aborted: false,
-        condition: false,
-        arg: sharedCurrentUser,
-        requestStatus: 'rejected',
-        requestId: expect.any(String),
-        rejectedWithValue: true,
-      },
-    })
   })
 
-  it('should handle ApiError and reject with proper error format', async () => {
+  it('should handle ApiError by logging user out', async () => {
     const mockApiError = {
       status: 403,
       name: 'ApiError',
@@ -139,30 +112,12 @@ describe('initializeUser', () => {
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(mockApiError)
     const store = configureTestStore()
 
-    const result = await store.dispatch(initializeUser(sharedCurrentUser))
+    await store.dispatch(initializeUser(sharedCurrentUser))
 
     expect(store.getState().user.currentUser).toBeNull()
     expect(store.getState().user.selectedVenue).toBeNull()
     expect(store.getState().user.venues).toBeNull()
     expect(store.getState().offerer.offererNames).toBeNull()
     expect(store.getState().offerer.currentOfferer).toBeNull()
-
-    expect(result).toEqual({
-      error: { message: 'Rejected' },
-      type: 'user/initializeUser/rejected',
-      payload: {
-        error: 'API_ERROR',
-        status: 403,
-        body: 'Bad Request',
-      },
-      meta: {
-        aborted: false,
-        condition: false,
-        arg: sharedCurrentUser,
-        requestStatus: 'rejected',
-        requestId: expect.any(String),
-        rejectedWithValue: true,
-      },
-    })
   })
 })

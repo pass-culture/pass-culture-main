@@ -103,12 +103,12 @@ export const HeaderDropdown = () => {
     }
   }, [])
 
-  const logEventAndLogout = () => {
+  const logEventAndLogout = async () => {
     logEvent(Events.CLICKED_LOGOUT, {
       from: pathname,
     })
 
-    dispatch(logout())
+    await dispatch(logout()).unwrap()
   }
 
   return (
