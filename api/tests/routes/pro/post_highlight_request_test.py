@@ -24,6 +24,11 @@ class Returns200Test:
 
         assert response.status_code == 201
 
+        response_json = response.json
+        assert response_json["id"] == offer.id
+        assert len(response_json["highlightRequests"]) == 1
+        assert response_json["highlightRequests"][0]["id"] == highlight.id
+
         highlight_request_query = db.session.query(highlights_models.HighlightRequest)
         assert highlight_request_query.count() == 1
         assert highlight_request_query.one().offerId == offer.id

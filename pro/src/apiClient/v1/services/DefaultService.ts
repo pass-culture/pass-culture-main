@@ -79,7 +79,6 @@ import type { ListVenueProviderResponse } from '../models/ListVenueProviderRespo
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
-import type { OfferHighlightResquestsResponseModel } from '../models/OfferHighlightResquestsResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -2061,13 +2060,13 @@ export class DefaultService {
    * post_highlight_request_offer <POST>
    * @param offerId
    * @param requestBody
-   * @returns OfferHighlightResquestsResponseModel Created
+   * @returns GetIndividualOfferWithAddressResponseModel Created
    * @throws ApiError
    */
   public postHighlightRequestOffer(
     offerId: number,
     requestBody: CreateOfferHighlightRequestBodyModel,
-  ): CancelablePromise<OfferHighlightResquestsResponseModel> {
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/{offer_id}/highlight-requests',

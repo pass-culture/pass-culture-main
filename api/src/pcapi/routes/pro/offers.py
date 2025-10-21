@@ -952,7 +952,7 @@ def get_offer_video_metadata(
 @private_api.route("/offers/<int:offer_id>/highlight-requests", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.OfferHighlightResquestsResponseModel,
+    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
@@ -960,7 +960,7 @@ def get_offer_video_metadata(
 def post_highlight_request_offer(
     offer_id: int,
     body: offers_schemas.CreateOfferHighlightRequestBodyModel,
-) -> offers_serialize.OfferHighlightResquestsResponseModel:
+) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options={"venue"})
     except exceptions.OfferNotFound:
@@ -972,11 +972,22 @@ def post_highlight_request_offer(
     offers_validation.check_offer_can_ask_for_highlight_request(offer)
 
     try:
-        highlight_requests = offers_api.upsert_highlight_requests(body.highlight_ids, offer)
+        offers_api.upsert_highlight_requests(body.highlight_ids, offer)
     except exceptions.HighlightNotFoundException:
         raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'existe pas"]}, status_code=400)
     except exceptions.UnavailableHighlightException:
         raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'est pas disponible"]}, status_code=400)
-    return offers_serialize.OfferHighlightResquestsResponseModel(
-        highlight_requests=[highlight_request.highlight.name for highlight_request in highlight_requests]
-    )
+
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "bookings_count",
+        "headline_offer",
+        "is_non_free_offer",
+        "meta_data",
+        "offerer_address",
+        "pending_bookings",
+        "product",
+        "stock",
+        "venue",
+    ]
+    offer = offers_repository.get_offer_by_id(offer_id, load_options)
+    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)

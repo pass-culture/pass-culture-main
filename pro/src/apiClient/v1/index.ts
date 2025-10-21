@@ -191,7 +191,6 @@ export type { OffererEligibilityResponseModel } from './models/OffererEligibilit
 export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
-export type { OfferHighlightResquestsResponseModel } from './models/OfferHighlightResquestsResponseModel';
 export type { OfferImage } from './models/OfferImage';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
 export { OfferStatus } from './models/OfferStatus';
