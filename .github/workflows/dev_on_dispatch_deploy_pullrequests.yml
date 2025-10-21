@@ -161,7 +161,7 @@ jobs:
       repository: pass-culture-artifact-registry
       artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
       artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
+      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key_test
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
