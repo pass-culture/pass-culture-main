@@ -84,9 +84,6 @@ def edit_collective_stock(
     end_datetime = stock_data.get("endDatetime")
     end_datetime = serialization_utils.as_utc_without_timezone(end_datetime) if end_datetime else None
 
-    if start_datetime and not end_datetime:
-        end_datetime = start_datetime
-
     if start_datetime or end_datetime:
         after_update_start_datetime = start_datetime or stock.startDatetime
         after_update_end_datetime = end_datetime or stock.endDatetime
