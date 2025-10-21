@@ -12,10 +12,10 @@ describe('ModalHighlight', () => {
       {
         name: 'my name',
         description: 'my description',
-        availabilityTimespan: [new Date(), new Date()],
+        availabilityTimespan: ['2025-01-01', '2025-01-15'],
         id: 1,
         mediationUrl: 'url.example',
-        highlightTimespan: [new Date(), new Date()],
+        highlightTimespan: ['2025-01-01', '2025-01-15'],
       },
     ])
 

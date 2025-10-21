@@ -186,6 +186,114 @@ describe('IndividualOfferLayout', () => {
       expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
     })
 
+    it('should display highlight banner', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.ACTIVE,
+        isEvent: true,
+      })
+
+      // When
+      renderIndividualOfferLayout({
+        options: { features: ['WIP_HIGHLIGHT'] },
+        props: { offer },
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).toBeInTheDocument()
+    })
+
+    it('should not display highlight banner if the WIP_HIGHLIGHT feature is not active', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.ACTIVE,
+        isEvent: true,
+      })
+
+      // When
+      renderIndividualOfferLayout({ props: { offer } })
+
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display highlight banner if the offer is not an event', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.ACTIVE,
+        isEvent: false,
+      })
+
+      // When
+      renderIndividualOfferLayout({
+        options: { features: ['WIP_HIGHLIGHT'] },
+        props: { offer },
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display highlight banner if the offer is rejected', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.REJECTED,
+        isEvent: true,
+      })
+
+      // When
+      renderIndividualOfferLayout({
+        options: { features: ['WIP_HIGHLIGHT'] },
+        props: { offer },
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display highlight banner if the offer is pending', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.PENDING,
+        isEvent: true,
+      })
+
+      renderIndividualOfferLayout({
+        options: { features: ['WIP_HIGHLIGHT'] },
+        props: { offer },
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display highlight banner if the offer is pending', () => {
+      // Given
+      const offer = getIndividualOfferFactory({
+        status: OfferStatus.DRAFT,
+        isEvent: true,
+      })
+
+      renderIndividualOfferLayout({
+        options: { features: ['WIP_HIGHLIGHT'] },
+        props: { offer },
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: 'Choisir un temps fort' })
+      ).not.toBeInTheDocument()
+    })
+
     it('should not display publication date in creation', () => {
       const future = addDays(new Date(), 3)
       const offer = getIndividualOfferFactory({

@@ -25,9 +25,9 @@ class ShortHighlightResponseModel(ConfiguredBaseModel):
 
 class HighlightResponseModel(ConfiguredBaseModel):
     id: int
-    availability_timespan: tuple[datetime, datetime]
+    availability_timespan: list[datetime]
     description: str
-    highlight_timespan: tuple[datetime, datetime]
+    highlight_timespan: list[datetime]
     mediation_url: str
     name: str
 
