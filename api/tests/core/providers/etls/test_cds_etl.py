@@ -560,3 +560,12 @@ class CDSExtractTransformLoadProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+
+        CDSExtractTransformLoadProcess(venue_provider).execute()
+        db.session.query(offers_models.PriceCategory).count() == 2
+        CDSExtractTransformLoadProcess(venue_provider).execute()
+        db.session.query(offers_models.PriceCategory).count() == 2

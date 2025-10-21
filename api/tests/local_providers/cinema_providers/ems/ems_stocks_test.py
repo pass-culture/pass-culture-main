@@ -412,7 +412,7 @@ class EMSStocksTest:
         seyne_sur_mer_expected_version = 172800
         if (
             ProcessClass == EMSExtractTransformLoadProcess
-        ):  # we dont update last version if no data return by API in new process
+        ):  # # We don't update the last version if there's no returned data by the API in the new process
             seyne_sur_mer_expected_version = 86400
         self._assert_seyne_sur_mer_initial_sync(
             ems_cine_venue,
