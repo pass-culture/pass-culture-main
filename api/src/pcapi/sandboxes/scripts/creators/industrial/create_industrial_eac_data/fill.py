@@ -1,5 +1,6 @@
 from functools import cache
 
+import sqlalchemy as sa
 from sqlalchemy import orm as sa_orm
 
 from pcapi.core.educational import models as educational_models
@@ -47,7 +48,7 @@ def fill_adage_playlists() -> None:
             }
             for offer in classroom_offers[:10]
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
+        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_add)
 
         playlist_items_to_add = [
             {
@@ -58,7 +59,7 @@ def fill_adage_playlists() -> None:
             }
             for venue in venues
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
+        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_add)
 
         playlist_items_to_add = [
             {
@@ -69,7 +70,7 @@ def fill_adage_playlists() -> None:
             }
             for offer in collective_offer_templates[:10]
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
+        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_add)
 
         playlist_items_to_add = [
             {
@@ -80,7 +81,7 @@ def fill_adage_playlists() -> None:
             }
             for venue in venues
         ]
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_add)  # type: ignore [arg-type]
+        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_add)
 
     db.session.commit()
 
