@@ -11,7 +11,6 @@ import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import ProductFactory
@@ -36,9 +35,7 @@ from . import fixtures
 
 
 TODAY_STR = datetime.date.today().strftime("%Y-%m-%d")
-FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
-    "%Y-%m-%d"
-)
+FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=60)).strftime("%Y-%m-%d")
 
 
 @pytest.mark.usefixtures("db_session")

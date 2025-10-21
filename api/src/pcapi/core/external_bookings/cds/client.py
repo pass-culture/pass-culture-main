@@ -8,8 +8,6 @@ from operator import attrgetter
 from pydantic.v1.tools import parse_obj_as
 
 import pcapi.core.bookings.models as bookings_models
-import pcapi.core.external_bookings.cds.constants as cds_constants
-import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
@@ -26,11 +24,20 @@ from . import serializers as cds_serializers
 
 
 logger = logging.getLogger(__name__)
+
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
+PASS_CULTURE_VOUCHER_CODE = "PSCULTURE"
+VOUCHER_PAYMENT_TYPE_CDS = "VCH"
+SEATMAP_HARDCODED_LABELS_SCREENID = "SEATMAP_HARDCODED_LABELS_SCREENID_"
+CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE = "TICKET_ALREADY_CANCELED"
+
+
+class CineDigitalServiceAPIException(external_bookings_exceptions.ExternalBookingException):
+    pass
 
 
 def _log_external_call(
-    client: external_bookings_models.ExternalBookingsClientAPI,
+    client: external_bookings_models.CinemaAPIClient,
     method: str,
     response: dict | list[dict] | list,
 ) -> None:
@@ -63,10 +70,10 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         reason = _extract_reason_from_response(response)
         if cinema_api_token:
             reason = reason.replace(cinema_api_token, "")  # filter out token
-        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
+        raise CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
 
 
-class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
+class CineDigitalServiceAPI(external_bookings_models.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -154,7 +161,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
                 return cinema.is_internet_sale_gauge_active
-        raise cds_exceptions.CineDigitalServiceAPIException(
+        raise CineDigitalServiceAPIException(
             f"Cinema internet_sale_gauge_active not found in Cine Digital Service API "
             f"for cinemaId={self.cinema_id} & url={self.base_url}"
         )
@@ -192,10 +199,10 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         data = self._authenticated_get(f"{self.base_url}paiementtype")
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
-            if payment_type.internal_code == cds_constants.VOUCHER_PAYMENT_TYPE_CDS:
+            if payment_type.internal_code == VOUCHER_PAYMENT_TYPE_CDS:
                 return payment_type
 
-        raise cds_exceptions.CineDigitalServiceAPIException(
+        raise CineDigitalServiceAPIException(
             f"Pass Culture payment type not found in Cine Digital Service API for cinemaId={self.cinema_id}"
             f" & url={self.base_url}"
         )
@@ -207,7 +214,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         return [
             voucher_type
             for voucher_type in voucher_types
-            if voucher_type.code == cds_constants.PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
+            if voucher_type.code == PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
 
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
@@ -216,7 +223,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         for screen in screens:
             if screen.id == screen_id:
                 return screen
-        raise cds_exceptions.CineDigitalServiceAPIException(
+        raise CineDigitalServiceAPIException(
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 
@@ -231,7 +238,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         cinema = self.get_cinema_infos()
         encoded_seatmap = None
         for parameter in cinema.cinema_parameters:
-            if parameter.key == cds_constants.SEATMAP_HARDCODED_LABELS_SCREENID + str(show.screen.id):
+            if parameter.key == SEATMAP_HARDCODED_LABELS_SCREENID + str(show.screen.id):
                 encoded_seatmap = parameter.value
         if not encoded_seatmap:
             return []
@@ -315,10 +322,10 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         if api_response:
             cancel_errors = parse_obj_as(cds_serializers.CancelBookingsErrorsCDS, api_response)
-            if {cds_constants.CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE} == set(cancel_errors.__root__.values()):
+            if {CDS_TICKET_ALREADY_CANCELED_ERROR_MESSAGE} == set(cancel_errors.__root__.values()):
                 return  # We don't raise if the tickets have already been cancelled
             sep = "\n"
-            raise cds_exceptions.CineDigitalServiceAPIException(
+            raise CineDigitalServiceAPIException(
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
@@ -328,13 +335,13 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
     ) -> list[Ticket]:
         quantity = booking.quantity
         if quantity < 0 or quantity > 2:
-            raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
+            raise CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
 
         show = self.get_show(show_id)
         screen = self.get_screen(show.screen.id)
         show_voucher_type = self.get_voucher_type_for_show(show)
         if not show_voucher_type:
-            raise cds_exceptions.CineDigitalServiceAPIException(f"Unavailable pass culture tariff for show={show.id}")
+            raise CineDigitalServiceAPIException(f"Unavailable pass culture tariff for show={show.id}")
 
         ticket_sale_collection = self._create_ticket_sale_dict(show, quantity, screen, show_voucher_type)
         payement_collection = self._create_transaction_payment(quantity, show_voucher_type)
@@ -400,7 +407,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
                 seat_number=seats_to_book[i].seatNumber if bool(seats_to_book) else None,
                 tariff=cds_serializers.IdObjectCDS(id=show_voucher_type.tariff.id),
                 show=cds_serializers.IdObjectCDS(id=show.id),
-                voucher_type=cds_constants.PASS_CULTURE_VOUCHER_CODE,
+                voucher_type=PASS_CULTURE_VOUCHER_CODE,
                 disabled_person=False,
             )
             ticket_sale_list.append(ticket_sale)
@@ -454,7 +461,7 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
         for cinema in cinemas:
             if cinema.id == self.cinema_id:
                 return cinema
-        raise cds_exceptions.CineDigitalServiceAPIException(
+        raise CineDigitalServiceAPIException(
             f"Cinema not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.base_url}"
         )
 

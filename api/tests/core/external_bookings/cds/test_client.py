@@ -8,7 +8,7 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.cds.client as cds_client
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.users.factories as users_factories
 from pcapi.core.external_bookings.cds import serializers as cds_serializers
@@ -252,7 +252,7 @@ class CineDigitalServiceGetPaymentTypeTest:
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+        with pytest.raises(cds_client.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_voucher_payment_type()
         assert (
             str(cds_exception.value)
@@ -363,7 +363,7 @@ class CineDigitalServiceGetScreenTest:
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test"
         )
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+        with pytest.raises(cds_client.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_screen(4)
         assert (
             str(cds_exception.value)
@@ -754,7 +754,7 @@ class CineDigitalServiceCancelBookingTest:
             cinema_api_token="token_test",
         )
 
-        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
+        with pytest.raises(cds_client.CineDigitalServiceAPIException) as exception:
             cine_digital_service.cancel_booking(
                 ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"]
             )

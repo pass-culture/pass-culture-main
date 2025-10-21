@@ -36,7 +36,7 @@ from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
-from pcapi.core.external_bookings.ems import constants as ems_constants
+from pcapi.core.external_bookings.ems.client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
@@ -1366,7 +1366,7 @@ def cancel_unstored_external_bookings() -> None:
 def cancel_ems_external_bookings() -> None:
     EMS_DEADLINE_BEFORE_CANCELLING = 90
     redis_client = current_app.redis_client
-    ems_queue = ems_constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+    ems_queue = EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 
     while redis_client.llen(ems_queue) > 0:
         booking_to_cancel = json.loads(redis_client.rpop(ems_queue))

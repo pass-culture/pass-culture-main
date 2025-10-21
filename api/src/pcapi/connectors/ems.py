@@ -13,11 +13,14 @@ from requests.auth import HTTPBasicAuth  # noqa: TID251
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
-from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
+
+
+class EMSAPIException(external_bookings_exceptions.ExternalBookingException):
+    pass
 
 
 class AbstractEMSConnector:

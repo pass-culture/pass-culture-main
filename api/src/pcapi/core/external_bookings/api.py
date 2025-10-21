@@ -123,7 +123,7 @@ def _check_cinema_booking_is_enabled(local_class: str) -> None:
         raise ValueError(f"Unknown cinema provider: {local_class}")
 
 
-def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
+def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.CinemaAPIClient:
     local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
     sentry_sdk.set_tag("cinema-provider-local-class", local_class)
 

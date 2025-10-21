@@ -10,7 +10,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.external_bookings.cds import serializers as cds_serializers
 from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -24,9 +23,7 @@ from . import cds_fixtures
 pytestmark = pytest.mark.usefixtures("db_session")
 
 TODAY_STR = datetime.date.today().strftime("%Y-%m-%d")
-FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
-    "%Y-%m-%d"
-)
+FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=60)).strftime("%Y-%m-%d")
 
 
 @mock.patch("pcapi.settings.CDS_API_URL", "cds_api.fake/")

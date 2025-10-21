@@ -41,7 +41,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
-from pcapi.core.external_bookings.ems import constants
+from pcapi.core.external_bookings.ems.client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -645,7 +645,7 @@ class BookOfferTest:
             assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
             assert mock_lpush.call_count == 1
-            assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+            assert mock_lpush.mock_calls[0].args[0] == EMS_EXTERNAL_BOOKINGS_TO_CANCEL
             booking_queued = json.loads(mock_lpush.mock_calls[0].args[1])
             assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
             assert booking_queued["token"] == token
@@ -756,7 +756,7 @@ class BookOfferTest:
             assert not db.session.query(Booking).all()
             assert booking_adapter.call_count == 1
             assert mock_lpush.call_count == 1
-            assert mock_lpush.mock_calls[0].args[0] == constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+            assert mock_lpush.mock_calls[0].args[0] == EMS_EXTERNAL_BOOKINGS_TO_CANCEL
             booking_queued = json.loads(mock_lpush.mock_calls[0].args[1])
             assert booking_queued["cinema_id"] == venue_provider.venueIdAtOfferProvider
             assert booking_queued["token"] == token

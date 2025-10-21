@@ -8,7 +8,6 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.boost.serializers as boost_serializers
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
@@ -93,7 +92,7 @@ class GenerateJWTTokenTest:
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
 
-        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+        with pytest.raises(boost_client.BoostAPIException) as exc:
             boost_api_client._generate_jwt_token()
 
         assert requests_mock.last_request.json() == {
@@ -188,12 +187,12 @@ class AuthenticatedGetTest:
             json={"message": "Why must you fail me so often ?"},
         )
 
-        with pytest.raises(boost_exceptions.BoostAPIException) as exc:
+        with pytest.raises(boost_client.BoostAPIException) as exc:
             boost_api_client._authenticated_get("https://cinema.example.com/example")
 
         assert requests_mock.last_request.url == "https://cinema.example.com/example"
         assert requests_mock.last_request.headers["Authorization"] == "Bearer token"
-        assert isinstance(exc.value, boost_exceptions.BoostAPIException)
+        assert isinstance(exc.value, boost_client.BoostAPIException)
         assert "token" not in str(exc.value)
         assert (
             "Error on Boost API on GET https://cinema.example.com/example : Expectation failed - Why must you fail me so often ?"
@@ -506,7 +505,7 @@ class CancelBookingTest:
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
 
-        with pytest.raises(boost_exceptions.BoostAPIException) as exception:
+        with pytest.raises(boost_client.BoostAPIException) as exception:
             boost.cancel_booking(barcodes=["55555"])
 
         assert (
