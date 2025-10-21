@@ -1,5 +1,7 @@
 import datetime
 
+import sqlalchemy as sa
+
 import pcapi.core.offers.models as offers_models
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -36,7 +38,7 @@ def update_chunk(chunk_to_update: dict[str, Model]) -> None:
         values_to_update_in_chunk = _extract_dict_values_from_chunk(matching_tuples_in_chunk)
         model_to_update = MODELS[model_in_chunk]
 
-        db.session.bulk_update_mappings(model_to_update, values_to_update_in_chunk)
+        db.session.execute(sa.update(model_to_update), values_to_update_in_chunk)
     db.session.commit()
 
 

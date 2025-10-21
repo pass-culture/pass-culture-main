@@ -3154,8 +3154,8 @@ def update_bank_account_venues_links(
                     "bankAccountId": bank_account.id,
                 }
             )
-        db.session.bulk_update_mappings(
-            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
+        db.session.execute(
+            sa.update(offerers_models.VenueBankAccountLink),
             link_bulk_update_mapping,
         )
 
@@ -3188,15 +3188,9 @@ def update_bank_account_venues_links(
                 }
             )
 
-        db.session.bulk_insert_mappings(
-            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
-            new_links,
-        )
+        db.session.execute(sa.insert(offerers_models.VenueBankAccountLink), new_links)
 
-        db.session.bulk_insert_mappings(
-            history_models.ActionHistory,  # type: ignore [arg-type]
-            action_history_bulk_insert_mapping,
-        )
+        db.session.execute(sa.insert(history_models.ActionHistory), action_history_bulk_insert_mapping)
 
         for venue in venues:
             if venue.id in venues_links_to_deprecate and venue.bookingEmail:
