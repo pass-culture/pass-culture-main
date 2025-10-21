@@ -365,7 +365,7 @@ class ApiAdresseBackend(BaseBackend):
     ) -> requests.Response:
         methods = {"GET": requests.get, "POST": requests.post}
         try:
-            response = methods[method](url, params=params, files=files, timeout=timeout)  # type: ignore
+            response = methods[method](url, params=params, files=files, timeout=timeout)  # type: ignore[operator]
         except requests.exceptions.RequestException as exc:
             msg = "Network error on Adresse API"
             logger.exception(msg, extra={"exc": exc, "url": url})
@@ -577,9 +577,9 @@ class ApiAdresseBackend(BaseBackend):
 
         files = [("data", payload)]
         for column in columns:
-            files.append(("columns", (None, column)))  # type: ignore
+            files.append(("columns", (None, column)))  # type: ignore[arg-type]
         for result_column in result_columns:
-            files.append(("result_columns", (None, result_column.value)))  # type: ignore
+            files.append(("result_columns", (None, result_column.value)))  # type: ignore[arg-type]
         text = self._search_csv(files)
         return csv.DictReader(StringIO(text))
 
