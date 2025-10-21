@@ -67,10 +67,6 @@ jobs:
     name: Push Docker image
     runs-on: ubuntu-22.04
     steps:
-      - name: show sa
-        run: |
-          echo "SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}" | base64
-
       - name: Authentification to Google
         uses: google-github-actions/auth@v3
         with:
