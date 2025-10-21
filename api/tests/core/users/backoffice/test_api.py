@@ -37,7 +37,6 @@ def roles_fixture(permissions) -> list[perm_models.Roles]:
     roles[1].permissions = [permissions[2], permissions[3]]
     roles[2].permissions = [permissions[0], permissions[1]]
 
-    db.session.bulk_save_objects(roles)
     db.session.flush()
 
     return roles
