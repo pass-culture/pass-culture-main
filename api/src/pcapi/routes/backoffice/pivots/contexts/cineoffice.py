@@ -5,8 +5,8 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPIException
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
@@ -113,7 +113,7 @@ class CineofficeContext(PivotContext):
             client.get_rating()
             flash("Connexion à l'API OK.", "success")
             return
-        except (requests.exceptions.RequestException, cds_exceptions.CineDigitalServiceAPIException) as exc:
+        except (requests.exceptions.RequestException, CineDigitalServiceAPIException) as exc:
             logger.exception(
                 "Network error on checking CDS API information", extra={"exc": exc, "account_id": account_id}
             )

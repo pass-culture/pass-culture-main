@@ -13,7 +13,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
+from pcapi.core.external_bookings.cgr import client as cgr_client
 from pcapi.core.finance import api
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -759,7 +759,7 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
     @pytest.mark.parametrize(
         "exception_type,expected_error_msg",
         [
-            (cgr_exceptions.CGRAPIException, "Une erreur s'est produite : Test"),
+            (cgr_client.CGRAPIException, "Une erreur s'est produite : Test"),
             (providers_exceptions.ProviderException, "Une erreur s'est produite : ProviderException"),
         ],
     )

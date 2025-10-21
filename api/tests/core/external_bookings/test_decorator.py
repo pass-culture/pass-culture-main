@@ -12,7 +12,7 @@ from pcapi.core.users import models as users_models
 from pcapi.utils.requests import requests
 
 
-class FakeExternalBookingClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+class FakeExternalBookingClientAPI(external_bookings_models.CinemaAPIClient):
     def __init__(self, cinema_id: str, connector) -> None:
         super().__init__(cinema_id)
         self.connector = connector

@@ -15,13 +15,16 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.requests import exceptions as requests_exception
 
-from . import constants
-
 
 logger = logging.getLogger(__name__)
 
 
-class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+EMS_SHOWTIMES_STOCKS_CACHE_KEY = "api:cinema_provider:ems:stocks:%s:%s"
+EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT = 60
+EMS_EXTERNAL_BOOKINGS_TO_CANCEL = "api:cinema_provider:ems:cancel_external_bookings"
+
+
+class EMSClientAPI(external_bookings_models.CinemaAPIClient):
     EMS_FAKE_REMAINING_PLACES = 100
 
     def __init__(self, cinema_id: str, request_timeout: None | int = None):
@@ -77,7 +80,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                     }
                 )
 
-                current_app.redis_client.lpush(constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
+                current_app.redis_client.lpush(EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
             raise
 
         self.connector.raise_for_status(response)
@@ -142,7 +145,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         )
 
     @external_bookings_models.cache_external_call(
-        key_template=constants.EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+        key_template=EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
