@@ -34,7 +34,7 @@ def _extract_logging_information(client_func: Callable, *args: list[Any], **kwar
             }
     """
     self = args[0]
-    assert isinstance(self, models.ExternalBookingsClientAPI)  # to make mypy happy
+    assert isinstance(self, models.CinemaAPIClient)  # to make mypy happy
     # as client_func is an instance method of `ExternalBookingsClientAPI`, self should have a `cinema_id`
     cinema_id = self.cinema_id
 
@@ -63,7 +63,7 @@ def catch_cinema_provider_request_timeout(client_func: F) -> F:
 
     @functools.wraps(client_func)
     def wrapped_func(*args: Any, **kwargs: Any) -> Any:
-        if len(args) == 0 or not isinstance(args[0], models.ExternalBookingsClientAPI):
+        if len(args) == 0 or not isinstance(args[0], models.CinemaAPIClient):
             raise ExternalBookingDecoratorException(
                 "`catch_request_timeout` can only be applied to an instance method of a class inheriting from `ExternalBookingsClientAPI`"
             )
