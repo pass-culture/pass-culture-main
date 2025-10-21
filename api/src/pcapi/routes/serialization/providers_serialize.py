@@ -1,4 +1,4 @@
-from pydantic.v1.main import BaseModel
+from pcapi.routes.serialization import BaseModel
 
 
 class ProviderResponse(BaseModel):
