@@ -742,6 +742,7 @@ def _get_offers_by_ids(
                 offers_models.Offer._extraData,
                 offers_models.Offer.lastProviderId,
                 offers_models.Offer.ean,
+                offers_models.Offer.offererAddressId,
             ),
             sa_orm.contains_eager(offers_models.Offer.venue).options(
                 sa_orm.load_only(
@@ -768,7 +769,7 @@ def _get_offers_by_ids(
             sa_orm.selectinload(offers_models.Offer.lastProvider).load_only(
                 providers_models.Provider.name,
             ),
-            sa_orm.joinedload(offers_models.Offer.offererAddress)
+            sa_orm.selectinload(offers_models.Offer.offererAddress)
             .load_only()
             .joinedload(offerers_models.OffererAddress.address)
             .load_only(
