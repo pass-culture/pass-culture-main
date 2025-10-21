@@ -4,6 +4,7 @@
 {% import "components/clipboard.html" as clipboard %}
 {% import "components/logo.html" as logo %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/generic_modal.html" import build_simple_modal_form with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/description.html" import description_detail_vertical %}
@@ -341,7 +342,7 @@
 {% block extra_main_content %}
   <!-- HIDDEN FORMS/AND MODALS -->
   {% if action.SYNCHRO_TITELIVE in allowed_actions %}
-    {{ build_lazy_modal(url_for('backoffice_web.product.get_product_synchronize_with_titelive_form', product_id=product.id) 
+    {{ build_dynamic_modal(url_for('backoffice_web.product.get_product_synchronize_with_titelive_form', product_id=product.id) 
     , "synchro-product-modal-" + product.id|string) }}
   {% endif %}
   {% if action.WHITELIST in allowed_actions %}

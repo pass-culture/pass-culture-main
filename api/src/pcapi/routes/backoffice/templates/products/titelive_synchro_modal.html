@@ -1,5 +1,4 @@
 {% from "products/titelive_information.html" import render_titelive_information %}
-<turbo-frame id="turbo-{{ div_id }}">
 {% if form %}
   <form action="{{ dst }}"
         name="{{ dst | action_to_name }}"
@@ -31,4 +30,3 @@
     {% endif %}
   {% endif %}
   {% if form %}</form>{% endif %}
-</turbo-frame>
