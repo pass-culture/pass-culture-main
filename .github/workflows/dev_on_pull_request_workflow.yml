@@ -107,9 +107,6 @@ jobs:
       ref: ${{ github.event.pull_request.head.sha }}
       image: pcapi-tests
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   run-mypy-cop:
     name: "MyPy cop"
