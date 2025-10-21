@@ -1,50 +1,50 @@
-<turbo-frame id="turbo-display-revenue-details">
-<div class="modal-header">
-  <h5 class="modal-title">CA par année</h5>
-  <button type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Fermer"></button>
-</div>
-<div class="modal-body row">
-  {% if information %}<div class="my-3">{{ information }}</div>{% endif %}
-  <div class="d-flex flex-column">
-    {% if details %}
-      <table>
-        <thead>
-          <tr>
-            <th>Année</th>
-            <th class="text-end">CA offres IND</th>
-            <th class="text-end">CA offres EAC</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for year, year_stats in details | dictsort(reverse=true) %}
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">CA par année</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Fermer"></button>
+  </div>
+  <div class="modal-body row">
+    {% if information %}<div class="my-3">{{ information }}</div>{% endif %}
+    <div class="d-flex flex-column">
+      {% if details %}
+        <table>
+          <thead>
             <tr>
-              <td class="text-start">{{ year }}</td>
-              <td class="text-end">{{ year_stats.individual | format_amount(target=target) }}</td>
-              <td class="text-end">{{ year_stats.collective | format_amount }}</td>
+              <th>Année</th>
+              <th class="text-end">CA offres IND</th>
+              <th class="text-end">CA offres EAC</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% if "En cours" in details %}
-        <div class="my-3 small">
-          Note : Le CA « En cours » correspond aux réservations qui n'ont pas encore été validées.
-          Ce chiffre d'affaires en cours n'est pas certain (annulations possibles), chaque réservation
-          sera comptabilisée sur l'année du jour de sa validation.
-        </div>
+          </thead>
+          <tbody>
+            {% for year, year_stats in details | dictsort(reverse=true) %}
+              <tr>
+                <td class="text-start">{{ year }}</td>
+                <td class="text-end">{{ year_stats.individual | format_amount(target=target) }}</td>
+                <td class="text-end">{{ year_stats.collective | format_amount }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if "En cours" in details %}
+          <div class="my-3 small">
+            Note : Le CA « En cours » correspond aux réservations qui n'ont pas encore été validées.
+            Ce chiffre d'affaires en cours n'est pas certain (annulations possibles), chaque réservation
+            sera comptabilisée sur l'année du jour de sa validation.
+          </div>
+        {% endif %}
       {% endif %}
-    {% endif %}
-    <div class="my-3 small">
-      Le chiffre d'affaires est mis à jour chaque nuit, les nouvelles réservations et les changements d'état
-      du jour ne sont pas encore pris en compte dans ce tableau.
+      <div class="my-3 small">
+        Le chiffre d'affaires est mis à jour chaque nuit, les nouvelles réservations et les changements d'état
+        du jour ne sont pas encore pris en compte dans ce tableau.
+      </div>
     </div>
   </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-outline-primary-subtle-bg"
+            data-bs-dismiss="modal">Fermer</button>
+  </div>
 </div>
-<div class="modal-footer">
-  <button type="button"
-          class="btn btn-outline-primary-subtle-bg"
-          data-bs-dismiss="modal">Fermer</button>
-</div>
-</turbo>
