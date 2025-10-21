@@ -1,0 +1,131 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_outline.scss" as outline;
+
+.banner {
+  width: fit-content;
+  padding: var(--size-spacing-l);
+  border-radius: var(--size-border-radius-m);
+  background: var(--color-background-info);
+  color: var(--color-text-brand-primary);
+}
+
+.success {
+  background: var(--color-background-success);
+  border-color: var(--color-border-success);
+  color: var(--color-icon-success);
+}
+
+.warning {
+  background: var(--color-background-warning);
+  border-color: var(--color-border-warning);
+  color: var(--color-icon-warning);
+}
+
+.error {
+  background: var(--color-background-error);
+  border-color: var(--color-border-error);
+  color: var(--color-icon-error);
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header {
+  width: fit-content;
+  margin-bottom: var(--size-spacing-xs);
+}
+
+.info {
+  flex-shrink: 0;
+  height: rem.torem(24px);
+}
+
+.title {
+  @include fonts.body-accent-s;
+
+  color: var(--color-text-default);
+  width: 100%;
+  margin-bottom: var(--size-spacing-xs);
+
+  &-large {
+    @include fonts.body-accent;
+  }
+}
+
+.content {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  gap: var(--size-spacing-l);
+}
+
+.content-body {
+  @include fonts.body-s;
+
+  display: flex;
+  flex-direction: column;
+  color: var(--color-text-default);
+
+  &-large {
+    @include fonts.body;
+  }
+}
+
+.links-list {
+  margin-top: var(--size-spacing-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-s);
+}
+
+.link {
+  @include fonts.body-accent-xs;
+
+  display: flex;
+  align-items: center;
+
+  svg {
+    height: rem.torem(16px);
+    width: rem.torem(16px);
+  }
+
+  &-large {
+    @include fonts.button;
+
+    svg {
+      height: rem.torem(20px);
+      width: rem.torem(20px);
+    }
+  }
+}
+
+.close-button {
+  height: fit-content;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+
+  &:focus-within {
+    @include outline.focus-outline(rem.torem(4px));
+
+    border-radius: var(--size-border-radius-s);
+  }
+
+  svg {
+    width: rem.torem(24px);
+    height: rem.torem(24px);
+  }
+}
+
+.image {
+  max-width: 30%;
+  border-radius: var(--size-border-radius-m);
+  aspect-ratio: 208/315;
+  object-fit: cover;
+}
