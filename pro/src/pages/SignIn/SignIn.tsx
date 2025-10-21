@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Navigate, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
@@ -37,7 +37,6 @@ interface SigninApiErrorResponse {
 export const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [shouldRedirect, setshouldRedirect] = useState(false)
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useAppDispatch()
 
@@ -68,14 +67,10 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
-      const result = await dispatch(initializeUser(user)).unwrap()
-
-      if (result.success) {
-        setshouldRedirect(true)
-      }
+      await dispatch(initializeUser(user)).unwrap()
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        dispatch(logout())
+        await dispatch(logout()).unwrap()
 
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
@@ -125,9 +120,7 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  return shouldRedirect ? (
-    <Navigate to="/" replace />
-  ) : (
+  return (
     <SignUpLayout mainHeading="Connectez-vous">
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>

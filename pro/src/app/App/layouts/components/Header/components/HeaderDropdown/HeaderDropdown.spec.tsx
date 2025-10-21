@@ -6,13 +6,14 @@ import { api } from '@/apiClient/api'
 import type {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
+  makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
-import { hardRefresh } from '@/commons/utils/hardRefresh'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -25,14 +26,15 @@ const baseOfferers: GetOffererResponseModel[] = [
   {
     ...defaultGetOffererResponseModel,
     id: 1,
-    name: 'B Structure',
+    name: 'Offerer A',
     isActive: true,
     hasDigitalVenueAtLeastOneOffer: true,
     managedVenues: [
       {
         ...defaultGetOffererVenueResponseModel,
-        id: 1,
+        id: 3,
         isVirtual: true,
+        name: 'Digital Venue A1',
       },
     ],
     hasValidBankAccount: false,
@@ -40,9 +42,21 @@ const baseOfferers: GetOffererResponseModel[] = [
   {
     ...defaultGetOffererResponseModel,
     id: 2,
-    name: 'A Structure',
+    name: 'Offerer B',
     hasValidBankAccount: true,
   },
+]
+const baseVenues: VenueListItemResponseModel[] = [
+  makeVenueListItem({
+    id: 3,
+    managingOffererId: 1,
+    name: 'Digital Venue A1',
+  }),
+  makeVenueListItem({
+    id: 4,
+    managingOffererId: 2,
+    name: 'Digital Venue B1',
+  }),
 ]
 
 const baseOfferersNames = baseOfferers.map(
@@ -62,6 +76,10 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
         offerer: currentOffererFactory({
           offererNames: baseOfferersNames,
         }),
+        user: {
+          ...options?.storeOverrides?.user,
+          venues: baseVenues,
+        },
       },
     }
   }
@@ -78,8 +96,8 @@ describe('App', () => {
     const offererList = screen.getByTestId('offerers-selection-menu')
     const offerers = within(offererList).getAllByRole('menuitemradio')
 
-    expect(offerers[0].textContent).toEqual('A Structure')
-    expect(offerers[1].textContent).toEqual('B Structure')
+    expect(offerers[0].textContent).toEqual('Offerer A')
+    expect(offerers[1].textContent).toEqual('Offerer B')
   })
 
   describe('Switch Offerer', () => {
@@ -88,10 +106,6 @@ describe('App', () => {
         api: {
           getOfferer: vi.fn(),
         },
-      }))
-
-      vi.mock('@/commons/utils/hardRefresh', () => ({
-        hardRefresh: vi.fn(),
       }))
 
       vi.spyOn(api, 'getOfferer').mockResolvedValue(
@@ -131,9 +145,6 @@ describe('App', () => {
 
       // Clic on one structure
       await userEvent.click(offerers[0])
-
-      // Verify that hardRefresh has been called once
-      expect(hardRefresh).toHaveBeenCalledOnce()
 
       // Stored search filters should be reset, while filters
       // visibility must be remembered.

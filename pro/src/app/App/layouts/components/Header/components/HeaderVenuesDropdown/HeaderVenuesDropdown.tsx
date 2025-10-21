@@ -1,3 +1,6 @@
+/* istanbul ignore file */
+// because this is only a temporary component that will be replaced by a definitive UI before `WIP_SWITCH_VENUE` is enabled in production. */
+
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 

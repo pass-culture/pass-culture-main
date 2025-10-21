@@ -80,9 +80,9 @@ export const initializeUser = createAsyncThunk<
 
     const firstOffererId = offerers.offerersNames.at(0)?.id
     const firstVenueId = firstOffererId
-      ? venuesResponse.venues
-          .filter((venue) => venue.managingOffererId === firstOffererId)
-          .at(0)?.id
+      ? venuesResponse.venues.find(
+          (venue) => venue.managingOffererId === firstOffererId
+        )?.id
       : undefined
 
     if (firstOffererId && firstVenueId) {
@@ -116,7 +116,6 @@ export const initializeUser = createAsyncThunk<
 
     dispatch(updateUser(user))
   } catch (_err: unknown) {
-    // In case of error, cancel all state modifications
-    dispatch(logout())
+    await dispatch(logout()).unwrap()
   }
 })

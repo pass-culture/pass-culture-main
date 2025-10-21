@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 // TODO (igabriele, 2025-10-16): Delete this file once `WIP_SWITCH_VENUE` is enabled in production (that's why `setCurrentOffererById` is not DRYed with `setSelectedVenueById`).
 
 import { createAsyncThunk } from '@reduxjs/toolkit'
