@@ -95,7 +95,7 @@ class BoostStocksTest:
 
         return boost_stocks
 
-    # Not tested with `BoostETLProcess` because it is specific to the Iterator implemntation
+    # Not tested with `BoostETLProcess` because it is specific to the Iterator implementation
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -136,7 +136,7 @@ class BoostStocksTest:
 
     @time_machine.travel(datetime.datetime(2023, 8, 11), tick=False)
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
-    def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(
+    def should_fill_offer_and_stock_information_for_each_movie_based_on_product(
         self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
     ):
         self._create_products()

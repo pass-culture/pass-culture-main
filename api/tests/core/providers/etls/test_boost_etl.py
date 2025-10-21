@@ -50,6 +50,19 @@ class BoostExtractTransformLoadProcessTest:
 
         return venue_provider
 
+    def setup_requests_mock(self, requests_mock) -> None:
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+        )
+
     def test_execute_should_raise_inactive_provider(self):
         venue_provider = self.setup_cinema_objects()
         venue_provider.provider.isActive = False
@@ -91,17 +104,7 @@ class BoostExtractTransformLoadProcessTest:
 
     def test_extract_should_return_raw_results(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
@@ -245,17 +248,7 @@ class BoostExtractTransformLoadProcessTest:
     def test_transform_should_return_loadable_result(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
@@ -373,17 +366,7 @@ class BoostExtractTransformLoadProcessTest:
     def test_load_should_create_product_offer_and_stocks(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
@@ -490,17 +473,7 @@ class BoostExtractTransformLoadProcessTest:
         )
         bookings_factories.BookingFactory(stock=stock_1)
 
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
@@ -549,17 +522,7 @@ class BoostExtractTransformLoadProcessTest:
     def test_execute_should_create_and_index_offer(self, async_index_offer_ids_mock, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         file_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -651,3 +614,25 @@ class BoostExtractTransformLoadProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+
+        get_cinema_attr_adapter = requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+
+        BoostExtractTransformLoadProcess(venue_provider).execute()
+        BoostExtractTransformLoadProcess(venue_provider).execute()
+
+        created_price_category = db.session.query(offers_models.PriceCategory).one()
+        assert created_price_category.price == decimal.Decimal("6.9")
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
+
+        assert get_cinema_attr_adapter.call_count == 2

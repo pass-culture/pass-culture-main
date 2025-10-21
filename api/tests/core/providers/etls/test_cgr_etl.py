@@ -263,3 +263,20 @@ class CGRExtractTransformLoadProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+        requests_mock.get("https://example.com/149341.jpg", content=bytes())
+
+        venue_provider = self.setup_cinema_objects()
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service",
+            text=cgr_fixtures.cgr_response_template([cgr_fixtures.FILM_138473]),
+        )
+
+        CGRExtractTransformLoadProcess(venue_provider).execute()
+        CGRExtractTransformLoadProcess(venue_provider).execute()
+
+        created_price_category = db.session.query(offers_models.PriceCategory).one()
+        assert created_price_category.price == decimal.Decimal("6.9")
