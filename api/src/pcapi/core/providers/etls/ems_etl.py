@@ -10,11 +10,11 @@ from pcapi.core.providers import repository
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 
-from .base_etl import BaseETLProcess
-from .base_etl import ETLStopProcessException
-from .base_etl import LoadableMovie
-from .base_etl import ShowFeatures
-from .base_etl import ShowStockData
+from .cinema_etl_template import CinemaETLProcessTemplate
+from .cinema_etl_template import ETLStopProcessException
+from .cinema_etl_template import LoadableMovie
+from .cinema_etl_template import ShowFeatures
+from .cinema_etl_template import ShowStockData
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class EMSExtractResult(typing.TypedDict):
     version: int
 
 
-class EMSExtractTransformLoadProcess(BaseETLProcess[EMSScheduleConnector, EMSExtractResult]):
+class EMSExtractTransformLoadProcess(CinemaETLProcessTemplate[EMSScheduleConnector, EMSExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `EMS`.

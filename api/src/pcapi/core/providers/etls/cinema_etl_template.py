@@ -56,20 +56,79 @@ class ETLStopProcessException(ETLProcessException):
     pass
 
 
-class BaseETLProcess[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector, ExtractResult]:
+class CinemaETLProcessTemplate[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector, ExtractResult]:
     def __init__(self, venue_provider: models.VenueProvider, api_client: APIClient):
         self.venue_provider = venue_provider
         self.api_client = api_client
 
+    def execute(self) -> None:
+        """
+        Check provider & venue_provider are active, then execute the etl process (extract, transform, load)
+
+        :raise: `InactiveProvider`, `InactiveVenueProvider`
+        """
+        # Check provider and venue_provider are active
+        if not self.venue_provider.provider.isActive:
+            self._log(logging.WARNING, "Init - Provider inactive")
+            raise exceptions.InactiveProvider()
+        if not self.venue_provider.isActive:
+            self._log(logging.WARNING, "Init - VenueProvider inactive")
+            raise exceptions.InactiveVenueProvider()
+
+        self._log(logging.INFO, "Starting ETL process")
+
+        # Step 1 : Extract (API calls)
+        try:
+            result = self._extract()
+        except ETLStopProcessException as exc:
+            self._log(logging.WARNING, "Step 1 - Stop", {"reason": str(exc)})
+            return
+        except Exception as exc:
+            self._log(logging.WARNING, "Step 1 - Extract failed", {"exc": exc.__class__.__name__, "msg": str(exc)})
+            raise
+
+        self._log(logging.DEBUG, "Step 1 - Extract done", self._extract_result_to_log_dict(result))
+
+        # Step 2 : Transform
+        loadable_movies = self._transform(result)
+
+        self._log(logging.DEBUG, " Step 2 - Transform done", loadable_movies)
+
+        # Step 3 : Load
+        try:
+            offers_ids, products_with_poster = self._load(loadable_movies)
+        except Exception as exc:
+            self._log(logging.WARNING, "Step 3 - Load failed", {"exc": exc.__class__.__name__, "msg": str(exc)})
+            raise
+
+        self._log(logging.DEBUG, " Step 3 - Load done", loadable_movies)
+
+        # Step 4 : Post Load actions
+        search.async_index_offer_ids(
+            offers_ids,
+            reason=search_models.IndexationReason.STOCK_UPDATE,
+            log_extra={
+                "source": "provider_api",
+                "venue_id": self.venue_provider.venueId,
+                "provider_id": self.venue_provider.providerId,
+            },
+        )
+        self._post_load_product_poster_update(products_with_poster)
+        self._post_load_provider_specific_hook(extract_result=result)
+
+        self._log(logging.INFO, "ETL process ended successfully")
+
     def _extract(self) -> ExtractResult:
-        """
-        Step 1: Fetch data from provider API
-        """
+        """Step 1: Fetch data from provider API (to be implemented in inheriting class)"""
+        raise NotImplementedError()
+
+    def _extract_result_to_log_dict(self, extract_result: ExtractResult) -> dict:
+        """Helper method to easily log result from extract step (to be implemented in inheriting class)"""
         raise NotImplementedError()
 
     def _transform(self, extract_result: ExtractResult) -> list[LoadableMovie]:
         """
-        Step 2: Transform data
+        Step 2: Transform data (to be implemented in inheriting class)
 
         Make data easily loadable by :
             - grouping shows by movie
@@ -254,67 +313,11 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector
                 except (offers_exceptions.ImageValidationError, PIL.UnidentifiedImageError) as e:
                     self._log(logging.WARNING, "Post load - Failed to create movie poster", {"reason": str(e)})
 
-    def _extract_result_to_log_dict(self, extract_result: ExtractResult) -> dict:
-        raise NotImplementedError()
-
-    def execute(self) -> None:
-        """
-        Check provider & venue_provider are active, then execute the etl process (extract, transform, load)
-
-        :raise: `InactiveProvider`, `InactiveVenueProvider`
-        """
-        # Check provider and venue_provider are active
-        if not self.venue_provider.provider.isActive:
-            self._log(logging.WARNING, "Init - Provider inactive")
-            raise exceptions.InactiveProvider()
-        if not self.venue_provider.isActive:
-            self._log(logging.WARNING, "Init - VenueProvider inactive")
-            raise exceptions.InactiveVenueProvider()
-
-        # Step 1 : Extract (API calls)
-        try:
-            result = self._extract()
-        except ETLStopProcessException as exc:
-            self._log(logging.WARNING, "Step 1 - Stop", {"reason": str(exc)})
-            return
-        except Exception as exc:
-            self._log(logging.WARNING, "Step 1 - Extract failed", {"exc": exc.__class__.__name__})
-            raise
-
-        self._log(logging.DEBUG, "Step 1 - Extract done", self._extract_result_to_log_dict(result))
-
-        # Step 2 : Transform
-        loadable_movies = self._transform(result)
-
-        self._log(logging.DEBUG, " Step 2 - Transform done", loadable_movies)
-
-        # Step 3 : Load
-        try:
-            offers_ids, products_with_poster = self._load(loadable_movies)
-        except Exception as exc:
-            self._log(logging.WARNING, "Step 3 - Load failed", {"exc": exc.__class__.__name__})
-            raise
-
-        self._log(logging.DEBUG, " Step 3 - Load done", loadable_movies)
-
-        # Step 4 : Post Load actions
-        search.async_index_offer_ids(
-            offers_ids,
-            reason=search_models.IndexationReason.STOCK_UPDATE,
-            log_extra={
-                "source": "provider_api",
-                "venue_id": self.venue_provider.venueId,
-                "provider_id": self.venue_provider.providerId,
-            },
-        )
-        self._post_load_product_poster_update(products_with_poster)
-        self._post_load_provider_specific_hook(extract_result=result)
-
     def _log(self, level: int, message: str, data: dict | list | None = None) -> None:
         """
         Prefix log message with class name & enrich extra dict with `venue_provider` information
 
-        :level: level defined in logging package, either `logging.WARNING` or `logging.DEBUG`
+        :level: level defined in logging package, either `logging.INFO`, `logging.WARNING` or `logging.DEBUG`
         :data: dict to be added in extra dict under the "data" key
         """
         log_message = "[%s] %s" % (self.__class__.__name__, message)
@@ -331,10 +334,12 @@ class BaseETLProcess[APIClient: ExternalBookingsClientAPI | EMSScheduleConnector
             logger.warning(log_message, extra=extra)
         elif level == logging.DEBUG:
             logger.debug(log_message, extra=extra)
+        elif level == logging.INFO:
+            logger.info(log_message, extra=extra)
 
     def _post_load_provider_specific_hook(self, extract_result: ExtractResult) -> None:
         """
-        Method called at the of the execute method where each implementation
-        can implement custom logic.
+        Method called at the end of the execute method.
+        Each implementation can add custom logic here.
         """
         return

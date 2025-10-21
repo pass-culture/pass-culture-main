@@ -21,7 +21,7 @@ from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.etls.cds_etl import CineDigitalServiceETLProcess
+from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 
@@ -74,9 +74,9 @@ class CDSStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[CineDigitalServiceETLProcess] | Type[CDSStocks],
+        ProcessClass: Type[CDSExtractTransformLoadProcess] | Type[CDSStocks],
         venue_provider,
-    ) -> CineDigitalServiceETLProcess | CDSStocks:
+    ) -> CDSExtractTransformLoadProcess | CDSStocks:
         boost_stocks = ProcessClass(venue_provider=venue_provider)
         if isinstance(boost_stocks, CDSStocks):
             boost_stocks.updateObjects()
@@ -192,7 +192,7 @@ class CDSStocksTest:
         assert db.session.query(Offer).count() == 2
 
     @time_machine.travel(datetime(2022, 3, 19), tick=False)
-    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CDSExtractTransformLoadProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     def should_fill_offer_and_stock_informations_for_each_movie(
         self, mock_get_venue_movies, ProcessClass, requests_mock
@@ -287,7 +287,7 @@ class CDSStocksTest:
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
-    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CDSExtractTransformLoadProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(
         self, mock_get_venue_movies, ProcessClass, requests_mock
@@ -372,7 +372,7 @@ class CDSStocksTest:
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
-    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CDSExtractTransformLoadProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     def test_synchronization_shouldnt_build_idatproviders_using_showtime(
         self, mock_get_venue_movies, ProcessClass, requests_mock
@@ -419,7 +419,7 @@ class CDSStocksTest:
         assert get_cinemas_adapter.call_count == 1
         assert get_voucher_types_adapter.call_count == 1
 
-    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CDSExtractTransformLoadProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     def test_synchronization_shouldnt_not_fail_if_api_returns_no_show(
         self, mock_get_venue_movies, ProcessClass, requests_mock
@@ -441,7 +441,7 @@ class CDSStocksTest:
 
         self.execute_import(ProcessClass, venue_provider)
 
-    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CineDigitalServiceETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CDSStocks, CDSExtractTransformLoadProcess])
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     def test_synchronization_do_not_duplicate_stocks_when_beginning_datetime_changed(
         self, mock_get_venue_movies, ProcessClass, requests_mock

@@ -405,8 +405,8 @@ class EMSStocksTest:
         if ProcessClass == EMSStocks:
             synchronize_ems_venue_providers(from_last_version=True)
         else:
-            ProcessClass(ormeaux_venue_provider).execute()
-            ProcessClass(ems_cine_venue_provider).execute()
+            ProcessClass(ormeaux_venue_provider, from_last_version=True).execute()
+            ProcessClass(ems_cine_venue_provider, from_last_version=True).execute()
 
         # Nothing should change for this VenueProvider, except for the sync version, as there is no additional data to handle for it
         seyne_sur_mer_expected_version = 172800
