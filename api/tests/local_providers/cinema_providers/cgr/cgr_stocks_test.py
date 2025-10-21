@@ -14,7 +14,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
 from pcapi.core.providers import factories as providers_factories
-from pcapi.core.providers.etls.cgr_etl import CircuitGeorgesRaymondETLProcess
+from pcapi.core.providers.etls.cgr_etl import CGRExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import CGRStocks
 from pcapi.models import db
@@ -43,9 +43,9 @@ class CGRStocksTest:
 
     def execute_import(
         self,
-        ProcessClass: Type[CircuitGeorgesRaymondETLProcess] | Type[CGRStocks],
+        ProcessClass: Type[CGRExtractTransformLoadProcess] | Type[CGRStocks],
         venue_provider,
-    ) -> CircuitGeorgesRaymondETLProcess | CGRStocks:
+    ) -> CGRExtractTransformLoadProcess | CGRStocks:
         boost_stocks = ProcessClass(venue_provider=venue_provider)
         if isinstance(boost_stocks, CGRStocks):
             boost_stocks.updateObjects()
@@ -154,9 +154,9 @@ class CGRStocksTest:
             },
         }
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(
-        self, ProcessClass: Type[CircuitGeorgesRaymondETLProcess] | Type[CGRStocks], requests_mock
+        self, ProcessClass: Type[CGRExtractTransformLoadProcess] | Type[CGRStocks], requests_mock
     ):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())
@@ -206,7 +206,7 @@ class CGRStocksTest:
         assert created_offers[1]._extraData == {}
 
     @time_machine.travel(datetime.datetime(2022, 12, 30), tick=False)
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_fill_offer_and_stock_information_for_each_movie_based_on_product(self, ProcessClass, requests_mock):
         self._create_products()
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
@@ -320,7 +320,7 @@ class CGRStocksTest:
         assert created_stock.priceCategory.price == Decimal("4.0")
         assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_fill_stocks_and_price_categories_for_a_movie_based_on_product(self, ProcessClass, requests_mock):
         self._create_products()
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
@@ -395,7 +395,7 @@ class CGRStocksTest:
         assert created_price_categories[2].priceCategoryLabel == created_price_category_labels[2]
         assert created_price_category_labels[2].label == "Tarif Standard"
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_reuse_price_category(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
@@ -419,7 +419,7 @@ class CGRStocksTest:
         created_price_category = db.session.query(offers_models.PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_update_stock_with_the_correct_stock_quantity(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
@@ -460,7 +460,7 @@ class CGRStocksTest:
         assert created_stocks[0].quantity == 2
         assert created_stocks[0].dnBookedQuantity == 2
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def test_dont_update_stock_if_quantity_is_inconsistent(self, ProcessClass, requests_mock):
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
@@ -492,7 +492,7 @@ class CGRStocksTest:
         # If the stock is sold out, it will be set accordingly the next time a beneficiary try to book it.
         assert existing_synced_stock.quantity == quantity_before_sync
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
@@ -537,7 +537,7 @@ class CGRStocksTest:
         stock = db.session.query(offers_models.Stock).one()
         mock_update_finance_event.assert_called_with(stock)
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def test_should_create_product_mediation(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
@@ -566,7 +566,7 @@ class CGRStocksTest:
         if isinstance(cgr_stocks, CGRStocks):
             assert cgr_stocks.createdThumbs == 1
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def test_should_not_create_product_mediation(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
@@ -598,7 +598,7 @@ class CGRStocksTest:
         if isinstance(cgr_stocks, CGRStocks):
             assert cgr_stocks.createdThumbs == 0
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_create_product_even_if_thumb_is_incorrect(self, ProcessClass, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
@@ -655,7 +655,7 @@ class CGRStocksTest:
 
         assert get_poster_adapter.call_count == 1
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     @pytest.mark.parametrize(
         "get_adapter_error_params",
         [
@@ -696,7 +696,7 @@ class CGRStocksTest:
         assert last_record.message == "Could not fetch movie poster"
         assert last_record.extra == {"client": "CGRClientAPI", "url": "https://example.com/149341.jpg"}
 
-    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CircuitGeorgesRaymondETLProcess])
+    @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_link_offer_with_known_visa_to_product(self, ProcessClass, requests_mock):
         requests_mock.get("https://example.com/149341.jpg", content=bytes())
         requests_mock.get("https://example.com/82382.jpg", content=bytes())

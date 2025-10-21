@@ -7,10 +7,10 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.providers import models
 
-from .base_etl import BaseETLProcess
-from .base_etl import LoadableMovie
-from .base_etl import ShowFeatures
-from .base_etl import ShowStockData
+from .cinema_etl_template import CinemaETLProcessTemplate
+from .cinema_etl_template import LoadableMovie
+from .cinema_etl_template import ShowFeatures
+from .cinema_etl_template import ShowStockData
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class BoostExtractResult(typing.TypedDict):
     showtimes: list[boost_serializers.ShowTime4]
 
 
-class BoostETLProcess(BaseETLProcess[BoostClientAPI, BoostExtractResult]):
+class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostClientAPI, BoostExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `Boost`.

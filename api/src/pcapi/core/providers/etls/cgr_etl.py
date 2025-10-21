@@ -9,10 +9,10 @@ from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.providers import models
 from pcapi.utils import date as date_utils
 
-from .base_etl import BaseETLProcess
-from .base_etl import LoadableMovie
-from .base_etl import ShowFeatures
-from .base_etl import ShowStockData
+from .cinema_etl_template import CinemaETLProcessTemplate
+from .cinema_etl_template import LoadableMovie
+from .cinema_etl_template import ShowFeatures
+from .cinema_etl_template import ShowStockData
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class CGRExtractResult(typing.TypedDict):
     films: list[cgr_serializers.Film]
 
 
-class CircuitGeorgesRaymondETLProcess(BaseETLProcess[CGRClientAPI, CGRExtractResult]):
+class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRClientAPI, CGRExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CGR`.

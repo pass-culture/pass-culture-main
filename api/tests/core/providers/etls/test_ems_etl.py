@@ -68,7 +68,7 @@ class EMSExtractTransformLoadProcessTest:
 
     def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
         venue_provider = self.setup_cinema_objects()
-        requests_mock.get("https://fake_url.com?version=0", exc=requests.exceptions.ConnectTimeout)
+        requests_mock.get("https://fake_url.com?version=0", exc=requests.exceptions.ConnectTimeout("so slow"))
 
         etl_process = EMSExtractTransformLoadProcess(venue_provider)
 
@@ -84,7 +84,7 @@ class EMSExtractTransformLoadProcessTest:
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "data": {"exc": "ConnectTimeout"},
+            "data": {"exc": "ConnectTimeout", "msg": "so slow"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):

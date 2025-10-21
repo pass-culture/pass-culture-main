@@ -14,7 +14,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
-from pcapi.core.providers.etls.cgr_etl import CircuitGeorgesRaymondETLProcess
+from pcapi.core.providers.etls.cgr_etl import CGRExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -34,7 +34,7 @@ FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constan
 )
 
 
-class CircuitGeorgesRaymondETLProcessTest:
+class CGRExtractTransformLoadProcessTest:
     def setup_cinema_objects(self):
         cgr_provider = get_provider_by_local_class("CGRStocks")
         venue_provider = providers_factories.VenueProviderFactory(
@@ -65,7 +65,7 @@ class CircuitGeorgesRaymondETLProcessTest:
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
         venue_provider.provider.isActive = False
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveProvider):
             etl_process.execute()
@@ -74,7 +74,7 @@ class CircuitGeorgesRaymondETLProcessTest:
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
         venue_provider.isActive = False
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveVenueProvider):
             etl_process.execute()
@@ -84,9 +84,9 @@ class CircuitGeorgesRaymondETLProcessTest:
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "https://cgr-cinema-0.example.com/web_service",
-            exc=requests.exceptions.ConnectTimeout,
+            exc=requests.exceptions.ConnectTimeout("houpsi"),
         )
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         with caplog.at_level(logging.WARNING):
             with pytest.raises(requests.exceptions.ConnectTimeout):
@@ -94,20 +94,20 @@ class CircuitGeorgesRaymondETLProcessTest:
 
         assert len(caplog.records) >= 1
         last_record = caplog.records[-1]
-        assert last_record.message == "[CircuitGeorgesRaymondETLProcess] Step 1 - Extract failed"
+        assert last_record.message == "[CGRExtractTransformLoadProcess] Step 1 - Extract failed"
         assert last_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "data": {"exc": "ConnectTimeout"},
+            "data": {"exc": "ConnectTimeout", "msg": "houpsi"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         assert extract_result == {
@@ -146,7 +146,7 @@ class CircuitGeorgesRaymondETLProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result=extract_result)
@@ -183,7 +183,7 @@ class CircuitGeorgesRaymondETLProcessTest:
         film_without_show["Seances"] = []
         self.setup_requests_mock(requests_mock, film_payload=[film_without_show])
 
-        etl_process = CircuitGeorgesRaymondETLProcess(venue_provider)
+        etl_process = CGRExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         with caplog.at_level(logging.WARNING):
@@ -193,7 +193,7 @@ class CircuitGeorgesRaymondETLProcessTest:
         assert len(caplog.records) >= 1
         movie_without_show_record = caplog.records[-1]
         assert (
-            movie_without_show_record.message == "[CircuitGeorgesRaymondETLProcess] Step 2 - Movie does not have shows"
+            movie_without_show_record.message == "[CGRExtractTransformLoadProcess] Step 2 - Movie does not have shows"
         )
         assert movie_without_show_record.extra == {
             "venue_id": venue_provider.venueId,
@@ -220,7 +220,7 @@ class CircuitGeorgesRaymondETLProcessTest:
             poster_venom = thumb_file.read()
         requests_mock.get("https://example.com/149341.jpg", content=poster_venom)
 
-        CircuitGeorgesRaymondETLProcess(venue_provider).execute()
+        CGRExtractTransformLoadProcess(venue_provider).execute()
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"138473%{venue_id}%CGR").one_or_none()
 

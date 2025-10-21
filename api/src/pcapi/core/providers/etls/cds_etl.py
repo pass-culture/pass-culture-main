@@ -9,10 +9,10 @@ from pcapi.core.providers import models
 from pcapi.core.providers import repository
 from pcapi.utils import date as date_utils
 
-from .base_etl import BaseETLProcess
-from .base_etl import LoadableMovie
-from .base_etl import ShowFeatures
-from .base_etl import ShowStockData
+from .cinema_etl_template import CinemaETLProcessTemplate
+from .cinema_etl_template import LoadableMovie
+from .cinema_etl_template import ShowFeatures
+from .cinema_etl_template import ShowStockData
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class CineDigitalServiceExtractResult(typing.TypedDict):
     is_internet_sale_gauge_active: bool
 
 
-class CineDigitalServiceETLProcess(BaseETLProcess[CineDigitalServiceAPI, CineDigitalServiceExtractResult]):
+class CDSExtractTransformLoadProcess(CinemaETLProcessTemplate[CineDigitalServiceAPI, CineDigitalServiceExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CDS`.
