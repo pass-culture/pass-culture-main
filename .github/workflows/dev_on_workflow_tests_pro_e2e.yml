@@ -22,9 +22,6 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
-env:
-  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
-
 defaults:
   run:
     working-directory: pro
@@ -177,8 +174,8 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
-          echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-          echo "::notice:: Running e2e-tests with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
+          echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running e2e-tests with ${{ inputs.image }}:${{ inputs.tag }}"
 
       - name: "Run postgres and redis server"
         run: docker-compose -f ../docker-compose-backend.yml up postgres redis -d
