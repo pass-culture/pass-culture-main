@@ -36,7 +36,7 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 @public_api.route("/webhooks/ubble/dummy", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
-    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,
 )
 def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serializers.WebhookDummyReponse:
     return ubble_serializers.WebhookDummyReponse()
@@ -46,7 +46,7 @@ def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serial
 @ubble_validation.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
-    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,
 )
 def ubble_v2_webhook_update_application_status(
     body: ubble_serializers.WebhookBodyV2,
@@ -93,7 +93,7 @@ def ubble_v2_webhook_update_application_status(
 @spectree_serialize(
     headers=ubble_serializers.WebhookRequestHeaders,  # type: ignore[arg-type]
     on_success_status=200,
-    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,
 )
 def ubble_webhook_update_application_status(
     body: ubble_serializers.WebhookRequest,
@@ -127,7 +127,7 @@ def ubble_webhook_update_application_status(
 @public_api.route("/webhooks/ubble/store_id_pictures", methods=["POST"])
 @spectree_serialize(
     on_success_status=200,
-    response_model=ubble_serializers.WebhookDummyReponse,  # type: ignore[arg-type]
+    response_model=ubble_serializers.WebhookDummyReponse,
 )
 def ubble_webhook_store_id_pictures(
     body: ubble_serializers.WebhookStoreIdPicturesRequest,

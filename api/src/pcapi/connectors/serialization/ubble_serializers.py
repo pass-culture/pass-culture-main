@@ -9,6 +9,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
+from pcapi.routes.serialization import BaseModel
 
 
 logger = logging.getLogger(__name__)
@@ -163,7 +164,7 @@ class WebhookBodyV2(pydantic_v1.BaseModel):
 # Ubble only consider HTTP status 200 and 201 as success
 # but we are not able to respond with empty body unless we return a 204 HTTP status
 # so we need a dummy reponse_model to be used for the webhook response
-class WebhookDummyReponse(pydantic_v1.BaseModel):
+class WebhookDummyReponse(BaseModel):
     status: str = "ok"
 
 
