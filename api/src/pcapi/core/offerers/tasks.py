@@ -59,7 +59,7 @@ class CheckOffererSirenRequest(BaseModel):
     fill_in_codir_report: bool = False
 
 
-@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)  # type: ignore[arg-type]
+@task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)
 def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     if not siren_utils.is_valid_siren(payload.siren):
         logger.error("Invalid SIREN format in the database", extra={"siren": payload.siren})

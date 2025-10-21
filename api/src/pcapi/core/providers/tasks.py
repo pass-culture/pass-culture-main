@@ -19,7 +19,7 @@ class SynchronizeVenueProvidersRequest(BaseModel):
 
 
 @task(
-    settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME,  # type: ignore[arg-type]
+    settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME,
     "/providers/synchronize_venue_providers",
     task_request_timeout=30 * 60,
 )
