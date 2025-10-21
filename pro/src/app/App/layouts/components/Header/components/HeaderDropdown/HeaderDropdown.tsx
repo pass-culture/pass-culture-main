@@ -5,7 +5,6 @@ import { useLocation } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -16,8 +15,6 @@ import {
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { hardRefresh } from '@/commons/utils/hardRefresh'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { sortByLabel } from '@/commons/utils/strings'
 import fulBackIcon from '@/icons/full-back.svg'
 import fullCloseIcon from '@/icons/full-close.svg'
@@ -40,7 +37,6 @@ import { resetAllStoredFilterConfig } from './utils/resetAllStoredFilterConfig'
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const dispatch = useAppDispatch()
   const currentOffererId = useAppSelector(selectCurrentOffererId)
@@ -78,17 +74,7 @@ export const HeaderDropdown = () => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
-    if (withSwitchVenueFeature) {
-      await dispatch(setCurrentOffererById({ nextCurrentOffererId })).unwrap()
-    } else {
-      // Updates offerer id in storage
-      if (storageAvailable('localStorage')) {
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, nextCurrentOffererId)
-      }
-
-      // Hard refresh to homepage after offerer change
-      hardRefresh('/accueil')
-    }
+    await dispatch(setCurrentOffererById({ nextCurrentOffererId })).unwrap()
   }
 
   useEffect(() => {
@@ -103,12 +89,12 @@ export const HeaderDropdown = () => {
     }
   }, [])
 
-  const logEventAndLogout = () => {
+  const logEventAndLogout = async () => {
     logEvent(Events.CLICKED_LOGOUT, {
       from: pathname,
     })
 
-    dispatch(logout())
+    await dispatch(logout()).unwrap()
   }
 
   return (

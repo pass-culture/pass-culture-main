@@ -29,7 +29,7 @@ const EmailChangeValidation = (): JSX.Element => {
       try {
         await api.patchValidateEmail({ token: token })
         setIsSuccess(true)
-        dispatch(logout())
+        await dispatch(logout()).unwrap()
       } catch {
         setIsSuccess(false)
       }

@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import type { RootState } from '@/commons/store/store'
 
 export const selectOffererNames = (state: RootState) =>

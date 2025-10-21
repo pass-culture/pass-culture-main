@@ -11,7 +11,7 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { updateCurrentOfferer } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import { setSelectedVenue, updateUserAccess } from '../reducer'
-import { ensureSelectedVenue, ensureVenues } from '../selectors'
+import { ensureVenues } from '../selectors'
 
 // TODO (igabriele, 2025-10-16): DRY that with `initializeUser`.
 export const setSelectedVenueById = createAsyncThunk<
@@ -23,8 +23,8 @@ export const setSelectedVenueById = createAsyncThunk<
   async (nextSelectedVenueId, { dispatch, getState }) => {
     try {
       const state = getState()
-      const previousSelectedVenue = ensureSelectedVenue(state)
-      if (Number(nextSelectedVenueId) === previousSelectedVenue.id) {
+      const previousSelectedVenue = state.user.selectedVenue
+      if (Number(nextSelectedVenueId) === previousSelectedVenue?.id) {
         return
       }
       const venues = ensureVenues(state)
