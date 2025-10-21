@@ -306,10 +306,20 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
 
-    chronicles = (
-        db.session.query(chronicles_models.Chronicle)
-        .filter(chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier)
-        .all()
+    products_subquery = (
+        sa.select(sa.func.array_agg(chronicles_models.ProductChronicle.productId))
+        .filter(
+            chronicles_models.ProductChronicle.chronicleId == chronicles_models.Chronicle.id,
+        )
+        .correlate(
+            chronicles_models.Chronicle,
+        )
+        .scalar_subquery()
+    )
+
+    chronicle_query = db.session.query(chronicles_models.Chronicle, products_subquery.label("products")).filter(
+        chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+        chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
     )
     match selected_chronicle.productIdentifierType:
         case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
@@ -341,9 +351,11 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         )
 
     for product in products:
-        for chronicle in chronicles:
-            chronicle.products.append(product)
-            db.session.add(product)
+        for chronicle, products_id in chronicle_query:
+            if not (products_id and product.id in products_id):
+                chronicle.products.append(product)
+
+    db.session.flush()
 
     if len(products) > 1:
         product_names = ", ".join(product.name for product in products)
@@ -360,7 +372,6 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
             ).format(product_name=products[0].name),
             "success",
         )
-    db.session.flush()
 
     return redirect(
         url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
