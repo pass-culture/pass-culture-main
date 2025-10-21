@@ -563,9 +563,7 @@ class AttachProductTest(PostEndpointHelper):
             ),
         ],
     )
-    def test_attach_product(
-        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
-    ):
+    def test_attach_product(self, product_identifier, product_identifier_type, club_type, authenticated_client):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
@@ -583,6 +581,7 @@ class AttachProductTest(PostEndpointHelper):
             client=authenticated_client,
             form={"product_identifier": product_identifier},
         )
+        assert response.status_code == 200
         db.session.refresh(chronicle)
 
         content_as_text = html_parser.content_as_text(response.data)
@@ -613,7 +612,7 @@ class AttachProductTest(PostEndpointHelper):
         ],
     )
     def test_attach_product_to_multiple_chronicles(
-        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
+        self, product_identifier, product_identifier_type, club_type, authenticated_client
     ):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
@@ -636,6 +635,7 @@ class AttachProductTest(PostEndpointHelper):
             client=authenticated_client,
             form={"product_identifier": product_identifier},
         )
+        assert response.status_code == 200
         db.session.refresh(untouched_chronicle)
         db.session.refresh(chronicles_to_update[0])
         db.session.refresh(chronicles_to_update[1])
@@ -669,9 +669,7 @@ class AttachProductTest(PostEndpointHelper):
             ),
         ],
     )
-    def test_product_not_found(
-        self, product_identifier, product_identifier_type, club_type, authenticated_client, legit_user
-    ):
+    def test_product_not_found(self, product_identifier, product_identifier_type, club_type, authenticated_client):
         chronicle = chronicles_factories.ChronicleFactory(
             productIdentifierType=product_identifier_type, clubType=club_type
         )
@@ -682,9 +680,44 @@ class AttachProductTest(PostEndpointHelper):
             client=authenticated_client,
             form={"product_identifier": product_identifier},
         )
+        assert response.status_code == 200
         db.session.refresh(chronicle)
 
         assert html_parser.extract_alerts(response.data) == ["Aucune œuvre n'a été trouvée pour cet identifiant"]
+
+    def test_some_already_attached(self, authenticated_client):
+        chronicle_ean = "9780201379602"
+        product = offers_factories.ProductFactory(ean=chronicle_ean)
+        product_to_attach = offers_factories.ProductFactory(ean="3210987654321")
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=chronicle_ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
+            products=[product, product_to_attach],
+        )
+        chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=chronicle_ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
+            products=[product],
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"product_identifier": product_to_attach.ean},
+        )
+        assert response.status_code == 200
+
+        db.session.refresh(chronicle)
+        db.session.refresh(old_chronicle)
+
+        assert set(chronicle.products) == {product, product_to_attach}
+        assert set(old_chronicle.products) == {product, product_to_attach}
+        assert html_parser.extract_alerts(response.data) == [
+            f"Le produit {product_to_attach.name} a été rattaché à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
 
 
 class DetachProductTest(PostEndpointHelper):
