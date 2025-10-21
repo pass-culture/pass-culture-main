@@ -102,9 +102,6 @@ jobs:
       ref: ${{ github.sha }}
       image: pcapi
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
@@ -115,12 +112,9 @@ jobs:
       ref: ${{ github.sha }}
       image: pcapi-console
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi:
-    name: "Push pcapi docker image to registry"
+    name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev
     needs: [build-pcapi, pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
@@ -129,12 +123,18 @@ jobs:
       commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
+      registry: europe-west1-docker.pkg.dev
+      project_id: passculture-infra-prod
+      repository: pass-culture-artifact-registry
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi-console:
-    name: "Push pcapi-console docker image to registry"
+    name: Push pcapi-console docker image to artifact registry europe-west1-docker.pkg.dev
     needs: [build-pcapi-console, pcapi-init-job]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
@@ -143,9 +143,15 @@ jobs:
       commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
+      registry: europe-west1-docker.pkg.dev
+      project_id: passculture-infra-prod
+      repository: pass-culture-artifact-registry
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
     secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-testing:
     name: "Deploy to testing"
