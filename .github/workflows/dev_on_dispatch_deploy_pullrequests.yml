@@ -119,7 +119,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [deploy-preview-env-init]
-    if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
+    if: inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.sha }}
@@ -132,7 +132,7 @@ jobs:
   push-pcapi:
     name: "Push pcapi docker image to registry"
     needs: [deploy-preview-env-init, build-pcapi]
-    if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
+    if: inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
