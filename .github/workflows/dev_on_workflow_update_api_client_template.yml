@@ -31,9 +31,6 @@ on:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
 
-env:
-  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
-
 jobs:
   update-api-client:
     name: "Update API Client template"
@@ -61,8 +58,8 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: compute-image-name
         run: |
-          echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.PCAPI_DOCKER_TAG }}" | tee -a ${GITHUB_OUTPUT}
-          echo "::notice:: Running update api client template with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.PCAPI_DOCKER_TAG }}"
+          echo "image_name=${{ inputs.image }}:${{ inputs.PCAPI_DOCKER_TAG }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running update api client template with ${{ inputs.image }}:${{ inputs.PCAPI_DOCKER_TAG }}"
       - name: "Download artifact"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         uses: actions/download-artifact@v5

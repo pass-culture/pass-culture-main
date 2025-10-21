@@ -16,9 +16,6 @@ on:
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
-env:
-  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
-
 defaults:
   run:
     working-directory: api
@@ -32,8 +29,8 @@ jobs:
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
-          echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-          echo "::notice:: Running tests api with ${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}"
+          echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+          echo "::notice:: Running tests api with ${{ inputs.image }}:${{ inputs.tag }}"
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v5
@@ -150,7 +147,7 @@ jobs:
           echo "post=$post" >> $GITHUB_OUTPUT
       - name: "Compute docker image name:tag"
         id: compute-image-name
-        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+        run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v5
@@ -356,7 +353,7 @@ jobs:
       - uses: actions/checkout@v5
       - name: "Compute docker image name:tag"
         id: compute-image-name
-        run: echo "image_name=${{ env.registry }}/${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
+        run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
         uses: actions/download-artifact@v5
