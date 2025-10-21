@@ -97,6 +97,7 @@
     "customRanking": [
         "desc(offer.rankingWeight)",
         "desc(offer.isEvent)",
+        "desc(offer.hasImage)",
         "desc(offer.thumbUrl)"
     ],
     "separatorsToIndex": "+",

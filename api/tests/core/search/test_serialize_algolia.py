@@ -96,6 +96,7 @@ def test_serialize_offer():
             "description": "livre bien lire",
             "ean": "2221001648999",
             "indexedAt": "2024-01-01T00:00:00",
+            "hasImage": False,
             "hasUrl": False,
             "isDuo": False,
             "isEducational": False,
@@ -191,6 +192,7 @@ def test_serialize_offer_legacy():
             "description": "livre bien lire",
             "ean": "2221001648999",
             "indexedAt": "2024-01-01T00:00:00",
+            "hasImage": False,
             "hasUrl": False,
             "isDuo": False,
             "isEducational": False,
@@ -340,6 +342,18 @@ def test_serialize_offer_thumb_url():
     offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
+
+
+def test_serialize_offer_has_image():
+    offer = offers_factories.MediationFactory().offer
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["hasImage"]
+
+
+def test_serialize_offer_not_has_image():
+    offer = offers_factories.OfferFactory()
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert not serialized["offer"]["hasImage"]
 
 
 def test_serialize_offer_gtl():

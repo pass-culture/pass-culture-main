@@ -261,6 +261,7 @@ class AlgoliaSerializationMixin:
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
+                "hasImage": offer.thumbUrl is not None,
                 "headlinesCount": headlines_count or None,
                 "indexedAt": date_utils.get_naive_utc_now().isoformat(),
                 "hasUrl": offer.hasUrl,
