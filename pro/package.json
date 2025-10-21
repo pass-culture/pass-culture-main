@@ -73,7 +73,7 @@
     "@cypress/grep": "5.0.0",
     "@hookform/devtools": "4.4.0",
     "@storybook/addon-a11y": "9.1.12",
-    "@storybook/addon-docs": "9.1.12",
+    "@storybook/addon-docs": "9.1.13",
     "@storybook/react-vite": "9.1.10",
     "@testing-library/cypress": "10.1.0",
     "@testing-library/jest-dom": "6.9.1",
