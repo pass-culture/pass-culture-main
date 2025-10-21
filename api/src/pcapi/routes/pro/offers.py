@@ -255,7 +255,14 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StockStatsResponseModel:
             status_code=404,
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
+    try:
+        stocks_stats = offers_api.get_stocks_stats(offer_id=offer_id)
+    except exceptions.OfferHasNoStock:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["L'offre en cours de création ne possède aucun Stock"],
+            },
+        )
     return offers_serialize.StockStatsResponseModel(
         oldest_stock=stocks_stats.oldest_stock,
         newest_stock=stocks_stats.newest_stock,
@@ -416,8 +423,20 @@ def patch_draft_offer(
 
     if body_extra_data := offers_api.deserialize_extra_data(body.extra_data, offer.subcategoryId):
         body.extra_data = body_extra_data
-    offer = offers_api.update_draft_offer(offer, body)
-
+    try:
+        offer = offers_api.update_draft_offer(offer, body)
+    except videos_exceptions.InvalidVideoUrl:
+        raise exceptions.ApiErrors(
+            errors={
+                "videoUrl": [
+                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                ]
+            }
+        )
+    except videos_exceptions.YoutubeVideoNotFound:
+        raise exceptions.ApiErrors(
+            errors={"videoUrl": ["URL Youtube non trouvée, vérifiez si votre vidéo n’est pas en privé."]}
+        )
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 

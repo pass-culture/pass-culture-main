@@ -6,6 +6,7 @@ class IndexationReason(enum.Enum):
     ARTIST_CREATION = "artist-creation"
     ARTIST_DELETION = "artist-deletion"
     ARTIST_EDITION = "artist-edition"
+    ARTIST_IMAGE_UPDATE = "artist-image-update"
     ARTIST_LINKS_UPDATE = "artist-links-update"
     ARTIST_UNBLACKLISTING = "artist-unblacklisting"
     BOOKING_CANCELLATION = "booking-cancellation"

@@ -18,6 +18,8 @@ from pcapi.utils.blueprint import Blueprint
 
 from .etls.boost_etl import BoostETLProcess
 from .etls.cds_etl import CineDigitalServiceETLProcess
+from .etls.cgr_etl import CircuitGeorgesRaymondETLProcess
+from .etls.ems_etl import EMSExtractTransformLoadProcess
 from .titelive_book_search import TiteliveBookSearch
 from .titelive_music_search import TiteliveMusicSearch
 from .titelive_utils import generate_titelive_gtl_from_file
@@ -52,9 +54,17 @@ def test_etl_integration(venue_provider_id: int) -> None:
         db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
     )
 
-    local_class_to_etl_mapping: dict[str, Type[BoostETLProcess] | Type[CineDigitalServiceETLProcess]] = {
+    local_class_to_etl_mapping: dict[
+        str,
+        Type[BoostETLProcess]
+        | Type[CineDigitalServiceETLProcess]
+        | Type[CircuitGeorgesRaymondETLProcess]
+        | Type[EMSExtractTransformLoadProcess],
+    ] = {
         "BoostStocks": BoostETLProcess,
         "CDSStocks": CineDigitalServiceETLProcess,
+        "CGRStocks": CircuitGeorgesRaymondETLProcess,
+        "EMSStocks": EMSExtractTransformLoadProcess,
     }
 
     if venue_provider.provider.localClass not in local_class_to_etl_mapping:

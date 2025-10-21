@@ -87,6 +87,7 @@ class Returns200Test:
                 "latitude": 48.87171,
                 "longitude": 2.308289,
                 "postalCode": "75001",
+                "isOpenToPublic": True,
             },
             venue,
         )
@@ -98,6 +99,7 @@ class Returns200Test:
         # the venue should be updated
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
+        assert venue.activity == offerers_models.Activity.BOOKSTORE
 
         # a new location should be created and linked to the venue
         assert (len(db.session.query(offerers_models.OffererAddress).all())) == 2
@@ -182,6 +184,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
             isOpenToPublic=False,
             isPermanent=True,
+            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -193,6 +196,7 @@ class Returns200Test:
 
         assert venue.isOpenToPublic is True
         assert venue.isPermanent is True
+        assert venue.activity == offerers_models.Activity.BOOKSTORE
 
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
         assert set(venue.accessibilityProvider.externalAccessibilityData["access_modality"]) == set(
@@ -554,6 +558,7 @@ class Returns200Test:
                 "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": venue_label.id,
                 "withdrawalDetails": "",  # should not appear in history with None => ""
+                "isOpenToPublic": False,
             },
             venue,
         )
@@ -564,6 +569,8 @@ class Returns200Test:
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.publicName == "Ma librairie"
+        assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
+        assert venue.activity == offerers_models.Activity.NOT_ASSIGNED
         assert venue.audioDisabilityCompliant == None
         assert venue.mentalDisabilityCompliant == None
         assert venue.motorDisabilityCompliant == None

@@ -4103,17 +4103,10 @@ class GetStocksStatsTest:
         assert stats.remaining_quantity == None
 
     def test_get_stocks_stats_with_no_stock(self):
-        # Given
         offer = factories.OfferFactory()
 
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.OfferHasNoStock):
             api.get_stocks_stats(offer_id=offer.id)
-
-        # Then
-        assert error.value.errors == {
-            "global": ["L'offre en cours de création ne possède aucun Stock"],
-        }
 
 
 @pytest.mark.usefixtures("db_session")

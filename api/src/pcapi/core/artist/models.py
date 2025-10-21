@@ -72,6 +72,8 @@ class Artist(Model):
         "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
     )
 
+    is_eligible_for_search: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+
     __table_args__ = (
         sa.Index(
             "ix_artist_trgm_unaccent_name",
@@ -82,18 +84,6 @@ class Artist(Model):
             },
         ),
     )
-
-    @property
-    def is_eligible_for_search(self) -> bool:
-        if self.is_blacklisted:
-            return False
-
-        for product in self.products:
-            for offer in product.offers:
-                if offer.is_eligible_for_search:
-                    return True
-
-        return False
 
     @property
     def thumbUrl(self) -> str | None:

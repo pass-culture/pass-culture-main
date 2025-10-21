@@ -60,6 +60,7 @@ from pcapi.core.geography import utils as geography_utils
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import utils as offerers_utils
 from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.core.search.models import IndexationReason
@@ -227,6 +228,8 @@ def update_venue(
     elif venue_snapshot.is_empty:
         return venue
     venue_snapshot.add_action()
+
+    venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
 
     # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
     repository.save(venue)
@@ -471,6 +474,10 @@ def create_venue(
             offerer.allowedOnAdage = True
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = date_utils.get_naive_utc_now()
+
+    venue.activity = offerers_utils.get_venue_activity_from_type_code(
+        data.get("isOpenToPublic"), data.get("venueTypeCode")
+    )
 
     db.session.add(venue)
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
@@ -1813,7 +1820,15 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         return offerers.filter(sa.false())
 
     if departments:
-        offerers = offerers.filter(models.Offerer.departementCode.in_(departments))
+        # At least one managed venue with SIRET in selected departments
+        offerers = offerers.filter(
+            sa.exists()
+            .where(models.Venue.managingOffererId == models.Offerer.id)
+            .where(models.Venue.siret.is_not(None))
+            .where(models.OffererAddress.id == models.Venue.offererAddressId)
+            .where(geography_models.Address.id == models.OffererAddress.addressId)
+            .where(geography_models.Address.departmentCode.in_(departments))
+        )
 
     if search_query.isnumeric():
         numeric_filter = models.Offerer.id == int(search_query)

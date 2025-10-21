@@ -203,6 +203,7 @@ class Activity(enum.Enum):
     COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
     CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
     CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    DISTRIBUTION_STORE = "DISTRIBUTION_STORE"
     FESTIVAL = "FESTIVAL"
     # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
     GAMES_CENTRE = "GAMES_CENTRE"
@@ -1205,7 +1206,6 @@ class Offerer(
 
     __table_args__ = (
         sa.Index("ix_offerer_trgm_unaccent_name", sa.func.immutable_unaccent("name"), postgresql_using="gin"),
-        sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin"),
     )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:

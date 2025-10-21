@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.connectors.big_query import queries as big_query_queries
 from pcapi.connectors.big_query.queries.last_30_days_booking import Last30DaysBookingsModel
 from pcapi.core.artist import models as artist_models
+from pcapi.core.artist import repository as artist_repository
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
@@ -646,45 +647,13 @@ def reindex_artist_ids(artist_ids: abc.Collection[str], from_error_queue: bool =
     logger.info("Starting to index artists", extra={"count": len(artist_ids)})
     artists = (
         db.session.query(artist_models.Artist)
+        .filter(artist_models.Artist.id.in_(artist_ids))
         .options(
-            sa_orm.load_only(
-                artist_models.Artist.computed_image,
-                artist_models.Artist.description,
-                artist_models.Artist.image,
-                artist_models.Artist.name,
+            sa_orm.with_expression(
+                artist_models.Artist.is_eligible_for_search, artist_repository.get_artist_search_eligibility_subquery()
             )
         )
-        .options(
-            sa_orm.joinedload(artist_models.Artist.products)
-            .load_only()
-            .joinedload(offers_models.Product.offers)
-            .load_only(
-                offers_models.Offer.publicationDatetime,
-                offers_models.Offer.validation,
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Offer.stocks).load_only(
-                    offers_models.Stock.beginningDatetime,
-                    offers_models.Stock.bookingLimitDatetime,
-                    offers_models.Stock.dnBookedQuantity,
-                    offers_models.Stock.isSoftDeleted,
-                    offers_models.Stock.offerId,
-                    offers_models.Stock.quantity,
-                )
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Offer.venue)
-                .load_only()
-                .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(
-                    offerers_models.Offerer.isActive,
-                    offerers_models.Offerer.postalCode,
-                    offerers_models.Offerer.siren,
-                    offerers_models.Offerer.validationStatus,
-                )
-            )
-        )
-    ).filter(artist_models.Artist.id.in_(artist_ids))
+    )
 
     to_add = []
     to_delete_ids = []
@@ -782,7 +751,8 @@ def reindex_offer_ids(offer_ids: abc.Collection[int], from_error_queue: bool = F
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+        _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
@@ -797,7 +767,8 @@ def unindex_offer_ids(offer_ids: abc.Collection[int]) -> None:
     # some offers changes might make some venue ineligible for search
     _reindex_venues_from_offers(offer_ids)
     # some offers changes might make some artists ineligible for search
-    _reindex_artists_from_offers(offer_ids)
+    if FeatureToggle.ENABLE_ARTIST_INDEXATION.is_active():
+        _reindex_artists_from_offers(offer_ids)
 
 
 def unindex_all_artists() -> None:
