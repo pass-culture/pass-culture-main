@@ -1660,7 +1660,7 @@ def get_offer_stock_edit_form(
 ) -> utils.BackofficeResponse:
     if finance_api.are_cashflows_being_generated():
         return render_template(
-            "components/turbo/modal_form.html",
+            "components/dynamic/modal_form.html",
             div_id=f"edit-offer-stock-modal-{stock_id}",
             title=f"Baisser le prix du stock {stock_id}",
             alert="Le script de génération des cashflows est en cours, veuillez réessayer plus tard.",
@@ -1668,7 +1668,7 @@ def get_offer_stock_edit_form(
 
     if not _is_stock_editable(offer_id, stock_id):
         return render_template(
-            "components/turbo/modal_form.html",
+            "components/dynamic/modal_form.html",
             div_id=f"edit-offer-stock-modal-{stock_id}",
             title=f"Baisser le prix du stock {stock_id}",
             alert="Ce stock n'est pas éditable.",
@@ -1686,7 +1686,7 @@ def _generate_offer_stock_edit_form(
 
     form = form or forms.EditStockForm(old_price=stock.price)
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer.confirm_offer_stock", offer_id=offer_id, stock_id=stock_id),
         div_id=f"edit-offer-stock-modal-{stock_id}",
@@ -1696,8 +1696,8 @@ def _generate_offer_stock_edit_form(
         additional_data=(
             (f"{q} réservation{pluralize(q)}", format_amount(a)) for q, a in _get_count_booking_prices_for_stock(stock)
         ),
-        data_turbo="true",
         alert=alert,
+        close_on_validation=False,
     )
 
 
