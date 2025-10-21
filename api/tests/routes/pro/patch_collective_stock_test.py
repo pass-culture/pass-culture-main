@@ -46,6 +46,7 @@ class Return200Test:
         # When
         stock_edition_payload = {
             "startDatetime": "2022-01-17T22:00:00Z",
+            "endDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
@@ -95,6 +96,7 @@ class Return200Test:
         # When
         stock_edition_payload = {
             "startDatetime": "2021-12-18T00:00:00Z",
+            "endDatetime": "2021-12-18T00:00:00Z",
         }
 
         client.with_session_auth("user@example.com")
@@ -123,6 +125,7 @@ class Return200Test:
         )
         stock = educational_factories.CollectiveStockFactory(
             startDatetime=datetime(2021, 12, 18),
+            endDatetime=datetime(2022, 1, 25),
             price=1200,
             numberOfTickets=32,
             bookingLimitDatetime=datetime(2021, 12, 1),
@@ -251,6 +254,7 @@ class Return200Test:
         # When
         stock_edition_payload = {
             "startDatetime": "2023-01-17T22:00:00Z",
+            "endDatetime": "2023-01-17T22:00:00Z",
         }
 
         client.with_session_auth("user@example.com")
