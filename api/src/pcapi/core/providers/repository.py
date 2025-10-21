@@ -1,9 +1,8 @@
 from typing import Iterable
 from typing import Sequence
 
+import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from sqlalchemy import func
-from sqlalchemy import or_
 
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
@@ -155,8 +154,8 @@ def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) 
         .with_entities(models.EMSCinemaDetails.id)
         .all()
     )
-    db.session.bulk_update_mappings(
-        models.EMSCinemaDetails,  # type: ignore [arg-type]
+    db.session.execute(
+        sa.update(models.EMSCinemaDetails),
         [{"id": id, "lastVersion": version} for (id,) in ids],
     )
 
@@ -170,7 +169,7 @@ def get_ems_oldest_sync_version() -> int:
     we get all resources that have been added since that point.
     """
     version = (
-        db.session.query(func.min(models.EMSCinemaDetails.lastVersion))
+        db.session.query(sa.func.min(models.EMSCinemaDetails.lastVersion))
         .join(models.CinemaProviderPivot)
         .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
         .filter(models.VenueProvider.isActive)
@@ -243,7 +242,7 @@ def get_future_events_requiring_ticketing_system(
     else:
         # Events not linked to a Venue specific ticketing system
         final_query = future_provider_events_with_ticketing_query.filter(
-            or_(
+            sa.or_(
                 Venue.venueProviders == None,
                 models.VenueProviderExternalUrls.bookingExternalUrl == None,
             )

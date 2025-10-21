@@ -53,7 +53,7 @@ def add_permissions_to_staging_specific_roles() -> None:
                 perm_models.RolePermission(roleId=global_access_role.id, permissionId=permission.id)
             )
 
-    db.session.bulk_save_objects(role_permissions_to_create)
+    db.session.add_all(role_permissions_to_create)
     db.session.commit()
 
     logger.info("Created permissions for QA and Global Access roles.")

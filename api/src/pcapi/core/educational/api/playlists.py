@@ -3,6 +3,8 @@ import random
 import typing
 from dataclasses import dataclass
 
+import sqlalchemy as sa
+
 import pcapi.connectors.big_query.queries as big_query
 import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
 import pcapi.core.educational.api.institution as institution_api
@@ -128,9 +130,9 @@ def synchronize_institution_playlist(
             lambda item: item[ctx.local_attr_name] in existing_foreign_ids,
             playlist_items_to_add,
         )
-        db.session.bulk_insert_mappings(educational_models.CollectivePlaylist, playlist_items_to_really_add)  # type: ignore [arg-type]
+        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_really_add)  # type: ignore[call-overload]
     if playlist_items_to_update:
-        db.session.bulk_update_mappings(educational_models.CollectivePlaylist, playlist_items_to_update)  # type: ignore [arg-type]
+        db.session.execute(sa.update(educational_models.CollectivePlaylist), playlist_items_to_update)
 
 
 def synchronize_collective_playlist(playlist_type: educational_models.PlaylistType) -> None:
