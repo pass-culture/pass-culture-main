@@ -126,9 +126,11 @@ jobs:
       image: pcapi
       tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
 
-  push-pcapi:
+  push-pcapi-to-europe-west1:
     name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev
-    needs: [deploy-preview-env-init, build-pcapi]
+    needs:
+      - deploy-preview-env-init
+      - build-pcapi
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
@@ -146,10 +148,36 @@ jobs:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  push-pcapi-to-europe:
+    name: Push pcapi docker image to artifact registry europe-docker.pkg.dev
+    needs:
+      - deploy-preview-env-init
+      - build-pcapi
+    if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    with:
+      image: pcapi
+      commit-hash: ${{ github.sha }}
+      checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
+      tag-latest: true
+      registry: europe-docker.pkg.dev
+      project_id: pc-infra-prd
+      repository: pass-culture-artifact-registry
+      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+      cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
   deploy-api:
-    name: "Deploy pullrequest"
+    name: Deploy pullrequest
     runs-on: ubuntu-latest
-    needs: [deploy-preview-env-init, push-pcapi, deploy-pro-on-firebase-preview-env]
+    needs:
+      - deploy-preview-env-init
+      - push-pcapi-to-europe-west1
+      - push-pcapi-to-europe
+      - deploy-pro-on-firebase-preview-env
     if: always() && !failure() && !cancelled() && inputs.front-only == false
     environment: pullrequest
     permissions:
