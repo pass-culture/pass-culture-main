@@ -1,6 +1,6 @@
 {% extends "layouts/list.html" %}
 {% import "components/links.html" as links with context %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% set rows_count = rows| length %}
 {% set hide_search_block = True %}
 {% block title %}Synchronisation des partenaires techniques{% endblock %}

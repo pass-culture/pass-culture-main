@@ -92,12 +92,13 @@ def get_create_provider_form() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.providers.create_provider"),
         div_id="create-provider",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un partenaire technique qui se synchronisera avec le pass Culture",
         button_text="Créer le partenaire",
+        ajax_submit=False,
     )
 
 

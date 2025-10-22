@@ -1,6 +1,5 @@
 {% extends "layouts/list.html" %}
 {% import "components/links.html" as links with context %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% set rows_count = list_gdpr_data|length %}
 {% block title %}Extraction des données jeunes{% endblock %}
 {% set hide_search_block = True %}

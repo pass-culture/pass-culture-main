@@ -324,12 +324,13 @@ def get_product_whitelist_form(product_id: int) -> utils.BackofficeResponse:
 
     form = empty_forms.EmptyForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.product.whitelist_product", product_id=product.id),
         div_id=f"whitelist-product-modal-{product.id}",
         title=f"Whitelister le produit  {product.name}",
         button_text="Whitelister le produit",
+        ajax_submit=False,
     )
 
 
@@ -354,12 +355,13 @@ def get_product_blacklist_form(product_id: int) -> utils.BackofficeResponse:
 
     form = empty_forms.EmptyForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.product.blacklist_product", product_id=product.id),
         div_id=f"blacklist-product-modal-{product.id}",
         title=f"Blacklister le produit  {product.name}",
         button_text="Blacklister le produit",
+        ajax_submit=False,
     )
 
 
@@ -386,7 +388,7 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
     form = forms.BatchLinkOfferToProductForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.product.batch_link_offers_to_product", product_id=product_id),
         div_id="batch-link-to-product-modal",
@@ -397,6 +399,7 @@ def confirm_link_offers_forms(product_id: int) -> utils.BackofficeResponse:
         information=Markup("Vous allez associer {number_of_offers} offre{pluralize}. Voulez vous continuer ?").format(
             number_of_offers=len(form.object_ids_list), pluralize=pluralize(len(form.object_ids_list))
         ),
+        ajax_submit=False,
     )
 
 
@@ -472,13 +475,14 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
         information_message = Markup("⚠️ {} {}").format(total_active_offers_count, message_part)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(".add_criteria_to_offers", product_id=product_id),
         div_id=f"tag-offers-product-modal-{product.id}",
         title="Tag des offres",
         button_text="Enregistrer",
         information=information_message,
+        ajax_submit=False,
     )
 
 
@@ -598,12 +602,13 @@ def get_import_product_from_titelive_form(ean: str) -> utils.BackofficeResponse:
         form = empty_forms.EmptyForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.product.import_product_from_titelive", ean=ean, is_ineligible=is_ineligible),
         div_id="import-product-modal",
         title="Voulez-vous importer ce produit ?",
         button_text="Importer",
+        ajax_submit=False,
     )
 
 

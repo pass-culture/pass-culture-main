@@ -315,12 +315,13 @@ def get_create_offer_validation_rule_form() -> utils.BackofficeResponse:
     form = forms.CreateOfferValidationRuleForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer_validation_rules.create_rule"),
         div_id="create-offer-validation-rule",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer une règle de validation d'offre",
         button_text="Créer la règle",
+        ajax_submit=False,
     )
 
 
@@ -383,7 +384,7 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
         raise NotFound()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.offer_validation_rules.delete_rule", rule_id=rule_id),
         div_id=f"delete-offer-validation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
@@ -393,6 +394,7 @@ def get_delete_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespo
             "La règle {name} et ses sous-règles seront définitivement supprimées de la base de données. "
             "Veuillez confirmer ce choix."
         ).format(name=rule_to_delete.name),
+        ajax_submit=False,
     )
 
 
@@ -471,12 +473,13 @@ def get_edit_offer_validation_rule_form(rule_id: int) -> utils.BackofficeRespons
             autocomplete.prefill_offerers_choices(sub_rule.offerer)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer_validation_rules.edit_rule", rule_id=rule_id),
         div_id=f"edit-offer-validation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier une règle de validation d'offre",
         button_text="Modifier la règle",
+        ajax_submit=False,
     )
 
 

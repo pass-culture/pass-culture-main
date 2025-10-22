@@ -76,12 +76,13 @@ def get_create_offer_price_limitation_rule_form() -> utils.BackofficeResponse:
     form = forms.CreateOfferPriceLimitationRuleForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer_price_limitation_rules.create_rule"),
         div_id="create-offer-price-limitation-rule",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer une règle de modification de prix d'offre",
         button_text="Créer la règle",
+        ajax_submit=False,
     )
 
 
@@ -114,7 +115,7 @@ def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.Backoffic
         raise NotFound()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.offer_price_limitation_rules.delete_rule", rule_id=rule_id),
         div_id=f"delete-offer-price-limitation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
@@ -123,6 +124,7 @@ def get_delete_offer_price_limitation_rule_form(rule_id: int) -> utils.Backoffic
         information=Markup(
             "La règle sur la sous-catégorie <b>{subcategory}</b> sera définitivement supprimée de la base de données. Veuillez confirmer ce choix."
         ).format(subcategory=format_offer_subcategory(rule_to_delete.subcategoryId)),
+        ajax_submit=False,
     )
 
 
@@ -155,12 +157,13 @@ def get_edit_offer_price_limitation_rule_form(rule_id: int) -> utils.BackofficeR
     form = forms.EditOfferPriceLimitationRuleForm(rate=rate)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.offer_price_limitation_rules.edit_rule", rule_id=rule_id),
         div_id=f"edit-offer-price-limitation-rule-{rule_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier une règle de modification de prix d'offre",
         button_text="Modifier la règle",
+        ajax_submit=False,
     )
 
 
