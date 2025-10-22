@@ -284,11 +284,8 @@ export const defaultGetVenue: GetVenueResponseModel = {
   isVirtual: false,
   managingOfferer: {
     id: 1,
-    city: 'Paris',
-    dateCreated: new Date().toISOString(),
     isValidated: true,
     name: 'Ma super structure',
-    postalCode: '75000',
     siren: '',
     allowedOnAdage: true,
   },
