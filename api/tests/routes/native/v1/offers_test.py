@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from datetime import timedelta
 
@@ -1384,6 +1385,26 @@ class OffersV2Test:
             "thumbUrl": "https://example.com/fAkeV1ide0o/thumbnail.jpg",
             "durationSeconds": 123,
         }
+
+    def test_get_offer_with_no_external_id_should_send_error_log(self, client, caplog):
+        metadata = offers_factories.OfferMetaDataFactory(
+            videoUrl="https://www.youtube.com/watch?v=fAkeV1ide0o",
+            videoExternalId=None,
+            videoTitle="Test Video",
+            videoThumbnailUrl="https://example.com/fAkeV1ide0o/thumbnail.jpg",
+            videoDuration=123,
+        )
+        offer_id = metadata.offer.id
+
+        with caplog.at_level(logging.ERROR):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+            assert (
+                caplog.messages[0]
+                == "This offer has a video URL but no videoExternalId in its metaData, and this should not happen"
+            )
+            assert caplog.records[0].extra == {"offer_id": offer_id}
+
+        assert response.json["video"] is None
 
 
 class OffersStocksV2Test:
