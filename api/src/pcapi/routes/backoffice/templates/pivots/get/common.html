@@ -2,7 +2,8 @@
 {% macro build_pivot_bar(pivot_name, form, dst) %}
   <div class="row">
     <form name="filter-{{ pivot_name }}"
-          action="{{ dst }}"
+          hx-get="{{ dst }}"
+          hx-target="#{{ pivot_name }}_frame"
           method="get"
           class="col-8 row">
       <div class="col-8">
