@@ -5,12 +5,17 @@ import sqlalchemy.orm as sa_orm
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository
 from pcapi.core.offerers import schemas
 from pcapi.core.users import factories as users_factories
+from pcapi.models import offer_mixin
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
 
 
@@ -269,3 +274,330 @@ class GetOffererHeadlineOfferTest:
 
         with pytest.raises(sa_orm.exc.NoResultFound):
             repository.get_offerer_headline_offer(offerer.id)
+
+
+class GetOffererAndExtraDataTest:
+    def should_return_none_when_offerer_does_not_exist(self) -> None:
+        result = repository.get_offerer_and_extradata(offerer_id=1234)
+
+        assert result is None
+
+    def should_return_offerer_with_default_false_values(self) -> None:
+        offerer = offerers_factories.OffererFactory(allowedOnAdage=False)
+
+        result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+        assert result is not None
+        assert result.Offerer == offerer
+        assert not result.hasNonFreeOffer
+        assert not result.hasValidBankAccount
+        assert not result.hasPendingBankAccount
+        assert not result.hasActiveOffer
+        assert not result.hasBankAccountWithPendingCorrections
+        assert not result.isOnboarded
+        assert not result.hasHeadlineOffer
+        assert not result.hasPartnerPage
+        assert not result.canDisplayHighlights
+
+    class HasNonFreeOfferTest:
+        def should_be_true_with_individual_offer(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.StockFactory(offer=offer, price=10)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasNonFreeOffer
+
+        def should_be_true_with_collective_offer(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+            educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer, price=10)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasNonFreeOffer
+
+        def should_be_false_if_individual_offer_price_is_zero(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.StockFactory(offer=offer, price=0)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasNonFreeOffer
+
+        def should_be_false_if_collective_offer_price_is_zero(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+            educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer, price=0)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasNonFreeOffer
+
+        def should_be_false_if_individual_offer_is_not_active(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=False)
+            offers_factories.StockFactory(offer=offer, price=10)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasNonFreeOffer
+
+        def should_be_false_if_collective_offer_is_not_active(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            collective_offer = educational_factories.CollectiveOfferFactory(venue=venue, isActive=False)
+            educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer, price=10)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasNonFreeOffer
+
+        def should_be_false_if_offer_is_soft_deleted(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasNonFreeOffer
+
+    class HasValidBankAccountTest:
+        def should_be_true_if_status_is_accepted(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer,
+                isActive=True,
+                status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasValidBankAccount
+
+        def should_be_false_if_status_is_not_accepted(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer, isActive=True, status=finance_models.BankAccountApplicationStatus.DRAFT
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasValidBankAccount
+
+        def should_be_false_if_bank_account_is_not_active(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer,
+                isActive=False,
+                status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasValidBankAccount
+
+    class HasActiveOfferTest:
+        def should_be_true_with_active_offer(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.StockFactory(offer=offer)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasActiveOffer
+
+        def should_be_false_if_offer_is_not_active(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=False)
+            offers_factories.StockFactory(offer=offer)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasActiveOffer
+
+        def should_be_false_if_offer_is_soft_deleted(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.StockFactory(offer=offer, isSoftDeleted=True)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasActiveOffer
+
+    class HasPendingBankAccountTest:
+        @pytest.mark.parametrize(
+            "status",
+            [
+                finance_models.BankAccountApplicationStatus.DRAFT,
+                finance_models.BankAccountApplicationStatus.ON_GOING,
+            ],
+        )
+        def should_be_true_for_pending_statuses(self, status: finance_models.BankAccountApplicationStatus) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(offerer=offerer, isActive=True, status=status)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasPendingBankAccount
+
+        def should_be_false_for_non_pending_statuses(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer,
+                isActive=True,
+                status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasPendingBankAccount
+
+    class HasBankAccountWithPendingCorrectionsTest:
+        def should_be_true_if_status_is_with_pending_corrections(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer,
+                isActive=True,
+                status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS,
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasBankAccountWithPendingCorrections
+
+        def should_be_false_for_other_statuses(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            finance_factories.BankAccountFactory(
+                offerer=offerer,
+                isActive=True,
+                status=finance_models.BankAccountApplicationStatus.ACCEPTED,
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasBankAccountWithPendingCorrections
+
+    class IsOnboardedTest:
+        def should_be_true_if_allowed_on_adage(self) -> None:
+            offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.isOnboarded
+
+        def should_be_true_if_venue_has_adage_id(self) -> None:
+            offerer = offerers_factories.OffererFactory(allowedOnAdage=False)
+            offerers_factories.VenueFactory(managingOfferer=offerer, adageId="123")
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.isOnboarded
+
+        def should_be_true_if_has_non_draft_offer(self) -> None:
+            offerer = offerers_factories.OffererFactory(allowedOnAdage=False)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offers_factories.OfferFactory(
+                venue=venue, validation=offer_mixin.OfferValidationStatus.PENDING, isActive=True
+            )
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.isOnboarded
+
+    class HasHeadlineOfferTest:
+        def should_be_true_if_active_headline_offer_exists(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=True)
+            offers_factories.HeadlineOfferFactory(offer=offer)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasHeadlineOffer
+
+        def should_be_false_if_headline_offer_is_inactive(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.OfferFactory(venue=venue, isActive=False)
+            offers_factories.HeadlineOfferFactory(offer=offer)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasHeadlineOffer
+
+    class HasPartnerPageTest:
+        def should_be_true_for_active_offerer_with_permanent_physical_venue(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True, isVirtual=False)
+            offers_factories.OfferFactory(venue=venue)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.hasPartnerPage
+
+        def should_be_false_if_offerer_is_inactive(self) -> None:
+            offerer = offerers_factories.OffererFactory(isActive=False)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True, isVirtual=False)
+            offers_factories.OfferFactory(venue=venue)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasPartnerPage
+
+        def should_be_false_if_offerer_is_closed(self) -> None:
+            offerer = offerers_factories.OffererFactory(validationStatus=ValidationStatus.CLOSED)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True, isVirtual=False)
+            offers_factories.OfferFactory(venue=venue)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasPartnerPage
+
+        def should_be_false_if_venue_is_not_permanent(self) -> None:
+            offerer = offerers_factories.OffererFactory(isActive=True)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=False, isVirtual=False)
+            offers_factories.OfferFactory(venue=venue)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasPartnerPage
+
+        def should_be_false_if_venue_is_virtual(self) -> None:
+            offerer = offerers_factories.OffererFactory(isActive=True)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True, isVirtual=True)
+            offers_factories.OfferFactory(venue=venue)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.hasPartnerPage
+
+    class CanDisplayHighlightsTest:
+        def should_be_true_if_offerer_has_event_offer(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.EVENEMENT_CINE.id)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert result.canDisplayHighlights
+
+        def should_be_false_if_offer_is_not_event(self) -> None:
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.VOD.id)
+
+            result = repository.get_offerer_and_extradata(offerer_id=offerer.id)
+
+            assert not result.canDisplayHighlights

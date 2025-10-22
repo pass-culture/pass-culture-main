@@ -5,6 +5,7 @@
 import type { GetOffererVenueResponseModel } from './GetOffererVenueResponseModel';
 export type GetOffererResponseModel = {
   allowedOnAdage: boolean;
+  canDisplayHighlights: boolean;
   hasActiveOffer: boolean;
   hasAvailablePricingPoints: boolean;
   hasBankAccountWithPendingCorrections: boolean;

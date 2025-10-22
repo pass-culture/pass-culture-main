@@ -526,6 +526,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - hasBankAccountWithPendingCorrections
         - isOnboarded
         - hasHeadlineOffer
+        - canDisplayHighlights
     """
     has_non_free_offers_subquery = (
         sa.select(1)
@@ -694,6 +695,21 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .exists()
     )
 
+    can_display_highlights = (
+        sa.select(1)
+        .select_from(offers_models.Offer)
+        .join(models.Venue, offers_models.Offer.venueId == models.Venue.id)
+        .join(models.Offerer, models.Venue.managingOffererId == models.Offerer.id)
+        .where(
+            sa.and_(
+                models.Offerer.id == offerer_id,
+                offers_models.Offer.isEvent.is_(True),
+            )
+        )
+        .correlate(models.Offerer)
+        .exists()
+    )
+
     return (
         db.session.query(
             models.Offerer,
@@ -707,6 +723,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             ).label("isOnboarded"),
             has_headline_offer.label("hasHeadlineOffer"),
             has_partner_page.label("hasPartnerPage"),
+            can_display_highlights.label("canDisplayHighlights"),
         )
         .filter(models.Offerer.id == offerer_id)
         .options(
