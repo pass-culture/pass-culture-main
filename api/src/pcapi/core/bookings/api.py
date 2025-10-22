@@ -507,7 +507,18 @@ def _cancel_booking(
     external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
-    update_external_pro(booking.venue.bookingEmail)
+
+    try:
+        # the booking's venue might be soft deleted.
+        # TODO(jbaudet - 10/2025): is it ok to soft delete a venue with
+        # cancellable bookings?
+        email = booking.venue.bookingEmail
+    except AttributeError:
+        logger.warning("Booking with a soft deleted venue", extra={"booking": booking.id})
+        email = None
+
+    update_external_pro(email)
+
     on_commit(
         partial(
             search.async_index_offer_ids,
