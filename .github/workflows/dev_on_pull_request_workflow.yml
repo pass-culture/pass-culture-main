@@ -57,7 +57,11 @@ jobs:
         id: check-pro-changes
         uses: tj-actions/changed-files@v47
         with:
-          files: pro/**
+          files: |
+            .github/workflows/dev_on_pull_request_workflow.yml
+            .github/workflows/dev_on_workflow_tests_pro.yml
+            .github/workflows/dev_on_workflow_tests_pro_e2e.yml
+            pro/**
       - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
         uses: tj-actions/changed-files@v47
