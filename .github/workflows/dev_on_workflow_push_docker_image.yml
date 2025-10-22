@@ -7,10 +7,6 @@ on:
         required: true
         type: string
 
-      commit-hash:
-        required: true
-        type: string
-
       checksum-tag:
         required: true
         type: string
@@ -123,8 +119,8 @@ jobs:
 
       - name: Push docker images
         run: |
-          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.commit-hash }}"
-          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.prefix-tag }}-${{ inputs.commit-hash }}"
+          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.checksum-tag }}"
+          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.prefix-tag }}-${{ inputs.checksum-tag }}"
           
           if [ ${{ inputs.tag-latest }} == 'true' ]; then
             docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
