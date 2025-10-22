@@ -15,7 +15,9 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import BeneficiaryFactory
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 
@@ -1314,7 +1316,11 @@ class CegidFinanceBackendTest:
             headers={"content-type": "application/json"},
         )
 
-        finance_backend.push_bank_account(bank_account.id)
+        bank_account_id = bank_account.id
+        db.session.expire_all()
+
+        with assert_num_queries(1):
+            finance_backend.push_bank_account(bank_account_id)
 
         assert request_matcher_create_vendor.call_count == 1
         request_json = request_matcher_create_vendor.request_history[0].json()
@@ -1324,11 +1330,11 @@ class CegidFinanceBackendTest:
         assert request_json["MainContact"] == {
             "Address": {
                 "AddressID": {"value": "PRINCIPAL"},
-                "AddressLine1": {"value": offerer.street},
-                "City": {"value": offerer.city},
+                "AddressLine1": {"value": ""},
+                "City": {"value": ""},
                 "Country": {"value": "FR"},
-                "PostalCode": {"value": offerer.postalCode},
-                "State": {"value": offerer.departementCode},
+                "PostalCode": {"value": ""},
+                "State": {"value": ""},
             }
         }
         assert request_json["NatureEco"] == {"value": "Exempt operations"}
