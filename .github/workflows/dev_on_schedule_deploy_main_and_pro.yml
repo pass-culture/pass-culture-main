@@ -239,7 +239,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: ops
-      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      app_version: ${{ github.sha }}
       cluster_scope: metier
       cluster_environment: ops
       workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider
