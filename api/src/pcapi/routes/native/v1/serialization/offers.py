@@ -32,7 +32,6 @@ from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.core.videos import api as videos_api
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -353,15 +352,17 @@ class BaseOfferResponseGetterDict(GetterDict):
             )  # FIXME (bpeyrou): to be removed when min app version stop using publicationDate
 
         if key == "video":
-            if not (offer.metaData and offer.metaData.videoUrl):
-                return None
+            if offer.metaData and offer.metaData.videoUrl and not offer.metaData.videoExternalId:
+                logger.error(
+                    "This offer has a video URL but no videoExternalId in its metaData, and this should not happen",
+                    extra={"offer_id": offer.id},
+                )  # we want to see this in sentry if ever it happens
 
-            video_id = offer.metaData.videoExternalId or videos_api.extract_video_id(offer.metaData.videoUrl)
-            if not video_id:
+            if not (offer.metaData and offer.metaData.videoExternalId):
                 return None
 
             return OfferVideo(
-                id=video_id,
+                id=offer.metaData.videoExternalId,
                 title=offer.metaData.videoTitle,
                 thumbUrl=offer.metaData.videoThumbnailUrl,
                 durationSeconds=offer.metaData.videoDuration,
