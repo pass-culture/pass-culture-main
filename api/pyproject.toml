@@ -116,7 +116,7 @@ types-urllib3 = "^1.26.25.14"
 
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 mypy_path = "stubs/"
 disallow_untyped_defs = true
 # The following line solves the internal mypy (v>1.4) error due to
