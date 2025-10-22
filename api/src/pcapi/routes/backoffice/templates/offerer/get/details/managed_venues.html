@@ -1,7 +1,7 @@
 {% from "components/badges.html" import build_fraudulent_booking_badge %}
 {% import "components/links.html" as links with context %}
 {% from "components/connect_as.html" import build_connect_as_link %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% if has_permission("CREATE_PRO_ENTITY") %}
   <button class="btn btn-outline-primary-subtle-bg mt-2"
           data-bs-toggle="modal"

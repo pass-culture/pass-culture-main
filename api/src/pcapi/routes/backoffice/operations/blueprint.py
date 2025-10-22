@@ -489,7 +489,7 @@ def get_update_date_event(special_event_id: int) -> utils.BackofficeResponse:
     form.date.data = event.eventDate
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.operations.update_date_event",
@@ -498,6 +498,7 @@ def get_update_date_event(special_event_id: int) -> utils.BackofficeResponse:
         div_id="update-event-date-modal",
         title="Modifier la date de l'évènement",
         button_text="Valider",
+        ajax_submit=False,
     )
 
 
@@ -540,7 +541,7 @@ def get_update_end_import_date_event(special_event_id: int) -> utils.BackofficeR
     form.date.data = event.endImportDate
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.operations.update_end_import_date",
@@ -549,6 +550,7 @@ def get_update_end_import_date_event(special_event_id: int) -> utils.BackofficeR
         div_id="update-end-import-date-modal",
         title="Modifier la date de clôture des candidatures",
         button_text="Valider",
+        ajax_submit=False,
     )
 
 
@@ -599,7 +601,7 @@ def get_update_venue_form(special_event_id: int) -> utils.BackofficeResponse:
         prefill_venues_choices(form.venue)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.operations.update_venue",
@@ -608,6 +610,7 @@ def get_update_venue_form(special_event_id: int) -> utils.BackofficeResponse:
         div_id="update-venue-modal",
         title="Modifier le partenaire culturel",
         button_text="Valider",
+        ajax_submit=False,
     )
 
 

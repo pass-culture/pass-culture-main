@@ -563,16 +563,16 @@ def get_validate_collective_offer_form(collective_offer_id: int) -> utils.Backof
         "div_id": f"validate-collective-offer-modal-{collective_offer.id}",
         "title": f"Validation de l'offre {collective_offer.name}",
         "button_text": "Valider l'offre",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html",
-            target_id=f"#collective-offer-row-{collective_offer_id}",
-            **kwargs,
-        )
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#collective-offer-row-{collective_offer_id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template(
+        "components/dynamic/modal_form.html",
+        **kwargs,
+    )
 
 
 @blueprint.route("/<int:collective_offer_id>/validate", methods=["POST"])
@@ -724,16 +724,16 @@ def get_reject_collective_offer_form(collective_offer_id: int) -> utils.Backoffi
         "div_id": f"reject-collective-offer-modal-{collective_offer.id}",
         "title": f"Rejet de l'offre {collective_offer.name}",
         "button_text": "Rejeter l'offre",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html",
-            target_id=f"#collective-offer-row-{collective_offer_id}",
-            **kwargs,
-        )
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = (f"#collective-offer-row-{collective_offer_id}",)
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template(
+        "components/dynamic/modal_form.html",
+        **kwargs,
+    )
 
 
 @blueprint.route("/<int:collective_offer_id>/reject", methods=["POST"])
@@ -1019,7 +1019,7 @@ def get_collective_offer_price_form(collective_offer_id: int) -> utils.Backoffic
         numberOfTickets=collective_offer.collectiveStock.numberOfTickets,
     )
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.collective_offer.edit_collective_offer_price", collective_offer_id=collective_offer_id
@@ -1027,6 +1027,7 @@ def get_collective_offer_price_form(collective_offer_id: int) -> utils.Backoffic
         div_id="update-collective-offer-price",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Ajuster le prix de l'offre collective {collective_offer_id}",
         button_text="Ajuster le prix",
+        ajax_submit=False,
     )
 
 
@@ -1053,12 +1054,13 @@ def get_move_collective_offer_form(collective_offer_id: int) -> utils.Backoffice
     move_offer_form.set_venue_choices(venue_choices)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=move_offer_form,
         dst=url_for("backoffice_web.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
         div_id=f"move-collective-offer-modal-{collective_offer.id}",
         title=f"Changer le partenaire culturel de l'offre collective {collective_offer_id}",
         button_text="Changer le partenaire",
+        ajax_submit=False,
     )
 
 

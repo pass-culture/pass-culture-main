@@ -497,4 +497,4 @@ def format_response_error_messages(errors: dict) -> list[str]:
 
 
 def is_request_from_htmx() -> bool:
-    return request.headers.get("hx-request") == "true"
+    return request.headers.get("hx-request") == "true" and not request.args.get("redirect", False)

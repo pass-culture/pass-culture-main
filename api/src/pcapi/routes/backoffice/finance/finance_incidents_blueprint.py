@@ -230,7 +230,7 @@ def list_incidents() -> utils.BackofficeResponse:
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     form = forms.CommentForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.finance_incidents.cancel_finance_incident", finance_incident_id=finance_incident_id
@@ -238,6 +238,7 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
         div_id=f"reject-finance-incident-modal-{finance_incident_id}",
         title="Annuler l'incident",
         button_text="Confirmer l'annulation",
+        ajax_submit=False,
     )
 
 
@@ -938,7 +939,7 @@ def _get_finance_overpayment_incident_validation_form(
     validation_url = "backoffice_web.finance_incidents.validate_finance_overpayment_incident"
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=forms.IncidentValidationForm(),
         dst=url_for(validation_url, finance_incident_id=finance_incident.id),
         div_id=f"finance-incident-validation-modal-{finance_incident.id}",
@@ -951,6 +952,7 @@ def _get_finance_overpayment_incident_validation_form(
             incident_amount=filters.format_amount(incident_total_amount_euros, target=finance_incident.venue),
             details=bank_account_details_str,
         ),
+        ajax_submit=False,
     )
 
 
@@ -965,7 +967,7 @@ def _get_finance_commercial_gesture_validation_form(
     validation_url = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for(validation_url, finance_incident_id=finance_incident.id),
         div_id=f"finance-incident-validation-modal-{finance_incident.id}",
@@ -978,6 +980,7 @@ def _get_finance_commercial_gesture_validation_form(
             commercial_gesture_amount=filters.format_amount(commercial_gesture_amount, target=finance_incident.venue),
             details=bank_account_details_str,
         ),
+        ajax_submit=False,
     )
 
 
@@ -1299,13 +1302,14 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> util
         raise NotFound()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.finance_incidents.force_debit_note", finance_incident_id=finance_incident_id),
         div_id=f"finance-incident-force-debit-note-modal-{finance_incident_id}",
         title="Générer une note de débit",
         button_text="Confirmer",
         information='Vous allez choisir le mode de compensation "Note de débit", une note de débit sera envoyée à l\'acteur culturel à la prochaine échéance. Voulez-vous continuer ?',
+        ajax_submit=False,
     )
 
 
@@ -1353,13 +1357,14 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> uti
         raise NotFound()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.finance_incidents.cancel_debit_note", finance_incident_id=finance_incident_id),
         div_id=f"finance-incident-cancel-debit-note-modal-{finance_incident_id}",
         title="Récupérer l'argent sur les prochaines réservations",
         button_text="Confirmer",
         information='Vous allez choisir le mode de compensation "Récupération sur les prochaines réservations", un mail sera envoyé à la suite de la confirmation. Voulez-vous continuer ?',
+        ajax_submit=False,
     )
 
 

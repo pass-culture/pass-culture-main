@@ -172,12 +172,13 @@ def get_validate_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"validate-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Valider l'entité juridique {offerer.name.upper()}",
         "button_text": "Valider l'entité juridique",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#offerer-row-{offerer.id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["POST"])
@@ -231,12 +232,13 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"reject-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter l'entité juridique {offerer.name.upper()}",
         "button_text": "Rejeter l'entité juridique",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#offerer-row-{offerer.id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/reject", methods=["POST"])
@@ -304,12 +306,13 @@ def get_offerer_pending_form(offerer_id: int) -> utils.BackofficeResponse:
         "div_id": f"pending-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente l'entité juridique {offerer.name.upper()}",
         "button_text": "Mettre en attente",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template("components/dynamic/modal_form.html", target_id=f"#offerer-row-{offerer.id}", **kwargs)
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#offerer-row-{offerer.id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/pending", methods=["POST"])
@@ -731,13 +734,12 @@ def get_reject_user_offerer_form(user_offerer_id: int) -> utils.BackofficeRespon
         "div_id": f"reject-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Rejeter le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Rejeter le rattachement",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html", target_id=f"#user-offerer-row-{user_offerer_id}", **kwargs
-        )
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#user-offerer-row-{user_offerer_id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/reject", methods=["POST"])
@@ -779,14 +781,13 @@ def get_user_offerer_pending_form(user_offerer_id: int) -> utils.BackofficeRespo
         "div_id": f"pending-modal-{user_offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": f"Mettre en attente le rattachement à {user_offerer.offerer.name.upper()}",
         "button_text": "Mettre en attente le rattachement",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html", target_id=f"#user-offerer-row-{user_offerer_id}", **kwargs
-        )
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#user-offerer-row-{user_offerer_id}"
 
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @validation_blueprint.route("/user-offerer/<int:user_offerer_id>/pending", methods=["POST"])

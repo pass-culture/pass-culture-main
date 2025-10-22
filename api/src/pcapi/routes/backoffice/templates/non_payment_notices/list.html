@@ -1,7 +1,7 @@
 {% extends "layouts/list.html" %}
 {% from "components/forms.html" import build_filters_form_ng with context %}
 {% import "components/links.html" as links with context %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% set rows_count = rows|length %}
 {% block title %}Liste des avis d'impayé{% endblock %}
 {% block search_block %}
@@ -13,7 +13,7 @@
             data-bs-toggle="modal"
             data-bs-target="#create-non-payment-notice"
             type="button">Saisir un avis d'impayé</button>
-    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_create_non_payment_notice_form") , "create-non-payment-notice", "lazy") }}
+    {{ build_lazy_modal(url_for("backoffice_web.non_payment_notices.get_create_non_payment_notice_form") , "create-non-payment-notice") }}
   </div>
 {% endblock before_table %}
 {% block table_header %}

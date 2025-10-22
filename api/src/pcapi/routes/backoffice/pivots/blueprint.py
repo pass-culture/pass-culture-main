@@ -59,12 +59,13 @@ def get_create_pivot_form(name: str) -> utils.BackofficeResponse:
 
     form = pivot_context.get_form()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(".create_pivot", name=name),
         div_id=f"create-{name}",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un pivot",
         button_text="Créer le pivot",
+        ajax_submit=False,
     )
 
 
@@ -122,12 +123,13 @@ def get_update_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     autocomplete.prefill_venues_choices(form.venue_id)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(".update_pivot", name=name, pivot_id=pivot_id),
         div_id=f"update-{name}-{pivot_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Modifier le pivot {name}",
         button_text="Valider",
+        ajax_submit=False,
     )
 
 
@@ -163,13 +165,14 @@ def update_pivot(name: str, pivot_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_TECH_PARTNERS)
 def get_delete_pivot_form(name: str, pivot_id: int) -> utils.BackofficeResponse:
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for(".delete_pivot", name=name, pivot_id=pivot_id),
         div_id=f"delete-{name}-{pivot_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Supprimer le pivot {name}",
         button_text="Confirmer",
         information="Le pivot sera définitivement supprimé de la base de données. Veuillez confirmer ce choix.",
+        ajax_submit=False,
     )
 
 

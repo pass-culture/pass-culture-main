@@ -224,14 +224,16 @@ def get_validate_collective_offer_template_form(collective_offer_template_id: in
         "div_id": f"validate-collective-offer-template-modal-{collective_offer_template.id}",
         "title": f"Validation de l'offre vitrine {collective_offer_template.name}",
         "button_text": "Valider l'offre vitrine",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html",
-            target_id=f"#collective-offer-template-row-{collective_offer_template_id}",
-            **kwargs,
-        )
-    return render_template("components/turbo/modal_form.html", **kwargs)
+
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = (f"#collective-offer-template-row-{collective_offer_template_id}",)
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        **kwargs,
+    )
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/validate", methods=["POST"])
@@ -269,14 +271,15 @@ def get_reject_collective_offer_template_form(collective_offer_template_id: int)
         "div_id": f"reject-collective-offer-template-modal-{collective_offer_template.id}",
         "title": f"Rejet de l'offre vitrine {collective_offer_template.name}",
         "button_text": "Rejeter l'offre vitrine",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html",
-            target_id=f"#collective-offer-template-row-{collective_offer_template_id}",
-            **kwargs,
-        )
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = (f"#collective-offer-template-row-{collective_offer_template_id}",)
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        **kwargs,
+    )
 
 
 @list_collective_offer_templates_blueprint.route("/<int:collective_offer_template_id>/reject", methods=["POST"])
