@@ -383,6 +383,7 @@ export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   isOnboarded: true,
   hasPartnerPage: false,
   isCaledonian: false,
+  canDisplayHighlights: true,
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
