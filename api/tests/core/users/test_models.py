@@ -458,10 +458,12 @@ class SQLFunctionsTest:
 
         assert db.session.query(sa.func.get_wallet_balance(user.id, False)).first()[0] == 0
 
-    def test_deposit_balance(self):
-        user = users_factories.BeneficiaryFactory(age=18)
+    @pytest.mark.parametrize(
+        "initial_amount", (decimal.Decimal("150"), decimal.Decimal("152.45"), decimal.Decimal("152.55"))
+    )
+    def test_deposit_balance(self, initial_amount):
+        user = users_factories.BeneficiaryFactory(age=18, deposit__amount=initial_amount)
         deposit = user.deposit
-        initial_amount = deposit.amount
 
         bookings_factories.UsedBookingFactory(deposit=deposit, amount=10)
         bookings_factories.BookingFactory(deposit=deposit, amount=1)
