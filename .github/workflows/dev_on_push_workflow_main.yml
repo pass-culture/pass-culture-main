@@ -114,9 +114,8 @@ jobs:
     if: needs.pcapi-init-job.outputs.api-changed == 'true' || needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi-tests
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
   prepare-cache-master: # on "master" branch only
     name: "Reset cache on master on dependency update"

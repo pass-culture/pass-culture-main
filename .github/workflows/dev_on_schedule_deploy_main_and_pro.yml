@@ -100,7 +100,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi
-      ref: ${{ github.sha }}
       tag: ${{ github.sha }}
 
   build-pcapi-console:
@@ -110,8 +109,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi-console
-      ref: ${{ github.sha }}
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
   push-pcapi-to-europe-west1:
     name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev

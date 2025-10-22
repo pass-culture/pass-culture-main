@@ -3,11 +3,6 @@ name: '3 [on_workflow/Deprecated] Build docker image'
 on:
   workflow_call:
     inputs:
-      ref:
-        description: "The git ref to build from. Can be a branch name, a tag or a commit"
-        required: false
-        type: string
-
       image:
         description: "The docker image name"
         required: true
@@ -25,8 +20,6 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.ref }}
 
       - name: Add version to api
         working-directory: api

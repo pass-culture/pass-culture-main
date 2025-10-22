@@ -122,9 +122,8 @@ jobs:
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi
-      tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
   push-pcapi-to-europe-west1:
     name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev
