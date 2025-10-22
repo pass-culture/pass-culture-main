@@ -521,7 +521,7 @@ Booking.trig_ddl = f"""
         RETURNS numeric
         AS $$
     DECLARE
-        deposit_amount bigint := (SELECT CASE WHEN "expirationDate" > now() THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
+        deposit_amount numeric := (SELECT CASE WHEN "expirationDate" > now() THEN amount ELSE 0 END amount FROM deposit WHERE id = deposit_id);
         sum_bookings numeric;
     BEGIN
         IF deposit_amount IS NULL
