@@ -11,9 +11,7 @@ import {
   Mode,
   type OfferEducationalFormValues,
 } from '@/commons/core/OfferEducational/types'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   managedVenueFactory,
   userOffererFactory,
@@ -71,18 +69,6 @@ const defaultProps: OfferEducationalFormProps = {
 }
 
 describe('OfferEducationalForm', () => {
-  beforeEach(() => {
-    const mockOffererData = {
-      data: { ...defaultGetOffererResponseModel, isValidated: true },
-      isLoading: false,
-      error: undefined,
-      mutate: vi.fn(),
-      isValidating: false,
-    }
-
-    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
-  })
-
   it('should render price details if offer is template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 

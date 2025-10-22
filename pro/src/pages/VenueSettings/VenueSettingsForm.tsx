@@ -176,13 +176,11 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
         </FormLayout.Section>
 
-        {!venue.siret && (
-          <ReimbursementFields
-            offerer={offerer}
-            scrollToSection={Boolean(location.state) || Boolean(location.hash)}
-            venue={venue}
-          />
-        )}
+        <ReimbursementFields
+          offerer={offerer}
+          scrollToSection={Boolean(location.state) || Boolean(location.hash)}
+          venue={venue}
+        />
       </FormLayout>
 
       <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />

@@ -60,21 +60,14 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
       setIsSubmitingPricingPoint(false)
     }
   }
-  const pricingPointOptions: SelectOption[] = [
-    {
-      value: '',
-      label: 'Sélectionner une structure dans la liste',
-    },
-  ]
 
-  offerer.managedVenues
-    ?.filter((venue) => venue.siret)
-    .forEach((venue) =>
-      pricingPointOptions.push({
-        value: venue.id.toString(),
+  const pricingPointOptions: SelectOption[] =
+    offerer?.managedVenues
+      ?.filter((venue) => Boolean(venue.siret))
+      .map((venue) => ({
         label: `${venue.name} - ${venue.siret}`,
-      })
-    )
+        value: venue.id.toString(),
+      })) ?? []
 
   return (
     <>
@@ -141,7 +134,13 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
             disabled={venue.pricingPoint?.id ? true : isInputDisabled}
             data-testid={'pricingPointSelect'}
             label="Structure avec SIRET utilisée pour le calcul de votre barème de remboursement"
-            options={pricingPointOptions}
+            options={[
+              {
+                value: '',
+                label: 'Sélectionner une structure dans la liste',
+              },
+              ...pricingPointOptions,
+            ]}
             required={true}
             error={errors.venueSiret?.message}
           />

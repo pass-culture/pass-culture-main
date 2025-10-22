@@ -20,22 +20,24 @@ export const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementFieldsProps) => {
-  const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
   const reimbursementSection = useId()
 
-  const scrollToReimbursementSection = useCallback((node: any) => {
-    if (node !== null && scrollToSection) {
-      setTimeout(() => {
-        node.scrollIntoView()
-      }, 200)
-    }
-  }, [])
+  const scrollToReimbursementSection = useCallback(
+    (node: { scrollIntoView: () => void } | null) => {
+      if (node !== null && scrollToSection) {
+        setTimeout(() => {
+          node.scrollIntoView()
+        }, 200)
+      }
+    },
+    [scrollToSection]
+  )
 
   return (
     <div ref={scrollToReimbursementSection} id={reimbursementSection}>
       <FormLayout.Section title="Barème de remboursement">
-        {!venueHaveSiret && !offererHaveVenueWithSiret ? (
+        {!venue.siret && !offererHaveVenueWithSiret ? (
           <Callout
             links={[
               {
@@ -48,7 +50,7 @@ export const ReimbursementFields = ({
             devez avoir, au minimum, une structure rattachée à un SIRET.
           </Callout>
         ) : (
-          !venueHaveSiret && <PricingPoint offerer={offerer} venue={venue} />
+          <PricingPoint offerer={offerer} venue={venue} />
         )}
       </FormLayout.Section>
     </div>

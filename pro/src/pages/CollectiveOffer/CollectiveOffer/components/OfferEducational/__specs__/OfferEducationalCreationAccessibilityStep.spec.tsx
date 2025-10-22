@@ -2,11 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
-import {
-  defaultGetOffererResponseModel,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -43,19 +39,11 @@ describe('screens | OfferEducational : accessibility step', () => {
   const secondVenueId = 13
   const offererId = 15
 
-  const mockOffererData = {
-    data: { ...defaultGetOffererResponseModel, isValidated: true },
-    isLoading: false,
-    error: undefined,
-    mutate: vi.fn(),
-    isValidating: false,
-  }
   beforeEach(() => {
     props = {
       ...defaultCreationProps,
     }
 
-    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
         makeVenueListItem({ id: firstVenueId }),
