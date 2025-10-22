@@ -122,7 +122,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-west1-docker.pkg.dev
@@ -144,7 +143,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-docker.pkg.dev
@@ -166,7 +164,6 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-west1-docker.pkg.dev
@@ -188,7 +185,6 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-docker.pkg.dev

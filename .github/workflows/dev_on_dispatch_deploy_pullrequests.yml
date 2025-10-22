@@ -135,7 +135,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-west1-docker.pkg.dev
@@ -157,7 +156,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
       checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
       tag-latest: true
       registry: europe-docker.pkg.dev
