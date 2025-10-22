@@ -7,9 +7,7 @@ import {
   CollectiveOfferAllowedAction,
   type GetCollectiveOfferResponseModel,
 } from '@/apiClient/v1'
-import * as useOfferer from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -59,14 +57,6 @@ describe('screens | OfferEducational : creation', () => {
   let offer: GetCollectiveOfferResponseModel
   const mockNavigate = vi.fn()
 
-  const mockOffererData = {
-    data: { ...defaultGetOffererResponseModel, isValidated: true },
-    isLoading: false,
-    error: undefined,
-    mutate: vi.fn(),
-    isValidating: false,
-  }
-
   beforeEach(() => {
     offer = getCollectiveOfferFactory()
 
@@ -78,7 +68,6 @@ describe('screens | OfferEducational : creation', () => {
       offer,
     }
 
-    vi.spyOn(useOfferer, 'useOfferer').mockReturnValue(mockOffererData)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
 

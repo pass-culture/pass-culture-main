@@ -1,9 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -53,19 +51,10 @@ describe('CollectiveOfferEdition', () => {
     isTemplate: false,
   }
 
-  const mockOffererData = {
-    data: { ...defaultGetOffererResponseModel, isValidated: true },
-    isLoading: false,
-    error: undefined,
-    mutate: vi.fn(),
-    isValidating: false,
-  }
-
   beforeEach(() => {
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [offerer],
     })
-    vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
   })
 
   it('should render collective offer edition form', async () => {
