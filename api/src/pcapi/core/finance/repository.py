@@ -320,13 +320,9 @@ def _get_sent_pricings_for_individual_bookings(
     sub_offer = sub.subquery("addresses_offer")
     columns.extend(
         [
-            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street, offerers_models.Offerer.street).label(
-                "address_street"
-            ),
-            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode, offerers_models.Offerer.postalCode).label(
-                "address_postal_code"
-            ),
-            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city, offerers_models.Offerer.city).label("address_city"),
+            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
         ]
     )
     query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
@@ -484,13 +480,9 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
     sub_offer = sub.subquery("addresses_offer")
     columns.extend(
         [
-            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street, offerers_models.Offerer.street).label(
-                "address_street"
-            ),
-            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode, offerers_models.Offerer.postalCode).label(
-                "address_postal_code"
-            ),
-            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city, offerers_models.Offerer.city).label("address_city"),
+            sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+            sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
         ]
     )
     query = (
