@@ -68,10 +68,10 @@ def test_update_brevo_pro(app, caplog):
         "[update_brevo_pro] 3 pro users emails",
         "[update_brevo_pro] Total: 4 distinct emails",
         "[update_brevo_pro] 4 emails to process",
-        "[update_brevo_pro] (1/4) first@example.com",
-        "[update_brevo_pro] (2/4) fourth@example.com",
-        "[update_brevo_pro] (3/4) second@example.com",
-        "[update_brevo_pro] (4/4) third@example.com",
+        "[update_brevo_pro] (1/4) fir***@example.com",
+        "[update_brevo_pro] (2/4) fou***@example.com",
+        "[update_brevo_pro] (3/4) sec***@example.com",
+        "[update_brevo_pro] (4/4) thi***@example.com",
         "[update_brevo_pro] Completed with 0 errors",
     ]
     assert "Exception" not in result.stdout

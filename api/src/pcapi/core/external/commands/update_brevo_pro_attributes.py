@@ -13,6 +13,7 @@ from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.utils import email as email_utils
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +58,13 @@ def update_brevo_pro_attributes(start_index: int = 0) -> None:
     errors = []
 
     for i, email in enumerate(all_emails_to_process):
-        logger.info("[update_brevo_pro] (%d/%d) %s", start_index + i + 1, len(all_emails), email)
+        logger.info(
+            "[update_brevo_pro] (%d/%d) %s",
+            start_index + i + 1,
+            len(all_emails),
+            email_utils.anonymize_email(email),
+            extra={"email": email},
+        )
 
         # In this script we don't need to delay using a Google Cloud Task because:
         # - this would create too many tasks,
@@ -73,6 +80,4 @@ def update_brevo_pro_attributes(start_index: int = 0) -> None:
         # Avoid flooding our database and Brevo API!
         time.sleep(0.1)
 
-    logger.info("[update_brevo_pro] Completed with %d errors", len(errors))
-    for email in errors:
-        logger.info("[update_brevo_pro] - %s", email)
+    logger.info("[update_brevo_pro] Completed with %d errors", len(errors), extra={"emails": errors})
