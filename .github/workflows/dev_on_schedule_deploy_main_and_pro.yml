@@ -99,9 +99,9 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      ref: ${{ github.sha }}
+      tag: ${{ github.sha }}
 
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
@@ -109,8 +109,8 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi-console
+      ref: ${{ github.sha }}
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
 
   push-pcapi-to-europe-west1:
