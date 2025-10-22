@@ -69,3 +69,47 @@ def test_fill_video_metadata(get_video_metadata_from_cache_mock):
     assert offer_with_video_with_metadata.metaData.videoThumbnailUrl == video_thumbnail_url
     assert offer_with_video_with_metadata.metaData.videoTitle == video_title
     assert offer_with_video_with_metadata.metaData.videoDuration == video_duration
+
+
+@pytest.mark.settings(YOUTUBE_API_BACKEND="pcapi.connectors.youtube.YoutubeNotFoundBackend")
+def test_delete_video_metadata_when_video_is_private():
+    video_url = "https://www.youtube.com/watch?v=XmVU35hbEA0"
+
+    offer_with_video_without_metadata = offers_factories.OfferFactory()
+    offers_factories.OfferMetaDataFactory(
+        offer=offer_with_video_without_metadata,
+        videoDuration=None,
+        videoExternalId=None,
+        videoThumbnailUrl=None,
+        videoTitle=None,
+        videoUrl=video_url,
+    )
+
+    main.main(not_dry=True)
+
+    assert offer_with_video_without_metadata.metaData.videoUrl == None
+    assert offer_with_video_without_metadata.metaData.videoExternalId == None
+    assert offer_with_video_without_metadata.metaData.videoThumbnailUrl == None
+    assert offer_with_video_without_metadata.metaData.videoTitle == None
+    assert offer_with_video_without_metadata.metaData.videoDuration == None
+
+
+def test_delete_video_metadata_when_url_is_incorect():
+    video_url = "https://lundi.am/"
+
+    offer_with_video_without_metadata = offers_factories.OfferFactory()
+    offers_factories.OfferMetaDataFactory(
+        offer=offer_with_video_without_metadata,
+        videoDuration=None,
+        videoExternalId=None,
+        videoThumbnailUrl=None,
+        videoTitle=None,
+        videoUrl=video_url,
+    )
+
+    main.main(not_dry=True)
+    assert offer_with_video_without_metadata.metaData.videoUrl == None
+    assert offer_with_video_without_metadata.metaData.videoExternalId == None
+    assert offer_with_video_without_metadata.metaData.videoThumbnailUrl == None
+    assert offer_with_video_without_metadata.metaData.videoTitle == None
+    assert offer_with_video_without_metadata.metaData.videoDuration == None

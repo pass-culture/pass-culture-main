@@ -43,14 +43,18 @@ def main(not_dry: bool) -> None:
         try:
             video_id = videos_api.extract_video_id(offer_meta_data.videoUrl)
         except videos_exceptions.InvalidVideoUrl:
-            logger.error(
-                "The video Url of this offer is not valid, please check it",
+            logger.warning(
+                "The video Url of this offer is not valid, removing video URL (PC-37882)",
                 extra={
                     "offer_id": offer_meta_data.offerId,
                     "video_url": offer_meta_data.videoUrl,
+                    "reason": "Supprimé par script lors du rattrapage le 22/20/2025",
                 },
+                technical_message_id="offer.video.deleted",
             )
+            offer_meta_data.videoUrl = None
             continue
+
         metadata = youtube.get_video_metadata(video_id=video_id)
         if metadata:
             logger.info(
@@ -68,15 +72,17 @@ def main(not_dry: bool) -> None:
             offer_meta_data.videoTitle = metadata.title
             offer_meta_data.videoThumbnailUrl = metadata.thumbnail_url
             offer_meta_data.videoDuration = metadata.duration
-            db.session.add(offer_meta_data)
         else:
             logger.warning(
-                "No Video found on Youtube for this offer",
+                "This video is private, removing video URL (PC-37882)",
                 extra={
                     "offer_id": offer_meta_data.offerId,
                     "video_url": offer_meta_data.videoUrl,
+                    "reason": "Supprimé par script lors du rattrapage le 22/20/2025",
                 },
+                technical_message_id="offer.video.deleted",
             )
+            offer_meta_data.videoUrl = None
 
 
 if __name__ == "__main__":
