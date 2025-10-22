@@ -215,13 +215,13 @@ def get_update_chronicle_content_form(chronicle_id: int) -> utils.BackofficeResp
         "div_id": f"update-chronicle-content-{chronicle_id}",  # must be consistent with parameter passed to build_lazy_modal
         "title": "Modifier le contenu de la chronique",
         "button_text": "Enregistrer",
+        "ajax_submit": utils.is_request_from_htmx(),
     }
 
-    if utils.is_request_from_htmx():
-        return render_template(
-            "components/dynamic/modal_form.html", target_id=f"#chronicle-row-{chronicle_id}", **kwargs
-        )
-    return render_template("components/turbo/modal_form.html", **kwargs)
+    if kwargs["ajax_submit"]:
+        kwargs["target_id"] = f"#chronicle-row-{chronicle_id}"
+
+    return render_template("components/dynamic/modal_form.html", **kwargs)
 
 
 @chronicles_blueprint.route("/<int:chronicle_id>/update-content", methods=["POST"])

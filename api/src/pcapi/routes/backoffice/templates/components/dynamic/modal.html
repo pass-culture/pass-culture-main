@@ -40,3 +40,6 @@
     <div class="modal-dialog modal-dialog-centered">{% include "components/dynamic/modal_form.html" %}</div>
   </div>
 {% endmacro %}
+{% macro build_lazy_modal(url, div_id, modal_size="lg", method="get", form=None) %}
+  {{ build_dynamic_modal(url, div_id, modal_size, method, form, ajax_submit=False) }}
+{% endmacro %}

@@ -98,12 +98,13 @@ def search_titelive() -> utils.BackofficeResponse:
 def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.titelive.add_product_whitelist", ean=ean, title=title),
         div_id="add-whitelist-confirmation",
         title="Ajouter à la whitelist",
         button_text="Ajouter",
+        ajax_submit=False,
     )
 
 

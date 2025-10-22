@@ -774,7 +774,7 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
     form = offerer_forms.OptionalCommentForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for(
             "backoffice_web.offerer.delete_user_offerer", offerer_id=offerer_id, user_offerer_id=user_offerer.id
@@ -783,6 +783,7 @@ def get_delete_user_offerer_form(offerer_id: int, user_offerer_id: int) -> utils
         title=f"Supprimer le rattachement à {user_offerer.offerer.name.upper()}",
         button_text="Supprimer le rattachement",
         information="Cette action entraîne la suppression du lien utilisateur/entité juridique et non le rejet. Cette action n’envoie aucun mail à l’acteur culturel.",
+        ajax_submit=False,
     )
 
 
@@ -991,14 +992,14 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
 
 def _render_get_create_venue_without_siret_form(form: pro_forms.CreateVenueWithoutSIRETForm, offerer_id: int) -> str:
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         information="Ce formulaire permet de créer un nouveau partenaire culturel rattaché au SIRET choisi.",
         form=form,
         dst=url_for("backoffice_web.offerer.create_venue", offerer_id=offerer_id),
         div_id="create-venue-modal",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un partenaire culturel sans SIRET",
         button_text="Créer le partenaire culturel",
-        data_turbo=True,
+        ajax_submit=False,
     )
 
 
@@ -1519,13 +1520,14 @@ def get_close_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
         info += Markup("</ul>")
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         info=info,
         form=form,
         dst=url_for("backoffice_web.offerer.close_offerer", offerer_id=offerer.id),
         div_id=f"close-modal-{offerer.id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Fermer l'entité juridique {offerer.name.upper()}",
         button_text="Fermer l'entité juridique",
+        ajax_submit=False,
     )
 
 

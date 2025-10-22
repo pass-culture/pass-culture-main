@@ -1079,11 +1079,12 @@ def _render_remove_pricing_point_content(
     )
     return (
         render_template(
-            "components/turbo/modal_form.html",
+            "components/dynamic/modal_form.html",
             div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
             title="Détacher le point de valorisation",
             additional_data=additional_data.items(),
             alert=error,
+            ajax_submit=False,
             **kwargs,
         ),
         400 if error or (form and form.errors) else 200,
@@ -1162,12 +1163,13 @@ def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     form = forms.PricingPointForm(venue=venue)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         div_id="set-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
         title="Attribuer un point de valorisation",
         form=form,
         dst=url_for("backoffice_web.venue.set_pricing_point", venue_id=venue.id),
         button_text="Confirmer",
+        ajax_submit=False,
     )
 
 

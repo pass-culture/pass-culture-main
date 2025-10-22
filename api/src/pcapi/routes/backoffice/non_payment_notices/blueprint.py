@@ -153,12 +153,13 @@ def get_create_non_payment_notice_form() -> utils.BackofficeResponse:
     form = forms.CreateNonPaymentNoticeForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.non_payment_notices.create_non_payment_notice"),
         div_id="create-non-payment-notice",  # must be consistent with parameter passed to build_lazy_modal
         title="Saisir un avis d'impayé",
         button_text="Enregistrer",
+        ajax_submit=False,
     )
 
 
@@ -244,12 +245,13 @@ def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
         autocomplete.prefill_venues_choices(form.venue)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.non_payment_notices.edit", notice_id=notice_id),
         div_id=f"edit-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Modifier les informations",
         button_text="Enregistrer",
+        ajax_submit=False,
     )
 
 
@@ -268,12 +270,13 @@ def get_set_pending_form(notice_id: int) -> utils.BackofficeResponse:
     form = forms.SetPendingForm()
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.non_payment_notices.set_pending", notice_id=notice_id),
         div_id=f"pending-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Mettre en attente",
         button_text="Mettre en attente",
+        ajax_submit=False,
     )
 
 
@@ -308,12 +311,13 @@ def set_pending(notice_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
 def get_set_no_continuation_form(notice_id: int) -> utils.BackofficeResponse:
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=EmptyForm(),
         dst=url_for("backoffice_web.non_payment_notices.set_no_continuation", notice_id=notice_id),
         div_id=f"no-continuation-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Classer sans suite",
         button_text="Classer sans suite",
+        ajax_submit=False,
     )
 
 
@@ -334,12 +338,13 @@ def set_no_continuation(notice_id: int) -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES)
 def get_close_form(notice_id: int) -> utils.BackofficeResponse:
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=forms.CloseForm(),
         dst=url_for("backoffice_web.non_payment_notices.close", notice_id=notice_id),
         div_id=f"close-modal-{notice_id}",  # must be consistent with parameter passed to build_lazy_modal
         title="Terminer",
         button_text="Terminer",
+        ajax_submit=False,
     )
 
 
