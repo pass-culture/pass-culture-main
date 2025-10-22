@@ -110,14 +110,10 @@ class VenueResponseModel(BaseModel):
 
 
 class GetVenueManagingOffererResponseModel(BaseModel):
-    city: str
-    dateCreated: datetime
     id: int
     isValidated: bool
     name: str
-    postalCode: str
     siren: str
-    street: str | None
     allowedOnAdage: bool
 
     class Config:
