@@ -61,8 +61,6 @@ class ListProvidersTest(GetEndpointHelper):
         assert rows[0]["Partenaire technique"] == provider.name
         assert rows[0]["Partenaires culturels synchronisés au partenaire"] == "0 actif / 0 inactif"
         assert rows[0]["SIREN"] == offerer.siren
-        assert rows[0]["Ville"] == offerer.city
-        assert rows[0]["Code postal"] == offerer.postalCode
         assert rows[0]["URL du logo"] == ""
         assert rows[0]["Nombre de clés d'API"] == "1"
         assert rows[0]["Actif pour les pros"] == "Oui"
@@ -72,8 +70,6 @@ class ListProvidersTest(GetEndpointHelper):
         assert rows[-1]["Partenaire technique"] == second_provider.name
         assert rows[-1]["Partenaires culturels synchronisés au partenaire"] == "1 actif / 1 inactif"
         assert rows[-1]["SIREN"] == second_offerer.siren
-        assert rows[-1]["Ville"] == second_offerer.city
-        assert rows[-1]["Code postal"] == second_offerer.postalCode
         assert rows[-1]["URL du logo"] == ""
         assert rows[-1]["Nombre de clés d'API"] == "1"
         assert rows[-1]["Actif pour les pros"] == "Oui"
@@ -96,8 +92,6 @@ class CreateProviderTest(PostEndpointHelper):
     def test_create_provider_and_offerer(self, authenticated_client):
         form_data = {
             "name": "Individual Offer API consumer",
-            "city": "Paris",
-            "postal_code": "75008",
             "siren": "123456789",
             "logo_url": "https://example.org/image.png",
             "booking_external_url": "https://example.org/booking",
@@ -127,8 +121,6 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.offererProvider is not None
         created_offerer = created_provider.offererProvider.offerer
         assert created_offerer.name == form_data["name"]
-        assert created_offerer.city == form_data["city"]
-        assert created_offerer.postalCode == form_data["postal_code"]
         assert created_offerer.siren == form_data["siren"]
         assert created_offerer.validationStatus == ValidationStatus.VALIDATED
         assert created_offerer.confidenceLevel == offerers_models.OffererConfidenceLevel.MANUAL_REVIEW
@@ -147,8 +139,6 @@ class CreateProviderTest(PostEndpointHelper):
 
         form_data = {
             "name": "Individual Offer API consumer",
-            "city": "Grenoble",
-            "postal_code": "38000",
             "siren": offerer.siren,
             "logo_url": "https://example.org/image.png",
             "booking_external_url": "https://example.org/booking",
@@ -178,16 +168,12 @@ class CreateProviderTest(PostEndpointHelper):
         assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_provider.offererProvider.offerer == offerer
         assert offerer.name != form_data["name"]
-        assert offerer.city != form_data["city"]
-        assert offerer.postalCode != form_data["postal_code"]
 
     def test_create_provider_with_least_data(self, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
         form_data = {
             "name": "Individual Offer API consumer",
-            "city": "Grenoble",
-            "postal_code": "38000",
             "siren": offerer.siren,
             "enabled_for_pro": False,
             "is_active": True,
@@ -213,8 +199,6 @@ class CreateProviderTest(PostEndpointHelper):
         assert db.session.query(offerers_models.Offerer).count() == 1
         assert created_provider.offererProvider.offerer == offerer
         assert offerer.name != form_data["name"]
-        assert offerer.city != form_data["city"]
-        assert offerer.postalCode != form_data["postal_code"]
 
 
 class GetProviderTest(GetEndpointHelper):
@@ -249,8 +233,6 @@ class GetProviderTest(GetEndpointHelper):
         assert provider.name in response_text
         assert f"Provider ID : {provider.id} " in response_text
         assert f"SIREN : {offerer.siren} " in response_text
-        assert f"Ville : {offerer.city} " in response_text
-        assert f"Code postal : {offerer.postalCode} " in response_text
         assert "Actif : Oui " in response_text
         assert "Actif pour les pros : Oui " in response_text
         assert f"Nombre de clés d'API : {len(provider.apiKeys)} " in response_text

@@ -78,7 +78,7 @@ def list_providers() -> utils.BackofficeResponse:
         .options(
             sa_orm.joinedload(providers_models.Provider.offererProvider)
             .joinedload(offerers_models.OffererProvider.offerer)
-            .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
+            .load_only(offerers_models.Offerer.siren)
         )
         .options(sa_orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
         .order_by(sa.func.lower(sa.func.unaccent(providers_models.Provider.name)))
@@ -193,8 +193,6 @@ def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_mod
         offerer = offerers_models.Offerer(
             name=form.name.data,
             siren=form.siren.data,
-            city=form.city.data,
-            postalCode=form.postal_code.data,
             validationStatus=ValidationStatus.VALIDATED,
         )
     elif not offerer.isValidated:
@@ -235,7 +233,7 @@ def get_provider(provider_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.joinedload(providers_models.Provider.offererProvider)
             .joinedload(offerers_models.OffererProvider.offerer)
-            .load_only(offerers_models.Offerer.city, offerers_models.Offerer.postalCode, offerers_models.Offerer.siren)
+            .load_only(offerers_models.Offerer.siren)
         )
         .options(sa_orm.joinedload(providers_models.Provider.apiKeys).load_only(offerers_models.ApiKey.id))
         .one_or_none()
