@@ -49,7 +49,7 @@ export const DatePicker = React.forwardRef(
         <div>
           <label htmlFor={inputId} className={styles['label']}>
             {label}
-            {required && asterisk ? ' *' : ''}
+            {required && asterisk ? <>&nbsp;*</> : ''}
           </label>
           <BaseDatePicker
             data-testid={name}
