@@ -503,43 +503,47 @@
                 "type": "object"
             },
             "BookingListItemOfferResponse": {
-                "type": "object",
-                "title": "BookingListItemOfferResponse",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
-                    "name": {
-                        "type": "string",
-                        "title": "Name"
-                    },
-                    "imageUrl": {
-                        "type": "string",
-                        "title": "Imageurl",
-                        "nullable": true
-                    },
                     "address": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/BookingListItemOfferResponseAddress"
                             }
                         ],
-                        "title": "BookingListItemOfferResponseAddress",
-                        "nullable": true
+                        "nullable": true,
+                        "title": "BookingListItemOfferResponseAddress"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "imageUrl": {
+                        "nullable": true,
+                        "title": "Imageurl",
+                        "type": "string"
                     },
                     "isDigital": {
-                        "type": "boolean",
-                        "title": "Isdigital"
+                        "title": "Isdigital",
+                        "type": "boolean"
                     },
                     "isPermanent": {
-                        "type": "boolean",
-                        "title": "Ispermanent"
+                        "title": "Ispermanent",
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "subcategoryId": {
+                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                    },
+                    "venue": {
+                        "$ref": "#/components/schemas/BookingListItemVenueResponse"
                     },
                     "withdrawalDelay": {
-                        "type": "integer",
+                        "nullable": true,
                         "title": "Withdrawaldelay",
-                        "nullable": true
+                        "type": "integer"
                     },
                     "withdrawalType": {
                         "anyOf": [
@@ -548,12 +552,6 @@
                             }
                         ],
                         "nullable": true
-                    },
-                    "subcategoryId": {
-                        "$ref": "#/components/schemas/SubcategoryIdEnum"
-                    },
-                    "venue": {
-                        "$ref": "#/components/schemas/BookingListItemVenueResponse"
                     }
                 },
                 "required": [
@@ -563,42 +561,42 @@
                     "isPermanent",
                     "subcategoryId",
                     "venue"
-                ]
+                ],
+                "title": "BookingListItemOfferResponse",
+                "type": "object"
             },
             "BookingListItemOfferResponseAddress": {
-                "type": "object",
-                "title": "BookingListItemOfferResponseAddress",
                 "properties": {
                     "timezone": {
-                        "type": "string",
-                        "title": "Timezone"
+                        "title": "Timezone",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "timezone"
-                ]
+                ],
+                "title": "BookingListItemOfferResponseAddress",
+                "type": "object"
             },
             "BookingListItemResponse": {
-                "title": "BookingListItemResponse",                
-                "type": "object",
                 "properties": {
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "dateCreated": {
-                        "format": "date-time",
-                        "title": "Datecreated",
-                        "type": "string"
-                    },
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ActivationCodeResponse"
                             }
                         ],
-                        "title": "ActivationCodeResponse",
-                        "nullable": true
+                        "nullable": true,
+                        "title": "ActivationCodeResponse"
+                    },
+                    "dateCreated": {
+                        "format": "date-time",
+                        "title": "Datecreated",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
                     },
                     "quantity": {
                         "title": "Quantity",
@@ -610,20 +608,20 @@
                 },
                 "required": [
                     "id",
-                    "date_created",
+                    "dateCreated",
                     "quantity",
                     "stock"
-                ]
-            },            
+                ],
+                "title": "BookingListItemResponse",
+                "type": "object"
+            },
             "BookingListItemStockResponse": {
-                "title": "BookingListItemStockResponse",
-                "type": "object",
                 "properties": {
                     "beginningDatetime": {
                         "format": "date-time",
+                        "nullable": true,
                         "title": "Beginningdatetime",
-                        "type": "string",
-                        "nullable": true
+                        "type": "string"
                     },
                     "offer": {
                         "$ref": "#/components/schemas/BookingListItemOfferResponse"
@@ -631,32 +629,32 @@
                 },
                 "required": [
                     "offer"
-                ]
-            },            
+                ],
+                "title": "BookingListItemStockResponse",
+                "type": "object"
+            },
             "BookingListItemVenueResponse": {
-                "type": "object",
-                "title": "BookingListItemVenueResponse",
                 "properties": {
-                    "id": {
-                        "type": "integer",
-                        "title": "Id"
-                    },
                     "city": {
-                        "type": "string",
+                        "nullable": true,
                         "title": "City",
-                        "nullable": true
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
                     },
                     "label": {
-                        "type": "string",
-                        "title": "Label"
+                        "title": "Label",
+                        "type": "string"
                     },
                     "name": {
-                        "type": "string",
-                        "title": "Name"
+                        "title": "Name",
+                        "type": "string"
                     },
                     "timezone": {
-                        "type": "string",
-                        "title": "Timezone"
+                        "title": "Timezone",
+                        "type": "string"
                     }
                 },
                 "required": [
@@ -664,22 +662,8 @@
                     "label",
                     "name",
                     "timezone"
-                ]
-            },
-            "BookingsListResponseV2": {
-                "properties": {
-                    "bookings": {
-                        "items": {
-                            "$ref": "#/components/schemas/BookingResponseList"
-                        },
-                        "title": "Bookings",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "bookings"
                 ],
-                "title": "BookingsListResponseV2",
+                "title": "BookingListItemVenueResponse",
                 "type": "object"
             },
             "BookingOfferExtraData": {
@@ -1325,6 +1309,22 @@
                     "isOpenToPublic"
                 ],
                 "title": "BookingVenueResponseV2",
+                "type": "object"
+            },
+            "BookingsListResponseV2": {
+                "properties": {
+                    "bookings": {
+                        "items": {
+                            "$ref": "#/components/schemas/BookingListItemResponse"
+                        },
+                        "title": "Bookings",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "bookings"
+                ],
+                "title": "BookingsListResponseV2",
                 "type": "object"
             },
             "BookingsResponse": {
@@ -8980,7 +8980,7 @@
                 "summary": "get_bookings_list <GET>",
                 "tags": []
             }
-        },        
+        },
         "/native/v2/offer/{offer_id}": {
             "get": {
                 "description": "",
