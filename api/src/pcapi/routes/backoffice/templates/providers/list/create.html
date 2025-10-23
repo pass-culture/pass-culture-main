@@ -1,0 +1,8 @@
+{% import "components/clipboard.html" as clipboard %}
+<div>
+  La clé d'API ne peut être ni régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : <pre class="d-inline">{{clear_secret}}</pre><span class="ms-1">{{ clipboard.copy_to_clipboard(clear_secret, "Copier la clé d'API") }}</span>
+</div>
+<hr />
+<div>
+  La clé de chiffrement des requêtes entre le service de billetterie du partenaire et le pass Culture est : <pre class="d-inline">{{ key }}</pre><span class="ms-1">{{ clipboard.copy_to_clipboard(key, "Copier la clé de chiffrement") }}</span>
+</div>

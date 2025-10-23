@@ -58,9 +58,11 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button"
-              class="btn btn-outline-primary-subtle-bg"
-              data-bs-dismiss="modal">Annuler</button>
+      {% if not hide_cancel %}
+        <button type="button"
+                class="btn btn-outline-primary-subtle-bg"
+                data-bs-dismiss="modal">Annuler</button>
+      {% endif %}
       {% if button_text %}
         <button class="btn btn-primary"
                 type="submit"

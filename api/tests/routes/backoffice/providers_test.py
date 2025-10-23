@@ -107,11 +107,9 @@ class CreateProviderTest(PostEndpointHelper):
             "is_active": True,
         }
         response = self.post_to_endpoint(authenticated_client, form_data)
-        assert response.status_code == 303
-        redirected_response = authenticated_client.get(response.headers["location"])
+        assert response.status_code == 200
 
-        created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", response.data.decode("utf-8")), (
             "clear api key secret not found"
         )
 
@@ -160,11 +158,9 @@ class CreateProviderTest(PostEndpointHelper):
             "is_active": True,
         }
         response = self.post_to_endpoint(authenticated_client, form_data)
-        assert response.status_code == 303
-        redirected_response = authenticated_client.get(response.headers["location"])
+        assert response.status_code == 200
 
-        created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", response.data.decode("utf-8")), (
             "clear api key secret not found"
         )
 
@@ -197,11 +193,9 @@ class CreateProviderTest(PostEndpointHelper):
             "is_active": True,
         }
         response = self.post_to_endpoint(authenticated_client, form_data)
-        assert response.status_code == 303
-        redirected_response = authenticated_client.get(response.headers["location"])
+        assert response.status_code == 200
 
-        created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert), (
+        assert re.search(rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", response.data.decode("utf-8")), (
             "clear api key secret not found"
         )
 

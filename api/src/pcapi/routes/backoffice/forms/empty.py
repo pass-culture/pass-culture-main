@@ -8,6 +8,13 @@ class EmptyForm(FlaskForm):
     pass
 
 
+class EmptyGetForm(FlaskForm):
+    method = "GET"
+
+    class Meta:
+        csrf = False
+
+
 class DynamicForm(EmptyForm):
     redirect = HiddenBooleanField(default=False)
 

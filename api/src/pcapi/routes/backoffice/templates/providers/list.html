@@ -10,7 +10,7 @@
             data-bs-toggle="modal"
             data-bs-target="#create-provider"
             type="button">Créer un partenaire</button>
-    {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider") }}
+    {{ build_lazy_modal(url_for("backoffice_web.providers.get_create_provider_form") , "create-provider", modal_size="xl") }}
   {% endif %}
 {% endblock before_table %}
 {% block table_header %}
