@@ -86,7 +86,8 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
     fraud_check = handle_dms_application(dms_application)
 
     if fraud_check is not None:
-        repository.delete(dms_orphan)
+        db.session.delete(dms_orphan)
+        db.session.commit()
 
 
 def _is_fraud_check_up_to_date(

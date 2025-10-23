@@ -26,7 +26,6 @@ from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.utils.repository import transaction
 
 
@@ -361,7 +360,9 @@ class UserDepositVersionTest:
 
     def test_when_no_deposit(self):
         user = users_factories.UserFactory()
-        repository.delete(*user.deposits)
+        for deposit in user.deposits:
+            db.session.delete(deposit)
+        db.session.commit()
         assert user.deposit_version is None
 
 
