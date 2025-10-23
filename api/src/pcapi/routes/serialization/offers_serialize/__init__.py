@@ -632,10 +632,6 @@ class VideoMetatdataQueryModel(BaseModel):
         extra = "forbid"
 
 
-class OfferHighlightResquestsResponseModel(BaseModel):
-    highlight_requests: list[str]
-
-
 class OfferVideo(ConfiguredBaseModel):
     id: str
     title: str | None
