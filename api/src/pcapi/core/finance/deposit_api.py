@@ -1,9 +1,11 @@
 import datetime
 import decimal
 import logging
+from collections.abc import Sequence
 
 import sqlalchemy.orm as sa_orm
 from dateutil.relativedelta import relativedelta
+from sqlalchemy import select
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external.attributes.api as external_attributes_api
@@ -77,25 +79,18 @@ def recredit_users() -> None:
     upper_date = date_utils.get_naive_utc_now() - relativedelta(years=17)
     lower_date = date_utils.get_naive_utc_now() - relativedelta(years=19)
 
-    user_ids = [
-        result
-        for (result,) in (
-            db.session.query(users_models.User)
-            .filter(users_models.User.has_underage_beneficiary_role)
-            .filter(users_models.User.validatedBirthDate > lower_date)
-            .filter(users_models.User.validatedBirthDate <= upper_date)
-            .with_entities(users_models.User.id)
-            .all()
-        )
-    ]
-
-    start_index = 0
-    while start_index < len(user_ids):
-        recredit_users_by_id(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
-        start_index += RECREDIT_UNDERAGE_USERS_BATCH_SIZE
+    user_id_query = (
+        select(users_models.User.id)
+        .where(users_models.User.has_underage_beneficiary_role)
+        .where(users_models.User.validatedBirthDate > lower_date)
+        .where(users_models.User.validatedBirthDate <= upper_date)
+        .execution_options(yield_per=RECREDIT_UNDERAGE_USERS_BATCH_SIZE)
+    )
+    for user_id_partition in db.session.scalars(user_id_query).partitions():
+        recredit_users_by_id(user_id_partition)
 
 
-def recredit_users_by_id(user_ids: list[int]) -> None:
+def recredit_users_by_id(user_ids: Sequence[int]) -> None:
     failed_users = []
 
     with transaction():
