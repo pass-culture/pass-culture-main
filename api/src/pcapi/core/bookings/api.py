@@ -201,7 +201,10 @@ def classify_and_sort_bookings(
     return (sorted_ended_bookings, sorted_ongoing_bookings)
 
 
-def get_individual_bookings_by_status(user: users_models.User, status: str) -> list[models.Booking]:
+def get_user_bookings_by_status(user: users_models.User, status: str) -> list[models.Booking]:
+    """
+    Get 'ended' or 'ongoing' bookings for a user, with only the data needed for the booking page.
+    """
     query = (
         db.session.query(models.Booking)
         .filter_by(userId=user.id)
