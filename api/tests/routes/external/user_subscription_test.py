@@ -34,7 +34,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories
@@ -1427,7 +1426,8 @@ class UbbleWebhookTest:
         )
         fraud_check.status = subscription_models.FraudCheckStatus.OK
         fraud_check.user.roles = [users_models.UserRole.BENEFICIARY]
-        repository.save(fraud_check)
+        db.session.add(fraud_check)
+        db.session.commit()
 
         response = self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
 
@@ -1600,7 +1600,9 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        repository.save(ubble_fraud_check)
+        db.session.add(ubble_fraud_check)
+        db.session.commit()
+
         honor_fraud_check = subscription_models.BeneficiaryFraudCheck(
             user=user,
             type=subscription_models.FraudCheckType.HONOR_STATEMENT,
@@ -1611,7 +1613,9 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
-        repository.save(honor_fraud_check)
+        db.session.add(honor_fraud_check)
+        db.session.commit()
+
         request_data = self._get_request_body(ubble_fraud_check, ubble_schemas.UbbleIdentificationStatus.PROCESSED)
         return user, ubble_fraud_check, request_data
 

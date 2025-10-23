@@ -70,7 +70,8 @@ class VenueBannerUrlTest:
         venue = factories.VenueFactory()
 
         venue.bannerUrl = expected_banner_url
-        repository.save(venue)
+        db.session.add(venue)
+        db.session.commit()
         db.session.refresh(venue)
 
         assert venue.bannerUrl == expected_banner_url
@@ -81,8 +82,8 @@ class VenueBannerUrlTest:
         venue = factories.VenueFactory(bannerUrl="http://example.com/legacy_url")
 
         venue.bannerUrl = expected_banner_url
-        repository.save(venue)
-        db.session.refresh(venue)
+        db.session.add(venue)
+        db.session.commit()
 
         assert venue.bannerUrl == expected_banner_url
         assert venue._bannerUrl == expected_banner_url

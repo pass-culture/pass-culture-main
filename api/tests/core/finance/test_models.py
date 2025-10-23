@@ -15,7 +15,6 @@ from pcapi.core.finance import models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -32,7 +31,8 @@ class CustomReimbursementRuleTest:
         start = datetime.datetime(2021, 1, 12, 0, 0)
         offer = offers_factories.OfferFactory()
         rule = models.CustomReimbursementRule(timespan=(start, None), amount=1, offer=offer)
-        repository.save(rule)
+        db.session.add(rule)
+        db.session.commit()
         db.session.refresh(rule)
 
         # Test without upper bound
@@ -44,7 +44,8 @@ class CustomReimbursementRuleTest:
         # Test with upper bound
         end = datetime.datetime(2021, 5, 12, 0, 0)
         rule.timespan = db_utils.make_timerange(start, end)
-        repository.save(rule)
+        db.session.add(rule)
+        db.session.commit()
         db.session.refresh(rule)
         assert rule.timespan.lower == start
         assert rule.timespan.upper == end
@@ -56,7 +57,8 @@ class CustomReimbursementRuleTest:
         tz = pytz.timezone("Europe/Paris")
         start = tz.localize(datetime.datetime(2021, 1, 12, 0, 0))
         rule = models.CustomReimbursementRule(timespan=(start, None), amount=1, offer=offer)
-        repository.save(rule)
+        db.session.add(rule)
+        db.session.commit()
         db.session.refresh(rule)
         assert rule.timespan.lower == datetime.datetime(2021, 1, 11, 23, 0)
 

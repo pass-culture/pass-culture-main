@@ -1092,7 +1092,8 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
     offer.criteria = criteria
     offer.rankingWeight = form.rankingWeight.data
-    repository.save(offer)
+    db.session.add(offer)
+    db.session.flush()
 
     #  Immediately index offer if tags are updated: tags are used by
     #  other tools (eg. building playlists for the home page) and
@@ -1301,7 +1302,8 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
             # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
             # modifications of the offer; we save them here first
-            repository.save(offer)
+            db.session.add(offer)
+            db.session.flush()
 
             cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
             for booking in cancelled_bookings:
@@ -1310,7 +1312,8 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
                     rejected_by_fraud_action=True,
                 )
 
-            repository.save(offer)
+            db.session.add(offer)
+            db.session.flush()
 
             recipients = _get_offer_recipients(offer)
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)

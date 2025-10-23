@@ -25,7 +25,6 @@ from pcapi.routes.backoffice.accounts import serialization
 from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.utils import email as email_utils
-from pcapi.utils import repository
 
 from . import forms
 
@@ -202,7 +201,8 @@ def update_bo_user(user_id: int) -> utils.BackofficeResponse:
         snapshot.set("email", old=old_email, new=form.email.data)
 
     snapshot.add_action()
-    repository.save(user)
+    db.session.add(user)
+    db.session.flush()
 
     flash("Les informations ont été mises à jour", "success")
     return redirect(url_for(".get_bo_user", user_id=user_id), code=303)
