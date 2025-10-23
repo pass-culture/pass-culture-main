@@ -46,6 +46,9 @@ Le repo `main` contient les 4 projets suivants :
 - [Commitizen](https://commitizen-tools.github.io/commitizen/#installation) (CLI pour écrire des commits au bon format)
   - `pip install -U commitizen` ou `brew install commitizen`
 
+- [gitleaks](https://github.com/gitleaks/gitleaks)
+  - `brew install gitleaks`
+
 Pour les devs **qui n'utilisent PAS VSCode** et qui ouvrent le projet à partir du dossier racine `pass-culture-main` dans leur IDE :
 - [Biome](https://biomejs.dev/guides/getting-started/) (Linter JS/JSON/CSS/HTML pour le Frontend)
   - `npm i -g @biomejs/biome` ou `brew install biome`

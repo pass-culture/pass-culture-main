@@ -324,5 +324,28 @@ if [[ ! -z "$STAGED_PYPROJECT_TOML" ]]; then
   fi
 fi
 
+###########################
+## END CHECK DEPENDECIES ##
+###########################
+
+########################
+## CHECK SECRET LEAKS ##
+########################
+
+echo "Running gitleaks..."
+
+output=$(gitleaks git --staged --verbose --exit-code 1 2>&1)
+status=$?
+
+if [ $status -ne 0 ]; then
+    echo -e "❌ Secrets were detected by gitleaks"
+    echo -e "$output"
+    exit 1
+fi
+
+############################
+## END CHECK SECRET LEAKS ##
+############################
+
 # return 0-exit code
 exit 0
