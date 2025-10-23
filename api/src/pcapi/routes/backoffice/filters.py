@@ -345,10 +345,13 @@ def format_bool_badge(data: bool | None, none_display: str = "") -> str:
     return format_badge("Non", "danger")
 
 
-def format_string_list(data: list[str] | None) -> str:
+def format_string_list(data: list[str] | None, max_characters: int | None = None) -> str:
     if data is None:
         return ""
-    return ", ".join(data)
+    result = ", ".join(data)
+    if max_characters and len(result) > max_characters:
+        result = result[:max_characters].rsplit(",", 1)[0] + "…"
+    return result
 
 
 def pluralize(count: int, singular: str = "", plural: str = "s") -> str:

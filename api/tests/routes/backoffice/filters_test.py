@@ -150,3 +150,11 @@ class FormatDateTimeTest:
         address = geography_factories.OverseasAddressFactory()
         result = filters.format_date_time(None, address)
         assert result == ""
+
+
+class FormatStringListTest:
+    def test_format_string_list(self):
+        data = ["Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Montpellier"]
+        assert filters.format_string_list(data) == "Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier"
+        assert filters.format_string_list(data, max_characters=30) == "Paris, Marseille, Lyon…"
+        assert filters.format_string_list(data, max_characters=3) == "Par…"
