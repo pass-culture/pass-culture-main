@@ -280,6 +280,50 @@ class OffererIsTopActeurSQLExpressionTest:
         assert db.session.query(models.Offerer).filter(models.Offerer.is_top_acteur.is_(True)).count() == 0
 
 
+class OffererDepartmentCodesTest:
+    def test_offerer_department_codes(self):
+        offerer = factories.OffererFactory()
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="11")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="22")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="33")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="11")
+        deleted_venue = factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="44")
+        deleted_venue.isSoftDeleted = True
+        db.session.flush()
+
+        offerer = (
+            db.session.query(models.Offerer)
+            .filter_by(id=offerer.id)
+            .options(
+                sa_orm.with_expression(models.Offerer.department_codes, models.Offerer.department_codes_expression())
+            )
+            .one()
+        )
+
+        assert sorted(offerer.department_codes) == ["11", "22", "33"]
+
+
+class OffererCitiesTest:
+    def test_offerer_cities(self):
+        offerer = factories.OffererFactory()
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Marseille")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Toulouse")
+        factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
+        deleted_venue = factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Nice")
+        deleted_venue.isSoftDeleted = True
+        db.session.flush()
+
+        offerer = (
+            db.session.query(models.Offerer)
+            .filter_by(id=offerer.id)
+            .options(sa_orm.with_expression(models.Offerer.cities, models.Offerer.cities_expression()))
+            .one()
+        )
+
+        assert sorted(offerer.cities) == ["Lyon", "Marseille", "Toulouse"]
+
+
 class VenueNApprovedOffersTest:
     def test_venue_n_approved_offers(self):
         venue = factories.VenueFactory()

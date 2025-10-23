@@ -155,6 +155,10 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id_query)
         .outerjoin(offerers_models.UserOfferer.user)
         .options(
+            sa_orm.with_expression(
+                offerers_models.Offerer.department_codes, offerers_models.Offerer.department_codes_expression()
+            ),
+            sa_orm.with_expression(offerers_models.Offerer.cities, offerers_models.Offerer.cities_expression()),
             sa_orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             ),
@@ -182,14 +186,6 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
     if not edit_offerer_form:
         edit_offerer_form = offerer_forms.EditOffererForm(
             name=offerer.name,
-            postal_address_autocomplete=(
-                f"{offerer.street}, {offerer.postalCode} {offerer.city}"
-                if offerer.street is not None and offerer.city is not None and offerer.postalCode is not None
-                else None
-            ),
-            city=offerer.city,
-            postal_code=offerer.postalCode,
-            street=offerer.street,
             tags=offerer.tags,
         )
 
@@ -243,7 +239,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         search_form=search_form,
         search_dst=url_for("backoffice_web.pro.search_pro"),
         offerer=offerer,
-        region=regions_utils.get_region_name_from_postal_code(offerer.postalCode) if offerer.postalCode else "",
+        regions={regions_utils.get_region_name_from_department_code(code) for code in offerer.department_codes or []},
         creator_phone_number=row.creator_phone_number,
         adage_information=row.adage_information,
         bank_information_status=bank_information_status,
@@ -550,9 +546,6 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
         offerer,
         current_user,
         name=form.name.data,
-        city=form.city.data,
-        postal_code=form.postal_code.data,
-        street=form.street.data,
         tags=form.tags.data,
     )
 

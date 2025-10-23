@@ -1115,26 +1115,18 @@ class CreateOffererTest:
 
 class UpdateOffererTest:
     def test_update_offerer(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory()
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(offerer, author, city="Nantes", postal_code="44000", street="29 avenue de Bretagne")
+        offerers_api.update_offerer(offerer, author, name="Test")
         offerer = db.session.query(offerers_models.Offerer).one()
-        assert offerer.city == "Nantes"
-        assert offerer.postalCode == "44000"
-        assert offerer.street == "29 avenue de Bretagne"
-
-        offerers_api.update_offerer(offerer, author, city="Naoned")
-        offerer = db.session.query(offerers_models.Offerer).one()
-        assert offerer.city == "Naoned"
-        assert offerer.postalCode == "44000"
-        assert offerer.street == "29 avenue de Bretagne"
+        assert offerer.name == "Test"
 
     def test_update_offerer_logs_action(self):
-        offerer = offerers_factories.OffererFactory(city="Portus Namnetum", street="1 rue d'Armorique")
+        offerer = offerers_factories.OffererFactory(name="Original")
         author = users_factories.UserFactory()
 
-        offerers_api.update_offerer(offerer, author, city="Nantes", street="29 avenue de Bretagne")
+        offerers_api.update_offerer(offerer, author, name="Updated")
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -1143,10 +1135,7 @@ class UpdateOffererTest:
         assert action.userId is None
         assert action.offererId == offerer.id
         assert action.venueId is None
-        assert action.extraData["modified_info"] == {
-            "city": {"new_info": "Nantes", "old_info": "Portus Namnetum"},
-            "street": {"new_info": "29 avenue de Bretagne", "old_info": "1 rue d'Armorique"},
-        }
+        assert action.extraData["modified_info"] == {"name": {"new_info": "Updated", "old_info": "Original"}}
 
 
 class DeleteOffererTest:
