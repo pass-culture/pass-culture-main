@@ -14,13 +14,23 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import type { VenueSettingsFormValues } from '../types'
+import type {
+  VenueSettingsFormContext,
+  VenueSettingsFormValues,
+} from '../../commons/types'
 import { VenueSettingsForm } from '../VenueSettingsForm'
 
 const venueTypes: VenueTypeResponseModel[] = [
   { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
   { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
+
+const defaultFormContext: VenueSettingsFormContext = {
+  isCaledonian: false,
+  withSiret: true,
+  isVenueVirtual: false,
+  siren: '881457238',
+}
 
 const offerer = {
   ...defaultGetOffererResponseModel,
@@ -47,13 +57,18 @@ function renderVenueSettingsForm(
   defaultProps?: VenueSettingsFormValues,
   options?: RenderWithProvidersOptions
 ) {
-  const Wrapper = () => {
+  const Wrapper = ({
+    formContext,
+  }: {
+    formContext?: VenueSettingsFormContext
+  }) => {
     const methods = useForm({ defaultValues: {} })
     return (
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(() => {})}>
           <VenueSettingsForm
             {...defaultProps}
+            formContext={formContext || defaultFormContext}
             offerer={offerer}
             venueTypes={venueTypes}
             venueProviders={venueProviders}

@@ -24,6 +24,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
@@ -107,7 +108,11 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         if body.siret and not entreprise_api.get_siret_open_data(body.siret).active:
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
     except entreprise_exceptions.UnknownEntityException:
-        if settings.ENFORCE_SIRET_CHECK or not FeatureToggle.DISABLE_SIRET_CHECK.is_active():
+        is_valid_ridet = venue.is_caledonian and body.siret and siren_utils.is_siret_or_ridet(body.siret)
+        force_siret_check_with_insee_api = not is_valid_ridet and (
+            settings.ENFORCE_SIRET_CHECK or not FeatureToggle.DISABLE_SIRET_CHECK.is_active()
+        )
+        if force_siret_check_with_insee_api:
             raise
 
     not_venue_fields = {

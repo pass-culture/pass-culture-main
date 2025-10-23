@@ -1,8 +1,8 @@
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { StructureDataBodyModel } from '@/apiClient/v1/models/StructureDataBodyModel'
-import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { memoize } from '@/commons/utils/memoize'
+import { unhumanizeSiret } from '@/commons/utils/siren'
 
 import { validateSiret } from './validate'
 
