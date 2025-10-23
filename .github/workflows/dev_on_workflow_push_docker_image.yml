@@ -11,25 +11,10 @@ on:
         required: true
         type: string
 
-      tag-latest:
+      tag_latest:
         required: false
         type: boolean
         default: false
-
-      artifact_registry_workload_identity_provider_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-
-      artifact_registry_service_account_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-
-      cosign_kms_key_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/cosign_kms_key
 
       registry:
         required: false
@@ -46,85 +31,45 @@ on:
         type: string
         default: pass-culture-artifact-registry
 
+      artifact_registry_workload_identity_provider_secret_name:
+        required: false
+        type: string
+        default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+
+      artifact_registry_service_account_secret_name:
+        required: false
+        type: string
+        default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+
+      cosign_kms_key_secret_name:
+        required: false
+        type: string
+        default: passculture-metier-ehp/cosign_kms_key
+
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER:
+      workload_identity_provider:
         required: true
 
-      SERVICE_ACCOUNT:
+      service_account:
         required: true
 
 jobs:
   push-docker-image:
-    name: Push Docker image
+    name: Push Docker image to Artifact Registry
     runs-on: ubuntu-22.04
     steps:
-      - name: Authentification to Google
-        uses: google-github-actions/auth@v3
+      - name: Push built docker image to Artifact Registry
+        uses: ./.github/actions/push-docker-image
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-
-      - name: Get Secret
-        id: secrets
-        uses: google-github-actions/get-secretmanager-secrets@v3
-        with:
-          secrets: |-
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.artifact_registry_workload_identity_provider_secret_name }}
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT: ${{ inputs.artifact_registry_service_account_secret_name }}
-            COSIGN_KMS_KEY: ${{ inputs.cosign_kms_key_secret_name }}
-
-      - name: OpenID Connect Authentication
-        id: openid-auth
-        uses: google-github-actions/auth@v3
-        with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-
-      - name: Docker login
-        uses: docker/login-action@v3
-        id: docker-login
-        with:
+          image: ${{ inputs.image }}
+          tag: ${{ inputs.tag }}
+          tag_latest: ${{ inputs.tag_latest }}
+          artifact_registry_workload_identity_provider_secret_name: ${{ inputs.artifact_registry_workload_identity_provider_secret_name }}
+          artifact_registry_service_account_secret_name: ${{ inputs.artifact_registry_service_account_secret_name }}
+          cosign_kms_key_secret_name: ${{ inputs.cosign_kms_key_secret_name }}
           registry: ${{ inputs.registry }}
-          username: oauth2accesstoken
-          password: ${{ steps.openid-auth.outputs.access_token }}
-
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.10.0
-
-      - name: Compute source docker image name and tag which is saved in artifact
-        id: compute-source-image-name
-        run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}
-
-      - name: Compute target docker image name and tag to push to Artifact Registry
-        id: compute-target-image-name
-        run: echo "image_name=${{ inputs.registry }}/${{ inputs.project_id }}/${{ inputs.repository }}/${{ inputs.image }}" | tee -a ${GITHUB_OUTPUT}
-
-      - name: Download artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: ${{ inputs.image }}-${{ inputs.tag }}.tar
-          path: ${{ runner.temp }}
-
-      - name: Load docker image from artifact
-        run: |
-          docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.tag }}.tar
-          docker images
-
-      - name: Push docker images
-        run: |
-          docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:${{ inputs.tag }}"
-          
-          if [ ${{ inputs.tag-latest }} == 'true' ]; then
-            docker image tag ${{ steps.compute-source-image-name.outputs.image_name }} "${{ steps.compute-target-image-name.outputs.image_name }}:latest"
-          fi
-          
-          docker image push --all-tags ${{ steps.compute-target-image-name.outputs.image_name }}
-
-      - name: Get the image digest
-        id: get_digest
-        run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-source-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
-
-      - name: Sign image with a kms key
-        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ steps.get_digest.outputs.digest }}
+          project_id: ${{ inputs.project_id }}
+          repository: ${{ inputs.repository }}
+        secrets:
+          workload_identity_provider: ${{ secrets.workload_identity_provider }}
+          service_account: ${{ secrets.service_account }}
