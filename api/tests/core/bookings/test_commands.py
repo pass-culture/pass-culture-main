@@ -22,7 +22,6 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 from tests.test_utils import run_command
 
@@ -152,7 +151,8 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
             stock__offer__product=non_expired_cd,
             dateCreated=booking_date_22_days_ago,
         )
-        repository.save(dont_expire_in_7_days_cd_individual_booking)
+        db.session.add(dont_expire_in_7_days_cd_individual_booking)
+        db.session.commit()
 
         # When
         bookings_commands._notify_soon_to_be_expired_individual_bookings()

@@ -12,7 +12,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.feature import check_feature_flags_completeness
 from pcapi.models.feature import clean_feature_flags
 from pcapi.models.feature import install_feature_flags
-from pcapi.utils import repository
 
 
 class TestingFeatureToggle(enum.Enum):
@@ -27,26 +26,26 @@ FEATURES_DISABLED_BY_DEFAULT_TEST = [TestingFeatureToggle.ENABLE_LANDING]
 @pytest.mark.usefixtures("db_session")
 class FeatureToggleTest:
     def test_is_active_returns_true_when_feature_is_active(self):
-        # Given
         feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
-        repository.save(feature)
+        db.session.add(feature)
+        db.session.commit()
 
-        # When / Then
         assert FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_returns_false_when_feature_is_inactive(self):
-        # Given
         feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = False
-        repository.save(feature)
-        # When / Then
+        db.session.add(feature)
+        db.session.commit()
+
         assert not FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
     def test_is_active_query_count_inside_request_context(self):
         feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
-        repository.save(feature)
+        db.session.add(feature)
+        db.session.commit()
 
         with assert_num_queries(1):
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
@@ -56,7 +55,9 @@ class FeatureToggleTest:
     def test_is_active_query_count_outside_request_context(self, app):
         feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = True
-        repository.save(feature)
+        db.session.add(feature)
+        db.session.commit()
+
         context_request = _cv_request.get()
         _cv_request.set(None)
 

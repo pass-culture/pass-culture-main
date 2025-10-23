@@ -12,7 +12,6 @@ from pcapi.local_providers.provider_manager import synchronize_ems_venue_provide
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
-from pcapi.utils import repository
 
 from tests.local_providers.cinema_providers.ems import fixtures as ems_fixtures
 from tests.local_providers.provider_test_utils import TestLocalProvider
@@ -96,7 +95,8 @@ class SynchronizeDataForProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_call_do_update_for_specified_provider(self, mock_updateObjects, app):
         provider_test = providers_factories.AllocineProviderFactory()
-        repository.save(provider_test)
+        db.session.add(provider_test)
+        db.session.commit()
 
         synchronize_data_for_provider(provider_test.__class__.__name__, None)
 

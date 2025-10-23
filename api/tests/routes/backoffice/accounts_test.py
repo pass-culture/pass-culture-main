@@ -67,7 +67,6 @@ from pcapi.routes.backoffice.accounts.blueprint import get_public_account_histor
 from pcapi.routes.backoffice.forms import search as search_forms
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
-from pcapi.utils import repository
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -1265,7 +1264,8 @@ class GetPublicAccountTest(GetEndpointHelper):
         # Here we want to check that it does not crash with None date in the history (legacy action migrated)
         # Force actionDate because it was replaced with default (now) when inserted in database
         no_date_action.actionDate = None
-        repository.save(no_date_action)
+        db.session.add(no_date_action)
+        db.session.commit()
 
         user_id = user.id
         # check if user should update their account

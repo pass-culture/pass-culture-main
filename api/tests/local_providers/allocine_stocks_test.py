@@ -15,7 +15,6 @@ from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import db
-from pcapi.utils import repository
 
 import tests
 from tests.domain import fixtures
@@ -513,7 +512,9 @@ class UpdateObjectsTest:
             second_stock.fieldsUpdated = ["bookingLimitDatetime"]
             second_stock.bookingLimitDatetime = datetime(2023, 12, 4, 14, 30)
 
-            repository.save(first_stock, second_stock)
+            db.session.add(first_stock)
+            db.session.add(second_stock)
+            db.session.commit()
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
@@ -560,7 +561,8 @@ class UpdateObjectsTest:
             created_offer = db.session.query(offers_models.Offer).one()
             created_offer.isDuo = True
             created_offer.fieldsUpdated = ["isDuo"]
-            repository.save(created_offer)
+            db.session.add(created_offer)
+            db.session.commit()
 
             # When
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
