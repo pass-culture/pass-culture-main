@@ -98,7 +98,9 @@ export function getIndividualOfferColumns(
           offerId: offer.id,
           mode: OFFER_WIZARD_MODE.EDITION,
           step: isNewOfferCreationFlowFFEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+            ? offer.isEvent
+              ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
             : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
         })
 
