@@ -407,8 +407,22 @@ class VenueListItemResponseGetterDict(GetterDict):
             }
             return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
 
+        if key == "bannerMeta":
+            return venue.bannerMeta
+
+        if key == "bannerUrl":
+            return venue.bannerUrl
+
+        if key == "hasPartnerPage":
+            return venue.has_partner_page
+
         if key == "isCaledonian":
             return venue.is_caledonian
+
+        if key == "venueType":
+            value = venue.venueTypeCode
+            label = value.value if value else ""
+            return VenueTypeResponseModel(value=value.name if value else "", label=label)
 
         return super().get(key, default)
 
@@ -427,8 +441,16 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    bannerMeta: BannerMetaModel | None
+    bannerUrl: str | None
+    collectiveDmsApplications: list[DMSApplicationForEAC]
+    hasOffers: bool
+    hasPartnerPage: bool
+    hasVenueProviders: bool
     isPermanent: bool
     isCaledonian: bool
+    managingOfferer: GetVenueManagingOffererResponseModel
+    venueType: VenueTypeResponseModel
 
     @classmethod
     def from_orm(
@@ -444,6 +466,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
                     venue.accessibilityProvider.externalAccessibilityData
                 )
             )
+        venue.hasVenueProviders = bool(venue.venueProviders)
         return super().from_orm(venue)
 
     class Config:

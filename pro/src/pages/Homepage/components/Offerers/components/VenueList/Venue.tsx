@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { VenueEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -20,13 +21,15 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './Venue.module.scss'
 
 export interface VenueProps {
-  offerer?: GetOffererResponseModel | null
-  venue: GetOffererVenueResponseModel
-  isFirstVenue: boolean
+  offerer: GetOffererResponseModel | null
+  venue: GetOffererVenueResponseModel | VenueListItemResponseModel
+  isFirstVenue?: boolean
 }
 
-export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
+export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
   const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
+  console.log({ venue })
+  console.log({ shouldShowVenueOfferSteps })
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
     shouldShowVenueOfferSteps

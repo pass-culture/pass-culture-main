@@ -6,6 +6,7 @@ import { useSWRConfig } from 'swr'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
+  VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
@@ -32,7 +33,7 @@ import { PartnerPageIndividualSection } from './PartnerPageIndividualSection'
 
 export interface PartnerPageProps {
   offerer: GetOffererResponseModel
-  venue: GetVenueResponseModel
+  venue: GetVenueResponseModel | VenueListItemResponseModel
   venueHasPartnerPage: boolean
 }
 
@@ -128,10 +129,7 @@ export const PartnerPage = ({
       <VenueOfferSteps
         className={styles['venue-offer-steps']}
         offerer={offerer}
-        venue={{
-          ...venue,
-          hasCreatedOffer: venue.hasOffers,
-        }}
+        venue={venue}
         hasVenue
         isInsidePartnerBlock
       />
