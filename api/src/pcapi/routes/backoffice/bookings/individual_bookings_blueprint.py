@@ -642,7 +642,6 @@ def get_batch_tag_fraudulent_bookings_form() -> utils.BackofficeResponse:
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=["Toutes les réservations sélectionnées sont déjà frauduleuses."],
             )
     return render_template(
@@ -686,7 +685,6 @@ def get_batch_remove_fraudulent_booking_tag_form() -> utils.BackofficeResponse:
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=["Aucune réservation sélectionnée n'a de marquage frauduleux."],
             )
     return render_template(
