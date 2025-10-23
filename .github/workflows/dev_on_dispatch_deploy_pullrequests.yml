@@ -131,7 +131,7 @@ jobs:
       - deploy-preview-env-init
       - build-pcapi
     if: needs.deploy-preview-env-init.outputs.pcapi-exists == 'false' && inputs.front-only == false
-    uses: ./.github/actions/push-docker-image
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
       tag: ${{ github.sha }}
@@ -142,9 +142,9 @@ jobs:
       artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
       artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
-    secrets:
-      workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+#    secrets:
+#      workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+#      service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi-to-europe:
     name: Push pcapi docker image to artifact registry europe-docker.pkg.dev

@@ -46,12 +46,12 @@ on:
         type: string
         default: passculture-metier-ehp/cosign_kms_key
 
-    secrets:
-      workload_identity_provider:
-        required: true
-
-      service_account:
-        required: true
+#    secrets:
+#      workload_identity_provider:
+#        required: true
+#
+#      service_account:
+#        required: true
 
 jobs:
   push-docker-image:
@@ -70,6 +70,6 @@ jobs:
           registry: ${{ inputs.registry }}
           project_id: ${{ inputs.project_id }}
           repository: ${{ inputs.repository }}
-        secrets:
-          workload_identity_provider: ${{ secrets.workload_identity_provider }}
-          service_account: ${{ secrets.service_account }}
+#        secrets:
+#          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+#          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
