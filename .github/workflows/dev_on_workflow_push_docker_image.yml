@@ -70,6 +70,5 @@ jobs:
           registry: ${{ inputs.registry }}
           project_id: ${{ inputs.project_id }}
           repository: ${{ inputs.repository }}
-#        secrets:
-#          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-#          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
