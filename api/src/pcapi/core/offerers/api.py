@@ -990,14 +990,7 @@ def create_offerer(
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
             is_new = True
-            update_offerer(
-                offerer,
-                author,
-                name=offerer_informations.name,
-                city=offerer_informations.city,
-                postal_code=offerer_informations.postalCode,
-                street=offerer_informations.street,
-            )
+            update_offerer(offerer, author, name=offerer_informations.name)
             _initialize_offerer(offerer)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
             user_offerer.validationStatus = ValidationStatus.VALIDATED
@@ -1028,10 +1021,7 @@ def create_offerer(
     else:
         is_new = True
         offerer = models.Offerer()
-        offerer.street = offerer_informations.street
-        offerer.city = offerer_informations.city
         offerer.name = offerer_informations.name
-        offerer.postalCode = offerer_informations.postalCode
         offerer.siren = offerer_informations.siren
         _initialize_offerer(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
