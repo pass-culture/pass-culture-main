@@ -49,7 +49,9 @@ class Returns200Test:
 
         assert response.status_code == 201
 
-        highlight_request_query = db.session.query(highlights_models.HighlightRequest)
+        highlight_request_query = db.session.query(highlights_models.HighlightRequest).order_by(
+            highlights_models.HighlightRequest.id
+        )
         assert highlight_request_query.count() == 2
         assert highlight_request_query.all()[0].offerId == offer.id
         assert highlight_request_query.all()[0].highlightId == highlight.id
