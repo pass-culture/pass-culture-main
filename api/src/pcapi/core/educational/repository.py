@@ -1016,7 +1016,6 @@ def get_filtered_collective_booking_report(
 ) -> sa_orm.Query:
     with_entities: tuple[typing.Any, ...] = (
         offerers_models.Venue.common_name.label("venueName"),
-        offerers_models.Offerer.postalCode.label("offererPostalCode"),
         models.CollectiveOffer.name.label("offerName"),
         models.CollectiveStock.price,
         models.CollectiveStock.startDatetime.label("stockStartDatetime"),
