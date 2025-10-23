@@ -128,4 +128,4 @@ runs:
       run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-source-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
 
     - name: Sign image with a kms key
-      run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} ${{ steps.get_digest.outputs.digest }}
+      run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.cosign_kms_key }} ${{ steps.get_digest.outputs.digest }}
