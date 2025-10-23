@@ -325,16 +325,18 @@ if [[ ! -z "$STAGED_PYPROJECT_TOML" ]]; then
 fi
 
 ###########################
-## END CHECK DEPENDECIES ##
+## END CHECK DEPENDENCIES ##
 ###########################
 
 ########################
 ## CHECK SECRET LEAKS ##
 ########################
 
+cd $DIR
+
 echo "Running gitleaks..."
 
-output=$(gitleaks git --staged --verbose --exit-code 1 2>&1)
+output=$(gitleaks git --max-archive-depth=2 --max-decode-depth=2 --staged --verbose --exit-code 1 2>&1)
 status=$?
 
 if [ $status -ne 0 ]; then
