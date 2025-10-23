@@ -421,21 +421,25 @@ def update_collective_bookings_for_new_institution(
     institution_source: educational_models.EducationalInstitution,
     institution_destination: educational_models.EducationalInstitution,
 ) -> None:
-    offers = db.session.query(educational_models.CollectiveOffer)
-    offers = offers.join(educational_models.CollectiveStock)
-    offers = offers.join(educational_models.CollectiveBooking)
-    offers = offers.filter(educational_models.CollectiveBooking.id.in_(booking_ids))
-    offers = offers.filter(educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id)
-    offer_ids = offers.with_entities(educational_models.CollectiveOffer.id)
+    offer_ids = (
+        db.session.query(educational_models.CollectiveOffer)
+        .join(educational_models.CollectiveStock)
+        .join(educational_models.CollectiveBooking)
+        .filter(
+            educational_models.CollectiveBooking.id.in_(booking_ids),
+            educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id,
+        )
+        .with_entities(educational_models.CollectiveOffer.id)
+    )
 
-    offers = db.session.query(educational_models.CollectiveOffer)
-    offers = offers.filter(educational_models.CollectiveOffer.id.in_(offer_ids))
-    offers.update({"institutionId": institution_destination.id}, synchronize_session=False)
+    db.session.query(educational_models.CollectiveOffer).filter(
+        educational_models.CollectiveOffer.id.in_(offer_ids)
+    ).update({"institutionId": institution_destination.id}, synchronize_session=False)
 
-    bookings = db.session.query(educational_models.CollectiveBooking)
-    bookings = bookings.filter(educational_models.CollectiveBooking.id.in_(booking_ids))
-    bookings = bookings.filter_by(educationalInstitution=institution_source)
-    bookings.update({"educationalInstitutionId": institution_destination.id})
+    db.session.query(educational_models.CollectiveBooking).filter(
+        educational_models.CollectiveBooking.id.in_(booking_ids),
+        educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id,
+    ).update({"educationalInstitutionId": institution_destination.id}, synchronize_session=False)
 
     db.session.flush()
 
