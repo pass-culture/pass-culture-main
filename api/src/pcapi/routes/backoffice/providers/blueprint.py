@@ -3,6 +3,7 @@ from secrets import token_urlsafe
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from flask import Response
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -23,6 +24,7 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -95,10 +97,12 @@ def get_create_provider_form() -> utils.BackofficeResponse:
         "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.providers.create_provider"),
-        div_id="create-provider",  # must be consistent with parameter passed to build_lazy_modal
+        div_id="create-provider",
+        modal_content_id="create-provider-modale-content",
+        target_id="#create-provider-modale-content",
         title="Créer un partenaire technique qui se synchronisera avec le pass Culture",
         button_text="Créer le partenaire",
-        ajax_submit=False,
+        close_on_validation=False,
     )
 
 
@@ -110,7 +114,13 @@ def create_provider() -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.providers.list_providers"), code=303)
+        return Response(
+            response="redirecting",
+            status=303,
+            headers={
+                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+            },
+        )
 
     def generate_hmac_key() -> str:
         return token_urlsafe(64)
@@ -150,24 +160,31 @@ def create_provider() -> utils.BackofficeResponse:
     except sa_exc.IntegrityError:
         mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
-    else:
-        if is_offerer_new:
-            zendesk_sell.create_offerer(offerer)
-        flash(
-            Markup(
-                "Le nouveau partenaire <b>{name}</b> a été créé. "
-                "La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : <pre>{clear_secret}</pre>"
-            ).format(name=provider.name, clear_secret=clear_secret),
-            "success",
-        )
-        flash(
-            Markup(
-                "La clé de chiffrage des requêtes entre le service de billetterie du partenaire et le pass Culture est : <pre>{key}</pre>"
-            ).format(key=provider.hmacKey),
-            "success",
+        return Response(
+            response="redirecting",
+            status=303,
+            headers={
+                "HX-Redirect": url_for("backoffice_web.providers.list_providers"),
+            },
         )
 
-    return redirect(url_for("backoffice_web.providers.list_providers"), code=303)
+    if is_offerer_new:
+        zendesk_sell.create_offerer(offerer)
+
+    form = empty_forms.EmptyGetForm()
+    return render_template(
+        "components/dynamic/modal_form.html",
+        dst=url_for("backoffice_web.providers.list_providers"),
+        form=form,
+        include_template="providers/list/create.html",
+        div_id="create-provider",
+        title=Markup("Le nouveau partenaire <b>{name}</b> a été créé.").format(name=provider.name),
+        button_text="Accepter",
+        key=provider.hmacKey,
+        clear_secret=clear_secret,
+        hide_cancel=True,
+        ajax_submit=False,
+    )
 
 
 def _get_or_create_offerer(form: forms.CreateProviderForm) -> tuple[offerers_models.Offerer, bool]:
