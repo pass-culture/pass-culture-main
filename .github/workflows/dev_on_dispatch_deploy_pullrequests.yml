@@ -134,9 +134,8 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
-      tag-latest: true
+      tag: ${{ github.sha }}
+      tag_latest: true
       registry: europe-west1-docker.pkg.dev
       project_id: passculture-infra-prod
       repository: pass-culture-artifact-registry
@@ -144,8 +143,8 @@ jobs:
       artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi-to-europe:
     name: Push pcapi docker image to artifact registry europe-docker.pkg.dev
@@ -156,9 +155,8 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.deploy-preview-env-init.outputs.checksum-tag }}
-      tag-latest: true
+      tag: ${{ github.sha }}
+      tag_latest: true
       registry: europe-docker.pkg.dev
       project_id: pc-infra-prd
       repository: pass-culture-artifact-registry
@@ -166,8 +164,8 @@ jobs:
       artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
       cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
     secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-api:
     name: Deploy pullrequest
