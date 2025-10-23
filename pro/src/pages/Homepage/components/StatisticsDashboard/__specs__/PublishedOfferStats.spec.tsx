@@ -4,7 +4,10 @@ import { api } from '@/apiClient/api'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferStats, type OfferStatsProps } from '../components/OfferStats'
+import {
+  PublishedOfferStats,
+  type PublishedOfferStatsProps,
+} from '../components/PublishedOfferStats'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -12,9 +15,9 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderOfferStats = (props: Partial<OfferStatsProps> = {}) =>
+const renderOfferStats = (props: Partial<PublishedOfferStatsProps> = {}) =>
   renderWithProviders(
-    <OfferStats
+    <PublishedOfferStats
       offerer={{ ...defaultGetOffererResponseModel, isValidated: true }}
       {...props}
     />

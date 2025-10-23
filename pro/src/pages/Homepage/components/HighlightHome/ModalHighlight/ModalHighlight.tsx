@@ -1,12 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
 import type { ReactNode } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
+import { formatDate } from '@/commons/utils/date'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -43,8 +41,11 @@ export const ModalHighlight = ({
           Elle pourra se faire sur l’application et dans nos communications aux
           jeunes (newsletters, notifications, sélections, page d’accueil).
         </p>
-        <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
-          <p className={styles['callout-title']}>Comment participer ?</p>
+        <Callout
+          title="Comment participer ?"
+          variant={CalloutVariant.INFO}
+          className={styles['callout']}
+        >
           <ul className={styles['callout-list']}>
             <li>
               Créez votre offre d’évènement ou choisissez en une dans votre
@@ -58,9 +59,9 @@ export const ModalHighlight = ({
           <Spinner />
         ) : (
           <>
-            <h2 className={styles['highlight-title']}>
+            <p className={styles['highlight-title']}>
               Les prochains temps forts :{' '}
-            </h2>
+            </p>
             <div className={styles['cards-container']}>
               {data?.map(
                 ({
@@ -150,8 +151,4 @@ const HighlightCard = ({
       </div>
     </div>
   )
-}
-
-function formatDate(date: string): string {
-  return format(new Date(date), FORMAT_DD_MM_YYYY, { locale: fr })
 }

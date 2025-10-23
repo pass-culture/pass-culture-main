@@ -6,27 +6,21 @@
   margin-top: var(--size-spacing-xxl);
 }
 
-.callout-title {
-  @include fonts.body-accent;
-}
-
 .callout-list {
   list-style: inside;
 }
 
 .highlight-title {
-  @include fonts.title3;
+  @include fonts.body-accent;
 
   margin-top: var(--size-spacing-xxl);
 }
 
 .cards-container {
   display: flex;
-  margin-top: var(--size-spacing-s);
+  margin-top: var(--size-spacing-l);
   gap: var(--size-spacing-s);
   align-items: flex-start;
-  align-self: stretch;
-  justify-content: space-around;
   flex-wrap: wrap;
 }
 
@@ -53,11 +47,12 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     gap: var(--size-spacing-m);
   }
 
   @media (min-width: size.$tablet) {
+    height: rem.torem(404px);
     max-width: rem.torem(274px);
   }
 }
@@ -75,6 +70,9 @@
 
 .card-description {
   @include fonts.body-xs;
+
+  overflow: hidden;
+  height: 100%;
 }
 
 .card-button {
@@ -87,7 +85,6 @@
 .card-limit-participation-date {
   @include fonts.body-accent-xs;
 
-  font-weight: 600;
   text-align: right;
   margin-top: var(--size-border-radius-m);
 }

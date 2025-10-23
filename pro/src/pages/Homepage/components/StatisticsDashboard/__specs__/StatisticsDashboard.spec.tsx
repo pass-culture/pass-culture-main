@@ -58,30 +58,20 @@ describe('StatisticsDashboard', () => {
     renderStatisticsDashboard(false)
 
     expect(
-      screen.getByText('Présence sur l’application pass Culture')
-    ).toBeInTheDocument()
-    expect(
       await screen.findByText(
         'Créez vos premières offres grand public pour être visible par les bénéficiaires'
       )
     ).toBeInTheDocument()
-
-    expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
 
   it('should render statistics dashboard with statistics coming soon message', async () => {
     renderStatisticsDashboard()
 
     expect(
-      screen.getByText('Présence sur l’application pass Culture')
-    ).toBeInTheDocument()
-    expect(
       await screen.findByText(
         'Les statistiques de consultation de vos offres seront bientôt disponibles.'
       )
     ).toBeInTheDocument()
-
-    expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
 
   it('should not render most viewed offers if there are none', async () => {
@@ -98,25 +88,11 @@ describe('StatisticsDashboard', () => {
     renderStatisticsDashboard()
 
     expect(
-      screen.getByText('Présence sur l’application pass Culture')
-    ).toBeInTheDocument()
-    expect(
       await screen.findByText('Évolution des consultations de vos offres')
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Vos offres les plus consultées')
     ).not.toBeInTheDocument()
-
-    expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
-  })
-
-  it('should not display the create offer button ', async () => {
-    renderStatisticsDashboard(false, [])
-
-    expect(
-      await screen.findByText('à destination du grand public')
-    ).toBeInTheDocument()
-    expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })
 
   it('should display the last sync date', async () => {
