@@ -1241,29 +1241,6 @@ class Offerer(
         )
 
     @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.inplace.setter
-    def _street_setter(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.inplace.expression
-    @classmethod
-    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
-        return cls._address
-
-    @hybrid_property
-    def departementCode(self) -> str | None:
-        return postal_code_utils.PostalCode(self.postalCode).get_departement_code() if self.postalCode else None
-
-    @departementCode.inplace.expression
-    @classmethod
-    def _departementCodeExpression(cls) -> sa.Function:
-        return sa.func.postal_code_to_department_code(cls.postalCode)
-
-    @hybrid_property
     def rid7(self) -> str | None:
         if siren_utils.is_rid7(self.siren):
             return siren_utils.siren_to_rid7(self.siren)
