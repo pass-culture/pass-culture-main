@@ -1,10 +1,14 @@
 import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 
-import { serializeEditVenueBodyModel } from '../serializers'
-import type { VenueSettingsFormValues } from '../types'
+import type {
+  VenueSettingsFormContext,
+  VenueSettingsFormValues,
+} from '../../types'
+import { toBody } from '../toBody'
 
-describe('serializeEditVenueBodyModel', () => {
+describe('toBody', () => {
   let formValues: VenueSettingsFormValues
+  let formContext: VenueSettingsFormContext
   let payload: EditVenueBodyModel
 
   beforeEach(() => {
@@ -30,6 +34,13 @@ describe('serializeEditVenueBodyModel', () => {
       withdrawalDetails: 'Details for withdraw',
     }
 
+    formContext = {
+      isCaledonian: false,
+      siren: '418166096',
+      isVenueVirtual: false,
+      withSiret: true,
+    }
+
     payload = {
       banId: '35288_7283_00001',
       bookingEmail: 'me@example.com',
@@ -50,14 +61,19 @@ describe('serializeEditVenueBodyModel', () => {
   })
 
   it('should serialize form values correctly', () => {
-    expect(serializeEditVenueBodyModel(formValues, false)).toEqual(payload)
+    expect(toBody(formValues, formContext)).toEqual(payload)
   })
 
   it('should not have siret and keep comment if called with "hideSiret"', () => {
     const noSiretPayload = structuredClone(payload)
     delete noSiretPayload.siret
 
-    expect(serializeEditVenueBodyModel(formValues, true)).toEqual({
+    expect(
+      toBody(formValues, {
+        ...formContext,
+        withSiret: false,
+      })
+    ).toEqual({
       ...noSiretPayload,
       comment: 'This is a venue comment',
     })

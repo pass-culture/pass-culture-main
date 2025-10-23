@@ -1194,3 +1194,43 @@ def test_with_inconsistent_siret(
     assert response.status_code == expected_result, response.json
     if expected_result == 400:
         assert response.json == {"global": ["Le SIREN n’existe pas."]}
+
+
+@pytest.mark.parametrize(
+    "new_ridet,enforce_siret_check,disable_siret_check,expected_result",
+    [
+        ("NC1234567000XX", True, False, 200),
+        ("NC1234567000XX", True, True, 200),
+        ("NC1234567000XX", False, False, 200),
+        ("NC1234567000XX", False, True, 200),
+        ("NC0234567890XX", False, True, 400),  # nok: ridet does not start with rid7
+    ],
+)
+@patch(
+    "pcapi.connectors.entreprise.api.get_siret_open_data",
+    side_effect=entreprise_exceptions.UnknownEntityException(),
+)
+def test_with_new_caledonian_ridet(
+    mock_get_siret_open_data,
+    client,
+    features,
+    settings,
+    new_ridet,
+    enforce_siret_check,
+    disable_siret_check,
+    expected_result,
+):
+    venue = offerers_factories.VenueFactory(siret="NC1234567890XX", managingOfferer__siren="NC1234567")
+    user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+    venue_data = populate_missing_data_from_venue({"siret": new_ridet}, venue)
+
+    settings.ENFORCE_SIRET_CHECK = enforce_siret_check
+    features.DISABLE_SIRET_CHECK = disable_siret_check
+    response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+    assert response.status_code == expected_result, response.json
+    if expected_result == 200:
+        assert venue.siret == new_ridet
+    if expected_result == 400:
+        assert response.json == {"siret": ["Le code RIDET doit correspondre à un établissement de votre structure"]}

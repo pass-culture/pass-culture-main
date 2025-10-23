@@ -1,6 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
+import type { AdresseData } from '@/apiClient/adresse/types'
 import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
@@ -23,16 +24,20 @@ import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
+import type {
+  VenueSettingsFormContext,
+  VenueSettingsFormValues,
+} from '../commons/types'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
-import type { VenueSettingsFormValues } from './types'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
-interface VenueFormProps {
+export interface VenueSettingsFormProps {
   offerer: GetOffererResponseModel
   venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
+  formContext: VenueSettingsFormContext
 }
 
 export const VenueSettingsForm = ({
@@ -40,15 +45,15 @@ export const VenueSettingsForm = ({
   venueTypes,
   venueProviders,
   venue,
-}: VenueFormProps) => {
-  const methods = useFormContext<VenueSettingsFormValues>()
+  formContext,
+}: VenueSettingsFormProps) => {
   const {
     register,
     setValue,
     watch,
     clearErrors,
     formState: { isDirty, isSubmitting, errors },
-  } = methods
+  } = useFormContext<VenueSettingsFormValues>()
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
@@ -62,19 +67,28 @@ export const VenueSettingsForm = ({
     clearErrors()
   }
 
+  const onAddressSelect = (data: AdresseData) => {
+    setValue('street', data.address)
+    setValue('postalCode', data.postalCode)
+    setValue('city', data.city)
+    setValue('latitude', data.latitude.toString())
+    setValue('longitude', data.longitude.toString())
+    setValue('banId', data.id)
+    setValue('inseeCode', data.inseeCode)
+    setValue('coords', `${data.latitude}, ${data.longitude}`)
+  }
+
   return (
     <>
       <ScrollToFirstHookFormErrorAfterSubmit />
-
       {!venue.isVirtual && (
         <OffersSynchronization venueProviders={venueProviders} venue={venue} />
       )}
-
       <FormLayout fullWidthActions>
         <FormLayout.Section title="Informations administratives">
           {!venue.isVirtual && (
             <FormLayout.Row>
-              <SiretOrCommentFields siren={offerer.siren} />
+              <SiretOrCommentFields formContext={formContext} />
             </FormLayout.Row>
           )}
 
@@ -103,16 +117,7 @@ export const VenueSettingsForm = ({
                   {...register('addressAutocomplete')}
                   disabled={manuallySetAddress}
                   label={'Adresse postale'}
-                  onAddressChosen={(addressData) => {
-                    setValue('manuallySetAddress', false)
-                    setValue('street', addressData.address)
-                    setValue('postalCode', addressData.postalCode)
-                    setValue('city', addressData.city)
-                    setValue('latitude', String(addressData.latitude))
-                    setValue('longitude', String(addressData.longitude))
-                    setValue('banId', addressData.id)
-                    setValue('inseeCode', addressData.inseeCode)
-                  }}
+                  onAddressChosen={onAddressSelect}
                   error={errors.addressAutocomplete?.message}
                 />
               </FormLayout.Row>
@@ -182,7 +187,6 @@ export const VenueSettingsForm = ({
           venue={venue}
         />
       </FormLayout>
-
       <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
       <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
     </>

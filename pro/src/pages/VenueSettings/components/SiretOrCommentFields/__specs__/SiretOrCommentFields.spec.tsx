@@ -16,7 +16,7 @@ import {
   SiretOrCommentFields,
   type SiretOrCommentFieldsProps,
 } from '../SiretOrCommentFields'
-import { generateSiretValidationSchema } from '../validationSchema'
+import { SiretOrCommentValidationSchema } from '../validationSchema'
 
 vi.mock('@/commons/core/Venue/siretApiValidate')
 
@@ -29,18 +29,34 @@ vi.mock('@/apiClient/api', () => ({
 
 const onSubmit = vi.fn()
 
+const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
+  isCaledonian: false,
+  withSiret: true,
+  isVenueVirtual: false,
+  siren: '123456789',
+}
+
+const defaultInitialValues = {
+  comment: '',
+  siret: '12345678901234',
+}
+
 function renderSiretOrComment(
   defaultProps: SiretOrCommentFieldsProps,
-  initialSiret: string = '12345678901234',
-  isSiretValued = true,
+  initalValues?: { comment: string; siret: string },
   options?: RenderWithProvidersOptions
 ) {
   const Wrapper = () => {
     const methods = useForm({
-      defaultValues: { comment: '', siret: initialSiret },
-      resolver: yupResolver(
-        generateSiretValidationSchema(false, isSiretValued, '012345678')
-      ),
+      context: {
+        ...defaultFormContext,
+        ...defaultProps.formContext,
+      },
+      defaultValues: {
+        ...defaultInitialValues,
+        ...(initalValues || {}),
+      },
+      resolver: yupResolver(SiretOrCommentValidationSchema),
       mode: 'all',
     })
 
@@ -67,7 +83,7 @@ describe('SiretOrCommentFields', () => {
 
     props = {
       setIsFieldNameFrozen: setIsFieldNameFrozen,
-      siren: '123456789',
+      formContext: defaultFormContext,
     }
   })
 
@@ -83,7 +99,13 @@ describe('SiretOrCommentFields', () => {
   })
 
   it('should display comment field when there is no siret', () => {
-    renderSiretOrComment(props, '')
+    renderSiretOrComment({
+      ...props,
+      formContext: {
+        ...props.formContext,
+        withSiret: false,
+      },
+    })
 
     const siretField = screen.queryByText(/SIRET de la structure/)
     expect(siretField).not.toBeInTheDocument()
@@ -149,7 +171,7 @@ describe('SiretOrCommentFields', () => {
         exact: false,
       })
       await userEvent.clear(siretInput)
-      await userEvent.type(siretInput, '01234567800000')
+      await userEvent.type(siretInput, '12345678900000')
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Enregistrer',
@@ -169,6 +191,7 @@ describe('SiretOrCommentFields', () => {
         exact: false,
       })
       await userEvent.clear(siretInput)
+      await userEvent.tab()
       await userEvent.click(
         screen.getByRole('button', {
           name: 'Enregistrer',
@@ -181,7 +204,10 @@ describe('SiretOrCommentFields', () => {
     })
 
     it('should not display required message if siret is empty for virtual venue', async () => {
-      renderSiretOrComment(props, '')
+      renderSiretOrComment(props, {
+        ...defaultInitialValues,
+        siret: '',
+      })
 
       expect(
         screen.queryByText('Veuillez renseigner un SIRET')
@@ -270,7 +296,21 @@ describe('SiretOrCommentFields', () => {
 
   describe('should validate comment on submit', () => {
     it('should display error message if comment empty', async () => {
-      renderSiretOrComment(props, '', false)
+      const commentFormContext: SiretOrCommentFieldsProps['formContext'] = {
+        ...defaultFormContext,
+        withSiret: false,
+        isVenueVirtual: true,
+      }
+      renderSiretOrComment(
+        {
+          ...props,
+          formContext: commentFormContext,
+        },
+        {
+          ...defaultInitialValues,
+          siret: '',
+        }
+      )
 
       await userEvent.click(
         screen.getByRole('button', {
