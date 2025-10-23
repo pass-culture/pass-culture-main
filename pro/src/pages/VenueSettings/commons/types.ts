@@ -11,3 +11,10 @@ export interface VenueSettingsFormValues extends AddressFormValues {
   withdrawalDetails: string
   manuallySetAddress?: boolean
 }
+
+export type VenueSettingsFormContext = {
+  isCaledonian: boolean
+  isVenueVirtual: boolean
+  siren: string | null
+  withSiret: boolean
+}

@@ -1,11 +1,11 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
-import { setInitialFormValues } from '../setInitialFormValues'
+import { toFormValues } from '../toFormValues'
 
 let venue: GetVenueResponseModel
 
-describe('setInitialFormValues', () => {
+describe('toFormValues', () => {
   beforeEach(() => {
     venue = {
       ...defaultGetVenue,
@@ -14,7 +14,7 @@ describe('setInitialFormValues', () => {
   })
 
   it('should return a valid initial form object', () => {
-    const formValues = setInitialFormValues({
+    const formValues = toFormValues({
       venue: {
         ...venue,
         address: {
@@ -60,7 +60,7 @@ describe('setInitialFormValues', () => {
   })
 
   it('should return empty inseeCode and null banId if address is not provided', () => {
-    const formValues = setInitialFormValues({
+    const formValues = toFormValues({
       venue: {
         ...venue,
         address: null,
@@ -84,7 +84,7 @@ describe('setInitialFormValues', () => {
   })
 
   it('should return empty inseeCode if inseeCode is missing in address', () => {
-    const formValues = setInitialFormValues({
+    const formValues = toFormValues({
       venue: {
         ...venue,
         address: {
@@ -97,7 +97,7 @@ describe('setInitialFormValues', () => {
   })
 
   it('should return null banId if banId is missing in address', () => {
-    const formValues = setInitialFormValues({
+    const formValues = toFormValues({
       venue: {
         ...venue,
         address: {
@@ -107,5 +107,20 @@ describe('setInitialFormValues', () => {
       },
     })
     expect(formValues.banId).toBeNull()
+  })
+
+  it('should return null banId if banId is missing in address', () => {
+    const formValues = toFormValues({
+      venue: {
+        ...venue,
+        isCaledonian: true,
+        siret: 'NC0123456789XX',
+        address: {
+          ...venue.address!, // Ensure address is not null
+          banId: undefined,
+        },
+      },
+    })
+    expect(formValues.siret).toEqual('NC0123456789')
   })
 })
