@@ -2,15 +2,27 @@ import logging
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.users.models import User
+from pcapi.models.utils import first_or_404
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v2.serialization.bookings import BookingResponse
 from pcapi.routes.native.v2.serialization.bookings import BookingsResponseV2
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 
 
 logger = logging.getLogger(__name__)
+
+
+@blueprint.native_route("/bookings/<int:booking_id>", version="v2", methods=["GET"])
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=BookingResponse, on_error_statuses=[404])
+@authenticated_and_active_user_required
+@atomic()
+def get_booking(user: User, booking_id: int) -> BookingResponse:
+    query = bookings_api.get_booking_by_id(user, booking_id)
+    booking = first_or_404(query)
+    return BookingResponse.from_orm(booking)
 
 
 @blueprint.native_route("/bookings", version="v2", methods=["GET"])
