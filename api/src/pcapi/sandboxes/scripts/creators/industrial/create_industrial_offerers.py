@@ -79,10 +79,7 @@ def create_industrial_offerers() -> dict[str, Offerer]:
         offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location.latitude, location.longitude)
 
         offerer = offerers_factories.OffererFactory.create(
-            street=location.address.upper(),
-            city=location.city,
             name=MOCK_NAMES[mock_index],
-            postalCode=location.postalCode,
             siren=str(incremented_siren),
         )
 
@@ -90,12 +87,12 @@ def create_industrial_offerers() -> dict[str, Offerer]:
             offerer.siren = str(MOCK_ADAGE_ELIGIBLE_SIREN)
             offerers_factories.VenueFactory.create(
                 managingOfferer=offerer,
-                street=offerer.street,
+                street=location.address.upper(),
                 bookingEmail="fake@email.com",
-                city=offerer.city,
+                city=location.city,
                 comment="Salle de cinéma",
                 name=offerer.name + " - Salle 1",
-                postalCode=offerer.postalCode,
+                postalCode=location.postalCode,
                 siret="88145723811111",
                 venueTypeCode=VenueTypeCode.MOVIE,
             )
