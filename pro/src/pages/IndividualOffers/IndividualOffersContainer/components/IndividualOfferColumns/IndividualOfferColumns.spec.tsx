@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
+import { api } from '@/apiClient/api'
 import { type HeadLineOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { listOffersOfferFactory } from '@/commons/utils/factories/individualApiFactories'
@@ -61,7 +63,8 @@ describe('getIndividualOfferColumns', () => {
 
   const renderTableWithOffer = (
     offer = baseOffer,
-    options: RenderOptions = {}
+    options: RenderOptions = {},
+    isNewOfferCreationFlowFFEnabled: boolean = false
   ) => {
     const { headlineOffer = null, isHeadlineOfferAllowedForOfferer = false } =
       options
@@ -69,7 +72,7 @@ describe('getIndividualOfferColumns', () => {
     const columns = getIndividualOfferColumns(
       headlineOffer,
       isHeadlineOfferAllowedForOfferer,
-      false
+      isNewOfferCreationFlowFFEnabled
     )
 
     return renderWithProviders(
@@ -162,5 +165,45 @@ describe('getIndividualOfferColumns', () => {
       isHeadlineOfferAllowedForOfferer: false,
     })
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
+  })
+
+  it('should redirect to stocks edition page when the offer is not isEvent, and the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+      venues: [],
+    })
+
+    renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, true)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(screen.getByRole('menuitem', { name: 'Stocks' })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/edition/tarifs')
+    )
+  })
+
+  it('should redirect to timetable edition page when the offer is isEvent, and the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+      venues: [],
+    })
+
+    renderTableWithOffer(
+      {
+        ...baseOffer,
+        isEvent: true,
+      },
+      {},
+      true
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(
+      screen.getByRole('menuitem', { name: 'Dates et capacités' })
+    ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
   })
 })
