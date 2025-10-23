@@ -5,10 +5,9 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.external_bookings.boost import exceptions as boost_exceptions
+from pcapi.core.external_bookings.boost.client import BoostAPIException
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
-from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
+from pcapi.core.external_bookings.boost.client import BoostInvalidTokenException
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
@@ -110,7 +109,7 @@ class BoostContext(PivotContext):
             client.test_jwt_token_generation()
             flash("Connexion à l'API OK.", "success")
             return
-        except boost_exceptions.BoostAPIException as exc:
+        except BoostAPIException as exc:
             logger.exception(
                 "Network error on checking Boost API information",
                 extra={"exc": exc, "cinema_url": pivot.cinemaUrl},

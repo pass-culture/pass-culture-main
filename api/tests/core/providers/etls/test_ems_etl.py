@@ -8,6 +8,7 @@ import pytest
 import time_machine
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
@@ -20,6 +21,7 @@ from pcapi.models import db
 from pcapi.utils import requests
 
 import tests
+from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 from . import ems_fixtures
 
@@ -68,7 +70,7 @@ class EMSExtractTransformLoadProcessTest:
 
     def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
         venue_provider = self.setup_cinema_objects()
-        requests_mock.get("https://fake_url.com?version=0", exc=requests.exceptions.ConnectTimeout)
+        requests_mock.get("https://fake_url.com?version=0", exc=requests.exceptions.ConnectTimeout("so slow"))
 
         etl_process = EMSExtractTransformLoadProcess(venue_provider)
 
@@ -84,7 +86,7 @@ class EMSExtractTransformLoadProcessTest:
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "data": {"exc": "ConnectTimeout"},
+            "data": {"exc": "ConnectTimeout", "msg": "so slow"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):
@@ -144,6 +146,7 @@ class EMSExtractTransformLoadProcessTest:
                     ),
                 ],
             ),
+            "version": 86400,
         }
 
     def test_transform_should_return_loadable_result(self, requests_mock):
@@ -343,3 +346,157 @@ class EMSExtractTransformLoadProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+        venue_provider = self.setup_cinema_objects()
+
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+
+        created_price_category = db.session.query(offers_models.PriceCategory).all()
+        assert len(created_price_category) == 2
+
+    def test_should_create_product_mediation(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        file_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(file_path, "rb") as thumb_file:
+            poster = thumb_file.read()
+        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=poster)
+
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+
+        created_offer = db.session.query(offers_models.Offer).one()
+
+        assert created_offer.image.url == created_offer.product.productMediations[0].url
+
+    def test_should_not_create_product_mediation(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        product = offers_factories.EventProductFactory(
+            name="Mon voisin Totoro",
+            extraData=offers_models.OfferExtraData(allocineId=269976),
+        )
+        offers_factories.ProductMediationFactory(product=product, imageType=offers_models.ImageType.POSTER)
+
+        get_image_adapter = requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg")
+
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+
+        assert get_image_adapter.last_request == None
+
+    def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+
+        venue_provider = self.setup_cinema_objects()
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            poster = thumb_file.read()
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=poster)
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+
+        assert db.session.query(offers_models.Offer).count() == 2
+        created_offer = (
+            db.session.query(offers_models.Offer).filter_by(idAtProvider=f"SHJRH%{venue_provider.venueId}%EMS").one()
+        )
+        assert len(created_offer.mediations) == 0
+
+    @pytest.mark.parametrize(
+        "get_adapter_error_params",
+        [
+            # invalid responses
+            {"status_code": 404},
+            {"status_code": 502},
+            # unexpected errors
+            {"exc": requests.exceptions.ReadTimeout},
+            {"exc": requests.exceptions.ConnectTimeout},
+        ],
+    )
+    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+
+        venue_provider = self.setup_cinema_objects()
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", **get_adapter_error_params)
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        with caplog.at_level(logging.WARNING):
+            EMSExtractTransformLoadProcess(venue_provider).execute()
+
+        assert db.session.query(offers_models.Offer).count() == 2
+        created_offer = (
+            db.session.query(offers_models.Offer).filter_by(idAtProvider=f"SHJRH%{venue_provider.venueId}%EMS").one()
+        )
+        assert created_offer.image is None
+
+        assert len(caplog.records) >= 1
+
+        last_record = caplog.records.pop()
+        assert last_record.message == "Could not fetch movie poster"
+        assert last_record.extra == {
+            "client": "EMSScheduleConnector",
+            "url": "https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg",
+        }
+
+    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com",
+            withdrawalDetails="Modalité de retrait",
+            pricing_point="self",
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
+        )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            EMSExtractTransformLoadProcess(venue_provider).execute()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with same date
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            EMSExtractTransformLoadProcess(venue_provider).execute()
+        mock_update_finance_event.assert_not_called()
+
+        # synchronize with show with new date
+        requests_mock.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0_WITH_NEW_DATE)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        # targeting specific stock whith idAtprovider
+        stock = (
+            db.session.query(offers_models.Stock).where(offers_models.Stock.idAtProviders.like("%999700079243")).first()
+        )
+        assert stock is not None
+        event_created = create_finance_event_to_update(stock=stock, venue_provider=venue_provider)
+        last_pricingOrderingDate = event_created.pricingOrderingDate
+        EMSExtractTransformLoadProcess(venue_provider).execute()
+        assert event_created.pricingOrderingDate != last_pricingOrderingDate

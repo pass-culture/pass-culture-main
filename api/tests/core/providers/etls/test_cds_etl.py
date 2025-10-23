@@ -10,9 +10,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.external_bookings.cds import serializers as cds_serializers
-from pcapi.core.providers.etls.cds_etl import CineDigitalServiceETLProcess
+from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -24,13 +23,11 @@ from . import cds_fixtures
 pytestmark = pytest.mark.usefixtures("db_session")
 
 TODAY_STR = datetime.date.today().strftime("%Y-%m-%d")
-FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
-    "%Y-%m-%d"
-)
+FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=60)).strftime("%Y-%m-%d")
 
 
 @mock.patch("pcapi.settings.CDS_API_URL", "cds_api.fake/")
-class CineDigitalServiceETLProcessTest:
+class CDSExtractTransformLoadProcessTest:
     def setup_cinema_objects(self):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(
@@ -75,7 +72,7 @@ class CineDigitalServiceETLProcessTest:
     def test_execute_should_raise_inactive_provider(self):
         venue_provider = self.setup_cinema_objects()
         venue_provider.provider.isActive = False
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveProvider):
             etl_process.execute()
@@ -83,17 +80,17 @@ class CineDigitalServiceETLProcessTest:
     def test_execute_should_raise_inactive_venue_provider_provider(self):
         venue_provider = self.setup_cinema_objects()
         venue_provider.isActive = False
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
 
         with pytest.raises(providers_exceptions.InactiveVenueProvider):
             etl_process.execute()
 
     def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
         venue_provider = self.setup_cinema_objects()
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
         requests_mock.get(
             "https://account_id.cds_api.fake/media?api_token=fake_token",
-            exc=requests.exceptions.ConnectTimeout,
+            exc=requests.exceptions.ConnectTimeout("pas le time"),
         )
 
         with caplog.at_level(logging.WARNING):
@@ -102,20 +99,20 @@ class CineDigitalServiceETLProcessTest:
 
         assert len(caplog.records) >= 1
         last_record = caplog.records[-1]
-        assert last_record.message == "[CineDigitalServiceETLProcess] Step 1 - Extract failed"
+        assert last_record.message == "[CDSExtractTransformLoadProcess] Step 1 - Extract failed"
         assert last_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
             "venue_provider_id": venue_provider.id,
             "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "data": {"exc": "ConnectTimeout"},
+            "data": {"exc": "ConnectTimeout", "msg": "pas le time"},
         }
 
     def test_extract_should_return_raw_results(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
 
@@ -239,7 +236,7 @@ class CineDigitalServiceETLProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result)
@@ -301,7 +298,7 @@ class CineDigitalServiceETLProcessTest:
     def test_transform_should_drop_show_without_pc_voucher_type(self, caplog):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
                 cds_serializers.MediaCDS(
@@ -354,7 +351,7 @@ class CineDigitalServiceETLProcessTest:
 
         assert len(caplog.records) >= 2
         missing_tariff_record = caplog.records[-2]
-        assert missing_tariff_record.message == "[CineDigitalServiceETLProcess] Step 2 - Missing pass Culture tariff"
+        assert missing_tariff_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing pass Culture tariff"
         assert missing_tariff_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -369,7 +366,9 @@ class CineDigitalServiceETLProcessTest:
         }
 
         movie_without_show_record = caplog.records[-1]
-        assert movie_without_show_record.message == "[CineDigitalServiceETLProcess] Step 2 - Movie does not have shows"
+        assert (
+            movie_without_show_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Movie does not have shows"
+        )
         assert movie_without_show_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -386,7 +385,7 @@ class CineDigitalServiceETLProcessTest:
     def test_transform_should_drop_show_without_movie(self, caplog):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        etl_process = CineDigitalServiceETLProcess(venue_provider)
+        etl_process = CDSExtractTransformLoadProcess(venue_provider)
         extract_result = {
             "movies": [
                 cds_serializers.MediaCDS(
@@ -438,7 +437,7 @@ class CineDigitalServiceETLProcessTest:
 
         assert len(caplog.records) >= 2
         missing_movie_record = caplog.records[-2]
-        assert missing_movie_record.message == "[CineDigitalServiceETLProcess] Step 2 - Missing movie"
+        assert missing_movie_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Missing movie"
         assert missing_movie_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -453,7 +452,9 @@ class CineDigitalServiceETLProcessTest:
         }
 
         movie_without_show_record = caplog.records[-1]
-        assert movie_without_show_record.message == "[CineDigitalServiceETLProcess] Step 2 - Movie does not have shows"
+        assert (
+            movie_without_show_record.message == "[CDSExtractTransformLoadProcess] Step 2 - Movie does not have shows"
+        )
         assert movie_without_show_record.extra == {
             "venue_id": venue_provider.venueId,
             "provider_id": venue_provider.providerId,
@@ -474,7 +475,7 @@ class CineDigitalServiceETLProcessTest:
         venue_id = venue_provider.venueId
         self.setup_requests_mock(requests_mock)
 
-        CineDigitalServiceETLProcess(venue_provider).execute()
+        CDSExtractTransformLoadProcess(venue_provider).execute()
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"1%{venue_id}%CDS").one_or_none()
         offer_2 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"2%{venue_id}%CDS").one_or_none()
@@ -556,3 +557,12 @@ class CineDigitalServiceETLProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+
+        CDSExtractTransformLoadProcess(venue_provider).execute()
+        db.session.query(offers_models.PriceCategory).count() == 2
+        CDSExtractTransformLoadProcess(venue_provider).execute()
+        db.session.query(offers_models.PriceCategory).count() == 2

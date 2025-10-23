@@ -32,7 +32,7 @@ class Movie:
     allocine_id: str | None = None
 
 
-class ExternalBookingsClientAPI:
+class CinemaAPIClient:
     def __init__(self, cinema_id: str, request_timeout: None | int = None) -> None:
         self.cinema_id = cinema_id
         self.request_timeout = request_timeout
@@ -84,7 +84,7 @@ def cache_external_call(key_template: str, expire: int | None = None) -> typing.
 
     def decorator(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def func_to_cache(instance: ExternalBookingsClientAPI, *args: typing.Any, **kwargs: typing.Any) -> list | dict:
+        def func_to_cache(instance: CinemaAPIClient, *args: typing.Any, **kwargs: typing.Any) -> list | dict:
             key_args = (instance.cinema_id, *args)
             retriever = partial(func, instance, *args, **kwargs)
             result_as_json = get_from_cache(

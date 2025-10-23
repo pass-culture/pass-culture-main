@@ -7,7 +7,7 @@ import pcapi.core.external_bookings.cgr.client as cgr_client
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
+from pcapi.core.external_bookings.cgr.client import CGRAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
 from pcapi.utils.crypto import encrypt
