@@ -290,6 +290,9 @@ def list_offerers_to_be_validated(
         )
         .outerjoin(offerers_models.UserOfferer, offerers_models.UserOfferer.id == creator_user_offerer_id)
         .outerjoin(users_models.User, offerers_models.UserOfferer.user)
+        .options(
+            sa_orm.with_expression(offerers_models.Offerer.cities, offerers_models.Offerer.cities_expression()),
+        )
     )
 
     query = _apply_query_filters(
