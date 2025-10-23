@@ -55,7 +55,6 @@ from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
-from pcapi.utils import repository
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -1320,8 +1319,10 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
 
     if len(offer_ids) > 0:
-        favorites = db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).all()
-        repository.delete(*favorites)
+        db.session.query(users_models.Favorite).filter(users_models.Favorite.offerId.in_(offer_ids)).delete(
+            synchronize_session=False
+        )
+        db.session.flush()
         on_commit(
             functools.partial(
                 search.async_index_offer_ids,
