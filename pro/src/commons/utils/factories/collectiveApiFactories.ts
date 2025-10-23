@@ -272,6 +272,9 @@ export const defaultGetVenue: GetVenueResponseModel = {
   visualDisabilityCompliant: true,
   openingHours: null,
   isCaledonian: false,
+  isActive: true,
+  isValidated: true,
+  hasNonFreeOffers: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
