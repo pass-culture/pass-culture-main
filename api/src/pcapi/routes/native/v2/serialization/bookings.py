@@ -34,6 +34,11 @@ class TicketDisplayEnum(enum.Enum):
     TICKET = "ticket"
 
 
+class BookingsListStatus(enum.Enum):
+    ongoing = "ongoing"
+    ended = "ended"
+
+
 class BookingVenueResponseV2GetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "name":
