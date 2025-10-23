@@ -1,9 +1,9 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { humanizeSiret } from '@/commons/core/Venue/utils'
+import { humanizeSiret, unhumanizeRidet } from '@/commons/utils/siren'
 
-import type { VenueSettingsFormValues } from './types'
+import type { VenueSettingsFormValues } from '../types'
 
-export const setInitialFormValues = ({
+export const toFormValues = ({
   venue,
 }: {
   venue: GetVenueResponseModel
@@ -29,7 +29,9 @@ export const setInitialFormValues = ({
     name: venue.name,
     venueSiret: venue.pricingPoint?.id || '',
     publicName: venue.publicName || '',
-    siret: humanizeSiret(venue.siret || ''),
+    siret: venue.isCaledonian
+      ? unhumanizeRidet(venue.siret || '', true, false)
+      : humanizeSiret(venue.siret || ''),
     venueType: venue.venueType.value,
     withdrawalDetails: venue.withdrawalDetails || '',
   }
