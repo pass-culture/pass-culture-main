@@ -675,9 +675,6 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.street == offerer_informations.street
-        assert created_offerer.postalCode == offerer_informations.postalCode
-        assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
         assert created_offerer.isActive
         assert "Collectivité" in (tag.label for tag in created_offerer.tags)
@@ -827,9 +824,6 @@ class CreateOffererTest:
         assert created_offerer.id == offerer.id
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.street == offerer_informations.street
-        assert created_offerer.postalCode == offerer_informations.postalCode
-        assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
         assert created_offerer.isActive
         assert created_offerer.dateCreated > first_creation_date
@@ -2781,9 +2775,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street == "3 RUE DE VALOIS"
-        assert created_offerer.postalCode == "75001"
-        assert created_offerer.city == "Paris"
         assert created_offerer.validationStatus == ValidationStatus.NEW
         # User is attached to offerer
         assert created_user_offerer.userId == user.id
@@ -3138,9 +3129,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert not created_offerer.street
-        assert created_offerer.city == "Paris"
-        assert created_offerer.postalCode == "75001"
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
@@ -3162,9 +3150,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street == "3 RUE DE VALOIS"
-        assert created_offerer.city == "Paris"
-        assert created_offerer.postalCode == "75001"
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]

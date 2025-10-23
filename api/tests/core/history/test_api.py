@@ -78,8 +78,6 @@ class LogActionTest:
         unsaved_offerer = offerers_models.Offerer()
         unsaved_offerer.siren = "102030405"
         unsaved_offerer.name = "Librairie du pass"
-        unsaved_offerer.postalCode = "75018"
-        unsaved_offerer.city = "Paris"
 
         with pytest.raises(RuntimeError):
             history_api.add_action(
