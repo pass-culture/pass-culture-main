@@ -265,8 +265,7 @@ def get_product_synchronize_with_titelive_form(product_id: int) -> utils.Backoff
     except Exception as err:
         mark_transaction_as_invalid()
         return render_template(
-            "components/turbo/modal_empty_form.html",
-            form=empty_forms.BatchForm(),
+            "components/dynamic/modal_empty_form.html",
             div_id=f"synchro-product-modal-{product.id}",
             messages=[
                 f"Une erreur s’est produite lors de la récupération des informations via l’API Titelive: {str(err) or err.__class__.__name__}"

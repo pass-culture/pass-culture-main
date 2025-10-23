@@ -438,7 +438,6 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
 
@@ -504,7 +503,6 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
 
@@ -561,9 +559,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
         mark_transaction_as_invalid()
         return render_template(
             "components/dynamic/modal_empty_form.html",
-            form=empty_forms.BatchForm(),
             messages=valid.messages,
-            div_id=f"overpayment-creation-modal-{collective_booking_id}",
         )
 
     return render_template(
@@ -616,9 +612,7 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
         mark_transaction_as_invalid()
         return render_template(
             "components/dynamic/modal_empty_form.html",
-            form=empty_forms.BatchForm(),
             messages=valid.messages,
-            div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
         )
 
     return render_template(
@@ -1015,7 +1009,6 @@ def get_batch_finance_incidents_validation_form() -> utils.BackofficeResponse:
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
 
@@ -1117,7 +1110,6 @@ def get_batch_finance_incidents_cancellation_form() -> utils.BackofficeResponse:
             mark_transaction_as_invalid()
             return render_template(
                 "components/dynamic/modal_empty_form.html",
-                form=empty_forms.BatchForm(),
                 messages=valid.messages,
             )
 

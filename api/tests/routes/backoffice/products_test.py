@@ -319,7 +319,7 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
 
         assert (
             "Une erreur s’est produite lors de la récupération des informations via l’API Titelive: ExternalAPIException"
-            in html_parser.extract_alert(response.data)
+            in response.data.decode("utf-8")
         )
 
 
