@@ -32,6 +32,8 @@ def make_bookable_offer(venue: offerers_models.Venue | None = None) -> offers_mo
 def make_fully_featured_offer(venue: offerers_models.Venue | None = None) -> offers_models.Offer:
     product = offers_factories.ProductFactory()
     offers_factories.ProductMediationFactory(product=product)
+    artist = artists_factories.ArtistFactory(image=None, computed_image="http://example.com/image.png")
+    artists_factories.ArtistProductLinkFactory(artist_id=artist.id, product_id=product.id)
     offer = offers_factories.OfferFactory(product=product, venue=venue or offerers_factories.VenueFactory())
     offers_factories.StockFactory(offer=offer)
     return offer
