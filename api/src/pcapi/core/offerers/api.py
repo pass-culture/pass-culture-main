@@ -990,14 +990,7 @@ def create_offerer(
             # When offerer was rejected, it is considered as a new offerer in validation process;
             # history is kept with same id and siren
             is_new = True
-            update_offerer(
-                offerer,
-                author,
-                name=offerer_informations.name,
-                city=offerer_informations.city,
-                postal_code=offerer_informations.postalCode,
-                street=offerer_informations.street,
-            )
+            update_offerer(offerer, author, name=offerer_informations.name)
             _initialize_offerer(offerer)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
             user_offerer.validationStatus = ValidationStatus.VALIDATED
@@ -1102,9 +1095,6 @@ def update_offerer(
     author: users_models.User,
     *,
     name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    city: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    postal_code: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
-    street: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     tags: list[models.OffererTag] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
 ) -> None:
     modified_info: dict[str, dict[str, str | None]] = {}
@@ -1112,15 +1102,6 @@ def update_offerer(
     if name is not offerers_constants.UNCHANGED and offerer.name != name:
         modified_info["name"] = {"old_info": offerer.name, "new_info": name}
         offerer.name = name
-    if city is not offerers_constants.UNCHANGED and offerer.city != city:
-        modified_info["city"] = {"old_info": offerer.city, "new_info": city}
-        offerer.city = city
-    if postal_code is not offerers_constants.UNCHANGED and offerer.postalCode != postal_code:
-        modified_info["postalCode"] = {"old_info": offerer.postalCode, "new_info": postal_code}
-        offerer.postalCode = postal_code
-    if street is not offerers_constants.UNCHANGED and offerer.street != street:
-        modified_info["street"] = {"old_info": offerer.street, "new_info": street}
-        offerer.street = street
     if tags is not offerers_constants.UNCHANGED:
         if set(offerer.tags) != set(tags):
             modified_info["tags"] = {

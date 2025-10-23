@@ -67,8 +67,11 @@ def get_department_code_from_city_code(city_code: str) -> str:
 
 def get_region_name_from_postal_code(postal_code: str) -> str:
     department_code = get_department_code_from_city_code(postal_code)
-    region = get_region_name_from_department(department_code)
-    return region
+    return get_region_name_from_department_code(department_code)
+
+
+def get_region_name_from_department_code(department_code: str) -> str:
+    return get_region_name_from_department(department_code)
 
 
 def get_all_regions() -> list[str]:

@@ -58,32 +58,6 @@ class EditOffererForm(FlaskForm):
             wtforms.validators.Length(max=140, message="doit contenir moins de %(max)d caractères"),
         ),
     )
-    postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
-        "Adresse",
-        street="street",
-        city="city",
-        # TODO: bdalbianco 5/5/2025 check if ban_id and inseecode are relevant here. If not, remove and fix tests
-        ban_id=None,
-        insee_code=None,
-        postal_code="postal_code",
-        latitude=None,
-        longitude=None,
-        required=True,
-        has_reset=True,
-        has_manual_editing=True,
-        limit=10,
-    )
-    street = fields.PCOptHiddenField(
-        "Adresse",
-        validators=(wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),),
-    )
-    postal_code = fields.PCPostalCodeHiddenField("Code postal")
-    city = fields.PCHiddenField(
-        "Ville",
-        validators=(
-            wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
-        ),
-    )
 
 
 class SuspendOffererForm(FlaskForm):

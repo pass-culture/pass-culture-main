@@ -352,7 +352,7 @@ def codir_admin(roles_with_permissions):
 
 @pytest.fixture(name="offerer")
 def offerer_fixture():
-    offerer = offerers_factories.OffererFactory(postalCode="46150")
+    offerer = offerers_factories.OffererFactory()
     return offerer
 
 
