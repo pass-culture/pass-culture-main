@@ -220,3 +220,10 @@ export const OPENING_HOURS_DAYS: (keyof WeekdayOpeningHoursTimespans)[] = [
   'SATURDAY',
   'SUNDAY',
 ]
+
+export function formatDate(
+  date: string,
+  date_format: string = FORMAT_DD_MM_YYYY
+): string {
+  return format(new Date(date), date_format, { locale: fr })
+}

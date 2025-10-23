@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import type { ReactNode } from 'react'
 
 import styles from './Card.module.scss'
@@ -8,18 +7,11 @@ type CardProps = {
   title: ReactNode
   children: ReactNode
   actions: ReactNode
-  className?: string
 }
 
-export const Card = ({
-  imageSrc,
-  title,
-  children,
-  actions,
-  className,
-}: CardProps) => {
+export const Card = ({ imageSrc, title, children, actions }: CardProps) => {
   return (
-    <div className={cn(styles['card'], className)}>
+    <div className={styles['card']}>
       <div className={styles['card-content']}>
         <div>
           <img src={imageSrc} alt="" className={styles['card-image']} />

@@ -1,4 +1,5 @@
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .section {
   margin-top: var(--size-spacing-xxl);
@@ -17,4 +18,27 @@
   flex-direction: column;
   gap: var(--size-spacing-l);
   margin-top: var(--size-spacing-l);
+}
+
+.offer-stats {
+  margin-top: var(--size-spacing-l);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-spacing-l);
+}
+
+.title {
+  @include fonts.title2;
+}
+
+.container-stats-highlight {
+  display: flex;
+  gap: var(--size-spacing-l);
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: stretch;
 }

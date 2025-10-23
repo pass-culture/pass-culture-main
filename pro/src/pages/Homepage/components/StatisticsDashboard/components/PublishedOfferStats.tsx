@@ -18,7 +18,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { LoadingSkeleton } from './LoadingSkeleton'
 import styles from './OfferStats.module.scss'
 
-export interface OfferStatsProps {
+export interface PublishedOfferStatsProps {
   offerer: GetOffererResponseModel
   className?: string
 }
@@ -58,7 +58,10 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
   </div>
 )
 
-export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
+export const PublishedOfferStats = ({
+  offerer,
+  className,
+}: PublishedOfferStatsProps) => {
   const { logEvent } = useAnalytics()
 
   const { isLoading, data: stats } = useSWR(

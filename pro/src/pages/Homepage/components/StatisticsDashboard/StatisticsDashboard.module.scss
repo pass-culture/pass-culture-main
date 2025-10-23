@@ -6,21 +6,6 @@
   margin-top: var(--size-spacing-xxl);
 }
 
-.offer-stats {
-  margin-top: var(--size-spacing-l);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--size-spacing-l);
-}
-
-.title {
-  @include fonts.title2;
-}
-
 .no-data {
   color: var(--color-text-subtle);
   display: flex;
@@ -53,14 +38,6 @@
   text-align: end;
   margin-top: var(--size-spacing-s);
   grid-column: 1 / -1;
-}
-
-.container-stats-highlight {
-  display: flex;
-  gap: var(--size-spacing-xxl);
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: stretch;
 }
 
 .card-data {

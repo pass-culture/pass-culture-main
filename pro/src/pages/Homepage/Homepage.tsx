@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
@@ -10,6 +11,7 @@ import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccoun
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { BankAccountHasPendingCorrectionCallout } from './components/BankAccountHasPendingCorrectionCallout/BankAccountHasPendingCorrectionCallout'
+import { HighlightHome } from './components/HighlightHome/HighlightHome'
 import { LinkVenueCallout } from './components/LinkVenueCallout/LinkVenueCallout'
 import { OffererBanners } from './components/Offerers/components/OffererBanners/OffererBanners'
 import {
@@ -17,6 +19,7 @@ import {
   getVirtualVenueFromOfferer,
 } from './components/Offerers/components/VenueList/venueUtils'
 import { Offerers } from './components/Offerers/Offerers'
+import { PublishedOfferStats } from './components/StatisticsDashboard/components/PublishedOfferStats'
 import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
@@ -24,6 +27,7 @@ import styles from './Homepage.module.scss'
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
+  const areHighlightsEnable = useActiveFeature('WIP_HIGHLIGHT')
 
   const offererNamesQuery = useOffererNamesQuery()
 
@@ -62,7 +66,19 @@ export const Homepage = (): JSX.Element => {
 
           {selectedOfferer?.isValidated && selectedOfferer.isActive && (
             <section className={styles.section}>
-              <StatisticsDashboard offerer={selectedOfferer} />
+              <div className={styles['header']}>
+                <h2 className={styles['title']}>
+                  Présence sur l’application pass Culture
+                </h2>
+              </div>
+              <div className={styles['container-stats-highlight']}>
+                <StatisticsDashboard offerer={selectedOfferer} />
+                {areHighlightsEnable && <HighlightHome />}
+              </div>
+              <PublishedOfferStats
+                offerer={selectedOfferer}
+                className={styles['offer-stats']}
+              />
             </section>
           )}
 
