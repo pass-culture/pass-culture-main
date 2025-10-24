@@ -511,7 +511,7 @@ describe('VenueEditionFormScreen', () => {
     it('should display a mandatory toggle to define isOpenToPublic', async () => {
       renderForm({ ...baseVenue, isOpenToPublic: false })
 
-      const toggle = screen.getByRole('radiogroup', {
+      const toggle = screen.getByRole('group', {
         name: 'Accueillez-vous du public dans votre structure ?',
       })
 

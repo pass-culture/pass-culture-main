@@ -1,3 +1,9 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.radio-group-title {
+  @include fonts.title2;
+}
+
 .group {
   margin-bottom: var(--size-spacing-xxl);
 }

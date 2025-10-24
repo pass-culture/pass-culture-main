@@ -36,7 +36,7 @@ describe('IndividualOfferPracticalInfosFormWithdrawal', () => {
   it('should display the withdrawal delay selects based on the selected withdrawal type', async () => {
     renderIndividualOfferPracticalInfosFormWithdrawal()
 
-    const withdrawalGroup = screen.getByRole('radiogroup', {
+    const withdrawalGroup = screen.getByRole('group', {
       name: /Précisez la façon dont vous distribuerez les billets/,
     })
 

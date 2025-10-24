@@ -33,8 +33,11 @@ export const FormAccessibility = ({
       <CheckboxGroup
         options={options}
         description="Sélectionnez au moins une option"
-        label="À quel type de handicap votre offre est-elle accessible ?"
-        labelTag="h2"
+        label={
+          <h2 className={styles['checkbox-group-title']}>
+            À quel type de handicap votre offre est-elle accessible ?
+          </h2>
+        }
         error={getFieldState('accessibility').error?.message}
         disabled={disableForm}
         variant="detailed"

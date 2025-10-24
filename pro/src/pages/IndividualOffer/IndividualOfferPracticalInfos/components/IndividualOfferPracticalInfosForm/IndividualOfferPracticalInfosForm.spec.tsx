@@ -70,7 +70,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
     })
 
     expect(
-      screen.getByRole('radiogroup', {
+      screen.getByRole('group', {
         name: /Précisez la façon dont vous distribuerez les billets/,
       })
     ).toBeInTheDocument()

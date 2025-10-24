@@ -1,54 +1,15 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .checkbox-group {
-  &-label {
-    &-h1 {
-      @include fonts.title1;
-    }
-
-    &-h2 {
-      @include fonts.title2;
-    }
-
-    &-h3 {
-      @include fonts.title3;
-    }
-
-    &-h4 {
-      @include fonts.title4;
-    }
-
-    &-span {
-      @include fonts.body-accent;
-    }
-
-    color: var(--color-text-default);
-
-    &.disabled {
-      color: var(--color-text-disabled);
-    }
-  }
-
   &-description {
+    @include fonts.body-accent-s;
+
     margin-top: var(--size-spacing-xs);
     color: var(--color-text-subtle);
+  }
 
-    &.has-label {
-      &-span {
-        @include fonts.body-s;
-      }
-
-      &-h1,
-      &-h2,
-      &-h3,
-      &-h4 {
-        @include fonts.body;
-      }
-    }
-
-    &.disabled {
-      color: var(--color-text-disabled);
-    }
+  &.label-as-text .checkbox-group-description {
+    @include fonts.body-accent-xs;
   }
 
   &-error {

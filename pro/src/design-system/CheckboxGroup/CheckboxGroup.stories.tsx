@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react-vite'
 import dog from '../assets/dog.jpg'
 
 import { CheckboxGroup, CheckboxGroupOption } from './CheckboxGroup'
+import { theme } from '@pass-culture/design-system/lib/pro/light.web'
 
 const defaultOptions: CheckboxGroupOption[] = [
   { label: 'Option 1', checked: false },
@@ -127,21 +128,10 @@ export const DetailedWithDescription: Story = {
 
 export const DetailedWithHeadingTag: Story = {
   args: {
-    label: 'Radio Button Group with Heading Tag',
-    labelTag: 'h2',
+    label: <h2 style={{fontFamily: theme.typography.title2.fontFamily, lineHeight: theme.typography.title2.lineHeight, fontSize: theme.typography.title2.fontSize}}>Radio Button Group with Heading Tag as Title</h2>,
     options: detailedOptions,
     variant: 'detailed',
     description: 'Description with heading',
-  },
-}
-
-export const DetailedWithSpanTag: Story = {
-  args: {
-    label: 'Radio Button Group with Span Tag',
-    labelTag: 'span',
-    options: detailedOptions,
-    variant: 'detailed',
-    description: 'Description with span',
   },
 }
 

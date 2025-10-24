@@ -240,8 +240,11 @@ export const RecurrenceForm = ({
 
           <div className={styles['recurrence-section']}>
             <RadioButtonGroup
-              label="Cet évènement aura lieu"
-              labelTag="h2"
+              label={
+                <h2 className={styles['radio-group-title']}>
+                  Cet évènement aura lieu
+                </h2>
+              }
               display="horizontal"
               options={[
                 { label: 'Une seule fois', value: RecurrenceType.UNIQUE },
