@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import pytest
 
@@ -12,7 +13,7 @@ from pcapi.utils import db as db_utils
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_create_one_highlight_request_for_one_offer(self, client):
+    def test_create_one_highlight_request_for_one_offer(self, client, caplog):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -20,10 +21,10 @@ class Returns200Test:
         highlight = highlights_factories.HighlightFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+        with caplog.at_level(logging.INFO):
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
 
         assert response.status_code == 201
-
         response_json = response.json
         assert response_json["id"] == offer.id
         assert len(response_json["highlightRequests"]) == 1
@@ -34,7 +35,19 @@ class Returns200Test:
         assert highlight_request_query.one().offerId == offer.id
         assert highlight_request_query.one().highlightId == highlight.id
 
-    def test_create_multiple_highlight_requests_for_one_offer(self, client):
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 1
+        log = next(log for log in caplog.records if log.message == "Highlight requests have been created")
+        assert log.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "highlight_ids": [highlight.id],
+        }
+
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been deleted"]) == 0
+
+        assert log.technical_message_id == "offer.highlightRequests.created"
+
+    def test_create_multiple_highlight_requests_for_one_offer(self, client, caplog):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -43,9 +56,10 @@ class Returns200Test:
         highlight2 = highlights_factories.HighlightFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(
-            f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id, highlight2.id]}
-        )
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id, highlight2.id]}
+            )
 
         assert response.status_code == 201
 
@@ -58,7 +72,17 @@ class Returns200Test:
         assert highlight_request_query.all()[1].offerId == offer.id
         assert highlight_request_query.all()[1].highlightId == highlight2.id
 
-    def test_create_highlight_request_for_offer_already_having_request_on_this_highlight(self, client):
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 1
+        log = next(log for log in caplog.records if log.message == "Highlight requests have been created")
+        assert log.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "highlight_ids": [highlight.id, highlight2.id],
+        }
+
+        assert log.technical_message_id == "offer.highlightRequests.created"
+
+    def test_create_highlight_request_for_offer_already_having_request_on_this_highlight(self, client, caplog):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -67,7 +91,8 @@ class Returns200Test:
         highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
+        with caplog.at_level(logging.INFO):
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight.id]})
 
         assert response.status_code == 201
 
@@ -76,7 +101,9 @@ class Returns200Test:
         assert highlight_request_query.one().offerId == offer.id
         assert highlight_request_query.one().highlightId == highlight.id
 
-    def test_update_highlight_request_with_new_list(self, client):
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 0
+
+    def test_update_highlight_request_with_new_list(self, client, caplog):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -90,9 +117,10 @@ class Returns200Test:
         highlight4 = highlights_factories.HighlightFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(
-            f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight3.id, highlight4.id]}
-        )
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": [highlight3.id, highlight4.id]}
+            )
 
         assert response.status_code == 201
 
@@ -106,7 +134,17 @@ class Returns200Test:
             highlight_request_query.filter(highlights_models.HighlightRequest.highlightId == highlight4.id).count() == 1
         )
 
-    def test_empty_list_should_delete_current_highlight_requests_but_keep_past_ones(self, client):
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 1
+        log = next(log for log in caplog.records if log.message == "Highlight requests have been created")
+        assert log.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "highlight_ids": [highlight3.id, highlight4.id],
+        }
+
+        assert log.technical_message_id == "offer.highlightRequests.created"
+
+    def test_empty_list_should_delete_current_highlight_requests_but_keep_past_ones(self, client, caplog):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
@@ -125,7 +163,8 @@ class Returns200Test:
         highlights_factories.HighlightRequestFactory(offer=offer, highlight=unavailable_highlight)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": []})
+        with caplog.at_level(logging.INFO):
+            response = client.post(f"/offers/{offer.id}/highlight-requests", json={"highlight_ids": []})
 
         assert response.status_code == 201
 
@@ -133,6 +172,18 @@ class Returns200Test:
         assert highlight_request_query.count() == 1
         assert highlight_request_query.one().offerId == offer.id
         assert highlight_request_query.one().highlightId == unavailable_highlight.id
+
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been deleted"]) == 1
+        log = next(log for log in caplog.records if log.message == "Highlight requests have been deleted")
+        assert log.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "highlight_ids": [highlight.id, highlight2.id],
+        }
+
+        assert log.technical_message_id == "offer.highlightRequests.deleted"
+
+        assert len([log for log in caplog.records if log.message == "Highlight requests have been created"]) == 0
 
 
 @pytest.mark.usefixtures("db_session")
