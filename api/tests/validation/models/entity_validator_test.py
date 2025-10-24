@@ -7,16 +7,6 @@ from pcapi.validation.models.entity_validator import validate
 
 
 class OffererValidationTest:
-    def test_invalid_postal_code(self):
-        offerer = offerers_factories.OffererFactory.build(postalCode="abcde")
-        api_errors = validate(offerer)
-        assert api_errors.errors == {"postalCode": ["Ce code postal est invalide"]}
-
-    def test_valid_postal_code(self):
-        offerer = offerers_factories.OffererFactory.build(postalCode="12345")
-        api_errors = validate(offerer)
-        assert not api_errors.errors
-
     def test_invalid_siren_with_incorrect_with_length(self):
         offerer = offerers_factories.OffererFactory.build(siren="1")
         api_errors = validate(offerer)

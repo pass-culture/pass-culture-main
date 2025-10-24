@@ -45,7 +45,6 @@ from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
@@ -1141,7 +1140,6 @@ class OffererTagMapping(PcObject, Model):
 class Offerer(
     PcObject,
     Model,
-    HasAddressMixin,
     ValidationStatusMixin,
     DeactivableMixin,
 ):
