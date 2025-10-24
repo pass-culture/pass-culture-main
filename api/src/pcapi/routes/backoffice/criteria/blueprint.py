@@ -122,12 +122,13 @@ def get_create_tag_form() -> utils.BackofficeResponse:
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.tags.create_tag"),
         div_id="create-offer-venue-tag",  # must be consistent with parameter passed to build_lazy_modal
         title="Créer un tag offres et partenaires culturels",
         button_text="Créer le tag",
+        ajax_submit=False,
     )
 
 
@@ -180,12 +181,13 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
     form.categories.data = [cat.id for cat in tag.categories]
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=form,
         dst=url_for("backoffice_web.tags.update_tag", tag_id=tag_id),
         div_id=f"update-offer-venue-tag-{tag_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Modifier {tag.name}",
         button_text="Valider",
+        ajax_submit=False,
     )
 
 
@@ -220,13 +222,14 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
     ).format(name=tag.name)
 
     return render_template(
-        "components/turbo/modal_form.html",
+        "components/dynamic/modal_form.html",
         form=empty_forms.EmptyForm(),
         dst=url_for("backoffice_web.tags.delete_tag", tag_id=tag_id),
         div_id=f"delete-offer-venue-tag-{tag_id}",  # must be consistent with parameter passed to build_lazy_modal
         title=f"Supprimer {tag.name}",
         button_text="Confirmer",
         information=information,
+        ajax_submit=False,
     )
 
 

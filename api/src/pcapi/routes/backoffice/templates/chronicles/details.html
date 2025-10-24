@@ -4,7 +4,7 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/history/view.html" import build_history_view with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
-{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% extends "layouts/standard.html" %}
 {% macro get_product_identifier(product, productIdentifierType) %}
   {% if productIdentifierType == "EAN" %}
