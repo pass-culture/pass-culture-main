@@ -19,18 +19,18 @@ DIGITS_AND_WHITESPACES_REGEX = re.compile(r"^[\d\s]+$")
 
 
 class TypeOptions(enum.Enum):
-    OFFERER = "offerer"
     VENUE = "venue"
+    OFFERER = "offerer"
     USER = "user"
     BANK_ACCOUNT = "bank-account"
 
 
 def format_search_type_options(type_option: TypeOptions) -> str:
     match type_option:
-        case TypeOptions.OFFERER:
-            return "Entité juridique"
         case TypeOptions.VENUE:
             return "Partenaire culturel"
+        case TypeOptions.OFFERER:
+            return "Entité juridique"
         case TypeOptions.USER:
             return "Compte pro"
         case TypeOptions.BANK_ACCOUNT:
@@ -43,7 +43,7 @@ class ProSearchForm(search_forms.SearchForm):
     pro_type = fields.PCSelectField(
         "Type",
         choices=utils.choices_from_enum(TypeOptions, format_search_type_options),
-        default=TypeOptions.OFFERER,
+        default=TypeOptions.VENUE,
     )
     departments = fields.PCSelectMultipleField("Départements", choices=area_choices, full_row=True)
 
