@@ -5,8 +5,8 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import create_industrial_admin_users
-from pcapi.utils import repository
 
 
 class Sirene:
@@ -46,7 +46,7 @@ def save_allocine_sandbox() -> None:
 
     venue_provider = providers_factories.VenueProviderFactory.create(venue=venue, provider=provider)
 
-    repository.save(offerer, venue, provider, venue_provider)
+    db.session.add_all((offerer, venue, provider, venue_provider))
 
     offer = offers_factories.OfferFactory.create(
         venue=venue,
@@ -55,4 +55,5 @@ def save_allocine_sandbox() -> None:
         idAtProvider="TW92aWU6MjQ4MTAy%34007977100028-VF",
     )
 
-    repository.save(offer)
+    db.session.add(offer)
+    db.session.commit()

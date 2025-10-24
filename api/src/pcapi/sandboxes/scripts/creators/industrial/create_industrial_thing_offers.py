@@ -5,9 +5,9 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
+from pcapi.models import db
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,8 @@ def create_industrial_thing_offers(
 
         thing_index += THINGS_PER_OFFERER
 
-    repository.save(*thing_offers_by_name.values())
+    db.session.add_all(thing_offers_by_name.values())
+    db.session.commit()
 
     logger.info("created %d thing_offers", len(thing_offers_by_name))
 
