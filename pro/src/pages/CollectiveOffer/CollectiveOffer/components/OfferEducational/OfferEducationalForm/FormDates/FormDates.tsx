@@ -47,8 +47,11 @@ export const FormDates = ({
     <div className={styles['container']}>
       <RadioButtonGroup
         disabled={disableForm}
-        label="Quand votre offre peut-elle avoir lieu ?"
-        labelTag="h2"
+        label={
+          <h2 className={styles['radio-group-title']}>
+            Quand votre offre peut-elle avoir lieu ?
+          </h2>
+        }
         checkedOption={watch('datesType')}
         variant="detailed"
         onChange={(e) => {

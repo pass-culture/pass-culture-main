@@ -166,9 +166,12 @@ export function IndividualOfferTimetableScreen({
         {isOfferTimetableTypeEditable && (
           <div className={styles['group']}>
             <RadioButtonGroup
-              label="Quand profiter de l’offre&nbsp;?"
+              label={
+                <h2 className={styles['radio-group-title']}>
+                  Quand profiter de l’offre&nbsp;?
+                </h2>
+              }
               name="timetableType"
-              labelTag="h2"
               variant="detailed"
               display="horizontal"
               checkedOption={timetableType}

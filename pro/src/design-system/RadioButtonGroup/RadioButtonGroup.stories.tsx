@@ -7,6 +7,7 @@ import strokeDateIcon from '@/icons/stroke-date.svg'
 
 import imageDemo from '../assets/dog.jpg'
 import { RadioButtonGroup } from './RadioButtonGroup'
+import { theme } from '@pass-culture/design-system/lib/pro/light.web'
 
 export default {
   title: '@/design-system/RadioButtonGroup',
@@ -118,18 +119,9 @@ export const WithDescription: StoryObj<typeof RadioButtonGroup> = {
 export const WithHeadingTagAsTitle: StoryObj<typeof RadioButtonGroup> = {
   args: {
     name: 'radio-button-group',
-    label: 'Radio Button Group with Heading Tag as Title',
-    labelTag: 'h2',
+    label: <h2 style={{fontFamily: theme.typography.title2.fontFamily, lineHeight: theme.typography.title2.lineHeight, fontSize: theme.typography.title2.fontSize}}>Radio Button Group with Heading Tag as Title</h2>,
     options,
-  },
-}
-
-export const WithSpanTagAsTitle: StoryObj<typeof RadioButtonGroup> = {
-  args: {
-    name: 'radio-button-group',
-    label: 'Radio Button Group with Span Tag as Title',
-    labelTag: 'span',
-    options,
+    description: 'This is a description for the radio button group.'
   },
 }
 
