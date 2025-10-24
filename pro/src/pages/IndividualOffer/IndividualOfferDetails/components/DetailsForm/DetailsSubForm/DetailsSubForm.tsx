@@ -1,9 +1,22 @@
+import { liteClient } from 'algoliasearch/lite'
 import { useFormContext } from 'react-hook-form'
+import {
+  Configure,
+  Index,
+  InstantSearch,
+  useHits,
+  useSearchBox,
+} from 'react-instantsearch'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import {
+  ALGOLIA_API_KEY,
+  ALGOLIA_APP_ID,
+  ALGOLIA_INDIVIDUAL_OFFERS_ARTISTS_INDEX,
+} from '@/commons/utils/config'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -18,6 +31,8 @@ import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
 import styles from './DetailsSubForm.module.scss'
+
+const searchClient = liteClient(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
 export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [
   'speaker',
@@ -161,13 +176,7 @@ export const DetailsSubForm = ({
                   />
                 )}
                 {subcategoryConditionalFields.includes('author') && (
-                  <TextInput
-                    label="Auteur"
-                    maxCharactersCount={1000}
-                    disabled={readOnlyFields.includes('author')}
-                    {...register('author')}
-                    error={errors.author?.message}
-                  />
+                  <AuthorWithAlgolia />
                 )}
                 {subcategoryConditionalFields.includes('visa') && (
                   <TextInput
@@ -223,5 +232,99 @@ export const DetailsSubForm = ({
         </div>
       )}
     </>
+  )
+}
+
+function AuthorSearchField() {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext<DetailsFormValues>()
+
+  const author = watch('author') ?? ''
+  const { refine } = useSearchBox()
+  const { hits } = useHits<{ objectID: string; name: string }>()
+
+  // Afficher les suggestions seulement si on a du texte + des résultats
+  const showSuggestions = author.trim().length > 0 && hits.length > 0
+
+  // Propager la frappe à Algolia en temps réel
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const v = e.target.value
+    setValue('author', v, { shouldValidate: false, shouldDirty: true })
+    refine(v)
+  }
+
+  // Cliquer remplit le champ et vide la query pour masquer la liste
+  const handlePick = (name: string) => {
+    setValue('author', name, { shouldValidate: true, shouldDirty: true })
+    refine('') // masque les résultats
+  }
+
+  return (
+    <div>
+      <TextInput
+        label="Auteur"
+        maxCharactersCount={1000}
+        {...register('author')}
+        // onChange contrôlé pour alimenter Algolia
+        onChange={handleChange}
+        error={errors.author?.message}
+      />
+
+      {showSuggestions && (
+        <div
+          // Simple panneau texte pour la démo
+          style={{
+            marginTop: 8,
+            border: '1px solid var(--grey-300, #ddd)',
+            padding: 8,
+            borderRadius: 6,
+            background: 'var(--bg, #fff)',
+          }}
+          role="listbox"
+        >
+          <ul>
+            {hits.map((hit) => (
+              <li
+                key={hit.objectID}
+                // onMouseDown évite que le blur du champ annule le clic
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  handlePick(hit.name)
+                }}
+                style={{
+                  cursor: 'pointer',
+                  padding: '6px 4px',
+                }}
+              >
+                {hit.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function AuthorWithAlgolia() {
+  return (
+    <InstantSearch
+      indexName={ALGOLIA_INDIVIDUAL_OFFERS_ARTISTS_INDEX}
+      searchClient={searchClient}
+      future={{ preserveSharedStateOnUnmount: true }}
+    >
+      <Index indexName={ALGOLIA_INDIVIDUAL_OFFERS_ARTISTS_INDEX}>
+        <Configure
+          attributesToHighlight={[]}
+          attributesToRetrieve={['name']}
+          hitsPerPage={8}
+        />
+        <AuthorSearchField />
+      </Index>
+    </InstantSearch>
   )
 }
