@@ -167,7 +167,7 @@ def test_update_venue():
 def test_create_venue_without_parent_offerer():
     # Offerer is not found in Zendesk, but feature flag prevents from creating it
     ret_id = 10
-    offerer = offerers_factories.OffererFactory(postalCode="97100")
+    offerer = offerers_factories.OffererFactory()
     venue = offerers_factories.VenueFactory(
         offererAddress__address__departmentCode="972",
         offererAddress__address__postalCode="97200",

@@ -21,10 +21,7 @@ def save_allocine_sandbox() -> None:
     create_industrial_admin_users()
 
     offerer = offerers_factories.OffererFactory.create(
-        address="145, rue Chaplin",
-        city="Paris 17",
         name="Le Royal - Cinéma d'essai",
-        postalCode="75017",
         siren=sirene.siren,
     )
 
@@ -32,13 +29,15 @@ def save_allocine_sandbox() -> None:
 
     venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
-        address=offerer.address,
         bookingEmail="fake@email.com",
-        city=offerer.city,
         comment="Salle de cinéma",
         name=offerer.name + " - Salle 1",
-        postalCode=offerer.postalCode,
         siret=sirene.siret,
+        offererAddress=offerers_factories.OffererAddressFactory(
+            street="145, rue Chaplin",
+            postalCode="75017",
+            city="Paris 17",
+        ),
     )
 
     provider = get_provider_by_local_class("AllocineStocks")

@@ -65,7 +65,7 @@ def _create_nc_beneficiaries() -> users_models.User:
 
 
 def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
-    address = geography_factories.AddressFactory.create(
+    noumea_address = geography_factories.AddressFactory.create(
         street="11 Avenue James Cook",
         postalCode="98800",
         city="Nouméa",
@@ -77,9 +77,6 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
     )
     offerer = offerers_factories.CaledonianOffererFactory.create(
         name="Structure calédonienne à Nouméa",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
         siren=siren_utils.rid7_to_siren("1230001"),
     )
     venue = offerers_factories.CaledonianVenueFactory.create(
@@ -87,41 +84,38 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         pricing_point="self",
         name="Lieu avec RIDET à Nouméa",
         siret=siren_utils.ridet_to_siret("1230001001"),
-        latitude=address.latitude,
-        longitude=address.longitude,
         bookingEmail="venue.nc@example.com",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
-        banId=address.banId,
-        timezone=address.timezone,
         venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
         description="Lieu de test en Nouvelle-Calédonie",
         contact__email="noumea.nc@example.com",
         contact__website="https://nc.example.com/noumea",
         contact__phone_number="+687263443",
         contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
-        offererAddress__address=address,
+        offererAddress__address=noumea_address,
+    )
+    dumbea_address = geography_factories.AddressFactory.create(
+        street="285 Boulevard du Rail Caledonien",
+        postalCode="98835",
+        city="Dumbéa",
+        latitude=-22.204793,
+        longitude=166.452108,
+        inseeCode="98805",
+        banId="98805_l2xcs6_00285",
+        timezone="Pacific/Noumea",
     )
     second_venue = offerers_factories.CaledonianVenueFactory.create(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Dumbéa",
         siret=siren_utils.ridet_to_siret("1230001002"),
-        latitude=-22.204793,
-        longitude=166.452108,
         bookingEmail="venue.nc@example.com",
-        street="285 Boulevard du Rail Caledonien",
-        postalCode="98835",
-        city="Dumbéa",
-        banId="98805_l2xcs6_00285",
-        timezone="Pacific/Noumea",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
         description="Lieu de test en Nouvelle-Calédonie",
         contact__email="dumbea.nc@example.com",
         contact__website="https://nc.example.com/dumbea",
         contact__phone_number="+687263443",
         contact__social_medias={"instagram": "https://instagram.com/@dumbea.nc"},
+        offererAddress__address=dumbea_address,
     )
 
     offerers_factories.UserOffererFactory.create(
@@ -184,9 +178,6 @@ def _create_nc_new_offerer() -> None:
     )
     offerer = offerers_factories.NotValidatedCaledonianOffererFactory.create(
         name="Structure calédonienne à Thio",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
         siren=siren_utils.rid7_to_siren("1230002"),
     )
     offerers_factories.CaledonianVenueFactory.create(
@@ -194,14 +185,7 @@ def _create_nc_new_offerer() -> None:
         pricing_point="self",
         name="Lieu avec RIDET à Thio",
         siret=siren_utils.ridet_to_siret("1230002001"),
-        latitude=address.latitude,
-        longitude=address.longitude,
         bookingEmail="thio.nc@example.com",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
-        banId=address.banId,
-        timezone=address.timezone,
         isPermanent=False,
         venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
         description="Lieu de test en Nouvelle-Calédonie, adresse inconnue de la BAN",
@@ -235,9 +219,6 @@ def _create_nc_cinema() -> None:
     )
     offerer = offerers_factories.CaledonianOffererFactory.create(
         name="Le Rex calédonien",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
         siren=siren_utils.rid7_to_siren("1230003"),
     )
     venue = offerers_factories.CaledonianVenueFactory.create(
@@ -245,14 +226,7 @@ def _create_nc_cinema() -> None:
         pricing_point="self",
         name=offerer.name,
         siret=siren_utils.ridet_to_siret("1230003003"),
-        latitude=address.latitude,
-        longitude=address.longitude,
         bookingEmail="cinema.nc@example.com",
-        street=address.street,
-        postalCode=address.postalCode,
-        city=address.city,
-        banId=address.banId,
-        timezone=address.timezone,
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
         description="Cinéma de test en Nouvelle-Calédonie",
         contact__email="cinema.nc@example.com",
