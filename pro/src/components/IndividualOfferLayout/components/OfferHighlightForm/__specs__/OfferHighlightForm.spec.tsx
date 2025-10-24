@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   HighlightResponseModel,
+  ShortHighlightResponseModel,
 } from '@/apiClient/v1'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -58,14 +59,22 @@ const mockedHighlights: HighlightResponseModel[] = [
   },
 ]
 
-function renderOfferHighlightForm(props: {
+function renderOfferHighlightForm({
+  offerId,
+  highlightRequests = [],
+  onSuccess = () => {},
+}: {
   offerId: number
+  highlightRequests?: Array<ShortHighlightResponseModel>
   onSuccess?: () => void
 }) {
-  const { onSuccess = () => {} } = props
   return renderWithProviders(
     <DialogBuilder defaultOpen title="test">
-      <OfferHighlightForm {...props} onSuccess={onSuccess} />
+      <OfferHighlightForm
+        offerId={offerId}
+        onSuccess={onSuccess}
+        highlightRequests={highlightRequests}
+      />
     </DialogBuilder>
   )
 }
@@ -155,6 +164,19 @@ describe('OfferHighlightForm', () => {
     expect(checkboxes).toHaveLength(mockedHighlights.length)
   })
 
+  it('should check highlight when highlight request has already been made', async () => {
+    // When
+    renderOfferHighlightForm({
+      offerId: 1,
+      highlightRequests: [{ name: 'Highlight 1', id: 1 }],
+    })
+
+    // Then
+    const checkboxes = await screen.findAllByRole('checkbox')
+    expect(checkboxes).toHaveLength(mockedHighlights.length)
+    expect(checkboxes[0]).toBeChecked()
+  })
+
   it('should call getDateTag with correct parameters for each highlight', async () => {
     // When
     renderOfferHighlightForm({ offerId: 1 })
@@ -209,7 +231,7 @@ describe('OfferHighlightForm', () => {
     // Then
     await waitFor(() => {
       expect(mockNotify.success).toHaveBeenCalledWith(
-        'La sélection des temps forts à bien été prise en compte'
+        'La sélection des temps forts a bien été prise en compte'
       )
     })
   })
