@@ -8,6 +8,7 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -18,11 +19,12 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
+import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
+import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
+import { OfferPublicationEdition } from './components/OfferPublicationEdition/OfferPublicationEdition'
+import { OfferStatusBanner } from './components/OfferStatusBanner/OfferStatusBanner'
+import { Status } from './components/Status/Status'
 import styles from './IndividualOfferLayout.module.scss'
-import { IndividualOfferNavigation } from './IndividualOfferNavigation/IndividualOfferNavigation'
-import { OfferPublicationEdition } from './OfferPublicationEdition/OfferPublicationEdition'
-import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
-import { Status } from './Status/Status'
 
 export interface IndividualOfferLayoutProps {
   withStepper?: boolean
@@ -38,6 +40,7 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
+  const isHighlightFeatureActive = useActiveFeature('WIP_HIGHLIGHT')
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -57,6 +60,14 @@ export const IndividualOfferLayout = ({
 
   const shouldDisplayActionOnStatus =
     withStepper && !displayUpdatePublicationAndBookingDates
+
+  const shouldDisplayHighlightsBanner =
+    !!offer &&
+    isHighlightFeatureActive &&
+    offer.isEvent &&
+    ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
+      offer.status
+    )
 
   const notify = useNotification()
   const navigate = useNavigate()
@@ -129,6 +140,12 @@ export const IndividualOfferLayout = ({
             Supprimer ce brouillon
           </Button>
         </Callout>
+      )}
+
+      {shouldDisplayHighlightsBanner && (
+        <div className={styles['banner-container']}>
+          <OfferHighlightBanner offerId={offer.id} />
+        </div>
       )}
 
       {offer?.lastProvider?.name && (
