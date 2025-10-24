@@ -72,8 +72,9 @@ def assert_offerer_equals(result_card_text: str, expected_offerer: offerers_mode
     assert f"{expected_offerer.name.upper()} " in result_card_text
     assert f"Offerer ID : {expected_offerer.id} " in result_card_text
     assert f"SIREN : {expected_offerer.siren} " in result_card_text
-    assert f"Ville : {expected_offerer.city}" in result_card_text
-    assert f"Code postal : {expected_offerer.postalCode}" in result_card_text
+    assert (
+        f"Département : {expected_offerer.managedVenues[0].offererAddress.address.departmentCode}" in result_card_text
+    )
     assert "Entité juridique " in result_card_text
     if expected_offerer.isValidated:
         assert " Validée " in result_card_text

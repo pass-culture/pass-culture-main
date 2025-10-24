@@ -1833,7 +1833,12 @@ def get_venue_by_id(venue_id: int) -> offerers_models.Venue | None:
 
 
 def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) -> sa_orm.Query:
-    offerers = db.session.query(models.Offerer)
+    offerers = db.session.query(models.Offerer).options(
+        sa_orm.with_expression(
+            offerers_models.Offerer.department_codes, offerers_models.Offerer.department_codes_expression()
+        ),
+        sa_orm.with_expression(offerers_models.Offerer.cities, offerers_models.Offerer.cities_expression()),
+    )
 
     search_query = search_query.strip()
     if not search_query:
