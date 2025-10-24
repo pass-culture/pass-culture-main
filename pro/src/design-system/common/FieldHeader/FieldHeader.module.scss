@@ -1,24 +1,26 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .label {
-    margin-bottom: var(--size-spacing-xs);
-    display: block;
+  margin-bottom: var(--size-spacing-xs);
+  display: block;
+  overflow-wrap: anywhere;
 
-    &-mandatory-asterisk {
-        margin-left: var(--size-spacing-s);
-    }
+  &-mandatory-asterisk {
+    margin-left: var(--size-spacing-s);
+  }
 }
 
 //  DESCRIPTION
 .has-description {
-    .label {
-        margin-bottom: var(--size-spacing-xxs);
-    }
+  .label {
+    margin-bottom: var(--size-spacing-xxs);
+  }
 }
 
 .description {
-    @include fonts.body-accent-xs;
+  @include fonts.body-accent-xs;
 
-    color: var(--color-text-subtle);
-    margin-bottom: var(--size-spacing-xs);
+  color: var(--color-text-subtle);
+  margin-bottom: var(--size-spacing-xs);
+  overflow-wrap: anywhere;
 }
