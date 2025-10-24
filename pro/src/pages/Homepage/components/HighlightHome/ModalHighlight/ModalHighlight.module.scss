@@ -6,10 +6,6 @@
   margin-top: var(--size-spacing-xxl);
 }
 
-.callout-list {
-  list-style: inside;
-}
-
 .highlight-title {
   @include fonts.body-accent;
 
@@ -18,7 +14,7 @@
 
 .cards-container {
   display: flex;
-  margin-top: var(--size-spacing-l);
+  margin-top: var(--size-spacing-s);
   gap: var(--size-spacing-s);
   align-items: flex-start;
   flex-wrap: wrap;
@@ -53,7 +49,7 @@
 
   @media (min-width: size.$tablet) {
     height: rem.torem(404px);
-    max-width: rem.torem(274px);
+    max-width: rem.torem(306px);
   }
 }
 

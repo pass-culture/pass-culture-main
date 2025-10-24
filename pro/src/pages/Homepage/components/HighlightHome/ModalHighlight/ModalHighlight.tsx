@@ -46,13 +46,13 @@ export const ModalHighlight = ({
           variant={CalloutVariant.INFO}
           className={styles['callout']}
         >
-          <ul className={styles['callout-list']}>
+          <ul>
             <li>
-              Créez votre offre d’évènement ou choisissez en une dans votre
+              - Créez votre offre d’évènement ou choisissez en une dans votre
               liste d’offre
             </li>
-            <li>Ouvrez votre offre</li>
-            <li>Choisissez le temps fort</li>
+            <li>- Ouvrez votre offre</li>
+            <li>- Choisissez le temps fort</li>
           </ul>
         </Callout>
         {isLoading ? (
@@ -62,7 +62,7 @@ export const ModalHighlight = ({
             <p className={styles['highlight-title']}>
               Les prochains temps forts :{' '}
             </p>
-            <div className={styles['cards-container']}>
+            <ul className={styles['cards-container']}>
               {data?.map(
                 ({
                   id,
@@ -72,18 +72,19 @@ export const ModalHighlight = ({
                   availabilityTimespan,
                   highlightTimespan,
                 }) => (
-                  <HighlightCard
-                    key={id}
-                    imageSrc={mediationUrl}
-                    title={name}
-                    availabilityTimespan={availabilityTimespan}
-                    highlightTimespan={highlightTimespan}
-                  >
-                    {description}
-                  </HighlightCard>
+                  <li key={id}>
+                    <HighlightCard
+                      imageSrc={mediationUrl}
+                      title={name}
+                      availabilityTimespan={availabilityTimespan}
+                      highlightTimespan={highlightTimespan}
+                    >
+                      {description}
+                    </HighlightCard>
+                  </li>
                 )
               )}
-            </div>
+            </ul>
           </>
         )}
       </div>
