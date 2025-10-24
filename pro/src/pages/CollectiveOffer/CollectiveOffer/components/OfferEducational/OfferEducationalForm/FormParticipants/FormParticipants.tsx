@@ -135,9 +135,12 @@ export const FormParticipants = ({
         }
       >
         <CheckboxGroup
-          label="À quels niveaux scolaires s’adressent votre offre ?"
+          label={
+            <h2 className={styles['checkbox-group-title']}>
+              À quels niveaux scolaires s’adressent votre offre ?
+            </h2>
+          }
           description="Sélectionnez au moins une option"
-          labelTag="h2"
           variant="detailed"
           disabled={disableForm}
           options={studentLevelsOptions}

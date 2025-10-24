@@ -1,5 +1,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.checkbox-group-title {
+  @include fonts.title2;
+}
+
 .container {
   margin: var(--size-spacing-xxxxl) 0;
 }

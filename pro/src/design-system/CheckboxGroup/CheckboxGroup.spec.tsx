@@ -51,16 +51,6 @@ describe('CheckboxGroup', () => {
       expect(screen.getByText('My label')).toBeInTheDocument()
     })
 
-    it('renders the label with proper tag element', () => {
-      renderCheckboxGroup({
-        label: 'My label',
-        options: baseOptions,
-        labelTag: 'h2',
-      })
-      expect(screen.getByText('My label')).toBeInTheDocument()
-      expect(screen.getByText('My label').tagName).toBe('H2')
-    })
-
     it('renders the description when provided', () => {
       renderCheckboxGroup({
         description: 'Desc',
