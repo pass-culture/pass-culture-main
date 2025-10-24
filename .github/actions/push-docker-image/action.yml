@@ -61,8 +61,8 @@ runs:
     - name: Authentification to Google
       uses: google-github-actions/auth@v3
       with:
-        workload_identity_provider: ${{ secrets.workload_identity_provider }}
-        service_account: ${{ secrets.service_account }}
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
 
     - name: Get Secret
       id: secrets
