@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import fullError from 'icons/full-error.svg'
-import { type ElementType, useId } from 'react'
+import { useId } from 'react'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { Checkbox, type CheckboxProps } from '../Checkbox/Checkbox'
@@ -10,10 +10,7 @@ export type CheckboxGroupOption = Omit<CheckboxProps, 'variant'>
 
 export type CheckboxGroupProps = {
   /** Label for the checkbox group */
-  label: string
-  /** Tag for the label, defaults to 'span', can be 'h1', 'h2', etc. */
-  labelTag?: ElementType
-  /** Description for the checkbox group */
+  label: React.ReactNode
   description?: string
   /** Error message for the checkbox group */
   error?: string
@@ -30,7 +27,6 @@ export type CheckboxGroupProps = {
 
 export const CheckboxGroup = ({
   label,
-  labelTag: LabelTag = 'span',
   description,
   error,
   options,
@@ -42,6 +38,8 @@ export const CheckboxGroup = ({
   const descriptionId = useId()
   const describedBy = `${error ? errorId : ''} ${description ? descriptionId : ''}`
 
+  const isStringLabel = typeof label === 'string'
+
   return (
     <fieldset
       aria-describedby={describedBy}
@@ -49,28 +47,12 @@ export const CheckboxGroup = ({
         styles['checkbox-group'],
         styles[`display-${display}`],
         styles[`variant-${variant}`],
-        {
-          [styles['disabled']]: disabled,
-        }
+        { [styles['label-as-text']]: isStringLabel }
       )}
     >
-      <legend className={styles['checkbox-group-legend']}>
-        <LabelTag
-          className={classNames(styles[`checkbox-group-label-${LabelTag}`], {
-            [styles['disabled']]: disabled,
-          })}
-        >
-          {label}
-        </LabelTag>
-      </legend>
+      <legend className={styles['checkbox-group-legend']}>{label}</legend>
       {description && (
-        <p
-          id={descriptionId}
-          className={classNames(styles['checkbox-group-description'], {
-            [styles['disabled']]: disabled,
-            [styles[`has-label-${LabelTag}`]]: LabelTag,
-          })}
-        >
+        <p id={descriptionId} className={styles['checkbox-group-description']}>
           {description}
         </p>
       )}

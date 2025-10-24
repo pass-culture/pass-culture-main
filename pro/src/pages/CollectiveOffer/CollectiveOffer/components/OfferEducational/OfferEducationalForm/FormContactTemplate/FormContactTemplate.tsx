@@ -74,9 +74,12 @@ export const FormContactTemplate = ({
   return (
     <div className={styles['container']}>
       <CheckboxGroup
-        label="Comment les enseignants peuvent-ils vous contacter ?"
+        label={
+          <h2 className={styles['checkbox-group-title']}>
+            Comment les enseignants peuvent-ils vous contacter ?
+          </h2>
+        }
         description="Sélectionnez au moins une option"
-        labelTag="h2"
         options={contactOptions}
         disabled={disableForm}
         variant="detailed"
