@@ -1,12 +1,14 @@
 import logging
 
+from werkzeug.exceptions import NotFound
+
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.users.models import User
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v2.serialization.bookings import BookingListItemResponse
 from pcapi.routes.native.v2.serialization.bookings import BookingResponse
 from pcapi.routes.native.v2.serialization.bookings import BookingsListResponseV2
-from pcapi.routes.native.v2.serialization.bookings import BookingsListStatus
 from pcapi.routes.native.v2.serialization.bookings import BookingsResponseV2
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -33,16 +35,16 @@ def get_bookings(user: User) -> BookingsResponseV2:
 
 
 @blueprint.native_route("/bookings/<string:status>", version="v2", methods=["GET"])
-@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=BookingsListResponseV2)
+@spectree_serialize(
+    response_model=BookingsListResponseV2, on_success_status=200, api=blueprint.api, on_error_statuses=[404]
+)
 @authenticated_and_active_user_required
 def get_bookings_list(user: User, status: str) -> BookingsListResponseV2:
     try:
-        status_enum = BookingsListStatus(status)
+        bookings_models.BookingsListStatus(status)
     except ValueError:
-        return BookingsListResponseV2(bookings=[])
+        raise NotFound()
 
-    user_bookings_list = bookings_api.get_user_bookings_by_status(user, status_enum.value)
+    bookings_list = bookings_api.get_user_bookings_by_status(user, status)
 
-    return BookingsListResponseV2(
-        bookings=[BookingListItemResponse.from_orm(booking) for booking in user_bookings_list]
-    )
+    return BookingsListResponseV2(bookings=[BookingListItemResponse.from_orm(booking) for booking in bookings_list])

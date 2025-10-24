@@ -259,7 +259,7 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
         ),
     )
 
-    if status == "ended":
+    if status == models.BookingsListStatus.ENDED.value:
         return query.filter(query_filter).all()
     return query.filter(sa.not_(query_filter)).all()
 
