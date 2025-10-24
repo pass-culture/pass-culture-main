@@ -9,6 +9,7 @@ from pcapi.core.highlights import models as highlights_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
+from pcapi.utils import date as date_utils
 
 import tests
 
@@ -107,7 +108,7 @@ class CreateHighlightTest(PostEndpointHelper):
         name = "New highlight"
         description = "Highlight description"
         highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
+        highlight_date_to = datetime.date.today() + datetime.timedelta(days=11)
         availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
         availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
         separator = " - "
@@ -132,18 +133,18 @@ class CreateHighlightTest(PostEndpointHelper):
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == name
         assert highlight.description == description
-        assert highlight.availability_timespan.lower == datetime.datetime.combine(
-            availability_date_from, datetime.time(0, 0, 0)
-        )
-        assert highlight.availability_timespan.upper == datetime.datetime.combine(
-            availability_date_to, datetime.time(0, 0, 0)
-        )
-        assert highlight.highlight_timespan.lower == datetime.datetime.combine(
-            highlight_date_from, datetime.time(0, 0, 0)
-        )
-        assert highlight.highlight_timespan.upper == datetime.datetime.combine(
-            highlight_date_to, datetime.time(0, 0, 0)
-        )
+        assert highlight.availability_timespan.lower == date_utils.date_to_localized_datetime(
+            availability_date_from, datetime.datetime.min.time()
+        ).replace(tzinfo=None)
+        assert highlight.availability_timespan.upper == date_utils.date_to_localized_datetime(
+            availability_date_to, datetime.datetime.max.time()
+        ).replace(tzinfo=None)
+        assert highlight.highlight_timespan.lower == date_utils.date_to_localized_datetime(
+            highlight_date_from, datetime.datetime.min.time()
+        ).replace(tzinfo=None)
+        assert highlight.highlight_timespan.upper == date_utils.date_to_localized_datetime(
+            highlight_date_to, datetime.datetime.max.time()
+        ).replace(tzinfo=None)
 
     def test_create_highlight_available_after_highlight(self, authenticated_client):
         name = "New highlight"
@@ -283,18 +284,18 @@ class UpdateHighlightTest(PostEndpointHelper):
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == new_name
         assert highlight.description == new_description
-        assert highlight.availability_timespan.lower == datetime.datetime.combine(
-            new_availability_date_from, datetime.time(0, 0, 0)
-        )
-        assert highlight.availability_timespan.upper == datetime.datetime.combine(
-            new_availability_date_to, datetime.time(0, 0, 0)
-        )
-        assert highlight.highlight_timespan.lower == datetime.datetime.combine(
-            new_highlight_date_from, datetime.time(0, 0, 0)
-        )
-        assert highlight.highlight_timespan.upper == datetime.datetime.combine(
-            new_highlight_date_to, datetime.time(0, 0, 0)
-        )
+        assert highlight.availability_timespan.lower == date_utils.date_to_localized_datetime(
+            new_availability_date_from, datetime.datetime.min.time()
+        ).replace(tzinfo=None)
+        assert highlight.availability_timespan.upper == date_utils.date_to_localized_datetime(
+            new_availability_date_to, datetime.datetime.max.time()
+        ).replace(tzinfo=None)
+        assert highlight.highlight_timespan.lower == date_utils.date_to_localized_datetime(
+            new_highlight_date_from, datetime.datetime.min.time()
+        ).replace(tzinfo=None)
+        assert highlight.highlight_timespan.upper == date_utils.date_to_localized_datetime(
+            new_highlight_date_to, datetime.datetime.max.time()
+        ).replace(tzinfo=None)
 
     def test_update_highlight_available_after_highlight(self, authenticated_client):
         highlight = highlights_factories.HighlightFactory.create()

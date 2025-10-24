@@ -1,3 +1,4 @@
+import datetime
 from functools import partial
 
 import sqlalchemy as sa
@@ -16,6 +17,7 @@ from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.search_utils import paginate
+from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -98,14 +100,27 @@ def create_highlight() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
-    availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
+
+    # Replace the start and end times of the time range with the maximum and minimum available times
+    # in the creation timezone, then convert them to UTC. This ensures that all datetimes remain
+    # consistent with the original creation timezone.
+    start_availability = date_utils.date_to_localized_datetime(
+        form.availability_timespan.data[0], datetime.datetime.min.time()
     )
-    highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
+    end_availability = date_utils.date_to_localized_datetime(
+        form.availability_timespan.data[1], datetime.datetime.max.time()
     )
+    start_highlight = date_utils.date_to_localized_datetime(
+        form.highlight_timespan.data[0], datetime.datetime.min.time()
+    )
+    end_highlight = date_utils.date_to_localized_datetime(form.highlight_timespan.data[1], datetime.datetime.max.time())
+
+    assert start_availability
+    assert end_availability
+    assert start_highlight
+    assert end_highlight
+    availability_timespan = db_utils.make_timerange(start=start_availability, end=end_availability)
+    highlight_timespan = db_utils.make_timerange(start=start_highlight, end=end_highlight)
     highlight = highlights_api.create_highlight(
         name=form.name.data,
         description=form.description.data,
@@ -150,14 +165,27 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
         return redirect(url_for(".list_highlights"), code=303)
 
     highlight = get_or_404(highlights_models.Highlight, highlight_id)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
-    availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
+
+    # Replace the start and end times of the time range with the maximum and minimum available times
+    # in the update timezone, then convert them to UTC. This ensures that all datetimes remain
+    # consistent with the update timezone.
+    start_availability = date_utils.date_to_localized_datetime(
+        form.availability_timespan.data[0], datetime.datetime.min.time()
     )
-    highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
+    end_availability = date_utils.date_to_localized_datetime(
+        form.availability_timespan.data[1], datetime.datetime.max.time()
     )
+    start_highlight = date_utils.date_to_localized_datetime(
+        form.highlight_timespan.data[0], datetime.datetime.min.time()
+    )
+    end_highlight = date_utils.date_to_localized_datetime(form.highlight_timespan.data[1], datetime.datetime.max.time())
+
+    assert start_availability
+    assert end_availability
+    assert start_highlight
+    assert end_highlight
+    availability_timespan = db_utils.make_timerange(start=start_availability, end=end_availability)
+    highlight_timespan = db_utils.make_timerange(start=start_highlight, end=end_highlight)
     image_as_bytes = None
     image_mimetype = None
     if form.image.data:
