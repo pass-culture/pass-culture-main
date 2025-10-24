@@ -495,7 +495,7 @@ def update_offer(
 
     if "bookingAllowedDatetime" in updates:
         bookingAllowedDatetime = get_field(offer, updates, "bookingAllowedDatetime", aliases=aliases)
-        if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
+        if not bookingAllowedDatetime or (bookingAllowedDatetime <= datetime.datetime.now(datetime.UTC)):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
     if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
@@ -1098,7 +1098,7 @@ def finalize_offer(
     :publication_datetime     : //!\\ must be a naive utc datetime
     :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
-    offer.finalizationDatetime = get_naive_utc_now()
+    offer.finalizationDatetime = datetime.datetime.now(datetime.UTC)
 
     if publication_datetime:
         publication_datetime = publication_datetime.replace(second=0, microsecond=0)
@@ -1129,7 +1129,7 @@ def publish_offer(
     :publication_datetime     : //!\\ must be a naive utc datetime
     :booking_allowed_datetime : //!\\ must be a naive utc datetime
     """
-    finalization_date = get_naive_utc_now()
+    finalization_date = datetime.datetime.now(datetime.UTC)
 
     if not offer.finalizationDatetime:
         offer.finalizationDatetime = finalization_date
