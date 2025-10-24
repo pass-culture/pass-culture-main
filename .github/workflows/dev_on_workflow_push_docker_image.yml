@@ -32,7 +32,7 @@ jobs:
             repository: pass-culture-artifact-registry
             cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
     steps:
-      - name: Push built docker image to Artifact Registry
+      - name: Push built docker image to Artifact Registry ${{ matrix.registry }}
         uses: ./.github/actions/push-docker-image
         with:
           image: ${{ inputs.image }}
