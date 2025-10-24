@@ -53,11 +53,11 @@ export function OfferHighlightForm({
       })
       onSuccess()
       if (isDirty) {
-      const successMessage =
+        const successMessage =
           values.highlightIds.length > 0
-          ? 'Les temps forts ont bien été reliés à votre offre'
-          : 'Le temps fort a bien été relié à votre offre'
-      notify.success(successMessage)
+            ? 'La sélection des temps forts à bien été prise en compte'
+            : 'Les temps forts ont été dissociés'
+        notify.success(successMessage)
       }
     } catch {
       notify.error(
@@ -97,7 +97,6 @@ export function OfferHighlightForm({
           </Callout>
           <CheckboxGroup
             label="Les prochains temps forts :"
-            labelTag="h3"
             variant="detailed"
             error={form.formState.errors.highlightIds?.message}
             options={highlightQuery.data.map((highlight) => {

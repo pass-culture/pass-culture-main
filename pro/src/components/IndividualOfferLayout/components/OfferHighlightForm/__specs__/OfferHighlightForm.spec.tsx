@@ -209,7 +209,7 @@ describe('OfferHighlightForm', () => {
     // Then
     await waitFor(() => {
       expect(mockNotify.success).toHaveBeenCalledWith(
-        'Le temps fort a bien été relié à votre offre'
+        'La sélection des temps forts à bien été prise en compte'
       )
     })
   })
