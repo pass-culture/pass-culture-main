@@ -24,6 +24,7 @@
     ],
     "replicas": [
         "virtual(PRODUCTION Top offres)",
+        "virtual(most liked offers)",
         "PRODUCTION B",
         "PRODUCTIONC"
     ],
@@ -46,6 +47,7 @@
         "filterOnly(offer.isForbiddenToUnderage)",
         "filterOnly(offer.isThing)",
         "filterOnly(offer.last30DaysBookings)",
+        "filterOnly(offer.likes)",
         "offer.last30DaysBookingsRange",
         "offer.movieGenres",
         "offer.musicType",
