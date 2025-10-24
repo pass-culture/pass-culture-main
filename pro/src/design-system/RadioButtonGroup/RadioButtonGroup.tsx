@@ -1,62 +1,43 @@
 import cn from 'classnames'
-import { type ElementType, useId } from 'react'
+import classNames from 'classnames'
+import { useId } from 'react'
 
 import {
   RadioButton,
   type RadioButtonProps,
-  type RadioButtonSizing,
-  type RadioButtonVariantProps,
 } from '@/design-system/RadioButton/RadioButton'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonGroup.module.scss'
 
-export type RadioButtonGroupProps<
-  N extends string,
-  V extends RadioButtonVariantProps,
-  S extends RadioButtonSizing,
-  D extends boolean,
-  onChange = (event: React.ChangeEvent<HTMLInputElement>) => void,
-  onBlur = (event: React.FocusEvent<HTMLInputElement>) => void,
-> = {
+export type RadioButtonGroupProps = {
   /** Name of the radio button group, binding all radio buttons together */
-  name: N
+  name: string
   /** Label for the radio button group */
-  label: string
+  label: React.ReactNode
   /** List of options as radio buttons */
-  options: Array<
-    Omit<RadioButtonProps, 'name'> & {
-      name?: N
-      sizing?: S
-      disabled?: D
-      onChange?: onChange
-      onBlur?: onBlur
-    } & V
-  >
-  /** Tag for the label, defaults to 'span', can be 'h1', 'h2', etc. */
-  labelTag?: ElementType
-  /** Description for the radio button group */
+  options: Array<Omit<RadioButtonProps, 'name'>>
   description?: string
   /** Error message for the radio button group */
   error?: string
   /** Variant of the radio buttons (applied to all), defaults to 'default' */
-  variant?: V['variant']
+  variant?: RadioButtonProps['variant']
   /** Sizing of the radio buttons (applied to all), defaults to 'fill' */
-  sizing?: S
+  sizing?: RadioButtonProps['sizing']
   /** Asset of the radio buttons (applied to all), displayed when variant is 'detailed' */
-  asset?: V['asset']
+  asset?: RadioButtonProps['asset']
   /** Display style of the radio button group, defaults to 'vertical' */
   display?: 'horizontal' | 'vertical'
   /** Selected option, required if the group is non-controlled */
   checkedOption?: string
   /** If the radio button group is disabled, making all options unselectable */
-  disabled?: D
+  disabled?: boolean
   /** Event handler for change */
-  onChange?: onChange
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   /** Event handler for blur */
-  onBlur?: onBlur
-  /** Whether the checkbox is required or not */
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  /** Whether at least one of the radio in the group should be selected or not */
   required?: boolean
   /** Whether the required asterisk is displayed or not */
   asterisk?: boolean
@@ -66,7 +47,6 @@ export const RadioButtonGroup = ({
   name,
   label,
   options,
-  labelTag: LabelTag = 'span',
   description,
   error,
   variant = 'default',
@@ -79,18 +59,12 @@ export const RadioButtonGroup = ({
   onBlur,
   required,
   asterisk = true,
-}: RadioButtonGroupProps<
-  string,
-  RadioButtonVariantProps,
-  RadioButtonSizing,
-  boolean,
-  (event: React.ChangeEvent<HTMLInputElement>) => void,
-  (event: React.FocusEvent<HTMLInputElement>) => void
->): JSX.Element => {
-  const labelId = useId()
+}: RadioButtonGroupProps): JSX.Element => {
   const errorId = useId()
   const descriptionId = useId()
   const describedBy = `${error ? errorId : ''}${description ? ` ${descriptionId}` : ''}`
+
+  const isStringLabel = typeof label === 'string'
 
   // Ensure all options have distinct values, which is natural
   // for radio buttons but also a requirement since they are used as unique keys.
@@ -100,24 +74,17 @@ export const RadioButtonGroup = ({
   }
 
   return (
-    <div
-      role="radiogroup"
-      aria-labelledby={labelId}
+    <fieldset
       aria-describedby={describedBy}
-      aria-disabled={disabled}
-      aria-required={required}
-      aria-invalid={!!error}
-      className={styles['radio-button-group']}
-      data-testid={`wrapper-${name}`}
+      className={classNames(styles['radio-button-group'], {
+        [styles['label-as-text']]: isStringLabel,
+      })}
     >
+      <legend className={styles['radio-button-group-legend']}>
+        {label}
+        {required && asterisk ? ' *' : ''}
+      </legend>
       <div className={styles['radio-button-group-header']}>
-        <LabelTag
-          id={labelId}
-          className={cn(styles[`radio-button-group-label-${LabelTag}`])}
-        >
-          {label}
-          {required && asterisk ? ' *' : ''}
-        </LabelTag>
         {description && (
           <span
             id={descriptionId}
@@ -172,6 +139,6 @@ export const RadioButtonGroup = ({
           </div>
         ))}
       </div>
-    </div>
+    </fieldset>
   )
 }

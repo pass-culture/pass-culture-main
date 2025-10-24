@@ -25,10 +25,9 @@ export const IndividualOfferType = () => {
       <RadioButtonGroup
         variant="detailed"
         name="individualOfferSubtype"
-        label="Votre offre est"
+        label={<h2 className={styles['radio-group-title']}>Votre offre est</h2>}
         display="vertical"
         sizing="fill"
-        labelTag="h2"
         onChange={(e) =>
           setValue('offer.individualOfferSubtype', e.target.value)
         }

@@ -4,6 +4,10 @@
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.radio-group-title {
+  @include fonts.title2;
+}
+
 .section {
   margin-bottom: var(--size-spacing-xxl);
 }

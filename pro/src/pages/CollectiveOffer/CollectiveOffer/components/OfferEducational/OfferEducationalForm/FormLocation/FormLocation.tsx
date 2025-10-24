@@ -245,8 +245,11 @@ export const FormLocation = ({
           onChange={handleLocationTypeChange}
           options={locationTypeRadios}
           variant="detailed"
-          label="Où se déroule votre offre ?"
-          labelTag="h2"
+          label={
+            <h2 className={styles['radio-group-title']}>
+              Où se déroule votre offre ?
+            </h2>
+          }
           name="location.locationType"
           disabled={disableForm}
           checkedOption={watch('location.locationType')}
