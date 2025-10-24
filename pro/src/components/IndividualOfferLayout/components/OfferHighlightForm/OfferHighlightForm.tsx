@@ -1,10 +1,14 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import type { JSX } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
-import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import {
+  GET_HIGHLIGHTS_QUERY_KEY,
+  GET_OFFER_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { Button } from '@/ui-kit/Button/Button'
@@ -21,14 +25,20 @@ import { getDateTag } from './utils'
 interface OfferHighlightFormProps {
   offerId: number
   onSuccess: () => void
+  highlightRequests: Array<ShortHighlightResponseModel>
 }
 
 export function OfferHighlightForm({
   offerId,
   onSuccess,
+  highlightRequests,
 }: OfferHighlightFormProps): JSX.Element {
   const notify = useNotification()
-  const defaultValues = { highlightIds: [] }
+  const { mutate } = useSWRConfig()
+
+  const defaultValues = {
+    highlightIds: highlightRequests.map((request) => request.id),
+  }
 
   const highlightQuery = useSWR(
     [GET_HIGHLIGHTS_QUERY_KEY],
@@ -48,14 +58,19 @@ export function OfferHighlightForm({
 
   const onSubmit = async (values: OfferHighlightFormValues) => {
     try {
-      await api.postHighlightRequestOffer(offerId, {
-        highlight_ids: values.highlightIds,
-      })
+      await mutate(
+        [GET_OFFER_QUERY_KEY, offerId],
+        await api.postHighlightRequestOffer(offerId, {
+          highlight_ids: values.highlightIds,
+        }),
+        { revalidate: false }
+      )
+
       onSuccess()
       if (isDirty) {
         const successMessage =
           values.highlightIds.length > 0
-            ? 'La sélection des temps forts à bien été prise en compte'
+            ? 'La sélection des temps forts a bien été prise en compte'
             : 'Les temps forts ont été dissociés'
         notify.success(successMessage)
       }
@@ -84,10 +99,10 @@ export function OfferHighlightForm({
           >
             <div className={styles['form-info-callout']}>
               <ul className={styles['form-info-callout-list']}>
-                <li>L’offre est liée à la thématique choisie</li>
-                <li>L’offre se déroule pendant le temps fort</li>
-                <li>L’offre est au statut publiée</li>
-                <li>L’offre a une image</li>
+                <li>- L’offre est liée à la thématique choisie</li>
+                <li>- L’offre se déroule pendant le temps fort</li>
+                <li>- L’offre est au statut publiée</li>
+                <li>- L’offre a une image</li>
               </ul>
               <p>
                 Un email de validation vous sera envoyé au moment de la

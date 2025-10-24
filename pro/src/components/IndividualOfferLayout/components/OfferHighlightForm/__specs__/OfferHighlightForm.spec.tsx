@@ -7,6 +7,7 @@ import { api } from '@/apiClient/api'
 import type {
   GetIndividualOfferWithAddressResponseModel,
   HighlightResponseModel,
+  ShortHighlightResponseModel,
 } from '@/apiClient/v1'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -58,14 +59,22 @@ const mockedHighlights: HighlightResponseModel[] = [
   },
 ]
 
-function renderOfferHighlightForm(props: {
+function renderOfferHighlightForm({
+  offerId,
+  highlightRequests = [],
+  onSuccess = () => {},
+}: {
   offerId: number
+  highlightRequests?: Array<ShortHighlightResponseModel>
   onSuccess?: () => void
 }) {
-  const { onSuccess = () => {} } = props
   return renderWithProviders(
     <DialogBuilder defaultOpen title="test">
-      <OfferHighlightForm {...props} onSuccess={onSuccess} />
+      <OfferHighlightForm
+        offerId={offerId}
+        onSuccess={onSuccess}
+        highlightRequests={highlightRequests}
+      />
     </DialogBuilder>
   )
 }
@@ -93,10 +102,8 @@ describe('OfferHighlightForm', () => {
   })
 
   it('should display the info callout', async () => {
-    // When
     renderOfferHighlightForm({ offerId: 1 })
 
-    // Then
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -107,10 +114,8 @@ describe('OfferHighlightForm', () => {
   })
 
   it('should call useSWR', async () => {
-    // When
     renderOfferHighlightForm({ offerId: 1 })
 
-    // Then
     await waitFor(() => {
       expect(useSWRMock).toHaveBeenCalledWith(
         [GET_HIGHLIGHTS_QUERY_KEY],
@@ -121,45 +126,46 @@ describe('OfferHighlightForm', () => {
   })
 
   it('should delegate to api.getHighlights', async () => {
-    // Given
     renderOfferHighlightForm({ offerId: 1 })
 
-    // When
     const fetcher = useSWRMock.mock.calls[0][1]
     await fetcher!()
 
-    // Then
     expect(getHighlightsMock).toHaveBeenCalledOnce()
   })
 
   it('should display spinner', () => {
-    // Given
     useSWRMock.mockReturnValue({
       isLoading: true,
       data: undefined,
     } as SWRResponse)
 
-    // When
     renderOfferHighlightForm({ offerId: 1 })
 
-    // Then
     expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
   })
 
   it('should display checkboxes', async () => {
-    // When
     renderOfferHighlightForm({ offerId: 1 })
 
-    // Then
     const checkboxes = await screen.findAllByRole('checkbox')
     expect(checkboxes).toHaveLength(mockedHighlights.length)
   })
 
+  it('should check highlight when highlight request has already been made', async () => {
+    renderOfferHighlightForm({
+      offerId: 1,
+      highlightRequests: [{ name: 'Highlight 1', id: 1 }],
+    })
+
+    const checkboxes = await screen.findAllByRole('checkbox')
+    expect(checkboxes).toHaveLength(mockedHighlights.length)
+    expect(checkboxes[0]).toBeChecked()
+  })
+
   it('should call getDateTag with correct parameters for each highlight', async () => {
-    // When
     renderOfferHighlightForm({ offerId: 1 })
 
-    // Then
     await waitFor(() => {
       expect(getDateTagMock).toHaveBeenNthCalledWith(
         1,
@@ -175,10 +181,8 @@ describe('OfferHighlightForm', () => {
   })
 
   it('should call api.postHighlightRequestOffer', async () => {
-    // Given
     renderOfferHighlightForm({ offerId: 1 })
 
-    // When
     const checkbox = await screen.findByText(mockedHighlights[0].name)
     await userEvent.click(checkbox)
 
@@ -187,17 +191,14 @@ describe('OfferHighlightForm', () => {
     })
     await userEvent.click(submitButton)
 
-    // Then
     expect(postHighlightRequestOfferMock).toHaveBeenCalledWith(1, {
       highlight_ids: [1],
     })
   })
 
   it('should call notify.success when new highlights list is submitted', async () => {
-    // Given
     renderOfferHighlightForm({ offerId: 1 })
 
-    // When
     const checkbox = await screen.findByText(mockedHighlights[0].name)
     await userEvent.click(checkbox)
 
@@ -206,36 +207,51 @@ describe('OfferHighlightForm', () => {
     })
     await userEvent.click(submitButton)
 
-    // Then
     await waitFor(() => {
       expect(mockNotify.success).toHaveBeenCalledWith(
-        'La sélection des temps forts à bien été prise en compte'
+        'La sélection des temps forts a bien été prise en compte'
       )
     })
   })
 
-  it('should not call notify.success when same highlights list is submitted', async () => {
-    // Given
-    renderOfferHighlightForm({ offerId: 1 })
+  it('should notify a success when several highlights are submitted', async () => {
+    renderOfferHighlightForm({
+      offerId: 1,
+      highlightRequests: mockedHighlights,
+    })
 
-    // When
+    await userEvent.click(await screen.findByText(mockedHighlights[0].name))
+    await userEvent.click(await screen.findByText(mockedHighlights[1].name))
+
     const submitButton = screen.getByRole('button', {
       name: 'Valider la sélection',
     })
     await userEvent.click(submitButton)
 
-    // Then
+    await waitFor(() => {
+      expect(mockNotify.success).toHaveBeenCalledWith(
+        'Les temps forts ont été dissociés'
+      )
+    })
+  })
+
+  it('should not call notify.success when same highlights list is submitted', async () => {
+    renderOfferHighlightForm({ offerId: 1 })
+
+    const submitButton = screen.getByRole('button', {
+      name: 'Valider la sélection',
+    })
+    await userEvent.click(submitButton)
+
     await waitFor(() => {
       expect(mockNotify.success).not.toHaveBeenCalled()
     })
   })
 
   it('should call notify.error', async () => {
-    // Given
     vi.spyOn(api, 'postHighlightRequestOffer').mockRejectedValueOnce('Error')
     renderOfferHighlightForm({ offerId: 1 })
 
-    // When
     const checkbox = await screen.findByText(mockedHighlights[0].name)
     await userEvent.click(checkbox)
 
@@ -244,7 +260,6 @@ describe('OfferHighlightForm', () => {
     })
     await userEvent.click(submitButton)
 
-    // Then
     await waitFor(() => {
       expect(mockNotify.error).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la sélection des temps forts'
