@@ -4,9 +4,9 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.categories import subcategories
+from pcapi.models import db
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,8 @@ def create_industrial_event_offers(
 
         event_index += EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE
 
-    repository.save(*event_offers_by_name.values())
+    db.session.add_all(event_offers_by_name.values())
+    db.session.commit()
 
     logger.info("created %d event_offers", len(event_offers_by_name))
 

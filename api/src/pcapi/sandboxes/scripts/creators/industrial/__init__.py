@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.industrial.add_accessibility_compliance_to_venues import (
     add_accessibility_compliance_to_venues,
 )
@@ -95,7 +94,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_user_offerers import cre
 from pcapi.sandboxes.scripts.getters.native import create_accessibility_offers
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 @log_func_duration
@@ -144,7 +142,8 @@ def save_industrial_sandbox() -> None:
         if "has-booked-some-but-deposit-expired" in name:
             assert user.deposit  # helps mypy
             user.deposit.expirationDate = date_utils.get_naive_utc_now()
-            repository.save(user.deposit)
+            db.session.add(user.deposit)
+            db.session.commit()
 
     create_industrial_search_indexed_objects()
 
