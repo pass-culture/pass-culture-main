@@ -10,10 +10,10 @@ from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.object_storage import delete_public_object_recursively
 from pcapi.core.offers.models import Offer
+from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -55,14 +55,16 @@ def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     for offer_name, offer in offer_items_with_mediation:
         mediations_by_name[offer_name] = offers_factories.MediationFactory.create(offer=offer)
 
-    repository.save(*mediations_by_name.values())
+    db.session.add_all(mediations_by_name.values())
+    db.session.commit()
 
     for mediation in mediations_by_name.values():
         mediations_with_asset[mediation.id] = store_public_object_from_sandbox_assets(
             "thumbs", mediation, mediation.offer.subcategoryId
         )
 
-    repository.save(*mediations_with_asset.values())
+    db.session.add_all(mediations_with_asset.values())
+    db.session.commit()
 
     logger.info("created %d mediations", len(mediations_by_name))
 

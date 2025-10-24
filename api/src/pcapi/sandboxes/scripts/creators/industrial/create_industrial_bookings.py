@@ -11,9 +11,9 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,8 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
                 user_name=user_name,
             )
 
-    repository.save(*bookings_by_name.values())
+    db.session.add_all(bookings_by_name.values())
+    db.session.commit()
     logger.info("created %d bookings", len(bookings_by_name))
 
     finance_api.price_events()
@@ -93,7 +94,8 @@ def _create_bookings_for_other_beneficiaries(
             if is_used:
                 stock.beginningDatetime = date_utils.get_naive_utc_now() - timedelta(days=2)
                 stock.bookingLimitDatetime = date_utils.get_naive_utc_now() - timedelta(days=5)
-                repository.save(stock)
+                db.session.add(stock)
+                db.session.commit()
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
                 assert user.deposit
@@ -147,7 +149,8 @@ def _create_has_booked_some_bookings(
         if is_used:
             stock.beginningDatetime = date_utils.get_naive_utc_now() - timedelta(days=2)
             stock.bookingLimitDatetime = date_utils.get_naive_utc_now() - timedelta(days=5)
-            repository.save(stock)
+            db.session.add(stock)
+            db.session.commit()
 
         booking = bookings_factories.BookingFactory.create(
             user=user,

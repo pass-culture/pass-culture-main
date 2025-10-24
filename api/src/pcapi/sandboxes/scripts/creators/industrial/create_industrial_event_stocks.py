@@ -1,10 +1,10 @@
 import logging
 
 import pcapi.core.offers.factories as offers_factories
+from pcapi.models import db
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import EventOccurrence
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,7 @@ def create_industrial_event_stocks(event_occurrences_by_name: dict[str, EventOcc
             priceCategory=event_occurrence_with_stocks.price_category,
         )
 
-    repository.save(*event_stocks_by_name.values())
+    db.session.add_all(event_stocks_by_name.values())
+    db.session.commit()
 
     logger.info("created %d event_stocks", len(event_stocks_by_name))

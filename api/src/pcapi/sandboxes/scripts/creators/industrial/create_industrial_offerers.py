@@ -8,7 +8,6 @@ from pcapi.models import db
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.mocks.offerer_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -107,7 +106,8 @@ def create_industrial_offerers() -> dict[str, Offerer]:
 
     objects_to_save = list(offerers_by_name.values())
 
-    repository.save(*objects_to_save)
+    db.session.add_all(objects_to_save)
+    db.session.commit()
 
     logger.info("created %d offerers", len(offerers_by_name))
     return offerers_by_name

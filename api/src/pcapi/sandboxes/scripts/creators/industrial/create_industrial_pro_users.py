@@ -3,9 +3,9 @@ import logging
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
-from pcapi.utils import repository
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,8 @@ def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     users_by_name["pro retention structures"] = pro_retention_structures
     users_by_name["pro pro adage eligible"] = pro_adage_eligible
 
-    repository.save(*users_by_name.values())
+    db.session.add_all(users_by_name.values())
+    db.session.commit()
 
     logger.info("created %d users", len(users_by_name))
 
