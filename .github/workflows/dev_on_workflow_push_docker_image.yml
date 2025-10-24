@@ -16,47 +16,21 @@ on:
         type: boolean
         default: false
 
-      registry:
-        required: false
-        type: string
-        default: europe-west1-docker.pkg.dev
-
-      project_id:
-        required: false
-        type: string
-        default: passculture-infra-prod
-
-      repository:
-        required: false
-        type: string
-        default: pass-culture-artifact-registry
-
-      artifact_registry_workload_identity_provider_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-
-      artifact_registry_service_account_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-
-      cosign_kms_key_secret_name:
-        required: false
-        type: string
-        default: passculture-metier-ehp/cosign_kms_key
-
-#    secrets:
-#      workload_identity_provider:
-#        required: true
-#
-#      service_account:
-#        required: true
-
 jobs:
   push-docker-image:
     name: Push Docker image to Artifact Registry
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        include:
+          - registry: europe-west-1-docker.pkg.dev
+            project_id: passculture-infra-prod
+            repository: pass-culture-artifact-registry
+            cosign_kms_key_secret_name: passculture-metier-ehp/cosign
+          - registry: europe-docker.pkg.dev
+            project_id: pc-infra-prd
+            repository: pass-culture-artifact-registry
+            cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
     steps:
       - name: Push built docker image to Artifact Registry
         uses: ./.github/actions/push-docker-image
@@ -64,11 +38,11 @@ jobs:
           image: ${{ inputs.image }}
           tag: ${{ inputs.tag }}
           tag_latest: ${{ inputs.tag_latest }}
-          artifact_registry_workload_identity_provider_secret_name: ${{ inputs.artifact_registry_workload_identity_provider_secret_name }}
-          artifact_registry_service_account_secret_name: ${{ inputs.artifact_registry_service_account_secret_name }}
-          cosign_kms_key_secret_name: ${{ inputs.cosign_kms_key_secret_name }}
-          registry: ${{ inputs.registry }}
-          project_id: ${{ inputs.project_id }}
-          repository: ${{ inputs.repository }}
+          artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+          artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          registry: ${{ matrix.registry }}
+          project_id: ${{ matrix.project_id }}
+          repository: ${{ matrix.repository }}
+          cosign_kms_key_secret_name: ${{ matrix.cosign_kms_key_secret_name }}

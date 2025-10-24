@@ -1,23 +1,23 @@
-name: 'Build docker image and saved as github artifact'
+name: 'Build docker image and saved it as github artifact'
 description: 'Build a docker image from the context directory and save it as a github artifact'
 inputs:
   image:
-    description: 'The docker image name'
+    description: The docker image name
     required: true
     type: string
 
   context:
-    description: 'The build context directory'
+    description: The build context directory
     required: true
     type: string
 
   tag:
-    description: 'The docker image tag'
+    description: The docker image tag
     required: true
     type: string
 
   artifact_path:
-    description: 'Paths to include in the artifact upload'
+    description: Paths to include in the artifact upload
     required: false
     type: string
     default: |

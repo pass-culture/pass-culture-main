@@ -47,14 +47,13 @@ inputs:
     required: false
     type: string
 
-#secrets:
-#  workload_identity_provider:
-#    description: Workload Identity Provider for fetching secrets in Secret Manager
-#    required: true
-#
-#  service_account:
-#    description: Service Account for fetching secrets in Secret Manager
-#    required: true
+  workload_identity_provider:
+    description: Workload Identity Provider for fetching secrets in Secret Manager
+    required: true
+
+  service_account:
+    description: Service Account for fetching secrets in Secret Manager
+    required: true
 
 runs:
   using: composite
@@ -62,8 +61,8 @@ runs:
     - name: Authentification to Google
       uses: google-github-actions/auth@v3
       with:
-        workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+        workload_identity_provider: ${{ secrets.workload_identity_provider }}
+        service_account: ${{ secrets.service_account }}
 
     - name: Get Secret
       id: secrets
