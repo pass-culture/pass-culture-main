@@ -406,9 +406,11 @@ class PcTableManager extends PcAddOn {
         const $newLines = tempTable.querySelectorAll("tr")
         // re-arrange each line's columns to fit applied filters
         $newLines.forEach(($newLine) => {
-          this.#initializeRow(defaultConfiguration, $newLine)
-          this.#applyConfigurationOnLine(configuration, $newLine)
-          htmx.swap(`tr#${$newLine.id}`, $newLine.outerHTML, {swapStyle: "outerHTML"})
+          if (!!$newLine.id) {
+            this.#initializeRow(defaultConfiguration, $newLine)
+            this.#applyConfigurationOnLine(configuration, $newLine)
+            htmx.swap(`tr#${$newLine.id}`, $newLine.outerHTML, {swapStyle: "outerHTML"})
+          }
         })
         // re-init table selection checkboxes and unselect them all
         this.app.addons.PcTableMultiSelectId.refreshTableState($table)
