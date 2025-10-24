@@ -144,7 +144,10 @@ export const IndividualOfferLayout = ({
 
       {shouldDisplayHighlightsBanner && (
         <div className={styles['banner-container']}>
-          <OfferHighlightBanner offerId={offer.id} />
+          <OfferHighlightBanner
+            offerId={offer.id}
+            highlightRequests={offer.highlightRequests}
+          />
         </div>
       )}
 
