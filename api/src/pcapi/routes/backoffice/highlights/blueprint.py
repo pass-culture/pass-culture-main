@@ -12,11 +12,13 @@ from pcapi.core.highlights import api as highlights_api
 from pcapi.core.highlights import models as highlights_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils import db as db_utils
 from pcapi.utils.clean_accents import clean_accents
+from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 
 from . import forms as highlights_forms
 
@@ -96,6 +98,8 @@ def create_highlight() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
+    assert form.availability_timespan.data[0]
+    assert form.highlight_timespan.data[0]
     availability_timespan = db_utils.make_timerange(
         start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
     )
@@ -114,5 +118,66 @@ def create_highlight() -> utils.BackofficeResponse:
     db.session.flush()
 
     flash(Markup("Le temps fort <b>{name}</b> a été créé.").format(name=highlight.name), "success")
+
+    return redirect(url_for(".list_highlights"), code=303)
+
+
+@highlights_blueprint.route("update/<int:highlight_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def get_update_highlight_form(highlight_id: int) -> utils.BackofficeResponse:
+    highlight = get_or_404(highlights_models.Highlight, highlight_id)
+    form = highlights_forms.UpdateHighlightForm(obj=highlight)
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        ajax_submit=False,
+        form=form,
+        dst=url_for("backoffice_web.highlights.update_highlight", highlight_id=highlight_id),
+        div_id=f"update-highlight-{highlight_id}",  # must be consistent with parameter passed to build_lazy_modal
+        title="Modifier le temps fort",
+        button_text="Enregistrer",
+        target_id=f"#highlight-{highlight_id}",
+    )
+
+
+@highlights_blueprint.route("update/<int:highlight_id>", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_HIGHLIGHT)
+def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
+    form = highlights_forms.UpdateHighlightForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for(".list_highlights"), code=303)
+
+    highlight = get_or_404(highlights_models.Highlight, highlight_id)
+    assert form.availability_timespan.data[0]
+    assert form.highlight_timespan.data[0]
+    availability_timespan = db_utils.make_timerange(
+        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
+    )
+    highlight_timespan = db_utils.make_timerange(
+        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
+    )
+    image_as_bytes = None
+    image_mimetype = None
+    if form.image.data:
+        image_as_bytes = form.get_image_as_bytes(request)
+        image_mimetype = form.get_image_mimetype(request)
+    highlight = highlights_api.update_highlight(
+        highlight,
+        name=form.name.data,
+        description=form.description.data,
+        availability_timespan=availability_timespan,
+        highlight_timespan=highlight_timespan,
+        image_as_bytes=image_as_bytes,
+        image_mimetype=image_mimetype,
+    )
+    db.session.add(highlight)
+    db.session.flush()
+
+    flash(
+        Markup("Le temps fort <b>{highlight_name}</b> a été mis à jour").format(highlight_name=highlight.name),
+        "success",
+    )
 
     return redirect(url_for(".list_highlights"), code=303)

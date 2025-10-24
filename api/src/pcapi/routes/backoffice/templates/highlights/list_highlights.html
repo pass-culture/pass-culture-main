@@ -43,6 +43,11 @@
               <a class="btn btn-sm d-block w-100 text-start px-3"
                  href="{{ url_for("backoffice_web.offer.list_offers") }}?search-0-search_field=HIGHLIGHT_REQUEST&search-0-operator=IN&search-0-highlight={{ highlight.id }}">Voir les offres ayant demandé à participer à ce temps fort</a>
             </li>
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 data-bs-toggle="modal"
+                 data-bs-target="#update-highlight-{{ highlight.id }}">Modifier le temps fort</a>
+            </li>
           </ul>
         </div>
       </td>
@@ -64,3 +69,8 @@
     </tr>
   {% endfor %}
 {% endblock table_body %}
+{% block after_table %}
+  {% for highlight in rows.items %}
+    {{ build_dynamic_modal(url_for('backoffice_web.highlights.get_update_highlight_form', highlight_id=highlight.id) , "update-highlight-" + highlight.id|string) }}
+  {% endfor %}
+{% endblock after_table %}

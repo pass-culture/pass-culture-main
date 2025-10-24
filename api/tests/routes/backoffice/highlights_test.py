@@ -221,3 +221,149 @@ class CreateHighlightTest(PostEndpointHelper):
             "Les dates de disponibilité sur l'espace partenaire sont obligatoires ; Dates du temps fort : Les dates du temps fort sont obligatoires ; "
             "Image du temps fort (max. 1 Mo) : L'image du temps fort est obligatoire ;"
         )
+
+
+class GetUpdateHighlightFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.highlights.get_update_highlight_form"
+    endpoint_kwargs = {"highlight_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
+
+    # session + current user
+    # get highlight
+    expected_num_queries = 3
+
+    def test_get_update_highlight_form(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, highlight_id=highlight_id))
+            assert response.status_code == 200
+
+
+class UpdateHighlightTest(PostEndpointHelper):
+    endpoint = "backoffice_web.highlights.update_highlight"
+    endpoint_kwargs = {"highlight_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
+
+    # - authenticated user
+    # - user session
+    # - get highlight
+    # - insert update highlight or rollback
+    expected_num_queries = 4
+
+    def test_update_highlight(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+
+        new_name = "New name"
+        new_description = "New description"
+        new_image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        new_highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
+        new_highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
+        new_availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
+        new_availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        separator = " - "
+        with open(new_image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                highlight_id=highlight_id,
+                form={
+                    "name": new_name,
+                    "description": new_description,
+                    "availability_timespan": f"{new_availability_date_from.strftime('%d/%m/%Y')}{separator}{new_availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{new_highlight_date_from.strftime('%d/%m/%Y')}{separator}{new_highlight_date_to.strftime('%d/%m/%Y')}",
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(response.data) == f"Le temps fort {new_name} a été mis à jour"
+        highlight = db.session.query(highlights_models.Highlight).one()
+        assert highlight.name == new_name
+        assert highlight.description == new_description
+        assert highlight.availability_timespan.lower == datetime.datetime.combine(
+            new_availability_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.availability_timespan.upper == datetime.datetime.combine(
+            new_availability_date_to, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.lower == datetime.datetime.combine(
+            new_highlight_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.upper == datetime.datetime.combine(
+            new_highlight_date_to, datetime.time(0, 0, 0)
+        )
+
+    def test_update_highlight_available_after_highlight(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+
+        availability_date_to = highlight.highlight_timespan.upper + datetime.timedelta(days=1)
+        separator = " - "
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            highlight_id=highlight_id,
+            form={
+                "name": highlight.name,
+                "description": highlight.description,
+                "availability_timespan": f"{highlight.availability_timespan.lower.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                "highlight_timespan": f"{highlight.highlight_timespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_timespan.upper.strftime('%d/%m/%Y')}",
+            },
+            expected_num_queries=self.expected_num_queries - 1,
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La disponibilité sur l'espace partenaire ne peut pas se terminer après la fin du temps fort"
+        )
+
+    def test_update_highlight_in_the_past(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+        highlight_date_from = datetime.date.today() - datetime.timedelta(days=12)
+        highlight_date_to = datetime.date.today() - datetime.timedelta(days=10)
+        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
+        availability_date_to = datetime.date.today() - datetime.timedelta(days=8)
+        separator = " - "
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            highlight_id=highlight_id,
+            form={
+                "name": highlight.name,
+                "description": highlight.description,
+                "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+            },
+            expected_num_queries=self.expected_num_queries - 1,
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Dates de disponibilité sur l'espace partenaire : "
+            "La date de fin de disponibilité sur l'espace partenaire ne peut pas être dans le passé ; Dates du temps fort : La date "
+            "de fin du temps fort ne peut pas être dans le passé ;"
+        )
+
+    def test_update_highlight_missing_field_should_fail(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+        response = self.post_to_endpoint(
+            authenticated_client, highlight_id=highlight_id, form={}, expected_num_queries=self.expected_num_queries - 1
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Nom du temps fort : Le nom est obligatoire ; "
+            "Description : La description est obligatoire ; Dates de disponibilité sur l'espace partenaire : "
+            "Les dates de disponibilité sur l'espace partenaire sont obligatoires ; Dates du temps fort : Les dates du temps fort sont obligatoires ;"
+        )

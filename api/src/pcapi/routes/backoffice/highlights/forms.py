@@ -93,15 +93,21 @@ class CreateHighlightForm(FlaskForm):
         return True
 
     def validate_availability_timespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
-        if dates.data[1].date() < datetime.date.today():
+        if dates.data[1] and dates.data[1].date() < datetime.date.today():
             raise wtforms.validators.ValidationError(
                 "La date de fin de disponibilité sur l'espace partenaire ne peut pas être dans le passé",
             )
         return dates
 
     def validate_highlight_timespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
-        if dates.data[1].date() < datetime.date.today():
+        if dates.data[1] and dates.data[1].date() < datetime.date.today():
             raise wtforms.validators.ValidationError(
                 "La date de fin du temps fort ne peut pas être dans le passé",
             )
         return dates
+
+
+class UpdateHighlightForm(CreateHighlightForm):
+    image = fields.PCImageField(
+        "Ajouter une image seulement pour modifier la précédente. Image du temps fort (max. 1 Mo)",
+    )
