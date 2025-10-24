@@ -34,7 +34,7 @@ jobs:
           - registry: europe-west-1-docker.pkg.dev
             project_id: passculture-infra-prod
             repository: pass-culture-artifact-registry
-            cosign_kms_key_secret_name: passculture-metier-ehp/cosign
+            cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
           - registry: europe-docker.pkg.dev
             project_id: pc-infra-prd
             repository: pass-culture-artifact-registry
