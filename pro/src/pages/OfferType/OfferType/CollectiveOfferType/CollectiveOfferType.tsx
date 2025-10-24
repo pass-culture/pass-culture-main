@@ -42,8 +42,11 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           <RadioButtonGroup
             variant="detailed"
             name="collectiveOfferSubtype"
-            label="Quel est le type de l’offre ?"
-            labelTag="h2"
+            label={
+              <h2 className={styles['radio-group-title']}>
+                Quel est le type de l’offre ?
+              </h2>
+            }
             onChange={(e) =>
               setValue('offer.collectiveOfferSubtype', e.target.value)
             }
@@ -81,8 +84,11 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             <RadioButtonGroup
               variant="detailed"
               name="collectiveOfferSubtypeDuplicate"
-              label="Créer une nouvelle offre ou dupliquer une offre ?"
-              labelTag="h2"
+              label={
+                <h2 className={styles['radio-group-title']}>
+                  Créer une nouvelle offre ou dupliquer une offre ?
+                </h2>
+              }
               sizing="fill"
               onChange={(e) =>
                 setValue(

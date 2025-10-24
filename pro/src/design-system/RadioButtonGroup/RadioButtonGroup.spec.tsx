@@ -1,24 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import type {
-  RadioButtonSizing,
-  RadioButtonVariantProps,
-} from '@/design-system/RadioButton/RadioButton'
-
 import {
   RadioButtonGroup,
   type RadioButtonGroupProps,
 } from './RadioButtonGroup'
 
-const options: RadioButtonGroupProps<
-  string,
-  RadioButtonVariantProps,
-  RadioButtonSizing,
-  boolean,
-  (event: React.ChangeEvent<HTMLInputElement>) => void,
-  (event: React.FocusEvent<HTMLInputElement>) => void
->['options'] = [
+const options: RadioButtonGroupProps['options'] = [
   {
     label: 'Option 1',
     description: 'Description 1',

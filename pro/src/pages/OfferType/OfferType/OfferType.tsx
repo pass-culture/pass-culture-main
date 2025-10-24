@@ -171,8 +171,11 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
               <RadioButtonGroup
                 variant="detailed"
                 name="offerType"
-                label="À qui destinez-vous cette offre ?"
-                labelTag="h2"
+                label={
+                  <h2 className={styles['radio-group-title']}>
+                    À qui destinez-vous cette offre ?
+                  </h2>
+                }
                 onChange={(e) =>
                   setValue('offer.offerType', e.target.value as OFFER_TYPES)
                 }
