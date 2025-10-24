@@ -1,93 +1,96 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_outline.scss' as outline;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_outline.scss" as outline;
 
-$icon-dimension: rem.torem(20px);
+$icon-dimension: rem.torem(24px);
 
 .container {
-    display: grid;
-    grid-template-columns: minmax(100px, 1fr);
-    grid-template-rows: repeat(3, auto);
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr);
+  grid-template-rows: repeat(3, auto);
 }
 
 .header {
-    grid-area: 1 / 1;
+  grid-area: 1 / 1;
 }
 
 .input {
-    outline: none;
-    appearance: none;
-    width: 100%;
-    background-color: var(--color-background-default);
-    color: var(--color-text-default);
-    height: var(--size-spacing-xxxl);
-    padding: var(--size-spacing-s) var(--size-spacing-m);
-    border-radius: var(--size-border-radius-m);
-    border: rem.torem(1px) solid var(--color-border-default);
+  outline: none;
+  appearance: none;
+  width: 100%;
+  background-color: var(--color-background-default);
+  color: var(--color-text-default);
+  height: var(--size-spacing-xxxl);
+  padding: var(--size-spacing-s) var(--size-spacing-m);
+  border-radius: var(--size-border-radius-m);
+  border: rem.torem(1px) solid var(--color-border-default);
 
-    &:focus-visible {
-        border-color: var(--color-border-focused);
-    }
+  &:focus-visible {
+    border-color: var(--color-border-focused);
+  }
 
-    &:hover {
-        border-color: var(--color-border-brand-secondary);
-    }
+  &:hover {
+    border-color: var(--color-border-brand-secondary);
+  }
 }
 
 .input-container {
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    grid-area: 2 / 1;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  grid-area: 2 / 1;
 }
 
-//  ICON 
+//  ICON
 .input-icon {
-    position: absolute;
-    height: $icon-dimension;
-    width: $icon-dimension;
-    left: var(--size-spacing-m);
-    color: var(--color-icon-subtle);
+  position: absolute;
+  height: $icon-dimension;
+  width: $icon-dimension;
+  left: var(--size-spacing-m);
+  color: var(--color-icon-subtle);
 }
 
 .has-icon .input {
-    padding-left: calc(var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s));
+  padding-left: calc(
+    var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s)
+  );
 }
 
 //  BUTTON
 .input-button {
-    position: absolute;
-    height: $icon-dimension;
-    width: $icon-dimension;
-    right: var(--size-spacing-m);
-    z-index: 1;
+  position: absolute;
+  height: $icon-dimension;
+  width: $icon-dimension;
+  right: var(--size-spacing-m);
+  z-index: 1;
 }
 
 .has-button .input {
-    padding-right: calc(var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s));
+  padding-right: calc(
+    var(--size-spacing-m) + $icon-dimension + var(--size-spacing-s)
+  );
 }
-
 
 //  FOOTER
 .footer {
-    grid-area: 3 / 1;
+  grid-area: 3 / 1;
 }
 
 //  ERROR
 .input[aria-invalid="true"] {
-    border-color: var(--color-border-error);
+  border-color: var(--color-border-error);
 }
 
 //  DISABLED
 .input:disabled {
-    border-color: var(--color-border-disabled);
-    background-color: var(--color-background-disabled);
+  border-color: var(--color-border-disabled);
+  background-color: var(--color-background-disabled);
 }
 
 //  EXTENSION
 .extension {
-    grid-area: 2 / 2;
-    display: flex;
-    align-items: center;
-    margin-left: var(--size-spacing-m);
+  grid-area: 2 / 2;
+  display: flex;
+  align-items: center;
+  margin-left: var(--size-spacing-m);
 }
