@@ -607,7 +607,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         self.timezone = (
             get_department_timezone(self.departementCode)
             if self.departementCode
-            else get_postal_code_timezone(self.managingOfferer.postalCode)
+            else get_postal_code_timezone(self.offererAddress.address.postalCode)
         )
 
     @property

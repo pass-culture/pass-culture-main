@@ -675,9 +675,6 @@ class CreateOffererTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.street == offerer_informations.street
-        assert created_offerer.postalCode == offerer_informations.postalCode
-        assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
         assert created_offerer.isActive
         assert "Collectivité" in (tag.label for tag in created_offerer.tags)
@@ -814,7 +811,8 @@ class CreateOffererTest:
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            **{key: value for key, value in offerer_informations.dict().items() if value}
+            name=offerer_informations.name,
+            siren=offerer_informations.siren,
         )
         first_creation_date = offerer.dateCreated
         offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -827,9 +825,6 @@ class CreateOffererTest:
         assert created_offerer.id == offerer.id
         assert created_offerer.name == offerer_informations.name
         assert created_offerer.siren == offerer_informations.siren
-        assert created_offerer.street == offerer_informations.street
-        assert created_offerer.postalCode == offerer_informations.postalCode
-        assert created_offerer.city == offerer_informations.city
         assert created_offerer.validationStatus == ValidationStatus.NEW
         assert created_offerer.isActive
         assert created_offerer.dateCreated > first_creation_date
@@ -865,7 +860,8 @@ class CreateOffererTest:
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            **{key: value for key, value in offerer_informations.dict().items() if value}
+            name=offerer_informations.name,
+            siren=offerer_informations.siren,
         )
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
 
@@ -905,9 +901,6 @@ class CreateOffererTest:
         offerer = offerers_factories.RejectedOffererFactory(
             name=offerer_informations.name,
             siren=offerer_informations.siren,
-            street=offerer_informations.street,
-            postalCode=offerer_informations.postalCode,
-            city=offerer_informations.city,
         )
         offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
 
@@ -2792,9 +2785,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street == "3 RUE DE VALOIS"
-        assert created_offerer.postalCode == "75001"
-        assert created_offerer.city == "Paris"
         assert created_offerer.validationStatus == ValidationStatus.NEW
         # User is attached to offerer
         assert created_user_offerer.userId == user.id
@@ -3074,7 +3064,7 @@ class CreateFromOnboardingDataTest:
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert actions[0].offerer == offerer
         assert actions[0].authorUser == user
-        assert set(actions[0].extraData["modified_info"].keys()) == {"name", "street", "postalCode"}
+        assert set(actions[0].extraData["modified_info"].keys()) == {"name"}
 
         assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
         assert actions[1].offerer == offerer
@@ -3121,7 +3111,7 @@ class CreateFromOnboardingDataTest:
         assert actions[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert actions[0].offerer == offerer
         assert actions[0].authorUser == new_user
-        assert set(actions[0].extraData["modified_info"].keys()) == {"name", "street", "postalCode"}
+        assert set(actions[0].extraData["modified_info"].keys()) == {"name"}
 
         assert actions[1].actionType == history_models.ActionType.OFFERER_NEW
         assert actions[1].offerer == offerer
@@ -3149,9 +3139,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert not created_offerer.street
-        assert created_offerer.city == "Paris"
-        assert created_offerer.postalCode == "75001"
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
@@ -3173,9 +3160,6 @@ class CreateFromOnboardingDataTest:
         created_offerer = created_user_offerer.offerer
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert created_offerer.siren == "853318459"
-        assert created_offerer.street == "3 RUE DE VALOIS"
-        assert created_offerer.city == "Paris"
-        assert created_offerer.postalCode == "75001"
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
