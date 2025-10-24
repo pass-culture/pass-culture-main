@@ -314,4 +314,4 @@ class BaseFinanceBackend:
         """
         Time in seconds to sleep between two requests to avoid rate limit errors
         """
-        return 0
+        return 5
