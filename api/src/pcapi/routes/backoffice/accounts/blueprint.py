@@ -2038,6 +2038,10 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             warning_message = "Le compte est déjà majeur (18+) il ne peut pas aussi être bénéficiaire (15-17)"
         elif isinstance(e, users_exceptions.PreDecreeEligibilityWhenPostDecreeBeneficiaryException):
             warning_message = "Le compte est déjà bénéficiaire du Pass 17-18, il ne peut pas aussi être bénéficiaire de l'ancien Pass 15-17 ou 18"
+        elif isinstance(e, users_exceptions.MustBePreDecreeEligibilityException):
+            warning_message = (
+                "Le compte a commencé le parcours d'activation de l'ancien crédit. Il est éligible à l'ancien Pass 18."
+            )
         else:
             warning_message = f"L'éligibilité '{eligibility.value}' n'est pas applicable à cet utilisateur"
 

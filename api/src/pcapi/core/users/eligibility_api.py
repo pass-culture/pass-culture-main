@@ -236,13 +236,20 @@ def is_user_age_compatible_with_eligibility(
 
 
 def check_eligibility_is_applicable_to_user(eligibility: users_models.EligibilityType, user: users_models.User) -> None:
-    is_user_eighteen = user.has_beneficiary_role or (user.age is not None and user.age >= constants.ELIGIBILITY_AGE_18)
-    if eligibility == users_models.EligibilityType.UNDERAGE and is_user_eighteen:
+    is_user_eighteen = user.age is not None and user.age >= constants.ELIGIBILITY_AGE_18
+    should_not_be_underage_eligibility = is_user_eighteen or user.has_beneficiary_role
+    if eligibility == users_models.EligibilityType.UNDERAGE and should_not_be_underage_eligibility:
         raise exceptions.UnderageEligibilityWhenAlreadyEighteenException()
 
     has_grant_17_18_deposit = user.deposit is not None and user.deposit.type == DepositType.GRANT_17_18
     if eligibility == users_models.EligibilityType.AGE18 and has_grant_17_18_deposit:
         raise exceptions.PreDecreeEligibilityWhenPostDecreeBeneficiaryException()
+
+    if user.birth_date and is_user_eighteen:
+        pre_decree_eligibility = get_pre_decree_eligibility(user, user.birth_date, date_utils.get_naive_utc_now())
+        must_be_pre_decree_eligibility = pre_decree_eligibility == users_models.EligibilityType.AGE18
+        if eligibility != users_models.EligibilityType.AGE18 and must_be_pre_decree_eligibility:
+            raise exceptions.MustBePreDecreeEligibilityException()
 
 
 def add_eligibility_role(user: users_models.User, eligibility: users_models.EligibilityType) -> None:

@@ -2103,6 +2103,30 @@ class ReviewPublicAccountTest(PostEndpointHelper):
             in html_parser.extract_alert(response.data)
         )
 
+    @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=date_utils.get_naive_utc_now())
+    def test_post_decree_eligibility_when_beneficiary_of_pre_decree_credit(self, authenticated_client):
+        year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=1)
+        user = users_factories.HonorStatementValidatedUserFactory(
+            age=19,
+            beneficiaryFraudChecks__eligibilityType=users_models.EligibilityType.AGE18,
+            beneficiaryFraudChecks__dateCreated=year_when_user_was_eighteen,
+        )
+
+        base_form = {
+            "status": subscription_models.FraudReviewStatus.OK.name,
+            "eligibility": users_models.EligibilityType.AGE17_18.name,
+            "reason": "test",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, form=base_form)
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Le compte a commencé le parcours d'activation de l'ancien crédit. Il est éligible à l'ancien Pass 18."
+            in html_parser.extract_alert(response.data)
+        )
+
     def test_unlocks_recredit_18(self, authenticated_client):
         user = users_factories.BeneficiaryFactory(age=17)
         eighteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=18, months=1)
