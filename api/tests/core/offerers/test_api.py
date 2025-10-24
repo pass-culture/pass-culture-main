@@ -811,7 +811,8 @@ class CreateOffererTest:
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            **{key: value for key, value in offerer_informations.dict().items() if value}
+            name=offerer_informations.name,
+            siren=offerer_informations.siren,
         )
         first_creation_date = offerer.dateCreated
         offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -859,7 +860,8 @@ class CreateOffererTest:
             city="Montreuil",
         )
         offerer = offerers_factories.RejectedOffererFactory(
-            **{key: value for key, value in offerer_informations.dict().items() if value}
+            name=offerer_informations.name,
+            siren=offerer_informations.siren,
         )
         offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
 
@@ -899,9 +901,6 @@ class CreateOffererTest:
         offerer = offerers_factories.RejectedOffererFactory(
             name=offerer_informations.name,
             siren=offerer_informations.siren,
-            street=offerer_informations.street,
-            postalCode=offerer_informations.postalCode,
-            city=offerer_informations.city,
         )
         offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
 
