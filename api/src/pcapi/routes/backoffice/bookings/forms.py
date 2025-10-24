@@ -119,9 +119,15 @@ class BaseBookingListForm(FlaskForm):
     def pro_view_args(self) -> str:
         output = ""
         if self.is_single_venue_with_optional_dates:
-            from_date = self.from_to_date.data[0].date() if self.from_to_date.data else datetime.date.today()
+            from_date = (
+                self.from_to_date.data[0].date()
+                if self.from_to_date.data and self.from_to_date.data[0]
+                else datetime.date.today()
+            )
             to_date = (
-                self.from_to_date.data[1].date() if self.from_to_date.data else from_date - datetime.timedelta(days=30)
+                self.from_to_date.data[1].date()
+                if self.from_to_date.data and self.from_to_date.data[1]
+                else from_date - datetime.timedelta(days=30)
             )
             output = (
                 f"?page=1&bookingBeginningDate={str(from_date)}&bookingEndingDate={str(to_date)}&bookingStatusFilter=booked"

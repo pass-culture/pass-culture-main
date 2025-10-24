@@ -9,6 +9,7 @@ import wtforms
 import wtforms_sqlalchemy.fields
 from flask import render_template
 from flask import url_for
+from sqlalchemy.dialects.postgresql.ranges import Range
 from wtforms import ValidationError
 from wtforms import validators
 
@@ -299,6 +300,12 @@ class PCDateRangeField(wtforms.StringField):
     separator = " - "
     date_range_dateformat = "%d/%m/%Y"
     widget = partial(widget, template="components/forms/date_range_field.html")
+
+    def process_data(self, value: Range | None) -> None:
+        if value:
+            self.data = [value.lower, value.upper]
+        else:
+            self.data = []
 
     def process_formdata(self, valuelist: list) -> None:
         if valuelist:
