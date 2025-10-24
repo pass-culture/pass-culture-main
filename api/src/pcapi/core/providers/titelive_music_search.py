@@ -11,6 +11,7 @@ from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.offers import models as offers_models
+from pcapi.utils import date as date_utils
 
 from .constants import MUSIC_SLUG_BY_GTL_ID
 from .constants import NOT_CD_LIBELLES
@@ -94,6 +95,8 @@ class TiteliveMusicSearch(TiteliveSearchTemplate[TiteliveMusicWork]):
             common_article_fields["titre"], width=TITELIVE_PRODUCT_NAME_MAX_LENGTH, placeholder="…"
         )
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
+        product.lastProviderId = self.provider.id
+        product.dateModifiedAtLastProvider = date_utils.get_naive_utc_now()
 
         activate_newly_eligible_product_and_offers(product)
 

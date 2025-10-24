@@ -93,6 +93,7 @@ class TiteliveBookSearch(TiteliveSearchTemplate[TiteLiveBookWork]):
         product.extraData.update(build_book_extra_data(article, authors))
         product.ean = ean
         product.name = title
+        product.lastProviderId = self.provider.id
         product.dateModifiedAtLastProvider = date_utils.get_naive_utc_now()
         product.subcategoryId = LIVRE_PAPIER.id
 
