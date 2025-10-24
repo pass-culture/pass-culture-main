@@ -50,7 +50,7 @@ describe('TimetableOpeningHours', () => {
     renderTimetableOpeningHours()
 
     waitFor(() => {
-      screen.getByRole('radiogroup', {
+      screen.getByRole('group', {
         name: /Peut-on en profiter dès aujourd’hui/,
       })
     })

@@ -82,7 +82,7 @@ export const RadioButtonGroup = ({
     >
       <legend className={styles['radio-button-group-legend']}>
         {label}
-        {required && asterisk ? ' *' : ''}
+        {required && asterisk ? <>&nbsp;*</> : ''}
       </legend>
       <div className={styles['radio-button-group-header']}>
         {description && (

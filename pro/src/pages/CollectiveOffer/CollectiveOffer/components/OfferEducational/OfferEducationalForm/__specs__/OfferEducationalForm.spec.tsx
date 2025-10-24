@@ -91,7 +91,7 @@ describe('OfferEducationalForm', () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
     expect(
       await screen.findByRole('heading', {
-        name: 'Quand votre offre peut-elle avoir lieu ? *',
+        name: /Quand votre offre peut-elle avoir lieu ?/,
       })
     ).toBeInTheDocument()
   })

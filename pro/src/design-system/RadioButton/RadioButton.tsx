@@ -4,7 +4,7 @@ import { type ForwardedRef, forwardRef, useId } from 'react'
 import { Asset, type AssetProps } from '../common/Asset/Asset'
 import styles from './RadioButton.module.scss'
 
-export type RadioButtonSizing = 'hug' | 'fill'
+type RadioButtonSizing = 'hug' | 'fill'
 
 type RadioButtonBaseProps = {
   /** Label displayed next to the radio */
@@ -27,7 +27,7 @@ type RadioButtonBaseProps = {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
 }
 
-export type RadioButtonVariantProps = {
+type RadioButtonVariantProps = {
   variant?: 'default' | 'detailed'
   /**
    * Description text displayed under the checkbox label.

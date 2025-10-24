@@ -38,7 +38,7 @@ describe('IndividualOfferTimetableScreen', () => {
     })
 
     expect(
-      screen.getByRole('radiogroup', { name: /Quand profiter de l’offre/ })
+      screen.getByRole('group', { name: /Quand profiter de l’offre/ })
     ).toBeInTheDocument()
   })
 
@@ -53,7 +53,7 @@ describe('IndividualOfferTimetableScreen', () => {
     })
 
     expect(
-      screen.queryByRole('radiogroup', { name: /Quand profiter de l’offre/ })
+      screen.queryByRole('group', { name: /Quand profiter de l’offre/ })
     ).not.toBeInTheDocument()
   })
 
@@ -68,7 +68,7 @@ describe('IndividualOfferTimetableScreen', () => {
     })
 
     expect(
-      screen.queryByRole('radiogroup', { name: /Quand profiter de l’offre/ })
+      screen.queryByRole('group', { name: /Quand profiter de l’offre/ })
     ).not.toBeInTheDocument()
   })
 })
