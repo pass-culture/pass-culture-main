@@ -1,11 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
-import {
-  defaultGetOffererResponseModel,
-  venueListItemFactory,
-} from '@/commons/utils/factories/individualApiFactories'
+import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -37,13 +33,6 @@ function renderOfferEducational(props: OfferEducationalProps) {
 
 describe('screens | OfferEducational : creation offerer step', () => {
   let props: OfferEducationalProps
-  const mockOffererData = {
-    data: { ...defaultGetOffererResponseModel, isValidated: true },
-    isLoading: false,
-    error: undefined,
-    mutate: vi.fn(),
-    isValidating: false,
-  }
 
   describe('when the offerer is not validated', () => {
     beforeEach(() => {
@@ -73,7 +62,6 @@ describe('screens | OfferEducational : creation offerer step', () => {
     const venue2Id = 2
     const venue3Id = 3
     beforeEach(() => {
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue(mockOffererData)
       vi.spyOn(api, 'getVenues').mockResolvedValue({
         venues: [
           venueListItemFactory({ id: venue1Id }),

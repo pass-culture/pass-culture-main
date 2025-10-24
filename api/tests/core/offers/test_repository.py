@@ -12,7 +12,6 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
-import pcapi.utils.repository as db_repository
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.geography import factories as geography_factories
@@ -1091,7 +1090,8 @@ class CheckStockConsistenceTest:
         stock6 = stock6_bookings.stock
         stock6.dnBookedQuantity = 2
 
-        db_repository.save(stock3, stock4, stock5, stock6)
+        db.session.add_all((stock3, stock4, stock5, stock6))
+        db.session.commit()
 
         stock_ids = set(repository.check_stock_consistency())
         assert stock_ids == {stock2.id, stock4.id, stock6.id}

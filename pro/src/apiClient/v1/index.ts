@@ -223,6 +223,7 @@ export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboarding
 export type { SharedCurrentUserResponseModel } from './models/SharedCurrentUserResponseModel';
 export type { SharedLoginUserResponseModel } from './models/SharedLoginUserResponseModel';
 export type { ShortHighlightResponseModel } from './models/ShortHighlightResponseModel';
+export { SimplifiedBankAccountStatus } from './models/SimplifiedBankAccountStatus';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
 export type { StockIdResponseModel } from './models/StockIdResponseModel';

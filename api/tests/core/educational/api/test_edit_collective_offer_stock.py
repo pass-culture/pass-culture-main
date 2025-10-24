@@ -36,6 +36,7 @@ class EditCollectiveOfferStocksTest:
         )
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             startDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
+            endDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
             bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5, hours=16),
             totalPrice=1500,
             numberOfTickets=35,
@@ -69,6 +70,7 @@ class EditCollectiveOfferStocksTest:
         )
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             startDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
+            endDatetime=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -99,6 +101,7 @@ class EditCollectiveOfferStocksTest:
         new_event_datetime = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7, hours=5)
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             startDatetime=new_event_datetime,
+            endDatetime=new_event_datetime,
             bookingLimitDatetime=None,
         )
 
@@ -155,7 +158,10 @@ class EditCollectiveOfferStocksTest:
             educationalYear=educational_year,
         )
 
-        data = {"startDatetime": datetime.datetime(2021, 12, 12, 20)}
+        data = {
+            "startDatetime": datetime.datetime(2021, 12, 12, 20),
+            "endDatetime": datetime.datetime(2021, 12, 12, 20),
+        }
 
         # When
         educational_api_stock.edit_collective_stock(stock=stock_to_be_updated, stock_data=data)

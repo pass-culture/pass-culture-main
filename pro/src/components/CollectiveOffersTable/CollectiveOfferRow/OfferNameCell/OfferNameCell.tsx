@@ -1,14 +1,18 @@
 import classNames from 'classnames'
 import { Link } from 'react-router'
 
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
+import type {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from '@/apiClient/v1'
+import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 import { Tag } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from '../Cells.module.scss'
 
 export interface OfferNameCellProps {
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   offerLink: string
   rowId: string
   displayThumb?: boolean
@@ -22,6 +26,8 @@ export const OfferNameCell = ({
   displayThumb = false,
   className,
 }: OfferNameCellProps) => {
+  const isTemplateTable = !isCollectiveOfferBookable(offer)
+
   return (
     <th
       scope="row"
@@ -46,8 +52,8 @@ export const OfferNameCell = ({
           </div>
         )}
         <div className={styles['title-column-name']}>
-          {offer.isShowcase && <Tag label="Offre vitrine" />}
-          {!offer.isShowcase ? (
+          {isTemplateTable && <Tag label="Offre vitrine" />}
+          {!isTemplateTable ? (
             <span
               className={styles['title-column-offer-id']}
             >{`N°${offer.id}`}</span>

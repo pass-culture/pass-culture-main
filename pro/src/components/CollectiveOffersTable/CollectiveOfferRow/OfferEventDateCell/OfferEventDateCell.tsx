@@ -2,8 +2,10 @@ import classNames from 'classnames'
 
 import type {
   CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
   ListOffersVenueResponseModel,
 } from '@/apiClient/v1'
+import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 import {
   formatShortDateForInput,
   getDateTimeToFrenchText,
@@ -15,7 +17,7 @@ import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cel
 import styles from '../Cells.module.scss'
 
 export interface OfferEventDateCellProps {
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
   rowId: string
   className?: string
 }
@@ -35,7 +37,11 @@ export const OfferEventDateCell = ({
   offer,
   className,
 }: OfferEventDateCellProps) => {
-  const getFormattedDatesForOffer = (offer: CollectiveOfferResponseModel) => {
+  const isTemplateTable = !isCollectiveOfferBookable(offer)
+
+  const getFormattedDatesForOffer = (
+    offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  ) => {
     const offerDatetimes = offer.dates
 
     const options: Intl.DateTimeFormatOptions = {
@@ -45,24 +51,24 @@ export const OfferEventDateCell = ({
     }
 
     if (!offerDatetimes?.start || !offerDatetimes.end) {
-      if (offer.isShowcase) {
+      if (isTemplateTable) {
         return ['Toute l’année scolaire']
       }
       return ['-']
     }
     const offerStartDate = getOfferDate(
       offerDatetimes.start,
-      offer.isShowcase,
+      isTemplateTable,
       offer.venue
     )
     const offerEndDate = getOfferDate(
       offerDatetimes.end,
-      offer.isShowcase,
+      isTemplateTable,
       offer.venue
     )
     if (
       offerDatetimes.start === offerDatetimes.end ||
-      (offer.isShowcase &&
+      (isTemplateTable &&
         formatShortDateForInput(offerStartDate) ===
           formatShortDateForInput(offerEndDate))
     ) {

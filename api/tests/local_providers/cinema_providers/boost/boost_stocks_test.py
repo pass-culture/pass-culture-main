@@ -2,6 +2,7 @@ import datetime
 import decimal
 import logging
 from pathlib import Path
+from typing import Type
 from unittest import mock
 from unittest.mock import patch
 
@@ -20,6 +21,7 @@ from pcapi.core.offers.models import PriceCategory
 from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
 from pcapi.core.providers.factories import BoostCinemaDetailsFactory
 from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
@@ -29,7 +31,6 @@ from pcapi.models import db
 from pcapi.utils.requests import exceptions as requests_exception
 
 import tests
-from tests.local_providers.provider_test_utils import create_finance_event_to_update
 
 from . import fixtures
 
@@ -81,6 +82,20 @@ class BoostStocksTest:
 
         return venue_provider
 
+    def execute_import(
+        self,
+        ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks],
+        venue_provider,
+    ) -> BoostExtractTransformLoadProcess | BoostStocks:
+        boost_stocks = ProcessClass(venue_provider=venue_provider)
+        if isinstance(boost_stocks, BoostStocks):
+            boost_stocks.updateObjects()
+        else:
+            boost_stocks.execute()
+
+        return boost_stocks
+
+    # Not tested with `BoostETLProcess` because it is specific to the Iterator implementation
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
@@ -120,7 +135,10 @@ class BoostStocksTest:
         assert get_cinema_attr_adapter.call_count == 1
 
     @time_machine.travel(datetime.datetime(2023, 8, 11), tick=False)
-    def should_fill_offer_and_stock_informations_for_each_movie_based_on_product(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_fill_offer_and_stock_information_for_each_movie_based_on_product(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
 
@@ -138,8 +156,10 @@ class BoostStocksTest:
         requests_mock.get("http://example.com/images/159673.jpg", content=bytes())
         requests_mock.get("http://example.com/images/159570.jpg", content=bytes())
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        boost_stocks = self.execute_import(ProcessClass, venue_provider)
+        if isinstance(boost_stocks, BoostStocks):
+            assert boost_stocks.erroredObjects == 0
+            assert boost_stocks.erroredThumbs == 0
 
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
@@ -212,12 +232,12 @@ class BoostStocksTest:
         )
         assert created_price_category_label.label == "PASS CULTURE"
 
-        assert boost_stocks.erroredObjects == 0
-        assert boost_stocks.erroredThumbs == 0
-
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_fill_offer_and_stocks_and_price_categories_based_on_product(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_fill_offer_and_stocks_and_price_categories_based_on_product(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         self._create_products()
         venue_provider = self._create_cinema_and_pivot()
 
@@ -231,8 +251,10 @@ class BoostStocksTest:
         )
 
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        boost_stocks = self.execute_import(ProcessClass, venue_provider)
+        if isinstance(boost_stocks, BoostStocks):
+            assert boost_stocks.erroredObjects == 0
+            assert boost_stocks.erroredThumbs == 0
 
         created_offer = db.session.query(Offer).order_by(Offer.id).one()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
@@ -276,12 +298,12 @@ class BoostStocksTest:
         assert created_price_categories[1].label == "PASS CULTURE 1"
         assert created_price_categories[1].priceCategoryLabel == created_price_category_labels[1]
 
-        assert boost_stocks.erroredObjects == 0
-        assert boost_stocks.erroredThumbs == 0
-
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_reuse_price_category(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_reuse_price_category(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
@@ -294,8 +316,8 @@ class BoostStocksTest:
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
 
-        BoostStocks(venue_provider=venue_provider).updateObjects()
-        BoostStocks(venue_provider=venue_provider).updateObjects()
+        self.execute_import(ProcessClass, venue_provider)
+        self.execute_import(ProcessClass, venue_provider)
 
         created_price_category = db.session.query(PriceCategory).one()
         assert created_price_category.price == decimal.Decimal("6.9")
@@ -303,7 +325,10 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 2
 
-    def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_not_create_stock_when_showtime_does_not_have_pass_culture_pricing(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
 
         get_cinema_attr_adapter = requests_mock.get(
@@ -314,8 +339,8 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.NO_PC_PRICING_JSON_DATA,
         )
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+
+        self.execute_import(ProcessClass, venue_provider)
 
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
         created_stocks = db.session.query(Stock).order_by(Stock.id).all()
@@ -325,7 +350,10 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    def should_update_stock_with_the_correct_stock_quantity(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_update_stock_with_the_correct_stock_quantity(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -342,8 +370,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        self.execute_import(ProcessClass, venue_provider)
         created_stock = db.session.query(Stock).one()
         # we received numberSeatsForOnlineSale = 96
         assert created_stock.quantity == 96
@@ -359,8 +386,7 @@ class BoostStocksTest:
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_WITH_SOLD_OUT_SHOWTIME_PAGE_1_JSON_DATA,
         )
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        self.execute_import(ProcessClass, venue_provider)
 
         created_stocks = db.session.query(Stock).all()
 
@@ -370,6 +396,7 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 2
 
+    # Not tested with `BoostETLProcess` because it is logic that was implemented for a very specific Festival
     @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", decimal.Decimal("4.0"))
     @patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
     @patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
@@ -404,7 +431,10 @@ class BoostStocksTest:
         assert stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
         should_apply_movie_festival_rate_mock.assert_called_with(stock.offer.id, stock.beginningDatetime.date())
 
-    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_update_finance_event_when_stock_beginning_datetime_is_updated(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
@@ -419,10 +449,9 @@ class BoostStocksTest:
             json=fixtures.ShowtimeDetailsEndpointResponse.THREE_PRICINGS_SHOWTIME_36683_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            boost_stocks.updateObjects()
+            self.execute_import(ProcessClass, venue_provider)
         mock_update_finance_event.assert_not_called()
 
         # synchronize again with same event date
@@ -430,9 +459,8 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            boost_stocks.updateObjects()
+            self.execute_import(ProcessClass, venue_provider)
         mock_update_finance_event.assert_not_called()
 
         # synchronize again with new event date
@@ -440,28 +468,16 @@ class BoostStocksTest:
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_WITH_NEW_DATE_JSON_DATA,
         )
-        to_compare = []
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        for providable_infos in boost_stocks:
-            for providable_info in providable_infos:
-                if isinstance(providable_info.type(), offers_models.Stock):
-                    stock_synchronised = (
-                        db.session.query(offers_models.Stock)
-                        .filter_by(idAtProviders=providable_info.id_at_providers)
-                        .one_or_none()
-                    )
-                    assert stock_synchronised is not None
-                    event_created = create_finance_event_to_update(
-                        stock=stock_synchronised, venue_provider=venue_provider
-                    )
-                    to_compare.append((event_created.pricingOrderingDate, event_created))
+        with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
+            self.execute_import(ProcessClass, venue_provider)
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)  # because the iterator is consumed
-        boost_stocks.updateObjects()
-        for last_pricingOrderingDate, event in to_compare:
-            assert event.pricingOrderingDate != last_pricingOrderingDate
+        stock = db.session.query(offers_models.Stock).one()
+        mock_update_finance_event.assert_called_with(stock)
 
-    def test_should_create_product_mediation(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def test_should_create_product_mediation(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -478,17 +494,20 @@ class BoostStocksTest:
             content=seagull_poster,
         )
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        boost_stocks = self.execute_import(ProcessClass, venue_provider)
+        if isinstance(boost_stocks, BoostStocks):
+            assert boost_stocks.createdThumbs == 1
+            assert boost_stocks.erroredThumbs == 0
 
         created_offer = db.session.query(Offer).one()
 
         assert created_offer.image.url == created_offer.product.productMediations[0].url
-        assert boost_stocks.createdThumbs == 1
-        assert boost_stocks.erroredThumbs == 0
         assert get_cinema_attr_adapter.call_count == 1
 
-    def test_should_not_create_product_mediation(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def test_should_not_create_product_mediation(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -509,14 +528,17 @@ class BoostStocksTest:
 
         get_image_adapter = requests_mock.get("http://example.com/images/158026.jpg")
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        boost_stocks = self.execute_import(ProcessClass, venue_provider)
 
-        assert boost_stocks.createdThumbs == 0
+        if isinstance(boost_stocks, BoostStocks):
+            assert boost_stocks.createdThumbs == 0
 
         assert not get_image_adapter.last_request
 
-    def should_create_offer_even_if_incorrect_thumb(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_create_offer_even_if_incorrect_thumb(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
@@ -534,15 +556,17 @@ class BoostStocksTest:
             content=seagull_poster,
         )
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        boost_stocks = self.execute_import(ProcessClass, venue_provider)
+
+        if isinstance(boost_stocks, BoostStocks):
+            assert boost_stocks.erroredThumbs == 1
 
         created_offer = db.session.query(Offer).one()
 
         assert created_offer.activeMediation is None
-        assert boost_stocks.erroredThumbs == 1
         assert get_cinema_attr_adapter.call_count == 1
 
+    # Not tested with `BoostETLProcess` because this logic was dropped with new implemnentation
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(
@@ -577,7 +601,14 @@ class BoostStocksTest:
             {"exc": requests_exception.ConnectTimeout},
         ],
     )
-    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def test_handle_error_on_movie_poster(
+        self,
+        ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks],
+        get_adapter_error_params,
+        requests_mock,
+        caplog,
+    ):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = VenueProviderFactory(provider=boost_provider)
         cinema_provider_pivot = BoostCinemaProviderPivotFactory(
@@ -598,8 +629,7 @@ class BoostStocksTest:
         requests_mock.get("http://example.com/images/158026.jpg", **get_adapter_error_params)
 
         with caplog.at_level(logging.WARNING, logger="pcapi.core.external_bookings.models"):
-            boost_stocks = BoostStocks(venue_provider=venue_provider)
-            boost_stocks.updateObjects()
+            self.execute_import(ProcessClass, venue_provider)
 
         created_offer = db.session.query(Offer).one()
         assert created_offer.thumbUrl is None
@@ -610,7 +640,10 @@ class BoostStocksTest:
         assert last_record.message == "Could not fetch movie poster"
         assert last_record.extra == {"client": "BoostClientAPI", "url": "http://example.com/images/158026.jpg"}
 
-    def should_link_offer_with_known_visa_to_product(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
+    def should_link_offer_with_known_visa_to_product(
+        self, ProcessClass: Type[BoostExtractTransformLoadProcess] | Type[BoostStocks], requests_mock
+    ):
         venue_provider = self._create_cinema_and_pivot()
 
         requests_mock.get(
@@ -630,8 +663,7 @@ class BoostStocksTest:
         product_1 = ProductFactory(name="Produit 1", extraData={"visa": "158026"})
         product_2 = ProductFactory(name="Produit 2", extraData={"visa": "149489"})
 
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
+        self.execute_import(ProcessClass, venue_provider)
 
         created_offers = db.session.query(Offer).order_by(Offer.id).all()
 

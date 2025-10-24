@@ -34,17 +34,6 @@ def transaction() -> typing.Iterator[None]:
             raise
 
 
-# DEPRECATED in favor of @atomic() and db.session.delete because committing or
-# rollbacking should be done by a transaction context manager, not manually
-def delete(*models: Model) -> None:
-    for model in models:
-        db.session.delete(model)
-    if is_managed_transaction():
-        db.session.flush()
-    else:
-        db.session.commit()
-
-
 # DEPRECATED in favor of @atomic() and db.session.add because committing or
 # rollbacking should be done by a transaction context manager, not manually
 def add_to_session(*models: Model) -> None:

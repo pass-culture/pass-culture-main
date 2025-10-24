@@ -28,8 +28,7 @@ import {
   getIndividualOfferUrl,
 } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import type { DeepPartial } from '@/commons/custom_types/utils'
-import * as hooks from '@/commons/hooks/swr/useOfferer'
-import type { RootState } from '@/commons/store/rootReducer'
+import type { RootState } from '@/commons/store/store'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import {
   defaultGetOffererResponseModel,
@@ -612,17 +611,6 @@ describe('screens:StocksThing', () => {
 
   describe('New caledonian offerer', () => {
     it('should display the price in F CFP when offerer is Caledonian', async () => {
-      vi.spyOn(hooks, 'useOfferer').mockReturnValue({
-        data: {
-          ...defaultGetOffererResponseModel,
-          isCaledonian: true,
-        },
-        isLoading: false,
-        error: undefined,
-        mutate: vi.fn(),
-        isValidating: false,
-      })
-
       props.offer = {
         ...offer,
         isDigital: false,

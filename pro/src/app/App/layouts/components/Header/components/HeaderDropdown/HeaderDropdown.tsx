@@ -1,24 +1,20 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
-import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { updateCurrentOfferer } from '@/commons/store/offerer/reducer'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
   selectCurrentOffererId,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
+import { logout } from '@/commons/store/user/dispatchers/logout'
+import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { getSavedOffererId } from '@/commons/utils/getSavedOffererId'
-import { hardRefresh } from '@/commons/utils/hardRefresh'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { sortByLabel } from '@/commons/utils/strings'
 import fulBackIcon from '@/icons/full-back.svg'
 import fullCloseIcon from '@/icons/full-close.svg'
@@ -42,11 +38,14 @@ export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
-  const currentOffererId = useSelector(selectCurrentOffererId)
-  const currentUser = useSelector(selectCurrentUser)
-  const offererNames = useSelector(selectOffererNames)
+  const dispatch = useAppDispatch()
+  const currentOffererId = useAppSelector(selectCurrentOffererId)
+  const currentUser = useAppSelector(selectCurrentUser)
+  const offererNames = useAppSelector(selectOffererNames)
+
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
+
   const sideOffset =
     windowWidth >= 673
       ? 20
@@ -65,25 +64,17 @@ export const HeaderDropdown = () => {
   const hideProfile =
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
-  const selectedOffererId =
-    currentOffererId ??
-    getSavedOffererId(offererOptions) ??
-    (offererOptions.length > 0 ? offererOptions[0]?.value : '')
+  const selectedOffererName = currentOffererId
+    ? offererNames?.find(
+        (offererOption) => offererOption.id === currentOffererId
+      )
+    : undefined
 
-  const selectedOffererName = offererNames?.find(
-    (offererOption) => offererOption.id === Number(selectedOffererId)
-  )
-  const handleChangeOfferer = (newOffererId: string): void => {
+  const handleChangeOfferer = async (nextCurrentOffererId: string) => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
-    // Updates offerer id in storage
-    if (storageAvailable('localStorage')) {
-      localStorage.setItem(SAVED_OFFERER_ID_KEY, newOffererId)
-    }
-
-    // Hard refresh to homepage after offerer change
-    hardRefresh('/accueil')
+    await dispatch(setCurrentOffererById({ nextCurrentOffererId })).unwrap()
   }
 
   useEffect(() => {
@@ -98,21 +89,12 @@ export const HeaderDropdown = () => {
     }
   }, [])
 
-  const dispatch = useDispatch()
-
-  const logout = () => {
+  const logEventAndLogout = async () => {
     logEvent(Events.CLICKED_LOGOUT, {
       from: pathname,
     })
 
-    api.signout()
-
-    if (storageAvailable('localStorage')) {
-      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-    }
-    dispatch(updateUser(null))
-    dispatch(updateCurrentOfferer(null))
-    dispatch(updateUserAccess(null))
+    await dispatch(logout()).unwrap()
   }
 
   return (
@@ -124,9 +106,9 @@ export const HeaderDropdown = () => {
           type="button"
         >
           <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
-          {offererOptions.length > 1 && (
+          {selectedOffererName && offererOptions.length > 1 && (
             <span className={styles['dropdown-button-name']}>
-              {selectedOffererName?.name}
+              {selectedOffererName.name}
             </span>
           )}
         </button>
@@ -157,9 +139,11 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Item>
             {offererOptions.length >= 1 && (
               <>
-                <div className={styles['menu-email']}>
-                  {selectedOffererName?.name}
-                </div>
+                {selectedOffererName && (
+                  <div className={styles['menu-email']}>
+                    {selectedOffererName.name}
+                  </div>
+                )}
 
                 <DropdownMenu.Sub open={subOpen}>
                   {offererOptions.length > 1 ? (
@@ -320,7 +304,7 @@ export const HeaderDropdown = () => {
               <Button
                 icon={fullLogoutIcon}
                 variant={ButtonVariant.TERNARY}
-                onClick={() => logout()}
+                onClick={logEventAndLogout}
               >
                 Se déconnecter
               </Button>

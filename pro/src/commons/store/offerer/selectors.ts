@@ -1,4 +1,6 @@
-import type { RootState } from '@/commons/store/rootReducer'
+/* istanbul ignore file */
+
+import type { RootState } from '@/commons/store/store'
 
 export const selectOffererNames = (state: RootState) =>
   state.offerer.offererNames

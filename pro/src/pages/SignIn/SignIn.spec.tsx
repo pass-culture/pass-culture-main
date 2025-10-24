@@ -28,6 +28,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     signin: vi.fn(),
+    signout: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
   },

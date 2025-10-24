@@ -30,7 +30,6 @@ from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 from tests.scripts.beneficiary import fixture
 from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
@@ -780,7 +779,8 @@ class HandleDmsAnnotationsTest:
             birth_date_error=None,
             fraud_check=fraud_check,
         )
-        repository.save(fraud_check)
+        db.session.add(fraud_check)
+        db.session.commit()
 
         mock_update_annotations.assert_called_once_with(
             "St1l3s", "AnnotationId", "Aucune erreur détectée. Le dossier peut être passé en instruction."

@@ -2,32 +2,28 @@ import {
   CollectiveOfferAllowedAction,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
+  type CollectiveOfferTemplateResponseModel,
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import {
-  isCollectiveOffer,
-  isCollectiveOfferTemplate,
-} from '@/commons/core/OfferEducational/types'
+import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
 
 export function isActionAllowedOnCollectiveOffer(
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel,
+    | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel,
   action: CollectiveOfferAllowedAction | CollectiveOfferTemplateAllowedAction
 ) {
-  if (isCollectiveOffer(offer)) {
-    return offer.allowedActions.includes(action as CollectiveOfferAllowedAction)
-  }
-
-  if (isCollectiveOfferTemplate(offer)) {
-    return offer.allowedActions.includes(
-      action as CollectiveOfferTemplateAllowedAction
+  if (isCollectiveOfferBookable(offer)) {
+    return (offer.allowedActions as CollectiveOfferAllowedAction[]).includes(
+      action as CollectiveOfferAllowedAction
     )
   }
-
-  return false
+  return (
+    offer.allowedActions as CollectiveOfferTemplateAllowedAction[]
+  ).includes(action as CollectiveOfferTemplateAllowedAction)
 }
 
 export function isCollectiveInstitutionEditable(
@@ -61,6 +57,7 @@ export function isCollectiveOfferSelectable(
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel
 ) {
   return offer.allowedActions.some((action) =>
     [
@@ -90,6 +87,7 @@ export function isCollectiveOfferEditable(
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel
 ) {
   return offer.allowedActions.some((action) =>
     [

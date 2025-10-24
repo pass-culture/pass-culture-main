@@ -1,28 +1,29 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .footer {
-    display: flex;
+  display: flex;
 }
 
 .has-footer {
-    margin-top: var(--size-spacing-xs);
+  margin-top: var(--size-spacing-xs);
 }
 
 .error {
-    flex-grow: 1;
-    color: var(--color-text-error);
+  flex-grow: 1;
+  color: var(--color-text-error);
 
-    &-content {
-        @include fonts.body-accent-s;
+  &-content {
+    @include fonts.body-accent-s;
 
-        display: flex;
-        align-items: center;
+    display: flex;
+    align-items: center;
+    overflow-wrap: anywhere;
 
-        &-icon {
-            width: var(--typography-body-font-size);
-            height: var(--typography-body-font-size);
-            margin-right: var(--size-spacing-xs);
-            flex-shrink: 0;
-        }
+    &-icon {
+      width: var(--typography-body-font-size);
+      height: var(--typography-body-font-size);
+      margin-right: var(--size-spacing-xs);
+      flex-shrink: 0;
     }
+  }
 }

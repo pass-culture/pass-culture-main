@@ -58,23 +58,6 @@ describe('OfferInstitutionCell', () => {
     expect(screen.getByRole('cell')).toHaveTextContent('COLLEGE Rouen 76000')
   })
 
-  it('should display "Tous les établissements" for OfferTemplate when institution name and postal code are empty', () => {
-    renderOfferInstitutionCell({
-      ...props,
-      educationalInstitution: {
-        ...props.educationalInstitution,
-        postalCode: '',
-        name: '',
-        institutionType: '',
-        city: '',
-      },
-    })
-
-    expect(screen.getByRole('cell')).toHaveTextContent(
-      'Tous les établissements'
-    )
-  })
-
   it('should display "-" for Offer when institution name and postal code are empty', () => {
     props.educationalInstitution.name = ''
     props.educationalInstitution.postalCode = ''

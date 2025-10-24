@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { SearchInput } from './SearchInput'
+import { useState } from 'react'
 
 const meta: Meta<typeof SearchInput> = {
   title: '@/design-system/SearchInput',
@@ -57,5 +58,24 @@ export const HasCharactersCountAndError: Story = {
     label: 'Characters count and error',
     maxCharactersCount: 200,
     error: 'This is an error message',
+  },
+}
+
+export const Controlled: StoryObj<typeof SearchInput> = {
+  render: () => {
+    const [value, setValue] = useState<string>(
+      'default value'
+    )
+
+    return (
+      <SearchInput
+        label='Controlled'
+        value={value}
+        onChange={e => {
+          setValue(e.target.value)
+        }}
+        name='search'
+      />
+    )
   },
 }

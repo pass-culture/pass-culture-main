@@ -11,6 +11,7 @@ import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel'
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
 import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
+import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeResponseModel } from './VenueTypeResponseModel';
@@ -20,6 +21,7 @@ export type GetVenueResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccount?: BankAccountResponseModel | null;
+  bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
@@ -44,11 +46,14 @@ export type GetVenueResponseModel = {
   externalAccessibilityUrl?: string | null;
   hasActiveIndividualOffer: boolean;
   hasAdageId: boolean;
+  hasNonFreeOffers: boolean;
   hasOffers: boolean;
   id: number;
+  isActive: boolean;
   isCaledonian: boolean;
   isOpenToPublic: boolean;
   isPermanent?: boolean | null;
+  isValidated: boolean;
   isVirtual: boolean;
   managingOfferer: GetVenueManagingOffererResponseModel;
   mentalDisabilityCompliant?: boolean | null;

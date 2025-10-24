@@ -3,6 +3,7 @@ import logging
 from base64 import b64decode
 from decimal import Decimal
 from pathlib import Path
+from typing import Type
 from unittest import mock
 
 import pytest
@@ -17,6 +18,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.providers.etls.ems_etl import EMSExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
@@ -42,8 +44,21 @@ class EMSStocksTest:
         credentials = history_api_call.headers["Authorization"].split("Basic ")[1]
         assert b64decode(credentials).decode() == f"{settings.EMS_API_USER}:{settings.EMS_API_PASSWORD}"
 
+    def execute_import(
+        self,
+        ProcessClass: Type[EMSExtractTransformLoadProcess] | Type[EMSStocks],
+        venue_provider,
+    ) -> None:
+        if ProcessClass == EMSStocks:
+            synchronize_ems_venue_providers()
+        else:
+            ProcessClass(venue_provider=venue_provider).execute()
+
     @time_machine.travel(datetime.datetime(2023, 2, 12), tick=False)
-    def should_fill_and_create_offer_and_stock_information_for_each_movie_if_product_doesnt_exist(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_fill_and_create_offer_and_stock_information_for_each_movie_if_product_doesnt_exist(
+        self, ProcessClass, requests_mock
+    ):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -62,10 +77,11 @@ class EMSStocksTest:
 
         assert db.session.query(offers_models.Product).count() == 0
 
-        synchronize_ems_venue_providers()
+        self.execute_import(ProcessClass, venue_provider)
 
         self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_detail, 86400)
 
+    # Not tested with `EMSExtractTransformLoadProcess` because it is logic that was implemented for a very specific Festival
     @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_RATE", Decimal("4.0"))
     @mock.patch("pcapi.local_providers.movie_festivals.constants.FESTIVAL_NAME", "My awesome festival")
     @mock.patch("pcapi.local_providers.movie_festivals.api.should_apply_movie_festival_rate")
@@ -102,7 +118,10 @@ class EMSStocksTest:
         assert created_stock.priceCategory.price == Decimal("4.0")
         assert created_stock.priceCategory.priceCategoryLabel.label == "My awesome festival"
 
-    def should_fill_and_create_offer_and_stock_information_for_each_movie_based_on_product(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_fill_and_create_offer_and_stock_information_for_each_movie_based_on_product(
+        self, ProcessClass, requests_mock
+    ):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -132,11 +151,12 @@ class EMSStocksTest:
         )
         cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        synchronize_ems_venue_providers()
+        self.execute_import(ProcessClass, venue_provider)
 
         self._assert_seyne_sur_mer_initial_sync_based_on_product(venue, venue_provider, cinema_detail, 86400)
 
-    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -156,7 +176,7 @@ class EMSStocksTest:
         providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            synchronize_ems_venue_providers()
+            self.execute_import(ProcessClass, venue_provider)
         mock_update_finance_event.assert_not_called()
 
         # synchronize with show with same date
@@ -165,7 +185,7 @@ class EMSStocksTest:
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
 
         with mock.patch("pcapi.core.finance.api.update_finance_event_pricing_date") as mock_update_finance_event:
-            synchronize_ems_venue_providers()
+            self.execute_import(ProcessClass, venue_provider)
         mock_update_finance_event.assert_not_called()
 
         # synchronize with show with new date
@@ -178,12 +198,14 @@ class EMSStocksTest:
         assert stock is not None
         event_created = create_finance_event_to_update(stock=stock, venue_provider=venue_provider)
         last_pricingOrderingDate = event_created.pricingOrderingDate
-        synchronize_ems_venue_providers()
+        self.execute_import(ProcessClass, venue_provider)
         assert event_created.pricingOrderingDate != last_pricingOrderingDate
 
-    def should_reuse_price_category(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_reuse_price_category(self, ProcessClass, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+        requests_mock.get("https://fake_url.com?version=86400", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
         venue = offerers_factories.VenueFactory(
@@ -193,49 +215,60 @@ class EMSStocksTest:
         venue_provider = providers_factories.VenueProviderFactory(
             venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
         )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
-        EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[0],
-        ).synchronize()
-        EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[0],
-        ).synchronize()
+        if ProcessClass == EMSStocks:
+            EMSStocks(
+                connector=connector,
+                venue_provider=venue_provider,
+                site=connector.get_schedules().sites[0],
+            ).synchronize()
+            EMSStocks(
+                connector=connector,
+                venue_provider=venue_provider,
+                site=connector.get_schedules().sites[0],
+            ).synchronize()
+        else:
+            EMSExtractTransformLoadProcess(venue_provider).execute()
+            EMSExtractTransformLoadProcess(venue_provider).execute()
 
         created_price_category = db.session.query(offers_models.PriceCategory).all()
         assert len(created_price_category) == 2
 
-    def test_should_create_product_mediation(self, requests_mock):
-        connector = EMSScheduleConnector()
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def test_should_create_product_mediation(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
             poster = thumb_file.read()
         requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=poster)
 
-        ems_stocks = EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[1],
-        )
-        ems_stocks.synchronize()
+        self.execute_import(ProcessClass, venue_provider)
 
         created_offer = db.session.query(offers_models.Offer).one()
 
         assert created_offer.image.url == created_offer.product.productMediations[0].url
 
-    def test_should_not_create_product_mediation(self, requests_mock):
-        connector = EMSScheduleConnector()
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def test_should_not_create_product_mediation(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
 
         product = offers_factories.EventProductFactory(
             name="Mon voisin Totoro",
@@ -245,33 +278,27 @@ class EMSStocksTest:
 
         get_image_adapter = requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg")
 
-        ems_stocks = EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[1],
-        )
-        ems_stocks.synchronize()
+        self.execute_import(ProcessClass, venue_provider)
 
         assert get_image_adapter.last_request == None
 
-    def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
-        connector = EMSScheduleConnector()
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_create_offer_even_if_thumb_is_incorrect(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
         file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
         with open(file_path, "rb") as thumb_file:
             poster = thumb_file.read()
         requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=poster)
 
-        ems_stocks = EMSStocks(
-            connector=connector,
-            venue_provider=venue_provider,
-            site=connector.get_schedules().sites[1],
-        )
-        ems_stocks.synchronize()
+        self.execute_import(ProcessClass, venue_provider)
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert len(created_offer.mediations) == 0
@@ -287,21 +314,20 @@ class EMSStocksTest:
             {"exc": requests_exception.ConnectTimeout},
         ],
     )
-    def test_handle_error_on_movie_poster(self, get_adapter_error_params, requests_mock, caplog):
-        connector = EMSScheduleConnector()
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def test_handle_error_on_movie_poster(self, ProcessClass, get_adapter_error_params, requests_mock, caplog):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue, provider=ems_provider, idAtProvider="0063"
+        )
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", **get_adapter_error_params)
 
         with caplog.at_level(logging.WARNING):
-            ems_stocks = EMSStocks(
-                connector=connector,
-                venue_provider=venue_provider,
-                site=connector.get_schedules().sites[1],
-            )
-            ems_stocks.synchronize()
+            self.execute_import(ProcessClass, venue_provider)
 
         created_offer = db.session.query(offers_models.Offer).one()
         assert created_offer.image is None
@@ -316,7 +342,8 @@ class EMSStocksTest:
         }
 
     @time_machine.travel(datetime.datetime(2023, 2, 12), tick=False)
-    def test_successive_version_syncs(self, requests_mock):
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def test_successive_version_syncs(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
@@ -354,7 +381,11 @@ class EMSStocksTest:
 
         # Everything is in place, so let’s first try an initial synchronization which will populate some data.
         # Day one
-        synchronize_ems_venue_providers()
+        if ProcessClass == EMSStocks:
+            synchronize_ems_venue_providers()
+        else:
+            ProcessClass(ormeaux_venue_provider).execute()
+            ProcessClass(ems_cine_venue_provider).execute()
         self._assert_seyne_sur_mer_initial_sync(
             ems_cine_venue,
             ems_cine_venue_provider,
@@ -371,14 +402,25 @@ class EMSStocksTest:
 
         # Day two
         # Let’s try to retrieve some additionnal data that were added by our provider during the night
-        synchronize_ems_venue_providers(from_last_version=True)
+        if ProcessClass == EMSStocks:
+            synchronize_ems_venue_providers(from_last_version=True)
+        else:
+            ProcessClass(ormeaux_venue_provider, from_last_version=True).execute()
+            ProcessClass(ems_cine_venue_provider, from_last_version=True).execute()
+
         # Nothing should change for this VenueProvider, except for the sync version, as there is no additional data to handle for it
+        seyne_sur_mer_expected_version = 172800
+        if (
+            ProcessClass == EMSExtractTransformLoadProcess
+        ):  # # We don't update the last version if there's no returned data by the API in the new process
+            seyne_sur_mer_expected_version = 86400
         self._assert_seyne_sur_mer_initial_sync(
             ems_cine_venue,
             ems_cine_venue_provider,
             ems_cine_cinema_detail,
-            172800,
+            seyne_sur_mer_expected_version,
         )
+
         # However, for this one, a new movie and session is available, let's check it !
         self._assert_ormeaux_version_sync(
             ormeaux_venue,

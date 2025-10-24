@@ -1,11 +1,8 @@
 import datetime
-import json
 import logging
 import time
-import typing
 
 import sqlalchemy.orm as sa_orm
-from flask import current_app
 
 from pcapi import settings
 from pcapi.connectors import googledrive
@@ -19,11 +16,9 @@ from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.repository import transaction
 from pcapi.utils.urls import build_backoffice_offerer_link
 
 
@@ -32,31 +27,10 @@ logger = logging.getLogger(__name__)
 CLOSED_OFFERER_TAG_NAME = "siren-caduc"
 
 
-def _get_scheduled_siren_redis_key(at_date: datetime.date) -> str:
-    return f"check_closed_offerers:scheduled:{at_date.isoformat()}"
-
-
-def get_scheduled_siren_to_check(at_date: datetime.date) -> list[str]:
-    key = _get_scheduled_siren_redis_key(at_date)
-    data = current_app.redis_client.get(key)
-    if not data:
-        return []
-    return json.loads(data)
-
-
-def add_scheduled_siren_to_check(siren: str, at_date: datetime.date) -> None:
-    siren_list = get_scheduled_siren_to_check(at_date)
-    if siren not in siren_list:
-        siren_list.append(siren)
-        key = _get_scheduled_siren_redis_key(at_date)
-        ttl = int((at_date - datetime.date.today() + datetime.timedelta(days=30)).total_seconds())
-        current_app.redis_client.set(key, json.dumps(siren_list), ex=ttl)
-
-
 class CheckOffererSirenRequest(BaseModel):
     siren: str
     close_or_tag_when_inactive: bool
-    fill_in_codir_report: bool = False
+    must_fill_in_codir_report: bool = False
 
 
 @task(settings.GCP_CHECK_OFFERER_SIREN_QUEUE_NAME, "/offerers/check_offerer", task_request_timeout=3 * 60)
@@ -83,18 +57,9 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
     )
     if not offerer:
         # This should not happen, unless has been deleted or its SIREN updated between cron task and this task,
-        # or between the day it was set in redis and today.
         return
 
     if siren_info.active:
-        if siren_info.closure_date:
-            # When siren_info.closure_date is set in the future (still active), schedule a new check on closure date
-            logger.warning(
-                "Entreprise API reports an offerer closed in the future",
-                extra={"siren": siren_info.siren, "closure_date": siren_info.closure_date},
-            )
-            add_scheduled_siren_to_check(siren_info.siren, siren_info.closure_date)
-
         for tag in offerer.tags:
             if tag.name == CLOSED_OFFERER_TAG_NAME:
                 db.session.query(offerers_models.OffererTagMapping).filter_by(
@@ -108,56 +73,19 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                     modified_info={"tags": {"old_info": tag.label}},
                 )
                 break
-
-        if not payload.fill_in_codir_report:
+        if not payload.must_fill_in_codir_report:
             # Nothing to do
             return
+    if payload.close_or_tag_when_inactive and not siren_info.active:
+        # Since we have check_closed_offerer task this should not happen. However we keep it here in case check_closed_offerer fails.
+        # This way we make sure to close inactive offerers, even if it's with a delay.
+        logger.info(
+            "offerer is inactive and has been closed by check_offerer_siren_task instead of in check_closed_offerer, check check_closed_offerer command",
+            extra={"offerer_id": offerer.id, "siren": offerer.siren},
+        )
+        offerers_api.handle_closed_offerer(offerer, closure_date=siren_info.closure_date)
 
-    if not siren_info.active:
-        logger.info("SIREN is no longer active", extra={"offerer_id": offerer.id, "siren": offerer.siren})
-
-        if payload.close_or_tag_when_inactive:
-            action_kwargs: dict[str, typing.Any] = {
-                "comment": "L'entité juridique est détectée comme fermée "
-                + (siren_info.closure_date.strftime("le %d/%m/%Y ") if siren_info.closure_date else "")
-                + "via l'API Entreprise (données INSEE)",
-            }
-
-            with transaction():
-                # Offerer may have been tagged in the past, but not closed
-                if CLOSED_OFFERER_TAG_NAME not in (tag.name for tag in offerer.tags):
-                    # .one() raises an exception if the tag does not exist -- ensures that a potential issue is tracked
-                    tag = (
-                        db.session.query(offerers_models.OffererTag)
-                        .filter(offerers_models.OffererTag.name == CLOSED_OFFERER_TAG_NAME)
-                        .one()
-                    )
-                    action_kwargs["modified_info"] = {"tags": {"new_info": tag.label}}
-                    db.session.add(offerers_models.OffererTagMapping(offererId=offerer.id, tagId=tag.id))
-
-                if offerer.isWaitingForValidation:
-                    offerers_api.reject_offerer(
-                        offerer=offerer,
-                        author_user=None,
-                        rejection_reason=offerers_models.OffererRejectionReason.CLOSED_BUSINESS,
-                        **action_kwargs,
-                    )
-                elif offerer.isValidated and FeatureToggle.ENABLE_AUTO_CLOSE_CLOSED_OFFERERS.is_active():
-                    offerers_api.close_offerer(
-                        offerer,
-                        closure_date=siren_info.closure_date,
-                        author_user=None,
-                        **action_kwargs,
-                    )
-                elif "modified_info" in action_kwargs:
-                    history_api.add_action(
-                        history_models.ActionType.INFO_MODIFIED,
-                        author=None,
-                        offerer=offerer,
-                        **action_kwargs,
-                    )
-
-    if offerer.isValidated and payload.fill_in_codir_report:
+    if offerer.isValidated and payload.must_fill_in_codir_report:
         fill_in_codir_report(offerer, siren_info)
     else:
         # FIXME (prouzet, 2025-01-24) remove this when cloud tasks are replaced:
@@ -171,7 +99,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
 
 
 def fill_in_codir_report(offerer: offerers_models.Offerer, siren_info: entreprise_models.SirenInfo) -> None:
-    # check attestations
+    # Unused for now, and since 09/2024. Is used to get reports on offerer's administrative status (up to date on URSSAF etc...)
     try:
         urssaf_status = "OK" if entreprise_api.get_urssaf(siren_info.siren).attestation_delivered else "REFUS"
     except entreprise_exceptions.EntrepriseException as exc:

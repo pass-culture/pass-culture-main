@@ -1,12 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
-import * as reactRedux from 'react-redux'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
-import * as thunks from '@/commons/store/user/thunks'
+import * as initializeUserModule from '@/commons/store/user/dispatchers/initializeUser'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -15,8 +14,16 @@ import {
 
 import { SignupValidation } from '../SignUpValidation'
 
-vi.mock('@/commons/store/user/thunks')
-vi.mock('react-redux', { spy: true })
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenues: vi.fn(),
+    signout: vi.fn(),
+    validateUser: vi.fn(),
+    getProfile: vi.fn(),
+  },
+}))
 
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
@@ -55,7 +62,7 @@ describe('src | components | pages | Signup | validation', () => {
     expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
     // and he should be redirected to signin page
     await waitFor(() => {
-      expect(screen.getByText('Connexion')).toBeInTheDocument()
+      expect(screen.getByText('Accueil')).toBeInTheDocument()
     })
   })
 
@@ -93,11 +100,7 @@ describe('src | components | pages | Signup | validation', () => {
     const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
     const user = sharedCurrentUserFactory()
     const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
-    const initializeUserThunk = vi.spyOn(thunks, 'initializeUserThunk')
-    const mockDispatch = vi.fn().mockImplementation(() => ({
-      unwrap: () => Promise.resolve({ success: true }),
-    }))
-    vi.spyOn(reactRedux, 'useDispatch').mockReturnValue(mockDispatch)
+    const initializeUser = vi.spyOn(initializeUserModule, 'initializeUser')
 
     renderSignupValidation()
 
@@ -111,11 +114,8 @@ describe('src | components | pages | Signup | validation', () => {
 
     // … and the user is initialized
     await waitFor(() =>
-      expect(initializeUserThunk).toHaveBeenCalledExactlyOnceWith(user)
+      expect(initializeUser).toHaveBeenCalledExactlyOnceWith(user)
     )
-
-    // The dispatch is called …
-    await waitFor(() => expect(mockDispatch).toHaveBeenCalledOnce())
 
     // … and we should be redirected to the homepage
     await screen.findByText('Accueil')

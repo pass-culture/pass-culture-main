@@ -5,11 +5,12 @@ import { Navigate, useParams } from 'react-router'
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import type { AppDispatch } from '@/commons/store/store'
+import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { initializeUserThunk } from '@/commons/store/user/thunks'
 
 type Params = { token: string }
 
+// TODO (igabriele, 2025-10-21): Not sure we need this component and its logic, the new auth flow should able to handle that automtically.
 export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const currentUser = useSelector(selectCurrentUser)
@@ -28,10 +29,8 @@ export const SignupValidation = (): JSX.Element | null => {
           tokenConsumed.current = true
           await api.validateUser(token)
           const user = await api.getProfile()
-          const result = await dispatch(initializeUserThunk(user)).unwrap()
-          if (result.success) {
-            setUrlToRedirect('/')
-          }
+          await dispatch(initializeUser(user)).unwrap()
+          setUrlToRedirect('/')
         } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)

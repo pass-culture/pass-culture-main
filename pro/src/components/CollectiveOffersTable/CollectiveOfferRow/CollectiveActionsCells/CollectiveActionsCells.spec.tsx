@@ -18,6 +18,7 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constan
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
@@ -366,9 +367,8 @@ describe('CollectiveActionsCells', () => {
       )
       vi.spyOn(api, 'createCollectiveOffer').mockResolvedValueOnce({ id: 202 })
       renderCollectiveActionsCell({
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferTemplateFactory({
           id: 200,
-          isShowcase: true,
           allowedActions: [
             CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
           ],

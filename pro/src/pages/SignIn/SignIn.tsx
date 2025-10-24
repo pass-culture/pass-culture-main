@@ -1,8 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
-import { Navigate, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
@@ -11,11 +10,11 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
-import type { AppDispatch } from '@/commons/store/store'
-import { updateUser } from '@/commons/store/user/reducer'
-import { initializeUserThunk } from '@/commons/store/user/thunks'
+import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
+import { logout } from '@/commons/store/user/dispatchers/logout'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -38,9 +37,8 @@ interface SigninApiErrorResponse {
 export const SignIn = (): JSX.Element => {
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [shouldRedirect, setshouldRedirect] = useState(false)
   const [hasApiError, setHasApiError] = useState(false)
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   useInitReCaptcha()
 
@@ -69,14 +67,11 @@ export const SignIn = (): JSX.Element => {
         captchaToken,
       })
 
-      const result = await dispatch(initializeUserThunk(user)).unwrap()
-
-      if (result.success) {
-        setshouldRedirect(true)
-      }
+      await dispatch(initializeUser(user)).unwrap()
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        dispatch(updateUser(null))
+        await dispatch(logout()).unwrap()
+
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
         } else {
@@ -125,9 +120,7 @@ export const SignIn = (): JSX.Element => {
     }
   }
 
-  return shouldRedirect ? (
-    <Navigate to="/" replace />
-  ) : (
+  return (
     <SignUpLayout mainHeading="Connectez-vous">
       <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>

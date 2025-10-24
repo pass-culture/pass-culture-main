@@ -1,9 +1,6 @@
 import { useState } from 'react'
 
-import type {
-  CollectiveOfferResponseModel,
-  GetOffererResponseModel,
-} from '@/apiClient/v1'
+import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
@@ -16,7 +13,6 @@ import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearc
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
@@ -30,7 +26,7 @@ import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/Templ
 export type TemplateCollectiveOffersScreenProps = {
   currentPageNumber: number
   isLoading: boolean
-  offerer: GetOffererResponseModel | null
+  offererId: string | undefined
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
     filters: Partial<CollectiveSearchFiltersParams> & {
@@ -38,13 +34,13 @@ export type TemplateCollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  offers: CollectiveOfferResponseModel[]
+  offers: CollectiveOfferTemplateResponseModel[]
 }
 
 export const TemplateCollectiveOffersScreen = ({
   currentPageNumber,
   isLoading,
-  offerer,
+  offererId,
   initialSearchFilters,
   redirectWithUrlFilters,
   urlSearchFilters,
@@ -52,7 +48,7 @@ export const TemplateCollectiveOffersScreen = ({
 }: TemplateCollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('template')
   const [selectedOffers, setSelectedOffers] = useState<
-    CollectiveOfferResponseModel[]
+    CollectiveOfferTemplateResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
@@ -100,11 +96,12 @@ export const TemplateCollectiveOffersScreen = ({
     currentSortingMode
   )
 
-  const { page, currentPageItems, setPage } = usePagination(
-    sortedOffers,
-    NUMBER_OF_OFFERS_PER_PAGE,
-    urlSearchFilters.page
-  )
+  const { page, currentPageItems, setPage } =
+    usePagination<CollectiveOfferTemplateResponseModel>(
+      sortedOffers,
+      NUMBER_OF_OFFERS_PER_PAGE,
+      urlSearchFilters.page
+    )
 
   const applyUrlFiltersAndRedirect = (
     filters: Partial<CollectiveSearchFiltersParams>
@@ -131,9 +128,9 @@ export const TemplateCollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
-    const matchingOffer = selectedOffers.find((selectedOffer) =>
-      isSameOffer(offer, selectedOffer)
+  function onSetSelectedOffer(offer: CollectiveOfferTemplateResponseModel) {
+    const matchingOffer = selectedOffers.find(
+      (selectedOffer) => offer.id === selectedOffer.id
     )
 
     if (matchingOffer) {
@@ -153,7 +150,7 @@ export const TemplateCollectiveOffersScreen = ({
         hasFilters={hasFilters}
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
-        offerer={offerer}
+        offererId={offererId}
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
@@ -189,21 +186,21 @@ export const TemplateCollectiveOffersScreen = ({
                 onPreviousPageClick={() => {
                   applyUrlFiltersAndRedirect({
                     ...urlSearchFilters,
-                    offererId: offerer?.id.toString() ?? '',
+                    offererId: offererId?.toString() ?? '',
                     page: page - 1,
                   })
                 }}
                 onNextPageClick={() => {
                   applyUrlFiltersAndRedirect({
                     ...urlSearchFilters,
-                    offererId: offerer?.id.toString() ?? '',
+                    offererId: offererId?.toString() ?? '',
                     page: page + 1,
                   })
                 }}
               />
             </div>
           )}
-          <div role="status">
+          <nav aria-label="Actions sur les offres">
             {selectedOffers.length > 0 && (
               <CollectiveOffersActionsBar
                 areTemplateOffers
@@ -212,7 +209,7 @@ export const TemplateCollectiveOffersScreen = ({
                 selectedOffers={selectedOffers}
               />
             )}
-          </div>
+          </nav>
         </>
       )}
     </div>

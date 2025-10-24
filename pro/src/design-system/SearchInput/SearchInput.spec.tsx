@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { SearchInput, type SearchInputProps } from './SearchInput'
@@ -22,5 +23,17 @@ describe('SearchInput', () => {
         rules: { 'color-contrast': { enabled: false } },
       })
     ).toHaveNoViolations()
+  })
+
+  it('should clear the input when clicking on the clear button', async () => {
+    renderSearchInput({ value: 'test', onChange: () => {} })
+
+    const input = screen.getByRole('searchbox', { name: 'Input label' })
+
+    expect(input).toHaveValue('test')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+
+    expect(input).toHaveValue('')
   })
 })

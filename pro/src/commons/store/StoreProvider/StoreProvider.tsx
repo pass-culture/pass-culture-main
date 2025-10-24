@@ -2,16 +2,12 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
-import { SAVED_OFFERER_ID_KEY } from '@/commons/core/shared/constants'
 import { updateFeatures } from '@/commons/store/features/reducer'
-import {
-  updateCurrentOfferer,
-  updateOffererNames,
-} from '@/commons/store/offerer/reducer'
-import { updateUser, updateUserAccess } from '@/commons/store/user/reducer'
-import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { updateUser } from '@/commons/store/user/reducer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import type { AppDispatch } from '../store'
+import { initializeUser } from '../user/dispatchers/initializeUser'
 import styles from './StoreProvider.module.scss'
 
 interface StoreProviderProps {
@@ -23,87 +19,41 @@ export const StoreProvider = ({
   children,
   isAdageIframe = false,
 }: StoreProviderProps) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [isStoreInitialized, setIsStoreInitialized] = useState(false)
 
   useEffect(() => {
-    const initializeUser = async () => {
-      if (isAdageIframe) {
-        return
-      }
+    const getUser = async () => {
       try {
-        const response = await api.getProfile()
-        dispatch(updateUser(response))
+        return await api.getProfile()
       } catch {
-        dispatch(updateUser(null))
+        return null
       }
     }
 
-    const initializeUserOfferer = async () => {
-      if (isAdageIframe) {
-        return
-      }
+    const getFeatures = async () => {
       try {
-        const response = await api.listOfferersNames()
-        const firstOffererId = response.offerersNames[0]?.id
-
-        let offererIdToUse = firstOffererId
-        if (storageAvailable('localStorage')) {
-          const savedOffererId = localStorage.getItem(SAVED_OFFERER_ID_KEY)
-          offererIdToUse = savedOffererId
-            ? Number(savedOffererId)
-            : firstOffererId
-        }
-
-        try {
-          const offererObj = offererIdToUse
-            ? await api.getOfferer(offererIdToUse)
-            : null
-          dispatch(updateCurrentOfferer(offererObj))
-
-          dispatch(
-            updateUserAccess(
-              response.offerersNames.length > 0
-                ? offererObj?.isOnboarded
-                  ? 'full'
-                  : 'no-onboarding'
-                : 'no-offerer'
-            )
-          )
-        } catch {
-          if (response.offerersNames.length > 0) {
-            dispatch(updateUserAccess('unattached'))
-          } else {
-            dispatch(updateUserAccess('no-offerer'))
-          }
-        } finally {
-          dispatch(updateOffererNames(response.offerersNames))
-        }
+        return await api.listFeatures()
       } catch {
-        // In any other case, it's a normal error
-        dispatch(updateCurrentOfferer(null))
-      }
-    }
-
-    const initializeFeatures = async () => {
-      try {
-        const response = await api.listFeatures()
-        dispatch(updateFeatures(response))
-      } catch {
-        dispatch(updateFeatures([]))
+        return []
       }
     }
 
     const getStoreInitialState = async () => {
-      await Promise.all([
-        initializeUser(),
-        initializeFeatures(),
-        initializeUserOfferer(),
-      ])
+      const features = await getFeatures()
+      dispatch(updateFeatures(features))
+
+      if (!isAdageIframe) {
+        const user = await getUser()
+        dispatch(updateUser(user))
+        if (user) {
+          await dispatch(initializeUser(user)).unwrap()
+        }
+      }
+
       setIsStoreInitialized(true)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getStoreInitialState()
   }, [isAdageIframe, dispatch])
 

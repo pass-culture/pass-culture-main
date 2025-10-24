@@ -1,9 +1,12 @@
+from sqlalchemy import orm as sa_orm
+
 from pcapi import settings
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import BaseFinanceBackend
 from pcapi.core.finance.backend.cegid import CegidFinanceBackend
 from pcapi.core.finance.backend.dummy import DummyFinanceBackend
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils.module_loading import import_string
 
@@ -26,7 +29,11 @@ def push_bank_account(bank_account_id: int) -> dict | None:
     bank_account = (
         db.session.query(finance_models.BankAccount)
         .filter_by(id=bank_account_id)
-        .join(finance_models.BankAccount.offerer)
+        .options(
+            sa_orm.joinedload(finance_models.BankAccount.offerer, innerjoin=True).load_only(
+                offerers_models.Offerer.name, offerers_models.Offerer.siren
+            )
+        )
         .one()
     )
     return backend.push_bank_account(bank_account)

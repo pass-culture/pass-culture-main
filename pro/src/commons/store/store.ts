@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { type AsyncThunkConfig, configureStore } from '@reduxjs/toolkit'
 
 import { rootReducer } from './rootReducer'
 
@@ -21,4 +21,15 @@ export const createStore = (initialState = {}) => {
 // We expose the store so that it can be used outside of the Redux context
 export const { store: rootStore } = createStore()
 
-export type AppDispatch = ReturnType<typeof createStore>['store']['dispatch']
+// https://react-redux.js.org/using-react-redux/usage-with-typescript#define-root-state-and-dispatch-types
+export type RootState = ReturnType<typeof rootStore.getState>
+export type AppDispatch = typeof rootStore.dispatch
+export type AppThunkApiConfig = AsyncThunkConfig & {
+  dispatch: AppDispatch
+  rejectValue: {
+    body?: string
+    error: string
+    status?: number
+  }
+  state: RootState
+}

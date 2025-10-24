@@ -15,7 +15,6 @@ from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.search import testing as search_testing
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
-from pcapi.utils import repository
 
 from tests.test_utils import run_command
 
@@ -178,7 +177,8 @@ def test_partially_index_venues_removes_non_eligible_venues(app):
 
     ### This is the actual test: the venue is no longer eligible for search ###
     future_not_indexable_venue.isOpenToPublic = False
-    repository.save(future_not_indexable_venue)
+    db.session.add(future_not_indexable_venue)
+    db.session.commit()
 
     expected_to_be_reindexed = {
         indexable_venue1.id,

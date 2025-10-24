@@ -16,7 +16,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import constants as boost_constants
 from pcapi.core.external_bookings.boost import serializers as boost_serializers
-from pcapi.core.providers.etls.boost_etl import BoostETLProcess
+from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
 from pcapi.models import db
@@ -35,7 +35,7 @@ FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constan
 )
 
 
-class BoostETLProcessTest:
+class BoostExtractTransformLoadProcessTest:
     def setup_cinema_objects(self):
         boost_provider = get_provider_by_local_class("BoostStocks")
         venue_provider = providers_factories.VenueProviderFactory(
@@ -50,47 +50,7 @@ class BoostETLProcessTest:
 
         return venue_provider
 
-    def test_execute_should_raise_inactive_provider(self):
-        venue_provider = self.setup_cinema_objects()
-        venue_provider.provider.isActive = False
-        etl_process = BoostETLProcess(venue_provider)
-
-        with pytest.raises(providers_exceptions.InactiveProvider):
-            etl_process.execute()
-
-    def test_execute_should_raise_inactive_venue_provider_provider(self):
-        venue_provider = self.setup_cinema_objects()
-        venue_provider.isActive = False
-        etl_process = BoostETLProcess(venue_provider)
-
-        with pytest.raises(providers_exceptions.InactiveVenueProvider):
-            etl_process.execute()
-
-    def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
-        venue_provider = self.setup_cinema_objects()
-        etl_process = BoostETLProcess(venue_provider)
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs",
-            exc=requests.exceptions.ConnectTimeout,
-        )
-
-        with caplog.at_level(logging.WARNING):
-            with pytest.raises(requests.exceptions.ConnectTimeout):
-                etl_process.execute()
-
-        assert len(caplog.records) >= 1
-        last_record = caplog.records[-1]
-        assert last_record.message == "[BoostETLProcess] Step 1 - Extract failed"
-        assert last_record.extra == {
-            "venue_id": venue_provider.venueId,
-            "provider_id": venue_provider.providerId,
-            "venue_provider_id": venue_provider.id,
-            "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
-            "data": {"exc": "ConnectTimeout"},
-        }
-
-    def test_extract_should_return_raw_results(self, requests_mock):
-        venue_provider = self.setup_cinema_objects()
+    def setup_requests_mock(self, requests_mock) -> None:
         requests_mock.get(
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
@@ -103,7 +63,50 @@ class BoostETLProcessTest:
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
 
-        etl_process = BoostETLProcess(venue_provider)
+    def test_execute_should_raise_inactive_provider(self):
+        venue_provider = self.setup_cinema_objects()
+        venue_provider.provider.isActive = False
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
+
+        with pytest.raises(providers_exceptions.InactiveProvider):
+            etl_process.execute()
+
+    def test_execute_should_raise_inactive_venue_provider_provider(self):
+        venue_provider = self.setup_cinema_objects()
+        venue_provider.isActive = False
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
+
+        with pytest.raises(providers_exceptions.InactiveVenueProvider):
+            etl_process.execute()
+
+    def test_should_log_and_raise_error_if_extract_fails(self, caplog, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs",
+            exc=requests.exceptions.ConnectTimeout("je suis sous l'eau"),
+        )
+
+        with caplog.at_level(logging.WARNING):
+            with pytest.raises(requests.exceptions.ConnectTimeout):
+                etl_process.execute()
+
+        assert len(caplog.records) >= 1
+        last_record = caplog.records[-1]
+        assert last_record.message == "[BoostExtractTransformLoadProcess] Step 1 - Extract failed"
+        assert last_record.extra == {
+            "venue_id": venue_provider.venueId,
+            "provider_id": venue_provider.providerId,
+            "venue_provider_id": venue_provider.id,
+            "venue_id_at_offer_provider": venue_provider.venueIdAtOfferProvider,
+            "data": {"exc": "ConnectTimeout", "msg": "je suis sous l'eau"},
+        }
+
+    def test_extract_should_return_raw_results(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+        self.setup_requests_mock(requests_mock)
+
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         assert extract_result == {
@@ -245,19 +248,9 @@ class BoostETLProcessTest:
     def test_transform_should_return_loadable_result(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
-        etl_process = BoostETLProcess(venue_provider)
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result=extract_result)
@@ -318,7 +311,7 @@ class BoostETLProcessTest:
 
     def test_transform_should_drop_showtime_without_pc_pricing(self):
         venue_provider = self.setup_cinema_objects()
-        etl_process = BoostETLProcess(venue_provider)
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
         extract_result = {
             "cinema_attributes": [],
@@ -373,19 +366,9 @@ class BoostETLProcessTest:
     def test_load_should_create_product_offer_and_stocks(self, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
-        etl_process = BoostETLProcess(venue_provider)
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result=extract_result)
@@ -490,19 +473,9 @@ class BoostETLProcessTest:
         )
         bookings_factories.BookingFactory(stock=stock_1)
 
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
-        etl_process = BoostETLProcess(venue_provider)
+        etl_process = BoostExtractTransformLoadProcess(venue_provider)
 
         extract_result = etl_process._extract()
         transform_result = etl_process._transform(extract_result=extract_result)
@@ -549,17 +522,7 @@ class BoostETLProcessTest:
     def test_execute_should_create_and_index_offer(self, async_index_offer_ids_mock, requests_mock):
         venue_provider = self.setup_cinema_objects()
         venue_id = venue_provider.venueId
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
-            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
-        )
+        self.setup_requests_mock(requests_mock)
 
         file_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
@@ -567,7 +530,7 @@ class BoostETLProcessTest:
         requests_mock.get("http://example.com/images/159673.jpg", content=poster_mission_impossible)
         requests_mock.get("http://example.com/images/159570.jpg", exc=requests.exceptions.ConnectTimeout)  # huho
 
-        BoostETLProcess(venue_provider).execute()
+        BoostExtractTransformLoadProcess(venue_provider).execute()
 
         offer_1 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"161%{venue_id}%Boost").one_or_none()
         offer_2 = db.session.query(offers_models.Offer).filter_by(idAtProvider=f"145%{venue_id}%Boost").one_or_none()
@@ -651,3 +614,25 @@ class BoostETLProcessTest:
                 "provider_id": venue_provider.providerId,
             },
         )
+
+    def test_should_reuse_price_category(self, requests_mock):
+        venue_provider = self.setup_cinema_objects()
+
+        get_cinema_attr_adapter = requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
+
+        BoostExtractTransformLoadProcess(venue_provider).execute()
+        BoostExtractTransformLoadProcess(venue_provider).execute()
+
+        created_price_category = db.session.query(offers_models.PriceCategory).one()
+        assert created_price_category.price == decimal.Decimal("6.9")
+        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
+
+        assert get_cinema_attr_adapter.call_count == 2

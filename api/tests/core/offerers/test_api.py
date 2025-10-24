@@ -2250,6 +2250,109 @@ def test_grant_user_offerer_access():
     assert not user.has_pro_role
 
 
+class HandleclosedOffererTest:
+    @pytest.fixture(name="siren_caduc_tag")
+    def siren_caduc_tag_fixture(self):
+        return offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
+
+    pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=False)
+
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @time_machine.travel("2025-01-21 12:00:00")
+    def test_tag_offerer_no_delete(
+        self,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001")
+
+        offerers_api.handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
+
+        assert offerer.tags == [siren_caduc_tag]
+        mock_close_offerer.assert_not_called()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    def test_inactive_offerer_already_tagged(
+        self,
+        mock_close_offerer,
+        client,
+        siren_caduc_tag,
+    ):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+
+        offerers_api.handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
+
+        assert offerer.tags == [siren_caduc_tag]
+        assert db.session.query(history_models.ActionHistory).count() == 0  # tag already set, no change made
+        mock_close_offerer.assert_called_once()
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    @patch("pcapi.core.offerers.api.close_offerer")
+    @time_machine.travel("2025-03-10 12:00:00")
+    def test_close_inactive_offerer_already_tagged(self, mock_close_offerer, client, siren_caduc_tag):
+        # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
+        offerer = offerers_factories.OffererFactory(siren="109599001", tags=[siren_caduc_tag])
+
+        offerers_api.handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
+        assert offerer.tags == [siren_caduc_tag]
+        mock_close_offerer.assert_called_once_with(
+            offerer,
+            closure_date=datetime.date(2025, 1, 16),
+            author_user=None,
+            comment="L'entité juridique est détectée comme fermée le 16/01/2025 au répertoire Sirene (INSEE)",
+        )
+
+    @pytest.mark.features(ENABLE_AUTO_CLOSE_CLOSED_OFFERERS=True)
+    def test_reject_inactive_offerer_waiting_for_validation(
+        self,
+        client,
+        siren_caduc_tag,
+    ):
+        offerer = offerers_factories.PendingOffererFactory(siren="100099001")
+        user_offerer = offerers_factories.UserNotValidatedOffererFactory(offerer=offerer)
+
+        offerers_api.handle_closed_offerer(offerer, closure_date=datetime.date(2025, 1, 16))
+
+        assert offerer.isRejected
+        assert offerer.tags == [siren_caduc_tag]
+
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.OFFERER_REJECTED)
+            .one()
+        )
+        assert offerer_action.actionDate is not None
+        assert offerer_action.authorUserId is None
+        assert offerer_action.userId == user_offerer.user.id
+        assert offerer_action.offererId == offerer.id
+        assert offerer_action.extraData == {
+            "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
+            "rejection_reason": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
+        }
+
+        user_offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter_by(actionType=history_models.ActionType.USER_OFFERER_REJECTED)
+            .one()
+        )
+        assert user_offerer_action.actionDate is not None
+        assert user_offerer_action.authorUserId is None
+        assert user_offerer_action.userId == user_offerer.user.id
+        assert user_offerer_action.offererId == offerer.id
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user_offerer.user.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFERER_NAME": offerer.name,
+            "REJECTION_REASON": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
+        }
+
+
 class VenueBannerTest:
     IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 

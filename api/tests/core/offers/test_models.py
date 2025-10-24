@@ -541,7 +541,8 @@ class StockDateModifiedTest:
     def test_update_dateModified_if_quantity_changes(self):
         stock = factories.StockFactory(dateModified=datetime.datetime(2018, 2, 12), quantity=1)
         stock.quantity = 10
-        repository.save(stock)
+        db.session.add(stock)
+        db.session.commit()
         stock = db.session.query(models.Stock).one()
         assert stock.dateModified.timestamp() == pytest.approx(date_utils.get_naive_utc_now().timestamp())
 
@@ -549,7 +550,8 @@ class StockDateModifiedTest:
         initial_dt = datetime.datetime(2018, 2, 12)
         stock = factories.StockFactory(dateModified=initial_dt, price=1)
         stock.price = 10
-        repository.save(stock)
+        db.session.add(stock)
+        db.session.commit()
         stock = db.session.query(models.Stock).one()
         assert stock.dateModified == initial_dt
 
@@ -593,7 +595,8 @@ class StockQuantityTest:
 
         # When
         stock.quantity = 3
-        repository.save(stock)
+        db.session.add(stock)
+        db.session.commit()
 
         # Then
         assert db.session.get(models.Stock, stock.id).quantity == 3
@@ -605,7 +608,8 @@ class StockQuantityTest:
 
         # When
         stock.quantity = 3
-        repository.save(stock)
+        db.session.add(stock)
+        db.session.commit()
 
         # Then
         assert db.session.get(models.Stock, stock.id).quantity == 3

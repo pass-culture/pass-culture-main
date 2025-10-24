@@ -12,6 +12,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.ds import DMS_TOKEN_PRO_PREFIX
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.geography.constants import MAX_LATITUDE
@@ -110,14 +111,10 @@ class VenueResponseModel(BaseModel):
 
 
 class GetVenueManagingOffererResponseModel(BaseModel):
-    city: str
-    dateCreated: datetime
     id: int
     isValidated: bool
     name: str
-    postalCode: str
     siren: str
-    street: str | None
     allowedOnAdage: bool
 
     class Config:
@@ -169,6 +166,34 @@ class LegalStatusResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SimplifiedBankAccountStatus(enum.Enum):
+    PENDING = "pending"
+    VALID = "valid"
+    PENDING_CORRECTIONS = "pending_corrections"
+
+
+def parse_venue_bank_account_status(venue: offerers_models.Venue) -> SimplifiedBankAccountStatus | None:
+    status_enum = finance_models.BankAccountApplicationStatus
+    bank_account = venue.current_bank_account
+
+    # TODO(jbaudet - 10/2025): move this code to a more
+    # appropriate api/repository/models module once offerers
+    # have been replaced by venues. These rules come from the
+    # `get_offerer_and_extradata` function.
+    if not bank_account or not bank_account.isActive:
+        return None
+
+    match bank_account.status:
+        case status_enum.ACCEPTED:
+            return SimplifiedBankAccountStatus.VALID
+        case status_enum.DRAFT | status_enum.ON_GOING:
+            return SimplifiedBankAccountStatus.PENDING
+        case status_enum.WITH_PENDING_CORRECTIONS:
+            return SimplifiedBankAccountStatus.PENDING_CORRECTIONS
+        case _:
+            return None
 
 
 class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
@@ -226,6 +251,15 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             label = value.value if value else ""
             return VenueTypeResponseModel(value=value.name if value else "", label=label)
 
+        if key == "isActive":
+            return venue.managingOfferer.isActive
+
+        if key == "isValidated":
+            return venue.managingOfferer.isValidated
+
+        if key == "bankAccountStatus":
+            return parse_venue_bank_account_status(venue)
+
         return super().get(key, default)
 
 
@@ -260,6 +294,10 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     hasActiveIndividualOffer: bool
     isCaledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
+    isActive: bool
+    isValidated: bool
+    bankAccountStatus: SimplifiedBankAccountStatus | None
+    hasNonFreeOffers: bool
 
     class Config:
         orm_mode = True

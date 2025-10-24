@@ -1889,6 +1889,7 @@ export class DefaultService {
     });
   }
   /**
+   * @deprecated
    * patch_draft_offer <PATCH>
    * @param offerId
    * @param requestBody
@@ -2929,6 +2930,31 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/v2/offers',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * update_offer <PATCH>
+   * @param offerId
+   * @param requestBody
+   * @returns GetIndividualOfferWithAddressResponseModel OK
+   * @throws ApiError
+   */
+  public updateOffer(
+    offerId: number,
+    requestBody: PatchOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/v2/offers/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
       body: requestBody,
       mediaType: 'application/json',
       errors: {
