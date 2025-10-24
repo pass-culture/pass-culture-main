@@ -716,11 +716,13 @@ class GetBookingsListTest:
             },
         }
 
-    def test_get_bookings_list_returns_empty_list(self, client):
+    def test_get_bookings_list_raises_error_when_status_is_unknown(self, client):
         users_factories.BeneficiaryFactory(email=self.identifier, age=18)
 
-        response_to_unknown_status = client.with_token(self.identifier).get("/native/v2/bookings/invalid_status")
-        assert response_to_unknown_status.json == {"bookings": []}
+        with assert_num_queries(1):  # user
+            response_to_unknown_status = client.with_token(self.identifier).get("/native/v2/bookings/invalid_status")
+
+        assert response_to_unknown_status.status_code == 404
 
 
 class GetBookingTicketTest:

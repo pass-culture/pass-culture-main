@@ -507,11 +507,11 @@
                     "address": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/BookingListItemOfferResponseAddress"
+                                "$ref": "#/components/schemas/BookingListItemOfferResponseTimezone"
                             }
                         ],
                         "nullable": true,
-                        "title": "BookingListItemOfferResponseAddress"
+                        "title": "BookingListItemOfferResponseTimezone"
                     },
                     "id": {
                         "title": "Id",
@@ -565,7 +565,7 @@
                 "title": "BookingListItemOfferResponse",
                 "type": "object"
             },
-            "BookingListItemOfferResponseAddress": {
+            "BookingListItemOfferResponseTimezone": {
                 "properties": {
                     "timezone": {
                         "title": "Timezone",
@@ -575,7 +575,7 @@
                 "required": [
                     "timezone"
                 ],
-                "title": "BookingListItemOfferResponseAddress",
+                "title": "BookingListItemOfferResponseTimezone",
                 "type": "object"
             },
             "BookingListItemResponse": {
@@ -8960,6 +8960,9 @@
                     },
                     "403": {
                         "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
                     },
                     "422": {
                         "content": {

@@ -34,11 +34,6 @@ class TicketDisplayEnum(enum.Enum):
     TICKET = "ticket"
 
 
-class BookingsListStatus(enum.Enum):
-    ongoing = "ongoing"
-    ended = "ended"
-
-
 class BookingVenueResponseV2GetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "name":
@@ -310,10 +305,8 @@ class BookingsResponseV2(ConfiguredBaseModel):
 
 class BookingListItemVenueResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "label":
-            if self._obj.venueLabel:
-                return self._obj.venueLabel.label
-            return None
+        if key == "label" and (venue_label := self._obj.venueLabel):
+            return venue_label.label
 
         return super().get(key, default)
 
@@ -329,30 +322,21 @@ class BookingListItemVenueResponse(ConfiguredBaseModel):
         getter_dict = BookingListItemVenueResponseGetterDict
 
 
-class BookingListItemOfferResponseAddress(ConfiguredBaseModel):
+class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
     timezone: str
 
 
 class BookingListItemOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
-            offerer_address: OffererAddress | None
-            if self._obj.offererAddress:
-                offerer_address = self._obj.offererAddress
-            else:
-                offerer_address = self._obj.venue.offererAddress
+            if offerer_address := self._obj.offererAddress or self._obj.venue.offererAddress:
+                return BookingListItemOfferResponseTimezone(
+                    timezone=offerer_address.address.timezone,
+                )
+            return None
 
-            if not offerer_address:
-                return None
-
-            address: Address = offerer_address.address
-
-            return BookingListItemOfferResponseAddress(
-                timezone=address.timezone,
-            )
-
-        elif key == "image_url":
-            return getattr(self._obj.image, "url", None)
+        if key == "image_url":
+            return self._obj.thumbUrl
 
         return super().get(key, default)
 
@@ -361,7 +345,7 @@ class BookingListItemOfferResponse(ConfiguredBaseModel):
     id: int
     name: str
     image_url: str | None
-    address: BookingListItemOfferResponseAddress | None
+    address: BookingListItemOfferResponseTimezone | None
     is_digital: bool
     is_permanent: bool
     withdrawal_delay: int | None
