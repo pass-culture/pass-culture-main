@@ -16,6 +16,14 @@ on:
         type: boolean
         default: false
 
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER:
+        description: 'Workload Identity Provider for fetching secrets in Secret Manager'
+        required: true
+      SERVICE_ACCOUNT:
+        description: 'Service Account for fetching secrets in Secret Manager'
+        required: true
+
 jobs:
   push-docker-image:
     name: Push Docker image to Artifact Registry
@@ -40,8 +48,8 @@ jobs:
           tag_latest: ${{ inputs.tag_latest }}
           artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
           artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
           registry: ${{ matrix.registry }}
           project_id: ${{ matrix.project_id }}
           repository: ${{ matrix.repository }}

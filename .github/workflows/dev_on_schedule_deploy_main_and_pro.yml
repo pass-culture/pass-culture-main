@@ -122,6 +122,9 @@ jobs:
       image: pcapi
       tag: ${{ github.sha }}
       tag_latest: true
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi-console:
     name: Push pcapi-console docker image to artifact registry
@@ -134,6 +137,9 @@ jobs:
       image: pcapi-console
       tag: ${{ github.sha }}
       tag_latest: true
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-testing:
     name: Deploy to testing
