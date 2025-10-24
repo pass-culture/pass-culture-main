@@ -384,7 +384,7 @@ class FindByProUserTest:
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -403,7 +403,7 @@ class FindByProUserTest:
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -426,7 +426,7 @@ class FindByProUserTest:
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -452,7 +452,7 @@ class FindByProUserTest:
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -478,7 +478,7 @@ class FindByProUserTest:
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)

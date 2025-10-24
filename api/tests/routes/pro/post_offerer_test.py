@@ -199,14 +199,15 @@ def test_current_user_has_access_to_created_offerer(client):
 def test_new_user_offerer_has_validation_status_new(client):
     # Given
     pro = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory()
+    offerer = venue.managingOfferer
     offerers_factories.UserOffererFactory(offerer=offerer)
     body = {
         "name": offerer.name,
         "siren": offerer.siren,
-        "street": offerer.street,
-        "postalCode": offerer.postalCode,
-        "city": offerer.city,
+        "street": venue.offererAddress.address.street,
+        "postalCode": venue.offererAddress.address.postalCode,
+        "city": venue.offererAddress.address.city,
         "latitude": 48,
         "longitude": 2,
     }
