@@ -2818,6 +2818,19 @@ def upsert_highlight_requests(
         highlights_models.HighlightRequest.offerId == offer.id,
     ).delete()
 
+    on_commit(
+        partial(
+            logger.info,
+            "Highlight requests have been deleted",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "highlight_ids": highlight_ids_to_delete,
+            },
+            technical_message_id="offer.highlightRequests.deleted",
+        )
+    )
+
     highlight_requests = [
         highlight_request
         for highlight_request in current_highlight_requests
@@ -2829,6 +2842,19 @@ def upsert_highlight_requests(
         highlight_request = highlights_models.HighlightRequest(offerId=offer.id, highlightId=highlight_id)
         highlight_requests.append(highlight_request)
         db.session.add(highlight_request)
+
+    on_commit(
+        partial(
+            logger.info,
+            "Highlight requests have been created",
+            extra={
+                "offer_id": offer.id,
+                "venue_id": offer.venueId,
+                "highlight_ids": highlight_ids_of_highlight_requests_to_create,
+            },
+            technical_message_id="offer.highlightRequests.created",
+        )
+    )
 
     db.session.flush()
     return highlight_requests
