@@ -281,9 +281,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
     def format_datetime(self, source_datetime: datetime.datetime) -> str:
         utc_source_datetime = date_utils.make_timezone_aware_utc(source_datetime)
 
-        formatted_datetime = utc_source_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-        formatted_offset = date_utils.format_offset(utc_source_datetime.utcoffset())
-        return f"{formatted_datetime}{formatted_offset}"
+        return utc_source_datetime.strftime("%Y-%m-%dT%H:%M:%S%:z")
 
     def _get_formatted_invoice_description(self, invoice: finance_models.Invoice) -> str:
         invoice_batch = invoice.cashflows[0].batch

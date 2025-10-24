@@ -270,34 +270,6 @@ def make_timezone_aware_utc(dt: datetime) -> datetime:
     return dt.replace(tzinfo=tz.utc)
 
 
-def format_offset(off: timedelta | None, sep: str = ":") -> str:
-    """
-    Format datetime's offset with ability to put separator between hours and minutes.
-    Ex:
-    >>> format_offset(dt)
-    "+00:00"
-
-    This is a backport from Python 3.12
-    TODO delete this function once we upgrade to Python 3.12
-    """
-    s = ""
-    if off is not None:
-        if off.days < 0:
-            sign = "-"
-            off = -off
-        else:
-            sign = "+"
-        hh, mm = divmod(off, timedelta(hours=1))
-        mm, ss = divmod(mm, timedelta(minutes=1))  # type: ignore[assignment]
-        s += "%s%02d%s%02d" % (sign, hh, sep, mm)  # type: ignore[str-format]
-        if ss or ss.microseconds:
-            s += "%s%02d" % (sep, ss.seconds)
-
-            if ss.microseconds:
-                s += ".%06d" % ss.microseconds
-    return s
-
-
 def get_naive_utc_now() -> datetime:
     """To replace deprecated `datetime.utcnow()`"""
     return datetime.now(tz.utc).replace(tzinfo=None)
