@@ -1,0 +1,54 @@
+name: 'Build docker image and saved it as github artifact'
+description: 'Build a docker image from the context directory and save it as a github artifact'
+inputs:
+  image:
+    description: The docker image name
+    required: true
+    type: string
+
+  context:
+    description: The build context directory
+    required: true
+    type: string
+
+  tag:
+    description: The docker image tag
+    required: true
+    type: string
+
+  artifact_path:
+    description: Paths to include in the artifact upload
+    required: false
+    type: string
+    default: |
+      ./
+      !./pro/scripts/generator'
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver: docker
+
+    - name: Build docker image
+      uses: docker/build-push-action@v6
+      with:
+        push: false
+        context: ${{ inputs.context }}
+        target: ${{ inputs.image }}
+        tags: ${{ inputs.image }}:${{ inputs.tag }}
+
+    - name: Store artifact
+      shell: bash
+      run: |
+        docker images
+        docker save ${{ inputs.image }}:${{ inputs.tag }} > ${{ inputs.image }}-${{ inputs.tag }}.tar
+
+    - name: Upload built image to github artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.image }}-${{ inputs.tag }}.tar
+        path: ${{ inputs.artifact_path }}
+        retention-days: 1

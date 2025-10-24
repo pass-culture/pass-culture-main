@@ -108,9 +108,8 @@ jobs:
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.event.pull_request.head.sha }}
       image: pcapi-tests
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
   run-mypy-cop:
     name: "MyPy cop"

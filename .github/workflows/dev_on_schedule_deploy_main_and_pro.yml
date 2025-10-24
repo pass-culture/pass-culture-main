@@ -99,9 +99,8 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
   build-pcapi-console:
     name: "[pcapi-console] build docker image."
@@ -109,12 +108,11 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      ref: ${{ github.sha }}
       image: pcapi-console
-      tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ github.sha }}
 
-  push-pcapi-to-europe-west1:
-    name: Push pcapi docker image to artifact registry europe-west1-docker.pkg.dev
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
     needs:
       - build-pcapi
       - pcapi-init-job
@@ -122,43 +120,14 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-      registry: europe-west1-docker.pkg.dev
-      project_id: passculture-infra-prod
-      repository: pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
+      tag: ${{ github.sha }}
+      tag_latest: true
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  push-pcapi-to-europe:
-    name: Push pcapi docker image to artifact registry europe-docker.pkg.dev
-    needs:
-      - build-pcapi
-      - pcapi-init-job
-    if: needs.pcapi-init-job.outputs.pcapi-exists == 'false'
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-      registry: europe-docker.pkg.dev
-      project_id: pc-infra-prd
-      repository: pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
-    secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  push-pcapi-console-to-europe-west1:
-    name: Push pcapi-console docker image to artifact registry europe-west1-docker.pkg.dev
+  push-pcapi-console:
+    name: Push pcapi-console docker image to artifact registry
     needs:
       - build-pcapi-console
       - pcapi-init-job
@@ -166,37 +135,8 @@ jobs:
     if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
     with:
       image: pcapi-console
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-      registry: europe-west1-docker.pkg.dev
-      project_id: passculture-infra-prod
-      repository: pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key_secret_name: passculture-metier-ehp/cosign_kms_key
-    secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  push-pcapi-console-to-europe:
-    name: Push pcapi-console docker image to artifact registry europe-docker.pkg.dev
-    needs:
-      - build-pcapi-console
-      - pcapi-init-job
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    if: needs.pcapi-init-job.outputs.pcapi-console-exists == 'false'
-    with:
-      image: pcapi-console
-      commit-hash: ${{ github.sha }}
-      checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
-      tag-latest: true
-      registry: europe-docker.pkg.dev
-      project_id: pc-infra-prd
-      repository: pass-culture-artifact-registry
-      artifact_registry_workload_identity_provider_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
-      artifact_registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
+      tag: ${{ github.sha }}
+      tag_latest: true
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -205,10 +145,8 @@ jobs:
     name: Deploy to testing
     needs:
     - pcapi-init-job
-    - push-pcapi-to-europe-west1
-    - push-pcapi-console-to-europe-west1
-    - push-pcapi-to-europe
-    - push-pcapi-console-to-europe
+    - push-pcapi
+    - push-pcapi-console
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
@@ -230,10 +168,8 @@ jobs:
     name: "Deploy to ops"
     needs:
       - pcapi-init-job
-      - push-pcapi-to-europe-west1
-      - push-pcapi-console-to-europe-west1
-      - push-pcapi-to-europe
-      - push-pcapi-console-to-europe
+      - push-pcapi
+      - push-pcapi-console
       - deploy-to-testing
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
