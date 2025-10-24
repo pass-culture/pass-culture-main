@@ -147,7 +147,7 @@ describe('Didactic Onboarding feature', () => {
         })
 
         // Starts offer creation by choosing offer type
-        cy.findByRole('radiogroup', { name: 'Votre offre est' })
+        cy.findByRole('group', { name: 'Votre offre est' })
           .findByText('Un bien physique')
           .click()
         cy.findByRole('button', { name: 'Étape suivante' }).click()

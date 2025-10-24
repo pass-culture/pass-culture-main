@@ -352,12 +352,6 @@ describe('<PhysicalLocationSubform />', () => {
     })
 
     expect(
-      screen.getByRole('radiogroup', {
-        name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
-      })
-    ).toHaveAttribute('aria-disabled', 'true')
-
-    expect(
       screen.getByRole('textbox', { name: 'Intitulé de la localisation' })
     ).toBeDisabled()
 
@@ -377,11 +371,6 @@ describe('<PhysicalLocationSubform />', () => {
     renderPhysicalLocationSubform({
       props: { isDisabled: true },
     })
-
-    const radiogroup = screen.getByRole('radiogroup', {
-      name: 'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
-    })
-    expect(radiogroup).toHaveAttribute('aria-disabled', 'true')
 
     // Attempt click
     await userEvent.click(

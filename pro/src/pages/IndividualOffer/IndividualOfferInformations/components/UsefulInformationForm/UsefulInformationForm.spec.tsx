@@ -42,7 +42,7 @@ const LABELS = {
   },
   fields: {
     offerLocation:
-      'Il s’agit de l’adresse à laquelle les jeunes devront se présenter. *',
+      /Il s’agit de l’adresse à laquelle les jeunes devront se présenter./,
     url: 'URL d’accès à l’offre *',
   },
   withdrawalDetails: /Informations de retrait/,
@@ -222,7 +222,8 @@ describe('UsefulInformationForm', () => {
         contextValue: {
           ...contextValueBase,
           offer: getIndividualOfferFactory({
-            subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_ONLINE.id,
+            subcategoryId: MOCKED_SUBCATEGORY.EVENT_ONLINE.id,
+            isDigital: true,
           }),
         },
       })
@@ -524,7 +525,7 @@ describe('UsefulInformationForm', () => {
       })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('radiogroup', {
+      screen.getByRole('group', {
         name: LABELS.fields.offerLocation,
       })
     ).toBeInTheDocument()

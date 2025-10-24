@@ -132,9 +132,7 @@ describe('FormLocation', () => {
   it('should render the location form with title', () => {
     renderFormLocation(props, initialValues)
 
-    expect(
-      screen.getByText('Où se déroule votre offre ? *')
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Où se déroule votre offre ?/)).toBeInTheDocument()
   })
 
   it('should display the address option', () => {
