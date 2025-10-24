@@ -400,6 +400,21 @@ class GetBookingsTest:
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["venue"]["isOpenToPublic"] is True
 
 
+class GetBookingTest:
+    identifier = "pascal.ture@example.com"
+
+    def test_get_booking(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking1 = booking_factories.BookingFactory(user=user)
+        booking_factories.BookingFactory(user=user)
+
+        client = client.with_token(self.identifier)
+        response = client.get(f"/native/v2/bookings/{booking1.id}")
+
+        assert response.status_code == 200
+        assert response.json["id"] == booking1.id
+
+
 class GetBookingTicketTest:
     identifier = "pascal.ture@example.com"
 
