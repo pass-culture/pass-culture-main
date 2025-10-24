@@ -301,3 +301,74 @@ class BookingsResponseV2(ConfiguredBaseModel):
     ended_bookings: list[BookingResponse]
     ongoing_bookings: list[BookingResponse]
     has_bookings_after_18: bool
+
+
+class BookingListItemVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "label" and (venue_label := self._obj.venueLabel):
+            return venue_label.label
+
+        return super().get(key, default)
+
+
+class BookingListItemVenueResponse(ConfiguredBaseModel):
+    id: int
+    city: str | None
+    label: str
+    name: str
+    timezone: str
+
+    class Config:
+        getter_dict = BookingListItemVenueResponseGetterDict
+
+
+class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
+    timezone: str
+
+
+class BookingListItemOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "address":
+            if offerer_address := self._obj.offererAddress or self._obj.venue.offererAddress:
+                return BookingListItemOfferResponseTimezone(
+                    timezone=offerer_address.address.timezone,
+                )
+            return None
+
+        if key == "image_url":
+            return self._obj.thumbUrl
+
+        return super().get(key, default)
+
+
+class BookingListItemOfferResponse(ConfiguredBaseModel):
+    id: int
+    name: str
+    image_url: str | None
+    address: BookingListItemOfferResponseTimezone | None
+    is_digital: bool
+    is_permanent: bool
+    withdrawal_delay: int | None
+    withdrawal_type: WithdrawalTypeEnum | None
+    subcategory_id: SubcategoryIdEnum
+    venue: BookingListItemVenueResponse
+
+    class Config:
+        getter_dict = BookingListItemOfferResponseGetterDict
+
+
+class BookingListItemStockResponse(ConfiguredBaseModel):
+    beginning_datetime: datetime | None
+    offer: BookingListItemOfferResponse
+
+
+class BookingListItemResponse(ConfiguredBaseModel):
+    id: int
+    date_created: datetime
+    activation_code: ActivationCodeResponse | None
+    quantity: int
+    stock: BookingListItemStockResponse
+
+
+class BookingsListResponseV2(ConfiguredBaseModel):
+    bookings: list[BookingListItemResponse]

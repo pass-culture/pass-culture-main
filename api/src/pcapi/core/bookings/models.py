@@ -70,6 +70,11 @@ class BookingCancellationReasons(enum.Enum):
         )
 
 
+class BookingsListStatus(enum.Enum):
+    ONGOING = "ongoing"
+    ENDED = "ended"
+
+
 class BookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"

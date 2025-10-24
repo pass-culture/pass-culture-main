@@ -7,7 +7,7 @@ import pytest
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.repository as providers_api
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings import models as booking_models
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.geography.factories import AddressFactory
@@ -264,7 +264,9 @@ class GetBookingsTest:
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
-        booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
+        booking_factories.BookingFactory(
+            stock=stock, user=ongoing_booking.user, status=booking_models.BookingStatus.CANCELLED
+        )
         client = client.with_token(ongoing_booking.user.email)
         with assert_num_queries(2):
             # select user, booking
@@ -398,6 +400,329 @@ class GetBookingsTest:
 
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["venue"]["isOpenToPublic"] is True
+
+
+class GetBookingsListTest:
+    identifier = "pascal.ture@example.com"
+
+    def test_get_bookings_list_returns_ongoing_bookings(self, client):
+        OFFER_URL = "https://demo.pass/some/path?token={token}&email={email}&offerId={offerId}"
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+        venue1 = offerers_factories.VenueFactory(
+            city="Paris",
+            name="fnac",
+            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
+            timezone="Europe/Paris",
+        )
+
+        venue2 = offerers_factories.VenueFactory(
+            city="Marseille",
+            name="fnac",
+            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
+            timezone="Europe/Paris",
+        )
+
+        offer = offers_factories.OfferFactory(
+            venue=venue1,
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.now() + timedelta(days=2),
+            offer=offer,
+        )
+
+        ongoing_booking = booking_factories.BookingFactory(stock=stock, user=user)
+
+        ended_booking_1 = booking_factories.UsedBookingFactory(
+            user=user,
+            stock__offer__venue=venue2,
+            displayAsEnded=True,
+            dateUsed=datetime(2023, 3, 2),
+            stock__offer__url=OFFER_URL,
+            stock__offer__name="ended booking - offer 1",
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            stock__features=["VO"],
+            stock__offer__extraData=None,
+            cancellation_limit_date=datetime(2023, 3, 2),
+        )
+
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+
+        second_activation_code = digital_stock.activationCodes[1]
+
+        ended_booking_2 = booking_factories.UsedBookingFactory(
+            user=user,
+            displayAsEnded=True,
+            stock__offer__name="ended booking - offer 2",
+            stock=digital_stock,
+            activationCode=second_activation_code,
+        )
+
+        ongoing_booking_mediation = offers_factories.MediationFactory(
+            id=1, offer=ongoing_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+        offers_factories.MediationFactory(id=2, offer=ended_booking_1.stock.offer, thumbCount=1, credit="photo credit")
+        offers_factories.MediationFactory(id=3, offer=ended_booking_2.stock.offer, thumbCount=1, credit="photo credit")
+
+        with assert_num_queries(3):  # user + bookings + offer
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ongoing")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+
+        assert booking_response == {
+            "activationCode": ongoing_booking.activationCode,
+            "dateCreated": ongoing_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "id": ongoing_booking.id,
+            "quantity": ongoing_booking.quantity,
+            "stock": {
+                "beginningDatetime": ongoing_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "offer": {
+                    "address": {"timezone": ongoing_booking.stock.offer.offererAddress.address.timezone},
+                    "id": ongoing_booking.stock.offer.id,
+                    "imageUrl": ongoing_booking_mediation.thumbUrl,
+                    "isDigital": ongoing_booking.stock.offer.isDigital,
+                    "isPermanent": ongoing_booking.stock.offer.isPermanent,
+                    "name": ongoing_booking.stock.offer.name,
+                    "subcategoryId": ongoing_booking.stock.offer.subcategoryId,
+                    "venue": {
+                        "city": ongoing_booking.stock.offer.venue.city,
+                        "id": ongoing_booking.stock.offer.venue.id,
+                        "label": ongoing_booking.stock.offer.venue.venueLabel.label,
+                        "name": ongoing_booking.stock.offer.venue.name,
+                        "timezone": ongoing_booking.stock.offer.venue.timezone,
+                    },
+                    "withdrawalDelay": ongoing_booking.stock.offer.withdrawalDelay,
+                    "withdrawalType": ongoing_booking.stock.offer.withdrawalType.value,
+                },
+            },
+        }
+
+    def test_get_bookings_list_returns_ended_bookings(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+
+        paris_timezone = "Europe/Paris"
+        offer = offers_factories.OfferFactory(
+            venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
+                timezone=paris_timezone,
+            ),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.now() + timedelta(days=2),
+            offer=offer,
+        )
+
+        ongoing_booking = booking_factories.BookingFactory(stock=stock, user=user)
+
+        booking_start_date = datetime(2023, 3, 2)
+        ended_booking = booking_factories.UsedBookingFactory(
+            user=user,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=True,
+            dateUsed=booking_start_date,
+            stock__offer__subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalDelay=60 * 30,
+            stock__beginningDatetime=booking_start_date,
+        )
+
+        offers_factories.ActivationCodeFactory(
+            booking=ended_booking,
+            stock=ended_booking.stock,
+            code="ended booking - activation code",
+            expirationDate=booking_start_date + timedelta(days=2),
+        )
+
+        offers_factories.MediationFactory(id=1, offer=ongoing_booking.stock.offer, thumbCount=1, credit="photo credit")
+        ended_booking_mediation = offers_factories.MediationFactory(
+            id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+
+        with assert_num_queries(3):  # user + booking + offer
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+
+        assert booking_response == {
+            "activationCode": {
+                "code": ended_booking.activationCode.code,
+                "expirationDate": ended_booking.activationCode.expirationDate.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            },
+            "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "id": ended_booking.id,
+            "quantity": ended_booking.quantity,
+            "stock": {
+                "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "offer": {
+                    "address": {"timezone": ended_booking.stock.offer.offererAddress.address.timezone},
+                    "id": ended_booking.stock.offer.id,
+                    "imageUrl": ended_booking_mediation.thumbUrl,
+                    "isDigital": ended_booking.stock.offer.isDigital,
+                    "isPermanent": ended_booking.stock.offer.isPermanent,
+                    "name": ended_booking.stock.offer.name,
+                    "subcategoryId": ended_booking.stock.offer.subcategoryId,
+                    "venue": {
+                        "city": ended_booking.stock.offer.venue.city,
+                        "id": ended_booking.stock.offer.venue.id,
+                        "label": ended_booking.stock.offer.venue.venueLabel.label,
+                        "name": ended_booking.stock.offer.venue.name,
+                        "timezone": ended_booking.stock.offer.venue.timezone,
+                    },
+                    "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
+                    "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
+                },
+            },
+        }
+
+    booking_start_date = datetime(2023, 3, 2)
+
+    @pytest.mark.parametrize(
+        "status,cancellationDate,cancellationReason,dateUsed,reimbursementDate",
+        [
+            (booking_models.BookingStatus.USED, None, None, booking_start_date, None),
+            (
+                booking_models.BookingStatus.REIMBURSED,
+                None,
+                None,
+                booking_start_date,
+                booking_start_date + timedelta(days=2),
+            ),
+            (
+                booking_models.BookingStatus.CANCELLED,
+                booking_start_date,
+                booking_models.BookingCancellationReasons.BENEFICIARY,
+                None,
+                None,
+            ),
+        ],
+        ids=["used_booking", "reimbursed_booking", "cancelled_booking"],
+    )
+    def test_get_bookings_list_returns_ended_bookings_when_offer_is_not_permanent(
+        self, client, status, cancellationDate, cancellationReason, dateUsed, reimbursementDate
+    ):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+
+        paris_timezone = "Europe/Paris"
+        offer = offers_factories.OfferFactory(
+            venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
+                timezone=paris_timezone,
+            ),
+            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            withdrawalDelay=60 * 30,
+        )
+
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime.now() + timedelta(days=2),
+            offer=offer,
+        )
+
+        ongoing_booking = booking_factories.BookingFactory(stock=stock, user=user)
+
+        booking_start_date = datetime(2023, 3, 2)
+        ended_booking = booking_factories.UsedBookingFactory(
+            user=user,
+            status=status,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=False,
+            dateUsed=dateUsed,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalDelay=60 * 30,
+            stock__beginningDatetime=booking_start_date,
+            cancellation_limit_date=booking_start_date - timedelta(days=2),
+            cancellation_date=cancellationDate,
+            cancellationReason=cancellationReason,
+            reimbursementDate=reimbursementDate,
+        )
+
+        offers_factories.MediationFactory(id=1, offer=ongoing_booking.stock.offer, thumbCount=1, credit="photo credit")
+        ended_booking_mediation = offers_factories.MediationFactory(
+            id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+
+        with assert_num_queries(3):  # user + booking + offer
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+
+        assert booking_response == {
+            "activationCode": None,
+            "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "id": ended_booking.id,
+            "quantity": ended_booking.quantity,
+            "stock": {
+                "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "offer": {
+                    "address": {"timezone": ended_booking.stock.offer.offererAddress.address.timezone},
+                    "id": ended_booking.stock.offer.id,
+                    "imageUrl": ended_booking_mediation.thumbUrl,
+                    "isDigital": ended_booking.stock.offer.isDigital,
+                    "isPermanent": ended_booking.stock.offer.isPermanent,
+                    "name": ended_booking.stock.offer.name,
+                    "subcategoryId": ended_booking.stock.offer.subcategoryId,
+                    "venue": {
+                        "city": ended_booking.stock.offer.venue.city,
+                        "id": ended_booking.stock.offer.venue.id,
+                        "label": ended_booking.stock.offer.venue.venueLabel.label,
+                        "name": ended_booking.stock.offer.venue.name,
+                        "timezone": ended_booking.stock.offer.venue.timezone,
+                    },
+                    "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
+                    "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
+                },
+            },
+        }
+
+    def test_get_bookings_list_raises_error_when_status_is_unknown(self, client):
+        users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        with assert_num_queries(1):  # user
+            response_to_unknown_status = client.with_token(self.identifier).get("/native/v2/bookings/invalid_status")
+
+        assert response_to_unknown_status.status_code == 404
 
 
 class GetBookingTicketTest:
