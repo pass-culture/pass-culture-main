@@ -38,7 +38,7 @@ describe('IndividualOfferTimetableScreen', () => {
     })
 
     expect(
-      screen.getByRole('radiogroup', { name: /Quand profiter de l’offre/ })
+      screen.getByRole('group', { name: /Quand profiter de l’offre/ })
     ).toBeInTheDocument()
   })
 

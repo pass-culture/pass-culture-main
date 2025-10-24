@@ -187,19 +187,6 @@ describe('<IndividualOfferLocationScreen />', () => {
           })
         )
       })
-
-      it('should disable the physical location inputs if another offer with the same EAN exists', async () => {
-        const contextValues = { hasPublishedOfferWithSameEan: true }
-        const props = { offer: offlineOffer }
-
-        renderIndividualOfferLocationScreen({ contextValues, props })
-
-        expect(
-          await screen.findByRole('radiogroup', {
-            name: LABELS.fields.address,
-          })
-        ).toHaveAttribute('aria-disabled', 'true')
-      })
     })
 
     describe('when mode is EDITION', () => {

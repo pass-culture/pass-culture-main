@@ -46,7 +46,7 @@ describe('<RadioButtonGroup />', () => {
       />
     )
 
-    const radioGroup = screen.getByRole('radiogroup', {
+    const radioGroup = screen.getByRole('group', {
       name: 'Radio Button Group',
     })
     expect(radioGroup).toBeInTheDocument()
