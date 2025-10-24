@@ -98,13 +98,21 @@ def create_highlight() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
+    assert form.availability_timespan.data[0] and form.availability_timespan.data[1]
+    assert form.highlight_timespan.data[0] and form.highlight_timespan.data[1]
+    # We replace the upper time boundary of the timerange with 21:59:59 for two reasons:
+    # - When creating a one-day timerange, both start and end dates from the form are identical.
+    #   If we keep the same time for both, the resulting timerange would be empty.
+    # - We use 21:59:59 instead of 23:59:59 because timeranges are stored in UTC, and this offset
+    #   ensures correct day coverage when converted from Paris local time.
+
     availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
+        start=form.availability_timespan.data[0],
+        end=form.availability_timespan.data[1].replace(hour=21, minute=59, second=59),
     )
     highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
+        start=form.highlight_timespan.data[0],
+        end=form.highlight_timespan.data[1].replace(hour=21, minute=59, second=59),
     )
     highlight = highlights_api.create_highlight(
         name=form.name.data,
@@ -150,13 +158,15 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
         return redirect(url_for(".list_highlights"), code=303)
 
     highlight = get_or_404(highlights_models.Highlight, highlight_id)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
+    assert form.availability_timespan.data[0] and form.availability_timespan.data[1]
+    assert form.highlight_timespan.data[0] and form.highlight_timespan.data[1]
     availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
+        start=form.availability_timespan.data[0],
+        end=form.availability_timespan.data[1].replace(hour=21, minute=59, second=59),
     )
     highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
+        start=form.highlight_timespan.data[0],
+        end=form.highlight_timespan.data[1].replace(hour=21, minute=59, second=59),
     )
     image_as_bytes = None
     image_mimetype = None

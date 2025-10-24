@@ -107,7 +107,7 @@ class CreateHighlightTest(PostEndpointHelper):
         name = "New highlight"
         description = "Highlight description"
         highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
+        highlight_date_to = datetime.date.today() + datetime.timedelta(days=11)
         availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
         availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
         separator = " - "
@@ -136,13 +136,13 @@ class CreateHighlightTest(PostEndpointHelper):
             availability_date_from, datetime.time(0, 0, 0)
         )
         assert highlight.availability_timespan.upper == datetime.datetime.combine(
-            availability_date_to, datetime.time(0, 0, 0)
+            availability_date_to, datetime.time(21, 59, 59)
         )
         assert highlight.highlight_timespan.lower == datetime.datetime.combine(
             highlight_date_from, datetime.time(0, 0, 0)
         )
         assert highlight.highlight_timespan.upper == datetime.datetime.combine(
-            highlight_date_to, datetime.time(0, 0, 0)
+            highlight_date_to, datetime.time(21, 59, 59)
         )
 
     def test_create_highlight_available_after_highlight(self, authenticated_client):
@@ -287,13 +287,13 @@ class UpdateHighlightTest(PostEndpointHelper):
             new_availability_date_from, datetime.time(0, 0, 0)
         )
         assert highlight.availability_timespan.upper == datetime.datetime.combine(
-            new_availability_date_to, datetime.time(0, 0, 0)
+            new_availability_date_to, datetime.time(21, 59, 59)
         )
         assert highlight.highlight_timespan.lower == datetime.datetime.combine(
             new_highlight_date_from, datetime.time(0, 0, 0)
         )
         assert highlight.highlight_timespan.upper == datetime.datetime.combine(
-            new_highlight_date_to, datetime.time(0, 0, 0)
+            new_highlight_date_to, datetime.time(21, 59, 59)
         )
 
     def test_update_highlight_available_after_highlight(self, authenticated_client):
