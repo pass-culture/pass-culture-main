@@ -137,3 +137,7 @@ class UnderageEligibilityWhenAlreadyEighteenException(InvalidEligibilityTypeExce
 
 class PreDecreeEligibilityWhenPostDecreeBeneficiaryException(InvalidEligibilityTypeException):
     pass
+
+
+class MustBePreDecreeEligibilityException(InvalidEligibilityTypeException):
+    pass
