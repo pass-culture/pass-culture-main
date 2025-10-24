@@ -1299,6 +1299,36 @@ class Offerer(
     def identifier(self) -> str | None:
         return self.rid7 or self.siren
 
+    department_codes: sa_orm.Mapped[list[str] | None] = sa_orm.query_expression()
+
+    @classmethod
+    def department_codes_expression(cls) -> ScalarSelect:
+        return (
+            sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.departmentCode)))
+            .select_from(geography_models.Address)
+            .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
+            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .filter(Venue.managingOffererId == Offerer.id)
+            .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
+            .correlate(Offerer)
+            .scalar_subquery()
+        )
+
+    cities: sa_orm.Mapped[list[str] | None] = sa_orm.query_expression()
+
+    @classmethod
+    def cities_expression(cls) -> ScalarSelect:
+        return (
+            sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.city)))
+            .select_from(geography_models.Address)
+            .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
+            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .filter(Venue.managingOffererId == Offerer.id)
+            .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
+            .correlate(Offerer)
+            .scalar_subquery()
+        )
+
     @property
     def confidenceLevel(self) -> "OffererConfidenceLevel | None":
         if not self.confidenceRule:

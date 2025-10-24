@@ -15,6 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
@@ -88,7 +89,12 @@ class GetOffererTest(GetEndpointHelper):
         selected_departments = html_parser.extract_select_options(response.data, "departments", selected_only=True)
         assert set(selected_departments.keys()) == {"04", "05", "06"}
 
-    def test_get_offerer(self, authenticated_client, offerer, offerer_tags):
+    def test_get_offerer(self, authenticated_client, offerer_tags):
+        offerer = offerers_factories.VenueFactory(
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="31", postalCode="31000", city="Toulouse"
+            )
+        ).managingOfferer
         offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[0].id, offererId=offerer.id)
         offerers_factories.OffererTagMappingFactory(tagId=offerer_tags[1].id, offererId=offerer.id)
 
@@ -110,11 +116,10 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Offerer ID : {offerer.id} " in content
         assert f"SIREN : {offerer.siren} " in content
         assert "Région : Occitanie " in content
-        assert f"Ville : {offerer.city} " in content
-        assert f"Code postal : {offerer.postalCode} " in content
-        assert f"Adresse : {offerer.street} " in content
+        assert "Département : 31 " in content
+        assert "Ville : Toulouse " in content
         assert "Peut créer une offre EAC : Oui" in content
-        assert "Présence CB dans les partenaires culturels : 0 OK / 0 KO " in content
+        assert "Présence CB dans les partenaires culturels : 0 OK / 1 KO " in content
         assert "Tags : Collectivité Top acteur " in content
         assert "Validation des offres : Suivre les règles" in content
         badges = html_parser.extract(response.data, tag="span", class_="badge")
@@ -245,7 +250,7 @@ class GetOffererTest(GetEndpointHelper):
         assert f"Validation des offres : {expected_text}" in response_text
 
     def test_get_caledonian_offerer(self, authenticated_client):
-        nc_offerer = offerers_factories.CaledonianOffererFactory()
+        nc_offerer = offerers_factories.CaledonianVenueFactory().managingOfferer
         url = url_for(self.endpoint, offerer_id=nc_offerer.id)
         db.session.expire(nc_offerer)
 
@@ -261,10 +266,45 @@ class GetOffererTest(GetEndpointHelper):
         assert nc_offerer.siren not in content
         assert f"RID7 : {nc_offerer.rid7} " in content
         assert "Région : Nouvelle-Calédonie " in content
-        assert f"Ville : {nc_offerer.city} " in content
-        assert f"Code postal : {nc_offerer.postalCode} " in content
-        assert f"Adresse : {nc_offerer.street} " in content
+        assert "Département : 988 " in content
+        assert "Ville : Nouméa " in content
         assert "Peut créer une offre EAC : Non" in content
+
+    def test_offerer_with_several_locations(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="35", postalCode="35400", city="Saint-Malo"
+            ),
+        )
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="971", postalCode="97110", city="Pointe-à-Pitre"
+            ),
+        )
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="29", postalCode="29200", city="Brest"
+            ),
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert offerer.name in content
+        assert f"Offerer ID : {offerer.id} " in content
+        assert "Régions : Bretagne, Guadeloupe " in content
+        assert "Départements : 29, 35, 971 " in content
+        assert "Villes : Brest, Pointe-à-Pitre, Saint-Malo " in content
 
     @pytest.mark.parametrize(
         "role,has_offers_links,has_bookings_links,adjust_num_queries",
@@ -618,19 +658,9 @@ class UpdateOffererTest(PostEndpointHelper):
 
         old_name = offerer_to_edit.name
         new_name = "Librairie bretonne"
-        old_city = offerer_to_edit.city
-        new_city = "Brest"
-        old_postal_code = offerer_to_edit.postalCode
-        new_postal_code = "29000"
-        expected_new_region = "Bretagne"
-        old_street = offerer_to_edit.street
-        new_street = "1 Rue de Siam"
 
         base_form = {
             "name": new_name,
-            "city": new_city,
-            "postal_code": new_postal_code,
-            "street": new_street,
             "tags": [tag.id for tag in offerer_to_edit.tags],
         }
 
@@ -643,7 +673,6 @@ class UpdateOffererTest(PostEndpointHelper):
 
         # Test region update
         response = authenticated_client.get(expected_url)
-        assert f"Région : {expected_new_region}" in html_parser.content_as_text(response.data)
 
         # Test history
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
@@ -651,27 +680,16 @@ class UpdateOffererTest(PostEndpointHelper):
 
         offerer_to_edit = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
         assert offerer_to_edit.name == new_name
-        assert offerer_to_edit.city == new_city
-        assert offerer_to_edit.postalCode == new_postal_code
-        assert offerer_to_edit.street == new_street
 
         assert len(offerer_to_edit.action_history) == 1
         assert offerer_to_edit.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert offerer_to_edit.action_history[0].authorUser == legit_user
-        assert set(offerer_to_edit.action_history[0].extraData["modified_info"].keys()) == {
-            "name",
-            "city",
-            "postalCode",
-            "street",
-        }
+        assert set(offerer_to_edit.action_history[0].extraData["modified_info"].keys()) == {"name"}
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == "Modification des informations"
         assert f"Nom juridique : {old_name} → {offerer_to_edit.name}" in history_rows[0]["Commentaire"]
-        assert f"Ville : {old_city} → {offerer_to_edit.city}" in history_rows[0]["Commentaire"]
-        assert f"Code postal : {old_postal_code} → {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
-        assert f"Adresse : {old_street} → {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
         assert len(testing.sendinblue_requests) == 4
         assert {sendinblue_request["email"] for sendinblue_request in testing.sendinblue_requests} == {
@@ -682,9 +700,7 @@ class UpdateOffererTest(PostEndpointHelper):
         }
 
     def test_update_offerer_tags(self, legit_user, authenticated_client):
-        offerer_to_edit = offerers_factories.OffererFactory(
-            street="Place de la Liberté", postalCode="29200", city="Brest"
-        )
+        offerer_to_edit = offerers_factories.OffererFactory()
         tag1 = offerers_factories.OffererTagFactory(label="Premier tag")
         tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
         tag3 = offerers_factories.OffererTagFactory(label="Troisième tag")
@@ -693,9 +709,6 @@ class UpdateOffererTest(PostEndpointHelper):
 
         base_form = {
             "name": offerer_to_edit.name,
-            "city": offerer_to_edit.city,
-            "postal_code": offerer_to_edit.postalCode,
-            "street": offerer_to_edit.street,
             "tags": [tag2.id, tag3.id],
         }
 
@@ -706,18 +719,13 @@ class UpdateOffererTest(PostEndpointHelper):
         history_url = url_for("backoffice_web.offerer.get_history", offerer_id=offerer_to_edit.id)
         history_response = authenticated_client.get(history_url)
 
-        updated_offerer = db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
-        assert updated_offerer.city == "Brest"
-        assert updated_offerer.postalCode == "29200"
-        assert updated_offerer.street == "Place de la Liberté"
+        db.session.query(offerers_models.Offerer).filter_by(id=offerer_to_edit.id).one()
 
         history_rows = html_parser.extract_table_rows(history_response.data)
         assert len(history_rows) == 1
         assert history_rows[0]["Type"] == "Modification des informations"
         assert history_rows[0]["Auteur"] == legit_user.full_name
         assert "Premier tag → Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
-        for item in ("Adresse", "Code postal", "Ville"):
-            assert item not in history_rows[0]["Commentaire"]
 
         assert len(testing.sendinblue_requests) == 1
         assert testing.sendinblue_requests[0]["email"] == venue.bookingEmail
@@ -727,9 +735,6 @@ class UpdateOffererTest(PostEndpointHelper):
 
         base_form = {
             "name": "",
-            "city": offerer.city,
-            "postal_code": offerer.postalCode,
-            "street": offerer.street,
             "tags": [],
         }
 
@@ -2140,6 +2145,9 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 offerer__validationStatus=ValidationStatus.NEW,
                 user__phoneNumber="+33610203040",
             )
+            offerer = user_offerer.offerer
+            offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Marseille")
+            offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__city="Lyon")
             tag = offerers_factories.OffererTagFactory(label="Magic Tag")
             category = (
                 db.session.query(offerers_models.OffererTagCategory)
@@ -2147,21 +2155,21 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 .one()
             )
             offerers_factories.OffererTagCategoryMappingFactory(tagId=tag.id, categoryId=category.id)
-            offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=user_offerer.offerer.id)
+            offerers_factories.OffererTagMappingFactory(tagId=tag.id, offererId=offerer.id)
 
             other_category_tag = offerers_factories.OffererTagFactory(label="Festival")
             other_category = offerers_factories.OffererTagCategoryFactory(name="spectacle", label="Spectacles")
             offerers_factories.OffererTagCategoryMappingFactory(
                 tagId=other_category_tag.id, categoryId=other_category.id
             )
-            offerers_factories.OffererTagMappingFactory(tagId=other_category_tag.id, offererId=user_offerer.offerer.id)
+            offerers_factories.OffererTagMappingFactory(tagId=other_category_tag.id, offererId=offerer.id)
 
             commenter = users_factories.AdminFactory(firstName="Inspecteur", lastName="Validateur")
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 10, 3, 12, 0),
                 actionType=history_models.ActionType.OFFERER_NEW,
                 authorUser=commenter,
-                offerer=user_offerer.offerer,
+                offerer=offerer,
                 user=user_offerer.user,
                 comment=None,
             )
@@ -2169,21 +2177,21 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 actionDate=datetime.datetime(2022, 10, 3, 13, 1),
                 actionType=history_models.ActionType.COMMENT,
                 authorUser=commenter,
-                offerer=user_offerer.offerer,
+                offerer=offerer,
                 comment="Bla blabla",
             )
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 10, 3, 14, 2),
                 actionType=history_models.ActionType.OFFERER_PENDING,
                 authorUser=commenter,
-                offerer=user_offerer.offerer,
+                offerer=offerer,
                 comment="Houlala",
             )
             history_factories.ActionHistoryFactory(
                 actionDate=datetime.datetime(2022, 10, 3, 15, 3),
                 actionType=history_models.ActionType.USER_OFFERER_VALIDATED,
                 authorUser=commenter,
-                offerer=user_offerer.offerer,
+                offerer=offerer,
                 user=user_offerer.user,
                 comment=None,
             )
@@ -2194,18 +2202,18 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             rows = html_parser.extract_table_rows(response.data)
             assert len(rows) == 1
-            assert rows[0]["ID"] == str(user_offerer.offerer.id)
-            assert rows[0]["Nom"] == user_offerer.offerer.name
+            assert rows[0]["ID"] == str(offerer.id)
+            assert rows[0]["Nom"] == offerer.name
             assert rows[0]["État"] == "Nouvelle"
             assert tag.label in rows[0]["Tags"]
             assert other_category_tag.label in rows[0]["Tags"]
             assert rows[0]["Date de la demande"] == "03/10/2022"
             assert rows[0]["Documents reçus"] == ""
             assert rows[0]["Dernier commentaire"] == "Houlala"
-            assert rows[0]["SIREN"] == user_offerer.offerer.siren
+            assert rows[0]["SIREN"] == offerer.siren
             assert rows[0]["Email"] == user_offerer.user.email
             assert rows[0]["Responsable"] == user_offerer.user.full_name
-            assert rows[0]["Ville"] == user_offerer.offerer.city
+            assert rows[0]["Ville"] == "Lyon, Marseille"
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")
             assert dms_adage_data == []

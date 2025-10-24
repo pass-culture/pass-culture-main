@@ -18,8 +18,6 @@
   <th>Partenaire technique</th>
   <th>Partenaires culturels synchronisés au partenaire</th>
   <th>SIREN</th>
-  <th>Ville</th>
-  <th>Code postal</th>
   <th>Nombre de clés d'API</th>
   <th>URL du logo</th>
   <th>Actif pour les pros</th>
@@ -34,12 +32,6 @@
       <td>{{ row.is_active_count | format_venue_provider_count }}</td>
       <td>
         {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
-      </td>
-      <td>
-        {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
-      </td>
-      <td>
-        {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
       </td>
       <td>{{ provider.apiKeys | length }}</td>
       <td>{{ provider.logoUrl | empty_string_if_null }}</td>

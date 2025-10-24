@@ -31,9 +31,6 @@ class OffererFactory(BaseFactory):
         model = models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
-    street = "1 boulevard Poissonnière"
-    postalCode = "75002"
-    city = "Paris"
     siren = factory.Sequence(lambda n: siren_utils.complete_siren_or_siret(f"{n + 1:08}"))  # ensures valid format
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
@@ -60,9 +57,6 @@ class ClosedOffererFactory(OffererFactory):
 
 class CaledonianOffererFactory(OffererFactory):
     name = factory.Sequence("Structure calédonienne {}".format)
-    street = "Avenue James Cook"
-    postalCode = "98800"
-    city = "Nouméa"
     siren = factory.Sequence(lambda n: siren_utils.rid7_to_siren(f"2{n + 1:06}"))
     allowedOnAdage = False
 

@@ -33,14 +33,6 @@
                   {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.siren }}{% endif %}
                 </p>
                 <p class="mb-1">
-                  <span class="fw-bold">Code postal :</span>
-                  {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.postalCode }}{% endif %}
-                </p>
-                <p class="mb-1">
-                  <span class="fw-bold">Ville :</span>
-                  {% if provider.offererProvider is not none %}{{ provider.offererProvider.offerer.city }}{% endif %}
-                </p>
-                <p class="mb-1">
                   <span class="fw-bold">Actif pour les pros :</span>
                   {{ provider.enabledForPro | format_bool_badge }}
                 </p>
