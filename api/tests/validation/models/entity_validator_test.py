@@ -51,7 +51,9 @@ class VenueValidationTest:
             siret="12345678901234",
         )
         api_errors = validate(venue)
-        assert api_errors.errors == {"siret": ["Le code SIRET doit correspondre à un établissement de votre structure"]}
+        assert api_errors.errors == {
+            "siret": [f"Le code {venue.identifier_name} doit correspondre à un établissement de votre structure"]
+        }
 
 
 class OfferValidationTest:

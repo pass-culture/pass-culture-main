@@ -12,8 +12,7 @@ import {
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { setInitialFormValues } from './setInitialFormValues'
-import { VenueSettingsScreen } from './VenueSettingsScreen'
+import { VenueSettingsScreen } from './components/VenueSettingsScreen'
 
 const VenueSettings = (): JSX.Element | null => {
   const { venueId } = useParams<{
@@ -54,7 +53,6 @@ const VenueSettings = (): JSX.Element | null => {
         <Spinner />
       ) : (
         <VenueSettingsScreen
-          initialValues={setInitialFormValues({ venue })}
           offerer={offerer}
           venueTypes={venueTypes}
           venue={venue}

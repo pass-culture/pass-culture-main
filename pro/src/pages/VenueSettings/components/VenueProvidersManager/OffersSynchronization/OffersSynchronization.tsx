@@ -5,9 +5,10 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { AddVenueProviderButton } from '@/pages/VenueSettings/VenueProvidersManager/AddVenueProviderButton'
-import style from '@/pages/VenueSettings/VenueProvidersManager/OffersSynchronization/OffersSynchronization.module.scss'
-import { VenueProviderCard } from '@/pages/VenueSettings/VenueProvidersManager/VenueProviderList/VenueProviderCard'
+import { AddVenueProviderButton } from '@/pages/VenueSettings/components/VenueProvidersManager/AddVenueProviderButton'
+import { VenueProviderCard } from '@/pages/VenueSettings/components/VenueProvidersManager/VenueProviderList/VenueProviderCard'
+
+import style from './OffersSynchronization.module.scss'
 
 interface OffersSynchronizationProps {
   venueProviders: VenueProviderResponse[]

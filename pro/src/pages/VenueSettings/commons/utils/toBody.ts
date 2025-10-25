@@ -1,12 +1,15 @@
 import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
-import { unhumanizeSiret } from '@/commons/core/Venue/utils'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
+import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
 
-import type { VenueSettingsFormValues } from './types'
+import type {
+  VenueSettingsFormContext,
+  VenueSettingsFormValues,
+} from '../types'
 
-export const serializeEditVenueBodyModel = (
+export const toBody = (
   formValues: VenueSettingsFormValues,
-  hideSiret: boolean
+  formContext: VenueSettingsFormContext
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
     banId: formValues.banId,
@@ -20,13 +23,15 @@ export const serializeEditVenueBodyModel = (
     inseeCode: formValues.inseeCode,
     publicName: formValues.publicName,
     street: removeQuotes(formValues.street?.trim() ?? ''),
-    siret: unhumanizeSiret(formValues.siret),
+    siret: formContext.isCaledonian
+      ? unhumanizeRidet(formValues.siret, true, true)
+      : unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
     venueTypeCode: formValues.venueType as VenueTypeCode,
     isManualEdition: formValues.manuallySetAddress,
   }
 
-  if (hideSiret) {
+  if (!formContext.withSiret) {
     delete payload.siret
   } else {
     payload.comment = ''
