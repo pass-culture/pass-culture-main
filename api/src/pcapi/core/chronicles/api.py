@@ -97,7 +97,7 @@ def save_chronicle(
     form: typeform.TypeformResponse,
     club_constants: Type[constants.BookClub] | Type[constants.CineClub],
     club_type: models.ChronicleClubType,
-    chronicle_type_id: models.ChronicleProductIdentifierType,
+    product_identifier_type: models.ChronicleProductIdentifierType,
 ) -> None:
     club_name = "Book Club" if club_constants == constants.BookClub else "Cine Club"
 
@@ -147,31 +147,23 @@ def save_chronicle(
         )
 
     product_choice_id = answer_dict.get(product_identifier_field, EMPTY_ANSWER).choice_id
-    products: list[offers_models.Product] = []
-    product_identifier = None
-    if chronicle_type_id == models.ChronicleProductIdentifierType.EAN:
-        product_identifier = _extract_book_club_ean(answer_dict.get(product_identifier_field, EMPTY_ANSWER))
-        if product_identifier:
-            products = (
-                db.session.query(offers_models.Product).filter(offers_models.Product.ean == product_identifier).all()
+
+    match product_identifier_type:
+        case models.ChronicleProductIdentifierType.EAN:
+            product_identifier = _extract_book_club_ean(answer_dict.get(product_identifier_field, EMPTY_ANSWER))
+        case models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            product_identifier = _extract_cine_club_movie_identifier(
+                answer_dict.get(product_identifier_field, EMPTY_ANSWER)
             )
-    elif chronicle_type_id == models.ChronicleProductIdentifierType.ALLOCINE_ID:
-        product_identifier = _extract_cine_club_movie_identifier(
-            answer_dict.get(product_identifier_field, EMPTY_ANSWER)
-        )
-        if product_identifier:
-            products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData.op("->")("allocineId") == product_identifier)
-                .all()
-            )
+        case _:
+            product_identifier = None
 
     try:
         city = None
         if hasattr(club_constants, "CITY_ID"):
             city = answer_dict.get(club_constants.CITY_ID.value, EMPTY_ANSWER).text
 
-        if all((content, product_identifier, form.email)):
+        if content and product_identifier and form.email:
             chronicle = models.Chronicle(
                 age=age,
                 city=city,
@@ -183,10 +175,10 @@ def save_chronicle(
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
-                products=products,
+                products=get_products(product_identifier_type, product_identifier),
                 userId=user_id,
                 isActive=False,
-                productIdentifierType=chronicle_type_id,
+                productIdentifierType=product_identifier_type,
                 productIdentifier=product_identifier,
                 clubType=club_type,
             )
@@ -215,15 +207,67 @@ def save_chronicle(
         mark_transaction_as_invalid()
 
 
+def get_products(
+    product_identifier_type: models.ChronicleProductIdentifierType, product_identifier: str
+) -> list[offers_models.Product]:
+    oldest_existing_chronicle_id = (
+        db.session.query(models.Chronicle.id)
+        .filter(
+            models.Chronicle.productIdentifierType == product_identifier_type,
+            models.Chronicle.productIdentifier == product_identifier,
+        )
+        .order_by(models.Chronicle.id.desc())
+        .limit(1)
+        .scalar()
+    )
+
+    # if it is not the first product on this products identifier, ignore the product identifier and
+    # use the same products as the other chronicles
+    if oldest_existing_chronicle_id:
+        return (
+            db.session.query(offers_models.Product)
+            .join(models.ProductChronicle, offers_models.Product.id == models.ProductChronicle.productId)
+            .filter(models.ProductChronicle.chronicleId == oldest_existing_chronicle_id)
+            .options(sa.orm.load_only(offers_models.Product.id))
+            .all()
+        )
+
+    # if it is the first chronicle on this product identifier
+    match product_identifier_type:
+        case models.ChronicleProductIdentifierType.EAN:
+            return (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.ean == product_identifier)
+                .options(sa.orm.load_only(offers_models.Product.id))
+                .all()
+            )
+
+        case models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            return (
+                db.session.query(offers_models.Product)
+                .filter(offers_models.Product.extraData.op("->")("allocineId") == product_identifier)
+                .options(sa.orm.load_only(offers_models.Product.id))
+                .all()
+            )
+        case _:
+            return []
+
+
 def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:
     save_chronicle(
-        form, constants.BookClub, models.ChronicleClubType.BOOK_CLUB, models.ChronicleProductIdentifierType.EAN
+        form=form,
+        club_constants=constants.BookClub,
+        club_type=models.ChronicleClubType.BOOK_CLUB,
+        product_identifier_type=models.ChronicleProductIdentifierType.EAN,
     )
 
 
 def save_cine_club_chronicle(form: typeform.TypeformResponse) -> None:
     save_chronicle(
-        form, constants.CineClub, models.ChronicleClubType.CINE_CLUB, models.ChronicleProductIdentifierType.ALLOCINE_ID
+        form=form,
+        club_constants=constants.CineClub,
+        club_type=models.ChronicleClubType.CINE_CLUB,
+        product_identifier_type=models.ChronicleProductIdentifierType.ALLOCINE_ID,
     )
 
 
