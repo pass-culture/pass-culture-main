@@ -170,12 +170,12 @@ class Returns200Test:
 
         link = offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         offerers_factories.VenueBankAccountLinkFactory(venue=deleted_venue, bankAccount=link.bankAccount)
+        client = client.with_session_auth(email=user_offerer.user.email)
 
         deleted_venue.isSoftDeleted = True  # can't be set before creating link
         db.session.add(deleted_venue)
         db.session.commit()
 
-        client = client.with_session_auth(email=user_offerer.user.email)
         response = client.patch(f"/venues/{venue.id}/collective-data", json={})
 
         assert response.status_code == 200
