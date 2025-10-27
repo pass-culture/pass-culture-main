@@ -13,7 +13,6 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
 import pcapi.notifications.push.testing as notifications_testing
 from pcapi import settings
-from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.geography.factories import AddressFactory
@@ -1241,12 +1240,10 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(product=product)
         artist_1 = artists_factories.ArtistFactory()
         artist_2 = artists_factories.ArtistFactory()
-        artists_factories.ArtistProductLinkFactory(
-            artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
-        )
-        artists_factories.ArtistProductLinkFactory(
-            artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.AUTHOR
-        )
+        artist_3 = artists_factories.ArtistFactory(is_blacklisted=True)
+        artists_factories.ArtistProductLinkFactory(artist_id=artist_1.id, product_id=product.id)
+        artists_factories.ArtistProductLinkFactory(artist_id=artist_2.id, product_id=product.id)
+        artists_factories.ArtistProductLinkFactory(artist_id=artist_3.id, product_id=product.id)
 
         offer_id = offer.id
         with assert_num_queries(self.base_num_queries + self.num_queries_with_product):
