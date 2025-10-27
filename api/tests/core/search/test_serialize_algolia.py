@@ -439,6 +439,18 @@ def test_serialize_offer_artists():
     assert serialized["artists"] == [{"id": artist.id, "name": artist.name, "image": artist.thumbUrl}]
 
 
+def test_exclude_blacklisted_artists():
+    artist = artists_factories.ArtistFactory(is_blacklisted=True)
+    product = offers_factories.ProductFactory()
+    offer = offers_factories.OfferFactory(product=product)
+    artists_factories.ArtistProductLinkFactory(
+        artist_id=artist.id, product_id=product.id, artist_type=artists_models.ArtistType.AUTHOR
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert "artists" not in serialized
+
+
 def test_filter_artists():
     offer = offers_factories.OfferFactory(
         extraData={
