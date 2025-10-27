@@ -253,6 +253,45 @@ class SaveBookClubChronicleTest:
         assert chronicle.externalId == form.response_id
         assert chronicle.userId is None
 
+    def test_save_book_club_chronicle_with_previous_chronicle(self):
+        ean = "1234567890123"
+        ean_choice_id = random_string()
+        related_product = offers_factories.ProductFactory(ean=ean)
+        unrelated_product = offers_factories.ProductFactory()
+
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=ean,
+            productIdentifierType=models.ChronicleProductIdentifierType.EAN,
+            identifierChoiceId=ean_choice_id,
+            products=[related_product, unrelated_product],
+        )
+
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=ean_choice_id,
+                    text=ean,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).filter(models.Chronicle.id != old_chronicle.id).first()
+        assert len(chronicle.products) == 2
+        assert related_product in chronicle.products
+        assert unrelated_product in chronicle.products
+
     def test_do_not_save_book_club_chronicle_without_email(self):
         form = typeform.TypeformResponse(
             response_id=random_string(),
@@ -676,6 +715,45 @@ class SaveCineClubChronicleTest:
         assert not chronicle.isActive
         assert chronicle.externalId == form.response_id
         assert chronicle.userId is None
+
+    def test_save_cine_club_chronicle_with_previous_chronicle(self):
+        allocine_id = "1000013191"
+        identifier_choice_id = random_string()
+        related_product = offers_factories.ProductFactory(extraData={"allocineId": allocine_id})
+        unrelated_product = offers_factories.ProductFactory()
+
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=allocine_id,
+            productIdentifierType=models.ChronicleProductIdentifierType.ALLOCINE_ID,
+            identifierChoiceId=identifier_choice_id,
+            products=[related_product, unrelated_product],
+        )
+
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.MOVIE_ID.value,
+                    choice_id=identifier_choice_id,
+                    text=f"Movie Title - {allocine_id} (sort le 25 mars)",
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.CineClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_cine_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).filter(models.Chronicle.id != old_chronicle.id).first()
+        assert len(chronicle.products) == 2
+        assert related_product in chronicle.products
+        assert unrelated_product in chronicle.products
 
     def test_do_not_save_cine_club_chronicle_without_email(self):
         form = typeform.TypeformResponse(
