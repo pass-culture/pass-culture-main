@@ -277,7 +277,11 @@ class BaseOfferResponseGetterDict(GetterDict):
             }
 
         if key == "artists":
-            return [OfferArtist.from_orm(artist) for artist in product.artists] if product else []
+            return (
+                [OfferArtist.from_orm(artist) for artist in product.artists if not artist.is_blacklisted]
+                if product
+                else []
+            )
 
         if key == "expense_domains":
             return get_expense_domains(offer)
