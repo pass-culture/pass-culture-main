@@ -60,33 +60,25 @@ jobs:
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
 
-  build-pcapi:
+  build-images:
+    name: Build Docker images
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
-      image: pcapi
+      image: ${{ matrix.image }}
       tag: ${{ inputs.tag_number }}
 
-  push-pcapi:
-    needs: build-pcapi
+  push-images:
+    name: Push Docker images
+    needs: [build-images]
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
-      image: pcapi
-      tag: ${{ inputs.tag_number }}
-    secrets:
-      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
-  build-pcapi-console:
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
-    with:
-      image: pcapi-console
-      tag: ${{ inputs.tag_number }}
-
-  push-pcapi-console:
-    needs: build-pcapi-console
-    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
-    with:
-      image: pcapi-console
+      image: ${{ matrix.image }}
       tag: ${{ inputs.tag_number }}
     secrets:
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -94,9 +86,7 @@ jobs:
 
   tag-and-push-release:
     runs-on: ubuntu-22.04
-    needs:
-      - push-pcapi
-      - push-pcapi-console
+    needs: [push-images]
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
       GIT_CONFIG_NAME: ${{ github.actor }}
