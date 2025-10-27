@@ -85,8 +85,8 @@ def get_create_highlight_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.highlights.create_highlight"),
         div_id="create-highlight",  # must be consistent with parameter passed to build_lazy_modal
-        title="Créer un temps fort",
-        button_text="Créer le temps fort",
+        title="Créer une valorisation",
+        button_text="Créer la valorisation",
     )
 
 
@@ -117,7 +117,7 @@ def create_highlight() -> utils.BackofficeResponse:
     db.session.add(highlight)
     db.session.flush()
 
-    flash(Markup("Le temps fort <b>{name}</b> a été créé.").format(name=highlight.name), "success")
+    flash(Markup("La valorisation thématique <b>{name}</b> a été créée.").format(name=highlight.name), "success")
 
     return redirect(url_for(".list_highlights"), code=303)
 
@@ -134,7 +134,7 @@ def get_update_highlight_form(highlight_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.highlights.update_highlight", highlight_id=highlight_id),
         div_id=f"update-highlight-{highlight_id}",  # must be consistent with parameter passed to build_lazy_modal
-        title="Modifier le temps fort",
+        title="Modifier la valorisation",
         button_text="Enregistrer",
         target_id=f"#highlight-{highlight_id}",
     )
@@ -176,7 +176,9 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
     db.session.flush()
 
     flash(
-        Markup("Le temps fort <b>{highlight_name}</b> a été mis à jour").format(highlight_name=highlight.name),
+        Markup("La valorisation thématique <b>{highlight_name}</b> a été mise à jour").format(
+            highlight_name=highlight.name
+        ),
         "success",
     )
 

@@ -53,7 +53,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VENUE_TAG = "Tag sur le partenaire culturel"
     OFFERER_TAG = "Tag sur l'entité juridique"
     HEADLINE = "Offres à la une"
-    HIGHLIGHT_REQUEST = "Temps fort (demande de participation)"
+    HIGHLIGHT_REQUEST = "Valorisation thématique (demande de participation)"
     VALIDATED_OFFERER = "Entité juridique validée"
     ALLOCINE_ID = "Identifiant Allociné"
 
@@ -232,7 +232,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         field_list_compatibility=True,
     )
     highlight = fields.PCTomSelectField(
-        "Temps forts",
+        "Valorisation thématique",
         multiple=True,
         choices=[],
         validate_choice=False,

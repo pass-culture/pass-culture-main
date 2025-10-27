@@ -769,8 +769,8 @@ def create_offers_with_video_url() -> None:
 def create_highlights() -> None:
     now = date_utils.get_naive_utc_now()
     highlights_factories.HighlightFactory.create(
-        name="Temps fort passé",
-        description="Ceci est un temps fort passé",
+        name="Valorisation passée",
+        description="Ceci est une valorisation passée",
         availability_timespan=db_utils.make_timerange(
             start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=5)
         ),
@@ -779,8 +779,8 @@ def create_highlights() -> None:
         ),
     )
     highlights_factories.HighlightFactory.create(
-        name="Temps fort actuel disponible",
-        description="Ceci est un temps fort actuel, auquel les acteurices culturelles peuvent proposer des offres",
+        name="Valorisation actuelle disponible",
+        description="Ceci est une valorisation actuelle, à laquelle les acteurices culturelles peuvent proposer des offres",
         availability_timespan=db_utils.make_timerange(
             start=now - datetime.timedelta(days=10), end=now + datetime.timedelta(days=10)
         ),
@@ -789,8 +789,8 @@ def create_highlights() -> None:
         ),
     )
     highlights_factories.HighlightFactory.create(
-        name="Temps fort actuel non disponible",
-        description="Ceci est un temps fort actuel, auquel les acteurices culturelles ne peuvent plus proposer des offres",
+        name="Valorisation actuelle non disponible",
+        description="Ceci est un valorisation actuelle, à laquelle les acteurices culturelles ne peuvent plus proposer des offres",
         availability_timespan=db_utils.make_timerange(
             start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=1)
         ),
