@@ -263,8 +263,7 @@ export class DefaultService {
       },
       errors: {
         401: `Authentification nécessaire`,
-        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
-        404: `La contremarque n'existe pas`,
+        404: `La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder.`,
         410: `La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié`,
         422: `Unprocessable Content`,
       },
@@ -408,8 +407,7 @@ export class DefaultService {
       },
       errors: {
         401: `Authentification nécessaire`,
-        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
-        404: `La contremarque n'existe pas`,
+        404: `La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder.`,
         410: `Cette contremarque a été validée.
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Content`,
@@ -433,8 +431,7 @@ export class DefaultService {
       },
       errors: {
         401: `Authentification nécessaire`,
-        403: `Vous n'avez pas les droits nécessaires pour voir cette contremarque`,
-        404: `La contremarque n'existe pas`,
+        404: `La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder.`,
         410: `Cette contremarque a été validée.
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Content`,
