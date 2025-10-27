@@ -1,0 +1,35 @@
+
+title = "pass Culture gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "ignore lines containing gitleaks:ignore"
+regexTarget = "line"
+regexes = '''gitleaks:ignore'''
+
+[[rules]]
+id = "discord-bot-token"
+description = "Detected a Discord Bot token, potentially compromising a Discord Bot."
+regex = '''\b[\w-]{26}\.[\w-]{6}\.[\w-]{38}\b'''
+
+[[rules]]
+id = "pc-api-key"
+description = "Detected a pass Culture API key"
+regex = '''\b(?:integration|production)_[a-fA-F0-9]{12}_[a-fA-F0-9]{64}\b'''
+keywords = [
+    "integration",
+    "production"
+    ]
+
+[[rules]]
+id = "pc-api-secret"
+description = "Detected a pass Culture API key secret"
+regex = '''\b[\w-]{86}\b'''
+entropy = 4.5
+
+[[rules]]
+id = "pc-email"
+description = "Detected a pass Culture email"
+regex = '''\b.*@passculture\.app\b'''
