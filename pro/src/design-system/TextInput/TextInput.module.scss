@@ -85,6 +85,7 @@ $icon-dimension: rem.torem(24px);
 .input:disabled {
   border-color: var(--color-border-disabled);
   background-color: var(--color-background-disabled);
+  color: var(--color-text-disabled);
 }
 
 //  EXTENSION
