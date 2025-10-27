@@ -123,7 +123,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
     with:
-      PCAPI_DOCKER_TAG: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      PCAPI_DOCKER_TAG: ${{ github.sha }}
       TRIGGER_ONLY_ON_API_CHANGE: false
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
