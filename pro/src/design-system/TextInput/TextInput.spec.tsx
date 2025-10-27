@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { TextInput, type TextInputProps } from './TextInput'
@@ -52,14 +53,16 @@ describe('TextInput', () => {
     expect(screen.queryByText('*')).not.toBeInTheDocument()
   })
 
-  it('should show the characters count', () => {
+  it('should show the characters count', async () => {
     renderTextInput({
       maxCharactersCount: 100,
-      value: 'bonjour',
-      onChange: () => {},
     })
 
-    expect(screen.getByText('7/100')).toBeInTheDocument()
+    expect(screen.getByText('0/100')).toBeInTheDocument()
+
+    await userEvent.type(screen.getByLabelText('Input label'), 'test')
+
+    expect(screen.getByText('4/100')).toBeInTheDocument()
   })
 
   it('should show an icon button', () => {

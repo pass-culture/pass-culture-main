@@ -8,6 +8,7 @@ import {
   useId,
   useImperativeHandle,
   useRef,
+  useState,
 } from 'react'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -82,6 +83,8 @@ export const TextInput = forwardRef(
 
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
+    const [currentCharactersCount, setCurrentCharactersCount] = useState(0)
+
     return (
       <div
         className={classNames(styles['container'], {
@@ -116,7 +119,10 @@ export const TextInput = forwardRef(
             aria-required={required}
             ref={inputRef}
             name={name}
-            onChange={onChange}
+            onChange={(e) => {
+              setCurrentCharactersCount(e.target.value.length)
+              onChange?.(e)
+            }}
             onBlur={onBlur}
             onKeyDown={onKeyDown}
             value={value}
@@ -139,7 +145,9 @@ export const TextInput = forwardRef(
                 ? {
                     max: maxCharactersCount,
                     current:
-                      value?.length || inputRef.current?.value.length || 0,
+                      value?.length ||
+                      inputRef?.current?.value.length ||
+                      currentCharactersCount,
                   }
                 : undefined
             }
