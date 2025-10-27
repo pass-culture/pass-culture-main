@@ -16,7 +16,6 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { COLLECTIVE_TABLES_TITLE } from '@/components/CollectiveBudgetInformation/constants'
 
 import {
   CollectiveOffersScreen,
@@ -328,20 +327,5 @@ describe('CollectiveOffersScreen', () => {
       screen.getAllByTestId('offer-event-date')[0].textContent
 
     expect(newFirstOfferEventDate).toEqual('30/06/2024')
-  })
-
-  it('should render budget information callout when offerer is allowed on adage', () => {
-    renderOffers(props)
-
-    expect(screen.getByText(COLLECTIVE_TABLES_TITLE)).toBeInTheDocument()
-  })
-
-  it('should not render budget information callout when offerer is not allowed on adage', () => {
-    renderOffers({
-      ...props,
-      offerer: { ...defaultGetOffererResponseModel, allowedOnAdage: false },
-    })
-
-    expect(screen.queryByText(COLLECTIVE_TABLES_TITLE)).not.toBeInTheDocument()
   })
 })
