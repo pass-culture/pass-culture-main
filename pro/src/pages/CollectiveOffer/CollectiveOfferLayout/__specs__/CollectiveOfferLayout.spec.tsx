@@ -8,7 +8,6 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { COLLECTIVE_OFFER_CREATION_TITLE } from '@/components/CollectiveBudgetInformation/constants'
 
 import {
   CollectiveOfferLayout,
@@ -89,25 +88,5 @@ describe('CollectiveOfferLayout', () => {
     })
 
     expect(title).toBeInTheDocument()
-  })
-
-  it('should render budget information callout when creating offer', () => {
-    renderCollectiveOfferLayout('/offre/A1/collectif/', {
-      isCreation: true,
-    })
-
-    expect(
-      screen.getByText(COLLECTIVE_OFFER_CREATION_TITLE)
-    ).toBeInTheDocument()
-  })
-
-  it('should not render budget information callout when reading offer', () => {
-    renderCollectiveOfferLayout('/offre/A1/collectif/', {
-      isCreation: false,
-    })
-
-    expect(
-      screen.queryByText(COLLECTIVE_OFFER_CREATION_TITLE)
-    ).not.toBeInTheDocument()
   })
 })

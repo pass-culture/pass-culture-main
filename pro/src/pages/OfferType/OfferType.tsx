@@ -2,8 +2,6 @@ import { useLocation } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/OnboardingLayout'
-import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
-import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
 
@@ -14,7 +12,6 @@ export const OfferType = (): JSX.Element => {
 
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const allowedOnAdage = useIsAllowedOnAdage()
 
   const mainHeading = `Créer une offre${collectiveOnly ? ' collective' : ''}`
   const children = <OfferTypeScreen collectiveOnly={collectiveOnly} />
@@ -29,9 +26,6 @@ export const OfferType = (): JSX.Element => {
     </OnboardingLayout>
   ) : (
     <BasicLayout mainHeading={mainHeading} isStickyActionBarInChild>
-      {allowedOnAdage && (
-        <CollectiveBudgetCallout pageName="offer-creation-hub" />
-      )}
       {children}
     </BasicLayout>
   )

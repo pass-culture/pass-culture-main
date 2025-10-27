@@ -8,7 +8,6 @@ import type {
 } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
-import { CollectiveBudgetCallout } from '@/components/CollectiveBudgetInformation/CollectiveBudgetCallout'
 import { HelpLink } from '@/components/HelpLink/HelpLink'
 import { Tag } from '@/design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
@@ -71,12 +70,6 @@ export const CollectiveOfferLayout = ({
       mainSubHeading={subTitle}
       isStickyActionBarInChild
     >
-      {allowedOnAdage && isCreation && (
-        <CollectiveBudgetCallout
-          pageName={isTemplate ? 'template-offer-creation' : 'offer-creation'}
-        />
-      )}
-
       {!allowedOnAdage ? null : navigationProps.isCreatingOffer ? (
         <CollectiveCreationOfferNavigation
           activeStep={navigationProps.activeStep}
