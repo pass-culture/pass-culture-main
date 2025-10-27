@@ -55,6 +55,7 @@
       "!coverage",
       "!scripts/customRequest.ts",
       "!src/apiClient/adage",
+      "!src/index.html",
       "!src/apiClient/v1",
       "!**/*.stories.tsx"
     ],
@@ -237,6 +238,7 @@
 
     {
       "includes": [
+        "!src/index.html",
         ".templatron/**/*.mjs",
         "cypress/**/*.ts",
         "src/**/__mocks__/*.ts",
