@@ -591,6 +591,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                     artist_models.Artist.id,
                     artist_models.Artist.name,
                     artist_models.Artist.image,
+                    artist_models.Artist.is_blacklisted,
                     artist_models.Artist.computed_image,
                 )
             )

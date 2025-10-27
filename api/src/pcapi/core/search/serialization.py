@@ -149,6 +149,7 @@ class AlgoliaSerializationMixin:
                     "name": artist.name,
                 }
                 for artist in offer.product.artists
+                if not artist.is_blacklisted
             ]
             if offer.product and offer.product.artists
             else None
