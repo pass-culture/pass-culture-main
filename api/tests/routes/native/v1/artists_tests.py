@@ -32,10 +32,18 @@ class GetArtistsTest:
         assert response.json["image"] is None
 
     def test_get_non_existent_artist(self, client):
-        artist_factories.ArtistFactory()
-
         artist_id = "123-test-3a2b"
         nb_queries = 1
+        with assert_num_queries(nb_queries):
+            response = client.get(f"/native/v1/artists/{artist_id}")
+
+        assert response.status_code == 404
+
+    def test_get_blacklisted_artist(self, client):
+        artist = artist_factories.ArtistFactory(is_blacklisted=True)
+
+        artist_id = artist.id
+        nb_queries = 1  # artist
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v1/artists/{artist_id}")
 

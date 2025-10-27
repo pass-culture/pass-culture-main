@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(response_model=serializers.ArtistResponse, api=blueprint.api, on_error_statuses=[404])
 def get_artist(artist_id: str) -> serializers.ArtistResponse:
     artist = db.session.query(Artist).filter(Artist.id == artist_id).one_or_none()
-    if not artist:
+    if not artist or artist.is_blacklisted:
         abort(404)
 
     return serializers.ArtistResponse(
