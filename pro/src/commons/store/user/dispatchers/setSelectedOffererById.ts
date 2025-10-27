@@ -16,7 +16,7 @@ import { setSelectedVenue, setVenues, updateUserAccess } from '../reducer'
 import { ensureVenues } from '../selectors'
 
 export const setCurrentOffererById = createAsyncThunk<
-  void,
+  boolean,
   { nextCurrentOffererId: number | string; shouldRefetch?: boolean },
   AppThunkApiConfig
 >(
@@ -29,7 +29,7 @@ export const setCurrentOffererById = createAsyncThunk<
       const state = getState()
       const previousSelectedOfferer = state.offerer.currentOfferer
       if (Number(nextCurrentOffererId) === previousSelectedOfferer?.id) {
-        return
+        return false
       }
 
       const venues = shouldRefetch
@@ -69,6 +69,7 @@ export const setCurrentOffererById = createAsyncThunk<
 
       localStorage.setItem(SAVED_OFFERER_ID_KEY, String(nextCurrentOfferer.id))
       localStorage.setItem(SAVED_VENUE_ID_KEY, String(nextSelectedVenue.id))
+      return true
     } catch (err: unknown) {
       if (isErrorAPIError(err) && err.status === 403) {
         // Do nothing at this point,
@@ -76,7 +77,7 @@ export const setCurrentOffererById = createAsyncThunk<
         // But we must let him sign in
         dispatch(updateUserAccess('unattached'))
 
-        return
+        return true
       }
 
       throw err
