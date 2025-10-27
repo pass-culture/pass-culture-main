@@ -917,12 +917,13 @@ class UpdateVenueTest(PostEndpointHelper):
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
-            siret=old_siret,
             managingOfferer=offerer,
+            siret=old_siret,
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
             name="Venue Name",
+            isOpenToPublic=True,
         )
 
         data = {
