@@ -137,7 +137,7 @@ MENU_SECTIONS = [
                 permissions=["READ_TAGS"],
             ),
             MenuItem(
-                label="Temps forts",
+                label="Valorisations thématiques",
                 url_name="backoffice_web.highlights.list_highlights",
                 permissions=["READ_HIGHLIGHT"],
             ),
