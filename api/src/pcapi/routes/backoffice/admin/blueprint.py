@@ -28,8 +28,12 @@ from . import forms
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles() -> utils.BackofficeResponse:
-    roles = perm_api.list_roles()
-    roles.sort(key=lambda role: role.name)
+    roles = (
+        db.session.query(perm_models.Role)
+        .options(sa_orm.joinedload(perm_models.Role.permissions))
+        .order_by(perm_models.Role.name)
+        .all()
+    )
 
     roles_for_permissions = (
         db.session.query(perm_models.Permission.name, sa.func.array_agg(perm_models.Role.name))
@@ -52,10 +56,14 @@ def get_roles() -> utils.BackofficeResponse:
 @blueprint.backoffice_web.route("/admin/roles-matrix", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def get_roles_management() -> utils.BackofficeResponse:
-    roles = perm_api.list_roles()
-    roles.sort(key=lambda role: role.name)
-    permissions = perm_api.list_permissions()
-    permissions.sort(key=lambda perm: perm.name)
+    roles = (
+        db.session.query(perm_models.Role)
+        .options(sa_orm.joinedload(perm_models.Role.permissions))
+        .order_by(perm_models.Role.name)
+        .all()
+    )
+
+    permissions = db.session.query(perm_models.Permission).order_by(perm_models.Permission.name).all()
     perm_forms = {}
 
     forms.EditPermissionForm.setup_form_fields(permissions)
@@ -90,7 +98,16 @@ def get_roles_history() -> utils.BackofficeResponse:
 @blueprint.backoffice_web.route("/admin/roles/<int:role_id>", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def update_role(role_id: int) -> utils.BackofficeResponse:
-    permissions = perm_api.list_permissions()
+    role = (
+        db.session.query(perm_models.Role)
+        .options(sa_orm.joinedload(perm_models.Role.permissions))
+        .filter(perm_models.Role.id == role_id)
+        .one_or_none()
+    )
+    if not role:
+        raise NotFound()
+
+    permissions = db.session.query(perm_models.Permission).all()
 
     forms.EditPermissionForm.setup_form_fields(permissions)
 
@@ -104,13 +121,10 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
         if perm_form._fields[perm.name].data:
             new_permissions_ids.append(perm.id)
 
-    roles = {role.id: role for role in perm_api.list_roles()}
-    role_name = roles[role_id].name
-
     perm_api.update_role(
-        role_id, role_name, tuple(new_permissions_ids), author=current_user, comment=perm_form.comment.data
+        role_id, role.name, tuple(new_permissions_ids), author=current_user, comment=perm_form.comment.data
     )
-    flash(Markup("Le rôle <b>{name}</b> a été mis à jour").format(name=role_name), "success")
+    flash(Markup("Le rôle <b>{name}</b> a été mis à jour").format(name=role.name), "success")
 
     return redirect(url_for(".get_roles", active_tab="management"), code=303)
 

@@ -17,7 +17,8 @@ def upsert_roles(
     if not user.backoffice_profile.roles:
         user.backoffice_profile.roles = []
 
-    concrete_roles = perm_api.get_concrete_roles(roles)
+    names = [role.value for role in roles]
+    concrete_roles = db.session.query(perm_models.Role).filter(perm_models.Role.name.in_(names)).all()
     user.backoffice_profile.roles = concrete_roles
 
     return user.backoffice_profile
