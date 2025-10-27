@@ -121,7 +121,13 @@ export const Validation = (): JSX.Element | undefined => {
           nextCurrentOffererId: createdOfferer.id,
           shouldRefetch: true,
         })
-      ).unwrap()
+      )
+        .unwrap()
+        .then((didChangeAccess) => {
+          if (!didChangeAccess) {
+            navigate('/accueil')
+          }
+        })
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
         notify.error(RECAPTCHA_ERROR_MESSAGE)
