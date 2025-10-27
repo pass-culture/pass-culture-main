@@ -10,7 +10,6 @@ class PermissionFactory(BaseFactory):
         model = perm_models.Permission
 
     name = factory.Sequence(lambda n: f"permission #{n:04}")
-    category: str | None = None
 
 
 class RoleFactory(BaseFactory):

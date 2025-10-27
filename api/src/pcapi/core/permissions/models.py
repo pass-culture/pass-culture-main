@@ -155,10 +155,10 @@ class RolePermission(PcObject, Model):
 
     __tablename__ = "role_permission"
     roleId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=True
+        sa.BigInteger, sa.ForeignKey("role.id", ondelete="CASCADE"), nullable=False
     )
     permissionId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"), nullable=True
+        sa.BigInteger, sa.ForeignKey("permission.id", ondelete="CASCADE"), nullable=False
     )
     __table_args__ = (sa.UniqueConstraint("roleId", "permissionId", name="role_permission_roleId_permissionId_key"),)
 
@@ -167,7 +167,6 @@ class Permission(PcObject, Model):
     __tablename__ = "permission"
 
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(length=140), nullable=False, unique=True)
-    category: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(140), nullable=True, default=None)
     roles: sa_orm.Mapped[list["Role"]] = sa_orm.relationship(
         "Role", secondary=RolePermission.__table__, back_populates="permissions"
     )

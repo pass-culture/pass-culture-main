@@ -8760,17 +8760,6 @@ INSERT INTO public.role VALUES (24, 'communication');
 -- Data for Name: role_permission; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-INSERT INTO public.role_permission VALUES (1, NULL, 1);
-INSERT INTO public.role_permission VALUES (1, NULL, 2);
-INSERT INTO public.role_permission VALUES (3, 33, 3);
-INSERT INTO public.role_permission VALUES (17, 34, 4);
-INSERT INTO public.role_permission VALUES (6, 34, 5);
-INSERT INTO public.role_permission VALUES (6, 35, 6);
-INSERT INTO public.role_permission VALUES (4, 36, 7);
-INSERT INTO public.role_permission VALUES (2, 36, 8);
-INSERT INTO public.role_permission VALUES (15, 36, 9);
-INSERT INTO public.role_permission VALUES (10, 36, 10);
-INSERT INTO public.role_permission VALUES (3, 36, 11);
 
 
 --
