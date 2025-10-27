@@ -1,5 +1,4 @@
-import cn from 'classnames'
-import classNames from 'classnames'
+import { default as classNames, default as cn } from 'classnames'
 import { useId } from 'react'
 
 import {

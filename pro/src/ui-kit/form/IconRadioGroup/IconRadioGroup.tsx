@@ -54,7 +54,7 @@ export const IconRadioGroup = ({
     >
       <legend className={styles['icon-radio-group-legend']}>
         {legend}
-        {required && requiredIndicator === 'symbol' && ' *'}
+        {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
       </legend>
       {displayScale && (
         <p className={styles['visually-hidden']} id={scaleId}>
