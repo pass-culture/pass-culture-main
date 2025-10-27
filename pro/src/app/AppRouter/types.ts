@@ -2,6 +2,7 @@ import type { NonIndexRouteObject } from 'react-router'
 
 interface CustomRouteMeta {
   public?: boolean
+  canBePublic?: boolean
   unattachedOnly?: boolean
   canBeUnattached?: boolean
   onboardingOnly?: boolean

@@ -27,7 +27,11 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
         location.pathname === '/' ? '/connexion' : `/connexion?de=${fromUrl}`
 
       return <Navigate to={loginUrl} replace />
-    } else if (userAccess && currentRoute?.meta?.public) {
+    } else if (
+      userAccess &&
+      !currentRoute?.meta?.canBePublic &&
+      currentRoute?.meta?.public
+    ) {
       const redirectUrl =
         searchParams.get('de') ??
         (searchParams ? `/accueil?${searchParams}` : '/accueil')
