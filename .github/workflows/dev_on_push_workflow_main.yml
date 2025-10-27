@@ -174,7 +174,7 @@ jobs:
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       ENV: "development"
-      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+      tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
