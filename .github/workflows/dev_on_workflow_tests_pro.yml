@@ -98,7 +98,7 @@ jobs:
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: blob-report-${{ matrix.shardIndex }}
           path: pro/.vitest-reports/
@@ -110,7 +110,7 @@ jobs:
 
       - name: Upload coverage report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: coverage-report-${{ matrix.shardIndex }}
           path: pro/coverage/*.json
@@ -118,7 +118,7 @@ jobs:
           retention-days: 1
 
       - name: "Upload Allure results for pro tests"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: ${{ !cancelled() && github.ref == 'refs/heads/master' }}
         with:
           name: allure-results-pro-unit-${{ matrix.shardIndex }}
@@ -136,7 +136,7 @@ jobs:
           pattern: allure-results-pro-unit-*
 
       - name: "Upload Allure results for pro tests"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: allure-results-pro-unit
@@ -159,7 +159,7 @@ jobs:
         run: allure generate allure-results --single-file --clean -o allure-report
 
       - name: "Upload Allure Report as artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: allure-report
           path: allure-report/index.html
