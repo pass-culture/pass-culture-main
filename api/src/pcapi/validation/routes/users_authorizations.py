@@ -1,13 +1,18 @@
 import pcapi.core.users.repository as users_repository
 from pcapi.core.users.models import User
-from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceNotFoundError
+
+
+TOKEN_NOT_FOUND_ERROR_MESSAGE = (
+    "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+)
 
 
 def check_user_can_validate_bookings_v2(user: User, offerer_id: int) -> None:
     if not users_repository.has_access(user, offerer_id):
-        api_errors = ForbiddenError()
+        api_errors = ResourceNotFoundError()
         api_errors.add_error(
-            "user",
-            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation",
+            "global",  # purposefully generic field name to avoid leaking info
+            TOKEN_NOT_FOUND_ERROR_MESSAGE,
         )
         raise api_errors

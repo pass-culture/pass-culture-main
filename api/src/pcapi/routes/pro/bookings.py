@@ -32,6 +32,7 @@ from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookin
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse
 from pcapi.utils.transaction_manager import atomic
+from pcapi.validation.routes.users_authorizations import TOKEN_NOT_FOUND_ERROR_MESSAGE
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
 from . import blueprint
@@ -270,15 +271,16 @@ def _create_booking_export_file(query: ListBookingsQueryModel, export_type: Book
 def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
     booking = bookings_repository.get_booking_by_token(token, load_options=["offerer", "venue", "offer", "address"])
     if not booking:
-        raise api_errors.ResourceNotFoundError({"global": ["Cette contremarque n'a pas été trouvée"]})
+        raise api_errors.ResourceNotFoundError({"global": [TOKEN_NOT_FOUND_ERROR_MESSAGE]})
 
     return booking
 
 
 _BASE_CODE_DESCRIPTIONS = {
     "HTTP_401": (None, "Authentification nécessaire"),
-    "HTTP_403": (None, "Vous n'avez pas les droits nécessaires pour voir cette contremarque"),
-    "HTTP_404": (None, "La contremarque n'existe pas"),
+    # To avoid giving more information than necessary to potential attackers,
+    # we use the same error message for 403 and 404 errors related to booking tokens.
+    "HTTP_404": (None, TOKEN_NOT_FOUND_ERROR_MESSAGE),
     "HTTP_410": (
         None,
         "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.",

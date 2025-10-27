@@ -115,10 +115,10 @@ class Returns403Test:
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
             response = client.get(url)
-            assert response.status_code == 403
+            assert response.status_code == 404
 
-        assert response.json["user"] == [
-            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
         ]
 
     def test_when_booking_not_confirmed(self, client):
@@ -209,7 +209,9 @@ class Returns404Test:
             response = client.get("/bookings/token/UNKNOWN")
             assert response.status_code == 404
 
-        assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+        ]
 
 
 class Returns410Test:

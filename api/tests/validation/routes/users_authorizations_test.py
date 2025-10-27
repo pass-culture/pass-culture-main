@@ -19,6 +19,6 @@ class CheckUserCanValidateBookingV2Test:
         user = User()
         with pytest.raises(ApiErrors) as errors:
             check_user_can_validate_bookings_v2(user, None)
-        assert errors.value.errors["user"] == [
-            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        assert errors.value.errors["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
         ]

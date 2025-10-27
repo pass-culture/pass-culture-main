@@ -52,9 +52,9 @@ class Returns403Test:
         )
 
         # Then
-        assert response.status_code == 403
-        assert response.json["user"] == [
-            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        assert response.status_code == 404
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
         ]
         assert booking.status == BookingStatus.USED
 
@@ -71,7 +71,9 @@ class Returns404Test:
         user = users_factories.ProFactory()
         response = client.with_session_auth(user.email).patch("/bookings/keep/token/UNKNOWN")
         assert response.status_code == 404
-        assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+        ]
 
 
 class Returns410Test:
