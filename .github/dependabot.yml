@@ -7,8 +7,6 @@ updates:
       interval: 'daily'
       time: '09:00'
     open-pull-requests-limit: 15
-    ignore:
-      - dependency-name: '@pass-culture/design-system' # Keep the design-system repo under control while it's early-stage
   - package-ecosystem: 'npm'
     directory: '/api/documentation'
     schedule:
