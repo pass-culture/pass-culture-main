@@ -48,9 +48,9 @@ class Returns403Test:
 
         response = client.with_session_auth(another_pro_user.email).patch(f"/bookings/use/token/{booking.token}")
 
-        assert response.status_code == 403
-        assert response.json["user"] == [
-            "Vous n’avez pas les droits suffisants pour valider cette contremarque car cette réservation n'a pas été faite sur une de vos offres, ou que votre rattachement à la structure est encore en cours de validation"
+        assert response.status_code == 404
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
         ]
         booking = db.session.get(Booking, booking.id)
         assert booking.status == BookingStatus.CONFIRMED
@@ -77,7 +77,9 @@ class Returns404Test:
         pro_user = users_factories.ProFactory()
         response = client.with_session_auth(pro_user.email).patch("/bookings/use/token/UNKNOWN")
         assert response.status_code == 404
-        assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
+        assert response.json["global"] == [
+            "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
+        ]
 
 
 class Returns410Test:
