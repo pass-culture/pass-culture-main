@@ -185,7 +185,7 @@ jobs:
 
       - name: "Download artifact"
         if: ${{ inputs.tag != 'latest' }}
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: ${{ inputs.image }}-${{ inputs.tag }}.tar
           path: ${{ runner.temp }}
@@ -216,7 +216,7 @@ jobs:
           timeout: 120000
 
       - name: Download the build folder
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: build
           path: pro/build
