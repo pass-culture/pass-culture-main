@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -38,6 +38,7 @@ export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const currentOffererId = useAppSelector(selectCurrentOffererId)
   const currentUser = useAppSelector(selectCurrentUser)
@@ -74,7 +75,12 @@ export const HeaderDropdown = () => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
-    await dispatch(setCurrentOffererById({ nextCurrentOffererId })).unwrap()
+    const didRefreshAccess = await dispatch(
+      setCurrentOffererById({ nextCurrentOffererId })
+    ).unwrap()
+    if (!didRefreshAccess) {
+      navigate('/accueil')
+    }
   }
 
   useEffect(() => {
