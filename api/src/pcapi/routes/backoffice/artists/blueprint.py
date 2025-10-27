@@ -18,6 +18,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search import async_index_offer_ids
+from pcapi.core.search import async_index_offers_of_artist_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
@@ -382,6 +383,7 @@ def post_artist_blacklist(artist_id: str) -> utils.BackofficeResponse:
     artist.is_blacklisted = True
     db.session.add(artist)
     async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
+    async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
 
     flash(Markup("L'artiste <strong>{name}</strong> a été blacklisté.").format(name=artist.name), "success")
     return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
@@ -418,6 +420,7 @@ def post_artist_unblacklist(artist_id: str) -> utils.BackofficeResponse:
 
     artist.is_blacklisted = False
     async_index_artist_ids([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
+    async_index_offers_of_artist_ids([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
     flash(Markup("L'artiste <strong>{name}</strong> a été réactivé.").format(name=artist.name), "success")
     return redirect(request.referrer or url_for(".get_artist_details", artist_id=artist_id), 303)
 

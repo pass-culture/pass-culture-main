@@ -139,7 +139,10 @@ class PostArtistBlacklistTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
-    def test_blacklist_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
+    def test_blacklist_artist_success(
+        self, mock_async_index_offers_of_artist_ids, mock_async_index_artist_ids, db_session, authenticated_client
+    ):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=False)
         with patch("pcapi.routes.backoffice.artists.blueprint.db.session.commit"):
             response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
@@ -148,6 +151,9 @@ class PostArtistBlacklistTest(PostEndpointHelper):
         artist = db.session.query(artist_models.Artist).filter_by(id=artist.id).one()
         assert artist.is_blacklisted is True
         mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_BLACKLISTING)
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
+            [artist.id], reason=IndexationReason.ARTIST_BLACKLISTING
+        )
         assert f"L'artiste {artist.name} a été blacklisté." in html_parser.extract_alerts(response.data)
 
 
@@ -186,12 +192,18 @@ class PostArtistUnblacklistTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
-    def test_unblacklist_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
+    @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offers_of_artist_ids")
+    def test_unblacklist_artist_success(
+        self, mock_async_index_offers_of_artist_ids, mock_async_index_artist_ids, db_session, authenticated_client
+    ):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=True)
         response = self.post_to_endpoint(authenticated_client, artist_id=artist.id, follow_redirects=True)
         db_session.refresh(artist)
         assert response.status_code == 200
         mock_async_index_artist_ids.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING)
+        mock_async_index_offers_of_artist_ids.assert_called_once_with(
+            [artist.id], reason=IndexationReason.ARTIST_UNBLACKLISTING
+        )
         assert f"L'artiste {artist.name} a été réactivé." in html_parser.extract_alerts(response.data)
         assert artist.is_blacklisted is False
 
