@@ -148,6 +148,20 @@ class UpdateVenueTest:
         assert opening_hours.timespan[0].lower == 10 * 60
         assert opening_hours.timespan[0].upper == 18 * 60
 
+    @patch("pcapi.workers.match_acceslibre_job.match_acceslibre_job")
+    def test_changing_address_should_not_synchronize_when_closed_to_public(self, mock_match_acceslibre_job):
+        venue = offerers_factories.VenueFactory(isOpenToPublic=False, isPermanent=True)
+        author = users_factories.UserFactory()
+        modifications = {
+            "street": "Avenue des Champs Elysées",
+            "latitude": "48.871285",
+            "longitude": "2.302859",
+            "banId": "75108_1733",
+        }
+        offerers_api.update_venue(venue, modifications, {}, author)
+
+        mock_match_acceslibre_job.assert_not_called()
+
 
 class CreateVenueTest:
     def base_data(self, offerer):

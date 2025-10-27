@@ -266,8 +266,13 @@ def update_venue(
     if contact_data and contact_data.website:
         virustotal.request_url_scan(contact_data.website, skip_if_recent_scan=True)
 
-    if new_open_to_public or has_address_changed:
-        match_acceslibre_job.delay(venue.id)
+    if new_open_to_public or (has_address_changed and venue.isOpenToPublic):
+        on_commit(
+            functools.partial(
+                match_acceslibre_job.delay,
+                venue.id,
+            )
+        )
 
     if not_open_to_public_anymore:
         delete_venue_accessibility_provider(venue)

@@ -306,6 +306,7 @@ class Returns200Test:
                 "longitude": 2.308289,
                 "postalCode": "75001",
                 "isManualEdition": True,
+                "isOpenToPublic": True,
             },
             venue,
         )
@@ -398,6 +399,7 @@ class Returns200Test:
                 "longitude": 2.308289,
                 "postalCode": "75001",
                 "isManualEdition": True,
+                "isOpenToPublic": True,
             },
             venue,
         )
@@ -1001,7 +1003,7 @@ class Returns200Test:
 
     def test_resync_acceslibre_when_address_changes(self, client):
         user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
         venue_data = {
