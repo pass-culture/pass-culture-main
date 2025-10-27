@@ -21,9 +21,11 @@ on:
         required: false
         type: boolean
         default: false
+
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
+
       GCP_EHP_SERVICE_ACCOUNT:
         required: true
 
@@ -34,94 +36,73 @@ permissions:
 jobs:
   build-and-tag-version:
     runs-on: ubuntu-22.04
-    env:
-      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
-      GIT_CONFIG_NAME: ${{ github.actor }}
-      TAG_NAME: v${{ inputs.tag_number }}
     steps:
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v3"
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-            ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
-            ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-            COSIGN_KMS_KEY:passculture-metier-ehp/cosign_kms_key
-      - name: "Checkout ref"
+      - name: Checkout ref
         uses: actions/checkout@v5
         with:
           ref: ${{ inputs.base_ref }}
-      - name: "Configure git author"
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
-      - name: "Add version to api"
+
+      - name: Add version to api
         working-directory: api
         run: |
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
-      - name: "Add version to pro"
+
+      - name: Add version to pro
         working-directory: pro
         run: |
           yarn version --new-version "${{ inputs.tag_number }}"
           git add package.json
-      - name: "Add version to image-resizing"
+
+      - name: Add version to image-resizing
         working-directory: app-engine/image-resizing
         run: |
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
-      - name: "Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-      - name: "OpenID Connect Authentication"
-        id: "openid-auth"
-        uses: "google-github-actions/auth@v3"
-        with:
-          create_credentials_file: true
-          token_format: "access_token"
-          workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.10.0
-      - name: "Docker login"
-        id: "docker-login"
-        uses: "docker/login-action@v3"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.openid-auth.outputs.access_token }}"
-      - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v6
-        id: docker-push-action
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }}
-      - name: Sign image with a kms key
-        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi@${{ steps.docker-push-action.outputs.digest }}
-      - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v6
-        id: docker-push-action-console
-        with:
-          context: api
-          push: true
-          target: pcapi-console
-          tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag_number }}
-      - name: Sign image with a kms key
-        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console@${{ steps.docker-push-action-console.outputs.digest }}
-      - name: "Tag Release"
+
+  build-images:
+    name: Build Docker images
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      image: ${{ matrix.image }}
+      tag: ${{ inputs.tag_number }}
+
+  push-images:
+    name: Push Docker images
+    needs: [build-images]
+    strategy:
+      matrix:
+        image: [pcapi, pcapi-console]
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    with:
+      image: ${{ matrix.image }}
+      tag: ${{ inputs.tag_number }}
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  tag-and-push-release:
+    runs-on: ubuntu-22.04
+    needs: [push-images]
+    env:
+      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
+      GIT_CONFIG_NAME: ${{ github.actor }}
+      TAG_NAME: ${{ inputs.tag_number }}
+    steps:
+      - name: Configure git author
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
+
+      - name: Tag Release
         run: |
           git commit -m "🚀 $TAG_NAME" -n
           git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
           git push origin "$TAG_NAME"
-      - name: "Push tag to base ref"
+
+      - name: Push tag to base ref
         if: ${{ inputs.base_ref_is_a_branch }}
         run: git push origin "${{ inputs.base_ref }}"
