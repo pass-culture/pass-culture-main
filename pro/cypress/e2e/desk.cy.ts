@@ -152,7 +152,7 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
     cy.stepLog({ message: 'I cannot validate the countermark' })
     cy.findByText('Valider la contremarque').should('be.disabled')
     cy.findByText(
-      "Vous n'avez pas les droits nécessaires pour voir cette contremarque"
+      "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
     )
   })
 
