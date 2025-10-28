@@ -98,7 +98,7 @@ export const UserPhoneForm = ({
               })}
               required={true}
               error={errors.phoneNumber?.message}
-              asterisk={false}
+              requiredIndicator={null}
             />
           </FormLayout.Row>
         </FormLayout>

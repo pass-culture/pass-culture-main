@@ -10,6 +10,7 @@ import {
 
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import type { RequiredIndicator } from '@/design-system/common/types'
 
 import { SelectedValuesTags } from '../../SelectedValuesTags/SelectedValuesTags'
 import styles from './MultiSelect.module.scss'
@@ -58,8 +59,8 @@ type MultiSelectProps = {
   buttonLabel: string
   /** field is required */
   required?: boolean
-  /** display asterik  */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /** this class offers the possibility of limiting the size of the multiselect  */
   className?: string
 
@@ -120,10 +121,9 @@ export const MultiSelect = forwardRef(
       disabled = false,
       onSelectedOptionsChanged,
       error,
-      name,
       buttonLabel,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       onBlur,
     }: MultiSelectProps,
     forwardedRef: ForwardedRef<HTMLFieldSetElement>
@@ -201,7 +201,8 @@ export const MultiSelect = forwardRef(
     return (
       <fieldset className={styles.container} onBlur={onBlur} ref={forwardedRef}>
         <legend className={styles['container-label']}>
-          {label} {required && asterisk && '*'}
+          {label}
+          {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
         </legend>
         <div className={cn(className, styles['container-input'])}>
           <div ref={containerRef}>

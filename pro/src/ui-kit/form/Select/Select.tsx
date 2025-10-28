@@ -41,7 +41,7 @@ export const Select = forwardRef(
       onChange,
       onBlur,
       error,
-      requiredIndicator,
+      requiredIndicator = 'symbol',
       value,
       ariaLabel,
     }: SelectProps<string | number>,

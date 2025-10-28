@@ -10,6 +10,7 @@ import {
 } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import type { RequiredIndicator } from '@/design-system/common/types'
 
 import { CountryCodeSelect } from './CodeCountrySelect/CountryCodeSelect'
 import {
@@ -32,7 +33,8 @@ export type PhoneNumberInputProps = {
   error?: string
   label: string | JSX.Element
   required?: boolean
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
 }
 
 export const PhoneNumberInput = forwardRef<
@@ -50,7 +52,7 @@ export const PhoneNumberInput = forwardRef<
       error,
       label,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       ...props
     },
     ref
@@ -143,7 +145,8 @@ export const PhoneNumberInput = forwardRef<
     return (
       <fieldset className={styles['phone-number-input-wrapper']}>
         <legend className={styles['phone-number-input-legend']}>
-          {label} {required && asterisk && '*'}
+          {label}
+          {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
         </legend>
         <p className={styles['phone-format']} id={formatId}>
           Par exemple : {PHONE_EXAMPLE_MAP[prefix as PlusString]}
