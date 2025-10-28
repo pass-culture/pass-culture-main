@@ -75,14 +75,14 @@ jobs:
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi-console
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          tag: ${{ github.sha }}
           token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "check pcapi image exists"
         id: check-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          tag: ${{ github.sha }}
           token: ${{ steps.openid-auth.outputs.access_token }}
       - name: "Summary"
         run: |
