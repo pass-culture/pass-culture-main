@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import {
-  collectiveOfferFactory,
+  collectiveOfferBookableFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -46,7 +46,7 @@ describe('OfferNameCell', () => {
   })
 
   it('should not display tag when offer is not a template', () => {
-    const offer = collectiveOfferFactory({ isShowcase: false, name: 'Test' })
+    const offer = collectiveOfferBookableFactory({ name: 'Test' })
 
     renderOfferNameCell({
       offer,
@@ -59,7 +59,7 @@ describe('OfferNameCell', () => {
   })
 
   it('should render a thumbnail when displayThumb is true', () => {
-    const offer = collectiveOfferFactory({ imageUrl: '/thumb.jpg' })
+    const offer = collectiveOfferBookableFactory({ imageUrl: '/thumb.jpg' })
 
     renderOfferNameCell({
       offer,
@@ -75,7 +75,7 @@ describe('OfferNameCell', () => {
   })
 
   it('should not render a thumbnail when displayThumb is false', () => {
-    const offer = collectiveOfferFactory({ imageUrl: '/thumb.jpg' })
+    const offer = collectiveOfferBookableFactory({ imageUrl: '/thumb.jpg' })
 
     renderOfferNameCell({
       offer,
@@ -88,7 +88,7 @@ describe('OfferNameCell', () => {
   })
 
   it('should use the correct link for the offer', () => {
-    const offer = collectiveOfferFactory({ name: 'Link test' })
+    const offer = collectiveOfferBookableFactory({ name: 'Link test' })
 
     renderOfferNameCell({
       offer,
@@ -100,9 +100,8 @@ describe('OfferNameCell', () => {
   })
 
   it('should show offer id when offer is bookable', () => {
-    const offer = collectiveOfferFactory({
+    const offer = collectiveOfferBookableFactory({
       name: 'Link test',
-      isShowcase: false,
     })
 
     renderOfferNameCell({

@@ -4,13 +4,13 @@ import * as router from 'react-router'
 
 import { api } from '@/apiClient/api'
 import type {
-  CollectiveOfferResponseModel,
-  CollectiveOffersStockResponseModel,
+  CollectiveOfferBookableResponseModel,
+  CollectiveOfferStockResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
@@ -74,7 +74,7 @@ const proVenues = [
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
-      getCollectiveOffers: vi.fn(),
+      getCollectiveBookableOffers: vi.fn(),
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getVenues: vi.fn(),
@@ -88,19 +88,18 @@ vi.mock('repository/venuesService', async () => ({
 }))
 
 describe('CollectiveOffersQueryParams', () => {
-  let offersRecap: CollectiveOfferResponseModel[]
-  const stocks: Array<CollectiveOffersStockResponseModel> = [
-    {
-      startDatetime: String(new Date()),
-      hasBookingLimitDatetimePassed: false,
-      remainingQuantity: 1,
-    },
-  ]
+  let offersRecap: CollectiveOfferBookableResponseModel[]
+  const stock: CollectiveOfferStockResponseModel = {
+    bookingLimitDatetime: null,
+    numberOfTickets: 100,
+    price: 10,
+  }
+
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory({ stocks })]
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
+    offersRecap = [collectiveOfferBookableFactory({ stock })]
+    vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
@@ -116,9 +115,11 @@ describe('CollectiveOffersQueryParams', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
-        collectiveOfferFactory({ stocks })
+        collectiveOfferBookableFactory({ stock })
       )
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
 
@@ -165,7 +166,9 @@ describe('CollectiveOffersQueryParams', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
@@ -186,7 +189,9 @@ describe('CollectiveOffersQueryParams', () => {
     })
 
     it('should have the status in the url value when user filters by status', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
 
       await userEvent.click(
@@ -208,7 +213,9 @@ describe('CollectiveOffersQueryParams', () => {
     })
 
     it('should have the status in the url value when user filters by multiple statuses', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
+        offersRecap
+      )
       await renderOffers()
 
       await userEvent.click(

@@ -3,19 +3,18 @@ import { userEvent } from '@testing-library/user-event'
 import { describe } from 'vitest'
 
 import {
-  CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
-  type CollectiveOffersStockResponseModel,
+  type CollectiveOfferStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { getToday } from '@/commons/utils/date'
 import {
-  collectiveOfferFactory,
+  collectiveOfferBookableFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -38,7 +37,7 @@ vi.mock('@/apiClient/api', () => ({
 
 const renderOfferItem = (
   props: CollectiveOfferRowProps<
-    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+    CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
   >,
   options?: RenderWithProvidersOptions
 ) =>
@@ -55,23 +54,21 @@ const renderOfferItem = (
   )
 
 const offerId = 12
-const stocks: Array<CollectiveOffersStockResponseModel> = [
-  {
-    startDatetime: String(new Date()),
-    remainingQuantity: 0,
-    hasBookingLimitDatetimePassed: false,
-  },
-]
-const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
-  id: offerId,
-  hasBookingLimitDatetimesPassed: false,
-  name: 'My little offer',
-  imageUrl: '/my-fake-thumb',
-  stocks,
-  location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
-})
+const stock: CollectiveOfferStockResponseModel = {
+  bookingLimitDatetime: null,
+  numberOfTickets: 100,
+  price: 10,
+}
+const offer: CollectiveOfferBookableResponseModel =
+  collectiveOfferBookableFactory({
+    id: offerId,
+    name: 'My little offer',
+    imageUrl: '/my-fake-thumb',
+    stock,
+    location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
+  })
 const props: CollectiveOfferRowProps<
-  CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
 > = {
   offer,
   selectOffer: vi.fn(),
@@ -92,7 +89,7 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
-      const offer = collectiveOfferFactory({ imageUrl: null })
+      const offer = collectiveOfferBookableFactory({ imageUrl: null })
       renderOfferItem({
         ...props,
         offer,
@@ -144,7 +141,7 @@ describe('CollectiveOfferRow', () => {
     it('should display "-" when offer is not assigned to a specific institution', () => {
       const { container } = renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({ booking: null, stocks }),
+        offer: collectiveOfferBookableFactory({ stock }),
       })
 
       const cell = container.querySelector('td.cell-institution')
@@ -155,7 +152,7 @@ describe('CollectiveOfferRow', () => {
     it('should display institution name when offer is assigned to a specific institution', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           educationalInstitution: {
             id: 1,
             name: 'Collège Bellevue',
@@ -164,7 +161,7 @@ describe('CollectiveOfferRow', () => {
             phoneNumber: '',
             institutionId: 'ABCDEF11',
           },
-          stocks,
+          stock,
         }),
       })
 
@@ -175,7 +172,7 @@ describe('CollectiveOfferRow', () => {
     it('should display institution cell when offer is bookable', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           educationalInstitution: {
             id: 1,
             name: 'Lycée Jean Moulin',
@@ -185,7 +182,7 @@ describe('CollectiveOfferRow', () => {
             institutionId: 'ABCDEF11',
             institutionType: 'LYCEE',
           },
-          stocks,
+          stock,
         }),
       })
 
@@ -237,7 +234,7 @@ describe('CollectiveOfferRow', () => {
     it('should not display a tag when offer is not template', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({ isShowcase: false, stocks }),
+        offer: collectiveOfferBookableFactory({ stock }),
       })
 
       const rowHeader = screen.getAllByRole('rowheader')[0]
@@ -277,9 +274,7 @@ describe('CollectiveOfferRow', () => {
       Storage.prototype.getItem = vi.fn(() => 'true')
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
-          isShowcase: true,
-          stocks,
+        offer: collectiveOfferTemplateFactory({
           allowedActions: [
             CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
           ],
@@ -305,10 +300,9 @@ describe('CollectiveOfferRow', () => {
   it('should cancel offer booking', async () => {
     renderOfferItem({
       ...props,
-      offer: collectiveOfferFactory({
-        stocks,
+      offer: collectiveOfferBookableFactory({
+        stock,
         displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
-        booking: { booking_status: CollectiveBookingStatus.PENDING, id: 1 },
         allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
       }),
     })
@@ -340,15 +334,12 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is published', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          stocks: [
-            {
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 1,
-              bookingLimitDatetime: getToday().toISOString(),
-            },
-          ],
+          stock: {
+            numberOfTickets: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
         }),
       })
 
@@ -360,16 +351,12 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is pre-booked', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-          stocks: [
-            {
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 1,
-              bookingLimitDatetime: getToday().toISOString(),
-            },
-          ],
-          booking: { id: 1, booking_status: 'PENDING' },
+          stock: {
+            numberOfTickets: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
         }),
       })
 
@@ -383,16 +370,12 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is pre-booked', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-          stocks: [
-            {
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 1,
-              bookingLimitDatetime: getToday().toISOString(),
-            },
-          ],
-          booking: { id: 1, booking_status: 'PENDING' },
+          stock: {
+            numberOfTickets: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
         }),
       })
 
@@ -406,15 +389,12 @@ describe('CollectiveOfferRow', () => {
     it('should not display a expiration row if the offer has no booking limit', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          stocks: [
-            {
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 1,
-              bookingLimitDatetime: undefined,
-            },
-          ],
+          stock: {
+            numberOfTickets: 1,
+            bookingLimitDatetime: undefined,
+          },
         }),
       })
 
@@ -426,15 +406,12 @@ describe('CollectiveOfferRow', () => {
     it('should not display a expiration row if the offer was cancelled', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferFactory({
+        offer: collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
-          stocks: [
-            {
-              hasBookingLimitDatetimePassed: false,
-              remainingQuantity: 1,
-              bookingLimitDatetime: getToday().toISOString(),
-            },
-          ],
+          stock: {
+            numberOfTickets: 1,
+            bookingLimitDatetime: getToday().toISOString(),
+          },
         }),
       })
 
@@ -478,37 +455,12 @@ describe('CollectiveOfferRow', () => {
   it('should display "-" if educationalInstitution is null', () => {
     const { container } = renderOfferItem({
       ...props,
-      offer: collectiveOfferFactory({ educationalInstitution: null }),
+      offer: collectiveOfferBookableFactory({ educationalInstitution: null }),
     })
 
     const cell = container.querySelector('td.cell-institution')
 
     expect(cell).toHaveTextContent('-')
-  })
-
-  it('should use only the first stock for bookingLimitDate', () => {
-    renderOfferItem({
-      ...props,
-      offer: collectiveOfferFactory({
-        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-        stocks: [
-          {
-            bookingLimitDatetime: getToday().toISOString(),
-            remainingQuantity: 1,
-            hasBookingLimitDatetimePassed: false,
-          },
-          {
-            bookingLimitDatetime: undefined,
-            remainingQuantity: 0,
-            hasBookingLimitDatetimePassed: true,
-          },
-        ],
-      }),
-    })
-
-    expect(
-      screen.getByText('En attente de réservation par le chef d’établissement')
-    ).toBeInTheDocument()
   })
 
   it('should display location cell', () => {
@@ -520,14 +472,11 @@ describe('CollectiveOfferRow', () => {
   it('should display price and participants cell when offer is bookable', () => {
     renderOfferItem({
       ...props,
-      offer: collectiveOfferFactory({
-        stocks: [
-          {
-            price: 10,
-            numberOfTickets: 2,
-            hasBookingLimitDatetimePassed: false,
-          },
-        ],
+      offer: collectiveOfferBookableFactory({
+        stock: {
+          price: 10,
+          numberOfTickets: 2,
+        },
       }),
     })
 

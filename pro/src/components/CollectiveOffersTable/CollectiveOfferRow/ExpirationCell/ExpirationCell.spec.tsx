@@ -1,16 +1,17 @@
 import { screen } from '@testing-library/react'
 
 import {
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
-  const offer: CollectiveOfferResponseModel = collectiveOfferFactory()
+  const offer: CollectiveOfferBookableResponseModel =
+    collectiveOfferBookableFactory()
 
   function renderExpirationCell(offerParam = offer) {
     return renderWithProviders(
@@ -30,12 +31,9 @@ describe('ExpirationCell', () => {
 
     const offerExpiringIn10Days = {
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: in10Days.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: in10Days.toISOString(),
+      },
     }
     renderExpirationCell(offerExpiringIn10Days)
 
@@ -52,12 +50,9 @@ describe('ExpirationCell', () => {
 
     const offerExpiringIn5Days = {
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: in5Days.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: in5Days.toISOString(),
+      },
     }
 
     renderExpirationCell(offerExpiringIn5Days)
@@ -69,12 +64,9 @@ describe('ExpirationCell', () => {
     const today = new Date()
     const offerExpiringToday = {
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: today.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: today.toISOString(),
+      },
     }
 
     renderExpirationCell(offerExpiringToday)
@@ -88,12 +80,9 @@ describe('ExpirationCell', () => {
     const offerExpiring = {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
-      stocks: [
-        {
-          bookingLimitDatetime: today.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: today.toISOString(),
+      },
     }
 
     renderExpirationCell(offerExpiring)
@@ -109,12 +98,9 @@ describe('ExpirationCell', () => {
 
     renderExpirationCell({
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: in10Days.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: in10Days.toISOString(),
+      },
     })
 
     expect(screen.queryByText(/expire dans/)).not.toBeInTheDocument()
@@ -126,12 +112,9 @@ describe('ExpirationCell', () => {
     const offerPublished = {
       ...offer,
       displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-      stocks: [
-        {
-          bookingLimitDatetime: today.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: today.toISOString(),
+      },
     }
 
     renderExpirationCell(offerPublished)
@@ -147,12 +130,9 @@ describe('ExpirationCell', () => {
 
     const { container } = renderExpirationCell({
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: soon.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: soon.toISOString(),
+      },
     })
 
     expect(container.querySelector('.banner-expires-soon')).toBeInTheDocument()
@@ -164,12 +144,9 @@ describe('ExpirationCell', () => {
 
     renderExpirationCell({
       ...offer,
-      stocks: [
-        {
-          bookingLimitDatetime: yesterday.toISOString(),
-          hasBookingLimitDatetimePassed: false,
-        },
-      ],
+      stock: {
+        bookingLimitDatetime: yesterday.toISOString(),
+      },
     })
 
     expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()

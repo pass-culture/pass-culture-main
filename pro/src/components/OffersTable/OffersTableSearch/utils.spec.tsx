@@ -29,7 +29,6 @@ const MOCKED_FILTERS: SelectedFilters = {
   format: 'all',
   status: 'all',
   creationMode: 'creationMode',
-  collectiveOfferType: 'collectiveOfferType',
   periodBeginningDate: 'periodBeginningDate',
   periodEndingDate: 'periodEndingDate',
   offererAddressId: 'offererAddressId',
