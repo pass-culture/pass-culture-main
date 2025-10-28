@@ -1,4 +1,5 @@
 import { isAfter } from 'date-fns'
+import Lottie from 'lottie-react'
 
 import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
@@ -11,6 +12,8 @@ import waitFullIcon from '@/icons/full-wait.svg'
 import styles from '@/pages/IndividualOffers/IndividualOffersContainer/components/IndividualOfferColumns/components/Cells.module.scss'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
+
+import starAnimation from './assets/star.json'
 
 export type OfferStatusCellProps = {
   offer: ListOffersOfferResponseModel
@@ -53,15 +56,24 @@ export const OfferStatusCell = ({
               aria-label="Information sur les offres à la une"
               className={styles['status-column-headline-offer-button']}
             >
-              <SvgIcon
+              {/* <SvgIcon
                 src={fullBoostedIcon}
                 width="20"
                 className={styles['status-column-headline-offer-star-icon']}
-              />
+              /> */}
+              <Star isActive={isHeadline} />
             </button>
           </Tooltip>
         </div>
       )}
+    </div>
+  )
+}
+
+export const Star = ({ isActive }: { isActive: boolean }) => {
+  return (
+    <div style={{ width: 24, height: 24 }}>
+      <Lottie animationData={starAnimation} loop={false} autoplay={isActive} />
     </div>
   )
 }
