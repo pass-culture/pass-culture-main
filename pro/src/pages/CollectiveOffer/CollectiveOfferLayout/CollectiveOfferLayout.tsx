@@ -8,7 +8,6 @@ import type {
 } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useIsAllowedOnAdage } from '@/commons/hooks/useIsAllowedOnAdage'
-import { HelpLink } from '@/components/HelpLink/HelpLink'
 import { Tag } from '@/design-system/Tag/Tag'
 import { CollectiveCreationOfferNavigation } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import { getActiveStep } from '@/pages/CollectiveOfferRoutes/utils/getActiveStep'
@@ -90,7 +89,6 @@ export const CollectiveOfferLayout = ({
         />
       )}
       {children}
-      <HelpLink />
     </BasicLayout>
   )
 }

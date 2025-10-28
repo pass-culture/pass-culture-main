@@ -40,7 +40,6 @@ export enum Events {
   CLICKED_DUPLICATE_TEMPLATE_OFFER = 'hasClickedDuplicateTemplateOffer',
   CLICKED_DUPLICATE_BOOKABLE_OFFER = 'hasClickedDuplicateBookableOffer',
   CLICKED_BEST_PRACTICES_STUDIES = 'hasClickedBestPracticesAndStudies',
-  CLICKED_HELP_LINK = 'hasClickedHelpLink',
   CLICKED_RESET_FILTERS = 'hasClickedResetFilter',
   CLICKED_SHOW_STATUS_FILTER = 'hasClickedShowStatusFilter',
   CLICKED_OMNI_SEARCH_CRITERIA = 'hasClickedOmniSearchCriteria',
