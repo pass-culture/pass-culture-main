@@ -61,7 +61,6 @@ class Returns200Test:
                 "endDatetime": format_into_utc_date(stock.endDatetime),
                 "id": stock.id,
                 "isBooked": False,
-                "isCancellable": False,
                 "numberOfTickets": stock.numberOfTickets,
                 "price": float(stock.price),
                 "startDatetime": format_into_utc_date(stock.startDatetime),
@@ -95,7 +94,6 @@ class Returns200Test:
             "interventionArea": offer.interventionArea,
             "isActive": True,
             "isBookable": True,
-            "isCancellable": False,
             "isNonFreeOffer": None,
             "isPublicApi": True,
             "isTemplate": False,
@@ -253,46 +251,6 @@ class Returns200Test:
         # Then
         response_json = response.json
         assert response_json["collectiveStock"]["isBooked"] is True
-        assert response_json["isCancellable"] is False
-
-    def test_cancellable(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory()
-        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        # When
-        client = client.with_session_auth(email="user@example.com")
-        offer_id = offer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 200
-
-        # Then
-        response_json = response.json
-        assert response_json["collectiveStock"]["isBooked"] is True
-        assert response_json["isCancellable"] is True
-
-    def test_cancellable_with_not_cancellable_booking(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory()
-        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-        educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        # When
-        client = client.with_session_auth(email="user@example.com")
-        offer_id = offer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 200
-
-        # Then
-        response_json = response.json
-        assert response_json["collectiveStock"]["isBooked"] is True
-        assert response_json["isCancellable"] is True
 
     def test_performance(self, client):
         # Given

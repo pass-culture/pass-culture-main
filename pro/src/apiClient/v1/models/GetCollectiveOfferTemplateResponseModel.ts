@@ -34,7 +34,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   imageUrl?: string | null;
   interventionArea: Array<string>;
   isActive: boolean;
-  isCancellable: boolean;
   isNonFreeOffer?: boolean | null;
   isTemplate?: boolean;
   location: GetCollectiveOfferLocationModel;

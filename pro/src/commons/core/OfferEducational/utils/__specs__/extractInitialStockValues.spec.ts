@@ -28,7 +28,6 @@ describe('extractInitialVisibilityValues', () => {
       educationalPriceDetail: 'test',
       id: 1,
       isBooked: false,
-      isCancellable: false,
       numberOfTickets: 20,
       price: 1200,
     }
