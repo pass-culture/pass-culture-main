@@ -1685,10 +1685,10 @@
   resolved "https://registry.yarnpkg.com/@standard-schema/utils/-/utils-0.3.0.tgz#3d5e608f16c2390c10528e98e59aef6bf73cae7b"
   integrity sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
 
-"@storybook/addon-a11y@9.1.13":
-  version "9.1.13"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-9.1.13.tgz#3a8f0133f23003680de8d3e7be84b00564acc4e4"
-  integrity sha512-4enIl1h2XSZnFKUQJJoZbp1X40lzdj7f5JE15ZhU1al4z6hHWp7i2zD7ySyDpEbMypBCz1xnLvyiyw79m1fp7w==
+"@storybook/addon-a11y@9.1.15":
+  version "9.1.15"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-9.1.15.tgz#a3a6d63701dbe9aeb9a44a741a8e0b40dfa3ce15"
+  integrity sha512-UIr9F/XCECoE9nxZ4v7SmBl50soy+7N7RtcruMNeiDjv0nlBsSO5xUc9Lr4ZwcTkN8FOrAvddHpoF4UtGrAmsQ==
   dependencies:
     "@storybook/global" "^5.0.0"
     axe-core "^4.2.0"
@@ -2405,15 +2405,10 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.13.2.tgz#0aa167216965ac9474ccfa83892cfb6b3e1e52ef"
   integrity sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw==
 
-axe-core@4.11.0:
+axe-core@4.11.0, axe-core@^4.2.0, axe-core@^4.4.2:
   version "4.11.0"
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.11.0.tgz#16f74d6482e343ff263d4f4503829e9ee91a86b6"
   integrity sha512-ilYanEU8vxxBexpJd8cWM4ElSQq4QctCLKih0TSfjIfCQTeyH/6zVrmIJfLPrKTKJRbiG+cfnZbQIjAlJmF1jQ==
-
-axe-core@^4.2.0, axe-core@^4.4.2:
-  version "4.10.3"
-  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.3.tgz#04145965ac7894faddbac30861e5d8f11bfd14fc"
-  integrity sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg==
 
 babel-plugin-macros@^3.1.0:
   version "3.1.0"
