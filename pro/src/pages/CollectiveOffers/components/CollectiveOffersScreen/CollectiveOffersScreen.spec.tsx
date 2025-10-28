@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import {
-  type CollectiveOfferResponseModel,
+  type CollectiveOfferBookableResponseModel,
   type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -59,7 +59,7 @@ vi.mock('@/apiClient/api', () => ({
 describe('CollectiveOffersScreen', () => {
   let props: CollectiveOffersScreenProps
   let currentUser: SharedCurrentUserResponseModel
-  let offersRecap: CollectiveOfferResponseModel[]
+  let offersRecap: CollectiveOfferBookableResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifySuccess = vi.fn()
@@ -67,7 +67,7 @@ describe('CollectiveOffersScreen', () => {
     currentUser = sharedCurrentUserFactory({
       roles: [UserRole.PRO],
     })
-    offersRecap = [collectiveOfferFactory()]
+    offersRecap = [collectiveOfferBookableFactory()]
 
     props = {
       currentPageNumber: 1,
@@ -90,8 +90,8 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should render as much offers as returned by the api', () => {
-    const firstOffer = collectiveOfferFactory()
-    const secondOffer = collectiveOfferFactory()
+    const firstOffer = collectiveOfferBookableFactory()
+    const secondOffer = collectiveOfferBookableFactory()
 
     renderOffers({
       ...props,
@@ -107,8 +107,8 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should display an unchecked by default checkbox to select all offers', () => {
-    const firstOffer = collectiveOfferFactory()
-    const secondOffer = collectiveOfferFactory()
+    const firstOffer = collectiveOfferBookableFactory()
+    const secondOffer = collectiveOfferBookableFactory()
 
     renderOffers({
       ...props,
@@ -124,7 +124,7 @@ describe('CollectiveOffersScreen', () => {
   it('should display total number of offers in plural if multiple offers', () => {
     renderOffers({
       ...props,
-      offers: [...offersRecap, collectiveOfferFactory()],
+      offers: [...offersRecap, collectiveOfferBookableFactory()],
     })
 
     expect(
@@ -146,7 +146,9 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should display 100+ for total number of offers if more than 500 offers are fetched', async () => {
-    offersRecap = Array.from({ length: 501 }, () => collectiveOfferFactory())
+    offersRecap = Array.from({ length: 501 }, () =>
+      collectiveOfferBookableFactory()
+    )
 
     renderOffers({
       ...props,
@@ -198,11 +200,7 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should not have "Tout Sélectionner" checked when there is no offer to be checked', async () => {
-    const offers = [
-      collectiveOfferFactory({
-        isActive: false,
-      }),
-    ]
+    const offers = [collectiveOfferBookableFactory()]
 
     renderOffers({
       ...props,
@@ -230,10 +228,10 @@ describe('CollectiveOffersScreen', () => {
 
   it('should check all validated offers checkboxes', async () => {
     const offers = [
-      collectiveOfferFactory({ name: 'offer 1' }),
-      collectiveOfferFactory({ name: 'offer 2' }),
-      collectiveOfferFactory({ name: 'offer 3' }),
-      collectiveOfferFactory({ name: 'offer 4' }),
+      collectiveOfferBookableFactory({ name: 'offer 1' }),
+      collectiveOfferBookableFactory({ name: 'offer 2' }),
+      collectiveOfferBookableFactory({ name: 'offer 3' }),
+      collectiveOfferBookableFactory({ name: 'offer 4' }),
     ]
 
     renderOffers({
@@ -272,7 +270,7 @@ describe('CollectiveOffersScreen', () => {
   it('should filter on the format', async () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      offers: [collectiveOfferBookableFactory()],
     })
 
     const formatSelect = screen.getByRole('combobox', { name: 'Format' })
@@ -297,13 +295,13 @@ describe('CollectiveOffersScreen', () => {
     renderOffers({
       ...props,
       offers: [
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           dates: {
             start: '2024-07-31T09:11:00Z',
             end: '2024-07-31T09:11:00Z',
           },
         }),
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           dates: {
             start: '2024-06-30T09:11:00Z',
             end: '2024-06-30T09:11:00Z',

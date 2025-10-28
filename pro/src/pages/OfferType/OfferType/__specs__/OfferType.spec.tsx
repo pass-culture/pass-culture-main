@@ -8,7 +8,7 @@ import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
-  collectiveOfferFactory,
+  collectiveOfferTemplateFactory,
   defaultDMSApplicationForEAC,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -31,7 +31,7 @@ vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     canOffererCreateEducationalOffer: vi.fn(),
-    getCollectiveOffers: vi.fn(),
+    getCollectiveOfferTemplates: vi.fn(),
     getVenue: vi.fn(),
     getCategories: vi.fn(),
   },
@@ -98,7 +98,7 @@ describe('OfferType', () => {
         }),
       ],
     })
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue([])
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -224,8 +224,10 @@ describe('OfferType', () => {
   })
 
   it('should select duplicate template offer', async () => {
-    const offersRecap = [collectiveOfferFactory()]
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+    const offersRecap = [collectiveOfferTemplateFactory()]
+    vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(
+      offersRecap
+    )
 
     renderOfferTypes()
 
@@ -256,7 +258,7 @@ describe('OfferType', () => {
     )
 
     await waitFor(() => {
-      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+      expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
         undefined,
         '1',
         undefined,
@@ -264,7 +266,7 @@ describe('OfferType', () => {
         undefined,
         undefined,
         undefined,
-        'template',
+        undefined,
         undefined
       )
     })

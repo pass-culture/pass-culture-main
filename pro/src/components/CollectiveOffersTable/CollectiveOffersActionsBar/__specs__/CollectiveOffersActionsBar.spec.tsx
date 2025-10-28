@@ -3,18 +3,21 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
+  CollectiveOfferStockResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import {
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOffersStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  collectiveOfferBookableFactory,
+  collectiveOfferTemplateFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -25,7 +28,7 @@ import {
 
 const renderActionsBar = (
   props: CollectiveOffersActionsBarProps<
-    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+    CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
   >,
   features: string[] = []
 ) => {
@@ -64,22 +67,21 @@ const mockLogEvent = vi.fn()
 
 describe('ActionsBar', () => {
   let props: CollectiveOffersActionsBarProps<
-    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+    CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
   >
   const offerIds = [1, 2]
-  let stocks: Array<CollectiveOffersStockResponseModel>
+  let stock: CollectiveOfferStockResponseModel
 
   beforeEach(() => {
-    stocks = [
-      {
-        startDatetime: String(new Date()),
-        hasBookingLimitDatetimePassed: true,
-        remainingQuantity: 1,
-      },
-    ]
+    stock = {
+      bookingLimitDatetime: new Date(Date.now()).toISOString(),
+      numberOfTickets: 10,
+      price: 10,
+    }
+
     props = {
       selectedOffers: offerIds.map((offerId) => ({
-        ...collectiveOfferFactory({ hasBookingLimitDatetimesPassed: false }),
+        ...collectiveOfferBookableFactory(),
         id: offerId,
       })),
       clearSelectedOfferIds: vi.fn(),
@@ -128,9 +130,10 @@ describe('ActionsBar', () => {
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {
-    props.selectedOffers = [collectiveOfferFactory()]
-
-    renderActionsBar(props)
+    renderActionsBar({
+      ...props,
+      selectedOffers: [collectiveOfferBookableFactory()],
+    })
 
     expect(screen.getByText('1 offre sélectionnée')).toBeInTheDocument()
   })
@@ -142,11 +145,11 @@ describe('ActionsBar', () => {
   })
 
   it('should show a generic count when more than 500 offers are selected', () => {
-    props.selectedOffers = Array(501)
+    const selectedOffers = Array(501)
       .fill(null)
-      .map((_val, i) => ({ ...collectiveOfferFactory(), id: i }))
+      .map((_val, i) => ({ ...collectiveOfferBookableFactory(), id: i }))
 
-    renderActionsBar(props)
+    renderActionsBar({ ...props, selectedOffers })
 
     expect(screen.getByText('100+ offres sélectionnées')).toBeInTheDocument()
   })
@@ -157,17 +160,15 @@ describe('ActionsBar', () => {
       areAllOffersSelected: false,
       areTemplateOffers: true,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferTemplateFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
-          isShowcase: true,
         }),
-        collectiveOfferFactory({
+        collectiveOfferTemplateFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
-          isShowcase: true,
         }),
       ],
     })
@@ -211,7 +212,7 @@ describe('ActionsBar', () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
@@ -236,15 +237,13 @@ describe('ActionsBar', () => {
       areAllOffersSelected: false,
       areTemplateOffers: true,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferTemplateFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          isShowcase: true,
         }),
-        collectiveOfferFactory({
+        collectiveOfferTemplateFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          isShowcase: true,
         }),
       ],
     })
@@ -265,18 +264,16 @@ describe('ActionsBar', () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-          stocks,
+          stock,
         }),
-        collectiveOfferFactory({
+        collectiveOfferTemplateFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
-          stocks,
-          isShowcase: true,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
         }),
       ],
     })
@@ -312,16 +309,16 @@ describe('ActionsBar', () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          stocks,
+          stock,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          stocks,
+          stock,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
@@ -346,16 +343,16 @@ describe('ActionsBar', () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 1,
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          stocks,
+          stock,
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
-        collectiveOfferFactory({
+        collectiveOfferBookableFactory({
           id: 2,
           displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
-          stocks,
+          stock,
           allowedActions: [],
         }),
       ],
@@ -375,10 +372,9 @@ describe('ActionsBar', () => {
     renderActionsBar({
       ...props,
       selectedOffers: [
-        collectiveOfferFactory({
-          isShowcase: false,
+        collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-          hasBookingLimitDatetimesPassed: false,
+
           allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         }),
       ],
@@ -398,10 +394,8 @@ describe('ActionsBar', () => {
       ...props,
       areTemplateOffers: true,
       selectedOffers: [
-        collectiveOfferFactory({
-          isShowcase: true,
+        collectiveOfferTemplateFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
-          hasBookingLimitDatetimesPassed: false,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
         }),
       ],
@@ -419,10 +413,8 @@ describe('ActionsBar', () => {
       ...props,
       areTemplateOffers: true,
       selectedOffers: [
-        collectiveOfferFactory({
-          isShowcase: true,
+        collectiveOfferTemplateFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
-          hasBookingLimitDatetimesPassed: false,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
         }),
       ],
@@ -442,10 +434,8 @@ describe('ActionsBar', () => {
       ...props,
       areTemplateOffers: true,
       selectedOffers: [
-        collectiveOfferFactory({
-          isShowcase: false,
+        collectiveOfferBookableFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.HIDDEN,
-          hasBookingLimitDatetimesPassed: false,
           allowedActions: [],
         }),
       ],
