@@ -583,7 +583,12 @@ def update_offer(
         setattr(offer, key, value)
     with db.session.no_autoflush:
         validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
-        validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
+
+        # the creation process is splitted into several steps. URL and
+        # address might be set only in the end. Therefore, this
+        # validation is meaningless until the offer has been finalized.
+        if offer.status != models.OfferStatus.DRAFT:
+            validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     repository.add_to_session(offer)
