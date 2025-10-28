@@ -2,15 +2,15 @@ name: "2 [on_schedule] deploy main and pro"
 
 on:
   workflow_dispatch:
-  schedule:
+  schedule: # taking ownership
     # This cron is defined in UTC timezone. It means that it will run:
     # - during summer hours between 8:28am - 7:28pm
     # - during winter hours between 7:28am - 6:28pm
     # we cannot yet specify timezone :
     # https://github.com/orgs/community/discussions/13454
-    # Why 28? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
+    # Why 27? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
     # Cron jobs might be delayed or even completely skipped.
-    - cron: "28 6-17 * * 1-5"
+    - cron: "27 6-17 * * 1-5"
 
 permissions: write-all
 
