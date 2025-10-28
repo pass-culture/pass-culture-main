@@ -40,6 +40,7 @@ from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -1461,3 +1462,23 @@ def _get_current_profile_refresh_campaign_date() -> datetime.datetime | None:
         .limit(1)
         .scalar()
     )
+
+
+def get_user_is_eligible_for_bonification(user: models.User) -> bool:
+    has_bonification_check = get_user_bonification_status(user) in (
+        subscription_models.FraudCheckStatus.OK,
+        subscription_models.FraudCheckStatus.PENDING,
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.SUSPICIOUS,
+    )
+    is_18_years_old = user.age == 18
+    has_v3_credit = user.received_pass_17_18
+
+    return (not has_bonification_check) and is_18_years_old and has_v3_credit
+
+
+def get_user_bonification_status(user: models.User) -> subscription_models.FraudCheckStatus | None:
+    for fraud_check in user.beneficiaryFraudChecks:
+        if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT:
+            return fraud_check.status
+    return None
