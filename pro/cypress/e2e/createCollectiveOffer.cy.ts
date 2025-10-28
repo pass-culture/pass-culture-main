@@ -57,8 +57,11 @@ describe('Create collective offers', () => {
       }
     ).as('getDomains')
 
-    cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
-      'collectiveOffers'
+    cy.intercept({ method: 'GET', url: '/collective/offers-template*' }).as(
+      'collectiveOffersTemplate'
+    )
+    cy.intercept({ method: 'GET', url: '/collective/bookable-offers*' }).as(
+      'collectiveOffersBookable'
     )
     cy.intercept({ method: 'GET', url: '/offerers/educational*' }).as(
       'educationalOfferers'
@@ -122,7 +125,7 @@ describe('Create collective offers', () => {
     cy.findByText('Voir mes offres').click()
 
     // Attendre que la page des offres soit chargée
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
 
     // Rechercher l'offre
     // eslint-disable-next-line cypress/unsafe-to-chain-command
@@ -132,7 +135,7 @@ describe('Create collective offers', () => {
     cy.findByText('Rechercher').click()
 
     // Attendre que les résultats soient chargés
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
   }
 
   const assertOfferInList = (
@@ -295,7 +298,7 @@ describe('Create collective offers', () => {
     cy.findByText('Voir mes offres').click()
 
     // Attendre que la page des offres soit chargée
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersTemplate')
 
     // Rechercher l'offre
     // eslint-disable-next-line cypress/unsafe-to-chain-command
@@ -305,7 +308,7 @@ describe('Create collective offers', () => {
     cy.findByText('Rechercher').click()
 
     // Attendre que les résultats soient chargés
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersTemplate')
 
     // Vérifier les résultats
     const templateResults = [
@@ -325,11 +328,7 @@ describe('Create collective offers', () => {
     cy.findByText('À un groupe scolaire').click()
     cy.findByText('Dupliquer les informations d’une offre vitrine').click()
     cy.findByText('Étape suivante').click()
-    cy.intercept({
-      method: 'GET',
-      url: '/collective/offers?offererId=1&status=PUBLISHED&status=HIDDEN&status=ENDED&collectiveOfferType=template',
-    }).as('duplicateOffers')
-    cy.wait('@duplicateOffers')
+    cy.wait('@collectiveOffersTemplate')
     cy.findByText(newOfferName).click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
     cy.findByLabelText(/Titre de l’offre/)
@@ -405,7 +404,9 @@ describe('Create collective offers', () => {
 
     cy.stepLog({ message: 'I want to see my offer in draft status' })
 
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
@@ -417,7 +418,7 @@ describe('Create collective offers', () => {
     // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres réservables' }).click()
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
 
     const draftResults = [
       BOOKABLE_OFFERS_COLUMNS,
@@ -467,7 +468,7 @@ describe('Create collective offers', () => {
     cy.findByText('Rechercher').click()
 
     // Attendre que les résultats soient chargés
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
     assertOfferInList(`N°6${newOfferName}`, '3 RUE DE VALOIS 75008 Paris')
   })
 })

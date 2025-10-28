@@ -32,8 +32,8 @@ describe('Search collective offers', () => {
   const formatName = 'Concert'
 
   beforeEach(() => {
-    cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
-      'collectiveOffers'
+    cy.intercept({ method: 'GET', url: '/collective/bookable-offers*' }).as(
+      'collectiveOffersBookable'
     )
     cy.visit('/connexion')
     cy.sandboxCall(
@@ -47,7 +47,7 @@ describe('Search collective offers', () => {
         offerRejected = response.body.offerRejected
         offerArchived = response.body.offerArchived
         cy.visit('/offres/collectives')
-        cy.wait(['@collectiveOffers'])
+        cy.wait(['@collectiveOffersBookable'])
         cy.findAllByTestId('spinner').should('not.exist')
       }
     )
@@ -64,7 +64,9 @@ describe('Search collective offers', () => {
     cy.findByLabelText(/Nom de l’offre/).type(offerPublished.name)
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
 
@@ -96,7 +98,9 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: '1 results should be displayed' })
     const expectedResults = [
@@ -125,7 +129,9 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: '1 results should be displayed' })
     const expectedResults = [
@@ -156,7 +162,9 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -188,7 +196,9 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
+    cy.wait('@collectiveOffersBookable')
+      .its('response.statusCode')
+      .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -232,7 +242,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I validate my collective filters' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
@@ -272,7 +282,7 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'I make a new search' })
     cy.findByText('Rechercher').click()
-    cy.wait('@collectiveOffers')
+    cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '5 results should be displayed' })
     const expectedResults2 = [

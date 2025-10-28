@@ -26,15 +26,15 @@ describe('Adage confirmation', () => {
         providerApiKey = response.body.providerApiKey
         cy.intercept({
           method: 'GET',
-          url: `/collective/offers?offererId=${offer.id}&collectiveOfferType=offer`,
+          url: `/collective/bookable-offers?offererId=${offer.id}`,
         }).as('collectiveOffers')
         cy.intercept({
           method: 'GET',
-          url: '/collective/offers?offererId=1&status=BOOKED&collectiveOfferType=offer',
+          url: '/collective/bookable-offers?offererId=1&status=BOOKED',
         }).as('collectiveOffersBOOKED')
         cy.intercept({
           method: 'GET',
-          url: '/collective/offers?offererId=1&status=PREBOOKED&collectiveOfferType=offer',
+          url: '/collective/bookable-offers?offererId=1&status=PREBOOKED',
         }).as('collectiveOffersPREBOOKED')
         cy.intercept({
           method: 'GET',
