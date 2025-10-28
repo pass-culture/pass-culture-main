@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { type ForwardedRef, forwardRef, useEffect, useId, useRef } from 'react'
 
 import { Asset, type AssetProps } from '../common/Asset/Asset'
+import type { RequiredIndicator } from '../common/types'
 import styles from './Checkbox.module.scss'
 
 type CheckboxBaseProps = {
@@ -39,10 +40,8 @@ type CheckboxBaseProps = {
    * Whether the checkbox is required or not.
    */
   required?: boolean
-  /**
-   * Whether the required asterisk is displayed or not.
-   */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
 }
 
 export type CheckboxProps = CheckboxBaseProps &
@@ -93,7 +92,7 @@ export const Checkbox = forwardRef(
       onBlur,
       name,
       required,
-      asterisk = true,
+      requiredIndicator = 'symbol',
     }: CheckboxProps,
     ref?: ForwardedRef<HTMLInputElement>
   ) => {
@@ -149,7 +148,8 @@ export const Checkbox = forwardRef(
           />
           <div className={styles['checkbox-label-row']}>
             <div className={styles['checkbox-label-row-left']}>
-              {label} {required && asterisk && '*'}
+              {label}
+              {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
               {description && (
                 <p className={styles['checkbox-description']}>{description}</p>
               )}
