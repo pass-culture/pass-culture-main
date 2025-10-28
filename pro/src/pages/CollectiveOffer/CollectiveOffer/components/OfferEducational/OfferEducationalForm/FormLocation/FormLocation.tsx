@@ -164,7 +164,6 @@ export const FormLocation = ({
               ),
             },
           ]}
-          required
         />
       ),
     },
@@ -253,7 +252,6 @@ export const FormLocation = ({
           name="location.locationType"
           disabled={disableForm}
           checkedOption={watch('location.locationType')}
-          required
         />
       </div>
     </FormLayout.Row>

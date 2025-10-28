@@ -101,7 +101,6 @@ export const FormDates = ({
           },
         ]}
         name="datesType"
-        required
       />
     </div>
   )

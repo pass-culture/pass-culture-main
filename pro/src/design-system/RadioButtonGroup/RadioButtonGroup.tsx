@@ -9,7 +9,6 @@ import {
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
-import type { RequiredIndicator } from '../common/types'
 import styles from './RadioButtonGroup.module.scss'
 
 export type RadioButtonGroupProps = {
@@ -38,10 +37,6 @@ export type RadioButtonGroupProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   /** Event handler for blur */
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
-  /** Whether at least one of the radio in the group should be selected or not */
-  required?: boolean
-  /** What type of required indicator is displayed */
-  requiredIndicator?: RequiredIndicator
 }
 
 export const RadioButtonGroup = ({
@@ -58,8 +53,6 @@ export const RadioButtonGroup = ({
   asset,
   onChange,
   onBlur,
-  required,
-  requiredIndicator = 'symbol',
 }: RadioButtonGroupProps): JSX.Element => {
   const errorId = useId()
   const descriptionId = useId()
@@ -81,10 +74,7 @@ export const RadioButtonGroup = ({
         [styles['label-as-text']]: isStringLabel,
       })}
     >
-      <legend className={styles['radio-button-group-legend']}>
-        {label}
-        {required && requiredIndicator === 'symbol' ? <>&nbsp;*</> : ''}
-      </legend>
+      <legend className={styles['radio-button-group-legend']}>{label}</legend>
       <div className={styles['radio-button-group-header']}>
         {description && (
           <span

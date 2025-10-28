@@ -127,7 +127,6 @@ export const PhysicalLocationSubform = ({
         checkedOption={watch('address.offerLocation')}
         onChange={toggleIsVenueAddress}
         disabled={isDisabled}
-        required
       />
 
       {!isVenueAddress && (
