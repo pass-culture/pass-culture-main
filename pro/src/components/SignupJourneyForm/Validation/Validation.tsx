@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -18,7 +19,7 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
-import { updateUser } from '@/commons/store/user/reducer'
+import { type UserAccess, updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -37,6 +38,7 @@ export const Validation = (): JSX.Element | undefined => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
+  const userAccess: UserAccess = useSelector((store: any) => store.user.access)
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
@@ -116,18 +118,16 @@ export const Validation = (): JSX.Element | undefined => {
 
       // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
-      await dispatch(
+      const newAccess = await dispatch(
         setCurrentOffererById({
           nextCurrentOffererId: createdOfferer.id,
           shouldRefetch: true,
         })
-      )
-        .unwrap()
-        .then((didChangeAccess) => {
-          if (!didChangeAccess) {
-            navigate('/accueil')
-          }
-        })
+      ).unwrap()
+      // if the new access is full, we redirect to the home page
+      if (userAccess === newAccess && newAccess === 'full') {
+        navigate('/accueil')
+      }
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
         notify.error(RECAPTCHA_ERROR_MESSAGE)

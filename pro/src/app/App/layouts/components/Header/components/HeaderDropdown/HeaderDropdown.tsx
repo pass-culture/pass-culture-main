@@ -75,10 +75,10 @@ export const HeaderDropdown = () => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
-    const didRefreshAccess = await dispatch(
+    const newAccess = await dispatch(
       setCurrentOffererById({ nextCurrentOffererId })
     ).unwrap()
-    if (!didRefreshAccess) {
+    if (newAccess === 'full') {
       navigate('/accueil')
     }
   }

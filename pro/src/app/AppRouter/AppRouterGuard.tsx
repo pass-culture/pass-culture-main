@@ -29,7 +29,7 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
       return <Navigate to={loginUrl} replace />
     } else if (
       userAccess &&
-      !currentRoute?.meta?.canBePublic &&
+      !currentRoute?.meta?.canBeLoggedIn &&
       currentRoute?.meta?.public
     ) {
       const redirectUrl =
