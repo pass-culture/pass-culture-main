@@ -116,7 +116,7 @@ export const RadioButtonGroup = ({
           className={cn(styles[`radio-button-group-label-${LabelTag}`])}
         >
           {label}
-          {required && asterisk ? ' *' : ''}
+          {required && asterisk ? <>&nbsp;*</> : ''}
         </LabelTag>
         {description && (
           <span
