@@ -49,7 +49,7 @@ export const ModalHighlight = ({
           <ul>
             <li>
               - Créez votre offre d’évènement ou choisissez en une dans votre
-              liste d’offre
+              liste d’offres
             </li>
             <li>- Ouvrez votre offre</li>
             <li>- Choisissez le temps fort</li>
@@ -59,10 +59,12 @@ export const ModalHighlight = ({
           <Spinner />
         ) : (
           <>
-            <p className={styles['highlight-title']}>
+            <h2 className={styles['highlight-title']}>
               Les prochains temps forts :{' '}
-            </p>
-            <ul className={styles['cards-container']}>
+            </h2>
+            {/* biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
+            biome-ignore lint/a11y/noRedundantRoles: idem */}
+            <ul className={styles['cards-container']} role="list">
               {data?.map(
                 ({
                   id,
@@ -72,7 +74,9 @@ export const ModalHighlight = ({
                   availabilityTimespan,
                   highlightTimespan,
                 }) => (
-                  <li key={id}>
+                  // biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
+                  // biome-ignore lint/a11y/noRedundantRoles: idem
+                  <li key={id} role="listitem">
                     <HighlightCard
                       imageSrc={mediationUrl}
                       title={name}
@@ -93,7 +97,6 @@ export const ModalHighlight = ({
           to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
           isExternal
           icon={fullLinkIcon}
-          aria-label="Nouvelle fenêtre"
           opensInNewTab
         >
           En savoir plus sur les temps forts
@@ -102,7 +105,6 @@ export const ModalHighlight = ({
           to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
           isExternal
           icon={fullLinkIcon}
-          aria-label="Nouvelle fenêtre"
           opensInNewTab
         >
           Voir tout le calendrier
