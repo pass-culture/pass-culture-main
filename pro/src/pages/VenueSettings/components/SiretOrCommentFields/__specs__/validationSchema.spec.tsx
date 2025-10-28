@@ -103,7 +103,7 @@ describe('SiretOrCommentValidationSchema', () => {
         siren: 'NC0123456',
         isCaledonian: true,
       },
-      expectedErrors: ['Le RIDET doit comporter 12 caractères'],
+      expectedErrors: ['Le RIDET doit comporter 10 caractères'],
     },
     {
       description: 'ridet errors with no rid7 matching',

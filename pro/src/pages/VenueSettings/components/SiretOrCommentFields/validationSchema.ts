@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import {
   isRidetStartingWithRid7,
   isSiretStartingWithSiren,
-  RIDET_WITH_PREFIX_LENGTH,
+  RIDET_LENGTH,
   SIRET_LENGTH,
   validRidetWithPrefixLength,
   validSiretLength,
@@ -30,7 +30,7 @@ export const SiretOrCommentValidationSchema = yup.object().shape({
           .required('Veuillez renseigner un RIDET')
           .test(
             'len',
-            `Le RIDET doit comporter ${RIDET_WITH_PREFIX_LENGTH} caractères`,
+            `Le RIDET doit comporter ${RIDET_LENGTH} caractères`,
             (ridetWithPrefix) =>
               Boolean(ridetWithPrefix) &&
               validRidetWithPrefixLength(ridetWithPrefix)

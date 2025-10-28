@@ -30,7 +30,7 @@ export const toFormValues = ({
     venueSiret: venue.pricingPoint?.id || '',
     publicName: venue.publicName || '',
     siret: venue.isCaledonian
-      ? unhumanizeRidet(venue.siret || '', true, false)
+      ? unhumanizeRidet(venue.siret || '', false, false)
       : humanizeSiret(venue.siret || ''),
     venueType: venue.venueType.value,
     withdrawalDetails: venue.withdrawalDetails || '',

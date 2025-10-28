@@ -84,7 +84,7 @@ export const SiretOrCommentFields = ({
   }
 
   const onRidetChange = (ridet: string) => {
-    setValue('siret', unhumanizeRidet(ridet || '', true, false))
+    setValue('siret', unhumanizeRidet(ridet || '', false, false))
 
     if (!errors.siret?.message) {
       setIsFieldNameFrozen?.(false)

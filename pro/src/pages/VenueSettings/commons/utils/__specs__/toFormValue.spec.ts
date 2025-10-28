@@ -121,6 +121,6 @@ describe('toFormValues', () => {
         },
       },
     })
-    expect(formValues.siret).toEqual('NC0123456789')
+    expect(formValues.siret).toEqual('0123456789')
   })
 })
