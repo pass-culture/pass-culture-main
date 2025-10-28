@@ -53,7 +53,7 @@ describe('IconRadioGroup', () => {
   })
 
   it('should not show the asterisk if the field is required but the asterisk is disabled', () => {
-    renderIconRadioGroup({ required: true, asterisk: false })
+    renderIconRadioGroup({ required: true, requiredIndicator: null })
 
     expect(screen.queryByText('Legend *')).not.toBeInTheDocument()
   })

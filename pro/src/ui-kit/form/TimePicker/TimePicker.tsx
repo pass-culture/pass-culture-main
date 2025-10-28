@@ -36,7 +36,7 @@ export const TimePicker = forwardRef(
       disabled,
       label,
       required = false,
-      requiredIndicator,
+      requiredIndicator = 'symbol',
       error,
       value,
       onChange,

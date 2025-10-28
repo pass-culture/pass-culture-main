@@ -11,6 +11,7 @@ import {
 } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import { Button } from '@/ui-kit/Button/Button'
 
 import styles from './TextArea.module.scss'
@@ -54,10 +55,8 @@ export type TextAreaProps = {
    */
   disabled?: boolean
   hasDefaultPlaceholder?: boolean
-  /**
-   * If the asterisk should be displayed when the field is required.
-   */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /**
    * Error text displayed under the field. If the error is trythy, the field has the error styles.
    */
@@ -109,7 +108,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       label,
       maxLength = 1000,
       required = false,
-      asterisk = true,
+      requiredIndicator = 'symbol',
       initialRows = 7,
       hasTemplateButton = false,
       wordingTemplate,
@@ -179,7 +178,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             })}
             htmlFor={fieldId}
           >
-            {label} {required && asterisk && '*'}
+            {label}
+            {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
           </label>
           {description && (
             <span

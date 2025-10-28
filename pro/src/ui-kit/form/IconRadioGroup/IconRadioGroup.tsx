@@ -1,6 +1,7 @@
 import { useId } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import { IconRadio } from '@/ui-kit/form/IconRadio/IconRadio'
 
 import styles from './IconRadioGroup.module.scss'
@@ -25,7 +26,8 @@ export interface IconRadioGroupProps {
    */
   group: IconRadioGroupValues[]
   isOptional?: boolean
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   error?: string
   required?: boolean
   value: string
@@ -37,7 +39,7 @@ export const IconRadioGroup = ({
   name,
   legend,
   required = false,
-  asterisk = true,
+  requiredIndicator = 'symbol',
   error,
   value,
   onChange,
@@ -59,7 +61,7 @@ export const IconRadioGroup = ({
     >
       <legend className={styles['icon-radio-group-legend']}>
         {legend}
-        {required && asterisk && ' *'}
+        {required && requiredIndicator === 'symbol' && ' *'}
       </legend>
       {displayScale && (
         <p className={styles['visually-hidden']} id={scaleId}>

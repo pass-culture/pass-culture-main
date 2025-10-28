@@ -69,7 +69,7 @@ export const FormStock = ({
         error={formState.errors.startDatetime?.message}
         className={styles['input-date']}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <DatePicker
         disabled={!canEditDates}
@@ -86,7 +86,7 @@ export const FormStock = ({
         minDate={minEndDatetime}
         className={styles['input-date']}
         required
-        asterisk={false}
+        requiredIndicator={null}
         {...register('endDatetime')}
         error={formState.errors.endDatetime?.message}
       />
