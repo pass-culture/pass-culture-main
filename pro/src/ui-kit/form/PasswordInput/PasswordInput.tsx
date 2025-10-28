@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import React, { type ForwardedRef, useState } from 'react'
 
-import { TextInput } from '@/design-system/TextInput/TextInput'
+import {
+  TextInput,
+  type TextInputProps,
+} from '@/design-system/TextInput/TextInput'
 import strokeHideIcon from '@/icons/full-hide.svg'
 import strokeShowIcon from '@/icons/full-show.svg'
 
@@ -13,7 +16,7 @@ export interface PasswordInputProps {
   description?: string
   autoComplete?: string
   error?: string
-  asterisk?: boolean
+  requiredIndicator?: TextInputProps['requiredIndicator']
   required?: boolean
 }
 
@@ -25,7 +28,7 @@ export const PasswordInput = React.forwardRef(
       description,
       autoComplete,
       error,
-      asterisk = true,
+      requiredIndicator,
       required,
       ...props
     }: PasswordInputProps,
@@ -53,7 +56,7 @@ export const PasswordInput = React.forwardRef(
           type={isPasswordHidden ? 'password' : 'text'}
           autoComplete={autoComplete}
           error={error}
-          asterisk={asterisk}
+          requiredIndicator={requiredIndicator}
           required={required}
           iconButton={{
             icon: isPasswordHidden ? strokeHideIcon : strokeShowIcon,
