@@ -39,10 +39,19 @@ export const HasError: Story = {
   },
 }
 
-export const IsRequired: Story = {
+export const IsRequiredSymbol: Story = {
   args: {
     label: 'Required',
     required: true,
+    requiredIndicator: 'symbol'
+  },
+}
+
+export const IsRequiredExplicit: Story = {
+  args: {
+    label: 'Required',
+    required: true,
+    requiredIndicator: 'explicit'
   },
 }
 
@@ -85,6 +94,8 @@ export const WithEverything: Story = {
     description: 'Format: test@test.co',
     error: 'This is an error message',
     maxCharactersCount: 200,
+    required: true,
+    requiredIndicator: 'explicit',
     icon: strokeSearchIcon,
     iconButton: {
       icon: fullClearIcon,

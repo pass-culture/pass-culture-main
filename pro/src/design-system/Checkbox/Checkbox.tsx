@@ -149,7 +149,20 @@ export const Checkbox = forwardRef(
           <div className={styles['checkbox-label-row']}>
             <div className={styles['checkbox-label-row-left']}>
               {label}
-              {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
+              {required && (
+                <>
+                  {requiredIndicator === 'symbol' && <>&nbsp;*</>}
+                  {requiredIndicator === 'explicit' && (
+                    <span
+                      className={
+                        styles['checkbox-label-required-indicator-explicit']
+                      }
+                    >
+                      &nbsp;-&nbsp;obligatoire
+                    </span>
+                  )}
+                </>
+              )}
               {description && (
                 <p className={styles['checkbox-description']}>{description}</p>
               )}

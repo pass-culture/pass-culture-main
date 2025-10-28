@@ -19,6 +19,13 @@
     align-items: center;
     gap: var(--size-spacing-m);
     cursor: pointer;
+
+    &-required-indicator-explicit {
+      @include fonts.body-accent-xs;
+
+      color: var(--color-text-subtle);
+      vertical-align: text-bottom;
+    }
   }
 
   &-input {
@@ -114,6 +121,10 @@
 .checkbox:hover {
   & > .checkbox-label {
     color: var(--color-text-brand-primary-hover);
+
+    .checkbox-label-required-indicator-explicit {
+      color: var(--color-text-brand-primary-hover);
+    }
   }
 
   & > .checkbox-label .checkbox-input {
@@ -136,7 +147,11 @@
 //  HAS ERROR
 .checkbox.has-error {
   & > .checkbox-label {
-    color: var(--color-text-default);
+    color: var(--color-text-error);
+
+    .checkbox-label-required-indicator-explicit {
+      color: var(--color-text-error);
+    }
   }
 
   & > .checkbox-label .checkbox-input {
@@ -161,6 +176,10 @@
     opacity: 1;
     cursor: default;
     color: var(--color-text-disabled);
+
+    .checkbox-label-required-indicator-explicit {
+      color: var(--color-text-disabled);
+    }
   }
 
   & > .checkbox-label .checkbox-input {
@@ -243,8 +262,12 @@
 .checkbox.detailed.has-error {
   border-color: var(--color-border-error);
 
-  & > .checkbox-label .checkbox-asset.icon {
-    color: var(--color-icon-error);
+  & > .checkbox-label {
+    color: var(--color-text-default);
+
+    .checkbox-asset.icon {
+      color: var(--color-icon-error);
+    }
   }
 }
 

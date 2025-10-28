@@ -48,12 +48,23 @@ export const DefaultIndeterminate: StoryObj<typeof Checkbox> = {
   },
 }
 
-export const DefaultRequired: StoryObj<typeof Checkbox> = {
+export const DefaultRequiredSymbol: StoryObj<typeof Checkbox> = {
   args: {
     label: 'Checkbox label',
     variant: 'default',
     checked: true,
     required: true,
+    requiredIndicator: 'symbol'
+  },
+}
+
+export const DefaultRequiredExplicit: StoryObj<typeof Checkbox> = {
+  args: {
+    label: 'Checkbox label',
+    variant: 'default',
+    checked: true,
+    required: true,
+    requiredIndicator: 'explicit'
   },
 }
 
