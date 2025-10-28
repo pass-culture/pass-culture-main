@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
   CollectiveOfferTemplateResponseModel,
   ListOffersVenueResponseModel,
 } from '@/apiClient/v1'
@@ -17,7 +17,9 @@ import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cel
 import styles from '../Cells.module.scss'
 
 export interface OfferEventDateCellProps {
-  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  offer:
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel
   rowId: string
   className?: string
 }
@@ -40,7 +42,9 @@ export const OfferEventDateCell = ({
   const isTemplateTable = !isCollectiveOfferBookable(offer)
 
   const getFormattedDatesForOffer = (
-    offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+    offer:
+      | CollectiveOfferTemplateResponseModel
+      | CollectiveOfferBookableResponseModel
   ) => {
     const offerDatetimes = offer.dates
 

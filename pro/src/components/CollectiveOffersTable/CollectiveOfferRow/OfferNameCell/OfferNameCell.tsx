@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { Link } from 'react-router'
 
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
@@ -12,7 +12,9 @@ import { Thumb } from '@/ui-kit/Thumb/Thumb'
 import styles from '../Cells.module.scss'
 
 export interface OfferNameCellProps {
-  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  offer:
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel
   offerLink: string
   rowId: string
   displayThumb?: boolean

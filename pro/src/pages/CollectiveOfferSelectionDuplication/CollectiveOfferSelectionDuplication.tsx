@@ -5,10 +5,7 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferType,
-} from '@/apiClient/v1'
+import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
@@ -60,10 +57,11 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     offererId,
     venueId,
     status,
-    creationMode,
     periodBeginningDate,
     periodEndingDate,
     format,
+    locationType,
+    offererAddressId,
   } = serializeApiCollectiveFilters(
     {
       ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
@@ -82,16 +80,16 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, nameOrIsbn],
     () =>
-      api.getCollectiveOffers(
+      api.getCollectiveOfferTemplates(
         nameOrIsbn,
         offererId,
         status,
         venueId,
-        creationMode,
         periodBeginningDate,
         periodEndingDate,
-        CollectiveOfferType.TEMPLATE,
-        format
+        format,
+        locationType,
+        offererAddressId
       ),
     {
       onError: () => {

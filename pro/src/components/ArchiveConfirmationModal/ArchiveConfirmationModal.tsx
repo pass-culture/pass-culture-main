@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router'
 
 import type {
+  CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -20,9 +20,9 @@ interface OfferEducationalModalProps<T extends Offer> {
   onDismiss(): void
   onValidate(): void
   offer?:
-    | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferResponseModel
+    | GetCollectiveOfferResponseModel
+    | CollectiveOfferBookableResponseModel
     | CollectiveOfferTemplateResponseModel
   hasMultipleOffers?: boolean
   selectedOffers?: T[]

@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 
 import {
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
@@ -22,7 +22,9 @@ import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
 export type CollectiveOfferRowProps<
-  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+  T extends
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel,
 > = {
   isSelected: boolean
   offer: T
@@ -32,7 +34,9 @@ export type CollectiveOfferRowProps<
 }
 
 function isCollectiveOfferPublishedOrPreBooked(
-  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+  offer:
+    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferTemplateResponseModel
 ) {
   return (
     offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
@@ -41,7 +45,9 @@ function isCollectiveOfferPublishedOrPreBooked(
 }
 
 export const CollectiveOfferRow = <
-  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+  T extends
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel,
 >({
   offer,
   isSelected,
@@ -63,7 +69,7 @@ export const CollectiveOfferRow = <
   const editionOfferLink = draftOfferLink || `/offre/${id}/collectif/edition`
 
   const bookingLimitDate = isCollectiveOfferBookable(offer)
-    ? offer.stocks[0]?.bookingLimitDatetime
+    ? offer.stock?.bookingLimitDatetime
     : null
 
   const hasExpirationRow =

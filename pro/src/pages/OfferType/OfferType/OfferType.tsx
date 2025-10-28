@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { CollectiveOfferType as CollectiveOfferApiType } from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -119,26 +118,28 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
         offererId,
         venueId,
         status,
-        creationMode,
         periodBeginningDate,
         periodEndingDate,
         format,
+        locationType,
+        offererAddressId,
       } = serializeApiCollectiveFilters(
         apiFilters,
         DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
       )
 
-      const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
-        nameOrIsbn,
-        offererId,
-        status,
-        venueId,
-        creationMode,
-        periodBeginningDate,
-        periodEndingDate,
-        CollectiveOfferApiType.TEMPLATE,
-        format
-      )
+      const templateOffersOnSelectedVenue =
+        await api.getCollectiveOfferTemplates(
+          nameOrIsbn,
+          offererId,
+          status,
+          venueId,
+          periodBeginningDate,
+          periodEndingDate,
+          format,
+          locationType,
+          offererAddressId
+        )
 
       if (templateOffersOnSelectedVenue.length === 0) {
         return notify.error(

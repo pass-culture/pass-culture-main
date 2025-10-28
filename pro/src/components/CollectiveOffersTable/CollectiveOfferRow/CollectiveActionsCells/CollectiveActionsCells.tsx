@@ -9,7 +9,7 @@ import { api } from '@/apiClient/api'
 import { getErrorCode, isErrorAPIError } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
-  type CollectiveOfferResponseModel,
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
@@ -54,11 +54,15 @@ import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialo
 
 export interface CollectiveActionsCellsProps {
   rowId: string
-  offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+  offer:
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel
   editionOfferLink: string
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   deselectOffer: (
-    offer: CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel
+    offer:
+      | CollectiveOfferTemplateResponseModel
+      | CollectiveOfferBookableResponseModel
   ) => void
   isSelected: boolean
   className?: string
