@@ -2,6 +2,7 @@ import cn from 'classnames'
 import type React from 'react'
 import { useId } from 'react'
 
+import type { RequiredIndicator } from '@/design-system/common/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCloseIcon from '@/icons/full-close.svg'
 import fullHelpIcon from '@/icons/full-help.svg'
@@ -31,11 +32,8 @@ type FieldLayoutBaseProps = {
    * It will display an asterisk next to the label.
    */
   isOptional?: boolean
-  /**
-   * Can be false only when it's the only field in a form and it's mandatory,
-   * or when all fields are mandatory and the form indicates that all fields are mandatory
-   */
-  hideAsterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /**
    * A custom class for the field layout,
    * where label, description, input, and footer are displayed.
@@ -79,7 +77,7 @@ export const FieldLayout = ({
   count = undefined,
   maxLength = undefined,
   isOptional = false,
-  hideAsterisk = false,
+  requiredIndicator = 'symbol',
   inline = false,
   classNameLabel,
   classNameFooter,
@@ -125,7 +123,8 @@ export const FieldLayout = ({
             )}
             htmlFor={name}
           >
-            {label} {!isOptional && !hideAsterisk && '*'}
+            {label}
+            {!isOptional && requiredIndicator === 'symbol' && <>&nbsp;*</>}
           </label>
           {help && (
             <Button

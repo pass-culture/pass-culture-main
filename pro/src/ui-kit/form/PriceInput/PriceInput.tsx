@@ -2,6 +2,7 @@ import React, { type ForwardedRef, useEffect, useRef, useState } from 'react'
 
 import type { Currency } from '@/commons/core/shared/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import {
   TextInput,
   type TextInputProps,
@@ -14,7 +15,7 @@ import {
  */
 export type PriceInputProps = Pick<
   TextInputProps,
-  'name' | 'max' | 'disabled' | 'description'
+  'name' | 'max' | 'disabled' | 'description' | 'required'
 > & {
   /**
    * A label for the input,
@@ -41,7 +42,8 @@ export type PriceInputProps = Pick<
    * A flag to show the "Gratuit" checkbox.
    */
   showFreeCheckbox?: boolean
-  hideAsterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /**
    * A custom error message to be displayed.
    * If this prop is provided, the error message will be displayed and the field will be marked as errored
@@ -80,7 +82,8 @@ export const PriceInput = React.forwardRef(
       max,
       disabled,
       showFreeCheckbox,
-      hideAsterisk = false,
+      requiredIndicator = 'symbol',
+      required = true,
       error,
       description,
       currency = 'EUR',
@@ -158,7 +161,7 @@ export const PriceInput = React.forwardRef(
         <TextInput
           ref={priceRef}
           autoComplete="off"
-          required={!hideAsterisk}
+          required={required}
           name={name}
           label={`${label} ${labelCurrency}`}
           value={value?.toString() ?? ''}
@@ -168,7 +171,7 @@ export const PriceInput = React.forwardRef(
           max={max}
           disabled={disabled}
           description={description}
-          requiredIndicator={!hideAsterisk ? 'symbol' : null}
+          requiredIndicator={requiredIndicator}
           onChange={onTextInputChange}
           onBlur={onBlur}
           onKeyDown={(event) => {
