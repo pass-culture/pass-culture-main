@@ -124,7 +124,6 @@ export const OfferLocation = ({
         checkedOption={offerLocation}
         onChange={onChangeOfferLocation}
         disabled={readOnlyFields.includes('offerLocation')}
-        required
       />
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>

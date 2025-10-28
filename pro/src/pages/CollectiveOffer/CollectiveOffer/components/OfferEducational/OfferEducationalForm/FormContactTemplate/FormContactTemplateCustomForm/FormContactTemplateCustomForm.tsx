@@ -58,7 +58,6 @@ export const FormContactTemplateCustomForm = ({
             ),
           },
         ]}
-        required
       />
     </div>
   )
