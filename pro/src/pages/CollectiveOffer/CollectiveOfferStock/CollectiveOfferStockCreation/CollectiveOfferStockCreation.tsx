@@ -109,7 +109,6 @@ export const CollectiveOfferStockCreation = ({
             ...offer.collectiveStock,
             ...response,
             isBooked: false,
-            isCancellable: offer.isCancellable,
           },
         },
         { revalidate: false }

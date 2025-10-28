@@ -18,7 +18,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferAllowedAction
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.models import HasImageMixin
@@ -116,24 +115,6 @@ class CollectiveOfferIsArchiveTest:
         assert len(results) == 1
         assert offer_archived.id in results_ids
         assert offer_not_archived.id not in results_ids
-
-
-class CollectiveStockIsCancellableFromOfferer:
-    def test_collective_stock_is_cancellable(self):
-        stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.CancelledCollectiveBookingFactory.build(collectiveStock=stock)
-        factories.PendingCollectiveBookingFactory.build(collectiveStock=stock)
-        assert stock.is_cancellable_from_offerer
-
-    def test_collective_stock_has_used_collective_booking(self):
-        stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.UsedCollectiveBookingFactory.build(collectiveStock=stock)
-        assert not stock.is_cancellable_from_offerer
-
-    def test_collective_stock_has_reimbursed_collective_booking(self):
-        stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.ReimbursedCollectiveBookingFactory.build(collectiveStock=stock)
-        assert not stock.is_cancellable_from_offerer
 
 
 class HasImageMixinTest:

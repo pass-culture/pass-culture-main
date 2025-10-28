@@ -895,12 +895,6 @@ class CollectiveOffer(
         return " ".join(text_data)
 
     @property
-    def is_cancellable_from_offerer(self) -> bool:
-        if self.collectiveStock is None:
-            return False
-        return self.collectiveStock.is_cancellable_from_offerer
-
-    @property
     def lastBooking(self) -> "CollectiveBooking | None":
         stock = self.collectiveStock
         if stock is None:
@@ -1357,13 +1351,6 @@ class CollectiveStock(PcObject, models.Model):
     def isSoldOut(self) -> bool:
         non_cancelled_bookings = self.get_non_cancelled_bookings()
         return len(non_cancelled_bookings) > 0
-
-    @property
-    def is_cancellable_from_offerer(self) -> bool:
-        if any(booking.is_cancellable_from_offerer for booking in self.collectiveBookings):
-            return True
-
-        return False
 
 
 class EducationalInstitution(PcObject, models.Model):

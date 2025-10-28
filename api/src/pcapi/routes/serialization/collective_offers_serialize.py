@@ -447,7 +447,6 @@ class PriceDetail(ConstrainedStr):
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
     isSoldOut: bool = Field(alias="isBooked")
-    is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -501,11 +500,7 @@ class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
         if key == "history":
             return collective_history_serialize.get_collective_offer_history(offer)
 
-        # we return these fields for a template for now
-        # we can remove this once the GET routes are separated
-        if key in ("hasBookingLimitDatetimesPassed", "isCancellable") and isinstance(
-            offer, educational_models.CollectiveOfferTemplate
-        ):
+        if key == "hasBookingLimitDatetimesPassed" and isinstance(offer, educational_models.CollectiveOfferTemplate):
             return False
 
         return super().get(key, default)
@@ -528,7 +523,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
-    is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None

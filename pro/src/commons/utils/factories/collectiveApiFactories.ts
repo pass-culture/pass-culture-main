@@ -104,7 +104,6 @@ export const listOffersVenueFactory = (
 const sharedCollectiveOfferData = {
   isActive: true,
   displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-  isCancellable: true,
   isTemplate: true,
   allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
   name: 'Offre de test',
@@ -183,7 +182,6 @@ export const getCollectiveOfferCollectiveStockFactory = (
     endDatetime: add(Date.now(), { days: 3 }).toISOString(),
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
     isBooked: false,
-    isCancellable: false,
     ...customGetCollectiveOfferCollectiveStock,
   }
 }

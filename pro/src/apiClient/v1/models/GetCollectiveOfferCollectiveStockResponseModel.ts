@@ -8,7 +8,6 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
   endDatetime?: string | null;
   id: number;
   isBooked: boolean;
-  isCancellable: boolean;
   numberOfTickets?: number | null;
   price: number;
   startDatetime?: string | null;

@@ -41,7 +41,6 @@ export type GetCollectiveOfferResponseModel = {
   interventionArea: Array<string>;
   isActive: boolean;
   isBookable: boolean;
-  isCancellable: boolean;
   isNonFreeOffer?: boolean | null;
   isPublicApi: boolean;
   isTemplate?: boolean;
