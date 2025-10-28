@@ -92,6 +92,7 @@ def validate_user(token: str) -> None:
 
 @private_api.route("/users/tuto-seen", methods=["PATCH"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_user_tuto_seen() -> None:
     user = current_user._get_current_object()  # get underlying User object from proxy
@@ -100,6 +101,7 @@ def patch_user_tuto_seen() -> None:
 
 @private_api.route("/users/rgs-seen", methods=["PATCH"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_pro_user_rgs_seen() -> None:
     user = current_user._get_current_object()  # get underlying User object from proxy
@@ -108,6 +110,7 @@ def patch_pro_user_rgs_seen() -> None:
 
 @private_api.route("/users/current", methods=["GET"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=users_serializers.SharedCurrentUserResponseModel, api=blueprint.pro_private_schema)
 def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
     user = current_user._get_current_object()  # get underlying User object from proxy
@@ -116,6 +119,7 @@ def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
 
 @private_api.route("/users/identity", methods=["PATCH"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=users_serializers.UserIdentityResponseModel, api=blueprint.pro_private_schema)
 def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_serializers.UserIdentityResponseModel:
     user = current_user._get_current_object()
@@ -126,13 +130,13 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
             "firstName", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
         )
         raise errors
-    attributes = body.dict()
-    users_api.update_user_info(user, author=current_user, **attributes)
+    users_api.update_user_info(user, author=current_user, first_name=body.first_name, last_name=body.last_name)
     return users_serializers.UserIdentityResponseModel.from_orm(user)
 
 
 @private_api.route("/users/phone", methods=["PATCH"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=users_serializers.UserPhoneResponseModel, api=blueprint.pro_private_schema)
 def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serializers.UserPhoneResponseModel:
     user = current_user._get_current_object()
@@ -143,12 +147,12 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
             "phoneNumber", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
         )
         raise errors
-    attributes = body.dict()
-    users_api.update_user_info(user, author=current_user, **attributes)
+    users_api.update_user_info(user, author=current_user, phone_number=body.phone_number)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
 
 
 @private_api.route("/users/validate_email", methods=["PATCH"])
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
     errors = ApiErrors()
@@ -170,6 +174,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
 
 @private_api.route("/users/email", methods=["POST"])
 @login_required
+@atomic()
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
     errors = ApiErrors()
@@ -201,6 +206,7 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
 
 @private_api.route("/users/email_pending_validation", methods=["GET"])
 @login_required
+@atomic()
 @spectree_serialize(response_model=users_serializers.UserEmailValidationResponseModel, api=blueprint.pro_private_schema)
 def get_user_email_pending_validation() -> users_serializers.UserEmailValidationResponseModel:
     user = current_user._get_current_object()
@@ -210,6 +216,7 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
 
 @private_api.route("/users/password", methods=["POST"])
 @login_required
+@atomic()
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> None:
     errors = ApiErrors()
@@ -275,6 +282,7 @@ def signout() -> None:
 
 
 @private_api.route("/users/cookies", methods=["POST"])
+@atomic()
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def cookies_consent(body: CookieConsentRequest) -> None:
     logger.info(
@@ -350,6 +358,7 @@ def connect_as(token: str) -> Response:
 
 @private_api.route("/users/log-user-review", methods=["POST"])
 @login_required
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None:
     if not FeatureToggle.ENABLE_PRO_FEEDBACK.is_active():

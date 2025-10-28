@@ -576,6 +576,7 @@ def change_email(
 
     try:
         current_user.email = new_email
+        # TODO: why using email_history to check if user need to be commited?
         repository.save(current_user, email_history)
     except ApiErrors as error:
         # The caller might not want to inform the end client that the
@@ -588,7 +589,10 @@ def change_email(
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
-    db.session.commit()
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     logger.info("User has changed their email", extra={"user": current_user.id})
 
@@ -606,7 +610,11 @@ def change_pro_user_email(
 
 def update_user_password(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
-    repository.save(user)
+    db.session.add(user)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def update_password_and_external_user(user: models.User, new_password: str) -> None:
@@ -704,11 +712,13 @@ def update_user_info(
         user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
+    db.session.add(user)
     if commit:
         snapshot.add_action()
-        repository.save(user)
-    else:
-        repository.add_to_session(user)
+        if transaction_manager.is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
@@ -855,12 +865,20 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
 def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
-    repository.save(user)
+    db.session.add(user)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def set_pro_rgs_as_seen(user: models.User) -> None:
     user.hasSeenProRgs = True
-    repository.save(user)
+    db.session.add(user)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def update_last_connection_date(user: models.User) -> None:
