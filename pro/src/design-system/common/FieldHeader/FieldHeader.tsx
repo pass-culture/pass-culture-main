@@ -22,20 +22,25 @@ export function FieldHeader({
 }: FieldHeaderProps) {
   return (
     <div
-      className={classNames({
+      className={classNames(styles['field-header'], {
         [styles['has-description']]: Boolean(description),
       })}
     >
-      <label htmlFor={fieldId} className={styles['label']}>
-        {label}
-        {required && requiredIndicator === 'symbol' && (
-          <span className={styles['label-mandatory-symbol']}>*</span>
+      <div className={styles['field-header-left']}>
+        <label htmlFor={fieldId} className={styles['label']}>
+          {label}
+          {required && requiredIndicator === 'symbol' && (
+            <span className={styles['label-mandatory-symbol']}>*</span>
+          )}
+        </label>
+        {description && (
+          <p id={descriptionId} className={styles['description']}>
+            {description}
+          </p>
         )}
-      </label>
-      {description && (
-        <p id={descriptionId} className={styles['description']}>
-          {description}
-        </p>
+      </div>
+      {required && requiredIndicator === 'explicit' && (
+        <div className={styles['field-header-right']}>Obligatoire</div>
       )}
     </div>
   )

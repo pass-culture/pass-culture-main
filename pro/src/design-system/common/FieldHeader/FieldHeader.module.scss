@@ -1,7 +1,20 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.label {
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--size-spacing-s);
   margin-bottom: var(--size-spacing-xs);
+
+  &-right {
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
+  }
+}
+
+.label {
   display: block;
   overflow-wrap: anywhere;
 
@@ -21,6 +34,5 @@
   @include fonts.body-accent-xs;
 
   color: var(--color-text-subtle);
-  margin-bottom: var(--size-spacing-xs);
   overflow-wrap: anywhere;
 }
