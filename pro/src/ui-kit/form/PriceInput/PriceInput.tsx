@@ -168,7 +168,7 @@ export const PriceInput = React.forwardRef(
           max={max}
           disabled={disabled}
           description={description}
-          asterisk={!hideAsterisk}
+          requiredIndicator={!hideAsterisk ? 'symbol' : null}
           onChange={onTextInputChange}
           onBlur={onBlur}
           onKeyDown={(event) => {

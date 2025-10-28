@@ -107,7 +107,7 @@ export const FormStock = ({
         type="number"
         icon={strokeCollaborator}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -118,7 +118,7 @@ export const FormStock = ({
         min={0}
         type="number"
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
     </FormLayout.Row>
   )
