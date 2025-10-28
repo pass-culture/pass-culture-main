@@ -19,6 +19,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import eligibility_api
@@ -209,6 +210,10 @@ class UserProfileGetterDict(GetterDict):
                 return profile_options.ActivityIdEnum(activity.name)
             except ValueError:
                 return None
+        if key == "isEligibleForBonification":
+            return users_api.get_user_is_eligible_for_bonification(user)
+        if key == "bonificationStatus":
+            return users_api.get_user_bonification_status(user)
 
         return super().get(key, default)
 
@@ -247,6 +252,8 @@ class UserProfileResponse(ConfiguredBaseModel):
     status: YoungStatusResponse
     subscription_message: subscription_serialization.SubscriptionMessage | None
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
+    is_eligible_for_bonification: bool
+    bonification_status: subscription_models.FraudCheckStatus | None
 
     _convert_recredit_amount_to_show = validator("recredit_amount_to_show", pre=True, allow_reuse=True)(convert_to_cent)
 

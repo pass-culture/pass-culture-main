@@ -26,6 +26,7 @@ if typing.TYPE_CHECKING:
 
 
 class FraudCheckType(enum.Enum):
+    BONUS_CREDIT = "bonus_credit"
     DMS = "dms"
     EDUCONNECT = "educonnect"
     HONOR_STATEMENT = "honor_statement"

@@ -2336,6 +2336,19 @@
                 "title": "FavoriteResponse",
                 "type": "object"
             },
+            "FraudCheckStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "canceled",
+                    "error",
+                    "ko",
+                    "ok",
+                    "pending",
+                    "started",
+                    "suspiscious"
+                ],
+                "title": "FraudCheckStatus"
+            },
             "GTL": {
                 "properties": {
                     "code": {
@@ -5182,6 +5195,14 @@
                         "title": "Birthdate",
                         "type": "string"
                     },
+                    "bonificationStatus": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/FraudCheckStatus"
+                            }
+                        ],
+                        "nullable": true
+                    },
                     "bookedOffers": {
                         "additionalProperties": {
                             "type": "integer"
@@ -5281,6 +5302,10 @@
                         "title": "Iseligibleforbeneficiaryupgrade",
                         "type": "boolean"
                     },
+                    "isEligibleForBonification": {
+                        "title": "Iseligibleforbonification",
+                        "type": "boolean"
+                    },
                     "lastName": {
                         "nullable": true,
                         "title": "Lastname",
@@ -5355,7 +5380,8 @@
                     "roles",
                     "showEligibleCard",
                     "status",
-                    "subscriptions"
+                    "subscriptions",
+                    "isEligibleForBonification"
                 ],
                 "title": "UserProfileResponse",
                 "type": "object"

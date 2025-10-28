@@ -134,6 +134,7 @@ class AccountTest:
                 "physical": None,
             },
             "birthDate": "2000-01-11",
+            "bonificationStatus": None,
             "depositType": "GRANT_18",
             "depositActivationDate": "2018-06-01T00:00:00Z",
             "firstDepositActivationDate": "2015-02-03T00:00:00Z",
@@ -145,6 +146,7 @@ class AccountTest:
             "hasProfileExpired": False,
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
+            "isEligibleForBonification": False,
             "needsToFillCulturalSurvey": True,
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
@@ -539,6 +541,42 @@ class AccountTest:
 
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is False
+
+    def test_get_user_profile_is_eligible_for_bonification(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["isEligibleForBonification"] is True
+        assert response.json["bonificationStatus"] is None
+
+    @pytest.mark.parametrize("age", [17, 19, 30])
+    def test_get_user_profile_non_eligible_for_bonification_because_of_age(self, client, age):
+        user = users_factories.BeneficiaryFactory(age=age)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["isEligibleForBonification"] is False
+        assert response.json["bonificationStatus"] is None
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            subscription_models.FraudCheckStatus.OK,
+            subscription_models.FraudCheckStatus.PENDING,
+            subscription_models.FraudCheckStatus.STARTED,
+            subscription_models.FraudCheckStatus.SUSPICIOUS,
+        ],
+    )
+    def test_get_user_profile_non_eligible_for_bonification_because_of_process_status(self, client, status):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BeneficiaryFraudCheckFactory(
+            type=subscription_models.FraudCheckType.BONUS_CREDIT,
+            status=status,
+            user=user,
+        )
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["isEligibleForBonification"] is False
+        assert response.json["bonificationStatus"] == status.value
 
 
 class AccountCreationTest:
