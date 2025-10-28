@@ -451,10 +451,7 @@ def patch_collective_offer_public(
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
 
     # edition errors
-    except (
-        educational_exceptions.CollectiveOfferNotEditable,
-        educational_exceptions.CollectiveOfferStockBookedAndBookingNotPending,
-    ):
+    except educational_exceptions.CollectiveOfferNotEditable:
         raise api_errors.ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
 
     # dates errors

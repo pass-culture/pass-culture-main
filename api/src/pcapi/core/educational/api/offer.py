@@ -1077,7 +1077,7 @@ def update_collective_offer(offer_id: int, body: "collective_offers_serialize.Pa
         offerer = offerers_repository.get_by_collective_offer_id(offer_to_update.id)
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
         if not new_venue:
-            raise exceptions.VenueIdDontExist()
+            raise exceptions.VenueIdDoesNotExist()
         if new_venue.managingOffererId != offerer.id:
             raise exceptions.OffererOfVenueDontMatchOfferer()
 
@@ -1112,7 +1112,7 @@ def update_collective_offer_template(
         new_venue = offerers_api.get_venue_by_id(new_values["venueId"])
 
         if not new_venue:
-            raise exceptions.VenueIdDontExist()
+            raise exceptions.VenueIdDoesNotExist()
 
         offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
