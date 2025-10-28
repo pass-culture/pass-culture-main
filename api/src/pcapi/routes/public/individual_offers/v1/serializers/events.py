@@ -111,6 +111,34 @@ class EventOfferEdition(v1_serialization.OfferEditionBase):
     event_duration: int | None = fields.EVENT_DURATION
     video_url: pydantic_v1.HttpUrl | None = fields.VIDEO_URL
 
+    @pydantic_v1.validator("category_related_fields")
+    def validate_music_fields(
+        cls, category_related_fields: v1_serialization.event_category_reading_fields | None
+    ) -> v1_serialization.event_category_reading_fields | None:
+        """Validate music fields until some more checks are needed.
+
+        Note: this is perhaps not the best place to run these
+        validations. Maybe the models definition should be updated to
+        set the real and expected category-dependant combinations. But
+        for now, lets run some checks this way.
+        """
+        if not category_related_fields:
+            return None
+
+        # only MUSIC_TYPE should be needed but since the
+        # category_related_fields is built using some black magic, lets
+        # be safe and use the two existing music-related enum values.
+        music_field_names = {
+            subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value,
+            subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value,
+        }
+
+        for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
+            if field_name in music_field_names and field_value is None:
+                raise ValueError("If musicType is set, it cannot be NULL")
+
+        return category_related_fields
+
     @pydantic_v1.validator("video_url")
     def check_video_is_from_youtube(
         cls,
