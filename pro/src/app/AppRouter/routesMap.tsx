@@ -59,7 +59,7 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
     path: '/erreur/indisponible',
     title: 'Page indisponible',
-    meta: { public: true, canBePublic: true },
+    meta: { public: true, canBeLoggedIn: true },
     isErrorPage: true,
   },
   {
@@ -403,25 +403,25 @@ export const routes: CustomRouteObject[] = [
     lazy: () => import('@/pages/Accessibility/AccessibilityMenu'),
     path: '/accessibilite',
     title: 'Informations d’accessibilité',
-    meta: { public: true, canBePublic: true },
+    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/Commitment'),
     path: '/accessibilite/engagements',
     title: 'Les engagements du pass Culture',
-    meta: { public: true, canBePublic: true },
+    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/Declaration'),
     path: '/accessibilite/declaration',
     title: "Déclaration d'accessibilité",
-    meta: { public: true, canBePublic: true },
+    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Accessibility/MultiyearScheme'),
     path: '/accessibilite/schema-pluriannuel',
     title: 'Schéma pluriannuel',
-    meta: { public: true, canBePublic: true },
+    meta: { public: true, canBeLoggedIn: true },
   },
   {
     lazy: () => import('@/pages/Collaborators/Collaborators'),
