@@ -96,7 +96,7 @@ jobs:
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+          tag: ${{ github.sha }}
           token: ${{ steps.openid-auth.outputs.access_token }}
 
   deploy-pro-on-firebase-preview-env:
