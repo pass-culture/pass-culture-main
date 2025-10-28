@@ -1,16 +1,17 @@
 import { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import { SortingMode } from '@/commons/hooks/useColumnSorting'
-import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+
+import { collectiveOfferBookableFactory } from '../factories/collectiveApiFactories'
 
 describe('sortCollectiveOffers', () => {
   it('should sort collective offers in a descending order', () => {
     const offers = [
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 1,
         dates: { start: '2024-07-15T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 2,
         dates: { start: '2024-07-16T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
@@ -26,11 +27,11 @@ describe('sortCollectiveOffers', () => {
 
   it('should sort collective offers in a ascending order', () => {
     const offers = [
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 1,
         dates: { start: '2024-07-15T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 2,
         dates: { start: '2024-07-16T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
@@ -46,11 +47,11 @@ describe('sortCollectiveOffers', () => {
 
   it('should not sort offers if the column sort is not defined', () => {
     const offers = [
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 1,
         dates: { start: '2024-07-15T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 2,
         dates: { start: '2024-07-16T00:00:00Z', end: '2024-08-15T00:00:00Z' },
       }),
@@ -68,11 +69,11 @@ describe('sortCollectiveOffers', () => {
 
   it('should not sort offers if the dates do not exist', () => {
     const offers = [
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 1,
         dates: undefined,
       }),
-      collectiveOfferFactory({
+      collectiveOfferBookableFactory({
         id: 2,
         dates: undefined,
       }),

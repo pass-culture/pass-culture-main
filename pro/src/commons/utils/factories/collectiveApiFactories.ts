@@ -7,8 +7,8 @@ import {
   CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
   type DMSApplicationForEAC,
@@ -36,27 +36,21 @@ let offerBookingId = 1
 let institutionId = 1
 let offerTemplateId = 1
 
-export const collectiveOfferFactory = (
-  customCollectiveOffer: Partial<CollectiveOfferResponseModel> = {}
-): CollectiveOfferResponseModel => {
+export const collectiveOfferBookableFactory = (
+  customCollectiveOffer: Partial<CollectiveOfferBookableResponseModel> = {}
+): CollectiveOfferBookableResponseModel => {
   const currentId = offerId++
 
   return {
     id: currentId,
     displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-    isActive: true,
-    hasBookingLimitDatetimesPassed: true,
-    isEducational: true,
     name: `offer name ${offerId}`,
     venue: listOffersVenueFactory(),
-    stocks: [
-      {
-        hasBookingLimitDatetimePassed: false,
-        remainingQuantity: 1,
-        startDatetime: new Date().toISOString(),
-      },
-    ],
-    isShowcase: false,
+    stock: {
+      bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
+      numberOfTickets: 10,
+      price: 10,
+    },
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     location: {
       locationType: CollectiveLocationType.SCHOOL,

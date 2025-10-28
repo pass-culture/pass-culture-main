@@ -1,11 +1,10 @@
 import type {
   CollectiveLocationType,
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
   CollectiveOfferTemplateResponseModel,
   EacFormat,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  ListOffersOfferResponseModel,
   StudentLevels,
 } from '@/apiClient/v1'
 import type {
@@ -75,10 +74,6 @@ export type OfferEducationalStockFormValues = {
   priceDetail: string
 }
 
-export const isOfferEducational = (
-  offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-): offer is CollectiveOfferResponseModel => offer.isEducational
-
 export const isCollectiveOffer = (
   value: unknown
 ): value is GetCollectiveOfferResponseModel =>
@@ -99,10 +94,10 @@ export enum CollectiveOffersSortingColumn {
 
 export const isCollectiveOfferBookable = (
   offer:
-    | CollectiveOfferResponseModel
+    | CollectiveOfferBookableResponseModel
     | CollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-): offer is CollectiveOfferResponseModel => {
-  return 'stocks' in offer
+): offer is CollectiveOfferBookableResponseModel => {
+  return 'stock' in offer
 }
