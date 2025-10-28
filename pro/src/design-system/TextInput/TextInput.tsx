@@ -15,6 +15,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { FieldFooter } from '../common/FieldFooter/FieldFooter'
 import { FieldHeader } from '../common/FieldHeader/FieldHeader'
+import type { RequiredIndicator } from '../common/types'
 import styles from './TextInput.module.scss'
 import {
   TextInputButton,
@@ -33,7 +34,7 @@ export type TextInputProps = {
   description?: string
   error?: string
   required?: boolean
-  requiredIndicator?: 'symbol' | 'explicit' | null
+  requiredIndicator?: RequiredIndicator
   maxCharactersCount?: number
   step?: number | string
   min?: number | string
