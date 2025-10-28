@@ -71,15 +71,13 @@ export const CollectiveOffers = (): JSX.Element => {
         DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
       )
 
-      return api.getCollectiveOffers(
+      return api.getCollectiveBookableOffers(
         params.nameOrIsbn,
         params.offererId,
         params.status,
         params.venueId,
-        params.creationMode,
         params.periodBeginningDate,
         params.periodEndingDate,
-        params.collectiveOfferType,
         params.format,
         params.locationType,
         params.offererAddressId

@@ -1,5 +1,5 @@
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
@@ -16,7 +16,9 @@ import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
 import styles from './CollectiveOffersTable.module.scss'
 
 type CollectiveOffersTableProps<
-  T extends CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
+  T extends
+    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferTemplateResponseModel,
 > = {
   hasFiltersOrNameSearch: boolean
   areAllOffersSelected: boolean
@@ -40,7 +42,9 @@ type CollectiveOffersTableProps<
 }
 
 export const CollectiveOffersTable = <
-  T extends CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel,
+  T extends
+    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferTemplateResponseModel,
 >({
   hasFiltersOrNameSearch,
   areAllOffersSelected,

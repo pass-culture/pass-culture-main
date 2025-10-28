@@ -5,8 +5,8 @@ import { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import {
   CollectiveOfferAllowedAction,
+  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
-  type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
@@ -83,7 +83,9 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
 }
 
 export function CollectiveOffersActionsBar<
-  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
+  T extends
+    | CollectiveOfferTemplateResponseModel
+    | CollectiveOfferBookableResponseModel,
 >({
   selectedOffers,
   clearSelectedOfferIds,

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 
 import type {
-  CollectiveOfferResponseModel,
+  CollectiveOfferBookableResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
@@ -16,7 +16,6 @@ import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearc
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { isSameOffer } from '@/commons/utils/isSameOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
@@ -39,7 +38,7 @@ export type CollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  offers: CollectiveOfferResponseModel[]
+  offers: CollectiveOfferBookableResponseModel[]
 }
 
 export const CollectiveOffersScreen = ({
@@ -53,7 +52,7 @@ export const CollectiveOffersScreen = ({
 }: CollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
-    CollectiveOfferResponseModel[]
+    CollectiveOfferBookableResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
@@ -131,9 +130,9 @@ export const CollectiveOffersScreen = ({
     setSelectedFilters(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
-    const matchingOffer = selectedOffers.find((selectedOffer) =>
-      isSameOffer(offer, selectedOffer)
+  function onSetSelectedOffer(offer: CollectiveOfferBookableResponseModel) {
+    const matchingOffer = selectedOffers.find(
+      (selectedOffer) => offer.id === selectedOffer.id
     )
 
     if (matchingOffer) {

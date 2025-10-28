@@ -1,13 +1,13 @@
 import cn from 'classnames'
 
-import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
+import type { CollectiveOfferBookableResponseModel } from '@/apiClient/v1'
 import { pluralizeString } from '@/commons/utils/pluralize'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 
 import styles from '../Cells.module.scss'
 
 interface PriceAndParticipantsCellProps {
-  offer: CollectiveOfferResponseModel
+  offer: CollectiveOfferBookableResponseModel
   rowId: string
   className?: string
 }
@@ -17,7 +17,7 @@ export const PriceAndParticipantsCell = ({
   offer,
   className,
 }: PriceAndParticipantsCellProps) => {
-  const { price, numberOfTickets } = offer.stocks[0] || {}
+  const { price, numberOfTickets } = offer.stock || {}
 
   return (
     <td
