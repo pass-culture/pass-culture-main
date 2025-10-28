@@ -3,7 +3,7 @@ name: "2 [on_schedule] deploy main and pro"
 on:
   workflow_dispatch:
   schedule:
-    # This cron is defined in UTC timezone. It means that it will run :
+    # This cron is defined in UTC timezone. It means that it will run:
     # - during summer hours between 8:28am - 7:28pm
     # - during winter hours between 7:28am - 6:28pm
     # we cannot yet specify timezone :
