@@ -109,7 +109,7 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
     cy.stepLog({ message: 'the countermark is rejected as invalid' })
     cy.findByTestId('desk-message').should(
       'have.text',
-      "La contremarque n'existe pas"
+      "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
     )
     cy.findByText('Valider la contremarque').should('be.disabled')
   })
