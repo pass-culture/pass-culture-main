@@ -57,7 +57,7 @@ describe('TimePicker', () => {
         label="input label"
         name="time"
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
     )
 

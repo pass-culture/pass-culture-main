@@ -3,6 +3,7 @@ import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import {
   BaseTimePicker,
   type SuggestedTimeList,
@@ -15,8 +16,8 @@ type TimePickerProps = {
   value?: string
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
   onBlur?: React.FocusEventHandler<HTMLInputElement>
-  /** Whether or not to display the asterisk in the label when the field is required */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /** Name of the input. Used for identifying it in an uncontrolled form, and for referencing the error */
   name: string
   className?: string
@@ -35,7 +36,7 @@ export const TimePicker = forwardRef(
       disabled,
       label,
       required = false,
-      asterisk = true,
+      requiredIndicator,
       error,
       value,
       onChange,
@@ -59,7 +60,7 @@ export const TimePicker = forwardRef(
             fieldId={inputId}
             label={label}
             required={required}
-            asterisk={asterisk}
+            requiredIndicator={requiredIndicator}
           />
         </div>
         <BaseTimePicker
