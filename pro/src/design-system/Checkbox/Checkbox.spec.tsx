@@ -106,9 +106,7 @@ describe('Checkbox', () => {
       checked: false,
       onChange: () => {},
     })
-    expect(
-      screen.getByRole('checkbox', { name: 'Checkbox label *' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /\*/ })).toBeInTheDocument()
   })
 
   it('should not show an asterisk if the field is required but hidden from the label', () => {

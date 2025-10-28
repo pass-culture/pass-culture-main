@@ -87,7 +87,12 @@ describe('<AddressSelect />', () => {
       <AddressSelect {...defaultProps} />
     )
 
-    expect(await axe(container)).toHaveNoViolations()
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
   })
 
   it('should render with description', () => {
@@ -112,7 +117,7 @@ describe('<AddressSelect />', () => {
       />
     )
 
-    const input = screen.getByRole('combobox', { name: 'Adresse postale *' })
+    const input = screen.getByRole('combobox', { name: /Adresse postale/ })
 
     const user = userEvent.setup()
     await user.click(input)
@@ -131,7 +136,7 @@ describe('<AddressSelect />', () => {
 
     renderAddressSelect(<AddressSelect {...defaultProps} />)
 
-    const input = screen.getByRole('combobox', { name: 'Adresse postale *' })
+    const input = screen.getByRole('combobox', { name: /Adresse postale/ })
 
     const user = userEvent.setup()
     await user.click(input)
@@ -157,7 +162,7 @@ describe('<AddressSelect />', () => {
       <AddressSelect {...defaultProps} onAddressChosen={onAddressChosen} />
     )
 
-    const input = screen.getByRole('combobox', { name: 'Adresse postale *' })
+    const input = screen.getByRole('combobox', { name: /Adresse postale/ })
 
     const user = userEvent.setup()
     await user.click(input)

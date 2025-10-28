@@ -40,7 +40,12 @@ describe('RecurrenceForm', () => {
 
   it('should pass axe accessibility tests', async () => {
     const { container } = renderRecurrenceForm()
-    expect(await axe(container)).toHaveNoViolations()
+    expect(
+      //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
+      await axe(container, {
+        rules: { 'color-contrast': { enabled: false } },
+      })
+    ).toHaveNoViolations()
   })
 
   it('should submit', async () => {
