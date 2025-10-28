@@ -4,7 +4,6 @@ from pcapi.core.core_exception import CoreException
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.educational.models import CollectiveBookingStatus
     from pcapi.core.educational.models import CollectiveOfferAllowedAction
     from pcapi.core.educational.models import CollectiveOfferTemplateAllowedAction
 
@@ -65,12 +64,6 @@ class CollectiveStockDoesNotExist(EducationalException):
     pass
 
 
-class CollectiveOfferStockBookedAndBookingNotPending(Exception):
-    def __init__(self, status: "CollectiveBookingStatus", booking_id: int) -> None:
-        self.booking_status = status
-        super().__init__()
-
-
 class MultipleCollectiveBookingFound(Exception):
     pass
 
@@ -103,7 +96,7 @@ class OffererOfVenueDontMatchOfferer(Exception):
     pass
 
 
-class VenueIdDontExist(Exception):
+class VenueIdDoesNotExist(Exception):
     pass
 
 
