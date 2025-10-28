@@ -9,6 +9,7 @@ import {
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import type { RequiredIndicator } from '../common/types'
 import styles from './RadioButtonGroup.module.scss'
 
 export type RadioButtonGroupProps = {
@@ -39,8 +40,8 @@ export type RadioButtonGroupProps = {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
   /** Whether at least one of the radio in the group should be selected or not */
   required?: boolean
-  /** Whether the required asterisk is displayed or not */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
 }
 
 export const RadioButtonGroup = ({
@@ -58,7 +59,7 @@ export const RadioButtonGroup = ({
   onChange,
   onBlur,
   required,
-  asterisk = true,
+  requiredIndicator = 'symbol',
 }: RadioButtonGroupProps): JSX.Element => {
   const errorId = useId()
   const descriptionId = useId()
@@ -82,7 +83,7 @@ export const RadioButtonGroup = ({
     >
       <legend className={styles['radio-button-group-legend']}>
         {label}
-        {required && asterisk ? <>&nbsp;*</> : ''}
+        {required && requiredIndicator === 'symbol' ? <>&nbsp;*</> : ''}
       </legend>
       <div className={styles['radio-button-group-header']}>
         {description && (
