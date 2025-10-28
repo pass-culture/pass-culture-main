@@ -98,8 +98,6 @@ class ReadFileTest:
 
         offerer = db.session.query(offerers_models.Offerer).filter_by(name="Test Pierre Pro").one()
         assert offerer.siren == "111222337"
-        assert offerer.postalCode == "75001"
-        assert offerer.city == "PARIS"
         assert offerer.isValidated
         assert offerer.allowedOnAdage
 

@@ -45,7 +45,6 @@ from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
@@ -607,7 +606,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         self.timezone = (
             get_department_timezone(self.departementCode)
             if self.departementCode
-            else get_postal_code_timezone(self.managingOfferer.postalCode)
+            else get_postal_code_timezone(self.offererAddress.address.postalCode)
         )
 
     @property
@@ -1141,7 +1140,6 @@ class OffererTagMapping(PcObject, Model):
 class Offerer(
     PcObject,
     Model,
-    HasAddressMixin,
     ValidationStatusMixin,
     DeactivableMixin,
 ):
@@ -1241,29 +1239,6 @@ class Offerer(
         )
 
     @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.inplace.setter
-    def _street_setter(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.inplace.expression
-    @classmethod
-    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
-        return cls._address
-
-    @hybrid_property
-    def departementCode(self) -> str | None:
-        return postal_code_utils.PostalCode(self.postalCode).get_departement_code() if self.postalCode else None
-
-    @departementCode.inplace.expression
-    @classmethod
-    def _departementCodeExpression(cls) -> sa.Function:
-        return sa.func.postal_code_to_department_code(cls.postalCode)
-
-    @hybrid_property
     def rid7(self) -> str | None:
         if siren_utils.is_rid7(self.siren):
             return siren_utils.siren_to_rid7(self.siren)
@@ -1298,6 +1273,36 @@ class Offerer(
     @property
     def identifier(self) -> str | None:
         return self.rid7 or self.siren
+
+    department_codes: sa_orm.Mapped[list[str] | None] = sa_orm.query_expression()
+
+    @classmethod
+    def department_codes_expression(cls) -> ScalarSelect:
+        return (
+            sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.departmentCode)))
+            .select_from(geography_models.Address)
+            .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
+            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .filter(Venue.managingOffererId == Offerer.id)
+            .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
+            .correlate(Offerer)
+            .scalar_subquery()
+        )
+
+    cities: sa_orm.Mapped[list[str] | None] = sa_orm.query_expression()
+
+    @classmethod
+    def cities_expression(cls) -> ScalarSelect:
+        return (
+            sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.city)))
+            .select_from(geography_models.Address)
+            .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
+            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .filter(Venue.managingOffererId == Offerer.id)
+            .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
+            .correlate(Offerer)
+            .scalar_subquery()
+        )
 
     @property
     def confidenceLevel(self) -> "OffererConfidenceLevel | None":

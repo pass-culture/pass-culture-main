@@ -47,11 +47,8 @@ class Returns200Test:
 
         assert response.status_code == 201
         created_offerer = db.session.query(offerers_models.Offerer).one()
-        assert created_offerer.street == "3 Rue de Valois"
-        assert created_offerer.city == "Paris"
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
-        assert created_offerer.postalCode == "75001"
         created_venue = db.session.query(offerers_models.Venue).one()
         assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
@@ -113,11 +110,7 @@ class Returns200Test:
 
         assert response.status_code == 201
         created_offerer = db.session.query(offerers_models.Offerer).one()
-        assert created_offerer.street == "3 Rue de Valois"
-        assert created_offerer.city == "Paris"
-        assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
-        assert created_offerer.postalCode == "75001"
         created_venue = db.session.query(offerers_models.Venue).one()
         assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
