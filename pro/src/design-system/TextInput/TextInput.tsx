@@ -103,7 +103,7 @@ export const TextInput = forwardRef(
             fieldId={inputId}
             label={label}
             required={required}
-            asterisk={requiredIndicator === 'symbol'}
+            requiredIndicator={requiredIndicator}
           />
         </div>
         <div className={styles['input-container']}>

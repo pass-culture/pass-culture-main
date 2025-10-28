@@ -4,6 +4,7 @@ import { type ForwardedRef, forwardRef, useId } from 'react'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 
 import styles from './Select.module.scss'
@@ -20,8 +21,8 @@ type SelectProps<T extends number | string = string> = {
   /** Option displayed if no option of the option list is selected */
   defaultOption?: SelectOption<T> | null
   options: SelectOption<T>[]
-  /** Whether or not to display the asterisk in the label when the field is required */
-  asterisk?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   error?: string
   value?: string
   ariaLabel?: string
@@ -40,7 +41,7 @@ export const Select = forwardRef(
       onChange,
       onBlur,
       error,
-      asterisk = true,
+      requiredIndicator,
       value,
       ariaLabel,
     }: SelectProps<string | number>,
@@ -56,7 +57,7 @@ export const Select = forwardRef(
             label={label}
             fieldId={fieldId}
             required={required}
-            asterisk={asterisk}
+            requiredIndicator={requiredIndicator}
           />
           <SelectInput
             disabled={disabled}

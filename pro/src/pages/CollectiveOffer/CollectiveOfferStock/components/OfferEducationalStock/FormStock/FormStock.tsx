@@ -97,7 +97,7 @@ export const FormStock = ({
         error={formState.errors.eventTime?.message}
         className={styles['custom-field-layout']}
         required
-        asterisk={false}
+        requiredIndicator={null}
       />
       <TextInput
         disabled={!canEditDiscount}
