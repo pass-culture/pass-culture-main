@@ -135,7 +135,6 @@ jobs:
 
       - name: Tag Release
         run: |
-          # git commit -m "🚀 $TAG_NAME" -n
           git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
           git push origin "$TAG_NAME"
 
