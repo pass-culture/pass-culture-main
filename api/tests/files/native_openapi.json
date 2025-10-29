@@ -2806,6 +2806,87 @@
                 "title": "MotorDisabilityModel",
                 "type": "object"
             },
+            "MovieCalendarResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "calendar": {
+                        "additionalProperties": {
+                            "items": {
+                                "$ref": "#/components/schemas/VenueScreenings"
+                            },
+                            "type": "array"
+                        },
+                        "propertyNames": {
+                            "format": "date"
+                        },
+                        "title": "Calendar",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "calendar"
+                ],
+                "title": "MovieCalendarResponse",
+                "type": "object"
+            },
+            "MovieScreeningsRequest": {
+                "additionalProperties": false,
+                "properties": {
+                    "allocineId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Allocineid"
+                    },
+                    "aroundRadius": {
+                        "default": 50000,
+                        "title": "Aroundradius",
+                        "type": "integer"
+                    },
+                    "from": {
+                        "format": "date-time",
+                        "title": "From",
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "to": {
+                        "format": "date-time",
+                        "title": "To",
+                        "type": "string"
+                    },
+                    "visa": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Visa"
+                    }
+                },
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "title": "MovieScreeningsRequest",
+                "type": "object"
+            },
             "MovieType": {
                 "properties": {
                     "label": {
@@ -4418,6 +4499,39 @@
                 ],
                 "title": "SchoolTypesIdEnum"
             },
+            "Screening": {
+                "additionalProperties": false,
+                "properties": {
+                    "beginningDatetime": {
+                        "format": "date-time",
+                        "title": "Beginningdatetime",
+                        "type": "string"
+                    },
+                    "features": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Features",
+                        "type": "array"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "number"
+                    },
+                    "stockId": {
+                        "title": "Stockid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "beginningDatetime",
+                    "features",
+                    "price",
+                    "stockId"
+                ],
+                "title": "Screening",
+                "type": "object"
+            },
             "SearchGroupResponseModelv2": {
                 "properties": {
                     "name": {
@@ -5803,6 +5917,66 @@
                     "timezone"
                 ],
                 "title": "VenueResponse",
+                "type": "object"
+            },
+            "VenueScreenings": {
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "title": "Address",
+                        "type": "string"
+                    },
+                    "dayScreenings": {
+                        "items": {
+                            "$ref": "#/components/schemas/Screening"
+                        },
+                        "title": "Dayscreenings",
+                        "type": "array"
+                    },
+                    "distance": {
+                        "title": "Distance",
+                        "type": "number"
+                    },
+                    "label": {
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "nextScreening": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Screening"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "thumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Thumburl"
+                    },
+                    "venueId": {
+                        "title": "Venueid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "address",
+                    "distance",
+                    "label",
+                    "thumbUrl",
+                    "venueId",
+                    "dayScreenings",
+                    "nextScreening"
+                ],
+                "title": "VenueScreenings",
                 "type": "object"
             },
             "VenueTypeCodeKey": {
@@ -7341,6 +7515,136 @@
                     }
                 ],
                 "summary": "delete_reminder <DELETE>",
+                "tags": []
+            }
+        },
+        "/native/v1/movie/calendar": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_movie_calendar",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "allocineId",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Allocineid"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "visa",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Visa"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "latitude",
+                        "required": true,
+                        "schema": {
+                            "title": "Latitude",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "longitude",
+                        "required": true,
+                        "schema": {
+                            "title": "Longitude",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "aroundRadius",
+                        "required": false,
+                        "schema": {
+                            "default": 50000,
+                            "title": "Aroundradius",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "from",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "From",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "to",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "To",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MovieCalendarResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_movie_screenings <GET>",
                 "tags": []
             }
         },

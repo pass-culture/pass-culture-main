@@ -4,6 +4,7 @@ from math import isfinite
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from pydantic import alias_generators
 
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import format_into_utc_date
@@ -46,7 +47,7 @@ class ConfiguredBaseModel(BaseModel):
 # for a migration guide from v1 to v2
 class HttpBodyModel(pydantic_v2.BaseModel):
     model_config = pydantic_v2.ConfigDict(
-        alias_generator=serialization_utils.to_camel,
+        alias_generator=alias_generators.to_camel,
         validate_by_name=True,
         json_encoders={datetime.datetime: format_into_utc_date},
         allow_inf_nan=False,
@@ -58,7 +59,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
 
 class HttpQueryParamsModel(pydantic_v2.BaseModel):
     model_config = pydantic_v2.ConfigDict(
-        alias_generator=serialization_utils.to_camel,
+        alias_generator=alias_generators.to_camel,
         allow_inf_nan=False,
         str_strip_whitespace=True,
         url_preserve_empty_path=True,
