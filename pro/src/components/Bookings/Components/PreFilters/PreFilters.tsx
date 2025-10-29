@@ -112,7 +112,7 @@ export const PreFilters = ({
                 label="Localisation"
                 name="address"
                 className={styles['venue-filter']}
-                isOptional
+                required={false}
               >
                 <SelectInput
                   defaultOption={ALL_OFFERER_ADDRESS_OPTION}

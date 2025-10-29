@@ -23,7 +23,7 @@ export const FilterByVenue = ({
       label="Structure"
       name="lieu"
       className={styles['venue-filter']}
-      isOptional
+      required={false}
     >
       <SelectInput
         defaultOption={ALL_STRUCTURES_OPTION}

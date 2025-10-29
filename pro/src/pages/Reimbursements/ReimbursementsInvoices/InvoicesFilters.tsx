@@ -68,7 +68,7 @@ export const InvoicesFilters = ({
             <FieldLayout
               label="Compte bancaire"
               name="reimbursementPoint"
-              isOptional
+              required={false}
             >
               <SelectInput
                 defaultOption={{

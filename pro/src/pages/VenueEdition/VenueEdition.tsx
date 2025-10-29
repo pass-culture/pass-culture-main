@@ -104,7 +104,7 @@ export const VenueEdition = (): JSX.Element | null => {
                   <FieldLayout
                     label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                     name="venues"
-                    isOptional
+                    required={false}
                     className={styles['select-page-partenaire']}
                   >
                     <SelectInput

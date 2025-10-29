@@ -27,11 +27,8 @@ type FieldLayoutBaseProps = {
    */
   isLabelHidden?: boolean
   hasLabelLineBreak?: boolean
-  /**
-   * A flag to indicate that the field is optional.
-   * It will display an asterisk next to the label.
-   */
-  isOptional?: boolean
+  /** A flag to indicate that the field is required. */
+  required?: boolean
   /** What type of required indicator is displayed */
   requiredIndicator?: RequiredIndicator
   /**
@@ -76,7 +73,7 @@ export const FieldLayout = ({
   error,
   count = undefined,
   maxLength = undefined,
-  isOptional = false,
+  required = true,
   requiredIndicator = 'symbol',
   inline = false,
   classNameLabel,
@@ -124,7 +121,7 @@ export const FieldLayout = ({
             htmlFor={name}
           >
             {label}
-            {!isOptional && requiredIndicator === 'symbol' && <>&nbsp;*</>}
+            {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
           </label>
           {help && (
             <Button
