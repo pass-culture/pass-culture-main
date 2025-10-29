@@ -92,7 +92,7 @@ export const LostPassword = (): JSX.Element => {
                     description="Format : email@exemple.com"
                     error={errors.email?.message}
                     required
-                    requiredIndicator={null}
+                    requiredIndicator="hidden"
                     type="email"
                     {...register('email')}
                   />

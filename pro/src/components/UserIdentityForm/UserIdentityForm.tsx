@@ -76,7 +76,7 @@ export const UserIdentityForm = ({
                 label="Prénom"
                 error={errors.firstName?.message}
                 required
-                requiredIndicator={null}
+                requiredIndicator="hidden"
                 {...register('firstName')}
               />
             </div>
@@ -85,7 +85,7 @@ export const UserIdentityForm = ({
                 label="Nom"
                 error={errors.lastName?.message}
                 required
-                requiredIndicator={null}
+                requiredIndicator="hidden"
                 {...register('lastName')}
               />
             </div>

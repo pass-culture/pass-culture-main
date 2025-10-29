@@ -1,1 +1,1 @@
-export type RequiredIndicator = 'symbol' | 'explicit' | null
+export type RequiredIndicator = 'symbol' | 'explicit' | 'hidden'

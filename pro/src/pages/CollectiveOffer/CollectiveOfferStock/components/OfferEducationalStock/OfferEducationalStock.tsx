@@ -164,7 +164,7 @@ export const OfferEducationalStock = <
                   {...form.register('priceDetail')}
                   description={PRICE_DETAIL_PLACEHOLDER}
                   error={form.formState.errors.priceDetail?.message}
-                  requiredIndicator={null}
+                  requiredIndicator="hidden"
                   required
                 />
               </FormLayout.Row>
@@ -189,7 +189,7 @@ export const OfferEducationalStock = <
                   error={form.formState.errors.bookingLimitDatetime?.message}
                   className={styles['input-date']}
                   required
-                  requiredIndicator={null}
+                  requiredIndicator="hidden"
                 />
               </FormLayout.Row>
             </FormLayout.Section>

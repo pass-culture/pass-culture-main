@@ -53,7 +53,7 @@ describe('Select', () => {
         name="mySelect"
         options={[{ label: 'option 1', value: 'option1' }]}
         required
-        requiredIndicator={null}
+        requiredIndicator="hidden"
       />
     )
 

@@ -47,7 +47,7 @@ describe('TextInput', () => {
   it('should not show an asterisk if the field is required but the asterisk is disabled', () => {
     renderTextInput({
       required: true,
-      requiredIndicator: null,
+      requiredIndicator: 'hidden',
     })
 
     expect(screen.queryByText('*')).not.toBeInTheDocument()

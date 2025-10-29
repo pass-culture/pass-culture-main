@@ -133,7 +133,7 @@ export const UserReviewDialog = ({
                   legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
                   group={group}
                   required
-                  requiredIndicator={null}
+                  requiredIndicator="hidden"
                   value={form.watch('userSatisfaction')}
                   onChange={(e) => form.setValue('userSatisfaction', e)}
                 />
@@ -150,7 +150,7 @@ export const UserReviewDialog = ({
                     </>
                   }
                   maxLength={500}
-                  requiredIndicator={null}
+                  requiredIndicator="hidden"
                   required
                   error={textareaError}
                   className={styles['text-area-container']}
