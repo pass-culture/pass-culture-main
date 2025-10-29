@@ -90,7 +90,7 @@ export const UserEmailForm = ({
                 required
                 type="email"
                 {...register('email')}
-                requiredIndicator={null}
+                requiredIndicator="hidden"
               />
             </div>
             <div className={styles['text-input']}>
@@ -99,7 +99,7 @@ export const UserEmailForm = ({
                 error={errors.password?.message}
                 required={true}
                 {...register('password')}
-                requiredIndicator={null}
+                requiredIndicator="hidden"
               />
             </div>
           </FormLayout>

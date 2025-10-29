@@ -50,7 +50,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
               error={errors.email?.message}
               description="Format : email@exemple.com"
               {...register('email')}
-              requiredIndicator={null}
+              requiredIndicator="hidden"
             />
           </div>
         </div>
@@ -61,7 +61,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             required
             error={errors.password?.message}
             {...register('password')}
-            requiredIndicator={null}
+            requiredIndicator="hidden"
           />
         </div>
         <ButtonLink
