@@ -142,6 +142,9 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
         "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     )
+    WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK = (
+        "Activer la fonctionnalité de partage du lien de l'offre vitrine sur Adage"
+    )
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
@@ -220,6 +223,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE,
+    FeatureToggle.WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_HIGHLIGHT,
