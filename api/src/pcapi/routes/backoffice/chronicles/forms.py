@@ -17,6 +17,12 @@ class SearchType(enum.Enum):
     PRODUCT_NAME = "Uniquement le titre des offres"
 
 
+class ProductIdentifierType(enum.Enum):
+    EAN = "EAN"
+    ALLOCINE_ID = "ID Allociné"
+    VISA = "Visa"
+
+
 class GetChronicleSearchForm(forms_utils.PCForm):
     class Meta:
         csrf = False
@@ -78,9 +84,14 @@ class UpdateContentForm(forms_utils.PCForm):
     )
 
 
-class AttachBookProductForm(forms_utils.PCForm):
+class AttachProductForm(forms_utils.PCForm):
+    product_identifier_type = fields.PCSelectField(
+        "Type d'identifiant'",
+        choices=forms_utils.choices_from_enum(ProductIdentifierType),
+        default=ProductIdentifierType.EAN.name,
+    )
     product_identifier = fields.PCStringField(
-        "EAN", validators=[Regexp(r"^[0-9]{13}$", message="L'EAN doit être composé de 13 chiffres")]
+        "Identifiant", validators=[Regexp(r"^\d+$", message="L'EAN doit être composé de 13 chiffres")]
     )
 
 
