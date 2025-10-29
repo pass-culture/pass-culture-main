@@ -22,6 +22,9 @@ from pcapi.core.educational.models import CollectivePlaylist
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.providers.api import delete_venue_provider
+from pcapi.core.providers.models import VenueProvider
+from pcapi.core.users.models import User
 from pcapi.models import db
 
 
@@ -83,16 +86,27 @@ def _venue_can_be_deleted(venue: Venue) -> bool:
 def main() -> None:
     rows = list(_read_csv_file("venues_without_offers"))
     venue_ids = {row[VENUE_ID_HEADER] for row in rows}
+
+    user = db.session.query(User).filter_by(id=5752883).one()
     venues_without_offers = db.session.query(Venue).filter(Venue.id.in_(venue_ids))
+    venue_provider_list = db.session.query(VenueProvider).filter(VenueProvider.venueId.in_(venue_ids)).all()
+
+    venue_providers = {vp.venueId: vp for vp in venue_provider_list}
+
     for venue in venues_without_offers.all():
         if not _venue_can_be_deleted(venue):
             continue
+
+        if vp := venue_providers.get(venue.id, None):
+            logger.info("Hard deleting venue provider %s", str(vp.id))
+            delete_venue_provider(vp, user, send_email=False)
 
         venue.isSoftDeleted = True
         logger.info("Soft deleting venue %s", str(venue.id))
         db.session.add(
             history_models.ActionHistory(
                 venueId=venue.id,
+                authorUser=user,
                 actionType=history_models.ActionType.VENUE_SOFT_DELETED,
                 comment="Venue without Offer Soft Deleted (PC-37989)",
             )
