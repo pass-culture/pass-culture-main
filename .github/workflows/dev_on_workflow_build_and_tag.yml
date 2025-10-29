@@ -60,15 +60,33 @@ jobs:
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
 
+      - name: Upload pre-release change to github artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pre-release-changes-${{ inputs.tag_number }}.tar
+          path: .
+          retention-days: 1
+
   build-images:
     name: Build Docker images
+    runs-on: ubuntu-22.04
+    needs: [build-and-tag-version]
     strategy:
       matrix:
         image: [pcapi, pcapi-console]
-    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
-    with:
-      image: ${{ matrix.image }}
-      tag: ${{ inputs.tag_number }}
+    steps:
+      - name: Download pre-release change from github artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: pre-release-changes-${{ inputs.tag_number }}.tar
+          path: ${{ runner.temp }}
+
+      - name: Build ${{ matrix.image }} docker image
+        uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+        with:
+          image: ${{ matrix.image }}
+          tag: ${{ inputs.tag_number }}
+
 
   push-images:
     name: Push Docker images
@@ -92,6 +110,12 @@ jobs:
       GIT_CONFIG_NAME: ${{ github.actor }}
       TAG_NAME: ${{ inputs.tag_number }}
     steps:
+      - name: Download pre-release change from github artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: pre-release-changes-${{ inputs.tag_number }}.tar
+          path: ${{ runner.temp }}
+
       - name: Configure git author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
