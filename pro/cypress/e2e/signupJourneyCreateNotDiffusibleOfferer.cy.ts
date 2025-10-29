@@ -49,7 +49,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
       'Certaines informations de votre structure ne sont pas diffusibles.'
     ).should('be.visible')
     cy.findByLabelText(/Nom public/).type(newVenueName)
-    cy.findByLabelText('Non').should('be.checked')
+    cy.findByLabelText('Non').click()
     cy.findByLabelText(/Adresse postale/).should('not.exist')
 
     cy.findByText('Étape suivante').click()
@@ -102,7 +102,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
 
     cy.findByText('Étape suivante').click()
     cy.findByText('Étape précédente').click()
-    cy.findByLabelText('Oui').should('be.checked')
+    cy.findByLabelText('Oui').click()
     cy.findByText('Étape suivante').click()
 
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)

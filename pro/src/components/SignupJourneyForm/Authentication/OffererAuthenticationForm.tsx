@@ -23,7 +23,7 @@ export interface OffererAuthenticationFormValues extends Address {
   'search-addressAutocomplete': string
   coords?: string
   manuallySetAddress?: boolean
-  isOpenToPublic?: string
+  isOpenToPublic?: string | undefined
 }
 
 export const OffererAuthenticationForm = (): JSX.Element => {
@@ -34,6 +34,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
     setValue,
     register,
     getFieldState,
+    clearErrors,
     formState: { errors },
   } = useFormContext<OffererAuthenticationFormValues>()
 
@@ -102,7 +103,10 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       </FormLayout.Row>
       <FormLayout.Row mdSpaceAfter className={styles['open-to-public-toggle']}>
         <OpenToPublicToggle
+          required={true}
+          error={errors.isOpenToPublic?.message}
           onChange={(e) => {
+            clearErrors('isOpenToPublic')
             if (!offerer?.isDiffusible) {
               if (e.target.value === 'true') {
                 // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
