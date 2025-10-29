@@ -34,42 +34,8 @@ permissions:
   id-token: write
 
 jobs:
-#  build-and-tag-version:
-#    runs-on: ubuntu-22.04
-#    steps:
-#      - name: Checkout ref
-#        uses: actions/checkout@v5
-#        with:
-#          ref: ${{ inputs.base_ref }}
-#
-#      - name: Add version to api
-#        working-directory: api
-#        run: |
-#          echo "${{ inputs.tag_number }}" > version.txt
-#          git add version.txt
-#
-#      - name: Add version to pro
-#        working-directory: pro
-#        run: |
-#          yarn version --new-version "${{ inputs.tag_number }}"
-#          git add package.json
-#
-#      - name: Add version to image-resizing
-#        working-directory: app-engine/image-resizing
-#        run: |
-#          echo "${{ inputs.tag_number }}" > version.txt
-#          git add version.txt
-#
-#      - name: Upload pre-release change to github artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: pre-release-changes-${{ inputs.tag_number }}.tar
-#          path: .
-#          retention-days: 1
-
   build-images:
     name: Build Docker images
-    # needs: [build-and-tag-version]
     strategy:
       matrix:
         image: [pcapi, pcapi-console]
@@ -77,7 +43,6 @@ jobs:
     with:
       image: ${{ matrix.image }}
       tag: ${{ inputs.tag_number }}
-
 
   push-images:
     name: Push Docker images
