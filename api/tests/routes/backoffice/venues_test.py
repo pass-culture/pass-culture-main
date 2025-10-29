@@ -1730,16 +1730,23 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert venue.contact.phone_number is None
 
-    @pytest.mark.parametrize("venue_name, venue_publicName", [("toto", "toto"), ("toto", "bebechat")])
-    def test_update_venue_empty_public_name(self, authenticated_client, venue_name, venue_publicName):
-        venue = offerers_factories.VenueFactory(name=venue_name, publicName=venue_publicName)
+    @pytest.mark.parametrize(
+        "original_public_name,new_name",
+        [("Original name", "Original name"), ("Public name", "Original name"), ("Public name", "New name")],
+    )
+    def test_update_venue_empty_public_name(self, authenticated_client, original_public_name, new_name):
+        venue = offerers_factories.VenueFactory(name="Original name", publicName=original_public_name)
+
         data = self._get_current_data(venue)
+        data["name"] = new_name
         data["public_name"] = ""
+
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 303
         db.session.refresh(venue)
-        assert venue.publicName == venue.name  # empty publicname default to name
+        assert venue.name == new_name
+        assert venue.publicName == new_name  # empty publicName defaults to name
 
     @pytest.mark.parametrize(
         "field,value",

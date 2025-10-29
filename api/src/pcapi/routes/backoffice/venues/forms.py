@@ -108,6 +108,13 @@ class EditVenueForm(EditVirtualVenueForm):
         self._fields.move_to_end("acceslibre_url")
         self._fields.move_to_end("is_permanent")
 
+    def validate_public_name(self, public_name: fields.PCOptStringField) -> fields.PCOptStringField:
+        # venue.publicName is no longer nullable in the database.
+        # When cleared in the form, it is reset to the same (new) value as venue.name.
+        if not public_name.data:
+            public_name.data = self._fields["name"].data
+        return public_name
+
     def filter_siret(self, raw_siret: str | None) -> str | None:
         # 'siret' field is disabled when user does not have permission, so it is not sent by the web browser,
         # force to ensure that is not considered as removed.
