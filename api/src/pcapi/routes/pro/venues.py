@@ -1,3 +1,5 @@
+from datetime import date
+
 import flask
 import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
@@ -8,6 +10,7 @@ from flask_login import login_required
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi import settings
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import api as entreprise_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
@@ -16,16 +19,20 @@ from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.repository import venues_have_individual_and_collective_offers
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venues_serialize
+from pcapi.routes.serialization.statistics_serialize import AggregatedRevenueModel
+from pcapi.routes.serialization.statistics_serialize import StatisticsModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.transaction_manager import atomic
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 
@@ -265,3 +272,65 @@ def get_venues_of_offerer_from_siret(siret: str) -> venues_serialize.GetVenuesOf
         offererName=offerer.name if offerer else None,
         venues=[venues_serialize.VenueOfOffererFromSiretResponseModel.from_orm(venue) for venue in db_venues],
     )
+
+
+def aggregate_revenues_by_year(
+    revenues: (
+        list[clickhouse_queries.AggregatedCollectiveRevenueModel]
+        | list[clickhouse_queries.AggregatedIndividualRevenueModel]
+        | list[clickhouse_queries.AggregatedTotalRevenueModel]
+    ),
+) -> dict[str, AggregatedRevenueModel | dict[None, None]]:
+    current_year = date.today().year
+    income_by_year: dict[str, AggregatedRevenueModel | dict[None, None]] = {
+        str(revenue.year): AggregatedRevenueModel(revenue=revenue.revenue, expected_revenue=revenue.expected_revenue)
+        for revenue in revenues
+    }
+
+    if not income_by_year:
+        return income_by_year
+
+    min_year = int(min(income_by_year.keys()))
+    max_year = int(max(income_by_year.keys()))
+    for year in range(min_year, max_year + 1):
+        if str(year) not in income_by_year:
+            income_by_year[str(year)] = {}
+        # we don't need to serialize expected_revenue for previous years
+        elif year < current_year and hasattr(income_by_year[str(year)], "expected_revenue"):
+            delattr(income_by_year[str(year)], "expected_revenue")
+
+    return income_by_year
+
+
+@private_api.route("/venues/<int:venue_id>/stats", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=StatisticsModel, api=blueprint.pro_private_schema)
+def venue_statistics(venue_id: int) -> StatisticsModel:
+    venue = (
+        db.session.query(models.Venue)
+        .filter(models.Venue.id == venue_id)
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .one_or_none()
+    )
+    if not venue:
+        flask.abort(404)
+
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    results: (
+        list[clickhouse_queries.AggregatedCollectiveRevenueModel]
+        | list[clickhouse_queries.AggregatedIndividualRevenueModel]
+        | list[clickhouse_queries.AggregatedTotalRevenueModel]
+    ) = []
+
+    has_individual, has_collective = venues_have_individual_and_collective_offers([venue_id])
+    if has_individual == has_collective:
+        results = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": [venue_id]})
+    elif not has_individual:
+        results = clickhouse_queries.AggregatedCollectiveRevenueQuery().execute({"venue_ids": [venue_id]})
+    else:
+        results = clickhouse_queries.AggregatedIndividualRevenueQuery().execute({"venue_ids": [venue_id]})
+
+    income_by_year = aggregate_revenues_by_year(results)
+    return StatisticsModel(income_by_year=income_by_year)
