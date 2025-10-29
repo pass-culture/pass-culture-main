@@ -207,11 +207,6 @@ MENU_SECTIONS = [
                 permissions=["READ_OFFERS"],
             ),
             MenuItem(
-                label="Opérations sur plusieurs offres",
-                url_name="backoffice_web.multiple_offers.multiple_offers_home",
-                permissions=["READ_OFFERS"],
-            ),
-            MenuItem(
                 label="Recherche EAN via Tite Live",
                 url_name="backoffice_web.titelive.search_titelive",
                 permissions=["READ_OFFERS"],
