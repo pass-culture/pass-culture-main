@@ -3,7 +3,6 @@ import typing
 
 from wtforms.validators import Length
 from wtforms.validators import Optional
-from wtforms.validators import Regexp
 
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.routes.backoffice import filters
@@ -15,6 +14,12 @@ class SearchType(enum.Enum):
     ALL = "Tout"
     CHRONICLE_CONTENT = "Uniquement le contenu des chroniques"
     PRODUCT_NAME = "Uniquement le titre des offres"
+
+
+class ProductIdentifierType(enum.Enum):
+    EAN = "EAN"
+    ALLOCINE_ID = "ID Allociné"
+    VISA = "Visa"
 
 
 class GetChronicleSearchForm(forms_utils.PCForm):
@@ -78,15 +83,16 @@ class UpdateContentForm(forms_utils.PCForm):
     )
 
 
-class AttachBookProductForm(forms_utils.PCForm):
-    product_identifier = fields.PCStringField(
-        "EAN", validators=[Regexp(r"^[0-9]{13}$", message="L'EAN doit être composé de 13 chiffres")]
+class AttachProductForm(forms_utils.PCForm):
+    product_identifier_type = fields.PCSelectField(
+        "Type d'identifiant",
+        choices=forms_utils.choices_from_enum(
+            chronicles_models.ChronicleProductIdentifierType, formatter=filters.format_chronicle_product_identifier_type
+        ),
+        default=chronicles_models.ChronicleProductIdentifierType.EAN.name,
     )
-
-
-class AttachCineProductForm(forms_utils.PCForm):
-    product_identifier = fields.PCStringField(
-        "ID Allociné", validators=[Regexp(r"^\d+$", message="L'ID Allocine doit être composé de chiffres")]
+    product_identifier = fields.PCIntegerField(
+        "Identifiant",
     )
 
 

@@ -135,18 +135,6 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     def _isPublishedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
 
-    @property
-    def productIdentifierName(self) -> str:
-        match self.productIdentifierType:
-            case ChronicleProductIdentifierType.ALLOCINE_ID:
-                return "ID Allociné"
-            case ChronicleProductIdentifierType.EAN:
-                return "EAN"
-            case ChronicleProductIdentifierType.VISA:
-                return "Visa"
-            case _:
-                raise ValueError()
-
 
 @sa.event.listens_for(Chronicle, "after_insert")
 def after_insert_chronicle(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Chronicle) -> None:

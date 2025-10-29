@@ -23,6 +23,7 @@ from pcapi.core.categories import pro_categories
 from pcapi.core.categories.genres import show
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -1945,6 +1946,18 @@ def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -
             return club_type.value
 
 
+def format_chronicle_product_identifier_type(chronicle_type: chronicles_models.ChronicleProductIdentifierType) -> str:
+    match chronicle_type:
+        case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
+            return "ID Allociné"
+        case chronicles_models.ChronicleProductIdentifierType.EAN:
+            return "EAN"
+        case chronicles_models.ChronicleProductIdentifierType.VISA:
+            return "Visa"
+        case _:
+            return chronicle_type.value
+
+
 def format_user_subscription_tunnel_step_status(status: str) -> str:
     match status:
         case "ok":
@@ -2090,6 +2103,8 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["product_mediation_link"] = product_mediation_link
     app.jinja_env.filters["format_artist_visibility_status"] = format_artist_visibility_status
     app.jinja_env.filters["format_collective_location_type"] = format_collective_location_type
+    app.jinja_env.filters["format_chronicle_product_identifier_type"] = format_chronicle_product_identifier_type
+    app.jinja_env.filters["get_chronicle_product_identifier"] = chronicles_api.get_product_identifier
     app.jinja_env.filters["format_user_profile_refresh_campaign_action_type"] = (
         format_user_profile_refresh_campaign_action_type
     )
