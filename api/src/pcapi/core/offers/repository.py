@@ -9,6 +9,10 @@ import pytz
 import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
+from geoalchemy2 import Geography
+from geoalchemy2.functions import ST_DWithin
+from geoalchemy2.functions import ST_Distance
+from geoalchemy2.functions import ST_MakePoint
 
 from pcapi.core.artist import models as artist_models
 from pcapi.core.bookings import models as bookings_models
@@ -18,7 +22,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.reactions import models as reactions_models
@@ -385,6 +388,70 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
     )
 
 
+def get_nearby_bookable_screenings_from_product(
+    product: models.Product,
+    latitude: float,
+    longitude: float,
+    around_radius: int,
+    from_datetime: datetime.datetime,
+    to_datetime: datetime.datetime,
+) -> list[dict[str, typing.Any]]:
+    request_location = sa.cast(
+        ST_MakePoint(longitude, latitude), Geography(None)
+    )  # `None` is used not to have to specify SRID
+    offer_location = sa.cast(
+        ST_MakePoint(
+            sa.cast(geography_models.Address.longitude, sa.DOUBLE_PRECISION),
+            sa.cast(geography_models.Address.latitude, sa.DOUBLE_PRECISION),
+        ),
+        Geography(None),
+    )
+
+    # In the _where_ clause, in `ST_DWithin` filter, `False` is the value for parameter `use_spheroid`,
+    # see the doc here: https://postgis.net/docs/ST_DWithin.html.
+    # It cannot be a keyword argument since kwargs, except special ones, are not taken into account by `ST_DWithin`.
+    stock_ids = db.session.scalars(
+        sa.select(models.Stock.id)
+        .select_from(geography_models.Address)
+        .join(offerers_models.OffererAddress)
+        .join(models.Offer)
+        .join(models.Stock)
+        .where(
+            ST_DWithin(offer_location, request_location, around_radius, False),
+            models.Offer.productId == product.id,
+            models.Offer.is_eligible_for_search.is_(True),
+            models.Stock.beginningDatetime >= from_datetime,
+            models.Stock.beginningDatetime < to_datetime,
+        )
+    )
+
+    result_objects_query = (
+        sa.select(
+            ST_Distance(offer_location, request_location).label("distance"),
+            models.Stock.id.label("stock_id"),
+            models.Stock.beginningDatetime.label("beginning_datetime"),
+            models.Stock.features,
+            models.Stock.price,
+            geography_models.Address.city,
+            geography_models.Address.postalCode.label("postal_code"),
+            geography_models.Address.street.label("street"),
+            sa.func.coalesce(offerers_models.OffererAddress.label, offerers_models.Venue.publicName).label("label"),
+            offerers_models.Venue.id.label("venue_id"),
+            offerers_models.Venue.bannerUrl.label("thumb_url"),
+        )
+        .select_from(models.Stock)
+        .join(models.Offer)
+        .join(offerers_models.Venue)
+        .join(offerers_models.OffererAddress, models.Offer.offererAddressId == offerers_models.OffererAddress.id)
+        .join(geography_models.Address)
+        .where(models.Stock.id.in_(stock_ids))
+        .order_by("distance")
+    )
+
+    result = db.session.execute(result_objects_query).mappings()
+    return [dict(**row) for row in result]
+
+
 def get_offers_by_filters(
     *,
     user_id: int,
@@ -732,7 +799,7 @@ def _find_today_event_stock_ids_filter_by_departments(
     base_query = find_event_stocks_day(today_min, today_max)
 
     query = (
-        base_query.join(offers_models.Offer)
+        base_query.join(models.Offer)
         .join(offerers_models.OffererAddress)
         .join(geography_models.Address)
         .filter(departments_filter)
@@ -1059,7 +1126,7 @@ def _order_stocks_by(query: sa_orm.Query, order_by: StocksOrderedBy, order_by_de
 
 def get_filtered_stocks(
     *,
-    offer: offers_models.Offer,
+    offer: models.Offer,
     venue: offerers_models.Venue,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
@@ -1113,7 +1180,7 @@ def get_filtered_stocks(
 
 
 def hard_delete_filtered_stocks(
-    offer: offers_models.Offer,
+    offer: models.Offer,
     venue: offerers_models.Venue,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
@@ -1307,9 +1374,7 @@ def venues_have_individual_and_collective_offers(
     venue_ids: list[int],
 ) -> tuple[bool, bool]:
     return (
-        db.session.query(
-            db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId.in_(venue_ids)).exists()
-        ).scalar(),
+        db.session.query(db.session.query(models.Offer).filter(models.Offer.venueId.in_(venue_ids)).exists()).scalar(),
         db.session.query(
             db.session.query(educational_models.CollectiveOffer)
             .filter(educational_models.CollectiveOffer.venueId.in_(venue_ids))
