@@ -9,6 +9,7 @@ from pcapi.core.subscription import exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -17,6 +18,7 @@ from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
 from .serialization import subscription as serializers
@@ -176,3 +178,23 @@ def start_identification_session(
             message = "Une erreur s'est produite à l'appel du service d'identification"
             return_status = 500
         raise api_errors.ApiErrors({"code": code, "message": message}, status_code=return_status)
+
+
+@blueprint.native_route("/subscription/bonus/quotient_familial", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@authenticated_and_active_user_required
+@atomic()
+def create_quotient_familial_bonus_credit_fraud_check(
+    user: users_models.User, body: serializers.BonusCreditRequest
+) -> None:
+    bonus_fraud_api.create_bonus_credit_fraud_check(
+        user,
+        last_name=body.last_name,
+        common_name=body.common_name,
+        first_names=body.first_names,
+        birth_date=body.birth_date,
+        gender=body.gender,
+        birth_country_cog_code=body.birth_country_cog_code,
+        birth_city_cog_code=body.birth_city_cog_code,
+        origin="enrolled from /subscription/bonus/quotient_familial endpoint",
+    )

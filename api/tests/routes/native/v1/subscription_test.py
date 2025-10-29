@@ -744,3 +744,41 @@ class HonorStatementTest:
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.reason == "statement from /subscription/honor_statement endpoint"
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE17_18
+
+
+class BonusTest:
+    def test_create_bonus_fraud_check(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(user.email).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 204, response.json
+
+        (bonus_fraud_check,) = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT
+        ]
+        assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert bonus_fraud_check.resultContent == {
+            "custodian": {
+                "last_name": "Lefebvre",
+                "common_name": None,
+                "first_names": ["Alexis"],
+                "birth_date": "1982-12-27",
+                "gender": "Mme",
+                "birth_country_cog_code": "91100",
+                "birth_city_cog_code": "08480",
+            },
+            "quotient_familial": None,
+        }

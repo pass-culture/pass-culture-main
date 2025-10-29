@@ -356,6 +356,52 @@
                 "title": "BannerResponse",
                 "type": "object"
             },
+            "BonusCreditRequest": {
+                "properties": {
+                    "birthCityCogCode": {
+                        "nullable": true,
+                        "title": "Birthcitycogcode",
+                        "type": "string"
+                    },
+                    "birthCountryCogCode": {
+                        "title": "Birthcountrycogcode",
+                        "type": "string"
+                    },
+                    "birthDate": {
+                        "format": "date",
+                        "title": "Birthdate",
+                        "type": "string"
+                    },
+                    "commonName": {
+                        "nullable": true,
+                        "title": "Commonname",
+                        "type": "string"
+                    },
+                    "firstNames": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Firstnames",
+                        "type": "array"
+                    },
+                    "gender": {
+                        "$ref": "#/components/schemas/GenderEnum"
+                    },
+                    "lastName": {
+                        "title": "Lastname",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "lastName",
+                    "firstNames",
+                    "birthDate",
+                    "gender",
+                    "birthCountryCogCode"
+                ],
+                "title": "BonusCreditRequest",
+                "type": "object"
+            },
             "BookOfferRequest": {
                 "properties": {
                     "quantity": {
@@ -2371,6 +2417,14 @@
                 ],
                 "title": "GTL",
                 "type": "object"
+            },
+            "GenderEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "M.",
+                    "Mme"
+                ],
+                "title": "GenderEnum"
             },
             "GenreType": {
                 "description": "An enumeration.",
@@ -8584,6 +8638,48 @@
                     }
                 ],
                 "summary": "get_activity_types <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/subscription/bonus/quotient_familial": {
+            "post": {
+                "description": "",
+                "operationId": "post__native_v1_subscription_bonus_quotient_familial",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BonusCreditRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "create_quotient_familial_bonus_credit_fraud_check <POST>",
                 "tags": []
             }
         },
