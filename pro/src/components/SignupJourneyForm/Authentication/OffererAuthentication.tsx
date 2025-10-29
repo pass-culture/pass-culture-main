@@ -28,8 +28,6 @@ export const OffererAuthentication = (): JSX.Element => {
   const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
-    isOpenToPublic:
-      offerer?.isOpenToPublic || (!offerer?.isDiffusible ? 'false' : 'true'),
     addressAutocomplete: `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     'search-addressAutocomplete': `${offerer?.street} ${offerer?.postalCode} ${offerer?.city}`,
     latitude: offerer?.latitude || 0,

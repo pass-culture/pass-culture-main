@@ -19,5 +19,5 @@ export const DEFAULT_OFFERER_FORM_VALUES = {
   hasVenueWithSiret: false,
   isDiffusible: true,
   ...DEFAULT_ADDRESS_FORM_VALUES,
-  isOpenToPublic: '',
+  isOpenToPublic: undefined,
 }
