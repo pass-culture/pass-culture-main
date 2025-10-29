@@ -21,6 +21,7 @@
 
 .data-container {
   display: grid;
+  width: 100%;
   gap: var(--size-spacing-xxl);
   grid-template-columns: 1fr;
   margin-top: var(--size-spacing-s);
