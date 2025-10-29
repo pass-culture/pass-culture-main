@@ -244,7 +244,11 @@ export const TemplateOffersSearchFilters = ({
           value={selectedFilters.format}
         />
       </FormLayout.Row>
-      <FieldLayout label="Période de l’évènement" name="period" isOptional>
+      <FieldLayout
+        label="Période de l’évènement"
+        name="period"
+        required={false}
+      >
         <PeriodSelector
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}

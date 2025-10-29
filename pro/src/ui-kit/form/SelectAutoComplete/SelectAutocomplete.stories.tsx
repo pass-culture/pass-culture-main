@@ -73,7 +73,7 @@ export const Default: StoryObj<typeof SelectAutocomplete> = {
     name: 'departement',
     label: 'Département',
     options,
-    isOptional: true,
+    required: false,
   },
 }
 
@@ -82,7 +82,7 @@ export const NoResetOnOpen: StoryObj<typeof SelectAutocomplete> = {
     name: 'departement',
     label: 'Département',
     options,
-    isOptional: true,
+    required: false,
     resetOnOpen: false,
     value: '05',
   },
@@ -103,7 +103,7 @@ export const WithOnsearchTrigger: StoryObj<typeof SelectAutocomplete> = {
           label="Département"
           name="departement"
           options={options}
-          isOptional={true}
+          required={false}
           onSearch={(text) => setSearchText(text)}
         />
       </>

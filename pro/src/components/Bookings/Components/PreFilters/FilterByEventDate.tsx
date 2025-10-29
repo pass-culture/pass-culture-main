@@ -21,7 +21,7 @@ export const FilterByEventDate = ({
     label="Date de l’évènement"
     name="select-filter-date"
     className={styles['offer-date-filter']}
-    isOptional
+    required={false}
   >
     <BaseDatePicker
       name="select-filter-date"

@@ -353,7 +353,7 @@ export const CollectiveOfferVisibilityScreen = ({
                   name="teacher"
                   options={teachersOptions}
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
-                  isOptional
+                  required={false}
                   description="Ex: Camille Dupont"
                   hideArrow
                   onReset={() => {

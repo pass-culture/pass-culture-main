@@ -47,8 +47,8 @@ export type AddressSelectProps = {
   error?: string
   /** Maximum number of address suggestions to display */
   suggestionLimit?: number
-  /** Indicates if the field is optional */
-  isOptional?: boolean
+  /** Indicates if the field is required */
+  required?: boolean
 }
 
 export const AddressSelect = forwardRef(
@@ -66,7 +66,7 @@ export const AddressSelect = forwardRef(
       onChange,
       onBlur,
       value: inputValue,
-      isOptional,
+      required = true,
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
@@ -168,7 +168,7 @@ export const AddressSelect = forwardRef(
         className={className}
         ref={inputRef}
         error={error}
-        isOptional={isOptional}
+        required={required}
       />
     )
   }

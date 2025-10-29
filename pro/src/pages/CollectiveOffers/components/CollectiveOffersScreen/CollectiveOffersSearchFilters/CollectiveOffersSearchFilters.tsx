@@ -264,7 +264,11 @@ export const CollectiveOffersSearchFilters = ({
           label="Format"
         />
       </FormLayout.Row>
-      <FieldLayout label="Période de l’évènement" name="period" isOptional>
+      <FieldLayout
+        label="Période de l’évènement"
+        name="period"
+        required={false}
+      >
         <PeriodSelector
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}

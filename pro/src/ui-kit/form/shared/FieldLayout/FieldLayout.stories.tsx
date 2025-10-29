@@ -16,7 +16,7 @@ export const Default: StoryObj<typeof FieldLayout> = {
     error: 'error message',
     count: 10,
     maxLength: 100,
-    isOptional: true,
+    required: false,
     children: <input type="text" />,
   },
 }

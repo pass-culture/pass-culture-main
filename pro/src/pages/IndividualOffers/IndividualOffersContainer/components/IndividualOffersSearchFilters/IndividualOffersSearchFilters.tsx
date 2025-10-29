@@ -121,7 +121,7 @@ export const IndividualOffersSearchFilters = ({
       searchButtonRef={searchButtonRef}
     >
       <FormLayout.Row inline>
-        <FieldLayout label="Statut" name="status" isOptional>
+        <FieldLayout label="Statut" name="status" required={false}>
           <SelectInput
             value={selectedFilters.status as OfferStatus}
             name="status"
@@ -130,7 +130,7 @@ export const IndividualOffersSearchFilters = ({
             options={individualFilterStatus}
           />
         </FieldLayout>
-        <FieldLayout label="Localisation" name="address" isOptional>
+        <FieldLayout label="Localisation" name="address" required={false}>
           <SelectInput
             defaultOption={ALL_OFFERER_ADDRESS_OPTION}
             onChange={storeSelectedOfferAddress}
@@ -142,7 +142,7 @@ export const IndividualOffersSearchFilters = ({
           />
         </FieldLayout>
         {categories && (
-          <FieldLayout label="Catégorie" name="categorie" isOptional>
+          <FieldLayout label="Catégorie" name="categorie" required={false}>
             <SelectInput
               defaultOption={ALL_CATEGORIES_OPTION}
               onChange={storeSelectedCategory}
@@ -157,7 +157,7 @@ export const IndividualOffersSearchFilters = ({
           label="Mode de création"
           name="creationMode"
           hasLabelLineBreak={false}
-          isOptional
+          required={false}
         >
           <SelectInput
             onChange={storeCreationMode}
@@ -170,7 +170,7 @@ export const IndividualOffersSearchFilters = ({
         <FieldLayout
           label="Période de l’évènement"
           name="period"
-          isOptional
+          required={false}
           className={styles['offers-table-search-filter-full-width']}
         >
           <PeriodSelector

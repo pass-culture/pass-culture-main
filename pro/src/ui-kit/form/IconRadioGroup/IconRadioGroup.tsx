@@ -7,25 +7,18 @@ import { IconRadio } from '@/ui-kit/form/IconRadio/IconRadio'
 import styles from './IconRadioGroup.module.scss'
 
 export type IconRadioGroupValues = {
+  /** Hidden label for the radio button shown as a tooltip on hover/focus */
   label: string
+  /** Icon element displayed in the small round radio button */
   icon: string | JSX.Element
+  /** Value of the radio button */
   value: string
 }
 
 export interface IconRadioGroupProps {
   name: string
   legend: string
-  /**
-   * ```
-   * {
-   *   label: Hidden label for the radio button shown as a tooltip on hover/focus
-   *   icon: Icon element displayed in the small round radio button
-   *   value: Value of the radio button
-   * }
-   * ```
-   */
   group: IconRadioGroupValues[]
-  isOptional?: boolean
   /** What type of required indicator is displayed */
   requiredIndicator?: RequiredIndicator
   error?: string

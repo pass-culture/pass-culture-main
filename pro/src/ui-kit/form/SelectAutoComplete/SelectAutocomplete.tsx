@@ -36,8 +36,8 @@ type CommonProps = {
   description?: string
   /** Disables the input and prevents interaction */
   disabled?: boolean
-  /** Indicates if the field is optional */
-  isOptional?: boolean
+  /** Indicates if the field is required */
+  required?: boolean
   /** Additional CSS class names */
   className?: string
   /** Error message to display */
@@ -86,7 +86,7 @@ export const SelectAutocomplete = forwardRef(
       disabled = false,
       name,
       hideArrow,
-      isOptional = false,
+      required = true,
       label,
       options,
       resetOnOpen = true,
@@ -287,7 +287,7 @@ export const SelectAutocomplete = forwardRef(
       <FieldLayout
         className={className}
         error={error}
-        isOptional={isOptional}
+        required={required}
         label={label}
         name={name}
         showError={!!error}
@@ -323,7 +323,7 @@ export const SelectAutocomplete = forwardRef(
             id={name}
             aria-expanded={isDropdownOpen}
             aria-haspopup="listbox"
-            aria-required={!isOptional}
+            aria-required={required}
             role="combobox"
             value={searchField}
             autoComplete="off"

@@ -149,7 +149,7 @@ export const optionalWithDescription: StoryObj<typeof AddressSelect> = {
     name: 'addressText',
     label: 'Adresse postale',
     description: 'Uniquement si vous souhaitez préciser l’adresse exacte',
-    isOptional: true,
+    required: false,
   },
 }
 
