@@ -2,8 +2,7 @@ import type {
   EducationalInstitutionResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from '@/apiClient/v1'
-
-import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
+import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 
 describe('extractInitialVisibilityValues', () => {
   it('should return default values when institution is not defined', () => {
