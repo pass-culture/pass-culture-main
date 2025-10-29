@@ -184,12 +184,6 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
             product_name = product.name
             break
 
-    attach_product_form = (
-        forms.AttachBookProductForm()
-        if chronicle.clubType == chronicles_models.ChronicleClubType.BOOK_CLUB
-        else forms.AttachCineProductForm()
-    )
-
     return render_template(
         "chronicles/details.html",
         chronicle=chronicle,
@@ -197,7 +191,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         active_tab=request.args.get("active_tab", "content"),
         chronicle_publication_form=EmptyForm(),
         empty_form=EmptyForm(),
-        attach_product_form=attach_product_form,
+        attach_product_form=forms.AttachProductForm(),
         action_history=action_history,
         comment_form=forms.CommentForm(),
     )
@@ -296,15 +290,14 @@ def unpublish_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
 def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
     selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
 
-    form = (
-        forms.AttachBookProductForm()
-        if selected_chronicle.clubType == chronicles_models.ChronicleClubType.BOOK_CLUB
-        else forms.AttachCineProductForm()
-    )
+    form = forms.AttachProductForm()
+
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
+
+    product_identifier = str(form.product_identifier.data)
 
     products_subquery = (
         sa.select(sa.func.array_agg(chronicles_models.ProductChronicle.productId))
@@ -321,27 +314,26 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
         chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
     )
-    match selected_chronicle.productIdentifierType:
-        case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
+
+    match form.product_identifier_type.data:
+        case chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID.name:
             products = (
                 db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData.op("->")("allocineId") == form.product_identifier.data)
+                .filter(offers_models.Product.extraData.op("->")("allocineId") == product_identifier)
                 .all()
             )
-        case chronicles_models.ChronicleProductIdentifierType.EAN:
+        case chronicles_models.ChronicleProductIdentifierType.EAN.name:
             products = (
-                db.session.query(offers_models.Product)
-                .filter(offers_models.Product.ean == form.product_identifier.data)
-                .all()
+                db.session.query(offers_models.Product).filter(offers_models.Product.ean == product_identifier).all()
             )
-        case chronicles_models.ChronicleProductIdentifierType.VISA:
+        case chronicles_models.ChronicleProductIdentifierType.VISA.name:
             products = (
                 db.session.query(offers_models.Product)
-                .filter(offers_models.Product.extraData["visa"].astext == form.product_identifier.data)
+                .filter(offers_models.Product.extraData["visa"].astext == product_identifier)
                 .all()
             )
         case _:
-            raise ValueError()
+            products = []
 
     if not products:
         mark_transaction_as_invalid()

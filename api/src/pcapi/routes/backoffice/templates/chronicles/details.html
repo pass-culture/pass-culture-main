@@ -6,17 +6,6 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% extends "layouts/standard.html" %}
-{% macro get_product_identifier(product, productIdentifierType) %}
-  {% if productIdentifierType == "EAN" %}
-    {{ product.ean }}
-  {% elif productIdentifierType == "ALLOCINE_ID" %}
-    {{ product.extraData.allocineId }}
-  {% elif productIdentifierType == "VISA" %}
-    {{ product.extraData.visa }}
-  {% else %}
-    -
-  {% endif %}
-{% endmacro %}
 {% block main_content %}
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
@@ -101,7 +90,7 @@
                 {% endif %}
               </p>
               <p class="mb-1">
-                <span class="fw-bold">{{ chronicle.productIdentifierName }} :</span>
+                <span class="fw-bold">{{ chronicle.productIdentifierType | format_chronicle_product_identifier_type }} :</span>
                 {% if chronicle.productIdentifier %}
                   {{ chronicle.productIdentifier }}
                 {% else %}
@@ -142,12 +131,16 @@
               <thead>
                 <tr>
                   {% if has_permission("MANAGE_CHRONICLE") %}<th scope="col"></th>{% endif %}
-                  <th scope="col-2">{{ chronicle.productIdentifierName }}</th>
+                  {% if chronicle.productIdentifierType.value != "EAN" %}
+                    <th scope="col-2">{{ chronicle.productIdentifierType | format_chronicle_product_identifier_type }}</th>
+                  {% endif %}
+                  <th scope="col-2">EAN</th>
                   <th scope="col-2">Titre</th>
                 </tr>
               </thead>
               <tbody>
                 {% for product in chronicle.products %}
+                  {% set product_identifier = chronicle | get_chronicle_product_identifier(product) %}
                   <tr>
                     {% if has_permission("MANAGE_CHRONICLE") %}
                       <td>
@@ -168,14 +161,28 @@
                         </div>
                       </td>
                     {% endif %}
-                    {% set product_identifier = get_product_identifier(product, chronicle.productIdentifierType.value) %}
-                    {% if product_identifier == chronicle.productIdentifier %}
+                    {% if chronicle.productIdentifierType.value != "EAN" %}
                       <td>
-                        <b>{{ product_identifier }}</b>
+                        {% if product_identifier %}
+                          {% if product_identifier == chronicle.productIdentifier %}
+                            <b>{{ product_identifier }}</b>
+                          {% else %}
+                            {{ product_identifier }}
+                          {% endif %}
+                        {% else %}
+                          -
+                        {% endif %}
                       </td>
-                    {% else %}
-                      <td>{{ product_identifier }}</td>
                     {% endif %}
+                    <td>
+                      {% if chronicle.productIdentifierType.value == "EAN" and product_identifier == chronicle.productIdentifier %}
+                        <b>{{ product_identifier }}</b>
+                      {% elif product.ean %}
+                        {{ product.ean }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
                     <td>{{ product.name }}</td>
                   </tr>
                 {% endfor %}

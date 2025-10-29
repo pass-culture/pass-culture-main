@@ -533,34 +533,31 @@ class AttachProductTest(PostEndpointHelper):
     # session
     # current user
     # get chronicle
-    # get every chronicle with same productIdentifier
     # get product
+    # get every chronicle with same productIdentifier
     # check if the chronicle is not already attached to the product
     # attach product to chronicle
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
     expected_num_queries = 7 + GetChronicleDetailsTest.expected_num_queries
 
     @pytest.mark.parametrize(
-        "product_identifier,product_identifier_type,club_type",
+        "product_identifier,product_identifier_type",
         [
             (
                 "1235467890123",
                 chronicles_models.ChronicleProductIdentifierType.EAN,
-                chronicles_models.ChronicleClubType.BOOK_CLUB,
             ),
             (
                 "1000013191",
                 chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
             (
                 "1000013192",
                 chronicles_models.ChronicleProductIdentifierType.VISA,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
         ],
     )
-    def test_attach_product(self, product_identifier, product_identifier_type, club_type, authenticated_client):
+    def test_attach_product(self, product_identifier, product_identifier_type, authenticated_client):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
         elif product_identifier_type == chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID:
@@ -568,7 +565,8 @@ class AttachProductTest(PostEndpointHelper):
         else:
             product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
         chronicle = chronicles_factories.ChronicleFactory(
-            productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
+            productIdentifier=product_identifier,
+            productIdentifierType=product_identifier_type,
         )
 
         response = self.post_to_endpoint(
@@ -576,7 +574,10 @@ class AttachProductTest(PostEndpointHelper):
             expected_num_queries=self.expected_num_queries,
             chronicle_id=chronicle.id,
             client=authenticated_client,
-            form={"product_identifier": product_identifier},
+            form={
+                "product_identifier": product_identifier,
+                "product_identifier_type": product_identifier_type.name,
+            },
         )
         assert response.status_code == 200
         db.session.refresh(chronicle)
@@ -589,27 +590,24 @@ class AttachProductTest(PostEndpointHelper):
         ]
 
     @pytest.mark.parametrize(
-        "product_identifier,product_identifier_type,club_type",
+        "product_identifier,product_identifier_type",
         [
             (
                 "1235467890123",
                 chronicles_models.ChronicleProductIdentifierType.EAN,
-                chronicles_models.ChronicleClubType.BOOK_CLUB,
             ),
             (
                 "1000013191",
                 chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
             (
                 "1000013192",
                 chronicles_models.ChronicleProductIdentifierType.VISA,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
         ],
     )
     def test_attach_product_to_multiple_chronicles(
-        self, product_identifier, product_identifier_type, club_type, authenticated_client
+        self, product_identifier, product_identifier_type, authenticated_client
     ):
         if product_identifier_type == chronicles_models.ChronicleProductIdentifierType.EAN:
             product = offers_factories.ProductFactory(ean=product_identifier)
@@ -619,7 +617,9 @@ class AttachProductTest(PostEndpointHelper):
             product = offers_factories.ProductFactory(extraData={"visa": product_identifier})
 
         chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(
-            2, productIdentifier=product_identifier, productIdentifierType=product_identifier_type, clubType=club_type
+            2,
+            productIdentifier=product_identifier,
+            productIdentifierType=product_identifier_type,
         )
         untouched_chronicle = chronicles_factories.ChronicleFactory()
 
@@ -630,7 +630,10 @@ class AttachProductTest(PostEndpointHelper):
             expected_num_queries=expected_num_queries,
             chronicle_id=chronicles_to_update[0].id,
             client=authenticated_client,
-            form={"product_identifier": product_identifier},
+            form={
+                "product_identifier": product_identifier,
+                "product_identifier_type": product_identifier_type.name,
+            },
         )
         assert response.status_code == 200
         db.session.refresh(untouched_chronicle)
@@ -647,35 +650,35 @@ class AttachProductTest(PostEndpointHelper):
         assert untouched_chronicle.products == []
 
     @pytest.mark.parametrize(
-        "product_identifier,product_identifier_type,club_type",
+        "product_identifier,product_identifier_type",
         [
             (
                 "1235467890123",
                 chronicles_models.ChronicleProductIdentifierType.EAN,
-                chronicles_models.ChronicleClubType.BOOK_CLUB,
             ),
             (
                 "1000013191",
                 chronicles_models.ChronicleProductIdentifierType.ALLOCINE_ID,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
             (
                 "1000013192",
                 chronicles_models.ChronicleProductIdentifierType.VISA,
-                chronicles_models.ChronicleClubType.CINE_CLUB,
             ),
         ],
     )
-    def test_product_not_found(self, product_identifier, product_identifier_type, club_type, authenticated_client):
+    def test_product_not_found(self, product_identifier, product_identifier_type, authenticated_client):
         chronicle = chronicles_factories.ChronicleFactory(
-            productIdentifierType=product_identifier_type, clubType=club_type
+            productIdentifierType=product_identifier_type,
         )
 
         response = self.post_to_endpoint(
             follow_redirects=True,
             chronicle_id=chronicle.id,
             client=authenticated_client,
-            form={"product_identifier": product_identifier},
+            form={
+                "product_identifier": product_identifier,
+                "product_identifier_type": product_identifier_type.name,
+            },
         )
         assert response.status_code == 200
         db.session.refresh(chronicle)
@@ -689,13 +692,11 @@ class AttachProductTest(PostEndpointHelper):
         old_chronicle = chronicles_factories.ChronicleFactory(
             productIdentifier=chronicle_ean,
             productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
-            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
             products=[product, product_to_attach],
         )
         chronicle = chronicles_factories.ChronicleFactory(
             productIdentifier=chronicle_ean,
             productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
-            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
             products=[product],
         )
 
@@ -703,7 +704,10 @@ class AttachProductTest(PostEndpointHelper):
             follow_redirects=True,
             chronicle_id=chronicle.id,
             client=authenticated_client,
-            form={"product_identifier": product_to_attach.ean},
+            form={
+                "product_identifier": product_to_attach.ean,
+                "product_identifier_type": chronicles_models.ChronicleProductIdentifierType.EAN.name,
+            },
         )
         assert response.status_code == 200
 
