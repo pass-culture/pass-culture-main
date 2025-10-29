@@ -1,14 +1,24 @@
+import dataclasses
+import datetime
 import pathlib
 import re
 import uuid
 from unittest.mock import patch
 
+import factory
 import pytest
 from flask import url_for
 
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -17,8 +27,12 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
+from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 
 import tests
@@ -493,6 +507,140 @@ class PostProductBlacklistTest(PostEndpointHelper):
         assert offer.status == OfferStatus.REJECTED
         assert unlinked_offer.status == OfferStatus.REJECTED
 
+    @pytest.mark.parametrize(
+        "validation_status,gcu_compatibility_type",
+        [
+            (OfferValidationStatus.DRAFT, offers_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.PENDING, offers_models.GcuCompatibilityType.COMPATIBLE),
+            (OfferValidationStatus.REJECTED, offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE),
+            (OfferValidationStatus.APPROVED, offers_models.GcuCompatibilityType.COMPATIBLE),
+        ],
+    )
+    def test_edit_product_gcu_compatibility(self, authenticated_client, validation_status, gcu_compatibility_type):
+        provider = providers_factories.PublicApiProviderFactory()
+        product_1 = offers_factories.ThingProductFactory(
+            description="premier produit inapproprié",
+            ean="9781234567890",
+            gcuCompatibilityType=gcu_compatibility_type,
+            lastProvider=provider,
+        )
+        venue = offerers_factories.VenueFactory()
+        offers_factories.OfferFactory(product=product_1, venue=venue, validation=validation_status)
+        offers_factories.OfferFactory(product=product_1, venue=venue)
+
+        initially_rejected = {
+            offer.id: {"type": offer.lastValidationType, "date": offer.lastValidationDate}
+            for offer in db.session.query(offers_models.Offer).filter(
+                offers_models.Offer.validation == OfferValidationStatus.REJECTED
+            )
+        }
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product_1.id, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert (
+            "Le produit a été marqué incompatible avec les CGU et les offres ont été désactivées"
+            in html_parser.extract_alerts(response.data)
+        )
+
+        product = db.session.query(offers_models.Product).one()
+        offers = db.session.query(offers_models.Offer).order_by("id").all()
+
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        for offer in offers:
+            assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+            if offer.id in initially_rejected:
+                assert offer.lastValidationType == initially_rejected[offer.id]["type"]
+                assert offer.lastValidationDate == initially_rejected[offer.id]["date"]
+            else:
+                assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+                assert date_utils.get_naive_utc_now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+
+    def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
+        provider = providers_factories.PublicApiProviderFactory()
+        product = offers_factories.ThingProductFactory(
+            description="Produit inapproprié",
+            ean="9781234567890",
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+            lastProvider=provider,
+        )
+        venue = offerers_factories.VenueFactory()
+        offer1 = offers_factories.OfferFactory(product=product, venue=venue, validation=OfferValidationStatus.APPROVED)
+        offers_factories.OfferFactory(product=product, venue=venue)
+        booking = bookings_factories.BookingFactory(stock__offer=offer1)
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+        assert response.status_code == 200
+
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == booking.email
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[0]["params"]["REJECTED"] == True
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_with_bookings_finance_events_and_pricings(self, authenticated_client):
+        product = offers_factories.ThingProductFactory(
+            description="Produit inapproprié",
+            ean="9781234567890",
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+            lastProvider=providers_factories.PublicApiProviderFactory(),
+        )
+        offer = offers_factories.OfferFactory(product=product)
+        stock = offers_factories.StockFactory(offer=offer)
+
+        bookings_factories.BookingFactory(stock=stock)  # confirmed, will be cancelled
+
+        used_booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(booking=used_booking)
+        finance_factories.PricingFactory(
+            event=finance_event, booking=used_booking, status=finance_models.PricingStatus.VALIDATED
+        )
+
+        cancelled_booking = bookings_factories.CancelledBookingFactory(
+            stock=stock, dateUsed=factory.LazyFunction(date_utils.get_naive_utc_now)
+        )
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking=cancelled_booking,
+            venue=offer.venue,
+            pricingPoint=offer.venue,
+            status=finance_models.FinanceEventStatus.CANCELLED,
+        )
+        finance_factories.PricingFactory(
+            event=finance_event, booking=cancelled_booking, status=finance_models.PricingStatus.CANCELLED
+        )
+
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking=reimbursed_booking, venue=offer.venue, pricingPoint=offer.venue
+        )
+        finance_factories.PricingFactory(
+            event=finance_event, booking=reimbursed_booking, status=finance_models.PricingStatus.INVOICED
+        )
+
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
+        assert response.status_code == 200
+
+        # ensure that we check that everything is committed, when using @atomic, transaction and with atomic (PC-31934)
+        db.session.close()
+        db.session.begin()
+
+        product = db.session.query(offers_models.Product).one()
+        offer = db.session.query(offers_models.Offer).one()
+
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+        assert date_utils.get_naive_utc_now() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+
+        assert (
+            db.session.query(bookings_models.Booking).filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2
+        )
+        assert db.session.query(bookings_models.Booking).filter(bookings_models.Booking.isCancelled).count() == 2
+
 
 class LinkUnlinkedOfferToProductButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
@@ -656,3 +804,16 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         assert criterion_to_add in linked_offer.criteria
         assert criterion_to_add in unlinked_offer.criteria
         assert criterion_to_add not in unrelated_offer.criteria
+
+    def test_add_criteria_to_offers_without_offers(self, authenticated_client):
+        product = offers_factories.ProductFactory(ean="9783161484100")
+        criterion = criteria_factories.CriterionFactory(name="Pretty good books")
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            product_id=product.id,
+            form={"criteria": [criterion.id]},
+            follow_redirects=True,
+        )
+
+        assert response.status_code == 200
