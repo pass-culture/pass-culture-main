@@ -2,8 +2,11 @@ import { act, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 
+import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import {
+  ApiError,
   CancelablePromise,
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
@@ -23,9 +26,14 @@ import {
 } from '@/commons/utils/renderWithProviders'
 
 import {
+  INSTITUTION_GENERIC_ERROR_MESSAGE,
+  POST_VISIBILITY_FORM_ERROR_MESSAGE,
+  REDACTOR_GENERIC_ERROR_MESSAGE,
+} from '../../commons/constants'
+import {
   type CollectiveOfferVisibilityProps,
   CollectiveOfferVisibilityScreen,
-} from '../CollectiveOfferVisibility'
+} from './CollectiveOfferVisibility'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -114,7 +122,19 @@ describe('CollectiveOfferVisibility', () => {
     id: offerId,
     allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
   })
-  beforeEach(() => {
+  const notifyError = vi.fn()
+  const notifySuccess = vi.fn()
+
+  beforeEach(async () => {
+    const notifsImport = (await vi.importActual(
+      '@/commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      success: notifySuccess,
+      error: notifyError,
+    }))
+
     props = {
       mode: Mode.CREATION,
       initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
@@ -252,15 +272,6 @@ describe('CollectiveOfferVisibility', () => {
       'patchCollectiveOffersEducationalInstitution'
     ).mockRejectedValueOnce(new Error('Ooops'))
 
-    const notifyError = vi.fn()
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
-    }))
-
     renderVisibilityStep(props)
 
     await userEvent.click(
@@ -397,7 +408,6 @@ describe('CollectiveOfferVisibility', () => {
         ...props,
         mode: Mode.EDITION,
         initialValues: {
-          visibility: 'one',
           institution: '24',
           teacher: 'teacher.teach@example.com',
         },
@@ -452,6 +462,139 @@ describe('CollectiveOfferVisibility', () => {
           /Option sélectionnée : LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/
         )
       ).toBeInTheDocument()
+    })
+
+    it('should display default institution error message when institution input is not empty but institution is null', async () => {
+      vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+      })
+
+      const institutionInput = await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+
+      await userEvent.type(institutionInput, 'Invalid Teacher')
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Enregistrer et continuer/ })
+      )
+      expect(
+        api.patchCollectiveOffersEducationalInstitution
+      ).not.toHaveBeenCalled()
+
+      expect(
+        screen.queryByText(INSTITUTION_GENERIC_ERROR_MESSAGE)
+      ).toBeInTheDocument()
+    })
+
+    it('should display teacher generic error message when teacher input is not empty but teacherEmail is null', async () => {
+      vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          institution: '24',
+        },
+      })
+
+      const teacherInput = await screen.findByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+
+      await userEvent.type(teacherInput, 'Invalid Teacher')
+
+      await userEvent.click(
+        screen.getByRole('button', { name: /Enregistrer et continuer/ })
+      )
+      expect(
+        api.patchCollectiveOffersEducationalInstitution
+      ).not.toHaveBeenCalled()
+
+      expect(
+        screen.queryByText(REDACTOR_GENERIC_ERROR_MESSAGE)
+      ).toBeInTheDocument()
+    })
+
+    it('should display institution generic error message when receiving an api error with form keys', async () => {
+      vi.spyOn(
+        api,
+        'patchCollectiveOffersEducationalInstitution'
+      ).mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              educationalInstitutionId: ['Erreur api surcharge cote front'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          institution: '24',
+        },
+      })
+      await userEvent.click(
+        screen.getByRole('button', { name: /Enregistrer et continuer/ })
+      )
+      expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
+
+      expect(
+        screen.queryByText(INSTITUTION_GENERIC_ERROR_MESSAGE)
+      ).toBeInTheDocument()
+
+      await waitFor(() =>
+        expect(notifyError).toHaveBeenNthCalledWith(
+          1,
+          POST_VISIBILITY_FORM_ERROR_MESSAGE
+        )
+      )
+    })
+
+    it('should display teacher generic error message when receiving an api error with form keys', async () => {
+      vi.spyOn(
+        api,
+        'patchCollectiveOffersEducationalInstitution'
+      ).mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              teacherEmail: ['Erreur api surcharge cote front'],
+            },
+          } as ApiResult,
+          ''
+        )
+      )
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          institution: '24',
+        },
+      })
+      await userEvent.click(
+        screen.getByRole('button', { name: /Enregistrer et continuer/ })
+      )
+      expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
+
+      expect(
+        screen.queryByText(REDACTOR_GENERIC_ERROR_MESSAGE)
+      ).toBeInTheDocument()
+
+      await waitFor(() =>
+        expect(notifyError).toHaveBeenNthCalledWith(
+          1,
+          POST_VISIBILITY_FORM_ERROR_MESSAGE
+        )
+      )
     })
   })
 
@@ -625,15 +768,6 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should display an error if redactors fetching fails', async () => {
-      const notifyError = vi.fn()
-      const notifsImport = (await vi.importActual(
-        '@/commons/hooks/useNotification'
-      )) as ReturnType<typeof useNotification.useNotification>
-      vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-        ...notifsImport,
-        error: notifyError,
-      }))
-
       vi.spyOn(
         api,
         'getAutocompleteEducationalRedactorsForUai'
