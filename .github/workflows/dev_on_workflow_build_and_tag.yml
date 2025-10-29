@@ -69,7 +69,7 @@ jobs:
 
   build-images:
     name: Build Docker images
-    needs: [build-and-tag-version]
+    # needs: [build-and-tag-version]
     strategy:
       matrix:
         image: [pcapi, pcapi-console]
