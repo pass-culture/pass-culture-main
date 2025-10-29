@@ -55,10 +55,9 @@ export function HeadlineOfferContextProvider({
   const { data } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
     api.getVenues(null, null, selectedOffererId)
   )
-  const nonVirtualVenues =
-    data?.venues.filter((venue) => !venue.isVirtual) || []
+
   const isHeadlineOfferAllowedForOfferer =
-    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
+    data?.venues.filter((venue) => venue.isPermanent).length === 1
 
   const { data: rawHeadlineOffer, error } = useSWR(
     selectedOffererId && isHeadlineOfferAllowedForOfferer
