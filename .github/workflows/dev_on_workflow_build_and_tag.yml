@@ -36,19 +36,11 @@ permissions:
 jobs:
   build-and-tag-version:
     runs-on: ubuntu-22.04
-    env:
-      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
-      GIT_CONFIG_NAME: ${{ github.actor }}
     steps:
       - name: Checkout ref
         uses: actions/checkout@v5
         with:
           ref: ${{ inputs.base_ref }}
-
-      - name: Configure git author
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
 
       - name: Add version to api
         working-directory: api
@@ -67,10 +59,6 @@ jobs:
         run: |
           echo "${{ inputs.tag_number }}" > version.txt
           git add version.txt
-
-      - name: Tag Release
-        run: |
-          git commit -m "🚀 $TAG_NAME" -n
 
       - name: Upload pre-release change to github artifact
         uses: actions/upload-artifact@v4
@@ -135,6 +123,7 @@ jobs:
 
       - name: Tag Release
         run: |
+          git commit -m "🚀 $TAG_NAME" -n
           git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
           git push origin "$TAG_NAME"
 
