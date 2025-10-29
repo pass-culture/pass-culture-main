@@ -1,4 +1,5 @@
 from sqlalchemy.orm import joinedload
+from werkzeug.exceptions import BadRequest
 
 import pcapi.core.chronicles.api as chronicles_api
 import pcapi.core.mails.transactional as transactional_mails
@@ -9,6 +10,7 @@ from pcapi.core.categories.app_search_tree import SEARCH_NODES
 from pcapi.core.categories.models import GenreType
 from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -57,6 +59,31 @@ def get_offers_and_stocks(body: serializers.OffersStocksRequest) -> serializers.
     serialized_offers = [serializers.OfferResponseV2.from_orm(offer) for offer in query]
     offers_response = serializers.OffersStocksResponseV2(offers=serialized_offers)
     return offers_response
+
+
+@blueprint.native_route("/movie/calendar", methods=["GET"])
+@spectree_serialize(response_model=serializers.MovieCalendarResponse, api=blueprint.api, on_error_statuses=[400, 404])
+def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serializers.MovieCalendarResponse:
+    if query.allocine_id:
+        product_query = db.session.query(Product).filter(Product.extraData.op("->")("allocineId") == query.allocine_id)
+    elif query.visa:
+        product_query = db.session.query(Product).filter(Product.extraData["visa"].astext == query.visa)
+    else:
+        raise BadRequest()  # shoud not happen
+
+    product = first_or_404(product_query)
+
+    results = repository.get_nearby_bookable_screenings_from_product(
+        product,
+        query.latitude,
+        query.longitude,
+        query.around_radius,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    calendar = serializers.make_movie_calendar_from_screening_rows(results, query.from_datetime, query.to_datetime)
+    return serializers.MovieCalendarResponse(calendar=calendar)
 
 
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])

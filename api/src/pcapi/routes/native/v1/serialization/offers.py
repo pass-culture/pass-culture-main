@@ -1,12 +1,16 @@
 import logging
 import textwrap
+import typing
 from datetime import date
 from datetime import datetime
+from datetime import time
+from datetime import timedelta
 from typing import Any
 from typing import Callable
 from typing import TypeVar
 from typing import cast
 
+import pydantic as pydantic_v2
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
 from pydantic.v1.utils import GetterDict
@@ -34,6 +38,7 @@ from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import BaseModelV2
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
@@ -501,6 +506,96 @@ class OffersStocksResponseV2(BaseModel):
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
+
+
+class MovieScreeningsRequest(BaseModelV2):
+    allocine_id: str | None = None
+    visa: str | None = None
+    latitude: float
+    longitude: float
+    around_radius: int = 50_000  # meters
+    from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
+    to_datetime: datetime = pydantic_v2.Field(
+        alias="to", default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=15)
+    )
+
+    _datetime_serializer = pydantic_v2.field_serializer("from_datetime", "to_datetime")(format_into_utc_date)
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_params(self) -> "MovieScreeningsRequest":
+        if (not self.allocine_id and not self.visa) or (self.allocine_id and self.visa):
+            raise ValueError("Only one of allocine_id and visa must be provided")
+
+        return self
+
+
+class Screening(BaseModelV2):
+    beginning_datetime: datetime
+    features: list[str]
+    price: float
+    stock_id: int
+
+
+class VenueScreenings(BaseModelV2):
+    address: str
+    distance: float
+    label: str
+    thumb_url: str | None
+    venue_id: int
+    day_screenings: list[Screening]
+    next_screening: Screening | None
+
+
+class MovieCalendarResponse(BaseModelV2):
+    calendar: dict[date, list[VenueScreenings]]
+
+
+def make_movie_calendar_from_screening_rows(
+    data: list[dict[str, typing.Any]], start_date: datetime, end_date: datetime
+) -> dict[date, list[VenueScreenings]]:
+    calendar = {}
+    for day_delta in range((end_date - start_date).days + 1):
+        day = (start_date + timedelta(days=day_delta)).date()
+        venues: dict[int, VenueScreenings] = {}
+        for row in data:
+            venue_id = row["venue_id"]
+            if venue_id not in venues:
+                venue_screenings = VenueScreenings(
+                    address=f"{row['street']}, {row['postal_code']} {row['city']}",
+                    distance=row["distance"],
+                    label=row["label"],
+                    thumb_url=row["thumb_url"],
+                    venue_id=venue_id,
+                    day_screenings=[],
+                    next_screening=None,
+                )
+                venues[venue_id] = venue_screenings
+
+            venue = venues[venue_id]
+            screening = Screening(
+                stock_id=row["stock_id"],
+                price=row["price"],
+                features=row["features"],
+                beginning_datetime=row["beginning_datetime"],
+            )
+            if screening.beginning_datetime.date() == day:
+                venue.day_screenings.append(screening)
+
+            if not venue.next_screening:
+                venue.next_screening = screening
+                continue
+
+            current_delta_from_day = (venue.next_screening.beginning_datetime.date() - day).days
+            new_delta_from_day = (screening.beginning_datetime.date() - day).days
+            if abs(new_delta_from_day) < abs(current_delta_from_day):
+                venue.next_screening = screening
+
+        for venue in venues.values():
+            venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+        sorted_screenings = sorted(venues.values(), key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
+        calendar[day] = sorted_screenings
+
+    return calendar
 
 
 class OffersStocksRequest(BaseModel):
