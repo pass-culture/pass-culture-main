@@ -15,6 +15,7 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.subscription.bonus.schemas import BonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
     from pcapi.core.subscription.jouve.schemas import JouveContent
@@ -26,15 +27,16 @@ if typing.TYPE_CHECKING:
 
 
 class FraudCheckType(enum.Enum):
+    BONUS_CREDIT = "bonus_credit"
     DMS = "dms"
     EDUCONNECT = "educonnect"
     HONOR_STATEMENT = "honor_statement"
     INTERNAL_REVIEW = "internal_review"
-    JOUVE = "jouve"
     PHONE_VALIDATION = "phone_validation"
     PROFILE_COMPLETION = "profile_completion"
     UBBLE = "ubble"
     # Deprecated but kept for backwards compatibility
+    JOUVE = "jouve"
     USER_PROFILING = "user_profiling"
 
 
@@ -122,19 +124,21 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 
 
 FraudCheckContent = typing.Union[
+    "BonusCreditContent",
     "DMSContent",
     "EduconnectContent",
-    "JouveContent",
     "UbbleContent",
     "ProfileCompletionContent",
     "HonorStatementContent",
     "PhoneValidationFraudData",
     # Deprecated. We keep USER_PROFILING for backward compatibility.
+    "JouveContent",
     "UserProfilingFraudData",
 ]
 
 
 def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckContent]]:
+    from pcapi.core.subscription.bonus.schemas import BonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
     from pcapi.core.subscription.jouve.schemas import JouveContent
@@ -145,6 +149,7 @@ def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckCon
     from pcapi.core.subscription.ubble.schemas import UbbleContent
 
     return {
+        FraudCheckType.BONUS_CREDIT: BonusCreditContent,
         FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
         FraudCheckType.DMS: DMSContent,
         FraudCheckType.EDUCONNECT: EduconnectContent,

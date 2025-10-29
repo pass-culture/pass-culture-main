@@ -6,7 +6,9 @@ from pydantic.v1 import validator
 import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -154,3 +156,13 @@ class IdentificationSessionResponse(BaseModel):
 
 class IdentificationSessionRequest(BaseModel):
     redirectUrl: str
+
+
+class BonusCreditRequest(ConfiguredBaseModel):
+    last_name: str
+    common_name: str | None = None
+    first_names: list[str]
+    birth_date: datetime.date
+    gender: users_models.GenderEnum
+    birth_country_cog_code: str
+    birth_city_cog_code: str | None = None
