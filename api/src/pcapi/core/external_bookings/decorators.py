@@ -24,7 +24,7 @@ def _extract_logging_information(client_func: Callable, *args: list[Any], **kwar
 
     The returned dictionary contains the following keys:
         - "cinema_id" (int): The ID of the cinema from the pivot table.
-        - "client" (str): The client used for the request (e.g., `EMSClientAPI`).
+        - "client" (str): The client used for the request (e.g., `EMSAPIClient`).
         - "method" (str): The instance method used for the request (e.g., `book_ticket`).
         - "method_params" (dict): The parameters passed to the method. Example:
             {

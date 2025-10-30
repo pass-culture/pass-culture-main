@@ -16,11 +16,11 @@ from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.bookings.utils import generate_hmac_signature
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.clients.boost_client import BoostAPIClient
 from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.core.providers.clients.cgr_client import CGRAPIClient
+from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
@@ -124,7 +124,7 @@ def _check_cinema_booking_is_enabled(local_class: str) -> None:
 
 def _instantiate_cinema_api_client(
     venue_id: int,
-) -> CineDigitalServiceAPIClient | BoostAPIClient | CGRAPIClient | EMSClientAPI:
+) -> CineDigitalServiceAPIClient | BoostAPIClient | CGRAPIClient | EMSAPIClient:
     local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
     sentry_sdk.set_tag("cinema-provider-local-class", local_class)
 
@@ -143,7 +143,7 @@ def _instantiate_cinema_api_client(
         case "CGRStocks":
             return CGRAPIClient(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case "EMSStocks":
-            return EMSClientAPI(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
+            return EMSAPIClient(cinema_id, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS)
         case _:
             raise ValueError(f"Unknown cinema provider: {local_class}")
 

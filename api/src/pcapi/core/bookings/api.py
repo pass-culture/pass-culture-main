@@ -36,10 +36,10 @@ from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
-from pcapi.core.external_bookings.ems.client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -1381,7 +1381,7 @@ def cancel_ems_external_bookings() -> None:
             redis_client.rpush(ems_queue, json.dumps(booking_to_cancel))
             return
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSAPIClient(cinema_id=cinema_id)
         try:
             tickets = client.get_ticket(token)
         except EMSAPIException as exc:
