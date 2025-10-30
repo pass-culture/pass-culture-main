@@ -24,7 +24,7 @@ jobs:
       - name: Add version to api
         working-directory: api
         run: |
-          echo "${{ inputs.ref }}" > version.txt
+          echo "${{ inputs.tag }}" > version.txt
           git add version.txt
 
       - name: Build docker image and save as github artifact
