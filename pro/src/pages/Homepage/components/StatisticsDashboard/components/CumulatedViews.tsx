@@ -1,5 +1,6 @@
+import type { Chart } from 'chart.js'
 import { fr } from 'date-fns/locale'
-import { useId } from 'react'
+import { useId, useLayoutEffect, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 
 import type { OffererViewsModel } from '@/apiClient/v1'
@@ -16,7 +17,11 @@ export interface CumulatedViewsProps {
   dailyViews: OffererViewsModel[]
 }
 
+type XYPoint = { x: string; y: number }
+
 export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
+  const chartRef = useRef<Chart<'line', XYPoint[], unknown> | null>(null)
+
   const hasNoViews =
     dailyViews.length < 2 ||
     dailyViews.every((view) => view.numberOfViews === 0)
@@ -37,6 +42,9 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
   }
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    resizeDelay: 0,
     scales: {
       x: {
         title: { display: true, text: 'Date' },
@@ -50,6 +58,11 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
   } as const
 
   const chartId = useId()
+
+  useLayoutEffect(() => {
+    const id = requestAnimationFrame(() => chartRef.current?.resize())
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   return (
     <div className={styles['cumulated-views']}>
@@ -93,13 +106,13 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
       ) : (
         <div className={styles['chart']}>
           <Line
+            ref={chartRef}
             data={data}
             options={options}
             role="img"
             aria-labelledby={`chart-title-${chartId}`}
             aria-details={`chart-description-${chartId}`}
           />
-
           {/* Wrap in visually hidden div, this class doesn't work on Chrome on <table> element */}
           <div className={styles['visually-hidden']}>
             <table id={`chart-description-${chartId}`}>

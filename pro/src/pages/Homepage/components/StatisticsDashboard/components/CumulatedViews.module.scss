@@ -6,6 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
+  min-width: 0;
 }
 
 .block-title {
@@ -33,13 +34,14 @@
 }
 
 .chart {
-  flex-grow: 1;
-  min-height: rem.torem(300px);
-  margin-top: var(--size-spacing-l);
+  position: relative;
+  width: 100%;
+  height: 18rem;
 
   /* Protect the chart from being too tall
   InvalidStateError: CanvasRenderingContext2D.setTransform: Canvas exceeds max size. */
   max-height: rem.torem(2000px);
+  margin-top: var(--size-spacing-l);
 }
 
 .visually-hidden {
