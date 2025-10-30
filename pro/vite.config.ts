@@ -63,6 +63,8 @@ export default defineConfig(({ mode }) => {
           'src/apiClient/adresse/*',
           'src/apiClient/v1/*',
           'src/vitest.*.ts',
+          'docs-build/**',
+          'storybook-static/**',
           ...coverageConfigDefaults.exclude,
         ],
       },
