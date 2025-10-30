@@ -3,10 +3,10 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.core.external_bookings.cds import serializers as cds_serializers
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
+from pcapi.core.providers.clients import cds_serializers
+from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate
@@ -26,7 +26,9 @@ class CineDigitalServiceExtractResult(typing.TypedDict):
     is_internet_sale_gauge_active: bool
 
 
-class CDSExtractTransformLoadProcess(CinemaETLProcessTemplate[CineDigitalServiceAPI, CineDigitalServiceExtractResult]):
+class CDSExtractTransformLoadProcess(
+    CinemaETLProcessTemplate[CineDigitalServiceAPIClient, CineDigitalServiceExtractResult]
+):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CDS`.
@@ -40,7 +42,7 @@ class CDSExtractTransformLoadProcess(CinemaETLProcessTemplate[CineDigitalService
         cinema_details = repository.get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
         super().__init__(
             venue_provider=venue_provider,
-            api_client=CineDigitalServiceAPI(
+            api_client=CineDigitalServiceAPIClient(
                 cinema_id=venue_provider.venueIdAtOfferProvider,
                 account_id=cinema_details.accountId,
                 cinema_api_token=cinema_details.cinemaApiToken,

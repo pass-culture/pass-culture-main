@@ -119,7 +119,7 @@ class BookingRaceConditionTest:
             Session.remove()
 
     @pytest.mark.usefixtures("clean_database")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_stock_race_condition_between_booking_and_synchronization(self, mock_get_venue_movies, requests_mock, app):
         # Given

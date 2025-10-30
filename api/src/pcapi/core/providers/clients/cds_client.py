@@ -19,7 +19,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
-from . import serializers as cds_serializers
+from . import cds_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         raise CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
 
 
-class CineDigitalServiceAPI(cinema_client.CinemaAPIClient):
+class CineDigitalServiceAPIClient(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,

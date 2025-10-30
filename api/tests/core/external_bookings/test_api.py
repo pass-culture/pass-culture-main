@@ -20,7 +20,7 @@ from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
 from pcapi.core.external_bookings.api import send_booking_notification_to_external_service
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
+from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 
@@ -69,7 +69,7 @@ class InstantiateCinemaApiClientTest:
         venue_id = venue_provider.venueId
         client_api = _instantiate_cinema_api_client(venue_id)
 
-        assert isinstance(client_api, CineDigitalServiceAPI)
+        assert isinstance(client_api, CineDigitalServiceAPIClient)
         assert client_api.cinema_id == "test_id"
         assert client_api.token == "test_token"
         assert client_api.base_url == "https://test_account.test_cds_url/vad/"

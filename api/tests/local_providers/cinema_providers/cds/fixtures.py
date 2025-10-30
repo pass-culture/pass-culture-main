@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pcapi.core.external_bookings.cds.serializers import IdObjectCDS
-from pcapi.core.external_bookings.cds.serializers import MediaCDS
-from pcapi.core.external_bookings.cds.serializers import ShowCDS
-from pcapi.core.external_bookings.cds.serializers import ShowTariffCDS
-from pcapi.core.external_bookings.cds.serializers import ShowsMediaoptionsCDS
+from pcapi.core.providers.clients.cds_serializers import IdObjectCDS
+from pcapi.core.providers.clients.cds_serializers import MediaCDS
+from pcapi.core.providers.clients.cds_serializers import ShowCDS
+from pcapi.core.providers.clients.cds_serializers import ShowTariffCDS
+from pcapi.core.providers.clients.cds_serializers import ShowsMediaoptionsCDS
 
 
 MOVIE_1 = MediaCDS(
