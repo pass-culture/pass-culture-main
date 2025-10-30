@@ -10,7 +10,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.cds import serializers as cds_serializers
+from pcapi.core.providers.clients import cds_serializers
 from pcapi.core.providers.etls.cds_etl import CDSExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models

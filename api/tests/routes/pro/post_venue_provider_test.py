@@ -6,12 +6,12 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
-from pcapi.core.external_bookings.cds.serializers import IdObjectCDS
-from pcapi.core.external_bookings.cds.serializers import ShowCDS
-from pcapi.core.external_bookings.cds.serializers import ShowTariffCDS
-from pcapi.core.external_bookings.cds.serializers import ShowsMediaoptionsCDS
 from pcapi.core.history import models as history_models
 from pcapi.core.offers.models import Movie
+from pcapi.core.providers.clients.cds_serializers import IdObjectCDS
+from pcapi.core.providers.clients.cds_serializers import ShowCDS
+from pcapi.core.providers.clients.cds_serializers import ShowTariffCDS
+from pcapi.core.providers.clients.cds_serializers import ShowsMediaoptionsCDS
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
@@ -232,7 +232,7 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, requests_mock, client):
         # Given

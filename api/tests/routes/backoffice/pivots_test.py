@@ -5,13 +5,13 @@ from unittest.mock import patch
 import pytest
 from flask import url_for
 
-from pcapi.core.external_bookings.cds import client as cds_client
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.clients import cds_client
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils.crypto import decrypt

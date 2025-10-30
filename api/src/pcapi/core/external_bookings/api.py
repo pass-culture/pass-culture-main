@@ -16,11 +16,11 @@ from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.bookings.utils import generate_hmac_signature
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.clients.boost_client import BoostAPIClient
+from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
@@ -124,7 +124,7 @@ def _check_cinema_booking_is_enabled(local_class: str) -> None:
 
 def _instantiate_cinema_api_client(
     venue_id: int,
-) -> CineDigitalServiceAPI | BoostAPIClient | CGRClientAPI | EMSClientAPI:
+) -> CineDigitalServiceAPIClient | BoostAPIClient | CGRClientAPI | EMSClientAPI:
     local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
     sentry_sdk.set_tag("cinema-provider-local-class", local_class)
 
@@ -135,7 +135,7 @@ def _instantiate_cinema_api_client(
             cds_cinema_details = providers_repository.get_cds_cinema_details(cinema_id)
             cinema_api_token = cds_cinema_details.cinemaApiToken
             account_id = cds_cinema_details.accountId
-            return CineDigitalServiceAPI(
+            return CineDigitalServiceAPIClient(
                 cinema_id, account_id, cinema_api_token, request_timeout=EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS
             )
         case "BoostStocks":
