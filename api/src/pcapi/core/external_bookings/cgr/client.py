@@ -8,7 +8,6 @@ from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy
 
 import pcapi.core.bookings.models as bookings_models
-import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
@@ -16,6 +15,7 @@ from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.exceptions import ExternalBookingException
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.models import CGRCinemaDetails
 from pcapi.core.providers.repository import get_cgr_cinema_details
 from pcapi.utils import date as date_utils
@@ -40,7 +40,7 @@ class CGRAPIException(ExternalBookingException):
 
 
 def _log_external_call(
-    client: external_bookings_models.CinemaAPIClient,
+    client: cinema_client.CinemaAPIClient,
     method: str,
     response: pydantic_v1.BaseModel | dict,
 ) -> None:
@@ -86,7 +86,7 @@ def _get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) 
     return service
 
 
-class CGRClientAPI(external_bookings_models.CinemaAPIClient):
+class CGRClientAPI(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -121,7 +121,7 @@ class CGRClientAPI(external_bookings_models.CinemaAPIClient):
         data = self._get_seances_pass_culture()
         return data.ObjetRetour.Films
 
-    @external_bookings_models.cache_external_call(
+    @cinema_client.cache_external_call(
         key_template=CGR_SHOWTIMES_STOCKS_CACHE_KEY, expire=CGR_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
@@ -139,7 +139,7 @@ class CGRClientAPI(external_bookings_models.CinemaAPIClient):
 
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
-    ) -> list[external_bookings_models.Ticket]:
+    ) -> list[cinema_client.Ticket]:
         logger.info(
             "Booking CGR external ticket",
             extra={"show_id": show_id, "cinema_id": self.cinema_id, "booking_token": booking.token},
@@ -184,18 +184,18 @@ class CGRClientAPI(external_bookings_models.CinemaAPIClient):
         )
         if booking.quantity == 2:
             tickets = [
-                external_bookings_models.Ticket(
+                cinema_client.Ticket(
                     barcode=response.QrCode,
                     seat_number=response.Placement.split(",")[0] if "," in response.Placement else None,
                 ),
-                external_bookings_models.Ticket(
+                cinema_client.Ticket(
                     barcode=response.QrCode,
                     seat_number=response.Placement.split(",")[1] if "," in response.Placement else None,
                 ),
             ]
         else:
             tickets = [
-                external_bookings_models.Ticket(
+                cinema_client.Ticket(
                     barcode=response.QrCode, seat_number=response.Placement if response.Placement else None
                 )
             ]

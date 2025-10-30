@@ -43,9 +43,9 @@ from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.external_bookings.ems.client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
-from pcapi.core.external_bookings.models import Ticket
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.providers.clients.cinema_client import Ticket
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
