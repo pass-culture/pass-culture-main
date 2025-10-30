@@ -18,6 +18,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
+from pcapi.utils import transaction_manager
 from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
 
@@ -282,7 +283,11 @@ def request_email_update_from_pro(user: models.User, email: str, password: str) 
     )
 
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
-    repository.save(email_history)
+    db.session.add(email_history)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     send_pro_user_emails_for_email_change(user, email, token)
 

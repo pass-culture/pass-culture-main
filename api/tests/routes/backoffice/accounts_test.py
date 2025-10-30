@@ -5165,10 +5165,9 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
     # session
     # user
     # targeted user by id
-    # validate user
     # UPDATE user
     # INSERT actionhistory
-    expected_queries = 6
+    expected_queries = 5
 
     def test_invalidate_public_account_password(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
