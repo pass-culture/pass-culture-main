@@ -9,12 +9,16 @@ import type {
   HighlightResponseModel,
   ShortHighlightResponseModel,
 } from '@/apiClient/v1'
+import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { OfferHighlightForm } from '../OfferHighlightForm'
 import * as highlightUtils from '../utils'
+
+const mockLogEvent = vi.fn()
 
 vi.mock('swr', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -180,7 +184,10 @@ describe('OfferHighlightForm', () => {
     })
   })
 
-  it('should call api.postHighlightRequestOffer', async () => {
+  it('should call api.postHighlightRequestOffer and log', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     renderOfferHighlightForm({ offerId: 1 })
 
     const checkbox = await screen.findByText(mockedHighlights[0].name)
@@ -194,6 +201,10 @@ describe('OfferHighlightForm', () => {
     expect(postHighlightRequestOfferMock).toHaveBeenCalledWith(1, {
       highlight_ids: [1],
     })
+    expect(mockLogEvent).toBeCalledWith(
+      HighlightEvents.HAS_VALIDATED_HIGHLIGHT,
+      { offerId: 1, highlightIds: [1] }
+    )
   })
 
   it('should call notify.success when new highlights list is submitted', async () => {

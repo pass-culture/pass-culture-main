@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
@@ -10,6 +12,8 @@ import { ModalHighlight } from './ModalHighlight/ModalHighlight'
 
 export const HighlightHome = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { logEvent } = useAnalytics()
+
   return (
     <div className={styles['highlight-home']}>
       <Card
@@ -25,7 +29,12 @@ export const HighlightHome = () => {
             onOpenChange={setIsOpen}
             open={isOpen}
             trigger={
-              <Button variant={ButtonVariant.SECONDARY}>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                onClick={() =>
+                  logEvent(HighlightEvents.HAS_CLICKED_DISCOVER_HIGHLIGHT)
+                }
+              >
                 Parcourir les temps forts
               </Button>
             }

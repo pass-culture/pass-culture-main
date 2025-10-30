@@ -3,7 +3,9 @@ import type { ReactNode } from 'react'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { formatDate } from '@/commons/utils/date'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -25,6 +27,7 @@ interface ModalHighlight extends Omit<DialogBuilderProps, 'children'> {}
 export const ModalHighlight = ({
   ...dialogBuilderProps
 }: ModalHighlight): JSX.Element | null => {
+  const { logEvent } = useAnalytics()
   const { data, isLoading } = useSWR([GET_HIGHLIGHTS_QUERY_KEY], () =>
     api.getHighlights()
   )
@@ -98,6 +101,9 @@ export const ModalHighlight = ({
           isExternal
           icon={fullLinkIcon}
           opensInNewTab
+          onClick={() =>
+            logEvent(HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT)
+          }
         >
           En savoir plus sur les temps forts
         </ButtonLink>
@@ -106,6 +112,9 @@ export const ModalHighlight = ({
           isExternal
           icon={fullLinkIcon}
           opensInNewTab
+          onClick={() =>
+            logEvent(HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT)
+          }
         >
           Voir tout le calendrier
         </ButtonLink>
@@ -115,7 +124,13 @@ export const ModalHighlight = ({
           <Dialog.Close asChild>
             <Button variant={ButtonVariant.SECONDARY}>Fermer</Button>
           </Dialog.Close>
-          <ButtonLink to="/offres" variant={ButtonVariant.PRIMARY}>
+          <ButtonLink
+            to="/offres"
+            variant={ButtonVariant.PRIMARY}
+            onClick={() =>
+              logEvent(HighlightEvents.HAS_CLICKED_ALL_OFFER_HIGHLIGHT)
+            }
+          >
             Accéder à mes offres
           </ButtonLink>
         </div>
