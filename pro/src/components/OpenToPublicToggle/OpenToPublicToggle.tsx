@@ -9,6 +9,7 @@ export interface OpenToPublicToggleProps {
   isOpenToPublic?: string | null
   error?: string
   showDescription?: boolean
+  overrideDescription?: string
 }
 
 const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
@@ -23,6 +24,7 @@ export const OpenToPublicToggle = ({
   isOpenToPublic,
   error,
   showDescription = true,
+  overrideDescription,
 }: OpenToPublicToggleProps): JSX.Element => {
   const finalRadioDescriptions = {
     ...DEFAULT_RADIO_DESCRIPTIONS,
@@ -40,7 +42,9 @@ export const OpenToPublicToggle = ({
     <RadioButtonGroup
       name="isOpenToPublic"
       label="Accueillez-vous du public dans votre structure ?"
-      {...(showDescription ? { description } : {})}
+      {...(showDescription || overrideDescription
+        ? { description: overrideDescription || description }
+        : {})}
       variant="detailed"
       sizing="hug"
       error={error}

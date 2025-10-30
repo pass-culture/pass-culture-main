@@ -74,7 +74,7 @@ describe('OffererAuthenticationForm validationSchema', () => {
     {
       description: 'invalid form without isOpenToPublic',
       formValues: { ...defaultValues, isOpenToPublic: '' },
-      expectedErrors: ['Veuillez sélectionner un choix'],
+      expectedErrors: ['Veuillez sélectionner une option'],
       notDiffusible: false,
     },
   ]
