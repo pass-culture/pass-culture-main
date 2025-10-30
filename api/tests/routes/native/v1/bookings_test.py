@@ -468,7 +468,7 @@ class PostBookingTest:
             idAtProviders="#1",
         )
 
-        with patch("pcapi.core.external_bookings.cgr.client.CGRClientAPI.book_ticket") as mock_book_ticket:
+        with patch("pcapi.core.providers.clients.cgr_client.CGRAPIClient.book_ticket") as mock_book_ticket:
             mock_book_ticket.side_effect = RuntimeError("test")
 
             response = client.with_token(self.identifier).post(

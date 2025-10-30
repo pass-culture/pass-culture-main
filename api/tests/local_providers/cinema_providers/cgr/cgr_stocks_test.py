@@ -104,13 +104,13 @@ class CGRStocksTest:
             cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
         )
 
-        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.cgr.client"):
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.providers.clients.cgr_client"):
             CGRStocks(venue_provider=venue_provider)
 
         assert len(caplog.records) == 3  # Info Fetching CGR movies + warning zeep + debug call
         caplog.records[2].message == "[CINEMA] Call to external API"
         caplog.records[2].extra == {
-            "api_client": "CGRClientAPI",
+            "api_client": "CGRAPIClient",
             "cinema_id": "00000002600013",
             "method": "get_films",
             "response": {
@@ -694,7 +694,7 @@ class CGRStocksTest:
         assert len(caplog.records) >= 1
         last_record = caplog.records.pop()
         assert last_record.message == "Could not fetch movie poster"
-        assert last_record.extra == {"client": "CGRClientAPI", "url": "https://example.com/149341.jpg"}
+        assert last_record.extra == {"client": "CGRAPIClient", "url": "https://example.com/149341.jpg"}
 
     @pytest.mark.parametrize("ProcessClass", [CGRStocks, CGRExtractTransformLoadProcess])
     def should_link_offer_with_known_visa_to_product(self, ProcessClass, requests_mock):
