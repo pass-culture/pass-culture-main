@@ -2,10 +2,10 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.core.external_bookings.boost import serializers as boost_serializers
-from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.providers import models
+from pcapi.core.providers.clients import boost_serializers
+from pcapi.core.providers.clients.boost_client import BoostAPIClient
+from pcapi.core.providers.clients.boost_client import get_pcu_pricing_if_exists
 
 from .cinema_etl_template import CinemaETLProcessTemplate
 from .cinema_etl_template import LoadableMovie
@@ -21,7 +21,7 @@ class BoostExtractResult(typing.TypedDict):
     showtimes: list[boost_serializers.ShowTime4]
 
 
-class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostClientAPI, BoostExtractResult]):
+class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostAPIClient, BoostExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `Boost`.
@@ -39,7 +39,7 @@ class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostClientAPI, 
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         super().__init__(
             venue_provider=venue_provider,
-            api_client=BoostClientAPI(
+            api_client=BoostAPIClient(
                 venue_provider.venueIdAtOfferProvider,
                 request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             ),

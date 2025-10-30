@@ -7,14 +7,14 @@ import PIL
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost import serializers as boost_serializers
-from pcapi.core.external_bookings.boost.client import BoostClientAPI
-from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers.clients import boost_serializers
+from pcapi.core.providers.clients.boost_client import BoostAPIClient
+from pcapi.core.providers.clients.boost_client import get_pcu_pricing_if_exists
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -48,7 +48,7 @@ class BoostStocks(LocalProvider):
         super().__init__(venue_provider)
         self.venue = venue_provider.venue
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
-        self._boost_api_client = BoostClientAPI(
+        self._boost_api_client = BoostAPIClient(
             venue_provider.venueIdAtOfferProvider,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
