@@ -5,7 +5,6 @@ import pydantic.v1 as pydantic_v1
 import sentry_sdk
 
 import pcapi.core.bookings.models as bookings_models
-import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
@@ -21,7 +20,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
-from pcapi.core.external_bookings.models import Ticket
+from pcapi.core.providers.clients import cinema_client
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
@@ -56,7 +55,7 @@ def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
 
 def book_cinema_ticket(
     venue_id: int, stock_id_at_providers: str | None, booking: bookings_models.Booking, beneficiary: users_models.User
-) -> list[external_bookings_models.Ticket]:
+) -> list[cinema_client.Ticket]:
     local_class, _ = _get_cinema_local_class_and_id(venue_id)
     _check_cinema_booking_is_enabled(local_class)
 
@@ -123,7 +122,9 @@ def _check_cinema_booking_is_enabled(local_class: str) -> None:
         raise ValueError(f"Unknown cinema provider: {local_class}")
 
 
-def _instantiate_cinema_api_client(venue_id: int) -> external_bookings_models.CinemaAPIClient:
+def _instantiate_cinema_api_client(
+    venue_id: int,
+) -> CineDigitalServiceAPI | BoostClientAPI | CGRClientAPI | EMSClientAPI:
     local_class, cinema_id = _get_cinema_local_class_and_id(venue_id)
     sentry_sdk.set_tag("cinema-provider-local-class", local_class)
 
@@ -173,7 +174,7 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
-) -> tuple[list[external_bookings_models.Ticket], int | None]:
+) -> tuple[list[cinema_client.Ticket], int | None]:
     assert stock.offer.lastProviderId  # helps mypy
     provider = providers_repository.get_active_provider_by_id(stock.offer.lastProviderId)
 
@@ -241,7 +242,7 @@ def book_event_ticket(
         )
 
     return [
-        Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets
+        cinema_client.Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets
     ], parsed_response.remainingQuantity
 
 

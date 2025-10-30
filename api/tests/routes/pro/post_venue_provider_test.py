@@ -10,8 +10,8 @@ from pcapi.core.external_bookings.cds.serializers import IdObjectCDS
 from pcapi.core.external_bookings.cds.serializers import ShowCDS
 from pcapi.core.external_bookings.cds.serializers import ShowTariffCDS
 from pcapi.core.external_bookings.cds.serializers import ShowsMediaoptionsCDS
-from pcapi.core.external_bookings.models import Movie
 from pcapi.core.history import models as history_models
+from pcapi.core.offers.models import Movie
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
@@ -255,20 +255,22 @@ class Returns201Test:
 
         mocked_movies = [
             Movie(
-                id="123",
+                allocine_id="123",
                 title="Coupez !",
                 duration=120,
                 description="Ca tourne mal",
                 visa="123456",
                 poster_url="fakeUrl/coupez.png",
+                extra_data={},
             ),
             Movie(
-                id="51",
+                allocine_id="51",
                 title="Top Gun",
                 duration=150,
                 description="Film sur les avions",
                 visa="333333",
                 poster_url="fakeUrl/topgun.png",
+                extra_data={},
             ),
         ]
         mock_get_venue_movies.return_value = mocked_movies

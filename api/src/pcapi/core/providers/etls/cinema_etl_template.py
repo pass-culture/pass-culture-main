@@ -10,13 +10,13 @@ import pcapi.core.finance.api as finance_api
 from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core import search
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.models import CinemaAPIClient
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.search import models as search_models
 from pcapi.models import db
 from pcapi.utils.date import get_naive_utc_now
@@ -56,7 +56,7 @@ class ETLStopProcessException(ETLProcessException):
     pass
 
 
-class CinemaETLProcessTemplate[APIClient: CinemaAPIClient | EMSScheduleConnector, ExtractResult]:
+class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSScheduleConnector, ExtractResult]:
     def __init__(self, venue_provider: models.VenueProvider, api_client: APIClient):
         self.venue_provider = venue_provider
         self.api_client = api_client

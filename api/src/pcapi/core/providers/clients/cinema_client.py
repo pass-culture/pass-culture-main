@@ -21,17 +21,6 @@ class Ticket:
     additional_information: dict | None = None
 
 
-@dataclass
-class Movie:
-    id: str
-    title: str
-    duration: int  # duration in minutes
-    description: str
-    poster_url: str | None
-    visa: str | None
-    allocine_id: str | None = None
-
-
 class CinemaAPIClient:
     def __init__(self, cinema_id: str, request_timeout: None | int = None) -> None:
         self.cinema_id = cinema_id

@@ -10,11 +10,11 @@ from pydantic.v1 import parse_obj_as
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
-import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.models import BoostCinemaDetails
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
@@ -76,7 +76,7 @@ def get_pcu_pricing_if_exists(
 
 
 def _log_external_call(
-    client: external_bookings_models.CinemaAPIClient,
+    client: cinema_client.CinemaAPIClient,
     method: str,
     response: dict | list[dict] | list,
     query_params: dict | None = None,
@@ -168,7 +168,7 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
     return decorated_func  # type: ignore[return-value]
 
 
-class BoostClientAPI(external_bookings_models.CinemaAPIClient):
+class BoostClientAPI(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -291,7 +291,7 @@ class BoostClientAPI(external_bookings_models.CinemaAPIClient):
         self._authenticated_post(f"{self.cinema_details.cinemaUrl}api/vendors/logout")
         self._unset_cinema_details_token()
 
-    @external_bookings_models.cache_external_call(
+    @cinema_client.cache_external_call(
         key_template=BOOST_SHOWTIMES_STOCKS_CACHE_KEY, expire=BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
@@ -314,7 +314,7 @@ class BoostClientAPI(external_bookings_models.CinemaAPIClient):
     @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
-    ) -> list[external_bookings_models.Ticket]:
+    ) -> list[cinema_client.Ticket]:
         quantity = booking.quantity
         showtime = self.get_showtime(show_id)
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
@@ -369,7 +369,7 @@ class BoostClientAPI(external_bookings_models.CinemaAPIClient):
             }
             # This will be useful for customer support
             logger.info("Booked Boost Ticket", extra=extra_data)
-            ticket = external_bookings_models.Ticket(barcode=barcode, seat_number=seat_number)
+            ticket = cinema_client.Ticket(barcode=barcode, seat_number=seat_number)
             tickets.append(ticket)
 
         return tickets
