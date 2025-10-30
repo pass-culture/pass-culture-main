@@ -37,9 +37,9 @@ const renderOfferNameCell = (
   )
 
 describe('OfferNameCell', () => {
-  it('should display a tag for offer template', () => {
+  it('should display a tag when offer has higlight request', () => {
     const eventOffer = listOffersOfferFactory({
-      isShowcase: true,
+      highlightRequests: [{ id: 666, name: 'mon temps fort' }],
       name: 'Offre nom',
     })
 
@@ -48,7 +48,7 @@ describe('OfferNameCell', () => {
       offerLink: '#',
     })
 
-    expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
+    expect(screen.getByText('mon temps fort')).toBeInTheDocument()
     expect(screen.getByText('Offre nom')).toBeInTheDocument()
   })
 
