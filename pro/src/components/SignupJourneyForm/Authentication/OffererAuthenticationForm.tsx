@@ -103,7 +103,6 @@ export const OffererAuthenticationForm = (): JSX.Element => {
       </FormLayout.Row>
       <FormLayout.Row mdSpaceAfter className={styles['open-to-public-toggle']}>
         <OpenToPublicToggle
-          required={true}
           error={errors.isOpenToPublic?.message}
           onChange={(e) => {
             clearErrors('isOpenToPublic')
