@@ -35,6 +35,21 @@ on:
         type: string
         required: false
         default: "api/documentation"
+      # Variables used for the new infra
+      is_new_infra:
+        type: boolean
+        required: true
+        default: false
+      location:
+        type: string
+        required: false
+        default: europe-west9
+      cluster_name:
+        type: string
+        required: true
+      gcp_project_id:
+        type: string
+        required: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -50,7 +65,7 @@ on:
 jobs:
   deploy-api:
     name: "Deploy api"
-    if: ${{ inputs.deploy_api }}
+
     concurrency:
       group: deploy-pcapi-${{ inputs.environment }}
       cancel-in-progress: false
@@ -61,149 +76,31 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v5
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-      - name: "Get secrets (github)"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v3"
-        with:
-          secrets: |-
-            DEPLOYMENT_SA:passculture-metier-ehp/pcapi-${{ inputs.environment }}_deploy-service-account
-            DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
-
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        id: "google-auth"
-        with:
-          create_credentials_file: true
-          token_format: "access_token"
-          service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
-          workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
-
-      - name: "Docker login"
-        id: "docker-login"
-        uses: "docker/login-action@v3"
-        with:
-          registry: "europe-west1-docker.pkg.dev"
-          username: "oauth2accesstoken"
-          password: "${{ steps.google-auth.outputs.access_token }}"
-
-      - name: Authenticate through github app ghactionci
-        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2.1.4
-        id: github-token
-        with:
-          app-id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          private-key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          # Liste des repositories à cloner
-          repositories: |
-            pass-culture-deployment
-            pass-culture-main
-            rendered-manifests
-            pc-connect
-            pc-firestore-cli
-            pc-render-manifests
-          permission-contents: write
-
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
-        with:
-          cluster_scope: ${{ inputs.cluster_scope }}
-          cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.github-token.outputs.token }}
-
-      - name: "Play pre-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
+      - name: "Deploy API"
+        if: ${{ inputs.deploy_api && !inputs.is_new_infra }}
+        uses: ./.github/actions/deploy-api
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
-          migration_type: pre
-
-      # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
-      - name: "Generate pcapi secrets list"
-        id: generate-pcapi-secrets-list
-        run: |
-          #Retrieve pcapi secrets list from source code
-          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
-          PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
-          #Sort list
-          PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
-          #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
-          PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
-          echo "PCAPI_SECRETS=$PCAPI_SECRETS" | tee -a "$GITHUB_OUTPUT"
-
-      # Checkout pass-culture-deployment repository containing pcapi helm value files
-      - uses: actions/checkout@v5
-        with:
-          repository: pass-culture/pass-culture-deployment
-          token: ${{ steps.github-token.outputs.token }}
-          path: ./pass-culture-deployment
-
-      # Commit and push app_version to matching pcapi environment helm value file.
-      - name: "Update image.tag in pass-culture-deployment repository"
-        run: |
-          git config --global user.email "PassCulture-SA@passculture.team"
-          git config --global user.name "PassCulture-SA"
-          cd ./pass-culture-deployment/helm/pcapi/${{ inputs.environment }}
-          sed -i '/^image:/,/^  tag:/{s/^  tag: .*/  tag: ${{ inputs.app_version }}/}' values.yaml.gotmpl
-          git add values.yaml.gotmpl
-          git diff-index --quiet HEAD || git commit -m "[${{ inputs.environment }}] Update pcapi image.tag (${{ inputs.app_version }}) (Github Actions Job : ${{ github.run_number }})"
-          git pull -r
-          git push origin master
-
-      - name: "Setup helmfile"
-        uses: mamezou-tech/setup-helmfile@v2.1.0
-        with:
-          helmfile-version: "v1.1.3"
-
-      # Executes helmfile templating and push results to render-manifests repository
-      - name: "Setup pc-render-manifests"
-        uses: pass-culture/common-workflows/actions/setup-pc-render-manifests@setup-pc-render-manifests/v0.1.0
-        with:
-          token: ${{ steps.github-token.outputs.token }}
-          version: "v0.7.1"
-
-      - name: "Generate and push rendered manifests"
-        env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
-        run: |
-          pc-render-manifests render \
-            -a pcapi \
-            -e ${{ inputs.environment }} \
-            --sourceRepoURL https://github.com/pass-culture/pass-culture-deployment.git \
-            --sourcePath helm/pcapi \
-            --sourceRepoRef master \
-            --additionalArg "--set ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}" \
-            --commitMsg "${{ inputs.app_name }}(${{ inputs.environment }}) : manifests for app_version=${{ inputs.app_version }}" \
-            --clean=false \
-            --push \
-            --silent
-
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
-        with:
           cluster_scope: ${{ inputs.cluster_scope }}
           cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.github-token.outputs.token }}
+          workload_identity_provider_secret_name: ${{ inputs.workload_identity_provider_secret_name }}
+          gcp_ehp_workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_ehp_service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          passculture_github_action_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          passculture_github_action_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-      - name: "Sync ArgoCD application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.8.0
-        with:
-          app_name: pcapi-${{ inputs.environment }}
-          sync_timeout: 900
-          retry_limit: 1
-
-      - name: "Play post-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
+      - name: "Deploy API To new Infra"
+        if: ${{ inputs.deploy_api && inputs.is_new_infra }}
+        uses: ./.github/actions/deploy-api-new-infra
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
-          migration_type: post
+          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          cluster_name: ${{ inputs.cluster_name }}
+          gcp_project_id: ${{ inputs.gcp_project_id }}
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
@@ -373,7 +270,7 @@ jobs:
             fi
             exit $FAIL
 
-  # Image resizing cannot be deployed as python 3.9 is not supported by app engine. 
+  # Image resizing cannot be deployed as python 3.9 is not supported by app engine.
   # deploy-image-resizing-ehp:
   #   name: "Deploy image-resizing EHP"
   #   permissions:
