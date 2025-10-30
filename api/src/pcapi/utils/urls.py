@@ -61,20 +61,20 @@ def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"/accueil?structure={offerer.id}&from-bo=true"
+    return f"/accueil?structure={offerer.id}"
 
 
 def build_pc_pro_offers_for_offerer_path(offerer: offerers_models.Offerer) -> str:
-    return f"/offres?structure={offerer.id}&from-bo=true"
+    return f"/offres?structure={offerer.id}"
 
 
 def build_pc_pro_collective_offers_for_offerer_path(offerer: offerers_models.Offerer) -> str:
-    return f"/offres/collectives?structure={offerer.id}&from-bo=true"
+    return f"/offres/collectives?structure={offerer.id}"
 
 
 def build_pc_pro_venue_path(venue: offerers_models.Venue) -> str:
     if venue.isVirtual:
-        return f"/accueil?structure={venue.managingOfferer.id}&from-bo=true"
+        return f"/accueil?structure={venue.managingOfferer.id}"
     return f"/structures/{venue.managingOffererId}/lieux/{venue.id}"
 
 
@@ -87,7 +87,7 @@ def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
 
 
 def build_pc_pro_bank_account_path(bank_account: finance_models.BankAccount) -> str:
-    return f"/remboursements/informations-bancaires?structure={bank_account.offererId}&from-bo=true"
+    return f"/remboursements/informations-bancaires?structure={bank_account.offererId}"
 
 
 def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> str:

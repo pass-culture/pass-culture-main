@@ -34,9 +34,9 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
-  setCurrentOffererById: vi.fn(() => () => {
+  setSelectedOffererById: vi.fn(() => () => {
     const action = {
-      type: 'user/setCurrentOffererById/fulfilled',
+      type: 'user/setSelectedOffererById/fulfilled',
       payload: undefined,
     }
 

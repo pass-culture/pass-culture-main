@@ -48,7 +48,8 @@ declare namespace Cypress {
     sandboxCall(
       method: 'GET' | 'POST',
       url: string,
-      onRequest: (response: unknown) => void,
+      // biome-ignore lint/suspicious/noExplicitAny: Acceptable for an e2e tests util.
+      onRequest: (response: Cypress.Response<any>) => void,
       retry?: boolean
     ): Chainable
 

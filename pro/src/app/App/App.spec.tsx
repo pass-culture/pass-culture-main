@@ -1,5 +1,5 @@
 import { setUser } from '@sentry/browser'
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 import useSWR from 'swr'
 
@@ -8,7 +8,6 @@ import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -120,34 +119,5 @@ describe('App', () => {
     expect(await screen.findByText('broken page')).toBeInTheDocument()
 
     expect(await screen.findByText('404 page')).toBeInTheDocument()
-  })
-})
-
-describe('App – load offerer via from-bo', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-      defaultGetOffererResponseModel
-    )
-  })
-
-  it('should call api.getOfferer when user come from back-office (?from-bo=...&structure=ID)', async () => {
-    renderApp({
-      initialRouterEntries: ['/?from-bo=true&structure=123'],
-      user,
-    })
-
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalledTimes(1)
-      expect(api.getOfferer).toHaveBeenCalledWith(123)
-    })
-  })
-
-  it('should not call api.getOfferer if user do not come form back-office (from-bo)', () => {
-    renderApp({
-      initialRouterEntries: ['/?from-bo=false&structure=null'],
-      user,
-    })
-
-    expect(api.getOfferer).not.toHaveBeenCalled()
   })
 })

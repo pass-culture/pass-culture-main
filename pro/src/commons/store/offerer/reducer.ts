@@ -6,11 +6,17 @@ import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererRe
 export type OffererState = {
   offererNames: null | GetOffererNameResponseModel[]
   currentOfferer: GetOffererResponseModel | null
+  /**
+   * Used to display the offerer name in the header when the user is still "unattached" to this offerer
+   * because they won't be allowed to access this offerer's details.
+   */
+  currentOffererName: GetOffererNameResponseModel | null
 }
 
 const initialState: OffererState = {
   offererNames: null,
   currentOfferer: null,
+  currentOffererName: null,
 }
 
 // TODO (igabriele, 2025-10-16): Merge that into user slice (it's user-dependent).
@@ -18,12 +24,20 @@ const offererSlice = createSlice({
   name: 'offerer',
   initialState,
   reducers: {
+    setCurrentOffererName: (
+      state: OffererState,
+      action: PayloadAction<GetOffererNameResponseModel | null>
+    ) => {
+      state.currentOffererName = action.payload
+    },
+
     updateOffererNames: (
       state: OffererState,
       action: PayloadAction<GetOffererNameResponseModel[] | null>
     ) => {
       state.offererNames = action.payload
     },
+
     updateCurrentOfferer: (
       state: OffererState,
       action: PayloadAction<GetOffererResponseModel | null>
@@ -35,4 +49,8 @@ const offererSlice = createSlice({
 
 export const offererReducer = offererSlice.reducer
 
-export const { updateOffererNames, updateCurrentOfferer } = offererSlice.actions
+export const {
+  setCurrentOffererName,
+  updateOffererNames,
+  updateCurrentOfferer,
+} = offererSlice.actions
