@@ -725,6 +725,93 @@ class GetBookingsListTest:
         assert response_to_unknown_status.status_code == 404
 
 
+class GetBookingTest:
+    identifier = "pascal.ture@example.com"
+
+    def test_get_booking_returns_booking_when_it_exists(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.BookingFactory(user=user)
+        booking_factories.BookingFactory(user=user)
+
+        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{booking.id}")
+
+        assert response.json == {
+            "canReact": False,
+            "cancellationDate": booking.cancellationDate,
+            "cancellationReason": booking.cancellationReason,
+            "completedUrl": booking.completedUrl,
+            "confirmationDate": booking.cancellationLimitDate,
+            "dateCreated": booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "dateUsed": booking.dateUsed,
+            "enablePopUpReaction": False,
+            "expirationDate": booking.expirationDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "id": booking.id,
+            "quantity": booking.quantity,
+            "stock": {
+                "beginningDatetime": booking.stock.beginningDatetime,
+                "features": booking.stock.features,
+                "id": booking.stock.id,
+                "offer": {
+                    "address": {
+                        "city": booking.venue.offererAddress.address.city,
+                        "coordinates": {
+                            "latitude": float(booking.venue.offererAddress.address.latitude),
+                            "longitude": float(booking.venue.offererAddress.address.longitude),
+                        },
+                        "id": booking.venue.offererAddress.address.id,
+                        "label": booking.venue.offererAddress.label,
+                        "postalCode": booking.venue.offererAddress.address.postalCode,
+                        "street": booking.venue.offererAddress.address.street,
+                        "timezone": booking.venue.offererAddress.address.timezone,
+                    },
+                    "bookingContact": booking.stock.offer.bookingContact,
+                    "extraData": {"ean": None},
+                    "id": booking.stock.offer.id,
+                    "image": None,
+                    "isDigital": booking.stock.offer.isDigital,
+                    "isPermanent": booking.stock.offer.isPermanent,
+                    "name": booking.stock.offer.name,
+                    "subcategoryId": booking.stock.offer.subcategoryId,
+                    "url": booking.stock.offer.url,
+                    "venue": {
+                        "address": {"id": booking.venue.offererAddress.address.id},
+                        "bannerUrl": booking.venue.bannerUrl,
+                        "id": booking.venue.id,
+                        "isOpenToPublic": booking.venue.isOpenToPublic,
+                        "name": booking.venue.publicName,
+                        "publicName": booking.venue.publicName,
+                        "timezone": "Europe/Paris",
+                    },
+                },
+                "price": int(booking.stock.price * 100),
+                "priceCategoryLabel": None,
+            },
+            "ticket": {
+                "activationCode": None,
+                "display": "voucher",
+                "externalBooking": None,
+                "token": {"data": booking.token},
+                "voucher": {"data": None},
+                "withdrawal": {"delay": None, "details": None, "type": None},
+            },
+            "totalAmount": int(booking.amount * 100),
+            "userReaction": None,
+        }
+
+    def test_get_booking_returns_404_when_booking_does_not_exist(self, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        wrong_id = 1234567890
+        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{wrong_id}")
+        assert response.status_code == 404
+
+    def test_get_booking_returns_404_when_booking_does_not_belong_to_user(self, client):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        other_user = users_factories.BeneficiaryGrant18Factory()
+        booking = booking_factories.BookingFactory(user=other_user)
+        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{booking.id}")
+        assert response.status_code == 404
+
+
 class GetBookingTicketTest:
     identifier = "pascal.ture@example.com"
 

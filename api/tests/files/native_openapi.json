@@ -9054,6 +9054,59 @@
                 "tags": []
             }
         },
+        "/native/v2/bookings/{booking_id}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_bookings_{booking_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "booking_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookingResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "security": [
+                    {
+                        "JWTAuth": []
+                    }
+                ],
+                "summary": "get_booking <GET>",
+                "tags": []
+            }
+        },
         "/native/v2/bookings/{status}": {
             "get": {
                 "description": "",

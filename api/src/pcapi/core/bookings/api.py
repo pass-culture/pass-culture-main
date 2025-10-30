@@ -9,6 +9,7 @@ from operator import attrgetter
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from flask import current_app
+from sqlalchemy.sql.base import ExecutableOption
 
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
@@ -101,73 +102,86 @@ def is_booking_by_18_user(booking: models.Booking) -> bool:
     return False
 
 
+def _get_booking_options() -> list[ExecutableOption]:
+    return [
+        sa_orm.joinedload(models.Booking.stock)
+        .load_only(
+            offers_models.Stock.id,
+            offers_models.Stock.beginningDatetime,
+            offers_models.Stock.price,
+            offers_models.Stock.features,
+            offers_models.Stock.offerId,
+        )
+        .options(
+            sa_orm.joinedload(offers_models.Stock.offer)
+            .load_only(
+                offers_models.Offer.bookingContact,
+                offers_models.Offer.name,
+                offers_models.Offer.url,
+                offers_models.Offer.subcategoryId,
+                offers_models.Offer.withdrawalDetails,
+                offers_models.Offer.withdrawalType,
+                offers_models.Offer.withdrawalDelay,
+                offers_models.Offer._extraData,
+            )
+            .options(
+                sa_orm.joinedload(offers_models.Offer.product)
+                .load_only(
+                    offers_models.Product.id,
+                    offers_models.Product.thumbCount,
+                )
+                .joinedload(offers_models.Product.productMediations),
+                sa_orm.joinedload(offers_models.Offer.venue)
+                .load_only(
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
+                    offerers_models.Venue.timezone,
+                    offerers_models.Venue._bannerUrl,
+                    offerers_models.Venue.isOpenToPublic,
+                    offerers_models.Venue.venueTypeCode,
+                )
+                .options(
+                    sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                        offerers_models.OffererAddress.address
+                    ),
+                    sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
+                ),
+                sa_orm.joinedload(offers_models.Offer.mediations),
+                sa_orm.joinedload(offers_models.Offer.offererAddress)
+                .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
+                .joinedload(offerers_models.OffererAddress.address),
+            ),
+            sa_orm.joinedload(offers_models.Stock.priceCategory)
+            .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+            .load_only(offers_models.PriceCategoryLabel.label),
+        ),
+        sa_orm.joinedload(models.Booking.activationCode),
+        sa_orm.joinedload(models.Booking.externalBookings),
+        sa_orm.joinedload(models.Booking.deposit).load_only(finance_models.Deposit.type),
+        sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions),
+    ]
+
+
+def get_booking_by_id(user: users_models.User, booking_id: int) -> models.Booking | None:
+    """
+    Get a booking by id for a user, with all the data needed for the bookings page
+    including the offer and venue data.
+    """
+    return (
+        db.session.query(models.Booking)
+        .filter_by(userId=user.id, id=booking_id)
+        .options(*_get_booking_options())
+        .one_or_none()
+    )
+
+
 def get_individual_bookings(user: users_models.User) -> list[models.Booking]:
     """
     Get all bookings for a user, with all the data needed for the bookings page
     including the offer and venue data.
     """
-    return (
-        db.session.query(models.Booking)
-        .filter_by(userId=user.id)
-        .options(
-            sa_orm.joinedload(models.Booking.stock)
-            .load_only(
-                offers_models.Stock.id,
-                offers_models.Stock.beginningDatetime,
-                offers_models.Stock.price,
-                offers_models.Stock.features,
-                offers_models.Stock.offerId,
-            )
-            .options(
-                sa_orm.joinedload(offers_models.Stock.offer)
-                .load_only(
-                    offers_models.Offer.bookingContact,
-                    offers_models.Offer.name,
-                    offers_models.Offer.url,
-                    offers_models.Offer.subcategoryId,
-                    offers_models.Offer.withdrawalDetails,
-                    offers_models.Offer.withdrawalType,
-                    offers_models.Offer.withdrawalDelay,
-                    offers_models.Offer._extraData,
-                )
-                .options(
-                    sa_orm.joinedload(offers_models.Offer.product)
-                    .load_only(
-                        offers_models.Product.id,
-                        offers_models.Product.thumbCount,
-                    )
-                    .joinedload(offers_models.Product.productMediations),
-                    sa_orm.joinedload(offers_models.Offer.venue)
-                    .load_only(
-                        offerers_models.Venue.name,
-                        offerers_models.Venue.publicName,
-                        # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
-                        offerers_models.Venue.timezone,
-                        offerers_models.Venue._bannerUrl,
-                        offerers_models.Venue.isOpenToPublic,
-                        offerers_models.Venue.venueTypeCode,
-                    )
-                    .options(
-                        sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
-                            offerers_models.OffererAddress.address
-                        ),
-                        sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
-                    ),
-                    sa_orm.joinedload(offers_models.Offer.mediations),
-                    sa_orm.joinedload(offers_models.Offer.offererAddress)
-                    .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
-                    .joinedload(offerers_models.OffererAddress.address),
-                ),
-                sa_orm.joinedload(offers_models.Stock.priceCategory)
-                .joinedload(offers_models.PriceCategory.priceCategoryLabel)
-                .load_only(offers_models.PriceCategoryLabel.label),
-            ),
-            sa_orm.joinedload(models.Booking.activationCode),
-            sa_orm.joinedload(models.Booking.externalBookings),
-            sa_orm.joinedload(models.Booking.deposit).load_only(finance_models.Deposit.type),
-            sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions),
-        )
-    ).all()
+    return (db.session.query(models.Booking).filter_by(userId=user.id).options(*_get_booking_options())).all()
 
 
 def classify_and_sort_bookings(
