@@ -133,3 +133,13 @@ export const OnboardingDidacticEvents = {
   HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING:
     'hasClickedSubmitCollectiveCaseDidacticOnboarding',
 }
+
+export enum HighlightEvents {
+  HAS_CLICKED_DISCOVER_HIGHLIGHT = 'HAsClickedDiscoverHighlight',
+  HAS_CLICKED_MORE_INFO_HIGHLIGHT = 'hasClickedMoreInfoHighlight',
+  HAS_CLICKED_CALENDAR_HIGHLIGHT = 'hasClickedCalendarHighlight',
+  HAS_CLICKED_ALL_OFFER_HIGHLIGHT = 'hasClickedAllOfferHighlight',
+  HAS_CLICKED_CHOOSE_HIGHLIGHT = 'hasClickedChooseHighlight',
+  HAS_CLICKED_EDIT_HIGHLIGHT = 'hasClickedEditHighlight',
+  HAS_VALIDATED_HIGHLIGHT = 'hasValidatedHighlight',
+}

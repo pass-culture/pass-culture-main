@@ -5,10 +5,12 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_HIGHLIGHTS_QUERY_KEY,
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { Button } from '@/ui-kit/Button/Button'
@@ -35,6 +37,7 @@ export function OfferHighlightForm({
 }: OfferHighlightFormProps): JSX.Element {
   const notify = useNotification()
   const { mutate } = useSWRConfig()
+  const { logEvent } = useAnalytics()
 
   const defaultValues = {
     highlightIds: highlightRequests.map((request) => request.id),
@@ -65,7 +68,10 @@ export function OfferHighlightForm({
         }),
         { revalidate: false }
       )
-
+      logEvent(HighlightEvents.HAS_VALIDATED_HIGHLIGHT, {
+        offerId,
+        highlightIds: values.highlightIds,
+      })
       onSuccess()
       if (isDirty) {
         const successMessage =

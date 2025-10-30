@@ -1,6 +1,8 @@
 import { type JSX, type ReactNode, useState } from 'react'
 
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
+import { useAnalytics } from '@/app/App/analytics/firebase'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -20,6 +22,7 @@ export const OfferHighlightBanner = ({
   highlightRequests,
 }: OfferHighlightBannerProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false)
+  const { logEvent } = useAnalytics()
 
   const isPlural = highlightRequests.length > 1
 
@@ -45,7 +48,15 @@ export const OfferHighlightBanner = ({
           >
             <Button
               variant={ButtonVariant.TERNARYBRAND}
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                logEvent(HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT, {
+                  offerId,
+                  hightlightIds: highlightRequests.map(
+                    (highlightRequest) => highlightRequest.id
+                  ),
+                })
+                setIsOpen(true)
+              }}
               icon={fullEditIcon}
             >
               Éditer le{isPlural ? 's' : ''} temps fort{isPlural ? 's' : ''}
@@ -65,7 +76,12 @@ export const OfferHighlightBanner = ({
           >
             <Button
               variant={ButtonVariant.PRIMARY}
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                logEvent(HighlightEvents.HAS_CLICKED_CHOOSE_HIGHLIGHT, {
+                  offerId,
+                })
+                setIsOpen(true)
+              }}
             >
               Choisir un temps fort
             </Button>

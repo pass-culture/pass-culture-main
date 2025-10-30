@@ -2,6 +2,8 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -9,6 +11,8 @@ import {
   OfferHighlightBanner,
   type OfferHighlightBannerProps,
 } from './OfferHighlightBanner'
+
+const mockLogEvent = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -40,7 +44,10 @@ describe('OfferHighlightBanner', () => {
       ).toBeInTheDocument()
     })
 
-    it('should open the modal when clicking the button', async () => {
+    it('should open the modal when clicking the button and log', async () => {
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
       vi.spyOn(api, 'getHighlights').mockResolvedValueOnce([])
 
       renderOfferHighlightBanner({ offerId: 1, highlightRequests: [] })
@@ -51,6 +58,10 @@ describe('OfferHighlightBanner', () => {
       expect(
         screen.getByRole('heading', { name: 'Choisir un temps fort' })
       ).toBeInTheDocument()
+      expect(mockLogEvent).toBeCalledWith(
+        HighlightEvents.HAS_CLICKED_CHOOSE_HIGHLIGHT,
+        { offerId: 1 }
+      )
     })
   })
 
@@ -85,9 +96,11 @@ describe('OfferHighlightBanner', () => {
       ).toBeInTheDocument()
     })
 
-    it('should open the modal when clicking the button', async () => {
+    it('should open the modal when clicking the button and log', async () => {
       vi.spyOn(api, 'getHighlights').mockResolvedValueOnce([])
-
+      vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+        logEvent: mockLogEvent,
+      }))
       renderOfferHighlightBanner({
         offerId: 1,
         highlightRequests: [{ id: 666, name: 'Journée de la révolution' }],
@@ -99,6 +112,10 @@ describe('OfferHighlightBanner', () => {
       expect(
         screen.getByRole('heading', { name: 'Choisir un temps fort' })
       ).toBeInTheDocument()
+      expect(mockLogEvent).toBeCalledWith(
+        HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT,
+        { offerId: 1, hightlightIds: [666] }
+      )
     })
   })
 })

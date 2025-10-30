@@ -3,9 +3,13 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
+import * as useAnalytics from '@/app/App/analytics/firebase'
+import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { HighlightHome } from './HighlightHome'
+
+const mockLogEvent = vi.fn()
 
 describe('HighlightHome', () => {
   it('should render and pass accessibility checks', async () => {
@@ -27,7 +31,10 @@ describe('HighlightHome', () => {
     ).toHaveNoViolations()
   })
 
-  it('should open the highlight modal ', async () => {
+  it('should open the highlight modal and log ', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     vi.spyOn(api, 'getHighlights').mockResolvedValue([])
 
     renderWithProviders(<HighlightHome />)
@@ -39,5 +46,8 @@ describe('HighlightHome', () => {
         name: 'Qu’est-ce qu’un temps fort sur le pass Culture ?',
       })
     ).toBeInTheDocument()
+    expect(mockLogEvent).toBeCalledWith(
+      HighlightEvents.HAS_CLICKED_DISCOVER_HIGHLIGHT
+    )
   })
 })
