@@ -35,6 +35,8 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
             ]
         if key == "hasPartnerPage":
             return self._obj._has_partner_page
+        if key == "isVirtual":
+            return False
         return super().get(key, default)
 
 
@@ -86,7 +88,6 @@ class PostOffererResponseModel(BaseModel):
 # access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
     hasAvailablePricingPoints: bool
-    hasDigitalVenueAtLeastOneOffer: bool
     isValidated: bool
     isActive: bool
     # see end of `from_orm()`
@@ -119,9 +120,6 @@ class GetOffererResponseModel(BaseModel):
             .all()
         )
 
-        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
-            offerer.id
-        )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in venues)
         offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
             offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
@@ -198,6 +196,13 @@ class GetOfferersNamesQueryModel(BaseModel):
         extra = "forbid"
 
 
+class GetEducationalOffererVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "isVirtual":
+            return False
+        return super().get(key, default)
+
+
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     id: int
@@ -212,6 +217,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
     class Config:
         orm_mode = True
+        getter_dict = GetEducationalOffererVenueResponseGetterDict
 
 
 # TODO(xordoquy): remove GetEducationalOffererResponseGetterDict once the soft delete lib is fixed

@@ -283,9 +283,6 @@ def post_product_offer_by_ean(body: products_serializers.ProductsOfferByEanCreat
     address_id = None
     address_label = None
 
-    if venue.isVirtual:
-        raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
-
     if body.location.type == "address":
         address = public_utils.get_address_or_raise_404(body.location.address_id)
         address_id = address.id

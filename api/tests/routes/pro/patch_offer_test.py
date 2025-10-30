@@ -39,39 +39,6 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            venue=venue,
-            name="L'amie prodigieuse",
-            description="Un livre sur l'italie des années 60",
-        )
-        publication_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=2)
-        booking_allowed_datetime = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)
-
-        data = {
-            "name": "Notre part de nuit",
-            "mentalDisabilityCompliant": True,
-            "publicationDatetime": format_into_utc_date(publication_datetime),
-            "bookingAllowedDatetime": format_into_utc_date(booking_allowed_datetime),
-        }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
-
-        assert response.status_code == 200, response.json
-        assert response.json["id"] == offer.id
-        assert response.json["venue"]["id"] == offer.venue.id
-        assert response.json["address"]["street"]
-
-        updated_offer = db.session.get(Offer, offer.id)
-        assert updated_offer.name == "Notre part de nuit"
-        assert updated_offer.mentalDisabilityCompliant
-        assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert updated_offer.publicationDatetime == publication_datetime.replace(tzinfo=None)
-        assert updated_offer.bookingAllowedDatetime == booking_allowed_datetime.replace(tzinfo=None)
-        assert not updated_offer.product
-
-    def test_patch_virtual_offer(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
             venue=venue,
             name="New name",

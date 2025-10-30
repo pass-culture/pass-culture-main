@@ -273,7 +273,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.name,
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.venueLabelId,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue._bannerUrl,
@@ -316,7 +315,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             {
                 "dms_application_submitted": any(venue.hasPendingBankAccountApplication for venue in venues),
                 "dms_application_approved": all(venue.hasAcceptedBankAccountApplication for venue in venues),
-                "isVirtual": any(venue.isVirtual for venue in venues),
+                "isVirtual": False,  # TODO: ideally this should be removed ?
                 "isPermanent": any(venue.isPermanent for venue in venues),
                 "isOpenToPublic": any(venue.isOpenToPublic for venue in venues),
                 "has_offers": has_bookable_individual_offers or has_bookable_collective_offers,
@@ -516,7 +515,6 @@ def get_bookings_categories_and_subcategories(
 def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
     return (
         db.session.query(bookings_models.Booking)
-        .options(joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual))
         .options(
             joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer)

@@ -1,6 +1,5 @@
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.repository import find_virtual_venue_by_offerer_id
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
@@ -21,13 +20,5 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
             api_errors.add_error(
                 "siret", f"Le code {venue.identifier_name} doit correspondre à un établissement de votre structure"
             )
-
-    if venue.isVirtual:
-        offerer_id = venue.managingOffererId
-        if not offerer_id:
-            offerer_id = venue.managingOfferer.id
-        already_existing_virtual_venue = find_virtual_venue_by_offerer_id(offerer_id)
-        if already_existing_virtual_venue and already_existing_virtual_venue.id != venue.id:
-            api_errors.add_error("isVirtual", "Un lieu pour les offres numériques existe déjà pour cette structure")
 
     return api_errors

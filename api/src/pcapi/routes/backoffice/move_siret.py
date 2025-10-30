@@ -78,15 +78,6 @@ def _validate_move_siret_form() -> tuple[
         )
         return form, None, None
 
-    if target_venue.isVirtual:
-        flash(
-            Markup(
-                "Le partenaire culturel cible <b>{venue_name}</b> (ID {venue_id}) est un partenaire culturel virtuel"
-            ).format(venue_name=target_venue.name, venue_id=target_venue.id),
-            "warning",
-        )
-        return form, None, None
-
     return form, source_venue, target_venue
 
 

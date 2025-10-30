@@ -51,6 +51,8 @@ class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
             return venue.offererAddress.address.postalCode
         if key == "departmentCode" or key == "departementCode":
             return venue.offererAddress.address.departmentCode
+        if key == "isVirtual":
+            return False
 
         return super().get(key, default)
 

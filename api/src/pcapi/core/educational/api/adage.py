@@ -332,7 +332,6 @@ def get_redactor_favorites_count(redactor_id: int) -> int:
             .joinedload(educational_models.CollectiveOfferTemplate.venue)
             .load_only(
                 offerers_models.Venue.managingOffererId,
-                offerers_models.Venue.isVirtual,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus)

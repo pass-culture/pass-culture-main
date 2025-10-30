@@ -135,43 +135,41 @@ def update_venue(
         or modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
     )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
-    if not venue.isVirtual:
-        assert venue.offererAddress is not None  # helps mypy
-        assert venue.offererAddress.address is not None  # helps mypy
-        is_venue_location_updated = any(
-            field in location_modifications
-            for field in (
-                "street",
-                "city",
-                "inseeCode",
-                "postalCode",
-                "latitude",
-                "longitude",
-            )
-        )
-        is_manual_edition_updated = is_venue_location_updated and (
-            is_manual_edition != venue.offererAddress.address.isManualEdition
-        )
 
-        old_oa = venue.offererAddress
-        if is_venue_location_updated:
-            update_venue_location(
-                venue,
-                modifications,
-                location_modifications,
-                venue_snapshot=venue_snapshot,
-                is_manual_edition=is_manual_edition,
-            )
-        elif is_manual_edition_updated:
-            # PC-35419 TODO refacto cette logique bdalbianco 30/04/2025
-            duplicate_oa(
-                venue=venue,
-                old_oa=old_oa,
-                is_manual_edition=is_manual_edition,
-                venue_snapshot=venue_snapshot,
-            )
-        if is_manual_edition_updated or is_venue_location_updated:
-            switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
+    is_venue_location_updated = any(
+        field in location_modifications
+        for field in (
+            "street",
+            "city",
+            "inseeCode",
+            "postalCode",
+            "latitude",
+            "longitude",
+        )
+    )
+    is_manual_edition_updated = is_venue_location_updated and (
+        is_manual_edition != venue.offererAddress.address.isManualEdition
+    )
+
+    old_oa = venue.offererAddress
+    if is_venue_location_updated:
+        update_venue_location(
+            venue,
+            modifications,
+            location_modifications,
+            venue_snapshot=venue_snapshot,
+            is_manual_edition=is_manual_edition,
+        )
+    elif is_manual_edition_updated:
+        # PC-35419 TODO refacto cette logique bdalbianco 30/04/2025
+        duplicate_oa(
+            venue=venue,
+            old_oa=old_oa,
+            is_manual_edition=is_manual_edition,
+            venue_snapshot=venue_snapshot,
+        )
+    if is_manual_edition_updated or is_venue_location_updated:
+        switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -2771,7 +2769,6 @@ def count_open_to_public_venues_with_accessibility_provider() -> int:
         .join(offerers_models.AccessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .count()
     )
@@ -2783,7 +2780,6 @@ def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch
         .join(offerers_models.Venue.accessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
@@ -2799,7 +2795,6 @@ def get_open_to_public_venues_without_accessibility_provider() -> list[models.Ve
         .outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
             offerers_models.AccessibilityProvider.id.is_(None),
         )
         .options(
