@@ -35,15 +35,13 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
   if (isLoading) {
     return <Spinner />
   }
-
   if (!venue) {
     return
   }
 
   const isBookable = isCollectiveOffer(offer) && offer.collectiveStock
 
-  //The venue from the created offer in pro must be modified to match the model of a venue in the adage iframe
-  let offerForAdage:
+  const offerForAdage:
     | CollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel = {
     ...offer,
@@ -63,11 +61,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
       departmentCode: venue.address?.departmentCode,
     },
     isTemplate: !isCollectiveOffer(offer),
-  }
-
-  if (isBookable) {
-    offerForAdage = {
-      ...offerForAdage,
+    ...(isBookable && {
       teacher: offer.teacher,
       educationalInstitution: {
         city: offer.institution?.city ?? '',
@@ -78,14 +72,11 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
       },
       stock: {
         ...offer.collectiveStock,
-        //  The price is mutliplied by 100 in the back when the offer is sent
-        //  through the passculture ADAGE api.
-        //  Thus we need to send a x100 prixe in the fake ADAGE component
         price: Number(offer.collectiveStock?.price) * 100,
         id: Number(offer.collectiveStock?.id),
         isBookable: offer.isBookable,
       },
-    }
+    }),
   }
 
   return (
