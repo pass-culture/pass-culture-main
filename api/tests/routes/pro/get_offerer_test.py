@@ -29,7 +29,6 @@ class GetOffererTest:
     num_queries += 1  # select venue_id
     num_queries += 1  # select offerer_address
     num_queries += 1  # select venues_id with active offers
-    num_queries += 1  # select offer to check if offerer has a partner page
 
     def test_basics(self, client):
         pro = users_factories.ProFactory()
@@ -60,7 +59,6 @@ class GetOffererTest:
             "hasActiveOffer": False,
             "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
-            "hasDigitalVenueAtLeastOneOffer": False,
             "hasHeadlineOffer": False,
             "hasNonFreeOffer": False,
             "hasPartnerPage": False,
