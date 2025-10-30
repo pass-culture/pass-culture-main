@@ -36,10 +36,10 @@ from pcapi.core.external import batch
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_booked_event
-from pcapi.core.external_bookings.ems import constants as ems_constants
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+from pcapi.core.providers.clients.ems_client import EMSAPIClient
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -1366,7 +1366,7 @@ def cancel_unstored_external_bookings() -> None:
 def cancel_ems_external_bookings() -> None:
     EMS_DEADLINE_BEFORE_CANCELLING = 90
     redis_client = current_app.redis_client
-    ems_queue = ems_constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL
+    ems_queue = EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 
     while redis_client.llen(ems_queue) > 0:
         booking_to_cancel = json.loads(redis_client.rpop(ems_queue))
@@ -1381,7 +1381,7 @@ def cancel_ems_external_bookings() -> None:
             redis_client.rpush(ems_queue, json.dumps(booking_to_cancel))
             return
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSAPIClient(cinema_id=cinema_id)
         try:
             tickets = client.get_ticket(token)
         except EMSAPIException as exc:

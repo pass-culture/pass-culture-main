@@ -9,13 +9,12 @@ from pydantic.v1 import parse_obj_as
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
-import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
-import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.providers.models import BoostCinemaDetails
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
@@ -23,31 +22,48 @@ from pcapi.utils import requests
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.queue import add_to_queue
 
-from . import constants
-from . import serializers
+from . import boost_serializers
 
 
 logger = logging.getLogger(__name__)
 
 
+BOOST_PASS_CULTURE_PRICING_CODES = ["PCU", "PC2", "PC3", "PC4", "PC5"]  # the order matters
+BOOST_PASS_CULTURE_REFUND_TYPE = "pcu"
+BOOST_PASS_CULTURE_CODE_PAYMENT = "PCU"
+BOOST_SHOWS_INTERVAL_DAYS = 60
+BOOST_PASS_CULTURE_PAYMENT_METHOD = "external:credit:passculture"
+BOOST_HIDE_FULL_RESERVATION = 1
+BOOST_SHOWTIMES_STOCKS_CACHE_KEY = "api:cinema_provider:boost:stocks:%s:%s"
+BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT = 60
 _BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN = (
     r"Insufficient number of seats for the showtime \d+, remaining: (\d), required: \d"
 )
 
 
+class BoostAPIException(external_bookings_exceptions.ExternalBookingException):
+    pass
+
+
+class BoostInvalidTokenException(BoostAPIException):
+    pass
+
+
+class BoostLoginException(BoostAPIException):
+    pass
+
+
 def get_pcu_pricing_if_exists(
-    showtime_pricing_list: list[serializers.ShowtimePricing],
-) -> serializers.ShowtimePricing | None:
+    showtime_pricing_list: list[boost_serializers.ShowtimePricing],
+) -> boost_serializers.ShowtimePricing | None:
     pcu_pricings = [
-        pricing
-        for pricing in showtime_pricing_list
-        if pricing.pricingCode in constants.BOOST_PASS_CULTURE_PRICING_CODES
+        pricing for pricing in showtime_pricing_list if pricing.pricingCode in BOOST_PASS_CULTURE_PRICING_CODES
     ]
     if len(pcu_pricings) == 0:
         return None
 
     pcu_pricings_sorted_by_code = sorted(
-        pcu_pricings, key=lambda p: constants.BOOST_PASS_CULTURE_PRICING_CODES.index(p.pricingCode)
+        pcu_pricings, key=lambda p: BOOST_PASS_CULTURE_PRICING_CODES.index(p.pricingCode)
     )
     first_pcu_pricing = pcu_pricings_sorted_by_code[0]
 
@@ -60,7 +76,7 @@ def get_pcu_pricing_if_exists(
 
 
 def _log_external_call(
-    client: external_bookings_models.ExternalBookingsClientAPI,
+    client: cinema_client.CinemaAPIClient,
     method: str,
     response: dict | list[dict] | list,
     query_params: dict | None = None,
@@ -93,7 +109,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         )
 
         if response.status_code == 401:
-            raise boost_exceptions.BoostInvalidTokenException(f"Boost: {message}")
+            raise BoostInvalidTokenException(f"Boost: {message}")
 
         if regex.match(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message):
             remaining_seats = int(regex.findall(_BOOST_NOT_ENOUGH_SEAT_ERROR_PATTERN, message)[0])
@@ -102,9 +118,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         if "No showtime found" in message:
             raise external_bookings_exceptions.ExternalBookingShowDoesNotExistError()
 
-        raise boost_exceptions.BoostAPIException(
-            f"Error on Boost API on {request_detail} : {error_message} - {message}"
-        )
+        raise BoostAPIException(f"Error on Boost API on {request_detail} : {error_message} - {message}")
 
 
 def _extract_reason_from_response(response: requests.Response) -> str:
@@ -143,10 +157,10 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
     """
 
     @wraps(func)
-    def decorated_func(client: "BoostClientAPI", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    def decorated_func(client: "BoostAPIClient", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         try:
             return func(client, *args, **kwargs)
-        except boost_exceptions.BoostInvalidTokenException:
+        except BoostInvalidTokenException:
             # if the token is invalid, we unset current token to force re-authentication
             client._unset_cinema_details_token()
             return func(client, *args, **kwargs)
@@ -154,7 +168,7 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
     return decorated_func  # type: ignore[return-value]
 
 
-class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+class BoostAPIClient(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -187,19 +201,19 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 params={"ignore_device": True},
             )
         except requests.exceptions.RequestException as exc:
-            raise boost_exceptions.BoostLoginException(f"Network error on Boost API: {url}") from exc
+            raise BoostLoginException(f"Network error on Boost API: {url}") from exc
 
         if response.status_code != 200:
             message = _extract_message_from_response(response)
-            raise boost_exceptions.BoostLoginException(
+            raise BoostLoginException(
                 f"Unexpected {response.status_code} response from Boost login API on {response.request.url}: {message}"
             )
 
         content = response.json()
-        login_info = parse_obj_as(serializers.LoginBoost, content)
+        login_info = parse_obj_as(boost_serializers.LoginBoost, content)
         token = login_info.token
         if not token:
-            raise boost_exceptions.BoostLoginException("No token received from Boost API")
+            raise BoostLoginException("No token received from Boost API")
 
         return token, jwt_expiration_datetime
 
@@ -277,8 +291,8 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self._authenticated_post(f"{self.cinema_details.cinemaUrl}api/vendors/logout")
         self._unset_cinema_details_token()
 
-    @external_bookings_models.cache_external_call(
-        key_template=constants.BOOST_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    @cinema_client.cache_external_call(
+        key_template=BOOST_SHOWTIMES_STOCKS_CACHE_KEY, expire=BOOST_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         showtimes = self.get_showtimes(film=int(film_id))
@@ -288,12 +302,10 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         barcodes = list(set(barcodes))
         sale_cancel_items = []
         for barcode in barcodes:
-            sale_cancel_item = serializers.SaleCancelItem(
-                code=barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
-            )
+            sale_cancel_item = boost_serializers.SaleCancelItem(code=barcode, refundType=BOOST_PASS_CULTURE_REFUND_TYPE)
             sale_cancel_items.append(sale_cancel_item)
 
-        sale_cancel = serializers.SaleCancel(sales=sale_cancel_items)
+        sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
         self._authenticated_put(
             f"{self.cinema_details.cinemaUrl}api/sale/orderCancel",
             payload=sale_cancel.json(by_alias=True),
@@ -302,7 +314,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
-    ) -> list[external_bookings_models.Ticket]:
+    ) -> list[cinema_client.Ticket]:
         quantity = booking.quantity
         showtime = self.get_showtime(show_id)
         pcu_pricing = get_pcu_pricing_if_exists(showtime.showtimePricing)
@@ -315,9 +327,9 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             # as a beneficiary cannot book a show if there is no pass Culture pricing
             raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
 
-        basket_items = [serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
-        sale_body = serializers.SaleRequest(
-            codePayment=constants.BOOST_PASS_CULTURE_CODE_PAYMENT, basketItems=basket_items, idsBeforeSale=None
+        basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
+        sale_body = boost_serializers.SaleRequest(
+            codePayment=BOOST_PASS_CULTURE_CODE_PAYMENT, basketItems=basket_items, idsBeforeSale=None
         )
 
         # step 1: preparation
@@ -325,7 +337,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
             payload=sale_body.json(by_alias=True),
         )
-        sale_preparation = parse_obj_as(serializers.SalePreparationResponse, sale_preparation_response)
+        sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
 
         # step 2: confirmation
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
@@ -333,7 +345,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
             payload=sale_body.json(by_alias=True),
         )
-        sale_confirmation_response = parse_obj_as(serializers.SaleConfirmationResponse, sale_response)
+        sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
             {
@@ -357,7 +369,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             }
             # This will be useful for customer support
             logger.info("Booked Boost Ticket", extra=extra_data)
-            ticket = external_bookings_models.Ticket(barcode=barcode, seat_number=seat_number)
+            ticket = cinema_client.Ticket(barcode=barcode, seat_number=seat_number)
             tickets.append(ticket)
 
         return tickets
@@ -366,16 +378,16 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self,
         *,
         start_date: datetime.date = datetime.date.today(),
-        interval_days: int = constants.BOOST_SHOWS_INTERVAL_DAYS,
+        interval_days: int = BOOST_SHOWS_INTERVAL_DAYS,
         per_page: int = 30,  # `per_page` max value seems to be 200
         film: int | None = None,
-    ) -> list[serializers.ShowTime4]:
+    ) -> list[boost_serializers.ShowTime4]:
         start_str = start_date.strftime("%Y-%m-%d")
         end_str = (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d")
         url = f"{self.cinema_details.cinemaUrl}api/showtimes/between/{start_str}/{end_str}"
         params = {
-            "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
-            "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
+            "paymentMethod": BOOST_PASS_CULTURE_PAYMENT_METHOD,
+            "hideFullReservation": BOOST_HIDE_FULL_RESERVATION,
             "film": film,
             "per_page": per_page,
         }
@@ -387,7 +399,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
             data = self._authenticated_get(url, params=params)
 
-            collection = parse_obj_as(serializers.ShowTimeCollection, data)
+            collection = parse_obj_as(boost_serializers.ShowTimeCollection, data)
             items.extend(collection.data)
             total_pages = collection.totalPages
             next_page = collection.nextPage
@@ -397,12 +409,12 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         return items
 
-    def get_showtime(self, showtime_id: int) -> serializers.ShowTime4:
+    def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
-        showtime_details = parse_obj_as(serializers.ShowTimeDetails, data)
+        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, data)
         return showtime_details.data
 
-    def get_cinemas_attributs(self) -> list[serializers.CinemaAttribut]:
+    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
-        attributs = parse_obj_as(serializers.CinemaAttributCollection, data)
+        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, data)
         return attributs.data

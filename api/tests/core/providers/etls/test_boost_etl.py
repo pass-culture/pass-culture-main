@@ -14,8 +14,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.boost import constants as boost_constants
-from pcapi.core.external_bookings.boost import serializers as boost_serializers
+from pcapi.core.providers.clients import boost_client
+from pcapi.core.providers.clients import boost_serializers
 from pcapi.core.providers.etls.boost_etl import BoostExtractTransformLoadProcess
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search import models as search_models
@@ -30,7 +30,7 @@ from . import fixtures
 pytestmark = pytest.mark.usefixtures("db_session")
 
 TODAY_STR = datetime.date.today().strftime("%Y-%m-%d")
-FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constants.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
+FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_client.BOOST_SHOWS_INTERVAL_DAYS)).strftime(
     "%Y-%m-%d"
 )
 

@@ -25,13 +25,13 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
-from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
-from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.providers.clients import cds_client
+from pcapi.core.providers.clients import cgr_client
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice import autocomplete
@@ -509,8 +509,8 @@ def _batch_cancel_bookings(
                 error_dict[exc.__class__.__name__].append(token)
                 mark_transaction_as_invalid()
             except (
-                cgr_exceptions.CGRAPIException,
-                cds_exceptions.CineDigitalServiceAPIException,
+                cgr_client.CGRAPIException,
+                cds_client.CineDigitalServiceAPIException,
                 ems.EMSAPIException,
             ) as exc:
                 logger.info(

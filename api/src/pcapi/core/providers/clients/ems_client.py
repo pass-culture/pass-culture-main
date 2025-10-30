@@ -7,34 +7,37 @@ from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.bookings import repository as bookings_repository
-from pcapi.core.external_bookings import models as external_bookings_models
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.requests import exceptions as requests_exception
 
-from . import constants
-
 
 logger = logging.getLogger(__name__)
 
 
-class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+EMS_SHOWTIMES_STOCKS_CACHE_KEY = "api:cinema_provider:ems:stocks:%s:%s"
+EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT = 60
+EMS_EXTERNAL_BOOKINGS_TO_CANCEL = "api:cinema_provider:ems:cancel_external_bookings"
+
+
+class EMSAPIClient(cinema_client.CinemaAPIClient):
     EMS_FAKE_REMAINING_PLACES = 100
 
     def __init__(self, cinema_id: str, request_timeout: None | int = None):
         super().__init__(cinema_id=cinema_id, request_timeout=request_timeout)
         self.connector = EMSBookingConnector()
 
-    def get_ticket(self, token: str) -> list[external_bookings_models.Ticket]:
+    def get_ticket(self, token: str) -> list[cinema_client.Ticket]:
         payload = ems_serializers.GetTicketRequest(num_cine=self.cinema_id, num_cmde=token)
         response = self.connector.do_request(self.connector.get_ticket_endpoint, payload=payload.dict())
         self.connector.raise_for_status(response)
         content = ems_serializers.ReservationPassCultureResponse(**response.json())
         return [
-            external_bookings_models.Ticket(
+            cinema_client.Ticket(
                 barcode=ticket.code_barre,
                 seat_number=ticket.num_place,
                 additional_information={
@@ -50,7 +53,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: booking_models.Booking, beneficiary: users_models.User
-    ) -> list[external_bookings_models.Ticket]:
+    ) -> list[cinema_client.Ticket]:
         payload = ems_serializers.ReservationPassCultureRequest(
             num_cine=self.cinema_id,
             id_seance=str(show_id),
@@ -77,14 +80,14 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                     }
                 )
 
-                current_app.redis_client.lpush(constants.EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
+                current_app.redis_client.lpush(EMS_EXTERNAL_BOOKINGS_TO_CANCEL, booking_to_cancel)
             raise
 
         self.connector.raise_for_status(response)
 
         content = ems_serializers.ReservationPassCultureResponse(**response.json())
         return [
-            external_bookings_models.Ticket(
+            cinema_client.Ticket(
                 barcode=ticket.code_barre,
                 seat_number=ticket.num_place,
                 additional_information={
@@ -123,7 +126,7 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             extra={"barcodes": [external_booking.barcode for external_booking in external_bookings]},
         )
 
-    def cancel_booking_with_tickets(self, tickets: list[external_bookings_models.Ticket]) -> None:
+    def cancel_booking_with_tickets(self, tickets: list[cinema_client.Ticket]) -> None:
         # There's no partial cancelling and only one ticket is enough to cancel a duo booking
         ticket = tickets[0]
         assert ticket.additional_information  # helps mypy, additional_information shouldn't be None at this point
@@ -141,8 +144,8 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             extra={"barcodes": [ticket.barcode for ticket in tickets]},
         )
 
-    @external_bookings_models.cache_external_call(
-        key_template=constants.EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=constants.EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
+    @cinema_client.cache_external_call(
+        key_template=EMS_SHOWTIMES_STOCKS_CACHE_KEY, expire=EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT
     )
     def get_film_showtimes_stocks(self, film_id: str) -> str:
         payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
