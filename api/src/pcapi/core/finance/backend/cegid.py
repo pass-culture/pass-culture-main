@@ -235,7 +235,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "BranchID": {"value": "PASSCULT"},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": self.format_datetime(invoice.date)},
-            "Description": {"value": invoice_description},  # F25xxxx - VIRXXX - <01/12-15/12>
+            "Description": {"value": invoice_description},  # VIRXXX - <01/12-15/12>
             "Details": lines,
             "Hold": {"value": False},
             "LocationID": {"value": "PRINCIPAL"},
@@ -287,7 +287,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
         invoice_batch = invoice.cashflows[0].batch
         start_date, end_date = self._get_invoice_daterange(invoice_batch.cutoff)
 
-        return f"{invoice.reference} - {invoice_batch.label} - {start_date:%d/%m}-{end_date:%d/%m}"
+        return f"{invoice_batch.label} - {start_date:%d/%m}-{end_date:%d/%m}"
 
     def get_invoice(self, reference: str) -> dict:
         url = f"{self.base_url}/{self._interface}/Bill"

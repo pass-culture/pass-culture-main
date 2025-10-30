@@ -764,7 +764,7 @@ class CegidFinanceBackendTest:
             "CashAccount": {},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": "2024-12-18T00:00:00+00:00"},
-            "Description": {"value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 15/01-31/01"},
+            "Description": {"value": f"{invoice.cashflows[0].batch.label} - 15/01-31/01"},
             "Details": [
                 {
                     "Account": {"value": "604000"},
@@ -874,9 +874,7 @@ class CegidFinanceBackendTest:
         assert request_json["BranchID"] == {"value": "PASSCULT"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
-        assert request_json["Description"] == {
-            "value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 16/01-31/01"
-        }
+        assert request_json["Description"] == {"value": f"{invoice.cashflows[0].batch.label} - 16/01-31/01"}
         assert "Details" in request_json
         details = request_json["Details"]
         assert len(details) == 3
@@ -1012,7 +1010,7 @@ class CegidFinanceBackendTest:
             "CashAccount": {},
             "CurrencyID": {"value": "EUR"},
             "Date": {"value": "2024-12-18T00:00:00+00:00"},
-            "Description": {"value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 15/01-31/01"},
+            "Description": {"value": f"{invoice.cashflows[0].batch.label} - 15/01-31/01"},
             "Details": [
                 {
                     "Account": {"value": "604000"},
@@ -1093,9 +1091,7 @@ class CegidFinanceBackendTest:
         assert request_json["BranchID"] == {"value": "PASSCULT"}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["Date"] == {"value": now.strftime("%Y-%m-%dT%H:%M:%S+00:00")}
-        assert request_json["Description"] == {
-            "value": f"{invoice.reference} - {invoice.cashflows[0].batch.label} - 16/01-31/01"
-        }
+        assert request_json["Description"] == {"value": f"{invoice.cashflows[0].batch.label} - 16/01-31/01"}
         assert "Details" in request_json
         details = request_json["Details"]
         assert len(details) == 1
