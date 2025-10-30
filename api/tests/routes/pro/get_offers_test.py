@@ -10,6 +10,7 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
+from pcapi.core.highlights import factories as highlights_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -295,6 +296,10 @@ class Returns200Test:
             beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19),
             dnBookedQuantity=50,
         )
+        highlight = highlights_factories.HighlightFactory()
+        highlight_name = highlight.name
+        highlight_id = highlight.id
+        highlights_factories.HighlightRequestFactory(offer=event_offer, highlight=highlight)
         authenticated_client = client.with_session_auth(email=pro.email)
         with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get("/offers")
@@ -354,6 +359,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": "2022-11-21T13:19:00Z",
                 "bookingsCount": 50,
                 "productId": product.id,
+                "highlightRequests": [{"id": highlight_id, "name": highlight_name}],
             }
         ]
 
@@ -420,6 +426,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             }
         ]
 
@@ -491,6 +498,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             }
         ]
 
@@ -616,6 +624,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             },
             {
                 "hasBookingLimitDatetimesPassed": False,
@@ -662,6 +671,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             },
         ]
 
@@ -737,6 +747,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             }
         ]
 
@@ -814,6 +825,7 @@ class Returns200Test:
                 "bookingAllowedDatetime": None,
                 "bookingsCount": 0,
                 "productId": None,
+                "highlightRequests": [],
             }
         ]
 

@@ -67,6 +67,7 @@ export const listOffersOfferFactory = (
     venue: listOffersVenueFactory(),
     stocks: [],
     isEditable: true,
+    highlightRequests: [],
     ...customListOffersOffer,
   }
 }
