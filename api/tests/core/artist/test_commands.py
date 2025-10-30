@@ -23,6 +23,7 @@ from pcapi.core.artist.models import ArtistAlias
 from pcapi.core.artist.models import ArtistProductLink
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.search import redis_queues
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 
@@ -295,6 +296,17 @@ class ComputeArtistsMostRelevantImageTest:
 
         assert artist.computed_image == product_mediation.url
         mock_async_index_artist.assert_called_once_with([artist.id], reason=IndexationReason.ARTIST_IMAGE_UPDATE)
+
+    def test_process_artists_by_batch(self, app, clear_redis):
+        artists = ArtistFactory.create_batch(5, image=None, computed_image=None)
+        product_mediation = offers_factories.ProductMediationFactory()
+        for artist in artists:
+            ArtistProductLinkFactory(artist_id=artist.id, product_id=product_mediation.product.id)
+
+        commands.compute_artists_most_relevant_image(batch_size=2)
+
+        assert all(artist.computed_image == product_mediation.url for artist in artists)
+        app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {artist.id for artist in artists}
 
     @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
     def test_update_artists_computed_image_only_if_changed(self, mock_async_index_artist):
