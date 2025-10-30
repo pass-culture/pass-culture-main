@@ -115,11 +115,65 @@
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
           {{ build_details_tab("content", "Contenu de la chronique", active_tab == 'content') }}
-          {{ build_details_tab("book", "Œuvres associées", active_tab == 'book') }}
+          {{ build_details_tab("product", "Œuvres associées", active_tab == 'product') }}
+          {{ build_details_tab("offer", "Offres associées", active_tab == 'offer') }}
           {{ build_details_tab("history", "Historique", active_tab == 'history') }}
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
-          {% call build_details_tab_content("book", active_tab == 'book') %}
+          {% call build_details_tab_content("offer", active_tab == 'offer') %}
+            {% if has_permission("MANAGE_CHRONICLE") %}
+              <div class="d-flex flex-row-reverse">
+                <div class="p-2">
+                  {{ build_modal_form("edit-content", url_for("backoffice_web.chronicles.attach_offer", chronicle_id=chronicle.id) , attach_offer_form, "", "Rattacher une offre", "Rattacher", none, "bi-plus-circle-fill h3") }}
+                </div>
+              </div>
+            {% endif %}
+            <table class="table table-hover mb-4 my-4">
+              <thead>
+                <tr>
+                  {% if has_permission("MANAGE_CHRONICLE") %}<th scope="col"></th>{% endif %}
+                  <th scope="col-2">ID</th>
+                  <th scope="col-2">Titre</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for offer in chronicle.offers %}
+                  <tr>
+                    {% if has_permission("MANAGE_CHRONICLE") %}
+                      <td>
+                        <div class="dropdown">
+                          <button type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                  class="btn p-0">
+                            <i class="bi bi-three-dots-vertical"></i>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#detach-offer-{{ offer.id }}-modal">Détacher</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    {% endif %}
+                    <td>
+                      <a class="link-primary"
+                         href="{{ url_for('backoffice_web.offer.get_offer_details', offer_id=offer.id) }}">{{ offer.id }}</a>
+                    </td>
+                    <td>{{ offer.name }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% if has_permission("MANAGE_CHRONICLE") %}
+              {% for offer in chronicle.offers %}
+                {{ build_modal_form("detach-offer-" + offer.id|string, url_for('backoffice_web.chronicles.detach_offer', chronicle_id=chronicle.id, offer_id=offer.id) , empty_form, "", "Détacher " + offer.name, "Détacher") }}
+              {% endfor %}
+            {% endif %}
+          {% endcall %}
+          {% call build_details_tab_content("product", active_tab == 'product') %}
             {% if has_permission("MANAGE_CHRONICLE") %}
               <div class="d-flex flex-row-reverse">
                 <div class="p-2">

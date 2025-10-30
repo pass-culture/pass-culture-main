@@ -830,3 +830,193 @@ class CommentChronicleTest(PostEndpointHelper):
         assert action_log.actionType == history_models.ActionType.COMMENT
         assert action_log.chronicle is chronicle
         assert action_log.comment == comment
+
+
+class AttachOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.chronicles.attach_offer"
+    endpoint_kwargs = {"chronicle_id": 1}
+    needed_permission = perm_models.Permissions.READ_CHRONICLE
+    # session
+    # current user
+    # get chronicle
+    # get offer
+    # get other chronicles and offers
+    # insert offer_chronicles
+    # GetChronicleDetailsTest.expected_num_queries (follow redirect)
+    expected_num_queries = 6 + GetChronicleDetailsTest.expected_num_queries
+
+    def test_attach_offer(self, authenticated_client):
+        chronicle = chronicles_factories.ChronicleFactory()
+        offer = offers_factories.OfferFactory()
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"offer_id": offer.id},
+        )
+        assert response.status_code == 200
+        db.session.refresh(chronicle)
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert offer.name in content_as_text
+        assert chronicle.offers == [offer]
+        assert html_parser.extract_alerts(response.data) == [
+            f"L'offre {offer.name} a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+    def test_attach_offer_to_multiple_chronicles(self, authenticated_client):
+        chronicles_to_update = chronicles_factories.ChronicleFactory.create_batch(
+            2,
+            productIdentifier="1235467890123",
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+        )
+        untouched_chronicle = chronicles_factories.ChronicleFactory()
+        offer = offers_factories.OfferFactory()
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicles_to_update[0].id,
+            client=authenticated_client,
+            form={"offer_id": offer.id},
+        )
+        assert response.status_code == 200
+        db.session.refresh(untouched_chronicle)
+        db.session.refresh(chronicles_to_update[0])
+        db.session.refresh(chronicles_to_update[1])
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert offer.name in content_as_text
+        assert html_parser.extract_alerts(response.data) == [
+            f"L'offre {offer.name} a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+        assert chronicles_to_update[0].offers == [offer]
+        assert chronicles_to_update[1].offers == [offer]
+        assert untouched_chronicle.offers == []
+
+    def test_offer_not_found(self, authenticated_client):
+        chronicle = chronicles_factories.ChronicleFactory()
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"offer_id": "0"},
+        )
+        assert response.status_code == 200
+        db.session.refresh(chronicle)
+
+        assert html_parser.extract_alerts(response.data) == ["Aucune offre n'a été trouvée pour cet ID"]
+
+    def test_some_already_attached(self, authenticated_client):
+        chronicle_ean = "9780201379602"
+        offer = offers_factories.OfferFactory()
+        offer_to_attach = offers_factories.OfferFactory()
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=chronicle_ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
+            offers=[offer, offer_to_attach],
+        )
+        chronicle = chronicles_factories.ChronicleFactory(
+            productIdentifier=chronicle_ean,
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            clubType=chronicles_models.ChronicleClubType.BOOK_CLUB,
+            offers=[offer],
+        )
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            chronicle_id=chronicle.id,
+            client=authenticated_client,
+            form={"offer_id": offer_to_attach.id},
+        )
+        assert response.status_code == 200
+
+        db.session.refresh(chronicle)
+        db.session.refresh(old_chronicle)
+
+        assert set(chronicle.offers) == {offer, offer_to_attach}
+        assert set(old_chronicle.offers) == {offer, offer_to_attach}
+        assert html_parser.extract_alerts(response.data) == [
+            f"L'offre {offer_to_attach.name} a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+
+class DetachOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.chronicles.detach_offer"
+    endpoint_kwargs = {"chronicle_id": 1, "offer_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
+    # session
+    # current user
+    # get current chronicle
+    # delete link between the chronicle and the offer
+    # GetChronicleDetailsTest.expected_num_queries (follow redirect)
+    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+
+    def test_detach_offer(self, authenticated_client, legit_user):
+        offer = offers_factories.OfferFactory()
+        chronicle = chronicles_factories.ChronicleFactory(offers=[offer])
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicle.id,
+            offer_id=offer.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicle)
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert offer.name not in content_as_text
+        assert chronicle.offers == []
+        assert html_parser.extract_alerts(response.data) == [
+            "L'offre a bien été détachée de toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+    def test_detach_product_from_multiple_chronicles(self, authenticated_client, legit_user):
+        offer = offers_factories.OfferFactory()
+        chronicles = chronicles_factories.ChronicleFactory.create_batch(
+            2, productIdentifier="1234567890123", offers=[offer]
+        )
+        untouched_chronicle = chronicles_factories.ChronicleFactory(productIdentifier="0123456789012", offers=[offer])
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            chronicle_id=chronicles[0].id,
+            offer_id=offer.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicles[0])
+        db.session.refresh(chronicles[1])
+        db.session.refresh(untouched_chronicle)
+
+        content_as_text = html_parser.content_as_text(response.data)
+        assert offer.name not in content_as_text
+        assert chronicles[0].offers == []
+        assert chronicles[1].offers == []
+        assert untouched_chronicle.offers == [offer]
+        assert html_parser.extract_alerts(response.data) == [
+            "L'offre a bien été détachée de toutes les chroniques sur la même œuvre que celle-ci"
+        ]
+
+    def test_detach_unattached_product(self, authenticated_client, legit_user):
+        offer = offers_factories.OfferFactory()
+        chronicle = chronicles_factories.ChronicleFactory()
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 1,  # rollback on error
+            chronicle_id=chronicle.id,
+            offer_id=offer.id,
+            client=authenticated_client,
+        )
+        db.session.refresh(chronicle)
+
+        assert chronicle.offers == []
+        assert html_parser.extract_alerts(response.data) == [
+            "L'offre n'existe pas ou n'était pas attachée à la chronique"
+        ]

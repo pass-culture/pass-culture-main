@@ -12,7 +12,7 @@ from markupsafe import Markup
 from sqlalchemy import orm as sa_orm
 from werkzeug.exceptions import NotFound
 
-import pcapi.core.chronicles.api as chronicles_api
+from pcapi.core.chronicles import api as chronicles_api
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -163,7 +163,11 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
                 offers_models.Product.name,
                 offers_models.Product.ean,
                 offers_models.Product.extraData,
-            )
+            ),
+            sa_orm.joinedload(chronicles_models.Chronicle.offers).load_only(
+                offers_models.Offer.id,
+                offers_models.Offer.name,
+            ),
         )
         .one_or_none()
     )
@@ -194,6 +198,7 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         attach_product_form=forms.AttachProductForm(),
         action_history=action_history,
         comment_form=forms.CommentForm(),
+        attach_offer_form=forms.AttachOfferForm(),
     )
 
 
@@ -295,7 +300,9 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id), code=303)
+        redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
+        )
 
     product_identifier = str(form.product_identifier.data)
 
@@ -339,7 +346,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Aucune œuvre n'a été trouvée pour cet identifiant", "warning")
         return redirect(
-            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
         )
 
     for product in products:
@@ -366,7 +373,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
         )
 
     return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
     )
 
 
@@ -404,7 +411,100 @@ def detach_product(chronicle_id: int, product_id: int) -> utils.BackofficeRespon
         flash("Le produit n'existe pas ou n'était pas attaché à la chronique", "warning")
 
     return redirect(
-        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="book"), code=303
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/attach-offer", methods=["POST"])
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def attach_offer(chronicle_id: int) -> utils.BackofficeResponse:
+    selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
+
+    form = forms.AttachOfferForm()
+
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303)
+
+    offers_subquery = (
+        sa.select(sa.func.array_agg(chronicles_models.OfferChronicle.offerId))
+        .filter(
+            chronicles_models.OfferChronicle.chronicleId == chronicles_models.Chronicle.id,
+        )
+        .correlate(
+            chronicles_models.Chronicle,
+        )
+        .scalar_subquery()
+    )
+
+    chronicle_query = db.session.query(chronicles_models.Chronicle, offers_subquery.label("offers")).filter(
+        chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+        chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+    )
+
+    offer = db.session.query(offers_models.Offer).filter(offers_models.Offer.id == form.offer_id.data).one_or_none()
+
+    if not offer:
+        mark_transaction_as_invalid()
+        flash("Aucune offre n'a été trouvée pour cet ID", "warning")
+        return redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
+        )
+
+    for chronicle, offers_id in chronicle_query:
+        if not (offers_id and int(form.offer_id.data) in offers_id):
+            db.session.add(chronicles_models.OfferChronicle(offerId=int(form.offer_id.data), chronicleId=chronicle.id))
+
+    db.session.flush()
+
+    flash(
+        Markup(
+            "L'offre <b>{offer_name}</b> a été rattachée à toutes les chroniques sur la même œuvre que celle-ci"
+        ).format(offer_name=offer.name),
+        "success",
+    )
+
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
+    )
+
+
+@chronicles_blueprint.route("/<int:chronicle_id>/detach-offer/<int:offer_id>", methods=["POST"])
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def detach_offer(chronicle_id: int, offer_id: int) -> utils.BackofficeResponse:
+    selected_chronicle = get_or_404(chronicles_models.Chronicle, chronicle_id)
+    chronicles_subquery = (
+        db.session.query(chronicles_models.Chronicle)
+        .filter(
+            sa.or_(
+                sa.and_(
+                    chronicles_models.Chronicle.productIdentifier == selected_chronicle.productIdentifier,
+                    chronicles_models.Chronicle.productIdentifierType == selected_chronicle.productIdentifierType,
+                ),
+                chronicles_models.Chronicle.id == chronicle_id,
+            )
+        )
+        .with_entities(chronicles_models.Chronicle.id)
+    )
+    deleted = (
+        db.session.query(chronicles_models.OfferChronicle)
+        .filter(
+            chronicles_models.OfferChronicle.offerId == offer_id,
+            chronicles_models.OfferChronicle.chronicleId.in_(chronicles_subquery),
+        )
+        .delete(synchronize_session=False)
+    )
+    db.session.flush()
+
+    if deleted:
+        flash("L'offre a bien été détachée de toutes les chroniques sur la même œuvre que celle-ci", "success")
+    else:
+        mark_transaction_as_invalid()
+        flash("L'offre n'existe pas ou n'était pas attachée à la chronique", "warning")
+
+    return redirect(
+        url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
     )
 
 

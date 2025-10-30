@@ -480,6 +480,37 @@ class SaveBookClubChronicleTest:
         assert len(chronicles) == 1
         assert chronicles[0].id == old_chronicle.id
 
+    def test_save_book_club_chronicle_with_offers(self):
+        ean = "1234567890123"
+        ean_choice_id = random_string()
+        offer = offers_factories.OfferFactory()
+        old_chronicle = chronicles_factories.ChronicleFactory(
+            offers=[offer], productIdentifier=ean, productIdentifierType=models.ChronicleProductIdentifierType.EAN
+        )
+        form = typeform.TypeformResponse(
+            response_id=random_string(),
+            date_submitted=datetime.datetime(2024, 10, 24),
+            phone_number=None,
+            email="email@mail.test",
+            answers=[
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.BOOK_EAN_ID.value,
+                    choice_id=ean_choice_id,
+                    text=ean,
+                ),
+                typeform.TypeformAnswer(
+                    field_id=constants.BookClub.CHRONICLE_ID.value,
+                    choice_id=None,
+                    text="some random chronicle description",
+                ),
+            ],
+        )
+
+        api.save_book_club_chronicle(form)
+
+        chronicle = db.session.query(models.Chronicle).filter(models.Chronicle.id != old_chronicle.id).one()
+        assert chronicle.offers == [offer]
+
 
 @pytest.mark.usefixtures("db_session")
 class ExtractBookClubEanTest:
