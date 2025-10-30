@@ -11,7 +11,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
-from pcapi.core.external_bookings.ems.client import EMSClientAPI
+from pcapi.core.providers.clients.ems_client import EMSAPIClient
 
 
 @pytest.mark.usefixtures("db_session")
@@ -73,7 +73,7 @@ class EMSBookTicketTest:
 
         requests_mock.post(url, json=expected_data, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
-        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=12)
+        client = EMSAPIClient(cinema_id=cinema_id, request_timeout=12)
         ticket = client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -142,7 +142,7 @@ class EMSBookTicketTest:
 
         requests_mock.post(url, json=expected_data, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
-        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=12)
+        client = EMSAPIClient(cinema_id=cinema_id, request_timeout=12)
         tickets = client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -185,7 +185,7 @@ class EMSBookTicketTest:
 
         requests_mock.post(url, json=error_payload, headers={"Source": settings.EMS_API_BOOKING_HEADER})
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSAPIClient(cinema_id=cinema_id)
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
@@ -220,7 +220,7 @@ class EMSBookTicketTest:
             headers={"Source": settings.EMS_API_BOOKING_HEADER},
         )
 
-        client = EMSClientAPI(cinema_id=cinema_id)
+        client = EMSAPIClient(cinema_id=cinema_id)
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
@@ -244,7 +244,7 @@ class EMSGetFilmShowtimesStocksTest:
         url_matcher = re.compile("https://fake_url.com/SEANCE/*")
         requests_mock.post(url=url_matcher, json=response_json)
 
-        client = EMSClientAPI(cinema_id=cinema_id, request_timeout=14)
+        client = EMSAPIClient(cinema_id=cinema_id, request_timeout=14)
         stocks = client.get_film_showtimes_stocks("12345")
 
         assert requests_mock.request_history[-1].method == "POST"
