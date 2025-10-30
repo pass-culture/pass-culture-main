@@ -9,7 +9,6 @@ export interface OpenToPublicToggleProps {
   isOpenToPublic?: string | null
   error?: string
   showDescription?: boolean
-  required?: boolean
 }
 
 const DEFAULT_RADIO_DESCRIPTIONS: OpenToPublicToggleProps['radioDescriptions'] =
@@ -24,7 +23,6 @@ export const OpenToPublicToggle = ({
   isOpenToPublic,
   error,
   showDescription = true,
-  required = false,
 }: OpenToPublicToggleProps): JSX.Element => {
   const finalRadioDescriptions = {
     ...DEFAULT_RADIO_DESCRIPTIONS,
@@ -59,7 +57,6 @@ export const OpenToPublicToggle = ({
       display="horizontal"
       onChange={onChange}
       checkedOption={isOpenToPublic?.toString()}
-      required={required}
     />
   )
 }
