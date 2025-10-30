@@ -125,7 +125,7 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             setValue('isOpenToPublic', e.target.value)
           }}
           isOpenToPublic={watch('isOpenToPublic')}
-          showDescription={false}
+          overrideDescription="Sélectionnez une des options."
         />
       </FormLayout.Row>
       {shouldDisplayAddress && (

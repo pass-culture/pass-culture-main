@@ -22,7 +22,7 @@ export const validationSchema = (shouldHandleNotDiffusibleOfferer: boolean) => {
         return schema
       })
       .nullable(),
-    isOpenToPublic: yup.string().required('Veuillez sélectionner un choix'),
+    isOpenToPublic: yup.string().required('Veuillez sélectionner une option'),
     ...addressValidationSchema,
   })
 }
