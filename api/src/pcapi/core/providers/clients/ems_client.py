@@ -24,7 +24,7 @@ EMS_SHOWTIMES_STOCKS_CACHE_TIMEOUT = 60
 EMS_EXTERNAL_BOOKINGS_TO_CANCEL = "api:cinema_provider:ems:cancel_external_bookings"
 
 
-class EMSClientAPI(cinema_client.CinemaAPIClient):
+class EMSAPIClient(cinema_client.CinemaAPIClient):
     EMS_FAKE_REMAINING_PLACES = 100
 
     def __init__(self, cinema_id: str, request_timeout: None | int = None):

@@ -41,11 +41,11 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
 from pcapi.core.external_bookings import factories as external_bookings_factories
-from pcapi.core.external_bookings.ems.client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers.clients.cinema_client import Ticket
+from pcapi.core.providers.clients.ems_client import EMS_EXTERNAL_BOOKINGS_TO_CANCEL
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -593,10 +593,10 @@ class BookOfferTest:
             }
 
         @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.lpush")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
-        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_timeout_during_ems_external_booking_trigger_a_cancel_call(
@@ -704,9 +704,9 @@ class BookOfferTest:
         @patch("flask.current_app.redis_client.llen")
         @patch("flask.current_app.redis_client.rpush")
         @patch("flask.current_app.redis_client.lpush")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
-        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_we_dont_cancel_too_early_failing_booking(
@@ -785,10 +785,10 @@ class BookOfferTest:
             assert not db.session.query(Booking).all()
 
         @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.lpush")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.lpush")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
         @patch("pcapi.core.bookings.repository.generate_booking_token")
-        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=False)
         @pytest.mark.parametrize("exception", [requests_exception.Timeout, requests_exception.ReadTimeout])
         def test_timeout_during_ems_external_booking_dont_do_anything_if_ff_deactivated(
@@ -850,8 +850,8 @@ class BookOfferTest:
             assert not db.session.query(Booking).all()
 
         @patch("flask.current_app.redis_client.llen")
-        @patch("pcapi.core.external_bookings.ems.client.current_app.redis_client.rpop")
-        @patch("pcapi.core.external_bookings.ems.client.EMSClientAPI.cancel_booking_with_tickets")
+        @patch("pcapi.core.providers.clients.ems_client.current_app.redis_client.rpop")
+        @patch("pcapi.core.providers.clients.ems_client.EMSAPIClient.cancel_booking_with_tickets")
         @pytest.mark.features(ENABLE_EMS_INTEGRATION=True, EMS_CANCEL_PENDING_EXTERNAL_BOOKING=True)
         @pytest.mark.parametrize(
             "exception", [requests_exception.Timeout, requests_exception.ReadTimeout, EMSAPIException]
