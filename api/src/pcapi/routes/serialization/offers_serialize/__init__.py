@@ -224,6 +224,12 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return offer_address_getter_dict_helper(self._obj)
         if key == "bookingsCount":
             return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
+        if key == "highlightRequests":
+            return [
+                highlight_request.highlight
+                for highlight_request in self._obj.highlight_requests
+                if highlight_request.highlight.highlight_timespan.upper >= date_utils.get_naive_utc_now()
+            ]
         return super().get(key, default)
 
 
@@ -251,6 +257,7 @@ class ListOffersOfferResponseModel(BaseModel):
     bookingAllowedDatetime: datetime.datetime | None
     bookingsCount: int | None
     productId: int | None
+    highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

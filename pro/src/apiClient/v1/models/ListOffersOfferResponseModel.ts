@@ -6,6 +6,7 @@ import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLin
 import type { ListOffersStockResponseModel } from './ListOffersStockResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
+import type { ShortHighlightResponseModel } from './ShortHighlightResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
   address?: AddressResponseIsLinkedToVenueModel | null;
@@ -13,6 +14,7 @@ export type ListOffersOfferResponseModel = {
   bookingsCount?: number | null;
   canBeEvent: boolean;
   hasBookingLimitDatetimesPassed: boolean;
+  highlightRequests: Array<ShortHighlightResponseModel>;
   id: number;
   isActive: boolean;
   isDigital: boolean;

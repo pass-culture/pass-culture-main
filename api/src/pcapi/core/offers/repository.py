@@ -120,6 +120,9 @@ def get_capped_offers_for_filters(
             ).joinedload(models.Offer.headlineOffers)
         )
         .options(
+            sa_orm.joinedload(models.Offer.highlight_requests).joinedload(highlights_models.HighlightRequest.highlight),
+        )
+        .options(
             sa_orm.joinedload(models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
