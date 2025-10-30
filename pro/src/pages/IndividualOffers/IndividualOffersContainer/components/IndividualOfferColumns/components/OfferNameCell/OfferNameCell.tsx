@@ -56,7 +56,9 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
           <Thumb url={offer.thumbUrl} />
         </div>
         <div>
-          {offer.isShowcase && <Tag label="Offre vitrine" />}
+          {offer.highlightRequests.length > 0 && (
+            <Tag label={offer.highlightRequests[0].name} />
+          )}
           <div className={styles['title-column-name']}>{offer.name}</div>
           {offer.isEvent && (
             <span className={styles['stocks']}>
