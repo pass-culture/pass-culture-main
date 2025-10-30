@@ -76,7 +76,7 @@ jobs:
         image: [pcapi, pcapi-console]
     steps:
       - name: Download pre-release change from github artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: pre-release-changes-${{ inputs.tag_number }}.tar
           path: ${{ runner.temp }}
@@ -111,7 +111,7 @@ jobs:
       TAG_NAME: ${{ inputs.tag_number }}
     steps:
       - name: Download pre-release change from github artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: pre-release-changes-${{ inputs.tag_number }}.tar
           path: ${{ runner.temp }}
