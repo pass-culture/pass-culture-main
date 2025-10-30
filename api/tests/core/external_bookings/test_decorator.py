@@ -4,15 +4,15 @@ from unittest.mock import Mock
 import pytest
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.external_bookings import models as external_bookings_models
 from pcapi.core.external_bookings.decorators import ExternalBookingDecoratorException
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
 from pcapi.core.external_bookings.exceptions import ExternalBookingTimeoutException
+from pcapi.core.providers.clients import cinema_client
 from pcapi.core.users import models as users_models
 from pcapi.utils.requests import requests
 
 
-class FakeExternalBookingClientAPI(external_bookings_models.CinemaAPIClient):
+class FakeExternalBookingClientAPI(cinema_client.CinemaAPIClient):
     def __init__(self, cinema_id: str, connector) -> None:
         super().__init__(cinema_id)
         self.connector = connector

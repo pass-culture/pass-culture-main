@@ -9,13 +9,12 @@ from pydantic.v1.tools import parse_obj_as
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
-import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.external_bookings.decorators import catch_cinema_provider_request_timeout
-from pcapi.core.external_bookings.models import Ticket
+from pcapi.core.providers.clients import cinema_client
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
@@ -37,7 +36,7 @@ class CineDigitalServiceAPIException(external_bookings_exceptions.ExternalBookin
 
 
 def _log_external_call(
-    client: external_bookings_models.CinemaAPIClient,
+    client: cinema_client.CinemaAPIClient,
     method: str,
     response: dict | list[dict] | list,
 ) -> None:
@@ -73,7 +72,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         raise CineDigitalServiceAPIException(f"Error on CDS API on {request_detail} : {reason}")
 
 
-class CineDigitalServiceAPI(external_bookings_models.CinemaAPIClient):
+class CineDigitalServiceAPI(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -332,7 +331,7 @@ class CineDigitalServiceAPI(external_bookings_models.CinemaAPIClient):
     @catch_cinema_provider_request_timeout
     def book_ticket(
         self, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
-    ) -> list[Ticket]:
+    ) -> list[cinema_client.Ticket]:
         quantity = booking.quantity
         if quantity < 0 or quantity > 2:
             raise CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
@@ -370,7 +369,7 @@ class CineDigitalServiceAPI(external_bookings_models.CinemaAPIClient):
             )
 
         booking_informations = [
-            Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
+            cinema_client.Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
             for ticket in create_transaction_response.tickets
         ]
         return booking_informations
