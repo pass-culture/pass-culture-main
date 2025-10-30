@@ -23,6 +23,7 @@ import { Validation } from '@/components/SignupJourneyForm/Validation/Validation
 
 vi.mock('@/apiClient/api', () => ({
   api: {
+    getVenues: vi.fn(),
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
     listOfferersNames: vi.fn(),
@@ -225,6 +226,10 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = 'nom public'
       }
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
@@ -262,6 +267,10 @@ describe('ValidationScreen', () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = ''
       }
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
@@ -351,7 +360,6 @@ describe('ValidationScreen', () => {
     })
 
     it('should not render when no activity', () => {
-      // biome-ignore lint/correctness/noUnusedVariables: <explanation>
       const noActivityContext = { ...contextValue, activity: null }
       renderValidationScreen(noActivityContext)
       expect(
@@ -360,7 +368,6 @@ describe('ValidationScreen', () => {
     })
 
     it('should not render when no offerer', () => {
-      // biome-ignore lint/correctness/noUnusedVariables: <explanation>
       const noOffererContext = { ...contextValue, offerer: null }
       renderValidationScreen(noOffererContext)
       expect(

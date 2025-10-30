@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateFeatures } from '@/commons/store/features/reducer'
 import { updateUser } from '@/commons/store/user/reducer'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import type { AppDispatch } from '../store'
 import { initializeUser } from '../user/dispatchers/initializeUser'
 import styles from './StoreProvider.module.scss'
 
@@ -19,7 +18,7 @@ export const StoreProvider = ({
   children,
   isAdageIframe = false,
 }: StoreProviderProps) => {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
   const [isStoreInitialized, setIsStoreInitialized] = useState(false)
 
   useEffect(() => {
