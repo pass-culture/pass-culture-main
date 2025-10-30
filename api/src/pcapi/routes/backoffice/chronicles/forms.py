@@ -96,5 +96,11 @@ class AttachProductForm(forms_utils.PCForm):
     )
 
 
+class AttachOfferForm(forms_utils.PCForm):
+    offer_id = fields.PCIntegerField(
+        "ID d'offre",
+    )
+
+
 class CommentForm(forms_utils.PCForm):
     comment = fields.PCCommentField("Commentaire interne pour la chronique")
