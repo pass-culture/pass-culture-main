@@ -3831,6 +3831,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             ean="1234567891234",
             extraData={"author": "Author", "editeur": "Editor", "gtl_id": "08010000"},
         )
+        offers_factories.OfferMetaDataFactory(offer=offer, videoUrl="https://www.youtube.com/watch?v=ixSI7qD-Z1s")
         offers_factories.OfferComplianceFactory(
             offer=offer,
             compliance_score=55,
@@ -3844,6 +3845,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         descriptions = html_parser.extract_descriptions(response.data)
+
         assert str(offer.id) == descriptions["Offer ID"]
         assert descriptions["Catégorie"] == "Films, vidéos"
         assert descriptions["Sous-catégorie"] == "Support physique (DVD, Blu-ray...)"
@@ -3859,6 +3861,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert descriptions["EAN"] == "1234567891234"
         assert descriptions["Éditeur"] == "Editor"
         assert descriptions["Description"] == "Une offre pour tester"
+        assert descriptions["Vidéo"] == "https://www.youtube.com/watch?v=ixSI7qD-Z1s"
         assert descriptions["Informations de retrait"] == "Demander à la caisse"
         assert descriptions["Email de contact"] == "contact@example.com"
         assert descriptions["Email auquel envoyer les notifications"] == "offre@example.com"
