@@ -36,4 +36,12 @@ describe('SearchInput', () => {
 
     expect(input).toHaveValue('')
   })
+
+  it('should not show the clear button when the input is disabled', () => {
+    renderSearchInput({ value: 'test', onChange: () => {}, disabled: true })
+
+    expect(
+      screen.queryByRole('button', { name: 'Effacer' })
+    ).not.toBeInTheDocument()
+  })
 })

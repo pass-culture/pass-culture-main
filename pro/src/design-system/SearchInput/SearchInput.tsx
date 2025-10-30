@@ -34,7 +34,7 @@ export const SearchInput = forwardRef(
           type="search"
           icon={strokeSearchIcon}
           iconButton={
-            isClearButtonVisible
+            isClearButtonVisible && !props.disabled
               ? {
                   icon: fullClearIcon,
                   label: 'Effacer',
