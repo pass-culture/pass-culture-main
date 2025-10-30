@@ -29,10 +29,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferStep } from '../../CollectiveOfferNavigation/CollectiveCreationOfferNavigation'
 import {
@@ -66,14 +63,14 @@ const defaultUseLocationValue = {
 
 const renderCollectiveEditingOfferNavigation = (
   props: CollectiveEditionOfferNavigationProps,
-  options?: RenderWithProvidersOptions
+  features?: string[]
 ) =>
   renderWithProviders(<CollectiveEditionOfferNavigation {...props} />, {
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
       offerer: currentOffererFactory(),
     },
-    ...options,
+    features,
   })
 
 vi.mock('react-router', async () => ({
@@ -415,5 +412,28 @@ describe('CollectiveEditionOfferNavigation', () => {
     })
 
     expect(previewButton).not.toBeInTheDocument()
+  })
+
+  it('should render share link drawer when the FF WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled', async () => {
+    renderCollectiveEditingOfferNavigation(
+      {
+        ...props,
+        isTemplate: true,
+        offer: getCollectiveOfferTemplateFactory({ isTemplate: true }),
+      },
+      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
+    )
+
+    const shareLinkButton = screen.getByRole('button', {
+      name: 'Partager l’offre',
+    })
+
+    expect(shareLinkButton).toBeInTheDocument()
+
+    await userEvent.click(shareLinkButton)
+    const drawerContent = await screen.findByText(
+      'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
+    )
+    expect(drawerContent).toBeInTheDocument()
   })
 })

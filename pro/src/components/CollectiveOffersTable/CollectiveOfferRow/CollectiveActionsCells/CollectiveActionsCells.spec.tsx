@@ -611,4 +611,52 @@ describe('CollectiveActionsCells', () => {
       expect.any(Object)
     )
   })
+
+  it('should render share link drawer when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferTemplateFactory(),
+      },
+      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    await userEvent.click(screen.getByText('Partager l’offre'))
+
+    expect(
+      screen.getByText(
+        'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not render share link drawer when offer is bookable', async () => {
+    renderCollectiveActionsCell(
+      {
+        offer: collectiveOfferBookableFactory(),
+      },
+      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(screen.queryByText('Partager l’offre')).not.toBeInTheDocument()
+  })
+
+  it('should not render share link drawer when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is disabled', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferTemplateFactory(),
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
+
+    expect(screen.queryByText('Partager l’offre')).not.toBeInTheDocument()
+  })
 })
