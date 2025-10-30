@@ -635,7 +635,7 @@ class BoostStocksTest:
 
         last_record = caplog.records.pop()
         assert last_record.message == "Could not fetch movie poster"
-        assert last_record.extra == {"client": "BoostClientAPI", "url": "http://example.com/images/158026.jpg"}
+        assert last_record.extra == {"client": "BoostAPIClient", "url": "http://example.com/images/158026.jpg"}
 
     @pytest.mark.parametrize("ProcessClass", [BoostStocks, BoostExtractTransformLoadProcess])
     def should_link_offer_with_known_visa_to_product(

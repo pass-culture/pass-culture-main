@@ -22,7 +22,7 @@ from pcapi.utils import requests
 from pcapi.utils.date import get_naive_utc_now
 from pcapi.utils.queue import add_to_queue
 
-from . import serializers
+from . import boost_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -54,8 +54,8 @@ class BoostLoginException(BoostAPIException):
 
 
 def get_pcu_pricing_if_exists(
-    showtime_pricing_list: list[serializers.ShowtimePricing],
-) -> serializers.ShowtimePricing | None:
+    showtime_pricing_list: list[boost_serializers.ShowtimePricing],
+) -> boost_serializers.ShowtimePricing | None:
     pcu_pricings = [
         pricing for pricing in showtime_pricing_list if pricing.pricingCode in BOOST_PASS_CULTURE_PRICING_CODES
     ]
@@ -157,7 +157,7 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
     """
 
     @wraps(func)
-    def decorated_func(client: "BoostClientAPI", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    def decorated_func(client: "BoostAPIClient", *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         try:
             return func(client, *args, **kwargs)
         except BoostInvalidTokenException:
@@ -168,7 +168,7 @@ def _retry_if_jwt_token_is_invalid(func: F) -> F:
     return decorated_func  # type: ignore[return-value]
 
 
-class BoostClientAPI(cinema_client.CinemaAPIClient):
+class BoostAPIClient(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,
@@ -210,7 +210,7 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
             )
 
         content = response.json()
-        login_info = parse_obj_as(serializers.LoginBoost, content)
+        login_info = parse_obj_as(boost_serializers.LoginBoost, content)
         token = login_info.token
         if not token:
             raise BoostLoginException("No token received from Boost API")
@@ -302,10 +302,10 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
         barcodes = list(set(barcodes))
         sale_cancel_items = []
         for barcode in barcodes:
-            sale_cancel_item = serializers.SaleCancelItem(code=barcode, refundType=BOOST_PASS_CULTURE_REFUND_TYPE)
+            sale_cancel_item = boost_serializers.SaleCancelItem(code=barcode, refundType=BOOST_PASS_CULTURE_REFUND_TYPE)
             sale_cancel_items.append(sale_cancel_item)
 
-        sale_cancel = serializers.SaleCancel(sales=sale_cancel_items)
+        sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
         self._authenticated_put(
             f"{self.cinema_details.cinemaUrl}api/sale/orderCancel",
             payload=sale_cancel.json(by_alias=True),
@@ -327,8 +327,8 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
             # as a beneficiary cannot book a show if there is no pass Culture pricing
             raise external_bookings_exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=0)
 
-        basket_items = [serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
-        sale_body = serializers.SaleRequest(
+        basket_items = [boost_serializers.BasketItem(idShowtimePricing=pcu_pricing.id, quantity=quantity)]
+        sale_body = boost_serializers.SaleRequest(
             codePayment=BOOST_PASS_CULTURE_CODE_PAYMENT, basketItems=basket_items, idsBeforeSale=None
         )
 
@@ -337,7 +337,7 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
             payload=sale_body.json(by_alias=True),
         )
-        sale_preparation = parse_obj_as(serializers.SalePreparationResponse, sale_preparation_response)
+        sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
 
         # step 2: confirmation
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
@@ -345,7 +345,7 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
             payload=sale_body.json(by_alias=True),
         )
-        sale_confirmation_response = parse_obj_as(serializers.SaleConfirmationResponse, sale_response)
+        sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
             {
@@ -381,7 +381,7 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
         interval_days: int = BOOST_SHOWS_INTERVAL_DAYS,
         per_page: int = 30,  # `per_page` max value seems to be 200
         film: int | None = None,
-    ) -> list[serializers.ShowTime4]:
+    ) -> list[boost_serializers.ShowTime4]:
         start_str = start_date.strftime("%Y-%m-%d")
         end_str = (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d")
         url = f"{self.cinema_details.cinemaUrl}api/showtimes/between/{start_str}/{end_str}"
@@ -399,7 +399,7 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
 
             data = self._authenticated_get(url, params=params)
 
-            collection = parse_obj_as(serializers.ShowTimeCollection, data)
+            collection = parse_obj_as(boost_serializers.ShowTimeCollection, data)
             items.extend(collection.data)
             total_pages = collection.totalPages
             next_page = collection.nextPage
@@ -409,12 +409,12 @@ class BoostClientAPI(cinema_client.CinemaAPIClient):
 
         return items
 
-    def get_showtime(self, showtime_id: int) -> serializers.ShowTime4:
+    def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
-        showtime_details = parse_obj_as(serializers.ShowTimeDetails, data)
+        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, data)
         return showtime_details.data
 
-    def get_cinemas_attributs(self) -> list[serializers.CinemaAttribut]:
+    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
-        attributs = parse_obj_as(serializers.CinemaAttributCollection, data)
+        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, data)
         return attributs.data

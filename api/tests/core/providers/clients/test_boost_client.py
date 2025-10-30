@@ -8,12 +8,12 @@ import pytest
 import time_machine
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.external_bookings.boost.serializers as boost_serializers
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
+import pcapi.core.providers.clients.boost_serializers as boost_serializers
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi import settings
-from pcapi.core.external_bookings.boost import client as boost_client
+from pcapi.core.providers.clients import boost_client
 from pcapi.core.providers.clients import cinema_client
 from pcapi.utils import date
 from pcapi.utils import date as date_utils
@@ -68,7 +68,7 @@ class GenerateJWTTokenTest:
         response_json = {"message": "Login successful", "token": "new-token"}
         requests_mock.post("https://cinema.example.com/api/vendors/login", json=response_json)
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
         token, token_expiration_datetime = boost_api_client._generate_jwt_token()
 
         assert requests_mock.last_request.json() == {
@@ -90,7 +90,7 @@ class GenerateJWTTokenTest:
         response_json = {"code": 400, "message": "Vendor login failed. Wrong password!"}
         requests_mock.post("https://cinema.example.com/api/vendors/login", status_code=400, json=response_json)
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
 
         with pytest.raises(boost_client.BoostAPIException) as exc:
             boost_api_client._generate_jwt_token()
@@ -114,7 +114,7 @@ class AuthenticatedGetTest:
             token="dG90bw==",
         )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
         get_adapter = requests_mock.get("https://cinema.example.com/example?page=1", json={"key": "value"})
         login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login")
 
@@ -131,7 +131,7 @@ class AuthenticatedGetTest:
             tokenExpirationDate=datetime.datetime(2022, 10, 1),
         )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
         response_data = {"key": "value"}
         get_adapter = requests_mock.get("https://cinema.example.com/example", json=response_data)
         login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
@@ -151,7 +151,7 @@ class AuthenticatedGetTest:
             tokenExpirationDate=date_utils.get_naive_utc_now() + datetime.timedelta(hours=10),
         )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
 
         get_adapter = requests_mock.get(
             "https://cinema.example.com/example",
@@ -178,7 +178,7 @@ class AuthenticatedGetTest:
             token="token",
         )
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        boost_api_client = boost_client.BoostClientAPI(cinema_str_id)
+        boost_api_client = boost_client.BoostAPIClient(cinema_str_id)
 
         requests_mock.get(
             "https://cinema.example.com/example",
@@ -210,7 +210,7 @@ class InvalidateJWTTokenTest:
         response_json = {"code": 200, "message": "OK"}
         requests_mock.post("https://cinema.example.com/api/vendors/logout", json=response_json)
 
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=14)
         boost.invalidate_jwt_token()
 
         assert requests_mock.last_request.headers["Authorization"] == "Bearer old-token"
@@ -235,15 +235,15 @@ class GetShowtimesTest:
             f"https://cinema-0.example.com/api/showtimes/between/{start_date.strftime('%Y-%m-%d')}/{end_date}?paymentMethod=external%3Acredit%3Apassculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=14)
 
-        with caplog.at_level(logging.DEBUG, logger="pcapi.core.external_bookings.boost.client"):
+        with caplog.at_level(logging.DEBUG, logger="pcapi.core.providers.clients.boost_client"):
             showtimes = boost.get_showtimes(per_page=2, start_date=start_date, interval_days=10)
 
         assert len(caplog.records) == 2
         assert caplog.records[0].message == "[CINEMA] Call to external API"
         assert caplog.records[0].extra == {
-            "api_client": "BoostClientAPI",
+            "api_client": "BoostAPIClient",
             "method": "GET https://cinema-0.example.com/api/showtimes/between/2025-09-17/2025-09-27",
             "query_params": {
                 "paymentMethod": "external:credit:passculture",
@@ -257,7 +257,7 @@ class GetShowtimesTest:
         }
         assert caplog.records[1].message == "[CINEMA] Call to external API"
         assert caplog.records[1].extra == {
-            "api_client": "BoostClientAPI",
+            "api_client": "BoostAPIClient",
             "method": "GET https://cinema-0.example.com/api/showtimes/between/2025-09-17/2025-09-27",
             "query_params": {
                 "paymentMethod": "external:credit:passculture",
@@ -317,7 +317,7 @@ class GetShowtimesTest:
             "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
             json=fixtures.ShowtimesWithFilmIdAndPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=14)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=14)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
 
         assert requests_mock.request_history[-1].method == "GET"
@@ -370,7 +370,7 @@ class BookTicketTest:
             headers={"Content-Type": "application/json"},
             additional_matcher=lambda request: bool(request.json().get("idsBeforeSale")),
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
         tickets = boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-3].method == "GET"
@@ -429,7 +429,7 @@ class BookTicketTest:
             headers={"Content-Type": "application/json"},
             additional_matcher=lambda request: not request.json().get("idsBeforeSale"),
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
@@ -448,7 +448,7 @@ class BookTicketTest:
 
         requests_mock.get("https://cinema-0.example.com/api/showtimes/36684", json=fixtures_with_missing_pricing)
         post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingNotEnoughSeatsError) as exc:
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
@@ -467,7 +467,7 @@ class BookTicketTest:
             json={"code": 400, "message": "No showtime found"},
         )
         post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
         with pytest.raises(external_bookings_exceptions.ExternalBookingShowDoesNotExistError):
             boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
@@ -485,7 +485,7 @@ class CancelBookingTest:
             json=fixtures.CANCEL_ORDER_SALE_90577,
             headers={"Content-Type": "application/json"},
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id, request_timeout=12)
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
 
         boost.cancel_booking(barcodes=[barcode])
 
@@ -503,7 +503,7 @@ class CancelBookingTest:
             reason="Not found",
             status_code=404,
         )
-        boost = boost_client.BoostClientAPI(cinema_str_id)
+        boost = boost_client.BoostAPIClient(cinema_str_id)
 
         with pytest.raises(boost_client.BoostAPIException) as exception:
             boost.cancel_booking(barcodes=["55555"])
