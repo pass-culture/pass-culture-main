@@ -28,10 +28,11 @@ Job console documentation here: https://www.notion.so/passcultureapp/Documentati
 
 You can start the job from the infrastructure repository with github cli :
 
-gh workflow run on_dispatch_pcapi_console_job.yml \
-  -f ENVIRONMENT=testing \
-  -f BRANCH_NAME={git_branch_name} \
-  -f NAMESPACE={namespace} \
+gh workflow run on_dispatch_pcapi_console_job.yml \\
+  -f ENVIRONMENT=testing \\
+  -f RESOURCES="512Mi/.5" \\
+  -f BRANCH_NAME={git_branch_name} \\
+  -f NAMESPACE={namespace} \\
   -f SCRIPT_ARGUMENTS="";
 
 \"""
