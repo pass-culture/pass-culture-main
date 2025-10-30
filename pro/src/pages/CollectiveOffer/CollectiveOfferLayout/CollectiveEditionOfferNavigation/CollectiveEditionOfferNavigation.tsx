@@ -29,6 +29,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
@@ -64,6 +65,9 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
+  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
+  )
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
@@ -235,6 +239,7 @@ export const CollectiveEditionOfferNavigation = ({
             Créer une offre réservable
           </Button>
         )}
+        {isCollectiveOfferTemplateShareLinkEnabled && <ShareLinkDrawer />}
       </div>
       {canEditOffer && (
         <NavLinkItems
