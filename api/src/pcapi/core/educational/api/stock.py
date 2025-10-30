@@ -68,9 +68,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     return collective_stock
 
 
-def edit_collective_stock(
-    stock: educational_models.CollectiveStock, stock_data: dict
-) -> educational_models.CollectiveStock:
+def edit_collective_stock(stock: educational_models.CollectiveStock, stock_data: dict) -> None:
     date_fields = ("startDatetime", "endDatetime", "bookingLimitDatetime")
     is_editing_dates = any(field in stock_data for field in date_fields)
 
@@ -114,16 +112,14 @@ def edit_collective_stock(
     # same day, booking_limit_datetime is set to start
     should_bypass_check_booking_limit_datetime = False
 
-    if stock.collectiveOffer.venue.departementCode is not None:
-        check_start_with_tz = date.utc_datetime_to_department_timezone(
-            check_start, stock.collectiveOffer.venue.departementCode
-        )
-        check_booking_limit_datetime_with_tz = date.utc_datetime_to_department_timezone(
-            check_booking_limit_datetime, stock.collectiveOffer.venue.departementCode
-        )
-        should_bypass_check_booking_limit_datetime = (
-            check_start_with_tz.date() == check_booking_limit_datetime_with_tz.date()
-        )
+    department_code = stock.collectiveOffer.venue.offererAddress.address.departmentCode
+    check_start_with_tz = date.utc_datetime_to_department_timezone(check_start, department_code)
+    check_booking_limit_datetime_with_tz = date.utc_datetime_to_department_timezone(
+        check_booking_limit_datetime, department_code
+    )
+    should_bypass_check_booking_limit_datetime = (
+        check_start_with_tz.date() == check_booking_limit_datetime_with_tz.date()
+    )
 
     current_booking = stock.get_unique_non_cancelled_booking()
 
@@ -173,12 +169,6 @@ def edit_collective_stock(
             list(stock_data.keys()),
         )
     )
-
-    return stock
-
-
-def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
-    return educational_repository.get_collective_stock(collective_stock_id)
 
 
 def _extract_updatable_fields_from_stock_data(

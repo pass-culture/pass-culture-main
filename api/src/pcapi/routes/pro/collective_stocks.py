@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import repository
 from pcapi.core.educational.api import stock as educational_api_stock
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -66,7 +67,7 @@ def create_collective_stock(
 def edit_collective_stock(
     collective_stock_id: int, body: collective_stock_serialize.CollectiveStockEditionBodyModel
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
-    collective_stock = educational_api_stock.get_collective_stock(collective_stock_id)
+    collective_stock = repository.get_collective_stock(collective_stock_id)
     if collective_stock is None:
         raise ApiErrors({"code": "COLLECTIVE_STOCK_NOT_FOUND"}, status_code=404)
 
@@ -77,10 +78,7 @@ def edit_collective_stock(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        collective_stock = educational_api_stock.edit_collective_stock(
-            collective_stock,
-            body.dict(exclude_unset=True),
-        )
+        educational_api_stock.edit_collective_stock(stock=collective_stock, stock_data=body.dict(exclude_unset=True))
         return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
     except educational_exceptions.CollectiveOfferIsPublicApi:
         raise ApiErrors({"global": ["Les stocks créés par l'api publique ne sont pas editables."]}, 403)

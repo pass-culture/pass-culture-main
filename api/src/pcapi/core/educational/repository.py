@@ -199,16 +199,10 @@ def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBookin
             sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
                 sa_orm.load_only(
-                    # TODO(OA) - remove the address fields when the virtual venues are migrated
-                    offerers_models.Venue.city,
-                    offerers_models.Venue.postalCode,
-                    offerers_models.Venue.latitude,
-                    offerers_models.Venue.longitude,
-                    offerers_models.Venue.timezone,
+                    # TODO(OA) - departementCode is still used in mails -> get_event_datetime
                     offerers_models.Venue.departementCode,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
-                    offerers_models.Venue._street,
                     offerers_models.Venue.offererAddressId,
                     offerers_models.Venue.siret,
                 ),
@@ -349,11 +343,7 @@ def get_paginated_collective_bookings_for_educational_year(
         .options(
             # ... to fetch its venue...
             sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
-                sa_orm.load_only(
-                    offerers_models.Venue.id,
-                    offerers_models.Venue.name,
-                    offerers_models.Venue.timezone,  # TODO(OA) - remove this when the virtual venues are migrated
-                ),
+                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.name),
                 # ... to fetch its offerer...
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.name),
                 # ... and its address
@@ -470,7 +460,9 @@ def get_collective_stock(collective_stock_id: int) -> models.CollectiveStock | N
             sa_orm.joinedload(models.CollectiveStock.collectiveOffer).options(
                 # needed to avoid a query when we call stock.collectiveOffer.collectiveStock
                 sa_orm.contains_eager(models.CollectiveOffer.collectiveStock),
-                sa_orm.joinedload(models.CollectiveOffer.venue),
+                sa_orm.joinedload(models.CollectiveOffer.venue)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address),
             ),
             sa_orm.joinedload(models.CollectiveStock.collectiveBookings),
         )
@@ -510,18 +502,22 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
         query = filter_collective_offers_by_statuses(query, filters.statuses)
 
     if filters.period_beginning_date is not None or filters.period_ending_date is not None:
+        venue_oa = sa_orm.aliased(offerers_models.OffererAddress)
+        venue_address = sa_orm.aliased(geography_models.Address)
+
         subquery = (
             db.session.query(models.CollectiveStock)
             .with_entities(models.CollectiveStock.collectiveOfferId)
             .distinct(models.CollectiveStock.collectiveOfferId)
-            .join(models.CollectiveOffer)
-            .join(offerers_models.Venue)
+            .join(models.CollectiveStock.collectiveOffer)
+            .join(models.CollectiveOffer.venue)
+            .join(venue_oa, offerers_models.Venue.offererAddress)
+            .join(venue_address, venue_oa.address)
         )
         if filters.period_beginning_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
-                    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
-                    offerers_models.Venue.timezone,
+                    venue_address.timezone,
                     sa.func.timezone("UTC", models.CollectiveStock.startDatetime),
                 )
                 >= filters.period_beginning_date
@@ -529,8 +525,7 @@ def get_collective_offers_by_filters(filters: schemas.CollectiveOffersFilter) ->
         if filters.period_ending_date is not None:
             subquery = subquery.filter(
                 sa.func.timezone(
-                    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
-                    offerers_models.Venue.timezone,
+                    venue_address.timezone,
                     sa.func.timezone("UTC", models.CollectiveStock.startDatetime),
                 )
                 <= datetime.combine(filters.period_ending_date, time.max),
