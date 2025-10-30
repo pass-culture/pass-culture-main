@@ -73,6 +73,12 @@ describe('AppRouterGuard', () => {
     expect(screen.getByText('/onboarding')).toBeInTheDocument()
   })
 
+  it('should not redirect if user is not onboarded and tries to create an offerer', () => {
+    renderGuard('no-onboarding', '/inscription/structure/recherche')
+
+    expect(screen.queryByText('/onboarding')).not.toBeInTheDocument()
+  })
+
   it('should redirect to home if user is onboarded and access onboarding pages', () => {
     renderGuard('full', '/onboarding')
 

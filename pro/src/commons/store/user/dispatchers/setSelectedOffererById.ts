@@ -12,11 +12,16 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 
 import { updateCurrentOfferer, updateOffererNames } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
-import { setSelectedVenue, setVenues, updateUserAccess } from '../reducer'
+import {
+  setSelectedVenue,
+  setVenues,
+  type UserAccess,
+  updateUserAccess,
+} from '../reducer'
 import { ensureVenues } from '../selectors'
 
 export const setCurrentOffererById = createAsyncThunk<
-  string | null,
+  UserAccess | null,
   { nextCurrentOffererId: number | string; shouldRefetch?: boolean },
   AppThunkApiConfig
 >(

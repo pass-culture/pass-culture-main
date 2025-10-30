@@ -127,6 +127,8 @@ export const Validation = (): JSX.Element | undefined => {
       // if the new access is full, we redirect to the home page
       if (userAccess === newAccess && newAccess === 'full') {
         navigate('/accueil')
+      } else if (newAccess === 'no-onboarding') {
+        navigate('/onboarding')
       }
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
