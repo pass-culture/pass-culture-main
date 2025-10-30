@@ -87,14 +87,12 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
     if not row:
         raise resource_not_found_error()
     ids_of_venues_with_offers = offerers_repository.get_ids_of_venues_with_offers([row.Offerer.id])
-    has_digital_venue_at_least_one_offer = offerers_repository.has_digital_venue_with_at_least_one_offer(row.Offerer.id)
     venues_with_non_free_offers_without_bank_accounts = (
         offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(row.Offerer.id)
     )
     return offerers_serialize.GetOffererResponseModel.build(
         row,
         ids_of_venues_with_offers,
-        has_digital_venue_at_least_one_offer,
         venues_with_non_free_offers_without_bank_accounts,
     )
 

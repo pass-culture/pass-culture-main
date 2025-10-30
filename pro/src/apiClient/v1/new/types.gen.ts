@@ -2961,10 +2961,6 @@ export type GetOffererResponseModel = {
      */
     hasBankAccountWithPendingCorrections: boolean;
     /**
-     * Hasdigitalvenueatleastoneoffer
-     */
-    hasDigitalVenueAtLeastOneOffer: boolean;
-    /**
      * Hasnonfreeoffer
      */
     hasNonFreeOffer: boolean;

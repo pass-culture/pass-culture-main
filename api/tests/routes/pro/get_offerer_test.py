@@ -29,7 +29,6 @@ class GetOffererTest:
     num_queries_without_venue += 1  # select offerer
     num_queries_without_venue += 1  # + selectinload venues + google_places_info
     num_queries_without_venue += 1  # select venue.id with non draft offers
-    num_queries_without_venue += 1  # select virtual venue with one offer‡
     num_queries_without_venue += 1  # select venues with offer and without bank account
 
     num_queries = num_queries_without_venue
@@ -70,7 +69,6 @@ class GetOffererTest:
             "hasActiveOffer": False,
             "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
-            "hasDigitalVenueAtLeastOneOffer": False,
             "hasNonFreeOffer": False,
             "hasPartnerPage": False,
             "hasPendingBankAccount": False,
