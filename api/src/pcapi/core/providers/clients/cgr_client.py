@@ -23,7 +23,7 @@ from pcapi.utils import requests
 from pcapi.utils.crypto import decrypt
 from pcapi.utils.queue import add_to_queue
 
-from . import serializers as cgr_serializers
+from . import cgr_serializers
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ def _get_cgr_service_proxy(cinema_url: str, request_timeout: int | None = None) 
     return service
 
 
-class CGRClientAPI(cinema_client.CinemaAPIClient):
+class CGRAPIClient(cinema_client.CinemaAPIClient):
     def __init__(
         self,
         cinema_id: str,

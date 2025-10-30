@@ -3,13 +3,13 @@ import json
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.external_bookings.cgr.client as cgr_client
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.clients.cgr_client as cgr_client
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core.external_bookings.cgr.client import CGRAPIException
 from pcapi.core.external_bookings.exceptions import ExternalBookingNotEnoughSeatsError
 from pcapi.core.external_bookings.exceptions import ExternalBookingShowDoesNotExistError
+from pcapi.core.providers.clients.cgr_client import CGRAPIException
 from pcapi.utils.crypto import encrypt
 
 from tests.connectors.cgr import soap_definitions
@@ -56,7 +56,7 @@ class GetSeancesPassCulture:
         requests_mock.post("http://example.com/web_service", text=response)
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
         cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         with pytest.raises(CGRAPIException) as exc:
             cgr._get_seances_pass_culture()
@@ -74,7 +74,7 @@ class GetSeancesPassCulture:
             password=encrypt("theRealPassword"),
         )
         cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         cgr._get_seances_pass_culture()
 
@@ -91,7 +91,7 @@ class GetFilmsTest:
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
         cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         films = cgr.get_films()
 
@@ -111,7 +111,7 @@ class GetFilmShowtimesStocksTest:
         requests_mock.post("http://example.com/web_service", text=fixtures.cgr_response_template(response_body))
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
         cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         data = cgr.get_film_showtimes_stocks(138473)
 
@@ -131,7 +131,7 @@ class GetNumCineTest:
         )
         cgr_cinema_details = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/web_service")
         cinema_id = cgr_cinema_details.cinemaProviderPivot.idAtProvider
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         num_cine = cgr.get_num_cine()
 
@@ -160,7 +160,7 @@ class BookTicketTest:
             "http://cgr-cinema-0.example.com/web_service",
             text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE),
         )
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -201,7 +201,7 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.ONE_TICKET_RESPONSE_WITHOUT_PLACEMENT),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -236,7 +236,7 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.TWO_TICKETS_RESPONSE),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -274,7 +274,7 @@ class BookTicketTest:
             text=fixtures.cgr_reservation_response_template(fixtures.TWO_TICKETS_RESPONSE_WITHOUT_PLACEMENT),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
         tickets = cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
 
         assert requests_mock.request_history[-1].method == "POST"
@@ -323,7 +323,7 @@ class BookTicketTest:
             ),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         with pytest.raises(ExternalBookingNotEnoughSeatsError) as exc:
             cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
@@ -358,7 +358,7 @@ class BookTicketTest:
             ),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id, request_timeout=12)
 
         with pytest.raises(ExternalBookingShowDoesNotExistError):
             cgr.book_ticket(show_id=177182, booking=booking, beneficiary=beneficiary)
@@ -377,7 +377,7 @@ class CancelBookingTest:
             text=fixtures.cgr_annulation_response_template(),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id, request_timeout=12)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_str_id, request_timeout=12)
 
         cgr.cancel_booking(barcodes=["CINE-123456789"])
 
@@ -399,7 +399,7 @@ class CancelBookingTest:
             ),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id)
         with pytest.raises(CGRAPIException) as exception:
             cgr.cancel_booking(barcodes=["CINE-987654321"])
 
@@ -422,7 +422,7 @@ class CancelBookingTest:
             ),
         )
 
-        cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
+        cgr = cgr_client.CGRAPIClient(cinema_id=cinema_id)
 
         # should not raise
         cgr.cancel_booking(barcodes=["CINE-987654321"])

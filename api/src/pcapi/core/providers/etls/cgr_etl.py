@@ -4,9 +4,9 @@ import logging
 import typing
 
 from pcapi import settings
-from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
-from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.providers import models
+from pcapi.core.providers.clients import cgr_serializers
+from pcapi.core.providers.clients.cgr_client import CGRAPIClient
 from pcapi.utils import date as date_utils
 
 from .cinema_etl_template import CinemaETLProcessTemplate
@@ -22,7 +22,7 @@ class CGRExtractResult(typing.TypedDict):
     films: list[cgr_serializers.Film]
 
 
-class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRClientAPI, CGRExtractResult]):
+class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRExtractResult]):
     """
     Integration to import products, offers, stocks & price_categories for a `Venue`
     linked to `CGR`.
@@ -35,7 +35,7 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRClientAPI, CGRE
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         super().__init__(
             venue_provider=venue_provider,
-            api_client=CGRClientAPI(
+            api_client=CGRAPIClient(
                 cinema_id=venue_provider.venueIdAtOfferProvider,
                 request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
             ),

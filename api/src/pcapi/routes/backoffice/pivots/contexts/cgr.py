@@ -5,10 +5,10 @@ from flask import flash
 from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
-from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers.clients.cgr_client import CGRAPIClient
 from pcapi.models import db
 from pcapi.utils.crypto import decrypt
 from pcapi.utils.crypto import encrypt
@@ -115,7 +115,7 @@ class CGRContext(PivotContext):
     def check_if_api_call_is_ok(cls, pivot: providers_models.CGRCinemaDetails) -> int | None:
         try:
             assert pivot.cinemaProviderPivot  # to make mypy happy
-            client = CGRClientAPI(pivot.cinemaProviderPivot.idAtProvider, cinema_details=pivot)
+            client = CGRAPIClient(pivot.cinemaProviderPivot.idAtProvider, cinema_details=pivot)
             num_cine = client.get_num_cine()
             flash("Connexion à l'API CGR OK.", "success")
             return num_cine
