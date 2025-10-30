@@ -13,10 +13,10 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.utils.date as utils_date
 from pcapi import settings
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
-from pcapi.core.external_bookings.cds.serializers import MediaCDS
-from pcapi.core.external_bookings.cds.serializers import ShowCDS
 from pcapi.core.offerers.models import Venue
+from pcapi.core.providers.clients.cds_client import CineDigitalServiceAPIClient
+from pcapi.core.providers.clients.cds_serializers import MediaCDS
+from pcapi.core.providers.clients.cds_serializers import ShowCDS
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
@@ -52,7 +52,7 @@ class CDSStocks(LocalProvider):
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
-        self.client_cds = CineDigitalServiceAPI(
+        self.client_cds = CineDigitalServiceAPIClient(
             cinema_id=self.cinema_id,
             account_id=self.accountId,
             cinema_api_token=self.apiToken,
