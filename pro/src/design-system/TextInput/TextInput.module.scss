@@ -26,6 +26,7 @@ $icon-dimension: rem.torem(24px);
 
   &:focus-visible {
     border-color: var(--color-border-focused);
+    border-width: rem.torem(2px);
   }
 
   &:hover {
