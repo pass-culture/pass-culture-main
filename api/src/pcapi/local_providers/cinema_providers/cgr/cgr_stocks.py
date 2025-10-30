@@ -12,9 +12,9 @@ import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
 from pcapi import settings
 from pcapi.core.categories import subcategories
-from pcapi.core.external_bookings.cgr import serializers as cgr_serializers
-from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.offers import api as offers_api
+from pcapi.core.providers.clients import cgr_serializers
+from pcapi.core.providers.clients.cgr_client import CGRAPIClient
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
@@ -42,7 +42,7 @@ class CGRStocks(LocalProvider):
         self.venue = venue_provider.venue
         assert venue_provider.venueIdAtOfferProvider  # to make mypy happy
         self.cinema_id = venue_provider.venueIdAtOfferProvider
-        self.cgr_client_api = CGRClientAPI(
+        self.cgr_client_api = CGRAPIClient(
             self.cinema_id,
             request_timeout=settings.EXTERNAL_BOOKINGS_TIMEOUT_IN_SECONDS,
         )
