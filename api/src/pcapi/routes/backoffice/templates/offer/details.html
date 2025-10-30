@@ -152,6 +152,12 @@
           {% call description_detail_horizontal("Description") %}
             {{ offer.description | empty_string_if_null | nl2br }}
           {% endcall %}
+          {% if offer.metaData.videoUrl %}
+            {% call description_detail_horizontal("Vidéo") %}
+              <a href="{{ offer.metaData.videoUrl }}"
+                 target="_blank">{{ offer.metaData.videoUrl }}</a>
+            {% endcall %}
+          {% endif %}
           <h5>Informations pratiques</h5>
           {% call description_detail_horizontal("Informations de retrait") %}
             {{ offer.withdrawalDetails | empty_string_if_null | nl2br }}
