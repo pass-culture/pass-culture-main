@@ -35,6 +35,7 @@ import {
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
@@ -83,6 +84,10 @@ export const CollectiveActionsCells = ({
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
+  )
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
@@ -269,6 +274,14 @@ export const CollectiveActionsCells = ({
     CollectiveOfferAllowedAction.CAN_CANCEL
   )
 
+  const shouldShowSeparator =
+    canDuplicateOffer ||
+    canCreateBookableOffer ||
+    canEditOffer ||
+    canPublishOffer ||
+    canHideOffer ||
+    isBookingCancellable
+
   const hideOrPublishOffer = async () => {
     const { id } = offer as CollectiveOfferTemplateResponseModel
 
@@ -392,9 +405,11 @@ export const CollectiveActionsCells = ({
             )}
             {canArchiveOffer && (
               <>
-                <DropdownMenu.Separator
-                  className={cn(styles['separator'], styles['tablet-only'])}
-                />
+                {shouldShowSeparator && (
+                  <DropdownMenu.Separator
+                    className={cn(styles['separator'], styles['tablet-only'])}
+                  />
+                )}
                 <DropdownMenu.Item
                   className={cn(styles['menu-item'])}
                   onSelect={() => setIsArchivedModalOpen(true)}
@@ -411,6 +426,12 @@ export const CollectiveActionsCells = ({
                 </DropdownMenu.Item>
               </>
             )}
+            {!isCollectiveOfferBookable(offer) &&
+              isCollectiveOfferTemplateShareLinkEnabled && (
+                <DropdownMenu.Label className={cn(styles['menu-item'])}>
+                  <ShareLinkDrawer />
+                </DropdownMenu.Label>
+              )}
           </DropdownMenuWrapper>
         )}
         <DuplicateOfferDialog
