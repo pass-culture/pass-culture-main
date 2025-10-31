@@ -6,7 +6,7 @@ describe('Cookie management with no login', () => {
   })
 
   it('The cookie banner should remain displayed when opening a new page', () => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
+    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 

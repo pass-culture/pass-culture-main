@@ -6,10 +6,23 @@ import {
 import {
   expectOffersOrBookingsAreFoundForNewTable,
   interceptSearch5Adresses,
-  logInAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create individual offers new flow', { testIsolation: false }, () => {
+describe('Create individual offers new flow', () => {
+  let login: string
+
+  before(() => {
+    // cy.wrap(Cypress.session.clearAllSavedSessions())
+    cy.visit('/connexion')
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
+      (response) => {
+        login = response.body.user.email
+      }
+    )
+  })
   beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
@@ -31,22 +44,15 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
     )
     interceptSearch5Adresses()
 
-    cy.visit('/connexion')
-
-    cy.sandboxCall(
-      'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
-      (response) => {
-        logInAndGoToPage(
-          response.body.user.email,
-          '/offre/individuelle/creation/description'
-        )
-      }
+    sessionLogInAndGoToPage(
+      'create individual offer new flow',
+      login,
+      '/offre/individuelle/creation/description'
     )
   })
 
   after(() => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
+    // cy.wrap(Cypress.session.clearAllSavedSessions())
   })
 
   it('I should be able to create an individual show offer', () => {
@@ -334,9 +340,6 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
       responseTimeout: 60000 * 2,
     })
 
-    //  CONFIRMATION STEP
-    cy.findByRole('button', { name: 'Plus tard' }).click()
-
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.url().should('contain', '/offres')
@@ -356,6 +359,7 @@ describe('Create individual offers new flow', { testIsolation: false }, () => {
         '42',
         'publiée',
       ],
+      [],
     ]
 
     expectOffersOrBookingsAreFoundForNewTable(expectedNewResults)
