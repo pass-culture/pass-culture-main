@@ -1392,7 +1392,6 @@ def add_criteria_to_offers(
     ean: str | None = None,
     visa: str | None = None,
     allocineId: int | None = None,
-    include_unlinked_offers: bool = False,
 ) -> bool:
     provided_identifiers_count = sum(1 for identifier in [ean, visa, allocineId] if identifier is not None)
     if provided_identifiers_count != 1 or not criterion_ids:
@@ -1419,18 +1418,17 @@ def add_criteria_to_offers(
         )
         offer_ids_to_tag.update(offer_id for (offer_id,) in linked_offer_ids_query.all())
 
-    if include_unlinked_offers:
-        unlinked_offer_query = db.session.query(models.Offer.id).filter(
-            models.Offer.productId.is_(None), models.Offer.isActive
-        )
+    unlinked_offer_query = db.session.query(models.Offer.id).filter(
+        models.Offer.productId.is_(None), models.Offer.isActive
+    )
 
-        if ean:
-            unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
-            offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
-        # The allocineId data exists only for products. We need to find offers that have the visa of this product.
-        elif (allocineId and product and product.extraData and product.extraData.get("visa")) or visa:
-            unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
-            offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
+    if ean:
+        unlinked_offer_query = unlinked_offer_query.filter(models.Offer.ean == ean)
+        offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
+    # The allocineId data exists only for products. We need to find offers that have the visa of this product.
+    elif (allocineId and product and product.extraData and product.extraData.get("visa")) or visa:
+        unlinked_offer_query = unlinked_offer_query.filter(models.Offer._extraData["visa"].astext == visa)
+        offer_ids_to_tag.update(offer_id for (offer_id,) in unlinked_offer_query.all())
 
     if not offer_ids_to_tag:
         return False

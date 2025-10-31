@@ -165,10 +165,10 @@ class ListTagsTest(GetEndpointHelper):
     def test_search_list_tags(self, authenticated_client, q, expected_nb_results, expected_results_key):
         tags = {
             "tag1": criteria_factories.CriterionFactory(
-                description="tag1 description", startDateTime=date_utils.get_naive_utc_now()
+                name="tag-1", description="tag1 description", startDateTime=date_utils.get_naive_utc_now()
             ),
             "tag2": criteria_factories.CriterionFactory(
-                description="tag2 description", startDateTime=date_utils.get_naive_utc_now()
+                name="tag-2", description="tag2 description", startDateTime=date_utils.get_naive_utc_now()
             ),
         }
 

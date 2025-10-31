@@ -2934,7 +2934,6 @@ class AddCriterionToOffersTest:
     def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
         ean = "1234567899999"
-        factories.OfferFactory(ean="1234567899999")
         criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When

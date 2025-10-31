@@ -498,14 +498,12 @@ def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
 
     identifier_type = product.identifierType
     if identifier_type == offers_models.ProductIdentifierType.EAN:
-        success = offers_api.add_criteria_to_offers(form.criteria.data, ean=product.ean, include_unlinked_offers=True)
+        success = offers_api.add_criteria_to_offers(form.criteria.data, ean=product.ean)
     # The allocineId data exists only for products. We need to find offers that have the visa of this product.
     elif (
         identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
     ) or identifier_type == offers_models.ProductIdentifierType.VISA:
-        success = offers_api.add_criteria_to_offers(
-            form.criteria.data, visa=product.extraData["visa"], include_unlinked_offers=True
-        )
+        success = offers_api.add_criteria_to_offers(form.criteria.data, visa=product.extraData["visa"])
 
     if success:
         flash("Les offres du produit ont été taguées", "success")
