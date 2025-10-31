@@ -15,7 +15,7 @@ export const ActivationCodeCallout = () => (
     ]}
     variant={CalloutVariant.INFO}
   >
-    Pour ajouter des codes d’activation, veuillez passer par le bouton et
-    choisir l’option correspondante.
+    Vous pouvez, sur cette page, ajouter des codes d’activation si vous le
+    souhaitez.
   </Callout>
 )
