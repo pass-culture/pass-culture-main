@@ -1,0 +1,60 @@
+name: "Deploy PCAPI To new Infra"
+description: "Deploy the Pass Culture API to Kubernetes"
+
+inputs:
+  environment:
+    type: string
+    required: true
+  app_version:
+    type: string
+    required: true
+  location:
+    type: string
+    required: true
+    default: europe-west9
+  cluster_name:
+    type: string
+    required: false
+  gcp_project_id:
+    type: string
+    required: false
+  GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+    required: true
+  GCP_EHP_SERVICE_ACCOUNT:
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: "Install kubectl"
+      uses: azure/setup-kubectl@v4
+
+    - name: "Setup ArgoWF cli"
+      run: |
+        curl -sSL -o argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/v3.6.5/argo-linux-amd64.gz
+        gunzip "argo-linux-amd64.gz"
+        sudo install -m 555 argo-linux-amd64 /usr/local/bin/argo
+        rm argo-linux-amd64
+
+    - name: "OpenID Connect Authentication"
+      uses: "google-github-actions/auth@v3"
+      with:
+        project_id: ${{ inputs.gcp_project_id }}
+        workload_identity_provider: ${{ inputs.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ inputs.GCP_EHP_SERVICE_ACCOUNT }}
+
+    - name: Authenticate to GKE cluster
+      uses: google-github-actions/get-gke-credentials@v3
+      with:
+        cluster_name: ${{ inputs.cluster_name }}
+        project_id: ${{ inputs.gcp_project_id }}
+        location: ${{ inputs.location }}
+        namespace: "infra-cd-tst"
+        use_dns_based_endpoint: true
+
+    - name: "🔀 Switch to ArgoCD namespace and Run Workflow 🚀"
+      run: |
+        template="wfw-pcapi-full-deploy-dhvjh"
+        argo submit --from wftmpl/${template} \
+          --log --wait \
+          -p environment=${{ inputs.environment }}
+          -p version=${{ inputs.app_version }}
