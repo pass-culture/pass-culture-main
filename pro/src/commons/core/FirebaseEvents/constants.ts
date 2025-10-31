@@ -135,7 +135,7 @@ export const OnboardingDidacticEvents = {
 }
 
 export enum HighlightEvents {
-  HAS_CLICKED_DISCOVER_HIGHLIGHT = 'HAsClickedDiscoverHighlight',
+  HAS_CLICKED_DISCOVER_HIGHLIGHT = 'hasClickedDiscoverHighlight',
   HAS_CLICKED_MORE_INFO_HIGHLIGHT = 'hasClickedMoreInfoHighlight',
   HAS_CLICKED_CALENDAR_HIGHLIGHT = 'hasClickedCalendarHighlight',
   HAS_CLICKED_ALL_OFFER_HIGHLIGHT = 'hasClickedAllOfferHighlight',
