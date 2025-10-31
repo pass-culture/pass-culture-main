@@ -20,7 +20,7 @@ class OfferCommandsTest:
     @pytest.mark.features(ENABLE_OFFERS_AUTO_CLEANUP=False)
     @pytest.mark.usefixtures("clean_database")
     def test_feature_flag_stops_deletion(self, app):
-        a_year_ago = datetime.date.today() - timedelta(days=366)
+        a_year_ago = datetime.datetime.now(datetime.UTC) - timedelta(days=366)
         offer_id = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago).id
 
         run_command(app, "delete_unbookable_unbooked_old_offers", "0", f"{offer_id * 2}")
@@ -30,7 +30,7 @@ class OfferCommandsTest:
     @pytest.mark.features(ENABLE_OFFERS_AUTO_CLEANUP=True)
     @pytest.mark.usefixtures("clean_database")
     def test_command_deletes_unbookable_unbooked_old_offers(self, app):
-        a_year_ago = datetime.date.today() - timedelta(days=366)
+        a_year_ago = datetime.datetime.now(datetime.UTC) - timedelta(days=366)
         offer = offers_factories.OfferFactory(dateCreated=a_year_ago, dateUpdated=a_year_ago)
         offer_id = offer.id
 
@@ -58,7 +58,7 @@ class OfferCommandsTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.usefixtures("clean_database")
     def test_reindex_recently_published_offers_command(self, mock_reindex_offers, app):
-        offer = offers_factories.OfferFactory(publicationDatetime=datetime.date.today())
+        offer = offers_factories.OfferFactory(publicationDatetime=datetime.datetime.now(datetime.UTC))
         user = users_factories.BeneficiaryFactory()
         reminders_factories.OfferReminderFactory(user=user, offer=offer)
 
@@ -69,7 +69,7 @@ class OfferCommandsTest:
     @mock.patch("pcapi.core.reminders.external.reminders_notifications.send_users_reminders_for_offer")
     @pytest.mark.usefixtures("clean_database")
     def test_future_offer_command(self, mock_notify_users, app):
-        offer = offers_factories.OfferFactory(bookingAllowedDatetime=datetime.date.today())
+        offer = offers_factories.OfferFactory(bookingAllowedDatetime=datetime.datetime.now(datetime.UTC))
         user = users_factories.BeneficiaryFactory()
         reminders_factories.OfferReminderFactory(user=user, offer=offer)
 

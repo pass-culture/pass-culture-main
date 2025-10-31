@@ -17,10 +17,10 @@ def _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates(cls: typ
     if not stock or not stock.booking_limit_datetime:
         return values
 
-    if publication_datetime and stock.booking_limit_datetime < publication_datetime:
+    if publication_datetime and stock.booking_limit_datetime < publication_datetime.replace(tzinfo=None):
         raise ValueError("`stock.bookingLimitDatetime` must be after `publicationDatetime`")
 
-    if booking_allowed_datetime and stock.booking_limit_datetime < booking_allowed_datetime:
+    if booking_allowed_datetime and stock.booking_limit_datetime < booking_allowed_datetime.replace(tzinfo=None):
         raise ValueError("`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`")
 
     return values
@@ -87,11 +87,11 @@ class ProductOfferByEanCreation(routes_serialization.ConfiguredBaseModel):
     )
     booking_allowed_datetime: datetime.datetime | None = fields.OFFER_BOOKING_ALLOWED_DATETIME
 
-    _validate_publicationDatetime = serialization_utils.validate_datetime(
+    _validate_publicationDatetime = serialization_utils.validate_timezoned_datetime(
         "publication_datetime",
         always=True,  # to convert default literal `"now"` into an actual datetime
     )
-    _validate_bookingAllowedDatetime = serialization_utils.validate_datetime("booking_allowed_datetime")
+    _validate_bookingAllowedDatetime = serialization_utils.validate_timezoned_datetime("booking_allowed_datetime")
     _validate_stock_booking_limit_datetime = pydantic_v1.root_validator(skip_on_failure=True, allow_reuse=True)(
         _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates
     )
