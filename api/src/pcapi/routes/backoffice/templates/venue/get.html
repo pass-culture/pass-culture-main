@@ -228,8 +228,7 @@
                           <div class="modal-content">
                             <form action="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
                                   name="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
-                                  method="POST"
-                                  data-turbo="false">
+                                  method="POST">
                               <div class="modal-header"
                                    id="delete-venue-provider-modal-label">
                                 <h5 class="modal-title">
@@ -319,8 +318,7 @@
                       <div class="modal-content">
                         <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
                               name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
-                              method="post"
-                              data-turbo="false">
+                              method="post">
                           {{ zendesk_sell_synchronisation_form.csrf_token }}
                           <div class="modal-header"
                                id="{{ sync_zsell_aria_described_by_id }}">

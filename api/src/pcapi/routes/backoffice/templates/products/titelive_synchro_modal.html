@@ -4,7 +4,6 @@
         name="{{ dst | action_to_name }}"
         method="{% if form.method %}form.method{% else %}post{% endif %}"
         target="_top"
-        data-turbo="{{ data_turbo or 'false' }}"
         class="modal-content">
     {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
   {% endif %}
