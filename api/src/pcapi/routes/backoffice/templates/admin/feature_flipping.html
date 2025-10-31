@@ -64,8 +64,7 @@
                       <div class="modal-content">
                         <form action="{{ url_for('.disable_feature_flag', feature_flag_id=feature_flag.id) if feature_flag.isActive else url_for(".enable_feature_flag", feature_flag_id=feature_flag.id) }}"
                               name="{{ url_for('.disable_feature_flag', feature_flag_id=feature_flag.id) if feature_flag.isActive else url_for(".enable_feature_flag", feature_flag_id=feature_flag.id) | action_to_name }}"
-                              method="post"
-                              data-turbo="false">
+                              method="post">
                           {{ csrf_token }}
                           <div class="modal-header"
                                id="{{ toggle_feature_flag_modal_label_id }}">

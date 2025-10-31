@@ -83,8 +83,7 @@
       <form action="{{ url_for('backoffice_web.fraud.blacklist_domain_name') }}"
             name="{{ url_for('backoffice_web.fraud.blacklist_domain_name') | action_to_name }}"
             method="post"
-            class="my-4"
-            data-turbo="true">
+            class="my-4">
         <input type="hidden"
                id="{{ random_hash() }}"
                name="domain"

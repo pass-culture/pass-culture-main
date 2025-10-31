@@ -1,4 +1,4 @@
-{% from "components/turbo/spinner.html" import build_loading_spinner %}
+{% from "components/dynamic/spinner.html" import build_loading_spinner %}
 {% macro build_dynamic_modal(url, div_id, modal_size="lg", method="get", form=None, ajax_submit=True) %}
   <div class="modal fade modal-{{ modal_size }}"
        id="{{ div_id }}"

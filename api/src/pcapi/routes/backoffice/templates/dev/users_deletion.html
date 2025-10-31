@@ -5,8 +5,7 @@
     <div class="col">
       <form action="{{ url_for('backoffice_web.dev.delete_user') }}"
             name="{{ url_for('backoffice_web.dev.delete_user') | action_to_name }}"
-            method="post"
-            data-turbo="false">
+            method="post">
         {{ form.csrf_token }}
         <div class="col-8 row">
           <div class="col-8">

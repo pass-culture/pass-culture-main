@@ -1384,7 +1384,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
         data["siren_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
 
     # Only data from INSEE is retrieved in this endpoint.
-    # Then other endpoints below will be called in turbo-frames, so that we have one API call per endpoint.
+    # Then other endpoints below will be called asynchronously, so that we have one API call per endpoint.
     # This ensures that a long API call does not block other information or makes the current endpoint timeout.
 
     # I don't have a list but corporate taxes do not apply at least to "Entreprise Individuelle" and public structures

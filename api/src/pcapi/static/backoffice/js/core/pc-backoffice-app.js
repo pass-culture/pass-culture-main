@@ -54,7 +54,6 @@ class PcBackofficeApp {
         this.addons[AddOn.ID] = addon
       }
     })
-    PcUtils.addLoadEvent(this.bindTurboFrameEvents)
     PcUtils.addLoadEvent(this.initialize)
     PcUtils.addLoadEvent(this.bindEvents)
   }
@@ -88,28 +87,6 @@ class PcBackofficeApp {
   }
 
   /**
-   * This method is automatically called on window `load` event and will bind turbo frame events.
-   * We have 3 turbo events binding at the moments:
-   * 1. `turbo:before-frame-render`: trigger `app.unbindEvents` on XHR response right before frame render,
-   * 1. `turbo:frame-load`: trigger `app.bindEvents` on XHR response right after frame load,
-   * 1. `turbo:before-visit`: trigger `app.unbindEvents` on XHR before visit navigation,
-   * 1. `turbo:load`: trigger `app.initialize` and `app.bindEvents` on XHR visit navigation load,
-   * 1. `turbo:frame-missing`: trigger `app.onTurboFrameMissing` on XHR response if the `id` of the turbo frame doesn't exist.
-   *
-   * Read more: https://turbo.hotwired.dev/reference/events
-   */
-  bindTurboFrameEvents = () => {
-    addEventListener('turbo:before-frame-render', this.unbindEvents)
-    addEventListener('turbo:frame-load', this.bindEvents)
-    addEventListener('turbo:before-visit', this.unbindEvents)
-    addEventListener('turbo:load', () => {
-      this.initialize()
-      this.bindEvents()
-    })
-    addEventListener("turbo:frame-missing", this.onTurboFrameMissing)
-  }
-
-  /**
    * This method is automatically called on window `load` event and will run each addon's bindEvents method.
    * When using XHR, it can be useful to rerun the bindEvents method on XHR response after DOM modification.
    * @example
@@ -136,27 +113,6 @@ class PcBackofficeApp {
    */
   unbindEvents = () => {
     Object.values(this.addons).forEach(({ unbindEvents }) => unbindEvents())
-  }
-
-  /**
-   * Handle server-side errors without a turbo-frame.
-   * Default behaviour since turbo 7.2 is to display a full page with the error content.
-   * For example, if nginx throws a 504 error because the flask controller did not respond in time,
-   * the whole page will be replaced by a generic 504 error message, which is not great in terms of UX.
-   * @param {Event} event
-   * @example
-   * addEventListener("turbo:frame-missing", app.onTurboFrameMissing)
-   */
-  onTurboFrameMissing = (event) => {
-    event.preventDefault()
-    if (event.detail.response.redirected) {
-      // Redirect from a turbo-frame loads a new full page
-      event.detail.visit(event.detail.response)
-      return
-    }
-    const error = new Error(`turbo:frame-missing with status code: ${event.detail.response.status}`)
-    console.error(error)
-    event.target.textContent = 'Une erreur est survenue'
   }
 
   /**

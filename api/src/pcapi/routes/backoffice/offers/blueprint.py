@@ -1648,7 +1648,6 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",
-        data_turbo="true",
         price_effect=price_effect,
         stock=stock,
         alert=alert,
