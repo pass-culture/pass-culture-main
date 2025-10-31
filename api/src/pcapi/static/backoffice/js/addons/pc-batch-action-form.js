@@ -1,6 +1,6 @@
 /**
  * Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect](#pctablemultiselect).
- *.
+ *
  *
  * To work, each `.btn-group` must set the following attributes:
  * - `[data-toggle="pc-batch-confirm-btn-group"]`: this value is fixed,
