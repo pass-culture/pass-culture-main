@@ -1,8 +1,8 @@
-import datetime
+import itertools
 import logging
 import textwrap
 
-import sqlalchemy.exc as sa_exc
+import sqlalchemy.orm as sa_orm
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
@@ -10,13 +10,15 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
+from pcapi import settings
 from pcapi.connectors.big_query.queries.product import BigQueryProductModel
 from pcapi.connectors.big_query.queries.product import ProductsToSyncQuery
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.categories.subcategories import LIVRE_PAPIER
+from pcapi.core.object_storage.backends.gcp import GCPBackend
+from pcapi.core.object_storage.backends.gcp import GCPData
 from pcapi.core.providers import constants
 from pcapi.core.providers.models import LocalProviderEventType
-from pcapi.core.providers.titelive_api import TiteliveDatabaseNotInitializedException
 from pcapi.core.providers.titelive_api import activate_newly_eligible_product_and_offers
 from pcapi.core.providers.titelive_book_search import get_book_format
 from pcapi.core.providers.titelive_book_search import get_gtl_id
@@ -38,31 +40,19 @@ class BigQueryProductSync:
         # If the table grows too large in the future, we may need to perform
         # individual checks instead of loading everything at once.
         self.product_whitelist_eans = {ean for (ean,) in db.session.query(fraud_models.ProductWhitelist.ean).all()}
-        logger.info("Loaded %d EANs from the whitelist.", len(self.product_whitelist_eans))
-
-    def get_last_sync_date(self, provider: providers_models.Provider) -> datetime.date:
-        last_sync_event = (
-            db.session.query(providers_models.LocalProviderEvent)
-            .filter(
-                providers_models.LocalProviderEvent.providerId == provider.id,
-                providers_models.LocalProviderEvent.type == LocalProviderEventType.SyncEnd,
-                providers_models.LocalProviderEvent.payload == self.titelive_base.value,
-            )
-            .order_by(providers_models.LocalProviderEvent.id.desc())
-            .first()
-        )
-        if last_sync_event is None or not last_sync_event.payload:
-            raise TiteliveDatabaseNotInitializedException()
-        return last_sync_event.date.date()
+        logger.info("Loaded EANs from the whitelist.", extra={"count": len(self.product_whitelist_eans)})
+        self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        self.gcp_data = GCPData()
+        self.gcp_backend = GCPBackend()
 
     def log_sync_status(
-        self, provider: providers_models.Provider, event_type: LocalProviderEventType, message: str | None = None
+        self, event_type: LocalProviderEventType, message: str | None = None
     ) -> providers_models.LocalProviderEvent:
         message = f"{self.titelive_base.value} : {message}" if message else self.titelive_base.value
         return providers_models.LocalProviderEvent(
             date=date_utils.get_naive_utc_now(),
             payload=message,
-            provider=provider,
+            provider=self.provider,
             type=event_type,
         )
 
@@ -73,130 +63,263 @@ class BigQueryProductSync:
             .delete(synchronize_session=False)
         )
 
+    def _copy_image_from_data_bucket_to_backend_bucket(self, source_uuid: str) -> str | None:
+        if not source_uuid:
+            return None
+        try:
+            if self.gcp_backend.object_exists(settings.THUMBS_FOLDER_NAME, source_uuid):
+                return source_uuid
+
+            if not self.gcp_data.object_exists(settings.DATA_TITELIVE_THUMBS_FOLDER_NAME, source_uuid):
+                logger.warning(
+                    "Image not found in source bucket. Cannot copy.",
+                    extra={
+                        "source_uuid": source_uuid,
+                        "bucket_name": self.gcp_data.bucket_name,
+                    },
+                )
+                return None
+
+            logger.info(
+                "Copying image from data bucket to backend bucket...",
+                extra={
+                    "source_uuid": source_uuid,
+                    "from_bucket": self.gcp_data.bucket_name,
+                    "to_bucket": self.gcp_backend.bucket_name,
+                },
+            )
+
+            self.gcp_data.copy_object_to(
+                source_folder=settings.DATA_TITELIVE_THUMBS_FOLDER_NAME,
+                source_object_id=source_uuid,
+                destination_backend=self.gcp_backend,
+                destination_folder=settings.THUMBS_FOLDER_NAME,
+                destination_object_id=source_uuid,
+            )
+            return source_uuid
+        except Exception as err:
+            logger.error(
+                "Failed to copy image from data bucket to backend bucket.",
+                extra={
+                    "source_uuid": source_uuid,
+                    "from_bucket": self.gcp_data.bucket_name,
+                    "to_bucket": self.gcp_backend.bucket_name,
+                    "error": err,
+                },
+            )
+            return None
+
     def _update_product_images(self, product: offers_models.Product, bq_product: BigQueryProductModel) -> None:
-        if not bq_product.recto_uuid and not bq_product.verso_uuid:
+        if not bq_product.has_image:
             return
 
-        provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-
-        self._remove_existing_mediations(product)
-
         if bq_product.recto_uuid:
-            recto_mediation = offers_models.ProductMediation(
-                productId=product.id,
-                uuid=bq_product.recto_uuid,
-                imageType=offers_models.ImageType.RECTO,
-                lastProvider=provider,
+            current_recto = next(
+                (m for m in product.productMediations if m.imageType == offers_models.ImageType.RECTO), None
             )
-            db.session.add(recto_mediation)
+            if not current_recto or current_recto.uuid != bq_product.recto_uuid:
+                source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(bq_product.recto_uuid)
+                if not source_uuid:
+                    logger.warning(
+                        "Skipping RECTO mediation due to GCS copy failure.",
+                        extra={
+                            "ean": product.ean,
+                            "uuid": bq_product.recto_uuid,
+                        },
+                    )
+                    return
 
-        if bq_product.verso_uuid:
-            verso_mediation = offers_models.ProductMediation(
-                productId=product.id,
-                uuid=bq_product.verso_uuid,
-                imageType=offers_models.ImageType.VERSO,
-                lastProvider=provider,
+                if current_recto:
+                    db.session.delete(current_recto)
+
+                recto_mediation = offers_models.ProductMediation(
+                    productId=product.id,
+                    uuid=bq_product.recto_uuid,
+                    imageType=offers_models.ImageType.RECTO,
+                    lastProvider=self.provider,
+                )
+                db.session.add(recto_mediation)
+
+        if bq_product.has_verso_image and bq_product.verso_uuid:
+            current_verso = next(
+                (m for m in product.productMediations if m.imageType == offers_models.ImageType.VERSO), None
             )
-            db.session.add(verso_mediation)
+            if not current_verso or current_verso.uuid != bq_product.verso_uuid:
+                source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(bq_product.verso_uuid)
+                if not source_uuid:
+                    logger.warning(
+                        "Skipping VERSO mediation due to GCS copy failure.",
+                        extra={
+                            "ean": product.ean,
+                            "uuid": bq_product.verso_uuid,
+                        },
+                    )
+                    return
 
-    def run_synchronization(self, from_date: datetime.date, to_date: datetime.date) -> None:
-        logger.info("Starting product synchronization from %s to %s.", from_date.isoformat(), to_date.isoformat())
+                if current_verso:
+                    db.session.delete(current_verso)
+
+                verso_mediation = offers_models.ProductMediation(
+                    productId=product.id,
+                    uuid=bq_product.verso_uuid,
+                    imageType=offers_models.ImageType.VERSO,
+                    lastProvider=self.provider,
+                )
+                db.session.add(verso_mediation)
+
+    def run_synchronization(self, batch_size: int) -> None:
+        logger.info("Starting product synchronization")
 
         total_products_upserted = 0
         ineligible_eans = []
 
-        products_iterator = ProductsToSyncQuery(from_date=from_date, to_date=to_date).execute()
-        for bq_product in products_iterator:
-            reasons = get_ineligibility_reasons(bq_product, bq_product.titre)
+        products_iterator = ProductsToSyncQuery().execute()
 
-            if reasons:
-                if bq_product.gencod in self.product_whitelist_eans:
-                    logger.info(
-                        "Skipping ineligibility for EAN %s (reasons: %s): product is whitelisted.",
-                        bq_product.gencod,
-                        reasons,
-                    )
-                else:
-                    ineligible_eans.append(bq_product.gencod)
-                    logger.info("Rejecting product EAN %s for reason(s): %s.", bq_product.gencod, reasons)
-                    continue
+        for bq_product_batch in itertools.batched(products_iterator, batch_size):
+            logger.info("Processing product batch...", extra={"batch_size": len(bq_product_batch)})
 
-            product = self.create_or_update(bq_product)
-            try:
-                with transaction():
-                    db.session.add(product)
-                total_products_upserted += 1
-            except sa_exc.IntegrityError as exc:
-                logger.error("Failed to upsert product with EAN %s: %s", product.ean, exc)
+            valid_bq_products_in_batch = []
+
+            for bq_product in bq_product_batch:
+                reasons = get_ineligibility_reasons(bq_product, bq_product.titre)
+
+                if reasons:
+                    if bq_product.ean in self.product_whitelist_eans:
+                        logger.info(
+                            "Skipping ineligibility: product is whitelisted.",
+                            extra={
+                                "ean": bq_product.ean,
+                                "reasons": reasons,
+                            },
+                        )
+                    else:
+                        ineligible_eans.append(bq_product.ean)
+                        logger.info("Rejecting product.", extra={"ean": bq_product.ean, "reasons": reasons})
+                        continue
+
+                valid_bq_products_in_batch.append(bq_product)
+
+            if not valid_bq_products_in_batch:
                 continue
 
             try:
                 with transaction():
-                    self._update_product_images(product, bq_product)
-            except sa_exc.IntegrityError as exc:
-                logger.error("Failed to update images for EAN %s. Reason: %s", product.ean, exc)
+                    batch_eans = {bq.ean for bq in valid_bq_products_in_batch}
+                    existing_products = (
+                        db.session.query(offers_models.Product)
+                        .filter(offers_models.Product.ean.in_(batch_eans))
+                        .options(sa_orm.selectinload(offers_models.Product.productMediations))
+                        .all()
+                    )
+                    existing_products_map = {p.ean: p for p in existing_products}
+
+                    products_to_upsert = []
+                    image_updates_to_run = []
+
+                    for bq_product in valid_bq_products_in_batch:
+                        existing_product = existing_products_map.get(bq_product.ean)
+                        product = self.create_or_update(bq_product, existing_product)
+                        products_to_upsert.append(product)
+                        image_updates_to_run.append((product, bq_product))
+
+                    db.session.add_all(products_to_upsert)
+                    logger.debug("Flushing session to get new product IDs...")
+                    db.session.flush()
+
+                    for product, bq_product in image_updates_to_run:
+                        self._update_product_images(product, bq_product)
+
+                total_products_upserted += len(valid_bq_products_in_batch)
+                logger.info("Successfully upserted batch.", extra={"count": len(valid_bq_products_in_batch)})
+            except Exception as exc:
+                logger.warning(
+                    "Batch upsert failed. Retrying products one by one...",
+                    extra={"error": exc, "retry_count": len(valid_bq_products_in_batch)},
+                )
+                db.session.rollback()
+
+                individual_success_count = 0
+
+                for bq_product in valid_bq_products_in_batch:
+                    if self._process_one_product(bq_product):
+                        individual_success_count += 1
+
+                total_products_upserted += individual_success_count
+                logger.info(
+                    "Individual retry complete for batch.",
+                    extra={
+                        "rescued_count": individual_success_count,
+                        "failed_count": len(valid_bq_products_in_batch) - individual_success_count,
+                    },
+                )
 
         if ineligible_eans:
             offers_api.reject_inappropriate_products(ineligible_eans, author=None)
 
         logger.info("Synchronization complete. Summary:")
-        logger.info("  > %d products upserted.", total_products_upserted)
-        logger.info("  > %d products rejected.", len(ineligible_eans))
-        logger.info("  > %d products processed in total.", total_products_upserted + len(ineligible_eans))
+        logger.info("  > Products upserted.", extra={"count": total_products_upserted})
+        logger.info("  > Products rejected.", extra={"count": len(ineligible_eans)})
+        logger.info("  > Products processed in total.", extra={"count": total_products_upserted + len(ineligible_eans)})
 
-    def synchronize_products(self, from_date: datetime.date | None, to_date: datetime.date | None) -> None:
-        provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-
-        if from_date is None:
-            try:
-                from_date = self.get_last_sync_date(provider) - datetime.timedelta(days=1)
-            except TiteliveDatabaseNotInitializedException:
-                logger.warning("No last synchronization date found. Use the --from-date option for the initial run.")
-                return
-
-        if to_date is None:
-            to_date = datetime.date.today() - datetime.timedelta(days=1)
-
-        if from_date >= to_date:
-            logger.warning("Start date %s is after end date %s. Aborting synchronization.", from_date, to_date)
-            return
-
+    def _process_one_product(self, bq_product: BigQueryProductModel, log_failure: bool = True) -> bool:
         try:
             with transaction():
-                start_sync_event = self.log_sync_status(provider, LocalProviderEventType.SyncStart)
+                existing_product = (
+                    db.session.query(offers_models.Product)
+                    .filter_by(ean=bq_product.ean)
+                    .options(sa_orm.selectinload(offers_models.Product.productMediations))
+                    .one_or_none()
+                )
+                product = self.create_or_update(bq_product, existing_product)
+                db.session.add(product)
+                db.session.flush()
+                self._update_product_images(product, bq_product)
+            return True
+
+        except Exception as e:
+            if log_failure:
+                logger.error(
+                    "Failed to upsert product during individual retry.", extra={"ean": bq_product.ean, "error": e}
+                )
+            db.session.rollback()
+            return False
+
+    def synchronize_products(self, batch_size: int) -> None:
+        try:
+            with transaction():
+                start_sync_event = self.log_sync_status(LocalProviderEventType.SyncStart)
                 db.session.add(start_sync_event)
 
-            self.run_synchronization(from_date, to_date)
+            self.run_synchronization(batch_size)
 
             with transaction():
-                stop_sync_event = self.log_sync_status(provider, LocalProviderEventType.SyncEnd)
+                stop_sync_event = self.log_sync_status(LocalProviderEventType.SyncEnd)
                 db.session.add(stop_sync_event)
 
         except Exception as e:
             with transaction():
-                sync_error_event = self.log_sync_status(
-                    provider, LocalProviderEventType.SyncError, e.__class__.__name__
-                )
+                sync_error_event = self.log_sync_status(LocalProviderEventType.SyncError, e.__class__.__name__)
                 db.session.add(sync_error_event)
             raise
 
-    def create_or_update(self, bq_product: BigQueryProductModel) -> offers_models.Product:
-        product = db.session.query(offers_models.Product).filter_by(ean=bq_product.gencod).one_or_none()
-
+    def create_or_update(
+        self, bq_product: BigQueryProductModel, product: offers_models.Product | None
+    ) -> offers_models.Product:
         is_update = product is not None
-        if not is_update:
-            product = offers_models.Product(ean=bq_product.gencod)
+        if not product:
+            logger.info("Creating new product.", extra={"ean": bq_product.ean})
+            product = offers_models.Product(ean=bq_product.ean)
+        else:
+            logger.info("Updating existing product.", extra={"ean": bq_product.ean})
 
-        assert product  # helps mypy
         product.name = textwrap.shorten(
             bq_product.titre,
             width=constants.TITELIVE_PRODUCT_NAME_MAX_LENGTH,
             placeholder="…",
         )
         product.description = bq_product.resume
-        product.lastProvider = providers_repository.get_provider_by_name(
-            providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
-        )
+        product.lastProviderId = self.provider.id
+        product.dateModifiedAtLastProvider = date_utils.get_naive_utc_now()
         product.subcategoryId = LIVRE_PAPIER.id
 
         if product.extraData is None:

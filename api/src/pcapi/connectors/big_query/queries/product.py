@@ -1,6 +1,5 @@
 import logging
 import typing
-from datetime import date
 
 import pydantic.v1 as pydantic_v1
 from pydantic.v1.class_validators import validator
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class BigQueryProductModel(TiteLiveBookArticle):
+    ean: str
     titre: str
     auteurs_multi: list[str]
 
@@ -35,49 +35,31 @@ class BigQueryProductModel(TiteLiveBookArticle):
 
 
 class ProductsToSyncQuery(BaseQuery):
-    base_query = f"""
+    raw_query = f"""
         SELECT
-            titre,
-            auteurs_multi,
-            resume,
-            gencod,
-            codesupport,
+            ean,
+            ean as gencod,
+            name as titre,
+            multiple_authors as auteurs_multi,
+            description as resume,
+            support_code as codesupport,
             gtl,
-            dateparution,
-            editeur,
-            prix,
-            langueiso,
-            taux_tva,
-            id_lectorat,
-            datemodification,
+            publication_date as dateparution,
+            publisher as editeur,
+            price as prix,
+            language_iso as langueiso,
+            vat_rate as taux_tva,
+            readership_id as id_lectorat,
             recto_uuid,
-            verso_uuid
+            verso_uuid,
+            image,
+            image_4
         FROM
-            `{settings.BIG_QUERY_TABLE_BASENAME}.wip_titelive_books`
-    """  # FIXME (jmontagnat, 2025-09-11): switch to final table when its name will be decided
+            `{settings.BIG_QUERY_TABLE_BASENAME}.product_delta`
+        ORDER BY ean
+    """
 
     model = BigQueryProductModel
-
-    def __init__(self, from_date: date, to_date: date):
-        super().__init__()
-        self.from_date = from_date
-        self.to_date = to_date
-
-    @property
-    def raw_query(self) -> str:
-        query = self.base_query
-        from_date_str = self.from_date.isoformat()
-        to_date_str = self.to_date.isoformat()
-
-        where_clause = f"""
-        WHERE
-            (PARSE_TIMESTAMP('%d/%m/%Y', datemodification) BETWEEN TIMESTAMP('{from_date_str}') AND TIMESTAMP('{to_date_str}'))
-            OR datemodification IS NULL
-        """
-        query += where_clause
-
-        logger.info(f"Executing BigQuery query: {query}")
-        return query
 
 
 class ProductModel(pydantic_v1.BaseModel):

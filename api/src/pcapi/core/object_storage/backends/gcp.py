@@ -146,6 +146,69 @@ class GCPBackend(BaseBackend):
             )
             raise exc
 
+    def object_exists(self, folder: str, object_id: str) -> bool:
+        storage_path = folder + "/" + object_id
+        try:
+            bucket = self.get_gcp_storage_client_bucket()
+            gcp_cloud_blob = bucket.blob(storage_path)
+            return gcp_cloud_blob.exists()
+
+        except Exception as exc:
+            logger.exception(
+                "An error has occurred while trying to check file existence on GCP bucket",
+                extra={
+                    "exc": exc,
+                    "project_id": self.project_id,
+                    "bucket_name": self.bucket_name,
+                    "storage_path": storage_path,
+                },
+            )
+            raise exc
+
+    def copy_object_to(
+        self,
+        source_folder: str,
+        source_object_id: str,
+        destination_backend: "GCPBackend",
+        destination_folder: str,
+        destination_object_id: str,
+    ) -> None:
+        source_path = f"{source_folder}/{source_object_id}"
+        destination_path = f"{destination_folder}/{destination_object_id}"
+        try:
+            source_bucket = self.get_gcp_storage_client_bucket()
+            source_blob = source_bucket.blob(source_path)
+            destination_bucket = destination_backend.get_gcp_storage_client_bucket()
+            source_bucket.copy_blob(
+                source_blob,
+                destination_bucket,
+                new_name=destination_path,
+                timeout=TIMEOUT,
+                retry=RETRY_STRATEGY,
+            )
+        except NotFound:
+            logger.warning(
+                "Source file %s not found in bucket %s. Cannot copy.",
+                source_path,
+                self.bucket_name,
+            )
+            raise FileNotFound()
+
+        except Exception as exc:
+            logger.exception(
+                "An error has occurred while trying to copy file between GCP buckets",
+                extra={
+                    "exc": exc,
+                    "source_project_id": self.project_id,
+                    "source_bucket_name": self.bucket_name,
+                    "source_storage_path": source_path,
+                    "dest_project_id": destination_backend.project_id,
+                    "dest_bucket_name": destination_backend.bucket_name,
+                    "dest_storage_path": destination_path,
+                },
+            )
+            raise exc
+
 
 class GCPAlternateBackend(GCPBackend):
     """A backend for GCP Storage that connects to an alternate bucket.
@@ -165,3 +228,10 @@ class GCPAlternateBackend(GCPBackend):
     """
 
     default_bucket_name = settings.GCP_ALTERNATE_BUCKET_NAME
+
+
+class GCPData(GCPBackend):
+    default_bucket_name = settings.GCP_DATA_PRODUCT_MEDIATION_BUCKET_NAME
+
+    def __init__(self) -> None:
+        super().__init__(project_id=settings.GCP_DATA_PROJECT_ID)
