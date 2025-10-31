@@ -1494,13 +1494,14 @@ class ResendEmailValidationTest:
         assert response.status_code == 204
         assert not mails_testing.outbox
 
-    def test_resend_validation_email_too_many_attempts(self, client):
+    @pytest.mark.parametrize("is_email_validated", [True, False])
+    def test_resend_validation_email_too_many_attempts(self, client, is_email_validated):
         """
         Test that a user cannot request more than
         MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
         N days.
         """
-        user = users_factories.UserFactory(isEmailValidated=False)
+        user = users_factories.UserFactory(isEmailValidated=is_email_validated)
 
         response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
 

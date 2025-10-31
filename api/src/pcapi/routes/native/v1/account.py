@@ -287,11 +287,11 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
     if not user or not user.isActive:
         return
     try:
+        api.check_email_validation_resends_count(user)
+        api.increment_email_resends_count(user)
         if user.isEmailValidated:
             api.request_password_reset(user)
         else:
-            api.check_email_validation_resends_count(user)
-            api.increment_email_validation_resends_count(user)
             api.request_email_confirmation(user)
     except exceptions.EmailValidationLimitReached:
         raise api_errors.ApiErrors(
@@ -307,7 +307,7 @@ def email_validation_remaining_resends(email: str) -> serializers.EmailValidatio
     if not user:
         return serializers.EmailValidationRemainingResendsResponse(remainingResends=0, counterResetDatetime=None)
 
-    remaining_resends = api.get_remaining_email_validation_resends(user)
+    remaining_resends = api.get_remaining_email_resends(user)
     expiration_time = api.get_email_validation_resends_limitation_expiration_time(user)
 
     return serializers.EmailValidationRemainingResendsResponse(
