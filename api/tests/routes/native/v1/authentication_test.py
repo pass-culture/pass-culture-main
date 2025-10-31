@@ -873,6 +873,20 @@ class RequestResetPasswordTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
 
+    def test_request_reset_password_rate_limit(self, client):
+        email = "existing_user@example.com"
+        data = {"email": email}
+        users_factories.UserFactory(email=email)
+
+        for _i in range(3):
+            response = client.post("/native/v1/request_password_reset", json=data)
+            assert response.status_code == 204
+
+        response = client.post("/native/v1/request_password_reset", json=data)
+
+        assert response.status_code == 429
+        assert response.json["code"] == "TOO_MANY_EMAIL_VALIDATION_RESENDS"
+
 
 @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=1)
 class ResetPasswordTest:
