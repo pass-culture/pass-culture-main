@@ -1,14 +1,33 @@
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFoundForNewTable,
-  logInAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create individual offers', { testIsolation: false }, () => {
+describe('Create individual offers', () => {
+  let login: string
   let venueName: string
   const stock = '42'
 
+  before(() => {
+    // cy.wrap(Cypress.session.clearAllSavedSessions())
+    cy.visit('/connexion')
+    cy.sandboxCall(
+      'GET',
+      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
+      (response) => {
+        login = response.body.user.email
+        venueName = response.body.venueName
+        cy.setFeatureFlags([
+          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
+        ])
+      }
+    )
+  })
+
   beforeEach(() => {
+    cy.visit('/connexion')
+
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
@@ -25,28 +44,11 @@ describe('Create individual offers', { testIsolation: false }, () => {
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
-  })
 
-  after(() => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
+    sessionLogInAndGoToPage('Create inididual offer', login, '/offre/creation')
   })
 
   it('I should be able to create an individual offer (event)', () => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
-    cy.visit('/connexion')
-    cy.sandboxCall(
-      'GET',
-      'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
-      (response) => {
-        cy.setFeatureFlags([
-          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
-        ])
-
-        logInAndGoToPage(response.body.user.email, '/offre/creation')
-        venueName = response.body.venueName
-      }
-    )
-
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
