@@ -1562,7 +1562,7 @@ class EmailValidationRemainingResendsTest:
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")
 
-        assert response.json["remainingResends"] == 0
+        assert response.json["remainingResends"] == settings.MAX_EMAIL_VALIDATION_RESENDS
         assert response.json["counterResetDatetime"] is None
 
 
