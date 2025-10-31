@@ -920,10 +920,10 @@
     "@firebase/util" "1.13.0"
     tslib "^2.1.0"
 
-"@firebase/app@0.14.4":
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.14.4.tgz#1d2ce74c09752dec9664e2f981b20335c4efbec1"
-  integrity sha512-pUxEGmR+uu21OG/icAovjlu1fcYJzyVhhT0rsCrn+zi+nHtrS43Bp9KPn9KGa4NMspCUE++nkyiqziuIvJdwzw==
+"@firebase/app@0.14.5":
+  version "0.14.5"
+  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.14.5.tgz#cfd2c37432628d835d2c68aedbf9bc946e5ccebe"
+  integrity sha512-zyNY77xJOGwcuB+xCxF8z8lSiHvD4ox7BCsqLEHEvgqQoRjxFZ0fkROR6NV5QyXmCqRLodMM8J5d2EStOocWIw==
   dependencies:
     "@firebase/component" "0.7.0"
     "@firebase/logger" "0.5.0"
