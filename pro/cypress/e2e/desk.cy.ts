@@ -31,8 +31,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   beforeEach(() => {
-    cy.visit('/connexion')
-
     sessionLogInAndGoToPage('Session desk', login, '/guichet')
   })
 

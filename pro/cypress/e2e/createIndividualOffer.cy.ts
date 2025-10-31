@@ -26,8 +26,6 @@ describe('Create individual offers', () => {
   })
 
   beforeEach(() => {
-    cy.visit('/connexion')
-
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
