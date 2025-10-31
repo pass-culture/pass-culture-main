@@ -23,7 +23,10 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 
@@ -58,6 +61,11 @@ const renderOfferActionsCell = (
 
   return renderWithProviders(<OfferActionsCell {...defaultProps} />, {
     features,
+    storeOverrides: {
+      offerer: {
+        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+      },
+    },
   })
 }
 
@@ -300,6 +308,7 @@ describe('OfferActionsCells', () => {
           offerId: 200,
           offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           offerType: 'collective',
+          offererId: '1',
         }
       )
     })
@@ -350,7 +359,7 @@ describe('OfferActionsCells', () => {
             coords: 'undefined, undefined',
             isManualEdition: false,
             isVenueAddress: true,
-            label: 'Le nom du lieu 4',
+            label: 'Structure 4',
             latitude: '',
             longitude: '',
             postalCode: '',

@@ -9,7 +9,7 @@ import {
   FORMAT_DD_MM_YYYY,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -57,7 +57,7 @@ export function ExpirationCell({ offer }: ExpirationCellProps) {
             <div>
               expire{' '}
               {daysCountBeforeExpiration > 0
-                ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
+                ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
                 : 'aujourd’hui'}
             </div>
           </div>

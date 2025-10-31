@@ -294,7 +294,7 @@ describe('CollectiveOffersScreen', () => {
     )
   })
 
-  it('should filter new column "Date de l’évènement"', async () => {
+  it('should filter and sort column "Dates"', async () => {
     renderOffers({
       ...props,
       offers: [
@@ -312,21 +312,27 @@ describe('CollectiveOffersScreen', () => {
         }),
       ],
     })
-
     const firstOfferEventDate =
       screen.getAllByTestId('offer-event-date')[0].textContent
 
     expect(firstOfferEventDate).toEqual('31/07/2024')
 
     await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Trier par ordre croissant',
-      })
+      screen.getByRole('img', { name: 'Trier par ordre croissant' })
     )
 
-    const newFirstOfferEventDate =
-      screen.getAllByTestId('offer-event-date')[0].textContent
+    const offerEventDates = await screen.findAllByTestId('offer-event-date')
+
+    const newFirstOfferEventDate = offerEventDates[0].textContent
 
     expect(newFirstOfferEventDate).toEqual('30/06/2024')
+  })
+
+  it('should render download button', () => {
+    renderOffers(props)
+    const downloadButton = screen.getByRole('button', {
+      name: 'Télécharger',
+    })
+    expect(downloadButton).toBeInTheDocument()
   })
 })

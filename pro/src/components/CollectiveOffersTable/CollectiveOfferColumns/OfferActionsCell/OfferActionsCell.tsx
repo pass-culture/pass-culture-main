@@ -1,7 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -30,8 +29,9 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constan
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
@@ -69,7 +69,7 @@ export const OfferActionsCell = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
@@ -86,7 +86,7 @@ export const OfferActionsCell = ({
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isInTemplateOffersPage: isTemplateTable,
     urlSearchFilters,
-    selectedOffererId: selectedOffererId?.toString(),
+    selectedOffererId,
   })
 
   const { mutate } = useSWRConfig()
