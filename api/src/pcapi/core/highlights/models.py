@@ -12,6 +12,7 @@ from pcapi.utils.date import get_naive_utc_now
 
 
 if typing.TYPE_CHECKING:
+    import pcapi.core.criteria.models as criteria_models
     import pcapi.core.offers.models as offers_models
 
 
@@ -29,6 +30,9 @@ class Highlight(PcObject, Model):
     mediation_uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
     highlight_requests: sa_orm.Mapped[list["HighlightRequest"]] = sa_orm.relationship(
         "HighlightRequest", foreign_keys="HighlightRequest.highlightId", back_populates="highlight"
+    )
+    criteria: sa_orm.Mapped[list["criteria_models.Criterion"]] = sa_orm.relationship(
+        "Criterion", foreign_keys="Criterion.highlightId", back_populates="highlight"
     )
 
     __table_args__ = (
