@@ -67,8 +67,7 @@
                                 <div class="modal-content">
                                   <form action="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
                                         name="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
-                                        method="post"
-                                        data-turbo="false">
+                                        method="post">
                                     <div class="modal-header"
                                          id="{{ edit_offerer_tag_modal_label_id }}">
                                       <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
@@ -95,8 +94,7 @@
                                 <div class="modal-content">
                                   <form action="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
                                         name="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
-                                        method="post"
-                                        data-turbo="false">
+                                        method="post">
                                     <div class="modal-header"
                                          id="{{ delete_offerer_tag_modal_label_id }}">
                                       <h5 class="modal-title">Supprimer le tag {{ offerer_tag.name }}</h5>

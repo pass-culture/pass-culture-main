@@ -23,8 +23,7 @@
       <div class="my-4">
         <form action="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') }}"
               name="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') | action_to_name }}"
-              method="get"
-              data-turbo="false">
+              method="get">
           <div class="col-8 row">
             <div class="col-8">
               <div class="input-group mb-3">{{ form.domain }}</div>

@@ -28,8 +28,7 @@
                 <li class="dropdown-item p-0">
                   <form action="{{ url_for('backoffice_web.fraud.remove_blacklisted_domain_name', domain=row.domain) }}"
                         name="{{ url_for('backoffice_web.fraud.remove_blacklisted_domain_name', domain=row.domain) | action_to_name }}"
-                        method="post"
-                        data-turbo="false">
+                        method="post">
                     <div class="col-8 row">
                       {{ csrf_token }}
                       <div class="col-4">
