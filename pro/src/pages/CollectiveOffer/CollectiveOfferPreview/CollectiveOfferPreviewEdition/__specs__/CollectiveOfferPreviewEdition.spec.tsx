@@ -1,14 +1,13 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import {
   defaultGetVenue,
+  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import {
-  type RenderWithProvidersOptions,
-  renderWithProviders,
-} from '@/commons/utils/renderWithProviders'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferPreviewEdition } from '../CollectiveOfferPreviewEdition'
@@ -32,17 +31,17 @@ vi.mock('@/apiClient/api', () => ({
 const renderCollectiveOfferPreviewCreation = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps,
-  options?: RenderWithProvidersOptions
+  features?: string[]
 ) => {
   renderWithProviders(<CollectiveOfferPreviewEdition {...props} />, {
-    ...options,
+    features,
     initialRouterEntries: [path],
   })
 }
 
 const defaultProps = {
-  offer: getCollectiveOfferTemplateFactory(),
-  isTemplate: false,
+  offer: getCollectiveOfferTemplateFactory({ isTemplate: true }),
+  isTemplate: true,
   offerer: undefined,
 }
 
@@ -63,6 +62,47 @@ describe('CollectiveOfferPreviewCreation', () => {
       screen.getByRole('heading', {
         name: 'Aperçu de l’offre',
       })
+    ).toBeInTheDocument()
+  })
+
+  it('should not render share link drawer when the FF WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled and offer is bookable', async () => {
+    renderCollectiveOfferPreviewCreation(
+      '/offre/1/collectif/apercu',
+      {
+        offerer: undefined,
+        isTemplate: false,
+        offer: getCollectiveOfferFactory(),
+      },
+      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
+    )
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Partager l’offre',
+      })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render share link drawer when the FF WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled and offer is template', async () => {
+    renderCollectiveOfferPreviewCreation(
+      '/offre/T-A1/collectif/apercu',
+      defaultProps,
+      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
+    )
+
+    const shareLinkButton = screen.getByRole('button', {
+      name: 'Partager l’offre',
+    })
+
+    expect(shareLinkButton).toBeInTheDocument()
+
+    await userEvent.click(shareLinkButton)
+    expect(
+      await screen.findByText(
+        'Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE'
+      )
     ).toBeInTheDocument()
   })
 })
