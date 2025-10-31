@@ -9,7 +9,8 @@ from pcapi.models.pc_object import PcObject
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.offerer.models import Venue
+    from pcapi.core.highlights import models as highlights_models
+    from pcapi.core.offerers.models import Venue
     from pcapi.core.offers.models import Offer
 
 
@@ -41,6 +42,13 @@ class Criterion(PcObject, Model):
     )
     categories: sa_orm.Mapped[list["CriterionCategory"]] = sa_orm.relationship(
         "CriterionCategory", secondary=CriterionCategoryMapping.__table__
+    )
+
+    highlightId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("highlight.id", ondelete="SET NULL"), index=True, nullable=True
+    )
+    highlight: sa_orm.Mapped["highlights_models.Highlight"] = sa_orm.relationship(
+        "Highlight", foreign_keys=[highlightId], back_populates="criteria"
     )
 
     def __str__(self) -> str:
