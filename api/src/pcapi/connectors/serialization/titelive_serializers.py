@@ -51,7 +51,7 @@ def _format_gtl_code(code: str) -> str:
 
 
 class TiteliveGtl(BaseModel):
-    first: dict[str, GenreTitelive]
+    first: dict[str, GenreTitelive] | None
 
 
 class TiteliveImage(BaseModel):
