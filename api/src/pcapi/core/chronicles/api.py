@@ -189,6 +189,7 @@ def save_chronicle(
                 productIdentifierType=chronicle_type_id,
                 productIdentifier=product_identifier,
                 clubType=club_type,
+                offers=_get_offers(chronicle_type_id, product_identifier),
             )
             db.session.add(chronicle)
             db.session.flush()
@@ -213,6 +214,35 @@ def save_chronicle(
     except sa.exc.IntegrityError:
         # the chronicle is already in db
         mark_transaction_as_invalid()
+
+
+def _get_offers(
+    product_identifier_type: models.ChronicleProductIdentifierType, product_identifier: str | None
+) -> list[offers_models.Offer]:
+    if not product_identifier:
+        return []
+
+    oldest_existing_chronicle_id = (
+        db.session.query(models.Chronicle.id)
+        .filter(
+            models.Chronicle.productIdentifierType == product_identifier_type,
+            models.Chronicle.productIdentifier == product_identifier,
+        )
+        .order_by(models.Chronicle.id.desc())
+        .scalar()
+    )
+
+    # if it is not the first product on this producti identifier, ignore the product identifier and
+    # use the same products as the other chronicles
+    if oldest_existing_chronicle_id:
+        return (
+            db.session.query(offers_models.Offer)
+            .join(models.OfferChronicle, offers_models.Offer.id == models.OfferChronicle.offerId)
+            .filter(models.OfferChronicle.chronicleId == oldest_existing_chronicle_id)
+            .options(sa.orm.load_only(offers_models.Offer.id))
+            .all()
+        )
+    return []
 
 
 def save_book_club_chronicle(form: typeform.TypeformResponse) -> None:

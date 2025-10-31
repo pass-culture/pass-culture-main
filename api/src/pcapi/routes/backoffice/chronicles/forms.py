@@ -90,5 +90,11 @@ class AttachCineProductForm(forms_utils.PCForm):
     )
 
 
+class AttachOfferForm(forms_utils.PCForm):
+    offer_id = fields.PCStringField(
+        "ID d'offre", validators=[Regexp(r"^\d+$", message="L'ID d'offre doit être composé de chiffres")]
+    )
+
+
 class CommentForm(forms_utils.PCForm):
     comment = fields.PCCommentField("Commentaire interne pour la chronique")
