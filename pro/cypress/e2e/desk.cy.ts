@@ -3,7 +3,8 @@ import { addDays, format } from 'date-fns'
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import { sessionLogInAndGoToPage } from '../support/helpers.ts'
 
-describe('Desk (Guichet) feature', { testIsolation: false }, () => {
+describe('Desk (Guichet) feature', () => {
+  let login: string
   let tokenConfirmed: string
   let tokenTooSoon: string
   let tokenUsed: string
@@ -11,50 +12,14 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
   let tokenReimbursed: string
   let tokenOther: string
 
-  after(() => {
-    cy.wrap(Cypress.session.clearAllSavedSessions())
-  })
-
-  it('I should see help information on desk page', () => {
-    // Attempt to ignore problematic 401 errors on connection page first load
-    // TODO (igabriele, 2025-07-31): The real solution is be to clean the 401 from connection page (see PC-37280)
-    // https://github.com/cypress-io/cypress/issues/27501#issuecomment-2272519301
-    cy.intercept(
-      {
-        method: 'GET',
-        url: '/users/current',
-        times: 2,
-      },
-      {
-        global: ['Authentification nécessaire'],
-      }
-    ).as('getCurrentUser')
-    cy.intercept(
-      {
-        method: 'GET',
-        url: '/offerers/names',
-        times: 2,
-      },
-      {
-        global: ['Authentification nécessaire'],
-      }
-    ).as('getOffererNames')
-
-    cy.wrap(Cypress.session.clearAllSavedSessions())
-
+  before(() => {
+    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
-    cy.wait('@getCurrentUser')
-    cy.wait('@getOffererNames')
-
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
       (response) => {
-        sessionLogInAndGoToPage(
-          'Session desk',
-          response.body.user.email,
-          '/guichet'
-        )
+        login = response.body.user.email
         tokenConfirmed = response.body.tokenConfirmed
         tokenTooSoon = response.body.tokenTooSoon
         tokenUsed = response.body.tokenUsed
@@ -63,6 +28,15 @@ describe('Desk (Guichet) feature', { testIsolation: false }, () => {
         tokenOther = response.body.tokenOther
       }
     )
+  })
+
+  beforeEach(() => {
+    cy.visit('/connexion')
+
+    sessionLogInAndGoToPage('Session desk', login, '/guichet')
+  })
+
+  it('I should see help information on desk page', () => {
     cy.stepLog({ message: 'The identity check message is displayed' })
     cy.findByText(
       'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
