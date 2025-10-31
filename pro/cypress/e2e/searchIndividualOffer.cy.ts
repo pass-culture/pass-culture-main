@@ -18,7 +18,6 @@ describe('Search individual offers', () => {
   let offerName7: string
 
   beforeEach(() => {
-    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',

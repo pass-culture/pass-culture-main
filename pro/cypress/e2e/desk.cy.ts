@@ -13,7 +13,6 @@ describe('Desk (Guichet) feature', () => {
   let tokenOther: string
 
   before(() => {
-    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
@@ -31,8 +30,6 @@ describe('Desk (Guichet) feature', () => {
   })
 
   beforeEach(() => {
-    cy.visit('/connexion')
-
     sessionLogInAndGoToPage('Session desk', login, '/guichet')
   })
 

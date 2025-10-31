@@ -10,7 +10,6 @@ describe('Create individual offers', () => {
   const stock = '42'
 
   before(() => {
-    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
@@ -26,8 +25,6 @@ describe('Create individual offers', () => {
   })
 
   beforeEach(() => {
-    cy.visit('/connexion')
-
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
