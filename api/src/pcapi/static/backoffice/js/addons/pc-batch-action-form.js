@@ -1,9 +1,6 @@
 /**
  * Add batch submit form to selection done using one `selectedRowsIds` within [PcTableMultiSelect](#pctablemultiselect).
- *
- * Form is renderer through a turbo frame which must be loaded with `loading="true"`.
- *
- * > Current integration does not yet support modal rendered with turbo `loading="lazy"`.
+ *.
  *
  * To work, each `.btn-group` must set the following attributes:
  * - `[data-toggle="pc-batch-confirm-btn-group"]`: this value is fixed,
@@ -107,16 +104,10 @@ class PcBatchActionForm extends PcAddOn {
   bindEvents = () => {
     this.refreshState()
     addEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
-    this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
-      EventHandler.on($batchConfirmBtnGroup, 'click', PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR, this.#onBatchButtonClick)
-    })
   }
 
   unbindEvents = () => {
     removeEventListener('pcTableMultiSelect:change', this.#onBatchSelectionChange)
-    this.$batchConfirmBtnGroups.forEach(($batchConfirmBtnGroup) => {
-      EventHandler.off($batchConfirmBtnGroup, 'click', PcBatchActionForm.BATCH_CONFIRM_BTN_SELECTOR, this.#onBatchButtonClick)
-    })
   }
 
   #onBatchSelectionChange = ({ detail }) => {
@@ -174,60 +165,5 @@ class PcBatchActionForm extends PcAddOn {
       $input = $form.querySelector("[name=object_ids]")
       $input.value = idsStr
     }
-  }
-
-  #onBatchButtonClick = async (event) => {
-    const { useConfirmationModal, useDynamicModal, pcTableMultiSelectId, toggleId, url, mode, fetchUrl, modalSelector } = event.target.dataset
-    if (useDynamicModal === "true") {
-      // TODO remove the remaining of the function and use htmx instead of turboframe
-      return
-    }
-    const { inputIdsName } = this.state[toggleId]
-    const tableMultiSelectState = this.app.addons.PcTableMultiSelectId.state[pcTableMultiSelectId]
-    const idsStr = [...tableMultiSelectState.selectedRowsIds].join(',')
-
-    if (url && useConfirmationModal !== 'true') {
-      const $form = document.createElement('form')
-      $form.classList.add('d-none')
-      $form.method = 'post'
-      $form.action = url
-      $form.innerHTML = this.app.csrfTokenInput
-      const $input = document.createElement('input')
-      $input.type = 'hidden'
-      $input.value = idsStr
-      $input.name = inputIdsName
-      $form.appendChild($input)
-      document.body.appendChild($form)
-      $form.submit()
-      return
-    }
-    const $modal = document.querySelector(modalSelector)
-    const $form = $modal.querySelector('form') // no support for turbo loading="lazy" yet
-    if ($form) {
-      const $objectIds = $form.querySelector(`input[name="${inputIdsName}"]`)
-      $objectIds.value = idsStr
-    }
-
-    if (mode === 'fetch' && fetchUrl && $form) {
-      try {
-        const $turboFrame = $modal.querySelector('turbo-frame')
-        const formData = new FormData()
-        formData.append(inputIdsName, idsStr)
-        formData.append('csrf_token', app.csrfTokenValue)
-        const response = await fetch(fetchUrl, {
-          method: 'POST',
-          body: formData,
-        })
-        if (!response.ok) {
-          throw new Error(`Bad response code (${response.status}): ${response.statusText}`)
-        }
-        this.app.addons.PcTomSelectFieldId.unbindEvents()
-        $turboFrame.parentElement.innerHTML = await response.text()
-        this.app.addons.PcTomSelectFieldId.bindEvents()
-      } catch (error) {
-        throw new Error(error)
-      }
-    }
-    bootstrap.Modal.getOrCreateInstance($modal).show()
   }
 }

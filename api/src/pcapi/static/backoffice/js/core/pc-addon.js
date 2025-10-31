@@ -62,7 +62,7 @@ class PcAddOn {
   /**
    * This method binds addons events.
    * Initialization is already called on document load through instance of `PcBackofficeApp`.
-   * It is called when event `turbo:frame-render` is emitted, prior an XHR call.
+   * It is called when event `htmx:afterRequest` is emitted, prior an XHR call.
    * @example
    * app.addons.bsTooltips.bindEvents()
    */
@@ -70,7 +70,7 @@ class PcAddOn {
 
   /**
    * This method unbinds addons events.
-   * It is called when event `turbo:before-frame-render` is emitted, after an XHR call.
+   * It is called when event `htmx:beforeRequest` is emitted, after an XHR call.
    * @example
    * app.addons.bsTooltips.unbindEvents()
    */

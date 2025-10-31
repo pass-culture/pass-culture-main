@@ -16,8 +16,6 @@ hashes = HashesContainer("", "")
 
 JS_BUNDLE = Path("src/pcapi/static/backoffice/js/bundle.js")
 JS_FILES = [
-    # Hotwired turbo frame,
-    Path("src/pcapi/static/backoffice/js/libs/@hotwired/turbo@v8.0.12/dist/turbo.es2017-umd.js"),
     # Bootstrap JS,
     Path("src/pcapi/static/backoffice/js/libs/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"),
     Path("src/pcapi/static/backoffice/js/libs/tom-select@2.4.1/dist/js/tom-select.complete.min.js"),
@@ -46,7 +44,6 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-registration-steps.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-filter-dataset.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-confirm-modal.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-reset-modal-turbo-src.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-field-list.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-form-field.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-clipboard.js"),
