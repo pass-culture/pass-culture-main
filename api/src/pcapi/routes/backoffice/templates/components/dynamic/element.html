@@ -1,4 +1,4 @@
-{% from "components/turbo/spinner.html" import build_loading_spinner %}
+{% from "components/dynamic/spinner.html" import build_loading_spinner %}
 {% macro dynamic_element(url, div_id="") %}
   <div {% if div_id %}id="{{ div_id }}"{% endif %}
        hx-trigger="load"
