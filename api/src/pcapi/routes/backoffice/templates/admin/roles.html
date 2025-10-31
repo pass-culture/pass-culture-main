@@ -28,33 +28,35 @@
                   {% endfor %}
                 </tr>
               </thead>
-              {% if not get_setting("BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS") %}
-                <tr>
-                  <td>&nbsp;</td>
-                  {% for role in roles %}
-                    <td class="border-start text-center">
-                      {% set link = "https://groups.google.com/a/passculture.app/g/backoffice-" + get_setting('ENV') + "-" + role.name + "/members" %}
-                      <a href="{{ link }}"
-                         target="_blank"
-                         rel="noreferrer noopener"
-                         class="link-primary"
-                         title="Voir les membres du groupe Google">
-                        <i class="bi bi-google"></i>
-                      </a>
-                    </td>
-                  {% endfor %}
+              <tbody>
+                {% if not get_setting("BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS") %}
+                  <tr>
+                    <td>&nbsp;</td>
+                    {% for role in roles %}
+                      <td class="border-start text-center">
+                        {% set link = "https://groups.google.com/a/passculture.app/g/backoffice-" + get_setting('ENV') + "-" + role.name + "/members" %}
+                        <a href="{{ link }}"
+                           target="_blank"
+                           rel="noreferrer noopener"
+                           class="link-primary"
+                           title="Voir les membres du groupe Google">
+                          <i class="bi bi-google"></i>
+                        </a>
+                      </td>
+                    {% endfor %}
+                  </tr>
                 {% endif %}
-              </tr>
-              {% for permission, perm_roles in permissions.items() %}
-                <tr class="border-top">
-                  <td class="text-nowrap">{{ permission | format_permission_name }}</td>
-                  {% for role in roles %}
-                    <td class="border-start text-center">
-                      {% if role.name in perm_roles %}<span title="{{ role.name }}">x</span>{% endif %}
-                    </td>
-                  {% endfor %}
-                </tr>
-              {% endfor %}
+                {% for permission, perm_roles in permissions.items() %}
+                  <tr class="border-top">
+                    <td class="text-nowrap">{{ permission | format_permission_name }}</td>
+                    {% for role in roles %}
+                      <td class="border-start text-center">
+                        {% if role.name in perm_roles %}<span title="{{ role.name }}">x</span>{% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
               <thead>
                 <tr class="border-top"
                     style="line-height: 13em">

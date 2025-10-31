@@ -165,6 +165,7 @@ tables_to_clean: list[type[Model]] = [
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
     users_models.SingleSignOn,
+    users_models.UserProfileRefreshCampaign,
     users_models.UserTagCategoryMapping,
     users_models.UserTagCategory,
     users_models.UserTagMapping,

@@ -1101,10 +1101,10 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"collective-offer-row-{collective_offer_to_validate.id}", is_xml=True
+        cells = html_parser.extract_plain_row(
+            response.data,
+            id=f"collective-offer-row-{collective_offer_to_validate.id}",
         )
-        cells = html_parser.extract(row, "td", is_xml=True)
         assert cells[2] == str(collective_offer_to_validate.id)
         assert cells[6] == "• Validée"
 
@@ -1318,10 +1318,7 @@ class RejectCollectiveOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
 
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"collective-offer-row-{collective_offer_to_reject.id}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer_to_reject.id}")
         assert cells[2] == str(collective_offer_to_reject.id)
         assert cells[6] == "• Rejetée Tarif erroné"
 
@@ -1393,10 +1390,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             assert collective_offer.isActive is True
             assert collective_offer.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer.validation is OfferValidationStatus.APPROVED
-            row = html_parser.get_tag(
-                response.data, tag="tr", id=f"collective-offer-row-{collective_offer.id}", is_xml=True
-            )
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
             assert cells[6] == "• Validée"
 
@@ -1502,10 +1496,7 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
             assert collective_offer.validation is OfferValidationStatus.REJECTED
             assert collective_offer.lastValidationAuthor == legit_user
             assert collective_offer.rejectionReason == reason
-            row = html_parser.get_tag(
-                response.data, tag="tr", id=f"collective-offer-row-{collective_offer.id}", is_xml=True
-            )
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"collective-offer-row-{collective_offer.id}")
             assert cells[2] == str(collective_offer.id)
             assert "• Rejetée" in cells[6]
 

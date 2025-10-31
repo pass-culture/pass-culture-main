@@ -13,8 +13,8 @@ def filter_whitespaces(text: str) -> str:
     return re.sub(r"\s+", " ", text.strip())
 
 
-def get_soup(html_content: str, from_encoding: str = "utf-8", is_xml: bool = False) -> BeautifulSoup:
-    return BeautifulSoup(html_content, features="lxml" if is_xml else "html5lib", from_encoding=from_encoding)
+def get_soup(html_content: str, from_encoding: str = "utf-8") -> BeautifulSoup:
+    return BeautifulSoup(html_content, features="html.parser", from_encoding=from_encoding)
 
 
 def content_as_text(html_content: str, from_encoding: str = "utf-8") -> str:
@@ -27,6 +27,7 @@ def extract_table_rows(
     parent_class: str | None = None,
     table_id: str | None = None,
     td_text_only: bool = True,
+    recursive: bool = True,
 ) -> list[dict[str, str]]:
     """
     Extract data from html table (thead + tbody), so that we can compare with expected data when testing routes.
@@ -62,7 +63,7 @@ def extract_table_rows(
     headers = []
     rows = []
 
-    thead_tr_list = thead.find_all("tr")
+    thead_tr_list = thead.find_all("tr", recursive=recursive)
     assert len(thead_tr_list) == 1
 
     for th in thead_tr_list[0].find_all(["th", "td"]):
@@ -70,11 +71,13 @@ def extract_table_rows(
         headers.append(th_text)
 
     # Only main rows, skip additional rows which show more information on click
-    tbody_tr_list = tbody.select("tr:not(.collapse)")
+    tbody_tr_list = tbody.find_all("tr", recursive=recursive)
 
     for tr in tbody_tr_list:
+        if tr.has_attr("class") and "collapse" in tr["class"]:
+            continue
         row_data = {}
-        td_list = tr.find_all(["th", "td"])
+        td_list = tr.find_all(["th", "td"], recursive=recursive)
         assert len(td_list) == len(headers)
         for idx, td in enumerate(td_list):
             if headers[idx]:
@@ -86,6 +89,26 @@ def extract_table_rows(
         rows.append(row_data)
 
     return rows
+
+
+def extract_plain_row(html_content: str, id: str) -> list[str]:
+    soup = get_soup(html_content)
+    rows = soup.find_all("tr", id=id, recursive=False)
+    res = []
+    for row in rows:
+        res.append(row.find_all("td", recursive=False))
+    assert len(res) == 1, f"Couldn't find a row with the id = `{id}`"
+    return [filter_whitespaces(td.text) for td in res[0]]
+
+
+def extract_plain_rows(html_content: str) -> list[list[str]]:
+    soup = get_soup(html_content)
+    rows = soup.find_all("tr", recursive=False)
+    res = []
+    for row in rows:
+        res.append([filter_whitespaces(td.text) for td in row.find_all("td", recursive=False)])
+
+    return res
 
 
 def count_table_rows(html_content: str, parent_class: str | None = None, table_id: str | None = None) -> int:
@@ -136,14 +159,14 @@ def extract_pagination_info(html_content: str) -> tuple[int, int, int]:
     return int(active_page_link.text), len(page_links), total_results
 
 
-def extract(html_content: str, tag: str = "div", class_: str | None = None, is_xml: bool = False) -> list[str]:
+def extract(html_content: str, tag: str = "div", class_: str | None = None, recursive: bool = True) -> list[str]:
     """
     Extract text from all <div> matching the class, as strings
     """
-    soup = get_soup(html_content, is_xml=is_xml)
+    soup = get_soup(html_content)
 
     if class_ is None:
-        elements = soup.find_all(tag)
+        elements = soup.find_all(tag, recursive=recursive)
     else:
         elements = soup.select(f"{tag}.{class_.replace(' ', '.')}")
     return [filter_whitespaces(element.text) for element in elements]
@@ -175,13 +198,12 @@ def get_tag(
     html_content: str,
     class_: str = sentinel,
     tag: str = "div",
-    is_xml: bool = False,
     **attrs: typing.Any,
 ) -> str:
     """
     Find a tag given its class
     """
-    soup = get_soup(html_content, is_xml=is_xml)
+    soup = get_soup(html_content)
     if class_ is not sentinel:
         attrs["class_"] = class_
     found_tag = soup.find(tag, **attrs)

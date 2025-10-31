@@ -380,8 +380,7 @@ class UpdateChronicleContentTest(PostEndpointHelper):
         db.session.refresh(chronicle)
 
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
         assert cells[3] == "new content"
 
 
@@ -438,8 +437,7 @@ class PublishChronicleTest(PostEndpointHelper):
         assert chronicle.isActive
 
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
         assert cells[5] == "Oui"
 
         action_log = db.session.query(history_models.ActionHistory).one()
@@ -510,8 +508,7 @@ class UnpublishChronicleTest(PostEndpointHelper):
         assert not chronicle.isActive
 
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"chronicle-row-{chronicle.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"chronicle-row-{chronicle.id}")
         assert cells[5] == "Non"
 
         action_log = db.session.query(history_models.ActionHistory).one()

@@ -1448,3 +1448,11 @@ class UserProfileRefreshCampaign(PcObject, Model):
     isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=expression.true(), default=True
     )
+
+    action_history: sa_orm.Mapped[list["ActionHistory"]] = sa_orm.relationship(
+        "ActionHistory",
+        foreign_keys="ActionHistory.userProfileRefreshCampaignId",
+        back_populates="userProfileRefreshCampaign",
+        order_by=ACTION_HISTORY_ORDER_BY,
+        passive_deletes=True,
+    )

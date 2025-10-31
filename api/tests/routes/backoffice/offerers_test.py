@@ -2912,8 +2912,7 @@ class ValidateOffererTest(ActivateOffererHelper):
 
         assert response.status_code == 200
 
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
         assert cells[2] == str(offerer.id)
 
     def test_validate_rejected_offerer(self, legit_user, authenticated_client):
@@ -3079,8 +3078,7 @@ class RejectOffererTest(DeactivateOffererHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
         assert cells[2] == str(offerer.id)
 
     def test_reject_offerer_keep_pro_role(self, authenticated_client):
@@ -3213,8 +3211,7 @@ class SetOffererPendingTest(DeactivateOffererHelper):
 
         assert response.status_code == 200
 
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
         assert cells[2] == str(offerer.id)
 
     def test_set_offerer_pending_keep_pro_role(self, authenticated_client):
@@ -3681,8 +3678,7 @@ class ValidateOffererAttachmentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
         assert cells[2] == str(user_offerer.user.id)
 
     def test_validate_offerer_attachment_returns_404_if_offerer_is_not_found(self, authenticated_client, offerer):
@@ -3761,8 +3757,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
         assert cells[2] == str(user_offerer.user.id)
 
     def test_reject_offerer_returns_404_if_offerer_attachment_is_not_found(self, authenticated_client, offerer):
@@ -3807,8 +3802,7 @@ class SetOffererAttachmentPendingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
         assert cells[2] == str(user_offerer.user.id)
 
     def test_set_offerer_attachment_pending_keep_pro_role(self, authenticated_client):
@@ -4087,8 +4081,7 @@ class BatchOffererValidateTest(PostEndpointHelper):
                 }
 
             # ensure that the row is rendered
-            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
             assert cells[2] == str(offerer.id)
 
 
@@ -4154,8 +4147,7 @@ class SetBatchOffererPendingTest(PostEndpointHelper):
                 }
             }
             # ensure that the row is rendered
-            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
             assert cells[2] == str(offerer.id)
 
 
@@ -4210,8 +4202,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
             assert action.extraData == {"rejection_reason": rejection_reason}
 
             # ensure that the row is rendered
-            row = html_parser.get_tag(response.data, tag="tr", id=f"offerer-row-{offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"offerer-row-{offerer.id}")
             assert cells[2] == str(offerer.id)
 
 
@@ -4248,8 +4239,7 @@ class BatchOffererAttachmentValidateTest(PostEndpointHelper):
             assert action.userId == user_offerer.user.id
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
-            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
             assert cells[2] == str(user_offerer.user.id)
 
         assert len(mails_testing.outbox) == len(user_offerers)
@@ -4317,8 +4307,7 @@ class SetBatchOffererAttachmentPendingTest(PostEndpointHelper):
             assert action.offererId == user_offerer.offerer.id
             assert action.venueId is None
             assert action.comment == "test comment"
-            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
             assert cells[2] == str(user_offerer.user.id)
 
 
@@ -4371,8 +4360,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
             assert action.offererId == user_offerer.offerer.id
             assert action.comment == "test comment"
             assert action.venueId is None
-            row = html_parser.get_tag(response.data, tag="tr", id=f"user-offerer-row-{user_offerer.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"user-offerer-row-{user_offerer.id}")
             assert cells[2] == str(user_offerer.user.id)
 
         assert len(mails_testing.outbox) == len(user_offerers)
