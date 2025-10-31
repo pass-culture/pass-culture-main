@@ -47,7 +47,7 @@ class CreateHighlightForm(FlaskForm):
         rows=10,
         validators=(
             wtforms.validators.InputRequired("La description est obligatoire"),
-            wtforms.validators.Length(max=2000, message="ne doit pas dépasser %(max)d caractères"),
+            wtforms.validators.Length(max=300, message="ne doit pas dépasser %(max)d caractères"),
         ),
     )
     availability_timespan = fields.PCDateRangeField(

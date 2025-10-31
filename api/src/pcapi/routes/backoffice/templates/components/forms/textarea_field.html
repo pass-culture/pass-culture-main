@@ -2,7 +2,7 @@
   {% set textarea_field_id = random_hash() %}
   <textarea name="{{ field.name }}"
             data-original-name="{{ field.name }}"
-            class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %}"
+            class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %} pc-textarea-counter"
             rows="{{ field.rows }}"
             id="{{ textarea_field_id }}"
             {% if field.flags.required %}required {% endif +%}
@@ -13,8 +13,12 @@
          data-original-name="{{ field.name }}"
          for="{{ textarea_field_id }}">{{ field.label.text }}</label>
   {% if not field.flags.readonly %}
-    <div class="text-muted text-end">
-      <small>Maj+Entrée pour ajouter une nouvelle ligne</small>
+    <div class="d-flex align-items-center text-muted pt-1">
+      <small>
+        <span class="pc-textarea-counter-container">{{ field.data | empty_string_if_null | length }}</span>
+        {% if field.flags.maxlength %}/ {{ field.flags.maxlength }}{% endif %}
+      </small>
+      <small class="ms-auto">Maj+Entrée pour ajouter une nouvelle ligne</small>
     </div>
   {% endif %}
 </div>
