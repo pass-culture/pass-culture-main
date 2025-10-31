@@ -18,7 +18,8 @@
     ],
     "replicas": [
         "venues playlist search",
-        "venues playlist search newest"
+        "venues playlist search newest",
+        "venues-experimental"
     ],
     "attributesForFaceting": [
         "filterOnly(audio_disability)",
