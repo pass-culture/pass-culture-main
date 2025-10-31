@@ -156,7 +156,7 @@ EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
 
 
 def get_gtl_id(article: TiteLiveBookArticle) -> str:
-    if not article.gtl:
+    if not article.gtl or not article.gtl.first:
         return EMPTY_GTL.code
     most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: gtl.code)
     gtl_id = most_precise_genre

@@ -106,7 +106,7 @@ def get_common_article_fields(titelive_search_result: TiteliveMusicWork) -> Comm
     artiste = None
     label = None
     for article in titelive_search_result.article:
-        if titelive_gtl is None and article.gtl is not None:
+        if titelive_gtl is None and article.gtl is not None and article.gtl.first is not None:
             most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: gtl.code)
             titelive_gtl = most_precise_genre
 
