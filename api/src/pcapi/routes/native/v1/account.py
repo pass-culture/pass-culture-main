@@ -7,6 +7,7 @@ from flask import current_app as app
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.users.models as users_models
+from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import google_oauth
 from pcapi.core import token as token_utils
@@ -305,7 +306,9 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 def email_validation_remaining_resends(email: str) -> serializers.EmailValidationRemainingResendsResponse | None:
     user = find_user_by_email(email)
     if not user:
-        return serializers.EmailValidationRemainingResendsResponse(remainingResends=0, counterResetDatetime=None)
+        return serializers.EmailValidationRemainingResendsResponse(
+            remainingResends=settings.MAX_EMAIL_VALIDATION_RESENDS, counterResetDatetime=None
+        )
 
     remaining_resends = api.get_remaining_email_validation_resends(user)
     expiration_time = api.get_email_validation_resends_limitation_expiration_time(user)
