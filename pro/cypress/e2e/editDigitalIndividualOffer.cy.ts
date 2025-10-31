@@ -7,7 +7,6 @@ describe('Edit digital individual offers', () => {
   describe('Display and url modification', () => {
     let login1: string
     beforeEach(() => {
-      // cy.wrap(Cypress.session.clearAllSavedSessions())
       cy.visit('/connexion')
       cy.sandboxCall(
         'GET',

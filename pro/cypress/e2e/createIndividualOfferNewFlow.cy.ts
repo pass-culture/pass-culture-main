@@ -13,7 +13,6 @@ describe('Create individual offers new flow', () => {
   let login: string
 
   before(() => {
-    // cy.wrap(Cypress.session.clearAllSavedSessions())
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
@@ -49,10 +48,6 @@ describe('Create individual offers new flow', () => {
       login,
       '/offre/individuelle/creation/description'
     )
-  })
-
-  after(() => {
-    // cy.wrap(Cypress.session.clearAllSavedSessions())
   })
 
   it('I should be able to create an individual show offer', () => {
