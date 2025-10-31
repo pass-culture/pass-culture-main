@@ -23,7 +23,7 @@ import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLa
 import { CollectiveOfferVisibilityScreen } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { getEducationalInstitutions } from './getEducationalInstitutions'
+import { getEducationalInstitutions } from './commons/utils/getEducationalInstitutions'
 
 export const CollectiveOfferEditionVisibility = ({
   offer,

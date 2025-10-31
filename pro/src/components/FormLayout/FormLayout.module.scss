@@ -34,6 +34,8 @@ $info-box-margin-left: rem.torem(24px);
 
   &-section {
     margin-bottom: var(--size-spacing-xxl);
+    min-width: auto;
+    max-width: 100%;
 
     &-title {
       @include fonts.title2;

@@ -1,3 +1,4 @@
+import type { InferType } from 'yup'
 import * as yup from 'yup'
 
 export const validationSchema = yup.object().shape({
@@ -7,3 +8,5 @@ export const validationSchema = yup.object().shape({
     .required('Veuillez sélectionner un établissement scolaire dans la liste'),
   teacher: yup.string(),
 })
+
+export type VisibilityFormValues = InferType<typeof validationSchema>

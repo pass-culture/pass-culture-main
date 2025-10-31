@@ -20,7 +20,7 @@ import {
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferVisibilityScreen } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 
-import { getEducationalInstitutions } from './getEducationalInstitutions'
+import { getEducationalInstitutions } from './commons/utils/getEducationalInstitutions'
 
 export const CollectiveOfferVisibility = ({
   offer,

@@ -3,15 +3,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
-import type { InferType } from 'yup'
 
 import { api } from '@/apiClient/api'
-import { isErrorAPIError } from '@/apiClient/helpers'
+import { isErrorAPIError, serializeApiErrors } from '@/apiClient/helpers'
 import {
   CollectiveOfferAllowedAction,
   type EducationalInstitutionResponseModel,
   type EducationalRedactor,
   type GetCollectiveOfferResponseModel,
+  type PatchCollectiveOfferEducationalInstitution,
 } from '@/apiClient/v1'
 import {
   GET_AUTOCOMPLETE_EDUCATIONAL_REDACTORS_FOR_UAI_KEY,
@@ -45,8 +45,19 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import {
+  DEFAULT_FORM_FIELD_ERRORS,
+  FORM_KEYS_MAPPING,
+  GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
+  INSTITUTION_GENERIC_ERROR_MESSAGE,
+  POST_VISIBILITY_FORM_ERROR_MESSAGE,
+  REDACTOR_GENERIC_ERROR_MESSAGE,
+} from '../../commons/constants'
+import {
+  type VisibilityFormValues,
+  validationSchema,
+} from '../../commons/validationSchema'
 import styles from './CollectiveOfferVisibility.module.scss'
-import { validationSchema } from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {
   mode: Mode
@@ -79,8 +90,6 @@ interface TeacherOption extends SelectOption {
   gender?: string | null
   email: string
 }
-
-export type VisibilityFormValues = InferType<typeof validationSchema>
 
 export const CollectiveOfferVisibilityScreen = ({
   mode,
@@ -134,18 +143,45 @@ export const CollectiveOfferVisibilityScreen = ({
     ([, id]) => api.getCollectiveOfferRequest(Number(id))
   )
 
+  const manualFormValidation = (
+    body: PatchCollectiveOfferEducationalInstitution
+  ) => {
+    if (!body.educationalInstitutionId) {
+      form.setError('institution', {
+        message: INSTITUTION_GENERIC_ERROR_MESSAGE,
+      })
+      return false
+    }
+    if (watch('teacher') && !body.teacherEmail) {
+      form.setError('teacher', {
+        message: REDACTOR_GENERIC_ERROR_MESSAGE,
+      })
+      return false
+    }
+    return true
+  }
+
   const onSubmit = async (values: VisibilityFormValues) => {
     const selectedTeacher: TeacherOption | null = requestId
       ? teachersOptions[0]
       : (teachersOptions.find(
           (teacher) => teacher.value === watch('teacher')
         ) ?? null)
+    const teacherEmail = selectedTeacher ? selectedTeacher.email : null
+
+    const isValid = manualFormValidation({
+      educationalInstitutionId: Number(values.institution),
+      teacherEmail,
+    })
+    if (!isValid) {
+      return
+    }
 
     try {
       const collectiveOffer =
         await api.patchCollectiveOffersEducationalInstitution(offer.id, {
           educationalInstitutionId: Number(values.institution),
-          teacherEmail: selectedTeacher ? selectedTeacher.email : null,
+          teacherEmail: teacherEmail,
         })
 
       onSuccess({
@@ -158,8 +194,25 @@ export const CollectiveOfferVisibilityScreen = ({
       reset({
         ...extractInitialVisibilityValues(collectiveOffer.institution),
       })
-    } catch {
-      notify.error(SENT_DATA_ERROR_MESSAGE)
+    } catch (error) {
+      if (isErrorAPIError(error)) {
+        const serializedApiErrors = serializeApiErrors(
+          error.body,
+          FORM_KEYS_MAPPING
+        )
+
+        notify.error(POST_VISIBILITY_FORM_ERROR_MESSAGE)
+
+        Object.entries(serializedApiErrors).forEach(([field]) => {
+          form.setError(field as keyof VisibilityFormValues, {
+            message:
+              DEFAULT_FORM_FIELD_ERRORS[field as keyof VisibilityFormValues] ||
+              SENT_DATA_ERROR_MESSAGE,
+          })
+        })
+      } else {
+        notify.error(SENT_DATA_ERROR_MESSAGE)
+      }
     }
   }
 
@@ -182,6 +235,7 @@ export const CollectiveOfferVisibilityScreen = ({
     resolver: yupResolver<VisibilityFormValues, unknown, unknown>(
       validationSchema
     ),
+    mode: 'onBlur',
   })
 
   const {
@@ -189,7 +243,7 @@ export const CollectiveOfferVisibilityScreen = ({
     setValue,
     reset,
     watch,
-    formState: { isDirty, isSubmitting },
+    formState: { isDirty, isSubmitting, errors },
   } = form
 
   const institution = watch('institution')
@@ -292,7 +346,9 @@ export const CollectiveOfferVisibilityScreen = ({
         )
       )
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      form.setError('teacher', {
+        message: GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
+      })
     }
   }, 400)
 
@@ -336,6 +392,7 @@ export const CollectiveOfferVisibilityScreen = ({
                     onChange={(event) => {
                       setValue('institution', event.target.value, {
                         shouldDirty: true,
+                        shouldValidate: true,
                       })
 
                       setValue('teacher', undefined)
@@ -345,6 +402,7 @@ export const CollectiveOfferVisibilityScreen = ({
                       searchPatternInOptions(options, pattern, 300)
                     }
                     value={watch('institution')}
+                    error={errors.institution?.message}
                   />
                 )}
               </FormLayout.Row>
@@ -368,9 +426,11 @@ export const CollectiveOfferVisibilityScreen = ({
                   onChange={(event) => {
                     setValue('teacher', event.target.value, {
                       shouldDirty: true,
+                      shouldValidate: true,
                     })
                   }}
                   value={watch('institution') ? watch('teacher') : undefined}
+                  error={errors.teacher?.message}
                 />
               </FormLayout.Row>
             </FormLayout.Section>

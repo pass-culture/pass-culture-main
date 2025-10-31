@@ -4,7 +4,7 @@ import type {
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from '@/apiClient/v1'
-import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/commons/validationSchema'
 
 export const formatInstitutionDisplayName = (
   institution:

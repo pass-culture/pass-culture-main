@@ -1,7 +1,7 @@
 import { api } from '@/apiClient/api'
 import type { EducationalInstitutionsResponseModel } from '@/apiClient/v1'
 
-import { getEducationalInstitutions } from '../getEducationalInstitutions'
+import { getEducationalInstitutions } from './getEducationalInstitutions'
 
 describe('getEducationalInstitutions', () => {
   let institutionsPaginated: EducationalInstitutionsResponseModel

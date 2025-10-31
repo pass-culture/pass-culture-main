@@ -1,5 +1,5 @@
 import { CollectiveLocationType } from '@/apiClient/v1'
-import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/commons/validationSchema'
 
 import type {
   OfferEducationalFormValues,
