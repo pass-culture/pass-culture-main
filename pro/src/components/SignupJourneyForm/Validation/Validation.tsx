@@ -18,7 +18,7 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
+import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { type UserAccess, updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
@@ -119,8 +119,8 @@ export const Validation = (): JSX.Element | undefined => {
       // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Offerer.tsx`).
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       const newAccess = await dispatch(
-        setCurrentOffererById({
-          nextCurrentOffererId: createdOfferer.id,
+        setSelectedOffererById({
+          nextSelectedOffererId: createdOfferer.id,
           shouldRefetch: true,
         })
       ).unwrap()

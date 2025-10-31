@@ -125,6 +125,7 @@ function doLogin(
   cy.stepLog({ message: `I am logged in with account ${login}` })
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
   cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
+  cy.intercept({ method: 'GET', url: '/venues' }).as('getVenues')
 
   cy.visit('/connexion')
   if (setDefaultCookieOrejime) {
@@ -148,6 +149,7 @@ function doLogin(
       })
     }
     cy.wait('@offererNames')
+    cy.wait('@getVenues')
   })
 }
 

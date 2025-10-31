@@ -1,9 +1,19 @@
 import { vi } from 'vitest'
 
+import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
-import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import { ApiError } from '@/apiClient/v1'
 import type { RootState } from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
+import {
+  defaultGetOffererResponseModel,
+  getOffererNameFactory,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
+import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
+
+import { initializeUser } from '../initializeUser'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -14,175 +24,192 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-vi.mock('@/commons/utils/storageAvailable', () => ({
-  storageAvailable: vi.fn(() => true),
-}))
-
-import { storageAvailable } from '@/commons/utils/storageAvailable'
-
-import { initializeUser } from '../initializeUser'
-
-const user: SharedCurrentUserResponseModel = {
-  dateCreated: '2025-01-01T00:00:00Z',
-  email: 'user@pro.fr',
-  id: 1,
-  isEmailValidated: true,
-  roles: [],
-}
-
 describe('initializeUser', () => {
-  const SAVED_OFFERER_ID_KEY = 'homepageSelectedOffererId'
-  const SAVED_VENUE_ID_KEY = 'PASS_CULTURE_SELECTED_VENUE_ID'
+  const user = sharedCurrentUserFactory({ email: 'user@pro.fr', id: 1 })
 
   beforeEach(() => {
     vi.resetAllMocks()
     localStorage.clear()
+    sessionStorage.clear()
+    // Reset URL between tests
+    window.history.pushState({}, '', '/')
   })
 
-  it('uses saved IDs when storage available and sets full access if onboarded', async () => {
-    ;(storageAvailable as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      true
-    )
-    localStorage.setItem(SAVED_OFFERER_ID_KEY, '99')
-    localStorage.setItem(SAVED_VENUE_ID_KEY, '199')
+  it('should prioritize BO URL params and refetch names and venues when `structure` search param is present', async () => {
+    window.history.pushState({}, '', '/?structure=200')
 
-    ;(
-      api.listOfferersNames as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      offerersNames: [{ id: 1, name: 'O1' }],
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
+      offerersNames: [getOffererNameFactory({ id: 200 })],
     })
-    ;(api.getVenues as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      venues: [
-        {
-          id: 199,
-          name: 'Saved V',
-          managingOffererId: 99,
-          offererName: 'O99',
-          isVirtual: false,
-          isPermanent: true,
-          isCaledonian: false,
-          hasCreatedOffer: false,
-          venueTypeCode: 'Autre',
-        },
-        {
-          id: 11,
-          name: 'V11',
-          managingOffererId: 1,
-          offererName: 'O1',
-          isVirtual: false,
-          isPermanent: true,
-          isCaledonian: false,
-          hasCreatedOffer: false,
-          venueTypeCode: 'Autre',
-        },
-      ],
+    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
+      venues: [makeVenueListItem({ id: 201, managingOffererId: 200 })],
     })
-    ;(api.getOfferer as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: 99,
-      name: 'O99',
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 200,
       isOnboarded: true,
     })
 
-    const store = configureTestStore() // default initial slices
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '100')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
+
+    const store = configureTestStore()
 
     await store.dispatch(initializeUser(user)).unwrap()
 
     const state = store.getState()
-    expect(state.offerer.offererNames?.[0]?.id).toBe(1)
-    expect(state.user.venues?.some((v) => v.id === 199)).toBe(true)
-    expect(state.offerer.currentOfferer?.id).toBe(99)
-    expect(state.user.selectedVenue?.id).toBe(199)
     expect(state.user.access).toBe('full')
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBe('99')
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('199')
-    expect(state.user.currentUser?.email).toBe('user@pro.fr')
+    expect(state.offerer.currentOfferer?.id).toBe(200)
+    expect(state.offerer.currentOffererName?.id).toBe(200)
+    expect(state.user.selectedVenue?.id).toBe(201)
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
+      '200'
+    )
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '201'
+    )
   })
 
-  it('falls back to first IDs when storage unavailable and sets no-onboarding when not onboarded', async () => {
-    ;(storageAvailable as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      false
-    )
-
-    ;(
-      api.listOfferersNames as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      offerersNames: [{ id: 2, name: 'O2' }],
-    })
-    ;(api.getVenues as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      venues: [
-        {
-          id: 20,
-          name: 'V20',
-          managingOffererId: 2,
-          offererName: 'O2',
-          isVirtual: false,
-          isPermanent: true,
-          isCaledonian: false,
-          hasCreatedOffer: false,
-          venueTypeCode: 'Autre',
-        },
+  it('should use saved venue id when present and set full access', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
       ],
     })
-    ;(api.getOfferer as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: 2,
-      name: 'O2',
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({ id: 101, managingOffererId: 100 }),
+        makeVenueListItem({ id: 201, managingOffererId: 200 }),
+        makeVenueListItem({ id: 202, managingOffererId: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 200,
+      isOnboarded: true,
+    })
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '200')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '201')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser(user)).unwrap()
+
+    const state = store.getState()
+    expect(state.user.access).toBe('full')
+    expect(state.offerer.currentOfferer?.id).toBe(200)
+    expect(state.offerer.currentOffererName?.id).toBe(200)
+    expect(state.user.selectedVenue?.id).toBe(201)
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
+      '200'
+    )
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '201'
+    )
+  })
+
+  it('should use saved offerer id when no saved venue id and pick a venue of that offerer', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({ id: 101, managingOffererId: 100 }),
+        makeVenueListItem({ id: 201, managingOffererId: 200 }),
+        makeVenueListItem({ id: 202, managingOffererId: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 200,
+      isOnboarded: true,
+    })
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '200')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser(user)).unwrap()
+
+    const state = store.getState()
+    expect(state.user.access).toBe('full')
+    expect(state.offerer.currentOfferer?.id).toBe(200)
+    expect(state.user.selectedVenue?.id).toBe(201)
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
+      '200'
+    )
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '201'
+    )
+  })
+
+  it('should prefer first venue when no saved IDs and mark access according to onboarding=false', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        getOffererNameFactory({ id: 100 }),
+        getOffererNameFactory({ id: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({ id: 101, managingOffererId: 100 }),
+        makeVenueListItem({ id: 201, managingOffererId: 200 }),
+        makeVenueListItem({ id: 202, managingOffererId: 200 }),
+      ],
+    })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
       isOnboarded: false,
     })
 
     const store = configureTestStore()
+
     await store.dispatch(initializeUser(user)).unwrap()
 
     const state = store.getState()
-    expect(state.offerer.currentOfferer?.id).toBe(2)
-    expect(state.user.selectedVenue?.id).toBe(20)
     expect(state.user.access).toBe('no-onboarding')
+    expect(state.offerer.currentOfferer?.id).toBe(100)
+    expect(state.user.selectedVenue?.id).toBe(101)
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
+      '100'
+    )
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBe(
+      '101'
+    )
   })
 
-  it('sets no-offerer access when there is no offerer/venue', async () => {
-    ;(storageAvailable as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      true
-    )
-    ;(
-      api.listOfferersNames as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({ offerersNames: [] })
-    ;(api.getVenues as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      venues: [],
-    })
+  it('should set no-offerer when no offerers and no venues', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
 
     const store = configureTestStore()
+
     await store.dispatch(initializeUser(user)).unwrap()
 
-    expect(store.getState().user.access).toBe('no-offerer')
-    expect(
-      api.getOfferer as unknown as ReturnType<typeof vi.fn>
-    ).not.toHaveBeenCalled()
+    expect(apiGetOffererSpy).not.toHaveBeenCalled()
+
+    const state = store.getState()
+    expect(state.user.access).toBe('no-offerer')
   })
 
-  it('sets unattached when getOfferer rejects with ApiError 403', async () => {
-    ;(storageAvailable as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      true
-    )
-    ;(
-      api.listOfferersNames as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      offerersNames: [{ id: 3, name: 'O3' }],
+  it('should set unattached when getOfferer rejects with 403 on first-offerer path', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [getOffererNameFactory({ id: 100 })],
     })
-    ;(api.getVenues as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      venues: [
-        {
-          id: 30,
-          name: 'V30',
-          managingOffererId: 3,
-          offererName: 'O3',
-          isVirtual: false,
-          isPermanent: true,
-          isCaledonian: false,
-          hasCreatedOffer: false,
-          venueTypeCode: 'Autre',
-        },
-      ],
-    })
-    ;(api.getOfferer as unknown as ReturnType<typeof vi.fn>).mockRejectedValue({
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getOfferer').mockRejectedValue({
       name: 'ApiError',
       message: 'Forbidden',
       status: 403,
@@ -194,53 +221,76 @@ describe('initializeUser', () => {
 
     const state = store.getState()
     expect(state.user.access).toBe('unattached')
-    expect(state.user.currentUser?.email).toBe('user@pro.fr')
-    // localStorage not updated in 403 path
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
+    expect(state.offerer.currentOfferer).toBeNull()
+    expect(state.offerer.currentOffererName?.id).toBe(100)
+    expect(state.user.selectedVenue).toBeNull()
+
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)).toBe(
+      '100'
+    )
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
-  it('logs out on non-403 error while initializing selection', async () => {
-    ;(storageAvailable as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
-      true
+  it('should logout and reset slices when getOfferer rejects with non-403 on venue path', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [getOffererNameFactory({ id: 100 })],
+    })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [makeVenueListItem({ id: 101, managingOffererId: 100 })],
+    })
+    vi.spyOn(api, 'getOfferer').mockRejectedValue(
+      new ApiError(
+        { method: 'DELETE', url: '' },
+        {} as unknown as ApiResult,
+        'error'
+      )
     )
-    ;(
-      api.listOfferersNames as unknown as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      offerersNames: [{ id: 4, name: 'O4' }],
-    })
-    ;(api.getVenues as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      venues: [
-        {
-          id: 40,
-          name: 'V40',
-          managingOffererId: 4,
-          offererName: 'O4',
-          isVirtual: false,
-          isPermanent: true,
-          isCaledonian: false,
-          hasCreatedOffer: false,
-          venueTypeCode: 'Autre',
-        },
-      ],
-    })
-    ;(api.getOfferer as unknown as ReturnType<typeof vi.fn>).mockRejectedValue({
-      name: 'ApiError',
-      message: 'Server error',
-      status: 500,
-      body: {},
-    })
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '100')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
 
     const store = configureTestStore()
+
     await store.dispatch(initializeUser(user)).unwrap()
 
-    // After logout, slices should be reset
     const state = store.getState() as RootState
-    expect(state.offerer.offererNames).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.user.currentUser).toBeNull()
     expect(state.user.access).toBeNull()
+    expect(state.user.currentUser).toBeNull()
+    expect(state.offerer.currentOfferer).toBeNull()
+    expect(state.offerer.offererNames).toBeNull()
     expect(state.user.selectedVenue).toBeNull()
     expect(state.user.venues).toBeNull()
+
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
+    ).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
+  })
+
+  it('should dispatch logout when initialization fails before selection', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    vi.spyOn(api, 'signout').mockResolvedValue()
+
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
+    localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '34')
+
+    const store = configureTestStore()
+
+    await store.dispatch(initializeUser(user)).unwrap()
+
+    const state = store.getState()
+    expect(state.user.access).toBeNull()
+    expect(state.user.currentUser).toBeNull()
+    expect(state.offerer.currentOfferer).toBeNull()
+    expect(state.offerer.currentOffererName).toBeNull()
+    expect(state.offerer.offererNames).toBeNull()
+    expect(state.user.selectedVenue).toBeNull()
+    expect(state.user.venues).toBeNull()
+
+    expect(
+      localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
+    ).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 })

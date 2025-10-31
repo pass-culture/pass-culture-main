@@ -9,6 +9,7 @@ export type UserAccess = 'no-offerer' | 'no-onboarding' | 'unattached' | 'full'
 
 type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
+  // TODO (igabriele, 2025-10-28): Move that into a `permission(s)` or `role(s)` prop attached to each venue provided by the backend (in `get_venues` route`) before `WIP_SWITCH_VENUE is enabled in production.
   access: null | UserAccess
   selectedVenue: VenueListItemResponseModel | null
   venues: VenueListItemResponseModel[] | null

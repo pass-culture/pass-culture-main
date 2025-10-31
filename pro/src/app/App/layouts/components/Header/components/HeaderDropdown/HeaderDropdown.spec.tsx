@@ -11,6 +11,7 @@ import type {
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
+  getOffererNameFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
@@ -105,6 +106,7 @@ describe('App', () => {
       vi.mock('@/apiClient/api', () => ({
         api: {
           getOfferer: vi.fn(),
+          signout: vi.fn(),
         },
       }))
 
@@ -114,6 +116,7 @@ describe('App', () => {
     })
 
     it('should reset url query parameters & stored search filters', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
       // Mock sessionStorage state to simulate previously stored search filters.
       const filtersVisibilityForAll = true
       Object.values(locallyStoredFilterConfig).forEach((key) => {
@@ -164,15 +167,20 @@ describe('App', () => {
     it('should display add a venue button when only one offerer', async () => {
       const options = {
         storeOverrides: {
-          offerer: currentOffererFactory({
+          offerer: {
             offererNames: [
-              {
+              getOffererNameFactory({
                 id: 1,
                 name: 'Mon offerer',
                 allowedOnAdage: true,
-              },
+              }),
             ],
-          }),
+            currentOffererName: getOffererNameFactory({
+              id: 1,
+              name: 'Mon offerer',
+              allowedOnAdage: true,
+            }),
+          },
         },
       }
       renderWithProviders(<HeaderDropdown />, options)

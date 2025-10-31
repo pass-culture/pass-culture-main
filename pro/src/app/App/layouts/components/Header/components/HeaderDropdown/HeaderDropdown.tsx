@@ -8,12 +8,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import {
-  selectCurrentOffererId,
-  selectOffererNames,
-} from '@/commons/store/offerer/selectors'
+import { selectOffererNames } from '@/commons/store/offerer/selectors'
 import { logout } from '@/commons/store/user/dispatchers/logout'
-import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
+import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import fulBackIcon from '@/icons/full-back.svg'
@@ -40,9 +37,11 @@ export const HeaderDropdown = () => {
 
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const currentOffererId = useAppSelector(selectCurrentOffererId)
   const currentUser = useAppSelector(selectCurrentUser)
   const offererNames = useAppSelector(selectOffererNames)
+  const selectedOffererName = useAppSelector(
+    (state) => state.offerer.currentOffererName
+  )
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
@@ -65,18 +64,14 @@ export const HeaderDropdown = () => {
   const hideProfile =
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
-  const selectedOffererName = currentOffererId
-    ? offererNames?.find(
-        (offererOption) => offererOption.id === currentOffererId
-      )
-    : undefined
-
-  const handleChangeOfferer = async (nextCurrentOffererId: string) => {
+  const handleChangeOfferer = async (nextSelectedOffererId: string) => {
     // Reset offers stored search filters before changing offerer
     resetAllStoredFilterConfig()
 
     const newAccess = await dispatch(
-      setCurrentOffererById({ nextCurrentOffererId })
+      setSelectedOffererById({
+        nextSelectedOffererId: Number(nextSelectedOffererId),
+      })
     ).unwrap()
     if (newAccess === 'full') {
       navigate('/accueil')

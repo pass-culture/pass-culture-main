@@ -45,7 +45,7 @@ export const HeaderVenuesDropdown = () => {
           <div className={cn(dropdownStyles['menu'], styles['menu'])}>
             <DropdownMenu.RadioGroup
               onValueChange={(nextSelectedVenueId) =>
-                dispatch(setSelectedVenueById(nextSelectedVenueId))
+                dispatch(setSelectedVenueById(Number(nextSelectedVenueId)))
               }
               className={dropdownStyles['menu-group']}
               value={selectedVenue.id.toString()}

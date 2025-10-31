@@ -17,7 +17,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { setCurrentOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
+import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -123,8 +123,8 @@ export const Offerers = (): JSX.Element => {
       // TODO (igabriele, 202-10-20): Must be further DRYed via a proper decicaded dispatcher (see `Validation.tsx`).
       dispatch(updateUser({ ...currentUser, hasUserOfferer: true }))
       await dispatch(
-        setCurrentOffererById({
-          nextCurrentOffererId: createdOfferer.id,
+        setSelectedOffererById({
+          nextSelectedOffererId: createdOfferer.id,
           shouldRefetch: true,
         })
       ).unwrap()

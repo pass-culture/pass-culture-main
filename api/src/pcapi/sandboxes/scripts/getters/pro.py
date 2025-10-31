@@ -119,23 +119,24 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
     return {"user": get_pro_user_helper(pro_user)}
 
 
+def create_pro_user_with_1_onboarded_and_1_unonboarded_offerers() -> dict:
+    pro_user = users_factories.ProFactory.create()
+    onboarded_offerer = offerers_factories.OffererFactory.create(name="Onboarded Offerer", allowedOnAdage=True)
+    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=onboarded_offerer)
+    offerers_factories.VenueFactory.create(name="Onboarded Offerer Structure", managingOfferer=onboarded_offerer)
+
+    unonboarded_offerer = offerers_factories.OffererFactory.create(name="Unonboarded Offerer", allowedOnAdage=False)
+    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=unonboarded_offerer)
+    offerers_factories.VenueFactory.create(name="Unonboarded Offerer Structure", managingOfferer=unonboarded_offerer)
+
+    return {"user": get_pro_user_helper(pro_user)}
+
+
 def create_pro_user_with_financial_data() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer_A = offerers_factories.OffererFactory.create(allowedOnAdage=True)
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_A)
     offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_A)
-
-    offerer_B = offerers_factories.OffererFactory.create(
-        name="Structure avec informations bancaires", allowedOnAdage=False
-    )
-    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer_B)
-    venue_B = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer_B)
-    bank_account_B = finance_factories.BankAccountFactory.create(offerer=offerer_B)
-    offerers_factories.VenuePricingPointLinkFactory.create(
-        venue=venue_B,
-        pricingPoint=venue_B,
-    )
-    finance_factories.InvoiceFactory.create(bankAccount=bank_account_B)
 
     return {"user": get_pro_user_helper(pro_user)}
 
