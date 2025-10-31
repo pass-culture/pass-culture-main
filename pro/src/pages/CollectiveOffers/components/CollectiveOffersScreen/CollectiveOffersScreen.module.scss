@@ -1,11 +1,32 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
 .offers-pagination {
   margin-top: var(--size-spacing-xxl);
 }
 
-.offer-multiselect-status {
-  flex: 1;
-}
-
 .filter-container {
   width: 100%;
+}
+
+.offers-table {
+  &-callout {
+    margin-bottom: var(--size-spacing-l);
+  }
+
+  &-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--size-spacing-s);
+
+    &-heading {
+      @include fonts.title2;
+
+      margin-right: var(--size-spacing-l);
+    }
+  }
+
+  &-pagination {
+    margin-top: var(--size-spacing-xxl);
+  }
 }

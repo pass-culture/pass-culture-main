@@ -1,4 +1,4 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
@@ -31,7 +31,7 @@ const LABELS = {
   nameSearchInput: /Nom de l’offre/,
 }
 
-const renderOffers = async (
+const renderOffers = (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -55,8 +55,6 @@ const renderOffers = async (
       },
     }
   )
-
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
   return {
     history,
@@ -121,8 +119,12 @@ describe('CollectiveOffersQueryParams', () => {
         collectiveOfferFactory({ stock })
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers()
-      const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
+
+      renderOffers()
+
+      const nextPageIcon = await screen.findByRole('button', {
+        name: 'Page suivante',
+      })
 
       await userEvent.click(nextPageIcon)
 
@@ -132,7 +134,7 @@ describe('CollectiveOffersQueryParams', () => {
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
-      await renderOffers()
+      renderOffers()
 
       await userEvent.type(
         screen.getByRole('searchbox', {
@@ -151,7 +153,7 @@ describe('CollectiveOffersQueryParams', () => {
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
-      await renderOffers()
+      renderOffers()
 
       await userEvent.clear(
         screen.getByRole('searchbox', {
@@ -166,16 +168,15 @@ describe('CollectiveOffersQueryParams', () => {
     })
 
     it('should have venue value be removed when user asks for all venues', async () => {
-      // Given
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers()
+      renderOffers()
       const firstTypeOption = screen.getByRole('option', {
         name: 'Concert',
       })
       const formatSelect = screen.getByRole('combobox', {
         name: 'Format',
       })
-      // When
+
       await userEvent.selectOptions(formatSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
 
@@ -189,13 +190,9 @@ describe('CollectiveOffersQueryParams', () => {
 
     it('should have the status in the url value when user filters by status', async () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers()
+      renderOffers()
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut',
-        })
-      )
+      await userEvent.click(screen.getByRole('button', { name: 'Statut' }))
 
       await userEvent.click(screen.getByText('Réservée'))
 
@@ -203,22 +200,15 @@ describe('CollectiveOffersQueryParams', () => {
 
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?statut=reservee',
-        {
-          replace: true,
-        }
+        { replace: true }
       )
     })
 
     it('should have the status in the url value when user filters by multiple statuses', async () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-      await renderOffers()
+      renderOffers()
 
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: 'Statut',
-        })
-      )
-
+      await userEvent.click(screen.getByRole('button', { name: 'Statut' }))
       await userEvent.click(screen.getByText('Réservée'))
       await userEvent.click(screen.getByText('En instruction'))
       await userEvent.click(screen.getByText('Archivée'))
@@ -227,9 +217,7 @@ describe('CollectiveOffersQueryParams', () => {
 
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
-        {
-          replace: true,
-        }
+        { replace: true }
       )
     })
   })
