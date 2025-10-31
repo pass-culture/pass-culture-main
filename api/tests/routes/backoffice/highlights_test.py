@@ -44,11 +44,11 @@ class ListHighlightsTest(GetEndpointHelper):
         assert rows[0]["Nom"] == highlight_2.name
         assert rows[0]["Description"] == highlight_2.description
         assert (
-            rows[0]["Dates de disponibilité sur l'espace partenaire"]
+            rows[0]["Diffusion espace partenaire"]
             == f"{highlight_2.availability_timespan.lower.strftime('%d/%m/%Y')} → {highlight_2.availability_timespan.upper.strftime('%d/%m/%Y')}"
         )
         assert (
-            rows[0]["Dates du temps fort"]
+            rows[0]["Date(s) d'évènement"]
             == f"{highlight_2.highlight_timespan.lower.strftime('%d/%m/%Y')} → {highlight_2.highlight_timespan.upper.strftime('%d/%m/%Y')}"
         )
 
@@ -56,11 +56,11 @@ class ListHighlightsTest(GetEndpointHelper):
         assert rows[1]["Nom"] == highlight_1.name
         assert rows[1]["Description"] == highlight_1.description
         assert (
-            rows[1]["Dates de disponibilité sur l'espace partenaire"]
+            rows[1]["Diffusion espace partenaire"]
             == f"{highlight_1.availability_timespan.lower.strftime('%d/%m/%Y')} → {highlight_1.availability_timespan.upper.strftime('%d/%m/%Y')}"
         )
         assert (
-            rows[1]["Dates du temps fort"]
+            rows[1]["Date(s) d'évènement"]
             == f"{highlight_1.highlight_timespan.lower.strftime('%d/%m/%Y')} → {highlight_1.highlight_timespan.upper.strftime('%d/%m/%Y')}"
         )
 
@@ -128,7 +128,7 @@ class CreateHighlightTest(PostEndpointHelper):
             assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"Le temps fort {name} a été créé."
+        assert html_parser.extract_alert(response.data) == f"La valorisation thématique {name} a été créée."
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == name
         assert highlight.description == description
@@ -172,7 +172,7 @@ class CreateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "La disponibilité sur l'espace partenaire ne peut pas se terminer après la fin du temps fort"
+            == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
     def test_create_highlight_in_the_past(self, authenticated_client):
@@ -202,9 +202,9 @@ class CreateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Dates de disponibilité sur l'espace partenaire : "
-            "La date de fin de disponibilité sur l'espace partenaire ne peut pas être dans le passé ; Dates du temps fort : La date "
-            "de fin du temps fort ne peut pas être dans le passé ;"
+            == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
+            "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
+            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ;"
         )
 
     def test_create_highlight_missing_field_should_fail(self, authenticated_client):
@@ -216,10 +216,11 @@ class CreateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Nom du temps fort : Le nom est obligatoire ; "
-            "Description : La description est obligatoire ; Dates de disponibilité sur l'espace partenaire : "
-            "Les dates de disponibilité sur l'espace partenaire sont obligatoires ; Dates du temps fort : Les dates du temps fort sont obligatoires ; "
-            "Image du temps fort (max. 1 Mo) : L'image du temps fort est obligatoire ;"
+            == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : Le nom est obligatoire ; "
+            "Description : La description est obligatoire ; Dates de diffusion sur l'espace partenaire : "
+            "Les dates de diffusion sur l'espace partenaire sont obligatoires ; Dates de l'évènement : "
+            "Les dates de l'évènement sont obligatoires ; Image de la valorisation thématique (max. 1 Mo) : "
+            "L'image de la valorisation thématique est obligatoire ;"
         )
 
 
@@ -279,7 +280,7 @@ class UpdateHighlightTest(PostEndpointHelper):
             assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
-        assert html_parser.extract_alert(response.data) == f"Le temps fort {new_name} a été mis à jour"
+        assert html_parser.extract_alert(response.data) == f"La valorisation thématique {new_name} a été mise à jour"
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == new_name
         assert highlight.description == new_description
@@ -319,7 +320,7 @@ class UpdateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "La disponibilité sur l'espace partenaire ne peut pas se terminer après la fin du temps fort"
+            == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
     def test_update_highlight_in_the_past(self, authenticated_client):
@@ -347,9 +348,9 @@ class UpdateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Dates de disponibilité sur l'espace partenaire : "
-            "La date de fin de disponibilité sur l'espace partenaire ne peut pas être dans le passé ; Dates du temps fort : La date "
-            "de fin du temps fort ne peut pas être dans le passé ;"
+            == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
+            "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
+            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ;"
         )
 
     def test_update_highlight_missing_field_should_fail(self, authenticated_client):
@@ -363,7 +364,8 @@ class UpdateHighlightTest(PostEndpointHelper):
         response = authenticated_client.get(response.location)
         assert (
             html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Nom du temps fort : Le nom est obligatoire ; "
-            "Description : La description est obligatoire ; Dates de disponibilité sur l'espace partenaire : "
-            "Les dates de disponibilité sur l'espace partenaire sont obligatoires ; Dates du temps fort : Les dates du temps fort sont obligatoires ;"
+            == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : Le nom est obligatoire ; "
+            "Description : La description est obligatoire ; Dates de diffusion sur l'espace partenaire : "
+            "Les dates de diffusion sur l'espace partenaire sont obligatoires ; "
+            "Dates de l'évènement : Les dates de l'évènement sont obligatoires ;"
         )

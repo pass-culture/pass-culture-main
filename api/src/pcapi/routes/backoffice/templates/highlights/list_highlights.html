@@ -5,7 +5,7 @@
 {% import "components/links.html" as links with context %}
 {% set rows_count = rows.total %}
 {% set pagination = True %}
-{% block title %}Temps forts{% endblock %}
+{% block title %}Valorisations thématiques{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block before_table %}
   {% if has_permission("MANAGE_HIGHLIGHT") %}
@@ -13,7 +13,7 @@
       <button class="btn btn-outline-primary-subtle-bg mt-2"
               data-bs-toggle="modal"
               data-bs-target="#create-highlight"
-              type="button">Créer un temps fort</button>
+              type="button">Créer une valorisation</button>
       {{ build_dynamic_modal(url_for("backoffice_web.highlights.get_create_highlight_form") , "create-highlight") }}
     </div>
   {% endif %}
@@ -23,8 +23,8 @@
   <th>ID</th>
   <th>Nom</th>
   <th>Description</th>
-  <th>Dates de disponibilité sur l'espace partenaire</th>
-  <th>Dates du temps fort</th>
+  <th>Diffusion espace partenaire</th>
+  <th>Date(s) d'évènement</th>
   <th>Image</th>
 {% endblock table_header %}
 {% block table_body %}
@@ -41,12 +41,12 @@
           <ul class="dropdown-menu">
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
-                 href="{{ url_for("backoffice_web.offer.list_offers") }}?search-0-search_field=HIGHLIGHT_REQUEST&search-0-operator=IN&search-0-highlight={{ highlight.id }}">Voir les offres ayant demandé à participer à ce temps fort</a>
+                 href="{{ url_for("backoffice_web.offer.list_offers") }}?search-0-search_field=HIGHLIGHT_REQUEST&search-0-operator=IN&search-0-highlight={{ highlight.id }}">Voir les offres candidates</a>
             </li>
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
                  data-bs-toggle="modal"
-                 data-bs-target="#update-highlight-{{ highlight.id }}">Modifier le temps fort</a>
+                 data-bs-target="#update-highlight-{{ highlight.id }}">Modifier la valorisation</a>
             </li>
           </ul>
         </div>

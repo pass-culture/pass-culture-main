@@ -12,8 +12,8 @@ from . import models
 
 
 class HighlightFactory(BaseFactory):
-    name = factory.Sequence(lambda n: f"Temps fort {n}")
-    description = factory.Sequence(lambda n: f"Ceci est le temps fort {n}")
+    name = factory.Sequence(lambda n: f"Valorisation thématique {n}")
+    description = factory.Sequence(lambda n: f"Ceci est la valorisation thématique {n}")
     highlight_timespan = factory.LazyFunction(
         lambda: db_utils.make_timerange(
             start=get_naive_utc_now() + datetime.timedelta(days=11),
