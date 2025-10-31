@@ -27,7 +27,6 @@ import styles from './Homepage.module.scss'
 export const Homepage = (): JSX.Element => {
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
-  const areHighlightsEnable = useActiveFeature('WIP_HIGHLIGHT')
 
   const offererNamesQuery = useOffererNamesQuery()
 
@@ -50,6 +49,9 @@ export const Homepage = (): JSX.Element => {
   }, [selectedOfferer])
 
   const isNotReady = offererNamesQuery.isLoading || !offererNames
+
+  const areHighlightsEnable =
+    useActiveFeature('WIP_HIGHLIGHT') && selectedOfferer?.canDisplayHighlights
 
   return (
     <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">
