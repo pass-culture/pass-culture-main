@@ -2269,9 +2269,9 @@ def _generate_invoice_legacy(
     db.session.flush()
     for line in invoice_lines:
         line.invoiceId = invoice.id
-    db.session.bulk_save_objects(invoice_lines)
+    db.session.add_all(invoice_lines)
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
-    db.session.bulk_save_objects(cf_links)
+    db.session.add_all(cf_links)
 
     # Cashflow.status: UNDER_REVIEW -> ACCEPTED
     with log_elapsed(logger, "Updating status of cashflows"):
@@ -2459,9 +2459,9 @@ def _generate_invoice(
     db.session.flush()
     for line in invoice_lines:
         line.invoiceId = invoice.id
-    db.session.bulk_save_objects(invoice_lines)
+    db.session.add_all(invoice_lines)
     cf_links = [models.InvoiceCashflow(invoiceId=invoice.id, cashflowId=cashflow.id) for cashflow in cashflows]
-    db.session.bulk_save_objects(cf_links)
+    db.session.add_all(cf_links)
 
     # Cashflow.status: UNDER_REVIEW → PENDING_ACCEPTANCE for new workflow
     with log_elapsed(logger, "Updating status of cashflows"):
@@ -3154,8 +3154,8 @@ def update_bank_account_venues_links(
                     "bankAccountId": bank_account.id,
                 }
             )
-        db.session.bulk_update_mappings(
-            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
+        db.session.execute(
+            sa.update(offerers_models.VenueBankAccountLink),
             link_bulk_update_mapping,
         )
 
@@ -3188,15 +3188,11 @@ def update_bank_account_venues_links(
                 }
             )
 
-        db.session.bulk_insert_mappings(
-            offerers_models.VenueBankAccountLink,  # type: ignore [arg-type]
-            new_links,
-        )
+        if new_links:
+            db.session.execute(sa.insert(offerers_models.VenueBankAccountLink), new_links)
 
-        db.session.bulk_insert_mappings(
-            history_models.ActionHistory,  # type: ignore [arg-type]
-            action_history_bulk_insert_mapping,
-        )
+        if action_history_bulk_insert_mapping:
+            db.session.execute(sa.insert(history_models.ActionHistory), action_history_bulk_insert_mapping)
 
         for venue in venues:
             if venue.id in venues_links_to_deprecate and venue.bookingEmail:
