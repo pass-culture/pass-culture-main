@@ -295,7 +295,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     venueLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.Integer, sa.ForeignKey("venue_label.id"), nullable=True
+        sa.BigInteger, sa.ForeignKey("venue_label.id"), nullable=True
     )
     venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
@@ -974,7 +974,6 @@ class OpeningHours(PcObject, Model):
 
 class VenueLabel(PcObject, Model):
     __tablename__ = "venue_label"
-    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     label: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(100), nullable=False)
 
 

@@ -1356,8 +1356,6 @@ class CollectiveStock(PcObject, models.Model):
 class EducationalInstitution(PcObject, models.Model):
     __tablename__ = "educational_institution"
 
-    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     # this institutionId corresponds to the UAI ("Unité Administrative Immatriculée") code
     institutionId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(30), nullable=False, unique=True, index=True)
 
