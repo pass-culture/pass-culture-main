@@ -1500,21 +1500,12 @@ class ResendEmailValidationTest:
         MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
         N days.
         """
-        user = users_factories.UserFactory(isEmailValidated=False)
+        email = "hello@example.com"
+        for _i in range(3):
+            response = client.post("/native/v1/resend_email_validation", json={"email": email})
+            assert response.status_code == 204
 
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.post("/native/v1/resend_email_validation", json={"email": email})
 
         assert response.status_code == 429
         assert response.json["code"] == "TOO_MANY_EMAIL_VALIDATION_RESENDS"
@@ -1526,14 +1517,14 @@ class EmailValidationRemainingResendsTest:
         self,
         client,
     ):
-        user = users_factories.UserFactory(isEmailValidated=False)
+        email = "hello@example.com"
 
-        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{email}")
         assert response.status_code == 200
-
         assert response.json["remainingResends"] == 3
-        client.post("/native/v1/resend_email_validation", json={"email": user.email})
-        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+
+        client.post("/native/v1/resend_email_validation", json={"email": email})
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{email}")
 
         assert response.status_code == 200
         assert response.json["remainingResends"] == 2
@@ -1558,11 +1549,10 @@ class EmailValidationRemainingResendsTest:
         self,
         client,
     ):
-        expected_num_queries = 1  # user
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(0):
             response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")
 
-        assert response.json["remainingResends"] == 0
+        assert response.json["remainingResends"] == settings.MAX_EMAIL_RESENDS
         assert response.json["counterResetDatetime"] is None
 
 
