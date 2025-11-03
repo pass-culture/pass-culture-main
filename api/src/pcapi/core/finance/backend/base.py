@@ -232,6 +232,8 @@ class BaseFinanceBackend:
         return res
 
     def _get_collective_data(self, invoice_id: int, query: sa_orm.Query) -> list[dict]:
+        confirmation_educational_year = sa_orm.aliased(educational_models.EducationalYear)
+
         res = []
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
@@ -243,12 +245,32 @@ class BaseFinanceBackend:
             .join(finance_models.Cashflow.invoices)
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
+                confirmation_educational_year,
+                sa.and_(
+                    confirmation_educational_year.beginningDate
+                    <= educational_models.CollectiveBooking.confirmationDate,
+                    confirmation_educational_year.expirationDate
+                    >= educational_models.CollectiveBooking.confirmationDate,
+                ),
+            )
+            .join(
                 educational_models.EducationalDeposit,
                 sa.and_(
                     educational_models.EducationalDeposit.educationalYearId
                     == educational_models.CollectiveBooking.educationalYearId,
                     educational_models.EducationalDeposit.educationalInstitutionId
                     == educational_models.EducationalInstitution.id,
+                    sa.case(
+                        (
+                            confirmation_educational_year.id == educational_models.CollectiveBooking.educationalYearId,
+                            educational_models.EducationalDeposit.period.op("@>")(
+                                educational_models.CollectiveBooking.confirmationDate
+                            ),
+                        ),
+                        else_=educational_models.EducationalDeposit.period.op("@>")(
+                            confirmation_educational_year.beginningDate
+                        ),
+                    ),
                 ),
             )
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId

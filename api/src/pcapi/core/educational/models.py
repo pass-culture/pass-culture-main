@@ -1477,6 +1477,8 @@ class EducationalDeposit(PcObject, models.Model):
         nullable=True,
     )
 
+    period: sa_orm.Mapped[DateTimeRange] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=False)
+
     def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
         """Check that the total amount of bookings won't exceed the
         deposit's amount.
