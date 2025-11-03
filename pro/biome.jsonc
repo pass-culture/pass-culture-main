@@ -57,7 +57,10 @@
       "!src/apiClient/adage",
       "!src/index.html",
       "!src/apiClient/v1",
-      "!**/*.stories.tsx"
+      "!**/*.stories.tsx",
+      "!docs-build",
+      "!cypress/downloads",
+      "!bundleStats.html"
     ],
     "ignoreUnknown": true
   },
