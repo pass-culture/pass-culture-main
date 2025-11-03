@@ -279,7 +279,6 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.name,
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.venueLabelId,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue._bannerUrl,
@@ -522,7 +521,6 @@ def get_bookings_categories_and_subcategories(
 def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
     return (
         db.session.query(bookings_models.Booking)
-        .options(joinedload(bookings_models.Booking.venue).load_only(offerers_models.Venue.isVirtual))
         .options(
             joinedload(bookings_models.Booking.stock)
             .joinedload(offers_models.Stock.offer)

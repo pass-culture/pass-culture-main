@@ -20,15 +20,10 @@ from pcapi.routes.backoffice.utils.geography import get_regions_choices
 from pcapi.utils import siren as siren_utils
 
 
-class EditVirtualVenueForm(utils.PCForm):
+class EditVenueForm(utils.PCForm):
     tags = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )
-    booking_email = fields.PCEmailField("Email (notifications de réservation)")
-    phone_number = fields.PCPhoneNumberField("Numéro de téléphone")  # match Venue.contact.postal_code case
-
-
-class EditVenueForm(EditVirtualVenueForm):
     name = fields.PCStringField(
         "Nom juridique",
         validators=[
@@ -86,25 +81,17 @@ class EditVenueForm(EditVirtualVenueForm):
         validators=(wtforms.validators.Length(max=5, message="doit contenir au maximum %(max)d caractères"),),
     )
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
+    booking_email = fields.PCEmailField("Email (notifications de réservation)")
+    phone_number = fields.PCPhoneNumberField("Numéro de téléphone")  # match Venue.contact.postal_code case
     acceslibre_url = fields.PCOptStringField(
         "URL chez acceslibre",
         validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
     )
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
-        """
-        Change the fields order to avoid having the email and phone
-        number (inherited from EditVirtualVenueForm) at the top.
-        """
         # save venue in order to validate the siret field
         self.venue = venue
-
         super().__init__(*args, **kwargs)
-
-        # self._fields is a collections.OrderedDict
-        self._fields.move_to_end("booking_email")
-        self._fields.move_to_end("phone_number")
-        self._fields.move_to_end("acceslibre_url")
 
     def validate_public_name(self, public_name: fields.PCOptStringField) -> fields.PCOptStringField:
         # venue.publicName is no longer nullable in the database.

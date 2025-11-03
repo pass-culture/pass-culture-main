@@ -27,7 +27,7 @@ class GetOffererVenueResponseModel(HttpBodyModel):
     booking_email: str | None
     has_created_offer: bool
     has_adage_id: bool
-    is_virtual: bool
+    is_virtual: bool = False  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     name: str
     id: int
     public_name: str
@@ -68,7 +68,6 @@ class GetOffererVenueResponseModel(HttpBodyModel):
             has_venue_providers=bool(venue.venueProviders),
             id=venue.id,
             is_permanent=venue.isPermanent,
-            is_virtual=venue.isVirtual,
             name=venue.name,
             public_name=venue.publicName,
             siret=venue.siret,
@@ -170,7 +169,7 @@ class GetOfferersNamesResponseModel(HttpBodyModel):
 
 class GetEducationalOffererVenueResponseModel(HttpBodyModel):
     id: int
-    isVirtual: bool
+    isVirtual: bool = False
     publicName: str
     name: str
     collectiveInterventionArea: list[str] | None = None
@@ -190,7 +189,6 @@ class GetEducationalOffererVenueResponseModel(HttpBodyModel):
     def build(cls, venue: offerers_models.Venue) -> "GetEducationalOffererVenueResponseModel":
         return cls(
             id=venue.id,
-            isVirtual=venue.isVirtual,
             publicName=venue.publicName,
             name=venue.name,
             collectiveInterventionArea=venue.collectiveInterventionArea,

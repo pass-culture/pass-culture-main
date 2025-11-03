@@ -101,7 +101,7 @@ def send_email_reminder_7_days_before_event() -> None:
 @cron_decorators.log_cron_with_transaction
 def send_email_reminder_offer_creation_j5_to_pro() -> None:
     """Triggers email reminder to pro 5 days after venue creation if no offer is created"""
-    venues = offerers_repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
+    venues = offerers_repository.find_venues_of_offerers_with_no_offer_and_at_least_one_venue_and_validated_x_days_ago(
         5
     )
     for venue_id, venue_booking_email in venues:
@@ -120,7 +120,7 @@ def send_email_reminder_offer_creation_j5_to_pro() -> None:
 @cron_decorators.log_cron_with_transaction
 def send_email_reminder_offer_creation_j10_to_pro() -> None:
     """Triggers email reminder to pro 10 days after venue creation if no offer is created"""
-    venues = offerers_repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
+    venues = offerers_repository.find_venues_of_offerers_with_no_offer_and_at_least_one_venue_and_validated_x_days_ago(
         10
     )
     for venue_id, venue_booking_email in venues:

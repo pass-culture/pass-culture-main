@@ -231,7 +231,6 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
             siret=siren_utils.ridet_to_siret(ridet),
             managingOffererId=offerer.id,
             publicName=data.get("public_name"),
-            isVirtual=False,
             isPermanent=True,
             isOpenToPublic=True,
             venueTypeCode=data.get("venue_type_code", offerers_models.VenueTypeCode.OTHER),

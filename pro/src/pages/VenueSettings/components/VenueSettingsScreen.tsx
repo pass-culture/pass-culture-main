@@ -37,7 +37,7 @@ export const VenueSettingsScreen = ({
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
-    isVenueVirtual: venue.isVirtual,
+    isVenueVirtual: venue.isVirtual ?? false,
     siren: offerer.siren,
     withSiret: Boolean(venue.siret),
   }

@@ -51,7 +51,7 @@ def test_response_serialization(client):
             "isActive": venue.managingOfferer.isActive,
             "hasNonFreeOffers": False,
             "bankAccountStatus": venue_finance_serialize.SimplifiedBankAccountStatus.VALID.value,
-            "isVirtual": False,
+            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             "bookingEmail": venue.bookingEmail,
             "withdrawalDetails": venue.withdrawalDetails,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
@@ -85,7 +85,7 @@ def test_response_serialization(client):
             "offererName": user_offerer.offerer.name,
             "publicName": venue_with_accessibility_provider.publicName,
             "isPermanent": venue_with_accessibility_provider.isPermanent,
-            "isVirtual": False,
+            "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             "isValidated": venue_with_accessibility_provider.managingOfferer.isValidated,
             "isActive": venue_with_accessibility_provider.managingOfferer.isActive,
             "hasNonFreeOffers": False,

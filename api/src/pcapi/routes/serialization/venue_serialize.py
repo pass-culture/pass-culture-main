@@ -82,7 +82,7 @@ def get_current_pricing_point(
 
 
 class GetVenueResponseModel(HttpBodyModel):
-    isVirtual: bool
+    isVirtual: bool = False  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
     name: str
     bannerUrl: str | None
     contact: offerers_schemas.VenueContactModelV2 | None
@@ -166,7 +166,6 @@ class GetVenueResponseModel(HttpBodyModel):
             if (venue.activity and venue.activity != offerers_models.Activity.NOT_ASSIGNED)
             else None,
             bannerUrl=venue.bannerUrl,
-            isVirtual=venue.isVirtual,
             name=venue.name,
             contact=venue.contact,
             description=venue.description,

@@ -16,7 +16,7 @@ export type GetOffererVenueResponseModel = {
   hasVenueProviders: boolean;
   id: number;
   isPermanent: boolean;
-  isVirtual: boolean;
+  isVirtual?: boolean;
   lastCollectiveDmsApplication: (DMSApplicationForEAC | null);
   name: string;
   publicName: string;

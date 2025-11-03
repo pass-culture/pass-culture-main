@@ -148,19 +148,18 @@ def update_venue(
         or location_modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
     )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
-    if not venue.isVirtual:
-        is_venue_location_updated = any(
-            field in location_modifications
-            for field in ("banId", "street", "city", "inseeCode", "postalCode", "latitude", "longitude")
-        )
+    is_venue_location_updated = any(
+        field in location_modifications
+        for field in ("banId", "street", "city", "inseeCode", "postalCode", "latitude", "longitude")
+    )
 
-        if is_venue_location_updated:
-            _update_venue_location(
-                venue,
-                location_modifications,
-                venue_snapshot=venue_snapshot,
-                is_manual_edition=is_manual_edition,
-            )
+    if is_venue_location_updated:
+        _update_venue_location(
+            venue,
+            location_modifications,
+            venue_snapshot=venue_snapshot,
+            is_manual_edition=is_manual_edition,
+        )
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -2757,7 +2756,6 @@ def count_open_to_public_venues_with_accessibility_provider() -> int:
         .join(offerers_models.AccessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .count()
     )
@@ -2769,7 +2767,6 @@ def get_open_to_public_venues_with_accessibility_provider(batch_size: int, batch
         .join(offerers_models.Venue.accessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .options(sa_orm.contains_eager(offerers_models.Venue.accessibilityProvider))
         .order_by(offerers_models.Venue.id.asc())
@@ -2785,7 +2782,6 @@ def get_open_to_public_venues_without_accessibility_provider() -> list[models.Ve
         .outerjoin(offerers_models.Venue.accessibilityProvider)
         .filter(
             sa.or_(offerers_models.Venue.isOpenToPublic.is_(True)),
-            offerers_models.Venue.isVirtual.is_(False),
             offerers_models.AccessibilityProvider.id.is_(None),
         )
         .options(

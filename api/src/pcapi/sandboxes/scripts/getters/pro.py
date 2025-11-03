@@ -168,6 +168,9 @@ def create_pro_user_with_financial_data_and_3_venues() -> dict:
     venue_C = offerers_factories.VenueFactory.create(name="Mon lieu 1", managingOfferer=offerer_C)
     venue_D = offerers_factories.VenueFactory.create(name="Mon lieu 2", managingOfferer=offerer_C)
     venue_E = offerers_factories.VenueFactory.create(name="Mon lieu 3", managingOfferer=offerer_C)
+    offers_factories.ThingOfferFactory(venue=venue_C)
+    offers_factories.ThingOfferFactory(venue=venue_D)
+    offers_factories.ThingOfferFactory(venue=venue_E)
     bank_account_C = finance_factories.BankAccountFactory.create(offerer=offerer_C)
     offerers_factories.VenuePricingPointLinkFactory.create(
         venue=venue_C,

@@ -2279,7 +2279,7 @@ export type GetEducationalOffererVenueResponseModel = {
     /**
      * Isvirtual
      */
-    isVirtual: boolean;
+    isVirtual?: boolean;
     /**
      * Mentaldisabilitycompliant
      */
@@ -3077,7 +3077,7 @@ export type GetOffererVenueResponseModel = {
     /**
      * Isvirtual
      */
-    isVirtual: boolean;
+    isVirtual?: boolean;
     lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     /**
      * Name
@@ -3464,7 +3464,7 @@ export type GetVenueResponseModel = {
     /**
      * Isvirtual
      */
-    isVirtual: boolean;
+    isVirtual?: boolean;
     lastCollectiveDmsApplication: DMSApplicationForEAC | null;
     location: LocationResponseModelV2;
     managingOfferer: GetVenueManagingOffererResponseModel;
