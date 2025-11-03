@@ -40,7 +40,6 @@ export { CollectiveBookingCancellationReasons } from './models/CollectiveBooking
 export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveLocationType } from './models/CollectiveLocationType';
 export { CollectiveOfferAllowedAction } from './models/CollectiveOfferAllowedAction';
-export type { CollectiveOfferBookableResponseModel } from './models/CollectiveOfferBookableResponseModel';
 export type { CollectiveOfferDatesModel } from './models/CollectiveOfferDatesModel';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
@@ -49,8 +48,6 @@ export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocat
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
-export type { CollectiveOffersBookingResponseModel } from './models/CollectiveOffersBookingResponseModel';
-export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffersStockResponseModel';
 export type { CollectiveOfferStockResponseModel } from './models/CollectiveOfferStockResponseModel';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
@@ -164,10 +161,8 @@ export type { LinkVenueToBankAccountBodyModel } from './models/LinkVenueToBankAc
 export type { LinkVenueToPricingPointBodyModel } from './models/LinkVenueToPricingPointBodyModel';
 export type { ListBookingsQueryModel } from './models/ListBookingsQueryModel';
 export type { ListBookingsResponseModel } from './models/ListBookingsResponseModel';
-export type { ListCollectiveOfferBookableResponseModel } from './models/ListCollectiveOfferBookableResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
-export type { ListCollectiveOfferTemplatesQueryModel } from './models/ListCollectiveOfferTemplatesQueryModel';
 export type { ListCollectiveOfferTemplatesResponseModel } from './models/ListCollectiveOfferTemplatesResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export type { ListOffersOfferResponseModel } from './models/ListOffersOfferResponseModel';

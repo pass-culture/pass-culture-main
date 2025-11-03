@@ -1,6 +1,5 @@
 import {
   CollectiveOfferAllowedAction,
-  type CollectiveOfferBookableResponseModel,
   type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
@@ -13,7 +12,7 @@ export function isActionAllowedOnCollectiveOffer(
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferResponseModel
     | CollectiveOfferTemplateResponseModel,
   action: CollectiveOfferAllowedAction | CollectiveOfferTemplateAllowedAction
 ) {
@@ -55,7 +54,7 @@ export function isCollectiveOfferDetailsEditable(
 
 export function isCollectiveOfferSelectable(
   offer:
-    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferResponseModel
     | CollectiveOfferTemplateResponseModel
     | GetCollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
@@ -87,7 +86,7 @@ export function isCollectiveOfferEditable(
   offer:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferResponseModel
     | CollectiveOfferTemplateResponseModel
 ) {
   return offer.allowedActions.some((action) =>

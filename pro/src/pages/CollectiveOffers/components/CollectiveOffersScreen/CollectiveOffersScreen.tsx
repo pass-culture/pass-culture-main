@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 
 import type {
-  CollectiveOfferBookableResponseModel,
+  CollectiveOfferResponseModel,
   GetOffererResponseModel,
 } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
@@ -38,7 +38,7 @@ export type CollectiveOffersScreenProps = {
     }
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  offers: CollectiveOfferBookableResponseModel[]
+  offers: CollectiveOfferResponseModel[]
 }
 
 export const CollectiveOffersScreen = ({
@@ -52,7 +52,7 @@ export const CollectiveOffersScreen = ({
 }: CollectiveOffersScreenProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
-    CollectiveOfferBookableResponseModel[]
+    CollectiveOfferResponseModel[]
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
@@ -130,7 +130,7 @@ export const CollectiveOffersScreen = ({
     setSelectedFilters(newFilters)
   }
 
-  function onSetSelectedOffer(offer: CollectiveOfferBookableResponseModel) {
+  function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
     const matchingOffer = selectedOffers.find(
       (selectedOffer) => offer.id === selectedOffer.id
     )

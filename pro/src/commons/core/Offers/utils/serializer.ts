@@ -1,9 +1,8 @@
 import { isEqual } from 'commons/utils/isEqual'
 
-import {
-  CollectiveOfferType,
-  type ListCollectiveOffersQueryModel,
-  type ListOffersQueryModel,
+import type {
+  ListCollectiveOffersQueryModel,
+  ListOffersQueryModel,
 } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 
@@ -86,16 +85,6 @@ export const serializeApiCollectiveFilters = (
 
     if (field === 'venueId') {
       accumulator.venueId = undefined
-      return accumulator
-    }
-
-    if (field === 'collectiveOfferType') {
-      accumulator.collectiveOfferType =
-        filterValue === 'offer'
-          ? CollectiveOfferType.OFFER
-          : filterValue === 'template'
-            ? CollectiveOfferType.TEMPLATE
-            : null
       return accumulator
     }
 

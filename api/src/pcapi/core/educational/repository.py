@@ -838,9 +838,7 @@ def filter_collective_offers_by_statuses(
     return query
 
 
-def get_collective_offers_for_filters(
-    filters: schemas.CollectiveOffersFilter, offers_limit: int
-) -> list[models.CollectiveOffer]:
+def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit: int) -> list[models.CollectiveOffer]:
     query = get_collective_offers_by_filters(filters=filters)
 
     offers = (
@@ -867,7 +865,7 @@ def get_collective_offers_for_filters(
     return offers
 
 
-def get_collective_offers_template_for_filters(
+def list_collective_offer_templates(
     filters: schemas.CollectiveOffersFilter, offers_limit: int
 ) -> list[models.CollectiveOfferTemplate]:
     query = get_collective_offers_template_by_filters(filters=filters)

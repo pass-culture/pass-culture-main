@@ -71,7 +71,7 @@ export const CollectiveOffers = (): JSX.Element => {
         DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
       )
 
-      return api.getCollectiveBookableOffers(
+      return api.getCollectiveOffers(
         params.nameOrIsbn,
         params.offererId,
         params.status,

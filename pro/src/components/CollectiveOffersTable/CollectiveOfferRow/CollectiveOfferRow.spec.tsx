@@ -5,8 +5,8 @@ import { describe } from 'vitest'
 import {
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
   type CollectiveOfferStockResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
@@ -14,7 +14,7 @@ import {
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { getToday } from '@/commons/utils/date'
 import {
-  collectiveOfferBookableFactory,
+  collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
 import {
@@ -37,7 +37,7 @@ vi.mock('@/apiClient/api', () => ({
 
 const renderOfferItem = (
   props: CollectiveOfferRowProps<
-    CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
+    CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
   >,
   options?: RenderWithProvidersOptions
 ) =>
@@ -59,16 +59,15 @@ const stock: CollectiveOfferStockResponseModel = {
   numberOfTickets: 100,
   price: 10,
 }
-const offer: CollectiveOfferBookableResponseModel =
-  collectiveOfferBookableFactory({
-    id: offerId,
-    name: 'My little offer',
-    imageUrl: '/my-fake-thumb',
-    stock,
-    location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
-  })
+const offer: CollectiveOfferResponseModel = collectiveOfferFactory({
+  id: offerId,
+  name: 'My little offer',
+  imageUrl: '/my-fake-thumb',
+  stock,
+  location: { locationType: CollectiveLocationType.TO_BE_DEFINED },
+})
 const props: CollectiveOfferRowProps<
-  CollectiveOfferBookableResponseModel | CollectiveOfferTemplateResponseModel
+  CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 > = {
   offer,
   selectOffer: vi.fn(),
@@ -89,7 +88,7 @@ describe('CollectiveOfferRow', () => {
     })
 
     it('should render an image with an empty url when offer does not have a thumb url', () => {
-      const offer = collectiveOfferBookableFactory({ imageUrl: null })
+      const offer = collectiveOfferFactory({ imageUrl: null })
       renderOfferItem({
         ...props,
         offer,
@@ -141,7 +140,7 @@ describe('CollectiveOfferRow', () => {
     it('should display "-" when offer is not assigned to a specific institution', () => {
       const { container } = renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({ stock }),
+        offer: collectiveOfferFactory({ stock }),
       })
 
       const cell = container.querySelector('td.cell-institution')
@@ -152,7 +151,7 @@ describe('CollectiveOfferRow', () => {
     it('should display institution name when offer is assigned to a specific institution', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           educationalInstitution: {
             id: 1,
             name: 'Collège Bellevue',
@@ -172,7 +171,7 @@ describe('CollectiveOfferRow', () => {
     it('should display institution cell when offer is bookable', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           educationalInstitution: {
             id: 1,
             name: 'Lycée Jean Moulin',
@@ -234,7 +233,7 @@ describe('CollectiveOfferRow', () => {
     it('should not display a tag when offer is not template', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({ stock }),
+        offer: collectiveOfferFactory({ stock }),
       })
 
       const rowHeader = screen.getAllByRole('rowheader')[0]
@@ -300,7 +299,7 @@ describe('CollectiveOfferRow', () => {
   it('should cancel offer booking', async () => {
     renderOfferItem({
       ...props,
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         stock,
         displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
         allowedActions: [CollectiveOfferAllowedAction.CAN_CANCEL],
@@ -334,7 +333,7 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is published', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stock: {
             numberOfTickets: 1,
@@ -351,7 +350,7 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is pre-booked', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
           stock: {
             numberOfTickets: 1,
@@ -370,7 +369,7 @@ describe('CollectiveOfferRow', () => {
     it('should display a expiration row if the bookable offer is pre-booked', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
           stock: {
             numberOfTickets: 1,
@@ -389,7 +388,7 @@ describe('CollectiveOfferRow', () => {
     it('should not display a expiration row if the offer has no booking limit', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           stock: {
             numberOfTickets: 1,
@@ -406,7 +405,7 @@ describe('CollectiveOfferRow', () => {
     it('should not display a expiration row if the offer was cancelled', () => {
       renderOfferItem({
         ...props,
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           displayedStatus: CollectiveOfferDisplayedStatus.CANCELLED,
           stock: {
             numberOfTickets: 1,
@@ -455,7 +454,7 @@ describe('CollectiveOfferRow', () => {
   it('should display "-" if educationalInstitution is null', () => {
     const { container } = renderOfferItem({
       ...props,
-      offer: collectiveOfferBookableFactory({ educationalInstitution: null }),
+      offer: collectiveOfferFactory({ educationalInstitution: null }),
     })
 
     const cell = container.querySelector('td.cell-institution')
@@ -472,7 +471,7 @@ describe('CollectiveOfferRow', () => {
   it('should display price and participants cell when offer is bookable', () => {
     renderOfferItem({
       ...props,
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         stock: {
           price: 10,
           numberOfTickets: 2,

@@ -5,27 +5,20 @@
 import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDatesModel } from './CollectiveOfferDatesModel';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
-import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
-import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
-import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
+import type { CollectiveOfferStockResponseModel } from './CollectiveOfferStockResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { GetCollectiveOfferLocationModel } from './GetCollectiveOfferLocationModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 export type CollectiveOfferResponseModel = {
-  allowedActions: (Array<CollectiveOfferAllowedAction> | Array<CollectiveOfferTemplateAllowedAction>);
-  booking?: CollectiveOffersBookingResponseModel | null;
+  allowedActions: Array<CollectiveOfferAllowedAction>;
   dates?: CollectiveOfferDatesModel | null;
   displayedStatus: CollectiveOfferDisplayedStatus;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
-  hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageUrl?: string | null;
-  isActive: boolean;
-  isEducational: boolean;
-  isShowcase: boolean;
   location: GetCollectiveOfferLocationModel;
   name: string;
-  stocks: Array<CollectiveOffersStockResponseModel>;
+  stock?: CollectiveOfferStockResponseModel | null;
   venue: ListOffersVenueResponseModel;
 };
 
