@@ -1,10 +1,7 @@
 import { useLocation } from 'react-router'
 import { computeAddressDisplayName } from 'repository/venuesService'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -13,6 +10,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Markdown } from '@/components/Markdown/Markdown'
@@ -23,7 +21,6 @@ import {
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 interface OfferSummaryProps {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -37,12 +34,8 @@ export const OfferSection = ({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const { categories, subCategories } = useIndividualOfferContext()
-  const musicTypesQuery = useSWR(
-    GET_MUSIC_TYPES_QUERY_KEY,
-    () => api.getMusicTypes(),
-    { fallbackData: [] }
-  )
-  const musicTypes = musicTypesQuery.data
+
+  const { musicTypes } = useMusicTypes()
 
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
@@ -54,10 +47,6 @@ export const OfferSection = ({
     subCategories,
     musicTypes
   )
-
-  if (musicTypesQuery.isLoading) {
-    return <Spinner />
-  }
 
   const offerTypeDescriptions: Description[] = [
     { title: 'Catégorie', text: offerData.categoryName },

@@ -1,8 +1,4 @@
-import useSWR from 'swr'
-
-import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -10,6 +6,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
@@ -45,16 +42,12 @@ export function IndividualOfferSummaryDetailsScreen({
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
 
-  const musicTypesQuery = useSWR(
-    GET_MUSIC_TYPES_QUERY_KEY,
-    () => api.getMusicTypes(),
-    { fallbackData: [] }
-  )
+  const { musicTypes } = useMusicTypes()
   const offerData = serializeOfferSectionData(
     offer,
     categories,
     subCategories,
-    musicTypesQuery.data
+    musicTypes
   )
 
   const subcategory = subCategories.find(
