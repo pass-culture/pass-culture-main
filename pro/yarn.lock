@@ -2147,10 +2147,10 @@
   dependencies:
     tinyrainbow "^2.0.0"
 
-"@vitest/pretty-format@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@vitest/pretty-format/-/pretty-format-4.0.4.tgz#19ffa9fb35853554e272799b68743717dc2ec1b7"
-  integrity sha512-lHI2rbyrLVSd1TiHGJYyEtbOBo2SDndIsN3qY4o4xe2pBxoJLD6IICghNCvD7P+BFin6jeyHXiUICXqgl6vEaQ==
+"@vitest/pretty-format@4.0.6":
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/@vitest/pretty-format/-/pretty-format-4.0.6.tgz#af838540d3cd6b29c5d434fbdd36eb2543b040a3"
+  integrity sha512-4vptgNkLIA1W1Nn5X4x8rLJBzPiJwnPc+awKtfBE5hNMVsoAl/JCCPPzNrbf+L4NKgklsis5Yp2gYa+XAS442g==
   dependencies:
     tinyrainbow "^3.0.3"
 
@@ -2163,12 +2163,12 @@
     pathe "^2.0.3"
     strip-literal "^3.0.0"
 
-"@vitest/runner@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-4.0.4.tgz#ca0eb9de67bdfe6c6cb0841a23f47474af92dbf9"
-  integrity sha512-99EDqiCkncCmvIZj3qJXBZbyoQ35ghOwVWNnQ5nj0Hnsv4Qm40HmrMJrceewjLVvsxV/JSU4qyx2CGcfMBmXJw==
+"@vitest/runner@4.0.6":
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/@vitest/runner/-/runner-4.0.6.tgz#5a938015cfb202b96cbff4688400f1cd4899b40a"
+  integrity sha512-trPk5qpd7Jj+AiLZbV/e+KiiaGXZ8ECsRxtnPnCrJr9OW2mLB72Cb824IXgxVz/mVU3Aj4VebY+tDTPn++j1Og==
   dependencies:
-    "@vitest/utils" "4.0.4"
+    "@vitest/utils" "4.0.6"
     pathe "^2.0.3"
 
 "@vitest/snapshot@3.2.4":
@@ -2196,12 +2196,12 @@
     loupe "^3.1.4"
     tinyrainbow "^2.0.0"
 
-"@vitest/utils@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/@vitest/utils/-/utils-4.0.4.tgz#90d355d0f21596a06eca83f84783a29467513d6a"
-  integrity sha512-4bJLmSvZLyVbNsYFRpPYdJViG9jZyRvMZ35IF4ymXbRZoS+ycYghmwTGiscTXduUg2lgKK7POWIyXJNute1hjw==
+"@vitest/utils@4.0.6":
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/@vitest/utils/-/utils-4.0.6.tgz#e8ce743a4a5adcd7228823249b643bc894c0955d"
+  integrity sha512-bG43VS3iYKrMIZXBo+y8Pti0O7uNju3KvNn6DrQWhQQKcLavMB+0NZfO1/QBAEbq0MaQ3QjNsnnXlGQvsh0Z6A==
   dependencies:
-    "@vitest/pretty-format" "4.0.4"
+    "@vitest/pretty-format" "4.0.6"
     tinyrainbow "^3.0.3"
 
 "@zootools/email-spell-checker@1.12.0":
