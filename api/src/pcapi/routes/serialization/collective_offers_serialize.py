@@ -1,4 +1,3 @@
-import enum
 import typing
 from datetime import date
 from datetime import datetime
@@ -56,15 +55,8 @@ class EmptyAsNullString(str):
 EmptyStringToNone = EmptyAsNullString | None
 
 
-class CollectiveOfferType(enum.Enum):
-    offer = "offer"
-    template = "template"
-
-
-# TODO: for now we duplicate fields and logic of ListCollectiveOffersQueryModel
-# once we have a separate route for collective offers we can factorize both query models
-class ListCollectiveOfferTemplatesQueryModel(ConfiguredBaseModel):
-    name: str | None
+class ListCollectiveOffersQueryModel(ConfiguredBaseModel):
+    nameOrIsbn: str | None
     offerer_id: int | None
     status: list[educational_models.CollectiveOfferDisplayedStatus] | None
     venue_id: int | None
@@ -154,15 +146,15 @@ class BaseCollectiveOfferResponseModel(ConfiguredBaseModel):
     dates: CollectiveOfferDatesModel | None
 
 
-class CollectiveOfferBookableResponseModel(BaseCollectiveOfferResponseModel):
+class CollectiveOfferResponseModel(BaseCollectiveOfferResponseModel):
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
     stock: CollectiveOfferStockResponseModel | None
     educationalInstitution: EducationalInstitutionResponseModel | None
 
     @classmethod
     def build(
-        cls: type["CollectiveOfferBookableResponseModel"], offer: educational_models.CollectiveOffer
-    ) -> "CollectiveOfferBookableResponseModel":
+        cls: type["CollectiveOfferResponseModel"], offer: educational_models.CollectiveOffer
+    ) -> "CollectiveOfferResponseModel":
         stock = offer.collectiveStock
         serialized_stock = CollectiveOfferStockResponseModel.from_orm(stock) if stock is not None else None
 
@@ -186,8 +178,8 @@ class CollectiveOfferBookableResponseModel(BaseCollectiveOfferResponseModel):
         )
 
 
-class ListCollectiveOfferBookableResponseModel(ConfiguredBaseModel):
-    __root__: list[CollectiveOfferBookableResponseModel]
+class ListCollectiveOffersResponseModel(ConfiguredBaseModel):
+    __root__: list[CollectiveOfferResponseModel]
 
 
 class CollectiveOfferTemplateResponseModel(BaseCollectiveOfferResponseModel):

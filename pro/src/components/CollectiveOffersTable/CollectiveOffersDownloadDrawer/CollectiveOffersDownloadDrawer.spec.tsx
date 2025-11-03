@@ -112,10 +112,8 @@ describe('CollectiveOffersDownloadDrawer', () => {
       '1',
       ['PUBLISHED'],
       undefined,
-      undefined,
       '2023-01-01',
       '2023-12-31',
-      'offer',
       'Concert',
       undefined,
       undefined
@@ -142,10 +140,8 @@ describe('CollectiveOffersDownloadDrawer', () => {
       '1',
       ['PUBLISHED'],
       undefined,
-      undefined,
       '2023-01-01',
       '2023-12-31',
-      'offer',
       'Concert',
       undefined,
       undefined
@@ -239,10 +235,8 @@ describe('CollectiveOffersDownloadDrawer', () => {
       '1',
       ['PUBLISHED'],
       undefined,
-      undefined,
       '2023-01-01',
       '2023-12-31',
-      'offer',
       'Concert',
       CollectiveLocationType.ADDRESS,
       123
@@ -278,10 +272,8 @@ describe('CollectiveOffersDownloadDrawer', () => {
       '1',
       ['PUBLISHED'],
       undefined,
-      undefined,
       '2023-01-01',
       '2023-12-31',
-      'offer',
       'Concert',
       CollectiveLocationType.SCHOOL,
       null

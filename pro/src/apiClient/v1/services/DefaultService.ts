@@ -69,7 +69,6 @@ import type { InvoiceListV2ResponseModel } from '../models/InvoiceListV2Response
 import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
-import type { ListCollectiveOfferBookableResponseModel } from '../models/ListCollectiveOfferBookableResponseModel';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListCollectiveOfferTemplatesResponseModel } from '../models/ListCollectiveOfferTemplatesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
@@ -439,8 +438,8 @@ export class DefaultService {
     });
   }
   /**
-   * get_collective_bookable_offers <GET>
-   * @param name
+   * get_collective_offers <GET>
+   * @param nameOrIsbn
    * @param offererId
    * @param status
    * @param venueId
@@ -449,11 +448,11 @@ export class DefaultService {
    * @param format
    * @param locationType
    * @param offererAddressId
-   * @returns ListCollectiveOfferBookableResponseModel OK
+   * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveBookableOffers(
-    name?: string | null,
+  public getCollectiveOffers(
+    nameOrIsbn?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -462,12 +461,12 @@ export class DefaultService {
     format?: EacFormat | null,
     locationType?: CollectiveLocationType | null,
     offererAddressId?: number | null,
-  ): CancelablePromise<ListCollectiveOfferBookableResponseModel> {
+  ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/collective/bookable-offers',
       query: {
-        'name': name,
+        'nameOrIsbn': nameOrIsbn,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
@@ -499,57 +498,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_collective_offers <GET>
-   * @param nameOrIsbn
-   * @param offererId
-   * @param status
-   * @param venueId
-   * @param creationMode
-   * @param periodBeginningDate
-   * @param periodEndingDate
-   * @param collectiveOfferType
-   * @param format
-   * @param locationType
-   * @param offererAddressId
-   * @returns ListCollectiveOffersResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveOffers(
-    nameOrIsbn?: string | null,
-    offererId?: number | null,
-    status?: Array<CollectiveOfferDisplayedStatus> | null,
-    venueId?: number | null,
-    creationMode?: string | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
-    format?: EacFormat | null,
-    locationType?: CollectiveLocationType | null,
-    offererAddressId?: number | null,
-  ): CancelablePromise<ListCollectiveOffersResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/offers',
-      query: {
-        'nameOrIsbn': nameOrIsbn,
-        'offererId': offererId,
-        'status': status,
-        'venueId': venueId,
-        'creationMode': creationMode,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
-        'format': format,
-        'locationType': locationType,
-        'offererAddressId': offererAddressId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * create_collective_offer <POST>
    * @param requestBody
    * @returns CollectiveOfferResponseIdModel Created
@@ -571,7 +519,7 @@ export class DefaultService {
   }
   /**
    * get_collective_offer_templates <GET>
-   * @param name
+   * @param nameOrIsbn
    * @param offererId
    * @param status
    * @param venueId
@@ -584,7 +532,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplates(
-    name?: string | null,
+    nameOrIsbn?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -598,7 +546,7 @@ export class DefaultService {
       method: 'GET',
       url: '/collective/offers-template',
       query: {
-        'name': name,
+        'nameOrIsbn': nameOrIsbn,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
@@ -835,10 +783,8 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
-   * @param collectiveOfferType
    * @param format
    * @param locationType
    * @param offererAddressId
@@ -850,10 +796,8 @@ export class DefaultService {
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
-    creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
     format?: EacFormat | null,
     locationType?: CollectiveLocationType | null,
     offererAddressId?: number | null,
@@ -866,10 +810,8 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
         'format': format,
         'locationType': locationType,
         'offererAddressId': offererAddressId,
@@ -886,10 +828,8 @@ export class DefaultService {
    * @param offererId
    * @param status
    * @param venueId
-   * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
-   * @param collectiveOfferType
    * @param format
    * @param locationType
    * @param offererAddressId
@@ -901,10 +841,8 @@ export class DefaultService {
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
-    creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
     format?: EacFormat | null,
     locationType?: CollectiveLocationType | null,
     offererAddressId?: number | null,
@@ -917,10 +855,8 @@ export class DefaultService {
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
-        'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
         'format': format,
         'locationType': locationType,
         'offererAddressId': offererAddressId,

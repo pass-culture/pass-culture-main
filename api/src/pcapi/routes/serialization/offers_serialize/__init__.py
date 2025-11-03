@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import enum
 import typing
 from typing import Any
 
@@ -22,7 +23,6 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
@@ -294,6 +294,11 @@ def serialize_capped_offers(paginated_offers: list[offers_models.Offer]) -> list
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
+class CollectiveOfferType(enum.Enum):
+    offer = "offer"
+    template = "template"
+
+
 class ListOffersQueryModel(BaseModel):
     # We should not use an alias nameOrIsbn, but ListOffersQueryModel is used
     # by the pro front for individual and collective search and most of the logic
@@ -306,7 +311,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
+    collective_offer_type: CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:

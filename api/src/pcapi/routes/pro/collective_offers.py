@@ -27,14 +27,14 @@ from pcapi.utils.transaction_manager import atomic
 from . import blueprint
 
 
-def _get_template_filters_from_query(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+def _get_filters_from_query(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> schemas.CollectiveOffersFilter:
     return schemas.CollectiveOffersFilter(
         user_id=current_user.id,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
-        name_keywords=query.name,
+        name_keywords=query.nameOrIsbn,
         statuses=query.status,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
@@ -48,19 +48,19 @@ def _get_template_filters_from_query(
 @atomic()
 @login_required
 @spectree_serialize(
-    response_model=collective_offers_serialize.ListCollectiveOfferBookableResponseModel,
+    response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
     api=blueprint.pro_private_schema,
     query_params_as_list=["status"],
 )
-def get_collective_bookable_offers(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
-) -> collective_offers_serialize.ListCollectiveOfferBookableResponseModel:
-    filters = _get_template_filters_from_query(query)
-    offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
+def get_collective_offers(
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
+) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
+    filters = _get_filters_from_query(query)
+    offers = repository.list_collective_offers(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
     offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
 
-    return collective_offers_serialize.ListCollectiveOfferBookableResponseModel(
-        __root__=[collective_offers_serialize.CollectiveOfferBookableResponseModel.build(offer) for offer in offers]
+    return collective_offers_serialize.ListCollectiveOffersResponseModel(
+        __root__=[collective_offers_serialize.CollectiveOfferResponseModel.build(offer) for offer in offers]
     )
 
 
@@ -73,12 +73,10 @@ def get_collective_bookable_offers(
     query_params_as_list=["status"],
 )
 def get_collective_offer_templates(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel:
-    filters = _get_template_filters_from_query(query)
-    offers = repository.get_collective_offers_template_for_filters(
-        filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT
-    )
+    filters = _get_filters_from_query(query)
+    offers = repository.list_collective_offer_templates(filters=filters, offers_limit=api_offer.OFFERS_RECAP_LIMIT)
 
     return collective_offers_serialize.ListCollectiveOfferTemplatesResponseModel(
         __root__=[collective_offers_serialize.CollectiveOfferTemplateResponseModel.build(offer) for offer in offers]
@@ -97,7 +95,7 @@ def get_collective_offer_templates(
     api=blueprint.pro_private_schema,
 )
 def get_collective_offers_csv(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> bytes:
     return _get_collective_offers_export(query, models.CollectiveOfferExportType.CSV)
 
@@ -114,16 +112,16 @@ def get_collective_offers_csv(
 )
 @atomic()
 def get_collective_offers_excel(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> bytes:
     return _get_collective_offers_export(query, models.CollectiveOfferExportType.EXCEL)
 
 
 def _get_collective_offers_export(
-    query: collective_offers_serialize.ListCollectiveOfferTemplatesQueryModel,
+    query: collective_offers_serialize.ListCollectiveOffersQueryModel,
     export_type: models.CollectiveOfferExportType,
 ) -> bytes:
-    filters = _get_template_filters_from_query(query)
+    filters = _get_filters_from_query(query)
     offers_query = repository.get_collective_offers_by_filters(filters=filters)
 
     if export_type == models.CollectiveOfferExportType.CSV:

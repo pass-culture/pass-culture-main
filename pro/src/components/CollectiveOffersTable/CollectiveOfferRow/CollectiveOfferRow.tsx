@@ -1,8 +1,8 @@
 import classNames from 'classnames'
 
 import {
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import { isCollectiveOfferBookable } from '@/commons/core/OfferEducational/types'
@@ -22,9 +22,7 @@ import { OfferNameCell } from './OfferNameCell/OfferNameCell'
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell/PriceAndParticipantsCell'
 
 export type CollectiveOfferRowProps<
-  T extends
-    | CollectiveOfferTemplateResponseModel
-    | CollectiveOfferBookableResponseModel,
+  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
 > = {
   isSelected: boolean
   offer: T
@@ -34,9 +32,7 @@ export type CollectiveOfferRowProps<
 }
 
 function isCollectiveOfferPublishedOrPreBooked(
-  offer:
-    | CollectiveOfferBookableResponseModel
-    | CollectiveOfferTemplateResponseModel
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 ) {
   return (
     offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
@@ -45,9 +41,7 @@ function isCollectiveOfferPublishedOrPreBooked(
 }
 
 export const CollectiveOfferRow = <
-  T extends
-    | CollectiveOfferTemplateResponseModel
-    | CollectiveOfferBookableResponseModel,
+  T extends CollectiveOfferTemplateResponseModel | CollectiveOfferResponseModel,
 >({
   offer,
   isSelected,

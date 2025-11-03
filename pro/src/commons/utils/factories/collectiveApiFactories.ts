@@ -7,8 +7,8 @@ import {
   CollectiveBookingStatus,
   CollectiveLocationType,
   CollectiveOfferAllowedAction,
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
   type DMSApplicationForEAC,
@@ -36,9 +36,9 @@ let offerBookingId = 1
 let institutionId = 1
 let offerTemplateId = 1
 
-export const collectiveOfferBookableFactory = (
-  customCollectiveOffer: Partial<CollectiveOfferBookableResponseModel> = {}
-): CollectiveOfferBookableResponseModel => {
+export const collectiveOfferFactory = (
+  customCollectiveOffer: Partial<CollectiveOfferResponseModel> = {}
+): CollectiveOfferResponseModel => {
   const currentId = offerId++
 
   return {

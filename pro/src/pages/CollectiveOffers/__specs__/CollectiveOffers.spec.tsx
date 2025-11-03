@@ -8,8 +8,8 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import {
   CollectiveLocationType,
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
   type CollectiveOfferStockResponseModel,
   EacFormat,
   type GetOffererAddressResponseModel,
@@ -17,7 +17,7 @@ import {
 import { DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
@@ -38,8 +38,8 @@ const stock: CollectiveOfferStockResponseModel = {
   price: 10,
 }
 
-const offersRecap: CollectiveOfferBookableResponseModel[] = [
-  collectiveOfferBookableFactory({ stock }),
+const offersRecap: CollectiveOfferResponseModel[] = [
+  collectiveOfferFactory({ stock }),
 ]
 
 vi.mock('@/commons/hooks/useActiveFeature', () => ({
@@ -49,7 +49,7 @@ vi.mock('@/commons/hooks/useActiveFeature', () => ({
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
-      getCollectiveBookableOffers: vi.fn(),
+      getCollectiveOffers: vi.fn(),
       getOfferer: vi.fn(),
       listOfferersNames: vi.fn(),
       getOffererAddresses: vi.fn(),
@@ -91,7 +91,7 @@ const offererId = '1'
 
 describe('CollectiveOffers', () => {
   beforeEach(() => {
-    vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
@@ -107,7 +107,7 @@ describe('CollectiveOffers', () => {
     await renderOffers()
 
     await waitFor(() => {
-      expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         offererId,
         undefined,
@@ -139,7 +139,7 @@ describe('CollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
             offererId,
@@ -172,7 +172,7 @@ describe('CollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
             undefined,
             offererId,
@@ -192,7 +192,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should indicate that no offers match selected filters', async () => {
-        vi.spyOn(api, 'getCollectiveBookableOffers')
+        vi.spyOn(api, 'getCollectiveOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
         await renderOffers()
@@ -217,7 +217,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should not display column titles when no offers are returned', async () => {
-        vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce([])
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
         await renderOffers()
 
@@ -235,7 +235,7 @@ describe('CollectiveOffers', () => {
         )
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -258,7 +258,7 @@ describe('CollectiveOffers', () => {
         )
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -281,7 +281,7 @@ describe('CollectiveOffers', () => {
         )
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -301,7 +301,7 @@ describe('CollectiveOffers', () => {
         await userEvent.selectOptions(localisationSelect, 'all')
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -328,7 +328,7 @@ describe('CollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             offererId,
             undefined,
@@ -352,7 +352,7 @@ describe('CollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -375,7 +375,7 @@ describe('CollectiveOffers', () => {
 
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
-          expect(api.getCollectiveBookableOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             offererId,
             undefined,
@@ -394,24 +394,24 @@ describe('CollectiveOffers', () => {
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
-        collectiveOfferBookableFactory({ stock })
+        collectiveOfferFactory({ stock })
       )
-      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
       await userEvent.click(nextIcon)
 
-      expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
-        collectiveOfferBookableFactory({ stock })
+        collectiveOfferFactory({ stock })
       )
-      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       const previousIcon = screen.getByRole('button', {
@@ -421,20 +421,18 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
     describe('when 101 offers are fetched', () => {
       const offersRecap = Array.from({ length: 101 }, () =>
-        collectiveOfferBookableFactory({ stock })
+        collectiveOfferFactory({ stock })
       )
 
       it('should have max number page of 10', async () => {
-        vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
-          offersRecap
-        )
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
         await renderOffers()
 
@@ -442,9 +440,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should not display the 101st offer', async () => {
-        vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce(
-          offersRecap
-        )
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers()
         const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
@@ -462,15 +458,15 @@ describe('CollectiveOffers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce([])
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
       const filters = {
         format: EacFormat.ATELIER_DE_PRATIQUE,
       }
       await renderOffers(filters)
 
-      expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         offererId,
@@ -485,9 +481,9 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Rechercher'))
       await waitFor(() => {
-        expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(1)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       })
-      expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         offererId,
@@ -504,9 +500,9 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Afficher toutes les offres'))
       await waitFor(() => {
-        expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(2)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
-      expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         offererId,
@@ -521,7 +517,7 @@ describe('CollectiveOffers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"  - except nameOrIsbn', async () => {
-      vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce([])
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
       const nameOrIsbn = 'Any word'
       await renderOffers({
@@ -529,8 +525,8 @@ describe('CollectiveOffers', () => {
         format: EacFormat.ATELIER_DE_PRATIQUE,
       })
 
-      expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         nameOrIsbn,
         offererId,
@@ -545,9 +541,9 @@ describe('CollectiveOffers', () => {
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       await waitFor(() => {
-        expect(api.getCollectiveBookableOffers).toHaveBeenCalledTimes(2)
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(2)
       })
-      expect(api.getCollectiveBookableOffers).toHaveBeenNthCalledWith(
+      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         nameOrIsbn,
         offererId,
@@ -563,11 +559,11 @@ describe('CollectiveOffers', () => {
   })
 
   it('should show draft offers ', async () => {
-    vi.spyOn(api, 'getCollectiveBookableOffers').mockResolvedValueOnce([
-      collectiveOfferBookableFactory({
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
+      collectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
       }),
-      collectiveOfferBookableFactory({
+      collectiveOfferFactory({
         displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     ])

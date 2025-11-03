@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PriceAndParticipantsCell } from './PriceAndParticipantsCell'
 
 describe('PriceAndParticipantsCell', () => {
   it('should display price and number of participants when present', () => {
-    const offer = collectiveOfferBookableFactory({
+    const offer = collectiveOfferFactory({
       stock: {
         numberOfTickets: 5,
         price: 10,
@@ -29,7 +29,7 @@ describe('PriceAndParticipantsCell', () => {
   })
 
   it('should display dash when price or numberOfTickets are missing', () => {
-    const offer = collectiveOfferBookableFactory({
+    const offer = collectiveOfferFactory({
       stock: {
         price: null,
       },

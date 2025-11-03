@@ -2,8 +2,8 @@ import classNames from 'classnames'
 import { differenceInCalendarDays, format } from 'date-fns'
 
 import {
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
 import {
   FORMAT_DD_MM_YYYY,
@@ -18,7 +18,7 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './ExpirationCell.module.scss'
 
 type ExpirationCellProps = {
-  offer: CollectiveOfferBookableResponseModel
+  offer: CollectiveOfferResponseModel
   rowId: string
   className?: string
 }

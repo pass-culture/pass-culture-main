@@ -17,7 +17,7 @@ import {
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
-  collectiveOfferBookableFactory,
+  collectiveOfferFactory,
   collectiveOfferTemplateFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -52,7 +52,7 @@ const renderCollectiveActionsCell = (
   features: string[] = []
 ) => {
   const defaultProps: CollectiveActionsCellsProps = {
-    offer: collectiveOfferBookableFactory(),
+    offer: collectiveOfferFactory(),
     editionOfferLink: '',
     urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     isSelected: false,
@@ -110,7 +110,7 @@ describe('CollectiveActionsCells', () => {
 
   it('should archive an offer on click on the action', async () => {
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         dates: {
           start: String(new Date()),
@@ -143,7 +143,7 @@ describe('CollectiveActionsCells', () => {
 
   it('should deselect an offer selected when the offer has just been archived', async () => {
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
         dates: {
           start: String(new Date()),
@@ -177,7 +177,7 @@ describe('CollectiveActionsCells', () => {
 
   it('should show action buttons when action is allowed on bookable offer', async () => {
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_ARCHIVE,
           CollectiveOfferAllowedAction.CAN_DUPLICATE,
@@ -224,7 +224,7 @@ describe('CollectiveActionsCells', () => {
 
   it('should not show action buttons when action is not allowed', async () => {
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_ARCHIVE, // keep one action to click on "Voir les actions"
         ],
@@ -266,7 +266,7 @@ describe('CollectiveActionsCells', () => {
     it('should show an error when bookable offer duplication fails', async () => {
       vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce({})
       renderCollectiveActionsCell({
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           id: 200,
           allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
@@ -293,7 +293,7 @@ describe('CollectiveActionsCells', () => {
         getCollectiveOfferFactory({ id: 201 })
       )
       renderCollectiveActionsCell({
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           id: 200,
           allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
@@ -327,7 +327,7 @@ describe('CollectiveActionsCells', () => {
       )
 
       renderCollectiveActionsCell({
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           id: 200,
           allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
         }),
@@ -466,7 +466,7 @@ describe('CollectiveActionsCells', () => {
     'should show edition button when the $name edition action is allowed',
     async ({ actions }) => {
       renderCollectiveActionsCell({
-        offer: collectiveOfferBookableFactory({
+        offer: collectiveOfferFactory({
           allowedActions: actions,
         }),
       })
@@ -481,7 +481,7 @@ describe('CollectiveActionsCells', () => {
 
   it('should not show edition button when no edition action is allowed', async () => {
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [
           CollectiveOfferAllowedAction.CAN_ARCHIVE,
           CollectiveOfferAllowedAction.CAN_CANCEL,
@@ -593,7 +593,7 @@ describe('CollectiveActionsCells', () => {
     )
 
     renderCollectiveActionsCell({
-      offer: collectiveOfferBookableFactory({
+      offer: collectiveOfferFactory({
         allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
       }),
     })

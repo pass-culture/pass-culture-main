@@ -1,17 +1,16 @@
 import { screen } from '@testing-library/react'
 
 import {
-  type CollectiveOfferBookableResponseModel,
   CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
 } from '@/apiClient/v1'
-import { collectiveOfferBookableFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ExpirationCell } from './ExpirationCell'
 
 describe('ExpirationCell', () => {
-  const offer: CollectiveOfferBookableResponseModel =
-    collectiveOfferBookableFactory()
+  const offer: CollectiveOfferResponseModel = collectiveOfferFactory()
 
   function renderExpirationCell(offerParam = offer) {
     return renderWithProviders(

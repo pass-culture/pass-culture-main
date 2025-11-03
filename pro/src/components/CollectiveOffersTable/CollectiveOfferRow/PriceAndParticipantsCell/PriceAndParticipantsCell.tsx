@@ -1,13 +1,13 @@
 import cn from 'classnames'
 
-import type { CollectiveOfferBookableResponseModel } from '@/apiClient/v1'
+import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
 import { pluralizeString } from '@/commons/utils/pluralize'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 
 import styles from '../Cells.module.scss'
 
 interface PriceAndParticipantsCellProps {
-  offer: CollectiveOfferBookableResponseModel
+  offer: CollectiveOfferResponseModel
   rowId: string
   className?: string
 }

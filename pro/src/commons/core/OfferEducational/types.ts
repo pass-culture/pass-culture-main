@@ -1,6 +1,6 @@
 import type {
   CollectiveLocationType,
-  CollectiveOfferBookableResponseModel,
+  CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   EacFormat,
   GetCollectiveOfferResponseModel,
@@ -94,10 +94,10 @@ export enum CollectiveOffersSortingColumn {
 
 export const isCollectiveOfferBookable = (
   offer:
-    | CollectiveOfferBookableResponseModel
+    | CollectiveOfferResponseModel
     | CollectiveOfferTemplateResponseModel
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-): offer is CollectiveOfferBookableResponseModel => {
+): offer is CollectiveOfferResponseModel => {
   return 'stock' in offer
 }
