@@ -2,10 +2,10 @@ name: "2 [on_schedule] Delete pullrequest deployments"
 
 on:
   workflow_dispatch:
-  schedule: # taking ownership
+  schedule:
     # This cron is defined in UTC timezone. It means that it will run :
-    # - during summer hours between 7:27am - 7:27pm
-    # - during winter hours between 6:27am - 6:27pm
+    # - during summer hours between 7:26am - 7:26pm
+    # - during winter hours between 6:26am - 6:26pm
     # we cannot yet specify timezone :
     # https://github.com/orgs/community/discussions/13454
     # Why 26? Choosing an exact hour or half-hour is discouraged by GitHub due to high load.
