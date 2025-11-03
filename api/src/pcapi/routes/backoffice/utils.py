@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 # perhaps one day we will be able to define it as str | tuple[str, int]
 BackofficeResponse = str | tuple[str, int] | WerkzeugResponse | Forbidden
 
-
 OPERATOR_DICT: dict[str, dict[str, typing.Any]] = {
     "EQUALS": {"function": op.eq},
     "IS": {"function": op.eq},

@@ -11,10 +11,12 @@ from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.highlights import models as highlights_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.filters import format_datespan
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.search_utils import paginate
 from pcapi.utils.clean_accents import clean_accents
@@ -102,6 +104,7 @@ def create_tag() -> utils.BackofficeResponse:
             startDateTime=form.start_date.data,
             endDateTime=form.end_date.data,
             categories=[cat for cat in get_tags_categories() if cat.id in form.categories.data],
+            highlightId=form.highlight.data[0] if form.highlight.data else None,
         )
 
         db.session.add(tag)
@@ -151,6 +154,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag.startDateTime = form.start_date.data
     tag.endDateTime = form.end_date.data
     tag.categories = [cat for cat in get_tags_categories() if cat.id in form.categories.data]
+    tag.highlightId = form.highlight.data[0] if form.highlight.data else None
 
     try:
         db.session.add(tag)
@@ -179,7 +183,16 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
     )
     form.categories.choices = [(cat.id, cat.label or cat.name) for cat in get_tags_categories()]
     form.categories.data = [cat.id for cat in tag.categories]
-
+    if tag.highlightId:
+        tag_highlight = (
+            db.session.query(highlights_models.Highlight)
+            .filter(highlights_models.Highlight.id == tag.highlightId)
+            .one()
+        )
+        form.highlight.data = [tag.highlightId]
+        form.highlight.choices = [
+            (tag.highlightId, f"{tag_highlight.name} - {format_datespan(tag_highlight.highlight_datespan)}"),
+        ]
     return render_template(
         "components/dynamic/modal_form.html",
         form=form,

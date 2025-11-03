@@ -53,6 +53,7 @@
                     <th scope="col" class="col-2">Catégories</th>
                     <th scope="col" class="col-1">Date de début</th>
                     <th scope="col" class="col-1">Date de fin</th>
+                    <th scope="col">Valorisation</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -96,6 +97,7 @@
                       <td>{{ tag.categories | format_tag_object_list }}</td>
                       <td>{{ tag.startDateTime | format_date }}</td>
                       <td>{{ tag.endDateTime | format_date }}</td>
+                      <td>{{ tag.highlight.name }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>

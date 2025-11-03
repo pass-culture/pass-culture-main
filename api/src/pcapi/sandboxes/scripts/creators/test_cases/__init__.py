@@ -17,7 +17,9 @@ from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
+from pcapi.core.criteria import constants
 from pcapi.core.criteria import factories as criteria_factories
+from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
@@ -73,6 +75,7 @@ def save_test_cases_sandbox() -> None:
     create_offers_interactions()
     create_offers_with_video_url()
     create_highlights()
+    create_highlight_criterion_category()
     create_venues_across_cities()
     create_offers_with_compliance_score()
     create_offers_for_each_subcategory()
@@ -800,6 +803,11 @@ def create_highlights() -> None:
         ),
         highlight_datespan=db_utils.make_inclusive_daterange(start=today, end=today + datetime.timedelta(days=8)),
     )
+
+
+@log_func_duration
+def create_highlight_criterion_category() -> None:
+    criteria_factories.CriterionCategoryFactory.create(label=constants.HIGHLIGHT_CATEGORY_LABEL)
 
 
 @log_func_duration

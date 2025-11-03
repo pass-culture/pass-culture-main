@@ -4,8 +4,10 @@ from datetime import timedelta
 import pytest
 from flask import url_for
 
+from pcapi.core.criteria import constants
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.highlights import factories as highlight_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
@@ -61,6 +63,63 @@ class CreateTagTest(PostEndpointHelper):
         assert len(tag.categories) == 1
         assert tag.categories[0].label == category.label
 
+    @pytest.mark.parametrize(
+        "with_highlight_category,with_highglight,should_fail,alert_msg",
+        [
+            (True, True, False, "Le nouveau tag offres et partenaires culturels a été créé"),
+            (
+                True,
+                False,
+                True,
+                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+            ),
+            (False, False, False, "Le nouveau tag offres et partenaires culturels a été créé"),
+            (
+                False,
+                True,
+                True,
+                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+            ),
+        ],
+    )
+    def test_create_tag_with_highlight_category(
+        self, with_highlight_category, with_highglight, should_fail, alert_msg, authenticated_client
+    ):
+        if with_highlight_category:
+            category = criteria_factories.CriterionCategoryFactory(label=constants.HIGHLIGHT_CATEGORY_LABEL)
+        else:
+            category = criteria_factories.CriterionCategoryFactory()
+        if with_highglight:
+            highlight = highlight_factories.HighlightFactory()
+            form = {
+                "name": "my-tag",
+                "description": "description",
+                "categories": [category.id],
+                "highlight": highlight.id,
+            }
+        else:
+            highlight = None
+            form = {"name": "my-tag", "description": "description", "categories": [category.id]}
+
+        response = self.post_to_endpoint(authenticated_client, form=form, follow_redirects=True)
+
+        assert response.status_code == 200  # after redirect
+        assert html_parser.extract_alert(response.data) == alert_msg
+
+        tag = db.session.query(criteria_models.Criterion).first()
+        if should_fail:
+            assert tag is None
+        else:
+            assert tag.name == "my-tag"
+            assert tag.description == "description"
+            assert not tag.startDateTime
+            assert not tag.endDateTime
+            assert len(tag.categories) == 1
+            assert tag.categories[0].label == category.label
+            assert tag.highlight == highlight
+
 
 class DeleteTagTest(PostEndpointHelper):
     endpoint = "backoffice_web.tags.delete_tag"
@@ -85,8 +144,34 @@ class UpdateTagTest(PostEndpointHelper):
     endpoint_kwargs = {"tag_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
-    def test_update_tag(self, authenticated_client):
-        categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
+    @pytest.mark.parametrize(
+        "with_highlight_category,with_highglight,should_fail,alert_msg",
+        [
+            (True, True, False, "Informations mises à jour"),
+            (
+                True,
+                False,
+                True,
+                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                f"La sélection d'une valorisation thématique est obligatoire pour les tags de la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+            ),
+            (False, False, False, "Informations mises à jour"),
+            (
+                False,
+                True,
+                True,
+                f"Les données envoyées comportent des erreurs. Valorisation thématique : "
+                f"La sélection d'une valorisation thématique est impossible pour les tags qui ne sont pas dans la catégorie {constants.HIGHLIGHT_CATEGORY_LABEL} ;",
+            ),
+        ],
+    )
+    def test_update_tag(self, with_highlight_category, with_highglight, should_fail, alert_msg, authenticated_client):
+        if with_highlight_category:
+            category1 = criteria_factories.CriterionCategoryFactory(label=constants.HIGHLIGHT_CATEGORY_LABEL)
+            category2 = criteria_factories.CriterionCategoryFactory()
+            categories = [category1, category2]
+        else:
+            categories = criteria_factories.CriterionCategoryFactory.create_batch(2)
         tag = criteria_factories.CriterionFactory(description="desc", startDateTime=None, endDateTime=None)
 
         new_tag_name = f"{tag.name}-update"
@@ -94,27 +179,47 @@ class UpdateTagTest(PostEndpointHelper):
         new_start_date = date.today()
         new_end_date = new_start_date + timedelta(days=1)
 
-        form = {
-            "name": new_tag_name,
-            "description": new_tag_description,
-            "start_date": new_start_date,
-            "end_date": new_end_date,
-            "categories": [category.id for category in categories],
-        }
+        if with_highglight:
+            highlight = highlight_factories.HighlightFactory()
+            form = {
+                "name": new_tag_name,
+                "description": new_tag_description,
+                "start_date": new_start_date,
+                "end_date": new_end_date,
+                "categories": [category.id for category in categories],
+                "highlight": highlight.id,
+            }
+        else:
+            highlight = None
+            form = {
+                "name": new_tag_name,
+                "description": new_tag_description,
+                "start_date": new_start_date,
+                "end_date": new_end_date,
+                "categories": [category.id for category in categories],
+            }
 
         response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form, follow_redirects=True)
 
         assert response.status_code == 200  # after redirect
-        assert html_parser.extract_alert(response.data) == "Informations mises à jour"
+        assert html_parser.extract_alert(response.data) == alert_msg
 
         db.session.refresh(tag)
 
-        assert tag.name == new_tag_name
-        assert tag.description == new_tag_description
-        assert tag.startDateTime.date() == new_start_date
-        assert tag.endDateTime.date() == new_end_date
-        assert len(tag.categories) == 2
-        assert set(tag.categories) == set(categories)
+        if should_fail:
+            assert tag.name != new_tag_name
+            assert tag.description != new_tag_description
+            assert tag.startDateTime is None
+            assert tag.endDateTime is None
+            assert len(tag.categories) == 0
+        else:
+            assert tag.name == new_tag_name
+            assert tag.description == new_tag_description
+            assert tag.startDateTime.date() == new_start_date
+            assert tag.endDateTime.date() == new_end_date
+            assert len(tag.categories) == 2
+            assert set(tag.categories) == set(categories)
+            assert tag.highlight == highlight
 
 
 class ListTagsTest(GetEndpointHelper):
