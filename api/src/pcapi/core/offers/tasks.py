@@ -22,8 +22,6 @@ from pcapi.routes.public.individual_offers.v1 import utils as individual_offers_
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.utils import date as utils_date
 from pcapi.utils import repository
-from pcapi.workers import worker
-from pcapi.workers.decorators import job
 
 
 logger = logging.getLogger(__name__)
@@ -167,24 +165,6 @@ def create_or_update_ean_offers_celery(payload: offers_schemas.CreateOrUpdateEAN
         provider_id=payload.provider_id,
         address_id=payload.address_id,
         address_label=payload.address_label,
-    )
-
-
-@job(worker.low_queue)
-def create_or_update_ean_offers(
-    *,
-    serialized_products_stocks: dict[str, offers_schemas.SerializedProductsStock],
-    venue_id: int,
-    provider_id: int,
-    address_id: int | None = None,
-    address_label: str | None = None,
-) -> None:
-    _create_or_update_ean_offers(
-        serialized_products_stocks=serialized_products_stocks,
-        venue_id=venue_id,
-        provider_id=provider_id,
-        address_id=address_id,
-        address_label=address_label,
     )
 
 

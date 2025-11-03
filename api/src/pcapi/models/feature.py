@@ -127,9 +127,6 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
-    WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour d'offres EAN"
-    )
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )
@@ -217,7 +214,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_EAN_OFFERS,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
