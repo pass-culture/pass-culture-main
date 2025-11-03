@@ -85,7 +85,6 @@ class VenueFactory(BaseFactory[models.Venue]):
     siret: factory.declarations.BaseDeclaration | None = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.complete_siren_or_siret(f"{o.managingOfferer.siren}{n:04}")
     )
-    isVirtual = False
     isPermanent: bool | factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
         lambda o: o.venueTypeCode in models.PERMENANT_VENUE_TYPES
     )

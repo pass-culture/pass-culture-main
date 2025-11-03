@@ -184,7 +184,7 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         educational_factories.CollectiveOfferTemplateFactory(venue=venue_with_offers)
 
         venues = (
-            repository.find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(5)
+            repository.find_venues_of_offerers_with_no_offer_and_at_least_one_venue_and_validated_x_days_ago(5)
             .order_by(models.Venue.id)
             .all()
         )

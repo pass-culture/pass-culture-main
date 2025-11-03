@@ -227,7 +227,7 @@ class Returns200Test:
                 "postalCode": venue.offererAddress.address.postalCode,
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
-                "isVirtual": False,
+                "isVirtual": False,  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
             },
             "videoData": {
                 "videoDuration": None,

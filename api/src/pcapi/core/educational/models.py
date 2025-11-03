@@ -1194,7 +1194,7 @@ class CollectiveOfferTemplate(
 
     @property
     def is_eligible_for_search(self) -> bool:
-        return bool(self.isReleased and not self.venue.isVirtual)
+        return bool(self.isReleased)
 
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove

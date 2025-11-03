@@ -265,45 +265,39 @@ def get_venue(venue_id: int) -> sa.engine.Row:
     return venue
 
 
-def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
+def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVenueForm | None = None) -> str:
     venue: offerers_models.Venue = venue_row.Venue
 
     if not edit_venue_form:
-        if venue.isVirtual:
-            edit_venue_form = forms.EditVirtualVenueForm(
-                booking_email=venue.bookingEmail,
-                phone_number=venue.contact.phone_number if venue.contact else None,
-            )
-        else:
-            edit_prefill: dict[str, typing.Any] = {
-                "name": venue.name,
-                "public_name": venue.publicName,
-                "siret": venue.siret,
-                "booking_email": venue.bookingEmail,
-                "phone_number": venue.contact.phone_number if venue.contact else None,
-                "acceslibre_url": venue.external_accessibility_url,
-                "is_permanent": venue.isPermanent,
+        edit_prefill: dict[str, typing.Any] = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "booking_email": venue.bookingEmail,
+            "phone_number": venue.contact.phone_number if venue.contact else None,
+            "acceslibre_url": venue.external_accessibility_url,
+            "is_permanent": venue.isPermanent,
+        }
+        # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)
+        if venue.offererAddress:
+            edit_prefill |= {
+                "postal_address_autocomplete": (
+                    f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+                    if venue.offererAddress.address.street is not None
+                    and venue.offererAddress.address.city is not None
+                    and venue.offererAddress.address.postalCode is not None
+                    else None
+                ),
+                "street": venue.offererAddress.address.street,
+                "postal_code": venue.offererAddress.address.postalCode,
+                "city": venue.offererAddress.address.city,
+                "ban_id": venue.offererAddress.address.banId,
+                "insee_code": venue.offererAddress.address.inseeCode,
+                "latitude": venue.offererAddress.address.latitude,
+                "longitude": venue.offererAddress.address.longitude,
             }
-            # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)
-            if venue.offererAddress:
-                edit_prefill |= {
-                    "postal_address_autocomplete": (
-                        f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
-                        if venue.offererAddress.address.street is not None
-                        and venue.offererAddress.address.city is not None
-                        and venue.offererAddress.address.postalCode is not None
-                        else None
-                    ),
-                    "street": venue.offererAddress.address.street,
-                    "postal_code": venue.offererAddress.address.postalCode,
-                    "city": venue.offererAddress.address.city,
-                    "ban_id": venue.offererAddress.address.banId,
-                    "insee_code": venue.offererAddress.address.inseeCode,
-                    "latitude": venue.offererAddress.address.latitude,
-                    "longitude": venue.offererAddress.address.longitude,
-                }
-            edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
-            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+        edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
+        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
@@ -345,7 +339,6 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
             if venue.isOpenToPublic
-            and not venue.isVirtual
             and access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
         ),
@@ -773,10 +766,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
     venue_row = get_venue(venue_id)
     venue: offerers_models.Venue = venue_row.Venue
 
-    if venue.isVirtual:
-        form = forms.EditVirtualVenueForm()
-    else:
-        form = forms.EditVenueForm(venue)
+    form = forms.EditVenueForm(venue)
 
     if not form.validate():
         mark_transaction_as_invalid()
@@ -801,7 +791,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
 
     update_siret = False
     unavailable_entreprise_api = False
-    if not venue.isVirtual and venue.siret != form.siret.data:
+    if venue.siret != form.siret.data:
         new_siret = form.siret.data
 
         if not _can_edit_siret():
@@ -818,7 +808,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
                 mark_transaction_as_invalid()
                 return render_venue_details(venue_row, form), 400
         elif new_siret:
-            # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
+            # Remove comment because of constraint check_has_siret_xor_comment
             attrs["comment"] = None
 
         if new_siret and offerers_repository.find_venue_by_siret(new_siret):
@@ -888,7 +878,7 @@ def update_venue(venue_id: int) -> response_utils.BackofficeResponse:
             contact_data=contact_data,
             criteria=criteria,
             external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
-            is_manual_edition=((not venue.isVirtual) and form.is_manual_address.data == "on"),
+            is_manual_edition=(form.is_manual_address.data == "on"),
             # TODO(activation): should we also update culturalDomaines ?
         )
     except sa_exc.IntegrityError as err:

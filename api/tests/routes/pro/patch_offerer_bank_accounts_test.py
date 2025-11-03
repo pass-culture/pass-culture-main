@@ -9,6 +9,7 @@ import pcapi.core.history.models as history_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.token.serialization as token_serialization
 import pcapi.core.users.factories as users_factories
 from pcapi.core import token
@@ -28,6 +29,7 @@ class OffererPatchBankAccountsTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        offers_factories.StockFactory(offer__venue=venue)
 
         assert not bank_account.venueLinks
 
@@ -443,6 +445,8 @@ class OffererPatchBankAccountsTest:
         first_venue, second_venue, third_venue, fourth_venue = offerers_factories.VenueFactory.create_batch(
             4, managingOfferer=offerer, pricing_point="self"
         )
+        for venue in (first_venue, second_venue, third_venue, fourth_venue):
+            offers_factories.StockFactory(offer__venue=venue)
 
         first_current_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=first_venue,
@@ -549,6 +553,7 @@ class OffererPatchBankAccountsTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+        offers_factories.StockFactory(offer__venue=venue)
 
         foreign_offerer = offerers_factories.OffererFactory()
         foreign_bank_account = finance_factories.BankAccountFactory(offerer=foreign_offerer)
@@ -556,6 +561,7 @@ class OffererPatchBankAccountsTest:
         foreign_link = offerers_factories.VenueBankAccountLinkFactory(
             venue=foreign_venue, bankAccount=foreign_bank_account, timespan=(date_utils.get_naive_utc_now(),)
         )
+        offers_factories.StockFactory(offer__venue=foreign_venue)
 
         assert not bank_account.venueLinks
 
@@ -618,6 +624,7 @@ class OffererPatchBankAccountsTest:
         venue_id = venue.id
         venue_with_pp = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
         venue_with_pp_id = venue_with_pp.id
+        offers_factories.OfferFactory(venue=venue_with_pp)
 
         assert not bank_account.venueLinks
 

@@ -104,7 +104,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .filter(
             offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
             offerers_models.Venue.isSoftDeleted.is_(False),
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
@@ -122,7 +121,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
     has_non_virtual_venues_query = (
         sa.exists()
         .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
-        .where(sa.not_(offerers_models.Venue.isVirtual))
         .where(offerers_models.Venue.isSoftDeleted.is_(False))
     )
 

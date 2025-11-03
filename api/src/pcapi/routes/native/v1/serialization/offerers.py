@@ -62,9 +62,6 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
                 visualDisability=self._obj.visualDisabilityCompliant,
             )
 
-        if key == "isVirtual":
-            return False
-
         return super().get(key, default)
 
 
@@ -113,8 +110,7 @@ class VenueResponse(BaseModel):
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None
-
-    isVirtual: bool
+    isVirtual: bool = False  # TODO(xordoquy): remove `isVirtual` once the front is cleaned
 
     class Config:
         orm_mode = True

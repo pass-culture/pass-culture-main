@@ -27,13 +27,6 @@ def get_backend() -> "BaseBackend":
     return backend_class()
 
 
-def is_offerer_only_virtual(offerer: offerers_models.Offerer) -> bool:
-    if not offerer.managedVenues:
-        return False
-
-    return all(venue.isVirtual for venue in offerer.managedVenues)
-
-
 def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     zendesk_backend = get_backend()
     try:
@@ -88,9 +81,6 @@ def create_venue(venue: offerers_models.Venue) -> None:
     if not FeatureToggle.ENABLE_ZENDESK_SELL_CREATION.is_active():
         return
 
-    if venue.isVirtual:
-        return
-
     # API calls to Zendesk Sell are delayed to return quickly
     on_commit(
         partial(
@@ -111,9 +101,6 @@ def do_create_venue(venue_id: int) -> None:
 
 
 def update_venue(venue: offerers_models.Venue) -> None:
-    if venue.isVirtual:
-        return
-
     # API calls to Zendesk Sell are delayed to return quickly
     on_commit(
         partial(
@@ -147,9 +134,6 @@ def create_offerer(offerer: offerers_models.Offerer) -> None:
     if not FeatureToggle.ENABLE_ZENDESK_SELL_CREATION.is_active():
         return
 
-    if is_offerer_only_virtual(offerer):
-        return
-
     # API calls to Zendesk Sell are delayed to return quickly
     on_commit(
         partial(
@@ -170,9 +154,6 @@ def do_create_offerer(offerer_id: int) -> None:
 
 
 def update_offerer(offerer: offerers_models.Offerer) -> None:
-    if is_offerer_only_virtual(offerer):
-        return
-
     # API calls to Zendesk Sell are delayed to return quickly
     on_commit(
         partial(

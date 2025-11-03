@@ -50,7 +50,7 @@ export type GetVenueResponseModel = {
   isOpenToPublic: boolean;
   isPermanent: (boolean | null);
   isValidated: boolean;
-  isVirtual: boolean;
+  isVirtual?: boolean;
   lastCollectiveDmsApplication: (DMSApplicationForEAC | null);
   location: LocationResponseModelV2;
   managingOfferer: GetVenueManagingOffererResponseModel;
