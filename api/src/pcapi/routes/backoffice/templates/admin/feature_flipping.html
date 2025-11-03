@@ -1,5 +1,22 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% extends "layouts/connected.html" %}
+{% macro feature_flag_toggle(feature_flag, feature_flag_checked, enabled) %}
+  <input class="form-check-input"
+         type="checkbox"
+         role="switch"
+         data-bs-toggle="modal"
+         data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
+         name="is_feature_flag_active"
+         id="feature-flag-switch-{{ feature_flag.id }}"
+         aria-label="{{ feature_flag_checked | format_bool }}"
+         {{ "checked" if feature_flag_checked else "" }}
+         data-description="{{ feature_flag.description }}"
+         data-name="{{ feature_flag.name }}"
+         data-confirm-modal=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
+         {%+ if not enabled %}
+         disabled
+         {% endif %} />
+{% endmacro %}
 {% block page %}
   <div class="pt-3 px-5 pc-feature-flip">
     <h1>Feature flipping</h1>
@@ -42,20 +59,7 @@
               <td>
                 {% set feature_flag_checked = feature_flag.isActive %}
                 {% if has_permission("FEATURE_FLIPPING") %}
-                  <div class="form-check form-switch">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           role="switch"
-                           data-bs-toggle="modal"
-                           data-bs-target=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
-                           name="is_feature_flag_active"
-                           id="feature-flag-switch-{{ feature_flag.id }}"
-                           aria-label="{{ feature_flag_checked | format_bool }}"
-                           {{ "checked" if feature_flag_checked else "" }}
-                           data-description="{{ feature_flag.description }}"
-                           data-name="{{ feature_flag.name }}"
-                           data-confirm-modal=".pc-toggle-feature-flag-modal-{{ feature_flag.id }}" />
-                  </div>
+                  <div class="form-check form-switch">{{ feature_flag_toggle(feature_flag, feature_flag_checked, true) }}</div>
                   <div class="modal modal-lg fade pc-toggle-feature-flag-modal-{{ feature_flag.id }}"
                        tabindex="-1"
                        aria-labelledby="{{ toggle_feature_flag_modal_label_id }}"
@@ -88,13 +92,7 @@
                     </div>
                   </div>
                 {% else %}
-                  <div class="form-check form-switch">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           role="switch"
-                           {{ "checked" if feature_flag_checked else "" }}
-                           disabled />
-                  </div>
+                  <div class="form-check form-switch">{{ feature_flag_toggle(feature_flag, feature_flag_checked, false) }}</div>
                 {% endif %}
               </td>
               <td>{{ feature_flag.name }}</td>
