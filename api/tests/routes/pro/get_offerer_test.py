@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+import pcapi.core.categories.subcategories as subcategories
 import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -57,6 +58,7 @@ class GetOffererTest:
 
         expected_serialized_offerer = {
             "allowedOnAdage": offerer.allowedOnAdage,
+            "canDisplayHighlights": False,
             "hasActiveOffer": False,
             "hasAvailablePricingPoints": True,
             "hasBankAccountWithPendingCorrections": False,
@@ -722,3 +724,24 @@ class GetOffererTest:
             assert response.status_code == 200
 
         assert response.json["isCaledonian"] is True
+
+    @pytest.mark.parametrize(
+        "subcategory_id,can_display_highlights",
+        [
+            (subcategories.EVENEMENT_CINE.id, True),
+            (subcategories.VOD.id, False),
+        ],
+    )
+    def test_offerer_can_display_highlights(self, client, subcategory_id, can_display_highlights):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        offers_factories.OfferFactory(venue__managingOfferer=offerer, subcategoryId=subcategory_id)
+
+        client = client.with_session_auth(pro.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offerers/{offerer.id}")
+            assert response.status_code == 200
+
+        assert response.json["canDisplayHighlights"] is can_display_highlights
