@@ -1,9 +1,7 @@
 import { useFormContext } from 'react-hook-form'
-import useSWR from 'swr'
 
-import { api } from '@/apiClient/api'
-import { GET_MUSIC_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
@@ -54,12 +52,9 @@ export const DetailsSubForm = ({
   const showType = watch('showType')
   const subcategoryConditionalFields = watch('subcategoryConditionalFields')
 
-  const musicTypesQuery = useSWR(
-    GET_MUSIC_TYPES_QUERY_KEY,
-    () => api.getMusicTypes(),
-    { fallbackData: [] }
-  )
-  const musicTypesOptions = musicTypesQuery.data.map((data) => ({
+  const { musicTypes } = useMusicTypes()
+
+  const musicTypesOptions = musicTypes.map((data) => ({
     value: data.gtl_id,
     label: data.label,
   }))
