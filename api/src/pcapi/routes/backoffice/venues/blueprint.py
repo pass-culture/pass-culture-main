@@ -223,44 +223,38 @@ def get_venue(venue_id: int) -> sa.engine.Row:
     return venue
 
 
-def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
+def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVenueForm | None = None) -> str:
     venue = venue_row.Venue
     region = regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
 
     if not edit_venue_form:
-        if venue.isVirtual:
-            edit_venue_form = forms.EditVirtualVenueForm(
-                booking_email=venue.bookingEmail,
-                phone_number=venue.contact.phone_number if venue.contact else None,
-            )
-        else:
-            assert venue.offererAddress  # physical venues should have an address
-            edit_venue_form = forms.EditVenueForm(
-                venue=venue,
-                name=venue.name,
-                public_name=venue.publicName,
-                siret=venue.siret,
-                city=venue.offererAddress.address.city,
-                postal_address_autocomplete=(
-                    f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
-                    if venue.offererAddress.address.street is not None
-                    and venue.offererAddress.address.city is not None
-                    and venue.offererAddress.address.postalCode is not None
-                    else None
-                ),
-                postal_code=venue.offererAddress.address.postalCode,
-                street=venue.offererAddress.address.street,
-                ban_id=venue.offererAddress.address.banId,
-                insee_code=venue.offererAddress.address.inseeCode,
-                acceslibre_url=venue.external_accessibility_url,
-                booking_email=venue.bookingEmail,
-                phone_number=venue.contact.phone_number if venue.contact else None,
-                is_permanent=venue.isPermanent,
-                latitude=venue.offererAddress.address.latitude,
-                longitude=venue.offererAddress.address.longitude,
-                venue_type_code=venue.venueTypeCode.name,
-            )
-            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+        assert venue.offererAddress  # physical venues should have an address
+        edit_venue_form = forms.EditVenueForm(
+            venue=venue,
+            name=venue.name,
+            public_name=venue.publicName,
+            siret=venue.siret,
+            city=venue.offererAddress.address.city,
+            postal_address_autocomplete=(
+                f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+                if venue.offererAddress.address.street is not None
+                and venue.offererAddress.address.city is not None
+                and venue.offererAddress.address.postalCode is not None
+                else None
+            ),
+            postal_code=venue.offererAddress.address.postalCode,
+            street=venue.offererAddress.address.street,
+            ban_id=venue.offererAddress.address.banId,
+            insee_code=venue.offererAddress.address.inseeCode,
+            acceslibre_url=venue.external_accessibility_url,
+            booking_email=venue.bookingEmail,
+            phone_number=venue.contact.phone_number if venue.contact else None,
+            is_permanent=venue.isPermanent,
+            latitude=venue.offererAddress.address.latitude,
+            longitude=venue.offererAddress.address.longitude,
+            venue_type_code=venue.venueTypeCode.name,
+        )
+        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
@@ -302,9 +296,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         connect_as=connect_as,
         zendesk_sell_synchronisation_form=(
             empty_forms.EmptyForm()
-            if venue.isOpenToPublic
-            and not venue.isVirtual
-            and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
+            if venue.isOpenToPublic and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
         ),
     )
@@ -701,10 +693,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     venue_row = get_venue(venue_id)
     venue: offerers_models.Venue = venue_row.Venue
 
-    if venue.isVirtual:
-        form = forms.EditVirtualVenueForm()
-    else:
-        form = forms.EditVenueForm(venue)
+    form = forms.EditVenueForm(venue)
 
     if not form.validate():
         mark_transaction_as_invalid()
@@ -731,7 +720,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     new_permanent = attrs.get("isPermanent")
     update_siret = False
     unavailable_entreprise_api = False
-    if not venue.isVirtual and venue.siret != form.siret.data:
+    if venue.siret != form.siret.data:
         new_siret = form.siret.data
 
         if not _can_edit_siret():
@@ -818,7 +807,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             contact_data=contact_data,
             criteria=criteria,
             external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
-            is_manual_edition=((not venue.isVirtual) and form.is_manual_address.data == "on"),
+            is_manual_edition=(form.is_manual_address.data == "on"),
         )
     except sa.exc.IntegrityError as err:
         # mostly errors about address / offerer_address tables

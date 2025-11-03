@@ -73,10 +73,6 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     )
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)
 
-    if zendesk_sell.is_offerer_only_virtual(offerer):
-        flash("Cette entité juridique ne gère que des partenaires culturels virtuels", "warning")
-        return redirect(url, code=303)
-
     try:
         zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
@@ -142,8 +138,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     url = url_for("backoffice_web.venue.get", venue_id=venue_id)
 
-    if venue.isVirtual or not venue.isOpenToPublic:
-        flash("Ce partenaire culturel est virtuel ou n'est pas ouvert au public", "warning")
+    if not venue.isOpenToPublic:
+        flash("Ce partenaire culturel n'est pas ouvert au public", "warning")
         return redirect(url, code=303)
 
     try:

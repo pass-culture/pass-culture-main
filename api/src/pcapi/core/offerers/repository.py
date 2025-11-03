@@ -216,10 +216,6 @@ def find_relative_venue_by_id(venue_id: int) -> list[models.Venue]:
     query = query.join(models.Offerer, models.Venue.managingOfferer)
     query = query.join(aliased_venue, models.Offerer.managedVenues)
     query = query.filter(
-        # constraint on retrieved venues
-        sa.not_(models.Venue.isVirtual),
-        # constraint on searched venue
-        sa.not_(aliased_venue.isVirtual),
         aliased_venue.id == venue_id,
     )
     query = query.options(sa_orm.joinedload(models.Venue.contact))
@@ -244,21 +240,15 @@ def find_venue_by_siret_with_address(siret: str) -> models.Venue | None:
     )
 
 
-def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
-    return db.session.query(models.Venue).filter_by(managingOffererId=offerer_id, isVirtual=True).first()
-
-
 def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago(
     days: int,
 ) -> sa_orm.Query:
     validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
         sa.select(models.Offerer.id)
-        .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
         .filter(models.Offerer.isValidated)
         .filter(
             sa.cast(models.Offerer.dateValidated, sa.Date) == (datetime.date.today() - datetime.timedelta(days=days))
         )
-        .filter(sa.not_(models.Venue.isVirtual))
         .distinct()
     )
 
@@ -282,17 +272,6 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
         .with_entities(models.Venue.id, models.Venue.bookingEmail)
         .filter(models.Venue.managingOffererId.in_(offerers_ids_with_no_offers_subquery))
     )
-
-
-def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.Venue)
-        .join(offers_models.Offer, models.Venue.id == offers_models.Offer.venueId)
-        .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(models.Venue.isVirtual.is_(True))
-        .filter(offers_models.Offer.status != offer_mixin.OfferStatus.DRAFT.name)
-        .exists()
-    ).scalar()
 
 
 def get_by_offer_id(offer_id: int) -> models.Offerer:
@@ -687,7 +666,6 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
             models.Offerer.isActive.is_(True),
             sa.not_(models.Offerer.isClosed),
             models.Venue.isPermanent.is_(True),
-            models.Venue.isVirtual.is_(False),
             models.Offerer.id == models.Venue.managingOffererId,
         )
         .correlate(models.Offerer)
@@ -758,13 +736,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             models.Venue,
             sa.and_(
                 models.Offerer.id == models.Venue.managingOffererId,
-                sa.or_(
-                    models.Venue.isVirtual.is_(False),
-                    sa.and_(
-                        models.Venue.isVirtual.is_(True),
-                        venue_has_offers_subquery,
-                    ),
-                ),
+                venue_has_offers_subquery,
             ),
         )
         .outerjoin(

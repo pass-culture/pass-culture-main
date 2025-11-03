@@ -19,7 +19,6 @@ from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
-from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import Case
 from sqlalchemy.sql.selectable import Exists
@@ -265,13 +264,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     publicName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
-
-    isVirtual: sa_orm.Mapped[bool] = sa_orm.mapped_column(
-        sa.Boolean,
-        nullable=False,
-        default=False,
-        server_default=expression.false(),
-    )
 
     isPermanent: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=False)
 
@@ -861,7 +853,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
                 Venue.id == self.id,
             )
             .exists()
@@ -882,7 +873,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 AliasedVenue.isPermanent.is_(True),
-                AliasedVenue.isVirtual.is_(False),
                 AliasedVenue.id == cls.id,
             )
             .exists()
@@ -1023,10 +1013,9 @@ def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None
 
 
 def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, Exception())
-        venue.store_departement_code()
+    if not venue.postalCode:
+        raise IntegrityError(None, None, Exception())
+    venue.store_departement_code()
     venue.store_timezone()
 
 

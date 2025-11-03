@@ -1218,7 +1218,7 @@ class CollectiveOfferTemplate(
 
     @property
     def is_eligible_for_search(self) -> bool:
-        return bool(self.isReleased and not self.venue.isVirtual)
+        return bool(self.isReleased)
 
     def get_sort_criterion(self) -> tuple[bool, int, datetime.datetime]:
         """

@@ -39,6 +39,10 @@ class VenueResponseGetterDict(base.VenueResponseGetterDict):
                 motorDisability=self._obj.motorDisabilityCompliant,
                 visualDisability=self._obj.visualDisabilityCompliant,
             )
+
+        if key == "isVirtual":
+            return False
+
         return super().get(key, default)
 
 
@@ -76,6 +80,9 @@ class VenueResponse(base.BaseVenueResponse):
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None
+    isVirtual: bool
+
+    isVirtual: bool  # duplicated to isolate it from its removal from PCPro
 
     class Config:
         getter_dict = VenueResponseGetterDict
