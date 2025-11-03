@@ -1,0 +1,116 @@
+name: "Deploy PCAPI To new Infra"
+description: "Deploy the Pass Culture API to Kubernetes"
+
+inputs:
+  environment:
+    type: string
+    required: true
+  app_version:
+    type: string
+    required: true
+  location:
+    type: string
+    required: true
+    default: europe-west9
+  cluster_name: # Argo WF cluster
+    type: string
+    required: false
+  gcp_project_id: # Argo WF project
+    type: string
+    required: false
+  GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+    required: true
+  GCP_EHP_SERVICE_ACCOUNT:
+    required: true
+  argo_template:
+    type: string
+    required: false
+    default: wfw-pcapi-full-deploy
+  argo_cli_version:
+    type: string
+    required: false
+    default: "3.6.5"
+  cluster_scope:
+    description: "Cluster scope"
+    required: false
+    default: "gke-backend-tst-eu9"
+  cluster_project_id:
+    description: "Cluster project_id"
+    required: false
+    default: "pc-backend-tst"
+
+runs:
+  using: composite
+  steps:
+    - name: "Install kubectl"
+      uses: azure/setup-kubectl@v4
+
+    - name: "Setup ArgoWF CLI"
+      shell: bash
+      run: |
+        curl -sSL -o argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/v${{ inputs.argo_cli_version }}/argo-linux-amd64.gz
+        gunzip "argo-linux-amd64.gz"
+        sudo install -m 555 argo-linux-amd64 /usr/local/bin/argo
+        rm argo-linux-amd64
+
+    - name: "OpenID Connect Authentication"
+      uses: "google-github-actions/auth@v3"
+      with:
+        project_id: ${{ inputs.gcp_project_id }}
+        workload_identity_provider: ${{ inputs.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ inputs.GCP_EHP_SERVICE_ACCOUNT }}
+
+    # Trigger pre-migrations #
+    - name: Authenticate to GKE cluster
+      uses: google-github-actions/get-gke-credentials@v3
+      with:
+        cluster_name: ${{ inputs.cluster_scope }}
+        project_id: ${{ inputs.cluster_project_id }}
+        location: ${{ inputs.location }}
+        use_dns_based_endpoint: true
+
+    - name: "Play pre-migrations"
+      uses: pass-culture/common-workflows/actions/pcapi-migration@IC-405-Allow-different-artifact-registry
+      with:
+        environment: "pcapi-${{ inputs.environment }}"
+        app_version: ${{ inputs.app_version }}
+        migration_type: pre
+        artifact_registry: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
+
+    # End Trigger pre-migrations #
+
+    # Trigger WF #
+    - name: Authenticate to GKE cluster
+      uses: google-github-actions/get-gke-credentials@v3
+      with:
+        cluster_name: ${{ inputs.cluster_name }}
+        project_id: ${{ inputs.gcp_project_id }}
+        location: ${{ inputs.location }}
+        namespace: "infra-cd-prd"
+        use_dns_based_endpoint: true
+
+    - name: "🔀 Switch to ArgoCD namespace and Run Workflow 🚀"
+      shell: bash
+      run: |
+        argo submit --from wftmpl/${{ inputs.argo_template }} \
+          --log --wait \
+          -p environment=${{ inputs.environment }}
+          -p version=${{ inputs.app_version }}
+    # End Trigger WF #
+    # Trigger post-migrations #
+    - name: Authenticate to GKE cluster
+      uses: google-github-actions/get-gke-credentials@v3
+      with:
+        cluster_name: ${{ inputs.cluster_scope }}
+        project_id: ${{ inputs.cluster_project_id }}
+        location: ${{ inputs.location }}
+        use_dns_based_endpoint: true
+
+    - name: "Play post-migrations"
+      uses: pass-culture/common-workflows/actions/pcapi-migration@IC-405-Allow-different-artifact-registry
+      with:
+        environment: "pcapi-${{ inputs.environment }}"
+        app_version: ${{ inputs.app_version }}
+        migration_type: post
+        artifact_registry: europe-docker.pkg.dev/pc-infra-prd@pass-culture-artifact-registry
+    # End Trigger post-migrations #
