@@ -201,6 +201,17 @@ class CegidFinanceBackend(BaseFinanceBackend):
             return str(amount)
         return str(-amount)
 
+    def check_can_push_invoice(self) -> bool:
+        """We only push invoices out of work hours so as not to impact Cegid perfs during its work hours usage"""
+        allowed_hours = [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7]  # "night" hours
+        allowed_weekdays = [5, 6]  # saturday and sunday
+        now = date_utils.get_naive_utc_now()
+        if now.weekday() in allowed_weekdays:
+            return True
+        elif now.hour in allowed_hours:
+            return True
+        return False
+
     def push_invoice(self, invoice: finance_models.Invoice) -> dict:
         """
         Create a new invoice.
@@ -327,6 +338,13 @@ class CegidFinanceBackend(BaseFinanceBackend):
                 settings.CEGID_CLIENT_SECRET,
             )
         )
+
+    @property
+    def time_to_sleep_between_two_sync_requests(self) -> int:
+        """
+        Time in seconds to sleep between two requests to avoid rate limit errors
+        """
+        return 5
 
     def _get_exception_type(self, response: requests.Response) -> str | None:
         if response.status_code == 500 and ("application/json" in response.headers.get("content-type", "")):

@@ -54,6 +54,11 @@ def get_time_to_sleep_between_two_sync_requests() -> int:
     return backend.time_to_sleep_between_two_sync_requests
 
 
+def check_can_push_invoice() -> bool:
+    backend = _get_backend()
+    return backend.check_can_push_invoice()
+
+
 def get_backend_name() -> str:
     backend = _get_backend()
     return backend.__class__.__name__
