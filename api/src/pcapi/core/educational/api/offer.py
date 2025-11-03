@@ -101,26 +101,6 @@ def unindex_expired_or_archived_collective_offers_template(process_all_expired: 
         page += 1
 
 
-def list_collective_offers_for_pro_user(
-    filters: schemas.CollectiveOffersFilter, offer_type: collective_offers_serialize.CollectiveOfferType | None = None
-) -> list[models.CollectiveOffer | models.CollectiveOfferTemplate]:
-    all_offers: list[models.CollectiveOffer | models.CollectiveOfferTemplate] = []
-
-    if offer_type in (None, collective_offers_serialize.CollectiveOfferType.offer):
-        offers = repository.get_collective_offers_for_filters(filters=filters, offers_limit=OFFERS_RECAP_LIMIT)
-        all_offers.extend(offers)
-
-    if offer_type in (None, collective_offers_serialize.CollectiveOfferType.template):
-        templates = repository.get_collective_offers_template_for_filters(
-            filters=filters, offers_limit=OFFERS_RECAP_LIMIT
-        )
-        all_offers.extend(templates)
-
-    all_offers.sort(key=lambda offer: offer.get_sort_criterion(), reverse=True)
-
-    return all_offers[0:OFFERS_RECAP_LIMIT]
-
-
 def get_educational_domains_from_ids(educational_domain_ids: list[int] | None) -> list[models.EducationalDomain]:
     if educational_domain_ids is None:
         return []
