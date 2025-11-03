@@ -4,6 +4,7 @@ import typing
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.criteria import constants
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -102,3 +103,11 @@ class CriterionCategory(PcObject, Model):
 
     def __str__(self) -> str:
         return self.label
+
+    @property
+    def is_editable(self) -> bool:
+        """
+        For informational purposes only.
+        The label field is not editable in the backoffice and should never be modified if its value is HIGHLIGHT_CATEGORY_LABEL.
+        """
+        return self.label != constants.HIGHLIGHT_CATEGORY_LABEL

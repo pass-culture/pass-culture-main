@@ -13,7 +13,7 @@
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           size="2"></select>
-  <label class="pc-select-label label-element-form"
+  <label class="pc-select-label label-element-form {% if field.data %}d-none{% endif %}"
          data-original-name="{{ field.name }}"
          for="{{ tom_select_field_id }}">{{ field.label.text }}</label>
 </div>
