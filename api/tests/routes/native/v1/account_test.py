@@ -1500,21 +1500,12 @@ class ResendEmailValidationTest:
         MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
         N days.
         """
-        user = users_factories.UserFactory(isEmailValidated=False)
+        email = "hello@example.com"
+        for _i in range(3):
+            response = client.post("/native/v1/resend_email_validation", json={"email": email})
+            assert response.status_code == 204
 
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
-
-        assert response.status_code == 204
-
-        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.post("/native/v1/resend_email_validation", json={"email": email})
 
         assert response.status_code == 429
         assert response.json["code"] == "TOO_MANY_EMAIL_VALIDATION_RESENDS"
