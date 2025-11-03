@@ -920,6 +920,23 @@ class CegidFinanceBackendTest:
         assert request_json["Vendor"] == {"value": str(bank_account.id)}
         assert request_json["VendorRef"] == {"value": invoice.reference}
 
+    @pytest.mark.parametrize(
+        "now,expected_boolean",
+        [
+            (datetime.datetime(2025, 11, 3, 16, 10, 0), False),
+            (datetime.datetime(2025, 11, 3, 19, 10, 0), True),
+            (datetime.datetime(2025, 11, 4, 0, 0, 0), True),
+            (datetime.datetime(2025, 11, 4, 8, 10, 0), False),
+            (datetime.datetime(2025, 11, 8, 13, 0, 0), True),  # saturday
+            (datetime.datetime(2025, 11, 9, 13, 0, 0), True),  # sunday
+        ],
+    )
+    @pytest.mark.usefixtures("mock_cegid_auth")
+    def test_cant_push_during_work_hours(self, now, expected_boolean):
+        with time_machine.travel(now):
+            check = finance_backend.check_can_push_invoice()
+        assert check is expected_boolean
+
     @pytest.mark.usefixtures("mock_cegid_auth")
     def test_get_invoice(self, requests_mock, cegid_config):
         response_data = [

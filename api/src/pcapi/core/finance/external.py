@@ -93,12 +93,20 @@ def push_invoices(count: int) -> None:
 
     invoice_ids = [e[0] for e in invoices]
     encountered_error = False
+    encountered_workhour = False
 
     try:
         for invoice_id in invoice_ids:
             try:
                 backend_name = finance_backend.get_backend_name()
                 logger.info("Push invoice", extra={"invoice_id": invoice_id, "backend": backend_name})
+                if not finance_backend.check_can_push_invoice():
+                    logger.info(
+                        "Didn't push invoice due to work hours beginning soon",
+                        extra={"invoice_id": invoice_id},
+                    )
+                    encountered_workhour = True
+                    break
                 finance_backend.push_invoice(invoice_id)
             except Exception as exc:
                 logger.exception(
@@ -122,10 +130,11 @@ def push_invoices(count: int) -> None:
                 db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
+
     finally:
         app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
 
-        if not encountered_error:
+        if not encountered_error and not encountered_workhour:
             cashflow = (
                 db.session.query(finance_models.Cashflow)
                 .join(finance_models.Cashflow.invoices)

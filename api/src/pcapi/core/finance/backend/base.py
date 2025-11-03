@@ -289,6 +289,9 @@ class BaseFinanceBackend:
             )
         return res
 
+    def check_can_push_invoice(self) -> bool:
+        return True
+
     def push_invoice(self, invoice: finance_models.Invoice) -> dict | None:
         raise NotImplementedError()
 
@@ -314,4 +317,4 @@ class BaseFinanceBackend:
         """
         Time in seconds to sleep between two requests to avoid rate limit errors
         """
-        return 5
+        return 0

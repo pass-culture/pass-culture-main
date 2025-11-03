@@ -6,6 +6,7 @@ import time_machine
 from pcapi.core.finance import external
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance.backend.dummy import DummyFinanceBackend
 from pcapi.core.finance.backend.dummy import bank_accounts as dummy_bank_accounts
 from pcapi.core.finance.backend.dummy import invoices as dummy_invoices
 from pcapi.core.offerers import factories as offerers_factories
@@ -68,10 +69,11 @@ class ExternalFinanceTest:
 
     @pytest.mark.settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
     @patch("pcapi.core.finance.external.send_internal_message")
-    def test_publish_invoices_sends_slack_notification(self, mock_send_internal_message):
+    def test_push_invoices_sends_slack_notification(self, mock_send_internal_message):
         invoices = finance_factories.InvoiceFactory.create_batch(
             5, status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
         )
+
         external.push_invoices(10)
         batch = invoices[0].cashflows[0].batch
         assert mock_send_internal_message.call_count == 1
@@ -88,6 +90,29 @@ class ExternalFinanceTest:
 
         assert call_kwargs["channel"] == "channel"
         assert call_kwargs["icon_emoji"] == ":large_green_circle:"
+
+    @pytest.mark.parametrize(
+        "check_value,expected_status",
+        [
+            (False, finance_models.InvoiceStatus.PENDING),
+            (True, finance_models.InvoiceStatus.PAID),
+        ],
+    )
+    def test_push_invoices_doesnt_run_during_work_hours(self, monkeypatch, check_value, expected_status):
+        invoice = finance_factories.InvoiceFactory(
+            status=finance_models.InvoiceStatus.PENDING, cashflows=[finance_factories.CashflowFactory()]
+        )
+
+        def check_can_push_invoice(self):
+            return check_value
+
+        monkeypatch.setattr(DummyFinanceBackend, "check_can_push_invoice", check_can_push_invoice)
+
+        external.push_invoices(0)
+        db.session.flush()
+        db.session.refresh(invoice)
+
+        assert invoice.status == expected_status
 
 
 class ExternalFinanceCommandTest:
