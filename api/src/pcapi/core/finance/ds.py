@@ -471,7 +471,6 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
             db.session.query(offerers_models.Venue)
             .filter(
                 offerers_models.Offerer.siren == self.application_details.siren,
-                offerers_models.Venue.isVirtual == False,
             )
             .options(
                 sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name)

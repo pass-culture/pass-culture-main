@@ -80,6 +80,7 @@ class VenueResponse(base.BaseVenueResponse):
     timezone: str
     contact: VenueContactModel | None
     openingHours: dict | None
+    isVirtual: bool
 
     isVirtual: bool  # duplicated to isolate it from its removal from PCPro
 

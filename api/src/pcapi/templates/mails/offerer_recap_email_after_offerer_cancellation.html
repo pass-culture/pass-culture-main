@@ -16,11 +16,7 @@
         {% if stock_date_time %}
         <br /> le {{ stock_date_time }},
         {% endif %}
-        {% if venue.isVirtual %}
-        <br /> Offre numérique proposée par {{ venue.name }}.
-        {% else %}
         <br /> proposé par {{ venue.name }} (Adresse : {{ venue.street }}, {{ venue.postalCode }} {{ venue.city }}).
-        {% endif %}
     </p>
     {% if stock_bookings %}
     <table id="recap-table">

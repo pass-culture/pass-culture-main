@@ -101,7 +101,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .select_from(offerers_models.Venue)
         .filter(
             offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
-            offerers_models.Venue.isVirtual.is_(False),
         )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
@@ -116,10 +115,8 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .scalar_subquery()
     )
 
-    has_non_virtual_venues_query = (
-        sa.exists()
-        .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
-        .where(sa.not_(offerers_models.Venue.isVirtual))
+    has_non_virtual_venues_query = sa.exists().where(
+        offerers_models.Venue.managingOffererId == offerers_models.Offerer.id
     )
 
     has_offerer_address_query = (
@@ -938,7 +935,6 @@ def get_managed_venues(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.Venue.venueTypeCode,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.isOpenToPublic,
-                offerers_models.Venue.isVirtual,
                 offerers_models.Venue.managingOffererId,
             ),
             sa_orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(

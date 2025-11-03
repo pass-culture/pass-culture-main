@@ -861,7 +861,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 Venue.isPermanent.is_(True),
-                Venue.isVirtual.is_(False),
                 Venue.id == self.id,
             )
             .exists()
@@ -882,7 +881,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 Offerer.isActive.is_(True),
                 sa.not_(Offerer.isClosed),
                 AliasedVenue.isPermanent.is_(True),
-                AliasedVenue.isVirtual.is_(False),
                 AliasedVenue.id == cls.id,
             )
             .exists()
@@ -1023,10 +1021,9 @@ def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None
 
 
 def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, Exception())
-        venue.store_departement_code()
+    if not venue.postalCode:
+        raise IntegrityError(None, None, Exception())
+    venue.store_departement_code()
     venue.store_timezone()
 
 

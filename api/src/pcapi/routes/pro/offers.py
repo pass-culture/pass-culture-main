@@ -905,11 +905,7 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
         db.session.query(offerers_models.Offerer)
         .filter_by(id=offerer_id)
         .options(sa_orm.load_only(offerers_models.Offerer.id))
-        .options(
-            sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.isVirtual
-            )
-        )
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
         .one_or_none()
     )
     validation.check_product_cgu_and_offerer(product, ean, offerer)

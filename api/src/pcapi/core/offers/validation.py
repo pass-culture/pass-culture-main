@@ -738,12 +738,11 @@ def check_product_cgu_and_offerer(
             },
             status_code=422,
         )
-    not_virtual_venues = [venue for venue in offerer.managedVenues if venue.isVirtual is False]
     # Context give only the offerer, not the specific venue on wich the offer is created.
     # We can only check the existence of an offer with this EAN if the offerer has one venue.
-    if len(not_virtual_venues) == 1:
+    if len(offerer.managedVenues) == 1:
         try:
-            check_other_offer_with_ean_does_not_exist(ean, not_virtual_venues[0])
+            check_other_offer_with_ean_does_not_exist(ean, offerer.managedVenues[0])
         except exceptions.OfferException as exc:
             raise api_errors.ApiErrors(errors=exc.errors, status_code=422)
     if not product.isGcuCompatible:
@@ -887,8 +886,8 @@ def check_offerer_is_eligible_for_headline_offers(offerer_id: int) -> None:
 
     venues = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.managingOffererId == offerer_id).all()
 
-    permanent_venues = [v for v in venues if v.isPermanent and not v.isVirtual]
-    non_permanent_venues = [v for v in venues if not v.isPermanent and not v.isVirtual]
+    permanent_venues = [v for v in venues if v.isPermanent]
+    non_permanent_venues = [v for v in venues if not v.isPermanent]
 
     if len(permanent_venues) != 1 or len(non_permanent_venues) > 0:
         raise exceptions.OffererCanNotHaveHeadlineOffer()

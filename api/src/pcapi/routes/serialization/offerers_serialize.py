@@ -35,6 +35,8 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
             ]
         if key == "hasPartnerPage":
             return self._obj._has_partner_page
+        if key == "isVirtual":
+            return False
         return super().get(key, default)
 
 
@@ -194,6 +196,13 @@ class GetOfferersNamesQueryModel(BaseModel):
         extra = "forbid"
 
 
+class GetEducationalOffererVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key == "isVirtual":
+            return False
+        return super().get(key, default)
+
+
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     id: int
@@ -208,6 +217,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
     class Config:
         orm_mode = True
+        getter_dict = GetEducationalOffererVenueResponseGetterDict
 
 
 # TODO(xordoquy): remove GetEducationalOffererResponseGetterDict once the soft delete lib is fixed
