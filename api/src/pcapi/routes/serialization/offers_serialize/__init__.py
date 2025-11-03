@@ -259,7 +259,11 @@ class ListOffersOfferResponseModel(BaseModel):
 
 
 class ListOffersResponseModel(BaseModel):
-    __root__: list[ListOffersOfferResponseModel]
+    offers: list[ListOffersOfferResponseModel]
+    total: int
+    pages: int
+    has_prev: bool
+    has_next: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -308,6 +312,8 @@ class ListOffersQueryModel(BaseModel):
     period_ending_date: datetime.date | None
     collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
     offerer_address_id: int | None
+    page: int
+    per_page: int
 
     class Config:
         alias_generator = to_camel

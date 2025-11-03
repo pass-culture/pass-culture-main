@@ -65,9 +65,17 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offerer_address_id=query.offerer_address_id,
+        page=query.page,
+        per_page=query.per_page,
     )
 
-    return offers_serialize.ListOffersResponseModel(__root__=offers_serialize.serialize_capped_offers(paginated_offers))
+    return offers_serialize.ListOffersResponseModel(
+        offers=offers_serialize.serialize_capped_offers(paginated_offers.items),
+        total=paginated_offers.total,
+        pages=paginated_offers.pages,
+        has_prev=paginated_offers.has_prev,
+        has_next=paginated_offers.has_next,
+    )
 
 
 @private_api.route("/offers/<int:offer_id>", methods=["GET"])

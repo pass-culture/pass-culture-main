@@ -12,6 +12,8 @@ export type ListOffersQueryModel = {
   nameOrIsbn?: string | null;
   offererAddressId?: number | null;
   offererId?: number | null;
+  page: number;
+  perPage: number;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
   status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null;

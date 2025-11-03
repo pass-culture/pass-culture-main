@@ -103,6 +103,8 @@ export const IndividualOffers = (): JSX.Element => {
     } = serializeApiFilters(apiFilters)
 
     return api.listOffers(
+      currentPageNumber,
+      10,
       nameOrIsbn,
       offererId,
       status,
@@ -116,7 +118,18 @@ export const IndividualOffers = (): JSX.Element => {
     )
   })
 
-  const offers = offersQuery.error ? [] : offersQuery.data || []
+  const emptyResponse = {
+    has_next: false,
+    has_prev: false,
+    offers: [],
+    page: 1,
+    pages: 1,
+    total: 0,
+  }
+
+  const response = offersQuery.error
+    ? emptyResponse
+    : offersQuery.data || emptyResponse
   // This is for tracking purposes, check useLogNavigation for more details.
   const bannerVideoQueryParam = '?from_banner=banner_video'
 
@@ -153,7 +166,7 @@ export const IndividualOffers = (): JSX.Element => {
           currentPageNumber={currentPageNumber}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
-          offers={offers}
+          response={response}
           redirectWithSelectedFilters={redirectWithSelectedFilters}
           offererAddresses={offererAddresses}
         />

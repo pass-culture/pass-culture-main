@@ -17,6 +17,8 @@ export const serializeApiFilters = (
   searchFilters: Partial<SearchFiltersParams>
 ): ListOffersQueryModel => {
   const listOffersQueryKeys: (keyof ListOffersQueryModel)[] = [
+    'page',
+    'perPage',
     'nameOrIsbn',
     'offererId',
     'status',

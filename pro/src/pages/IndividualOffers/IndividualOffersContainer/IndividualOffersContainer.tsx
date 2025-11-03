@@ -1,6 +1,10 @@
 import { useRef, useState } from 'react'
 
-import { type ListOffersOfferResponseModel, OfferStatus } from '@/apiClient/v1'
+import {
+  type ListOffersOfferResponseModel,
+  type ListOffersResponseModel,
+  OfferStatus,
+} from '@/apiClient/v1'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import {
   DEFAULT_PAGE,
@@ -40,7 +44,7 @@ export type IndividualOffersContainerProps = {
   ) => void
   offererAddresses: SelectOption[]
   categories?: SelectOption[]
-  offers?: ListOffersOfferResponseModel[]
+  response?: ListOffersResponseModel
 }
 
 export const IndividualOffersContainer = ({
@@ -50,7 +54,7 @@ export const IndividualOffersContainer = ({
   redirectWithSelectedFilters,
   offererAddresses,
   categories,
-  offers = [],
+  response,
 }: IndividualOffersContainerProps): JSX.Element => {
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
   const [selectedOfferIds, setSelectedOfferIds] = useState<
@@ -64,13 +68,9 @@ export const IndividualOffersContainer = ({
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const offers = response?.offers ?? []
 
-  const currentPageOffersSubset = offers.slice(
-    (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
-    currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
-  )
-
-  const hasOffers = currentPageOffersSubset.length > 0
+  const hasOffers = offers.length > 0
 
   const hasFilters = hasSearchFilters({
     searchFilters: initialSearchFilters,
@@ -86,9 +86,6 @@ export const IndividualOffersContainer = ({
   function clearSelectedOffers() {
     setSelectedOfferIds(new Set())
   }
-
-  const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
-  const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
   const applySelectedFiltersAndRedirect = (
     filters: Partial<SearchFiltersParams> & { audience?: Audience }
@@ -180,16 +177,14 @@ export const IndividualOffersContainer = ({
               Liste des offres
             </h2>
             <div>
-              {`${getOffersCountToDisplay(offers.length)} ${
-                offers.length <= 1 ? 'offre' : 'offres'
-              }`}
+              {`${response?.total ?? 0} ${offers.length <= 1 ? 'offre' : 'offres'}`}
             </div>
           </div>
         )}
       </output>
       <Table
         columns={columns}
-        data={currentPageOffersSubset}
+        data={offers}
         allData={offers}
         isLoading={isLoading}
         variant={TableVariant.COLLAPSE}
@@ -217,7 +212,7 @@ export const IndividualOffersContainer = ({
       <div className={styles['offers-table-pagination']}>
         <Pagination
           currentPage={currentPageNumber}
-          pageCount={pageCount}
+          pageCount={response?.pages ?? 1}
           onPreviousPageClick={onPreviousPageClick}
           onNextPageClick={onNextPageClick}
         />

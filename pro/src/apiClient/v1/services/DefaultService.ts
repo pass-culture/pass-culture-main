@@ -1703,6 +1703,8 @@ export class DefaultService {
   }
   /**
    * list_offers <GET>
+   * @param page
+   * @param perPage
    * @param nameOrIsbn
    * @param offererId
    * @param status
@@ -1717,6 +1719,8 @@ export class DefaultService {
    * @throws ApiError
    */
   public listOffers(
+    page: number,
+    perPage: number,
     nameOrIsbn?: string | null,
     offererId?: number | null,
     status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null,
@@ -1742,6 +1746,8 @@ export class DefaultService {
         'periodEndingDate': periodEndingDate,
         'collectiveOfferType': collectiveOfferType,
         'offererAddressId': offererAddressId,
+        'page': page,
+        'perPage': perPage,
       },
       errors: {
         403: `Forbidden`,

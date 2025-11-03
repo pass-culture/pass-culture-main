@@ -11,6 +11,5 @@ export function computeIndividualApiFilters(
     ...{ offererId: selectedOffererId?.toString() ?? '' },
   }
 
-  delete apiFilters.page
   return apiFilters
 }

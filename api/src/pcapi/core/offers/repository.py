@@ -4,6 +4,7 @@ import logging
 import operator
 import typing
 
+import flask_sqlalchemy as fs
 import psycopg2
 import pytz
 import sqlalchemy as sa
@@ -88,7 +89,9 @@ def get_capped_offers_for_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offerer_address_id: int | None = None,
-) -> list[models.Offer]:
+    page: int,
+    per_page: int,
+):
     query = get_offers_by_filters(
         user_id=user_id,
         offerer_id=offerer_id,
@@ -102,7 +105,7 @@ def get_capped_offers_for_filters(
         period_ending_date=period_ending_date,
     )
 
-    offers = (
+    offers_query = (
         query.options(
             sa_orm.load_only(
                 models.Offer.id,
@@ -175,15 +178,25 @@ def get_capped_offers_for_filters(
                 offerers_models.OffererAddress.isLinkedToVenue.expression,
             ),
         )
-        .limit(offers_limit)
-        .all()
+        .order_by(models.Offer.dateCreated.desc())
     )
+    # # --- construire un Statement pour EXPLAIN ---
+    # # 1) extraire le Select depuis le Query
+    # stmt = offers_query.statement  # <-- devient un sqlalchemy.sql.Select
 
-    # Do not use `ORDER BY` in SQL, which sometimes applies on a very large result set
-    # _before_ the `LIMIT` clause (and kills performance).
-    if len(offers) < offers_limit:
-        offers = sorted(offers, key=operator.attrgetter("id"), reverse=True)
+    # # 2) y appliquer la même pagination que celle utilisée pour l'appel réel
+    # stmt = stmt.limit(per_page).offset((page - 1) * per_page)
 
+    # # 3) compiler en SQL littéral
+    # dialect = db.session.get_bind().dialect
+    # compiled = stmt.compile(dialect=dialect, compile_kwargs={"literal_binds": True})
+
+    # # 4) écrire/EXPLAIN le SQL
+    # with open("query_2.sql", "w", encoding="utf-8") as f:
+    #     f.write(str(compiled) + "\n")
+
+    # --- exécution normale paginée (ne pas toucher) ---
+    offers = offers_query.paginate(page=page, per_page=per_page)
     return offers
 
 
