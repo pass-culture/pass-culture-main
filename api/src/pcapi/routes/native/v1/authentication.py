@@ -96,6 +96,16 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not valid"})
+
+    try:
+        users_api.check_email_validation_resends_count(body.email)
+        users_api.increment_email_resends_count(body.email)
+    except users_exceptions.EmailValidationLimitReached:
+        raise api_errors.ApiErrors(
+            {"message": "Le nombre de tentatives maximal est dépassé.", "code": "TOO_MANY_EMAIL_VALIDATION_RESENDS"},
+            status_code=429,
+        )
+
     user = find_user_by_email(body.email)
     users_api.request_password_reset(user)
 

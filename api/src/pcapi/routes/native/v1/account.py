@@ -283,32 +283,30 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
 @blueprint.native_route("/resend_email_validation", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400, 429])
 def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> None:
-    user = find_user_by_email(body.email)
-    if not user or not user.isActive:
-        return
     try:
-        if user.isEmailValidated:
-            api.request_password_reset(user)
-        else:
-            api.check_email_validation_resends_count(user)
-            api.increment_email_validation_resends_count(user)
-            api.request_email_confirmation(user)
+        api.check_email_validation_resends_count(body.email)
+        api.increment_email_resends_count(body.email)
     except exceptions.EmailValidationLimitReached:
         raise api_errors.ApiErrors(
             {"message": "Le nombre de tentatives maximal est dépassé.", "code": "TOO_MANY_EMAIL_VALIDATION_RESENDS"},
             status_code=429,
         )
 
+    user = find_user_by_email(body.email)
+    if not user or not user.isActive:
+        return
+
+    if user.isEmailValidated:
+        api.request_password_reset(user)
+    else:
+        api.request_email_confirmation(user)
+
 
 @blueprint.native_route("/email_validation_remaining_resends/<email>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.EmailValidationRemainingResendsResponse)
 def email_validation_remaining_resends(email: str) -> serializers.EmailValidationRemainingResendsResponse | None:
-    user = find_user_by_email(email)
-    if not user:
-        return serializers.EmailValidationRemainingResendsResponse(remainingResends=0, counterResetDatetime=None)
-
-    remaining_resends = api.get_remaining_email_validation_resends(user)
-    expiration_time = api.get_email_validation_resends_limitation_expiration_time(user)
+    remaining_resends = api.get_remaining_email_resends(email)
+    expiration_time = api.get_email_validation_resends_limitation_expiration_time(email)
 
     return serializers.EmailValidationRemainingResendsResponse(
         remainingResends=remaining_resends, counterResetDatetime=expiration_time
