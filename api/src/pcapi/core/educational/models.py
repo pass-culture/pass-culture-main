@@ -1214,15 +1214,6 @@ class CollectiveOfferTemplate(
     def is_eligible_for_search(self) -> bool:
         return bool(self.isReleased and not self.venue.isVirtual)
 
-    def get_sort_criterion(self) -> tuple[bool, int, datetime.datetime]:
-        """
-        This is is used to compare offers.
-
-        For template offers there is no booking_limit criterium. Thats is why we define the second value of the tuple
-        to the constant.
-        """
-        return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_OFFERS, self.dateCreated)
-
     @property
     def visibleText(self) -> str:  # used in validation rule, do not remove
         return f"{self.name} {self.description} {self.priceDetail}"

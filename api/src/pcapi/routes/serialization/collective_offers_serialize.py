@@ -98,57 +98,6 @@ class ListCollectiveOfferTemplatesQueryModel(ConfiguredBaseModel):
         extra = "forbid"
 
 
-class ListCollectiveOffersQueryModel(BaseModel):
-    nameOrIsbn: str | None
-    offerer_id: int | None
-    status: list[educational_models.CollectiveOfferDisplayedStatus] | None
-    venue_id: int | None
-    creation_mode: str | None
-    period_beginning_date: date | None
-    period_ending_date: date | None
-    collective_offer_type: CollectiveOfferType | None
-    format: EacFormat | None
-    location_type: educational_models.CollectiveLocationType | None
-    offerer_address_id: int | None
-
-    @validator("status", pre=True)
-    def parse_status(cls, status: typing.Any | None) -> list[typing.Any] | None:
-        # this is needed to handle the case of only one status in query filters
-        if status is None or isinstance(status, list):
-            return status
-
-        return [status]
-
-    @root_validator(skip_on_failure=True)
-    def validate_location_filter(cls, values: dict) -> dict:
-        location_type = values.get("location_type")
-        offerer_address_id = values.get("offerer_address_id")
-
-        if offerer_address_id is not None and location_type != educational_models.CollectiveLocationType.ADDRESS:
-            raise ValueError(
-                f"Cannot provide offerer_address_id when location_type is not {educational_models.CollectiveLocationType.ADDRESS.value}"
-            )
-
-        return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class CollectiveOffersStockResponseModel(BaseModel):
-    hasBookingLimitDatetimePassed: bool
-    remainingQuantity: int = 0  # needed for frontend tables compatibility
-    bookingLimitDatetime: datetime | None
-    startDatetime: datetime | None
-    endDatetime: datetime | None
-    price: float | None
-    numberOfTickets: int | None
-
-    class Config:
-        orm_mode = True
-
-
 class CollectiveOfferStockResponseModel(ConfiguredBaseModel):
     bookingLimitDatetime: datetime | None
     price: float | None
@@ -176,103 +125,10 @@ class CollectiveOfferDatesModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class CollectiveOffersBookingResponseModel(BaseModel):
-    id: int
-    booking_status: str
-
-
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
     address: address_serialize.AddressResponseIsLinkedToVenueModel | None
-
-
-class CollectiveOfferResponseModel(BaseModel):
-    hasBookingLimitDatetimesPassed: bool
-    id: int
-    isActive: bool
-    isEducational: bool
-    name: str
-    stocks: list[CollectiveOffersStockResponseModel]
-    booking: CollectiveOffersBookingResponseModel | None
-    isShowcase: bool
-    venue: base_serializers.ListOffersVenueResponseModel
-    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
-    allowedActions: (
-        list[educational_models.CollectiveOfferAllowedAction]
-        | list[educational_models.CollectiveOfferTemplateAllowedAction]
-    )
-    educationalInstitution: EducationalInstitutionResponseModel | None
-    imageUrl: str | None
-    dates: CollectiveOfferDatesModel | None
-    location: GetCollectiveOfferLocationModel
-
-    class Config:
-        alias_generator = to_camel
-
-
-class ListCollectiveOffersResponseModel(BaseModel):
-    __root__: list[CollectiveOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
-def serialize_collective_offers_capped(
-    paginated_offers: list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate],
-) -> list[CollectiveOfferResponseModel]:
-    return [_serialize_offer_paginated(offer) for offer in paginated_offers]
-
-
-def _serialize_offer_paginated(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
-) -> CollectiveOfferResponseModel:
-    is_offer_template = isinstance(offer, educational_models.CollectiveOfferTemplate)
-
-    stock = offer.collectiveStock if not is_offer_template else None
-    serialized_stocks = [_serialize_stock(stock)]
-
-    last_booking = stock.lastBooking if stock is not None else None
-    if last_booking is not None:
-        serialized_last_booking = CollectiveOffersBookingResponseModel(
-            id=last_booking.id,
-            booking_status=last_booking.status.value,
-        )
-    else:
-        serialized_last_booking = None
-
-    return CollectiveOfferResponseModel(
-        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
-        id=offer.id,
-        isActive=offer.isActive,
-        isEducational=True,
-        name=offer.name,
-        stocks=serialized_stocks,
-        booking=serialized_last_booking,
-        venue=_serialize_venue(offer.venue),
-        displayedStatus=offer.displayedStatus,
-        allowedActions=offer.allowedActions,
-        isShowcase=is_offer_template,
-        educationalInstitution=offer.institution if not is_offer_template else None,
-        imageUrl=offer.imageUrl,
-        dates=offer.dates,  # type: ignore[arg-type]
-        location=get_collective_offer_location_model(offer),
-    )
-
-
-def _serialize_stock(stock: educational_models.CollectiveStock | None) -> CollectiveOffersStockResponseModel:
-    if stock is not None:
-        return CollectiveOffersStockResponseModel.from_orm(stock)
-
-    return CollectiveOffersStockResponseModel(
-        hasBookingLimitDatetimePassed=False,
-        remainingQuantity=1,
-        startDatetime=None,
-        endDatetime=None,
-        bookingLimitDatetime=None,
-        price=None,
-        numberOfTickets=None,
-    )
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
