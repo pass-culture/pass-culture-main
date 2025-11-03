@@ -57,13 +57,28 @@ class ETLStopProcessException(ETLProcessException):
 
 
 class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSScheduleConnector, ExtractResult]:
+    """
+    Extract Transform Load process to import movies & shows for cinema integrations.
+
+    Each inheriting class must implement the following methods that are integration specific :
+        - `_extract` : call cinema API (-> `ExtractResult`)
+        - `_transform` : format API response into a generic list easily loadable in DB (`ExtractResult` -> `list[LoadableMovie]`)
+        - `_extract_result_to_log_dict` : format API response into a loggable `dict` (`ExtractResult` -> `dict`)
+
+    Common methods are :
+       - `execute` : (main method) execute the entire Extract Transform Load process
+       - `_load` : create or update `Product`, `Offer` & `Stock` based on received `list[LoadableMovie]`
+       - `_post_load_product_poster_update` : fetch movie product poster when relevant
+    """
+
     def __init__(self, venue_provider: models.VenueProvider, api_client: APIClient):
         self.venue_provider = venue_provider
         self.api_client = api_client
 
     def execute(self) -> None:
         """
-        Check provider & venue_provider are active, then execute the etl process (extract, transform, load)
+        Check provider & venue_provider are active, then execute the etl process (extract, transform, load).
+        Once the `Product`, `Offer` & `Stock` are loaded, this method enqueues indexation jobs for upserted offers.
 
         :raise: `InactiveProvider`, `InactiveVenueProvider`
         """
@@ -165,6 +180,12 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         loadable_movie: LoadableMovie,
         price_category_labels_by_label: dict[str, offers_models.PriceCategoryLabel],
     ) -> tuple[offers_models.Model, tuple[offers_models.Product, str] | None]:
+        """
+        This method does 3 things :
+            1. Upsert movie product
+            2. Upsert offer
+            3. Upsert offer stocks (creating missing price categories if necessary)
+        """
         # Product - Create Or Update
         product = offers_api.upsert_movie_product_from_provider(
             loadable_movie["movie_data"],
