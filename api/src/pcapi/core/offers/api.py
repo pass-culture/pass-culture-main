@@ -549,9 +549,21 @@ def update_offer(
             provider=offer.lastProvider,
         )
 
-    body_ean = body.extra_data.get("ean", None) if body.extra_data else None
-    if body_ean:
+    try:
         updates["ean"] = updates["extraData"].pop("ean")
+
+        # TODO(jbaudet - 11/2025): remove this whole try/except in a
+        # couple of weeks, after checking that this warning never
+        # appears.
+        # Caller should use body.ean instead of body.extra_data["ean"]
+        # This seems to be ok today, but... lets wait a little bit before
+        # doing anything stupid.
+        logger.warning(
+            "update_offer: extracting EAN from extraData (use body.ean instead)",
+            extra={"offer": offer.id, "ean": updates["ean"]},
+        )
+    except (KeyError, AttributeError):
+        pass
 
     if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
         # - The offer URL must not be removed if the offer has an online subcategory.
