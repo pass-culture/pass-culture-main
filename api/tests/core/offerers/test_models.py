@@ -667,8 +667,16 @@ class VenueIsCaledonianTest:
         venue = factories.CaledonianVenueFactory()
         assert venue.is_caledonian
 
+    def test_venue_without_ridet_is_caledonian(self):
+        venue = factories.CaledonianVenueWithoutRidetFactory()
+        assert venue.is_caledonian
+
     def test_venue_is_not_caledonian(self):
         venue = factories.VenueFactory()
+        assert not venue.is_caledonian
+
+    def test_venue_without_siret_is_not_caledonian(self):
+        venue = factories.VenueWithoutSiretFactory()
         assert not venue.is_caledonian
 
 

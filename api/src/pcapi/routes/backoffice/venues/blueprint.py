@@ -411,7 +411,11 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         .options(
             sa_orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
                 offerers_models.VenuePricingPointLink.pricingPoint
-            )
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.departmentCode),
         )
         .outerjoin(
             offerers_models.VenueBankAccountLink,
@@ -449,7 +453,13 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         db.session.query(offerers_models.Venue)
         .filter_by(id=venue_id)
-        .options(sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.siret))
+        .options(
+            sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.siret),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(geography_models.Address.departmentCode),
+        )
         .one_or_none()
     )
 

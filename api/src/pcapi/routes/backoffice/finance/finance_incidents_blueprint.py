@@ -20,6 +20,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
@@ -70,11 +71,16 @@ def _get_incidents_by_id(incidents_ids: list[int] | sa.sql.Select) -> list[finan
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.siret,
             )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(
-                offerers_models.Offerer.id,
-                offerers_models.Offerer.name,
-                offerers_models.Offerer.siren,
+            .options(
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.id,
+                    offerers_models.Offerer.name,
+                    offerers_models.Offerer.siren,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                .load_only()
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.departmentCode),
             ),
             sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents).options(
                 sa_orm.load_only(
@@ -422,10 +428,16 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa_orm.joinedload(bookings_models.Booking.venue)
-                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret)
-                .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(offerers_models.Offerer.siren),
+                sa_orm.joinedload(bookings_models.Booking.venue).options(
+                    sa_orm.load_only(
+                        offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret
+                    ),
+                    sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
+                    sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                    .load_only()
+                    .joinedload(offerers_models.OffererAddress.address)
+                    .load_only(geography_models.Address.departmentCode),
+                ),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -487,10 +499,16 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
                 .load_only(offers_models.Stock.id)
                 .joinedload(offers_models.Stock.offer)
                 .load_only(offers_models.Offer.name),
-                sa_orm.joinedload(bookings_models.Booking.venue)
-                .load_only(offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret)
-                .joinedload(offerers_models.Venue.managingOfferer)
-                .load_only(offerers_models.Offerer.siren),
+                sa_orm.joinedload(bookings_models.Booking.venue).options(
+                    sa_orm.load_only(
+                        offerers_models.Venue.publicName, offerers_models.Venue.name, offerers_models.Venue.siret
+                    ),
+                    sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
+                    sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                    .load_only()
+                    .joinedload(offerers_models.OffererAddress.address)
+                    .load_only(geography_models.Address.departmentCode),
+                ),
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
@@ -1425,6 +1443,10 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
                 .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress)
+                .load_only()
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.departmentCode),
             ),
             # Booking incidents info
             sa_orm.joinedload(finance_models.FinanceIncident.booking_finance_incidents)
