@@ -15,7 +15,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.utils import repository
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.update_all_offers_active_status_job import (
     update_venue_synchronized_collective_offers_active_status_job,
@@ -41,6 +40,16 @@ def create_venue_provider(
     current_user: users_models.User,
     payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
 ) -> providers_models.VenueProvider:
+    existing_venue_provider = (
+        db.session.query(providers_models.VenueProvider)
+        .filter(
+            providers_models.VenueProvider.venueId == venue.id, providers_models.VenueProvider.providerId == provider.id
+        )
+        .one_or_none()
+    )
+    if existing_venue_provider:
+        raise providers_exceptions.ProviderException({"global": ["Votre lieu est déjà lié à cette source."]})
+
     if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, provider.id, payload)
     elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
@@ -152,15 +161,16 @@ def update_venue_provider(
 ) -> providers_models.VenueProvider:
     activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.isActive), author)
     if venue_provider.isFromAllocineProvider:
-        venue_provider = update_allocine_venue_provider(venue_provider, venue_provider_payload)
+        venue_provider = _update_allocine_venue_provider(venue_provider, venue_provider_payload)
     else:
         if venue_provider.provider.isCinemaProvider:
-            venue_provider = update_cinema_venue_provider(venue_provider, venue_provider_payload)
-        repository.save(venue_provider)
+            venue_provider = _update_cinema_venue_provider(venue_provider, venue_provider_payload)
+    db.session.add(venue_provider)
+    db.session.flush()
     return venue_provider
 
 
-def update_cinema_venue_provider(
+def _update_cinema_venue_provider(
     venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.VenueProvider:
     venue_provider.isDuoOffers = bool(venue_provider_payload.isDuo)
@@ -168,7 +178,7 @@ def update_cinema_venue_provider(
     return venue_provider
 
 
-def update_allocine_venue_provider(
+def _update_allocine_venue_provider(
     allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
@@ -176,8 +186,6 @@ def update_allocine_venue_provider(
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     assert venue_provider_payload.price is not None  # helps mypy
     allocine_venue_provider.price = venue_provider_payload.price
-
-    repository.save(allocine_venue_provider)
 
     return allocine_venue_provider
 
@@ -190,7 +198,8 @@ def connect_venue_to_provider(
     venue_provider.venue = venue
     venue_provider.provider = provider
 
-    repository.save(venue_provider)
+    db.session.add(venue_provider)
+    db.session.flush()
 
     return venue_provider
 
@@ -215,7 +224,8 @@ def connect_venue_to_allocine(
             theaterId=theater.theaterId,
             internalId=theater.internalId,
         )
-        repository.save(pivot)
+        db.session.add(pivot)
+        db.session.flush()
 
     venue_provider = providers_models.AllocineVenueProvider(
         venue=venue,
@@ -226,7 +236,8 @@ def connect_venue_to_allocine(
         internalId=pivot.internalId,
         price=payload.price,
     )
-    repository.save(venue_provider)
+    db.session.add(venue_provider)
+    db.session.flush()
 
     return venue_provider
 
@@ -247,7 +258,8 @@ def connect_venue_to_cinema_provider(
     venue_provider.isDuoOffers = payload.isDuo if payload.isDuo else False
     venue_provider.venueIdAtOfferProvider = provider_pivot.idAtProvider
 
-    repository.save(venue_provider)
+    db.session.add(venue_provider)
+    db.session.flush()
     return venue_provider
 
 
