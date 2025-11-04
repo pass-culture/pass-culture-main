@@ -140,8 +140,8 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch offers with joinedload including extra data (1 query)
     # - fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
     expected_num_queries_with_no_result = 4
-    # - fetch addresses (selectinload: 1 query)
-    expected_num_queries_with_results = expected_num_queries_with_no_result + 1
+    # - fetch venue addresses and offer addresses (2 x selectinload: 2 queries)
+    expected_num_queries_with_results = expected_num_queries_with_no_result + 2
     # - fetch providers (selectinload: 1 query)
     expected_num_queries_with_provider = expected_num_queries_with_results + 1
 
@@ -1861,9 +1861,9 @@ class BatchEditOfferTest(PostEndpointHelper):
         # 1 x all criteria
         # 1 x update offers (for 3 offers)
         # 1 x insert into offer_criterion (for 3 insertions)
-        # 1 x re-fetch to render updated rows (2 queries)
+        # 1 x re-fetch to render updated rows (3 queries)
         # 1 x `build_pc_pro_offer_path` call with `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=9)
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=10)
         assert response.status_code == 200
         # ensure rows are rendered
         html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
@@ -1892,8 +1892,8 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
     expected_num_queries_with_no_result = 3
-    # - fetch addresses (selectinload: 1 query)
-    expected_num_queries_with_results = expected_num_queries_with_no_result + 1
+    # - fetch addresses (2 x selectinload: 2 queries)
+    expected_num_queries_with_results = expected_num_queries_with_no_result + 2
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
@@ -2405,9 +2405,9 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # update offer (3 in 1 query)
         # fetch the venues for AO label if needed (3 in 1 query)
         # select FFs (1 query) because of `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` in `build_pc_pro_offer_path`
-        # re-fetch updated offers to render updated rows (2 queries)
+        # re-fetch updated offers to render updated rows (3 queries)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=8 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=9 + additional_query_count
         )
 
         assert response.status_code == 200
@@ -3588,7 +3588,7 @@ class ActivateOfferTest(PostEndpointHelper):
         offer_to_activate = offers_factories.OfferFactory(isActive=False)
 
         expected_num_queries = self.expected_num_queries
-        expected_num_queries += 2  # re-fetch to render updated offer + address
+        expected_num_queries += 3  # re-fetch to render updated offer + venue address + offer address
         expected_num_queries += 1  # FFs check in `build_pc_pro_offer_path` (`WIP_ENABLE_NEW_OFFER_CREATION_FLOW`)
 
         response = self.post_to_endpoint(
@@ -3684,8 +3684,8 @@ class DeactivateOfferTest(PostEndpointHelper):
         offer_to_deactivate = offers_factories.OfferFactory(isActive=True)
 
         expected_num_queries = self.expected_num_queries
-        # re-fetch offer to render again + address
-        expected_num_queries += 2
+        # re-fetch offer to render again + venue address + offer address
+        expected_num_queries += 3
         # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
         expected_num_queries += 1
         response = self.post_to_endpoint(
@@ -3758,9 +3758,9 @@ class BatchOfferActivateTest(PostEndpointHelper):
     # current user
     # get offers
     # update offers
-    # re-fetch to render updated offer rows (2 queries)
+    # re-fetch to render updated offer rows (3 queries)
     # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-    expected_num_queries = 7
+    expected_num_queries = 8
 
     def test_batch_activate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
@@ -3789,9 +3789,9 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
     # current user
     # get offers
     # update offers
-    # re-fetch to render updated offer rows (2 queries)
+    # re-fetch to render updated offer rows (3 queries)
     # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-    expected_num_queries = 7
+    expected_num_queries = 8
 
     def test_batch_deactivate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3)

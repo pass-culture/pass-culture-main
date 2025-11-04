@@ -117,6 +117,19 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         contact__social_medias={"instagram": "https://instagram.com/@dumbea.nc"},
         offererAddress__address=dumbea_address,
     )
+    venue_without_ridet = offerers_factories.CaledonianVenueWithoutRidetFactory.create(
+        managingOfferer=offerer,
+        pricing_point=second_venue,
+        name="Lieu sans RIDET à Nouméa",
+        bookingEmail="venue.nc@example.com",
+        venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+        description="Lieu de test sans RIDET en Nouvelle-Calédonie",
+        contact__email="noumea.nc@example.com",
+        contact__website="https://nc.example.com/noumea",
+        contact__phone_number="+687263443",
+        contact__social_medias={"instagram": "https://instagram.com/@noumea.nc"},
+        offererAddress__address=noumea_address,
+    )
 
     offerers_factories.UserOffererFactory.create(
         offerer=offerer,
@@ -133,37 +146,35 @@ def _create_nc_active_offerer(beneficiary: users_models.User) -> None:
         offerer=offerer,
         dsApplicationId="988001",
     )
-    offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
-    )
-    offerers_factories.VenueBankAccountLinkFactory.create(
-        venue=second_venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now(),)
-    )
 
-    event_offer = offers_factories.EventOfferFactory.create(name="Offre d'événement en Nouvelle-Calédonie", venue=venue)
-    # 22:00 UTC = 11:00 Noumea time on the day after
-    ref_date = date_utils.get_naive_utc_now().replace(hour=22, minute=0, second=0, microsecond=0)
-    event_stocks = [
-        offers_factories.EventStockFactory.create(
-            offer=event_offer,
-            beginningDatetime=ref_date + datetime.timedelta(days=days),
-            bookingLimitDatetime=ref_date + datetime.timedelta(days=days - 2),
-            price=finance_utils.xpf_to_euros(1790),
-            quantity=50,
+    now = date_utils.get_naive_utc_now()
+    for v in (venue, second_venue, venue_without_ridet):
+        offerers_factories.VenueBankAccountLinkFactory.create(venue=v, bankAccount=bank_account, timespan=(now,))
+
+        event_offer = offers_factories.EventOfferFactory.create(name="Offre d'événement en Nouvelle-Calédonie", venue=v)
+        # 22:00 UTC = 11:00 Noumea time on the day after
+        ref_date = now.replace(hour=22, minute=0, second=0, microsecond=0)
+        event_stocks = [
+            offers_factories.EventStockFactory.create(
+                offer=event_offer,
+                beginningDatetime=ref_date + datetime.timedelta(days=days),
+                bookingLimitDatetime=ref_date + datetime.timedelta(days=days - 2),
+                price=finance_utils.xpf_to_euros(1790),
+                quantity=50,
+            )
+            for days in range(8, 15)
+        ]
+
+        bookings_factories.BookingFactory.create(stock=event_stocks[0], user=beneficiary)
+
+        thing_stock = offers_factories.ThingStockFactory.create(
+            offer__name="Offre physique en Nouvelle-Calédonie",
+            offer__venue=v,
+            price=finance_utils.xpf_to_euros(2_800),
+            quantity=10,
         )
-        for days in range(8, 15)
-    ]
 
-    bookings_factories.BookingFactory.create(stock=event_stocks[0], user=beneficiary)
-
-    thing_stock = offers_factories.ThingStockFactory.create(
-        offer__name="Offre physique en Nouvelle-Calédonie",
-        offer__venue=venue,
-        price=finance_utils.xpf_to_euros(12_000),
-        quantity=10,
-    )
-
-    bookings_factories.UsedBookingFactory.create(stock=thing_stock, user=beneficiary)
+        bookings_factories.UsedBookingFactory.create(stock=thing_stock, user=beneficiary)
 
 
 def _create_nc_new_offerer() -> None:

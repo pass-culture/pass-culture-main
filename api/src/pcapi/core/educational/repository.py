@@ -234,7 +234,7 @@ def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBookin
                 ),
                 sa_orm.joinedload(offerers_models.Venue.offererAddress)
                 .joinedload(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.timezone),
+                .load_only(geography_models.Address.departmentCode, geography_models.Address.timezone),
             ),
         )
     )

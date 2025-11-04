@@ -58,6 +58,7 @@ from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import numranges_to_timespan_str
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.regions import NEW_CALEDONIA_DEPARTMENT_CODE
 
 
 if typing.TYPE_CHECKING:
@@ -836,13 +837,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_caledonian(self) -> bool:
-        """
-        Note that Caledonian venues may be registered with a SIRET.
-        Complete check should include cases where:
-        `self.offererAddress.address.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE)`
-        However, all venues imported in New Caledonia are registered with a RIDET => avoid complex requests with joins.
-        """
-        return siren_utils.is_ridet(self.siret)
+        return (
+            siren_utils.is_ridet(self.siret)
+            or self.offererAddress.address.departmentCode == NEW_CALEDONIA_DEPARTMENT_CODE
+        )
 
     @property
     def has_headline_offer(self) -> bool:

@@ -266,6 +266,7 @@ def test_only_return_non_softdeleted_venues(client):
 def test_is_caledonian(client):
     pro_user = users_factories.ProFactory()
     venue = offerers_factories.CaledonianVenueFactory()
+    offerers_factories.CaledonianVenueWithoutRidetFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
     offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user=pro_user)
 
     client = client.with_session_auth(pro_user.email)
@@ -277,5 +278,6 @@ def test_is_caledonian(client):
         assert response.status_code == 200
 
     assert "venues" in response.json
-    assert len(response.json["venues"]) == 1
+    assert len(response.json["venues"]) == 2
     assert response.json["venues"][0]["isCaledonian"] is True
+    assert response.json["venues"][1]["isCaledonian"] is True

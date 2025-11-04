@@ -757,6 +757,10 @@ def _get_offers_by_ids(
                         offerers_models.Offerer.name,
                     ),
                 ),
+                sa_orm.selectinload(offerers_models.Venue.offererAddress)
+                .load_only()
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.departmentCode),
             ),
             sa_orm.joinedload(offers_models.Offer.author).load_only(
                 users_models.User.id,
@@ -1356,6 +1360,9 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
+    VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
+    VenueAddress = sa_orm.aliased(geography_models.Address)
+
     offer_query = (
         db.session.query(offers_models.Offer)
         .filter(offers_models.Offer.id == offer_id)
@@ -1388,6 +1395,10 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
                 sa_orm.joinedload(offerers_models.Venue.confidenceRule).load_only(
                     offerers_models.OffererConfidenceRule.confidenceLevel
                 ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress.of_type(VenueOffererAddress))
+                .load_only()
+                .joinedload(VenueOffererAddress.address.of_type(VenueAddress))
+                .load_only(VenueAddress.departmentCode),
             ),
             sa_orm.joinedload(offers_models.Offer.stocks)
             .joinedload(offers_models.Stock.priceCategory)

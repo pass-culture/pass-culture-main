@@ -184,7 +184,7 @@ class VenueFactory(BaseFactory):
 class CaledonianVenueFactory(VenueFactory):
     name = factory.Sequence("Partenaire culturel calédonien {}".format)
     managingOfferer = factory.SubFactory(CaledonianOffererFactory)
-    siret = factory.LazyAttributeSequence(
+    siret: factory.declarations.BaseDeclaration | None = factory.LazyAttributeSequence(
         lambda o, n: siren_utils.ridet_to_siret(f"{siren_utils.siren_to_rid7(o.managingOfferer.siren)}{n % 100:03}")
     )
     venueTypeCode = models.VenueTypeCode.BOOKSTORE
@@ -233,6 +233,11 @@ class GooglePlacesInfoFactory(BaseFactory):
 class VenueWithoutSiretFactory(VenueFactory):
     siret = None
     comment = "No SIRET"
+
+
+class CaledonianVenueWithoutRidetFactory(CaledonianVenueFactory):
+    siret = None
+    comment = "No RIDET"
 
 
 class VenuePricingPointLinkFactory(BaseFactory):
