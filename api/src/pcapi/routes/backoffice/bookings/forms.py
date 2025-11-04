@@ -166,10 +166,6 @@ class GetCollectiveBookingListForm(BaseBookingListForm):
     def is_empty(self) -> bool:
         return super().is_empty() and not self.institution.data and not self.formats.data
 
-    @property
-    def is_single_venue_with_optional_dates(self) -> bool:
-        return super().is_single_venue_with_optional_dates and not self.formats.data
-
     institution = fields.PCTomSelectField(
         "Établissement",
         multiple=True,

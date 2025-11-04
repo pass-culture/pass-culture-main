@@ -42,23 +42,6 @@
 {% block search_block %}
   {{ forms.build_filters_form_ng(form, dst) }}
 {% endblock search_block %}
-{% block before_table %}
-  {% if form.is_single_venue_with_optional_dates %}
-    <span class="mx-2 fs-3">
-      {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
-      <a href="{{ url_for('backoffice_web.collective_bookings.get_collective_booking_csv_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
-         class="mx-2"><i class="bi bi-filetype-csv"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger en CSV."></i></a>
-      <a href="{{ url_for('backoffice_web.collective_bookings.get_collective_booking_xlsx_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
-         class="mx-2"><i class="bi bi-filetype-xlsx"
-   data-bs-toggle="tooltip"
-   data-bs-placement="top"
-   data-bs-title="Télécharger en Excel."></i></a>
-    </span>
-  {% endif %}
-{% endblock before_table %}
 {% block table_header %}
   <th>Actions</th>
   <th>ID résa</th>

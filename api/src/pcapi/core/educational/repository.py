@@ -17,7 +17,6 @@ from pcapi.core.educational import schemas
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -25,22 +24,6 @@ from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
 from pcapi.utils.clean_accents import clean_accents
-
-
-COLLECTIVE_BOOKING_STATUS_LABELS = {
-    models.CollectiveBookingStatus.PENDING: "préréservé",
-    models.CollectiveBookingStatus.CONFIRMED: "réservé",
-    models.CollectiveBookingStatus.CANCELLED: "annulé",
-    models.CollectiveBookingStatus.USED: "validé",
-    models.CollectiveBookingStatus.REIMBURSED: "remboursé",
-    "confirmed": "confirmé",
-}
-
-BOOKING_DATE_STATUS_MAPPING: dict[models.CollectiveBookingStatusFilter, sa_orm.InstrumentedAttribute] = {
-    models.CollectiveBookingStatusFilter.BOOKED: models.CollectiveBooking.dateCreated,
-    models.CollectiveBookingStatusFilter.VALIDATED: models.CollectiveBooking.dateUsed,
-    models.CollectiveBookingStatusFilter.REIMBURSED: models.CollectiveBooking.reimbursementDate,
-}
 
 
 def find_bookings_starting_in_x_days(number_of_days: int) -> list[models.CollectiveBooking]:
@@ -891,64 +874,6 @@ def get_collective_offers_template_for_filters(
     return offers
 
 
-def _get_filtered_collective_bookings_query(
-    pro_user: User,
-    period: tuple[date, date] | None = None,
-    status_filter: models.CollectiveBookingStatusFilter | None = None,
-    event_date: date | None = None,
-    venue_id: int | None = None,
-    *,
-    extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> sa_orm.Query[models.CollectiveBooking]:
-    collective_bookings_query = (
-        db.session.query(models.CollectiveBooking)
-        .join(models.CollectiveBooking.offerer)
-        .join(offerers_models.Offerer.UserOfferers)
-        .join(models.CollectiveBooking.collectiveStock)
-        .join(models.CollectiveBooking.venue, isouter=True)
-    )
-    for join_key, *join_conditions in extra_joins:
-        if join_conditions:
-            collective_bookings_query = collective_bookings_query.join(join_key, *join_conditions, isouter=True)
-        else:
-            collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
-
-    if not pro_user.has_admin_role:
-        collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.userId == pro_user.id)
-
-    collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.isValidated)
-
-    if period:
-        period_attribute_filter = (
-            BOOKING_DATE_STATUS_MAPPING[status_filter]
-            if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[models.CollectiveBookingStatusFilter.BOOKED]
-        )
-
-        if all(period):
-            collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
-            )
-        elif period[0]:
-            collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter) >= period[0]
-            )
-        elif period[1]:
-            collective_bookings_query = collective_bookings_query.filter(
-                field_to_venue_timezone(period_attribute_filter) <= period[1]
-            )
-
-    if venue_id is not None:
-        collective_bookings_query = collective_bookings_query.filter(models.CollectiveBooking.venueId == venue_id)
-
-    if event_date:
-        collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(models.CollectiveStock.startDatetime) == event_date
-        )
-
-    return collective_bookings_query
-
-
 def list_public_collective_offers(
     *,
     required_id: int,
@@ -1005,61 +930,6 @@ def list_public_collective_offers(
     query = query.order_by(models.CollectiveOffer.id)
     query = query.limit(limit)
     return query.all()
-
-
-def get_filtered_collective_booking_report(
-    pro_user: User,
-    period: tuple[date, date] | None,
-    status_filter: models.CollectiveBookingStatusFilter | None,
-    event_date: datetime | None = None,
-    venue_id: int | None = None,
-) -> sa_orm.Query:
-    with_entities: tuple[typing.Any, ...] = (
-        offerers_models.Venue.common_name.label("venueName"),
-        models.CollectiveOffer.name.label("offerName"),
-        models.CollectiveStock.price,
-        models.CollectiveStock.startDatetime.label("stockStartDatetime"),
-        models.CollectiveStock.bookingLimitDatetime.label("stockBookingLimitDatetime"),
-        models.EducationalRedactor.firstName,
-        models.EducationalRedactor.lastName,
-        models.EducationalRedactor.email,
-        models.CollectiveBooking.id,
-        models.CollectiveBooking.dateCreated.label("bookedAt"),
-        models.CollectiveBooking.dateUsed.label("usedAt"),
-        models.CollectiveBooking.reimbursementDate.label("reimbursedAt"),
-        models.CollectiveBooking.status,
-        models.CollectiveBooking.isConfirmed,
-        models.EducationalInstitution.institutionId,
-        models.EducationalInstitution.name.label("institutionName"),
-        models.EducationalInstitution.institutionType,
-        # `get_batch` function needs a field called exactly `id` to work,
-        # the label prevents SA from using a bad (prefixed) label for this field
-        models.CollectiveBooking.id.label("id"),
-        models.CollectiveBooking.educationalRedactorId,
-        geography_models.Address.departmentCode.label("venueDepartmentCode"),
-    )
-
-    bookings_query = _get_filtered_collective_bookings_query(
-        pro_user,
-        period,
-        status_filter,
-        event_date,
-        venue_id,
-        extra_joins=(
-            (models.CollectiveStock.collectiveOffer,),
-            (models.CollectiveBooking.educationalRedactor,),
-            (models.CollectiveBooking.educationalInstitution,),
-            (
-                offerers_models.OffererAddress,
-                offerers_models.Venue.offererAddressId == offerers_models.OffererAddress.id,
-            ),
-            (geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id),
-        ),
-    )
-    bookings_query = bookings_query.with_entities(*with_entities)
-    bookings_query = bookings_query.distinct(models.CollectiveBooking.id)
-
-    return bookings_query
 
 
 def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query[models.CollectiveOffer]:
@@ -1557,11 +1427,6 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
     )
 
     return db.session.query(query).scalar()
-
-
-def field_to_venue_timezone(field: sa_orm.InstrumentedAttribute) -> sa.Cast[date]:
-    # TODO(OA) - use Venue.offererAddress.address.timezone when the virtual venues are migrated
-    return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
 
 
 def offerer_has_ongoing_collective_bookings(offerer_id: int, include_used: bool = False) -> bool:

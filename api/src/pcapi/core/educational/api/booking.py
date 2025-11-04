@@ -1,4 +1,3 @@
-import datetime
 import decimal
 import logging
 from functools import partial
@@ -7,7 +6,6 @@ import sqlalchemy.orm as sa_orm
 from pydantic.v1.error_wrappers import ValidationError
 
 from pcapi import settings
-from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
@@ -21,9 +19,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.mails import transactional as transactional_mails
-from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -199,30 +195,6 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
     transactional_mails.send_eac_booking_cancellation_email(collective_booking)
 
     return collective_booking
-
-
-def get_collective_booking_report(
-    *,
-    user: User,
-    booking_period: tuple[datetime.date, datetime.date] | None = None,
-    status_filter: (
-        educational_models.CollectiveBookingStatusFilter | None
-    ) = educational_models.CollectiveBookingStatusFilter.BOOKED,
-    event_date: datetime.datetime | None = None,
-    venue_id: int | None = None,
-    export_type: bookings_models.BookingExportType | None = bookings_models.BookingExportType.CSV,
-) -> str | bytes:
-    bookings_query = educational_repository.get_filtered_collective_booking_report(
-        pro_user=user,
-        period=booking_period,
-        status_filter=status_filter,
-        event_date=event_date,
-        venue_id=venue_id,
-    )
-
-    if export_type == bookings_models.BookingExportType.EXCEL:
-        return collective_bookings_serialize.serialize_collective_booking_excel_report(bookings_query)
-    return collective_bookings_serialize.serialize_collective_booking_csv_report(bookings_query)
 
 
 def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:

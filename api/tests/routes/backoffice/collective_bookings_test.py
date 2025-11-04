@@ -1,7 +1,5 @@
 import datetime
-from io import BytesIO
 
-import openpyxl
 import pytest
 from flask import url_for
 
@@ -684,49 +682,3 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert "Les données envoyées comportent des erreurs. Raison : Information obligatoire ;" in alerts["warning"]
-
-
-class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
-    endpoint = "backoffice_web.collective_bookings.get_collective_booking_csv_download"
-    needed_permission = perm_models.Permissions.READ_BOOKINGS
-
-    # session + current user + list of bookings
-    expected_num_queries = 3
-
-    def test_csv_length(self, authenticated_client, collective_bookings):
-        venue_id = collective_bookings[0].venueId
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
-            assert response.status_code == 200
-
-        expected_length = 1  # headers
-        expected_length += 1  # on booking
-        expected_length += 1  # empty line
-
-        assert len(response.data.split(b"\n")) == expected_length
-
-
-class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
-    endpoint = "backoffice_web.collective_bookings.get_collective_booking_xlsx_download"
-    needed_permission = perm_models.Permissions.READ_BOOKINGS
-
-    # session + current user + list of bookings
-    expected_num_queries = 3
-
-    def reader_from_response(self, response):
-        wb = openpyxl.load_workbook(BytesIO(response.data))
-        return wb.active
-
-    def test_xlsx_length(self, authenticated_client, collective_bookings):
-        venue_id = collective_bookings[0].venueId
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
-            assert response.status_code == 200
-
-        sheet = self.reader_from_response(response)
-
-        assert sheet.cell(row=1, column=1).value == "Lieu"
-        assert sheet.cell(row=2, column=1).value == collective_bookings[0].venue.name
-        assert sheet.cell(row=3, column=1).value == None
