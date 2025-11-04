@@ -205,7 +205,7 @@ def _create_pro_user(row: dict) -> User:
     )
     offerers_api.get_or_create_offerer_address(offerer.id, address.id, label="Palais des Festivals")
 
-    if row["Type"] == "externe:bug-bounty":
+    if row["Type"] == "externe:bug-bounty" or row["Type"] == "interne:test":
         _create_provider(venue, row)
 
     user.isEmailValidated = True
