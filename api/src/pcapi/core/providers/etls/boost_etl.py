@@ -60,8 +60,10 @@ class BoostExtractTransformLoadProcess(CinemaETLProcessTemplate[BoostAPIClient, 
     def _extract_result_to_log_dict(self, extract_result: BoostExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
         return {
-            "cinema_attributes": [cinema_attribute.dict() for cinema_attribute in extract_result["cinema_attributes"]],
-            "showtimes": [showtime.dict() for showtime in extract_result["showtimes"]],
+            "cinema_attributes": [
+                cinema_attribute.model_dump_json() for cinema_attribute in extract_result["cinema_attributes"]
+            ],
+            "showtimes": [showtime.model_dump_json() for showtime in extract_result["showtimes"]],
         }
 
     def _transform(self, extract_result: BoostExtractResult) -> list[LoadableMovie]:

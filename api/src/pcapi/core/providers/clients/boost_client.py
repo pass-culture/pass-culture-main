@@ -5,7 +5,6 @@ import typing
 from functools import wraps
 
 import regex
-from pydantic.v1 import parse_obj_as
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
@@ -210,7 +209,7 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
             )
 
         content = response.json()
-        login_info = parse_obj_as(boost_serializers.LoginBoost, content)
+        login_info = boost_serializers.LoginBoost.model_validate(content)
         token = login_info.token
         if not token:
             raise BoostLoginException("No token received from Boost API")
@@ -308,7 +307,7 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
         sale_cancel = boost_serializers.SaleCancel(sales=sale_cancel_items)
         self._authenticated_put(
             f"{self.cinema_details.cinemaUrl}api/sale/orderCancel",
-            payload=sale_cancel.json(by_alias=True),
+            payload=sale_cancel.model_dump_json(by_alias=True),
         )
 
     @catch_cinema_provider_request_timeout
@@ -335,17 +334,18 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
         # step 1: preparation
         sale_preparation_response = self._authenticated_post(
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
-            payload=sale_body.json(by_alias=True),
+            payload=sale_body.model_dump_json(by_alias=True),
         )
-        sale_preparation = parse_obj_as(boost_serializers.SalePreparationResponse, sale_preparation_response)
+        sale_preparation = boost_serializers.SalePreparationResponse.model_validate(sale_preparation_response)
 
         # step 2: confirmation
         sale_body.idsBeforeSale = str(sale_preparation.data[0].id)
         sale_response = self._authenticated_post(
             f"{self.cinema_details.cinemaUrl}api/sale/complete",
-            payload=sale_body.json(by_alias=True),
+            payload=sale_body.model_dump_json(by_alias=True),
         )
-        sale_confirmation_response = parse_obj_as(boost_serializers.SaleConfirmationResponse, sale_response)
+        sale_confirmation_response = boost_serializers.SaleConfirmationResponse.model_validate(sale_response)
+
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
             {
@@ -399,7 +399,7 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
 
             data = self._authenticated_get(url, params=params)
 
-            collection = parse_obj_as(boost_serializers.ShowTimeCollection, data)
+            collection = boost_serializers.ShowTimeCollection.model_validate(data)
             items.extend(collection.data)
             total_pages = collection.totalPages
             next_page = collection.nextPage
@@ -411,10 +411,10 @@ class BoostAPIClient(cinema_client.CinemaAPIClient):
 
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime4:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/showtimes/{showtime_id}")
-        showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, data)
+        showtime_details = boost_serializers.ShowTimeDetails.model_validate(data)
         return showtime_details.data
 
     def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
         data = self._authenticated_get(f"{self.cinema_details.cinemaUrl}api/cinemas/attributs")
-        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, data)
+        attributs = boost_serializers.CinemaAttributCollection.model_validate(data)
         return attributs.data
