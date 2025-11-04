@@ -36,7 +36,6 @@ class Highlight(PcObject, Model):
     )
 
     __table_args__ = (
-        sa.CheckConstraint('length("name") <= 200'),
         sa.CheckConstraint('length("mediation_uuid") <= 100'),
         sa.CheckConstraint('length("description") <= 2000'),
         sa.Index(
