@@ -545,8 +545,7 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"custom-reimbursement-rule-row-{rule.id}")
         assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
@@ -568,8 +567,7 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"custom-reimbursement-rule-row-{rule.id}")
         assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
@@ -588,8 +586,7 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"custom-reimbursement-rule-row-{rule.id}")
         assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)
@@ -605,8 +602,7 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"custom-reimbursement-rule-row-{rule.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"custom-reimbursement-rule-row-{rule.id}")
         assert cells[1] == str(rule.id)
 
         db.session.refresh(rule)

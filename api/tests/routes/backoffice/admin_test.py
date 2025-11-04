@@ -738,7 +738,9 @@ class ListUserProfileRefreshCampaignTest(GetEndpointWithoutPermissionHelper):
 
         response = authenticated_client.get(url_for(self.endpoint))
         assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data)
+        response_data = response.data
+        # remove history tables to be able to check columns data
+        rows = html_parser.extract_table_rows(response_data, recursive=False)
         assert len(rows) == 2
         assert {r["Id"] for r in rows} == {str(campaign1.id), str(campaign2.id)}
 
@@ -783,13 +785,11 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
     endpoint = "backoffice_web.user_profile_refresh_campaigns.create_campaign"
     needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
 
+    @pytest.mark.time_machine("2025-02-02")  # Winter time
     def test_create_campaign_regular(self, authenticated_client):
         response = self.post_to_endpoint(
             authenticated_client,
-            form={
-                "campaign_date": "2027-01-01T01:01",
-                "is_active": False,
-            },
+            form={"campaign_date": "2027-01-01T01:01", "is_active": "false"},
             follow_redirects=True,
         )
         assert response.status_code == 200
@@ -797,9 +797,10 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
         assert len(campaigns) == 1
         campaign = campaigns[0]
         assert campaign.isActive is False
-        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 00:01", "%Y-%m-%d %H:%M")
         assert html_parser.extract_alert(response.data) == "Campagne de mise à jour de données créée avec succès."
 
+    @pytest.mark.time_machine("2025-02-02")  # Winter time
     def test_create_campaign_missing_is_active_field(self, authenticated_client):
         response = self.post_to_endpoint(
             authenticated_client,
@@ -811,7 +812,7 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
         assert len(campaigns) == 1
         campaign = campaigns[0]
         assert campaign.isActive is False
-        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 00:01", "%Y-%m-%d %H:%M")
         assert html_parser.extract_alert(response.data) == "Campagne de mise à jour de données créée avec succès."
 
     def test_create_campaign_missing_campaign_date_field(self, authenticated_client):
@@ -834,12 +835,88 @@ class CreateUserProfileRefreshCampaignTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Date de début de la campagne : Information obligatoire ;"
         )
 
+    def test_create_campaign_action_history(self, authenticated_client, legit_user):
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": "false",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 1
+        campaign = campaigns[0]
+        actions = campaign.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED
+        assert action.authorUser == legit_user
+
+    def test_create_active_campaign_deactivates_existing_one(self, authenticated_client):
+        existing_campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": "true",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 2
+        new_campaign = [e for e in campaigns if e.id != existing_campaign.id][0]
+        existing_campaign = [e for e in campaigns if e.id == existing_campaign.id][0]
+        assert new_campaign.isActive is True
+        assert existing_campaign.isActive is False
+
+    def test_create_active_campaign_deactivates_existing_one_render(self, authenticated_client):
+        existing_campaign = users_factories.UserProfileRefreshCampaignFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": "true",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        campaigns = db.session.query(users_models.UserProfileRefreshCampaign).all()
+        assert len(campaigns) == 2
+        rows = html_parser.extract_table_rows(response.data, recursive=False)
+        assert len(rows) == 2
+        assert existing_campaign.id in [e.id for e in campaigns]
+        assert {str(e.id) for e in campaigns} == {e["Id"] for e in rows}
+
+    def test_create_active_campaign_deactivates_existing_one_action(self, authenticated_client):
+        existing_campaign = users_factories.UserProfileRefreshCampaignFactory()
+        assert len(existing_campaign.action_history) == 0
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "campaign_date": "2027-01-01T01:01",
+                "is_active": "true",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        actions = existing_campaign.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.extraData == {"modified_info": {"isActive": {"old_info": True, "new_info": False}}}
+
 
 class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_USER_PROFILE_REFRESH_CAMPAIGN
     endpoint = "backoffice_web.user_profile_refresh_campaigns.edit_campaign"
     endpoint_kwargs = {"campaign_id": 1}
 
+    @pytest.mark.time_machine("2025-02-02")  # Winter time
     def test_edit_campaign_date(self, authenticated_client):
         campaign = users_factories.UserProfileRefreshCampaignFactory(
             campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
@@ -851,22 +928,22 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
             campaign_id=campaign.id,
             form={
                 "campaign_date": "2027-01-01T01:01",
-                "is_active": True,
+                "is_active": "true",
             },
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"campaign-row-{campaign.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"campaign-row-{campaign.id}")
         assert len(cells) == 6
-        assert cells[0] == "Modifier"
+        assert cells[0].startswith("Modifier Voir l'historique")
         assert cells[1] == str(campaign.id)
         assert cells[2] == "Oui"
-        assert cells[3] == "01/01/2027 à 02h01"
+        assert cells[3] == "01/01/2027 à 01h01"
 
-        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.campaignDate == datetime.datetime.strptime("2027-01-01 00:01", "%Y-%m-%d %H:%M")
         assert campaign.isActive is True
 
+    @pytest.mark.time_machine("2025-02-02")  # Winter time
     def test_edit_campaign_is_active(self, authenticated_client):
         campaign = users_factories.UserProfileRefreshCampaignFactory(
             campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
@@ -878,18 +955,144 @@ class EditUserProfileRefreshCampaignTest(PostEndpointHelper):
             campaign_id=campaign.id,
             form={
                 "campaign_date": "2026-01-01T01:01",
-                "is_active": False,
+                "is_active": "false",
             },
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"campaign-row-{campaign.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"campaign-row-{campaign.id}")
         assert len(cells) == 6
-        assert cells[0] == "Modifier"
+        assert cells[0].startswith("Modifier Voir l'historique")
         assert cells[1] == str(campaign.id)
         assert cells[2] == "Non"
-        assert cells[3] == "01/01/2026 à 02h01"
+        assert cells[3] == "01/01/2026 à 01h01"
 
-        assert campaign.campaignDate == datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M")
+        assert campaign.campaignDate == datetime.datetime.strptime("2026-01-01 00:01", "%Y-%m-%d %H:%M")
         assert campaign.isActive is False
+
+    @pytest.mark.time_machine("2025-02-02")  # Winter time
+    def test_edit_campaign_action_history(self, authenticated_client, legit_user):
+        campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign.id,
+            form={
+                "campaign_date": "2026-01-01T02:01",
+                "is_active": "false",
+            },
+        )
+        assert response.status_code == 200
+        actions = campaign.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.actionType == history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED
+        assert action.authorUser == legit_user
+        assert action.extraData == {"modified_info": {"isActive": {"new_info": False, "old_info": True}}}
+
+    @pytest.mark.time_machine("2025-10-22 16:00:00", tick=False)
+    def test_edit_campaign_action_history_render(self, authenticated_client, legit_user):
+        campaign = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-02-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign.id,
+            form={
+                "campaign_date": "2026-03-01T01:01",
+                "is_active": "false",
+            },
+        )
+        assert response.status_code == 200
+        actions = campaign.action_history
+        assert len(actions) == 1
+        history_table_rows = html_parser.extract_table_rows(response.data)
+        assert len(history_table_rows) == 1
+        history_row = history_table_rows[0]
+        assert history_row["Action"] == "Mise à jour"
+        assert history_row["Utilisateur"] == f"{legit_user.firstName} {legit_user.lastName}"
+        assert history_row["Date"] == "22/10/2025 à 18h00"
+        assert history_row["Informations"] == "Actif : Oui → Non Date : 01/02/2026 à 02h01 → 01/03/2026 à 01h01"
+
+    def test_activate_campaign_deactivates_existing_one(self, authenticated_client):
+        campaign1 = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-01-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=True,
+        )
+        campaign2 = users_factories.UserProfileRefreshCampaignFactory(
+            campaignDate=datetime.datetime.strptime("2026-05-01 01:01", "%Y-%m-%d %H:%M"),
+            isActive=False,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign2.id,
+            form={
+                "campaign_date": "2026-05-01T01:01",
+                "is_active": "true",
+            },
+        )
+        assert response.status_code == 200
+        db.session.refresh(campaign1)
+        db.session.refresh(campaign2)
+        assert campaign1.isActive is False
+        assert campaign2.isActive is True
+
+    def test_activate_campaign_deactivates_existing_one_render(self, authenticated_client):
+        campaign1 = users_factories.UserProfileRefreshCampaignFactory(isActive=False)
+        campaign2 = users_factories.UserProfileRefreshCampaignFactory(isActive=True)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign1.id,
+            form={
+                "is_active": "true",
+                "campaign_date": "2026-05-01T01:01",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        rows = html_parser.extract_plain_rows(response.data)
+        assert len(rows) == 2
+        assert {str(campaign1.id), str(campaign2.id)} == {e[1] for e in rows}
+
+    def test_activate_campaign_deactivates_existing_one_action(self, authenticated_client):
+        campaign1 = users_factories.UserProfileRefreshCampaignFactory(isActive=False)
+        campaign2 = users_factories.UserProfileRefreshCampaignFactory(isActive=True)
+        assert len(campaign2.action_history) == 0
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign1.id,
+            form={
+                "is_active": "true",
+                "campaign_date": "2026-05-01T01:01",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        actions = campaign2.action_history
+        assert len(actions) == 1
+        action = actions[0]
+        assert action.extraData == {"modified_info": {"isActive": {"old_info": True, "new_info": False}}}
+
+    def test_activate_campaign_rerender_only_affected_campaigns(self, authenticated_client):
+        users_factories.UserProfileRefreshCampaignFactory(isActive=False)
+        campaign2 = users_factories.UserProfileRefreshCampaignFactory(isActive=True)
+        campaign3 = users_factories.UserProfileRefreshCampaignFactory(isActive=False)
+        assert len(campaign2.action_history) == 0
+        response = self.post_to_endpoint(
+            authenticated_client,
+            campaign_id=campaign3.id,
+            form={
+                "is_active": "true",
+                "campaign_date": "2026-05-01T01:01",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        rows = html_parser.extract_plain_rows(response.data)
+        assert len(rows) == 2
+        assert {str(campaign2.id), str(campaign3.id)} == {e[1] for e in rows}

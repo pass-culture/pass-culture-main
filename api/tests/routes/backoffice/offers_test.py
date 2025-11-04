@@ -1722,8 +1722,7 @@ class EditOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_edit.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
         assert len(cells) == 25
         i = count()
         assert cells[next(i)] == ""  # Checkbox
@@ -1866,9 +1865,9 @@ class BatchEditOfferTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=10)
         assert response.status_code == 200
         # ensure rows are rendered
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}")
 
         for offer in offers:
             assert offer.rankingWeight == chosen_ranking_weight
@@ -2193,8 +2192,7 @@ class ValidateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_validate.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
         assert len(cells) == 25
         i = count()
         assert cells[next(i)] == ""  # Checkbox
@@ -2310,8 +2308,7 @@ class RejectOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_reject.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
         assert len(cells) == 25
         i = count()
         assert cells[next(i)] == ""  # Checkbox
@@ -2412,9 +2409,9 @@ class BatchOfferValidateTest(PostEndpointHelper):
 
         assert response.status_code == 200
         # ensure rows are rendered
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}")
         for offer in offers:
             db.session.refresh(offer)
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
@@ -3599,8 +3596,7 @@ class ActivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_activate.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
         assert len(cells) == 25
         i = count()
         assert cells[next(i)] == ""  # Checkbox
@@ -3696,8 +3692,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         # ensure that the row is rendered
-        row = html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer_to_deactivate.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
         assert len(cells) == 25
         i = count()
         assert cells[next(i)] == ""  # Checkbox
@@ -3774,9 +3769,9 @@ class BatchOfferActivateTest(PostEndpointHelper):
 
         assert response.status_code == 200
         # ensure rows are rendered
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}")
         for offer in offers:
             db.session.refresh(offer)
             assert offer.isActive is True
@@ -3805,9 +3800,9 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
 
         assert response.status_code == 200
         # ensure rows are rendered
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}", is_xml=True)
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}", is_xml=True)
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}")
+        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}")
         for offer in offers:
             db.session.refresh(offer)
             assert offer.isActive is False

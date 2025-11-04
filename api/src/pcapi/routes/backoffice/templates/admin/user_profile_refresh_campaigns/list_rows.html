@@ -1,24 +1,86 @@
 {% for campaign in rows %}
   <tr id="campaign-row-{{ campaign.id  }}">
-    {% if has_permission("MANAGE_USER_PROFILE_REFRESH_CAMPAIGN") %}
-      <td>
-        <div class="dropdown">
-          <button type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                  class="btn p-0">
-            <i class="bi bi-three-dots-vertical"></i>
-          </button>
-          <ul class="dropdown-menu">
+    <td>
+      <div class="dropdown">
+        <button type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                class="btn p-0">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu">
+          {% if has_permission("MANAGE_USER_PROFILE_REFRESH_CAMPAIGN") %}
             <li class="dropdown-item">
               <a class="btn btn-sm d-block w-100 text-start px-3"
                  data-bs-toggle="modal"
                  data-bs-target="#edit-campaign-modal-{{ campaign.id }}">Modifier</a>
             </li>
-          </ul>
+          {% endif %}
+          {% if campaign.action_history %}
+            <li class="dropdown-item">
+              <a class="btn btn-sm d-block w-100 text-start px-3"
+                 type="button"
+                 data-bs-toggle="modal"
+                 data-bs-target="#campaign-history-{{ campaign.id }}">Voir l'historique</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="modal fade modal-xl"
+           id="campaign-history-{{ campaign.id }}">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Historique de la campagne #{{ campaign.id }}</h4>
+              <button type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+              <table id="history-table-{{ campaign.id }}"
+                     class="table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Utilisateur</th>
+                    <th>Date</th>
+                    <th>Informations</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for action in campaign.action_history | reverse %}
+                    <tr>
+                      <td>{{ action.actionType | format_user_profile_refresh_campaign_action_type }}</td>
+                      <td>
+                        {% if action.authorUser %}{{ action.authorUser.full_name }}{% endif %}
+                      </td>
+                      <td>{{ action.actionDate | format_date_time }}</td>
+                      <td>
+                        {% if action.comment %}<p>{{ action.comment }}</p>{% endif %}
+                        {% set modified_info = action.extraData.get('modified_info', {}) %}
+                        {% if modified_info %}
+                          {% for field, modifications in modified_info.items() %}
+                            <p>
+                              <span class="text-decoration-underline">{{ field | format_modified_info_name | escape }} :</span>
+                              {{ modifications | format_modified_info_values(field, campaign) }}
+                            </p>
+                          {% endfor %}
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary"
+                      data-bs-dismiss="modal">Fermer</button>
+            </div>
+          </div>
         </div>
-      </td>
-    {% endif %}
+      </div>
+    </td>
     <td>{{ campaign.id }}</td>
     <td>{{ campaign.isActive | format_bool_badge }}</td>
     <td>{{ campaign.campaignDate | format_date_time }}</td>

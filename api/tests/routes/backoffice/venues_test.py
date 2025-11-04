@@ -2826,8 +2826,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert response.status_code == 200
 
         for venue in venues:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venue.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"venue-row-{venue.id}")
             assert cells[1] == str(venue.id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}  # 1 kept, 1 removed, 1 added
@@ -2862,8 +2861,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 200
 
-        row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venues[0].id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"venue-row-{venues[0].id}")
         assert cells[1] == str(venues[0].id)
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}
@@ -2899,8 +2897,7 @@ class BatchEditVenuesTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 200
 
-        row = html_parser.get_tag(response.data, tag="tr", id=f"venue-row-{venue.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"venue-row-{venue.id}")
         assert cells[1] == str(venue.id)
 
         assert venue.isPermanent is set_permanent

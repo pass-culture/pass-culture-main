@@ -180,6 +180,10 @@ def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | No
     return pytz.timezone(METROPOLE_TIMEZONE).localize(naive_utc_datetime).astimezone(pytz.utc)
 
 
+def datetime_to_localized_datetime(dt: datetime) -> datetime:
+    return pytz.timezone(METROPOLE_TIMEZONE).localize(dt).astimezone(pytz.utc)
+
+
 def to_department_midnight(dt: datetime | date, department_code: str | None) -> datetime:
     local_tz = get_department_timezone(department_code)
     return datetime.combine(date(dt.year, dt.month, dt.day), time.min, ZoneInfo(local_tz))

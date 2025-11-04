@@ -1818,8 +1818,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         incidents = db.session.query(finance_models.FinanceIncident).all()
@@ -1857,8 +1856,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -1906,8 +1904,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in selected_bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 1
@@ -1954,8 +1951,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -2163,8 +2159,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 1
@@ -2200,8 +2195,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 0
@@ -2231,8 +2225,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 0
@@ -2261,8 +2254,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
         assert cells[2] == str(booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 0  # didn't create new incident
@@ -2306,8 +2298,7 @@ class CreateCommercialGestureTest(PostEndpointHelper):
 
         assert response.status_code == 200
         for booking in selected_bookings:
-            row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking.id}", is_xml=True)
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking.id}")
             assert cells[2] == str(booking.id)
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -2344,8 +2335,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{collective_booking.id}")
         assert cells[1] == str(collective_booking.id)
 
         finance_incidents = db.session.query(finance_models.FinanceIncident).all()
@@ -2390,8 +2380,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{collective_booking.id}")
         assert cells[1] == str(collective_booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == expected_incident_count
@@ -2421,8 +2410,7 @@ class CreateCollectiveBookingOverpaymentTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{collective_booking.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{collective_booking.id}")
         assert cells[1] == str(collective_booking.id)
 
         assert db.session.query(finance_models.FinanceIncident).count() == 2

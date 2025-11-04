@@ -1280,5 +1280,7 @@ class UserTagCategoryMappingFactory(BaseFactory):
 
 
 class UserProfileRefreshCampaignFactory(BaseFactory):
+    campaignDate = factory.Faker("future_datetime")
+
     class Meta:
         model = models.UserProfileRefreshCampaign

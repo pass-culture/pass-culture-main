@@ -26,6 +26,7 @@ def add_action(
     bank_account: finance_models.BankAccount | None = None,
     rule: offers_models.OfferValidationRule | None = None,
     chronicle: chronicles_models.Chronicle | None = None,
+    user_profile_refresh_campaign: users_models.UserProfileRefreshCampaign | None = None,
     comment: str | None = None,
     **extra_data: typing.Any,
 ) -> models.ActionHistory:
@@ -34,10 +35,12 @@ def add_action(
         models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         models.ActionType.ROLE_PERMISSIONS_CHANGED,
     )
-    if not any((user, offerer, venue, finance_incident, bank_account, rule, chronicle)) and (
-        action_type not in legit_actions
-    ):
-        raise ValueError("No resource (user, offerer, venue, finance incident, bank account, rule)")
+    if not any(
+        (user, offerer, venue, finance_incident, bank_account, rule, chronicle, user_profile_refresh_campaign)
+    ) and (action_type not in legit_actions):
+        raise ValueError(
+            "No resource (user, offerer, venue, finance incident, bank account, rule, user profile refresh campaign)"
+        )
 
     # author/user/offerer/venue/bank_account object and its would may not be associated before flush() or commit()
     db.session.flush()
@@ -60,6 +63,11 @@ def add_action(
     if chronicle is not None and chronicle.id is None:
         raise RuntimeError("Unsaved chronicle would be saved with action %s" % chronicle.id)
 
+    if user_profile_refresh_campaign and user_profile_refresh_campaign.id is None:
+        raise RuntimeError(
+            "Unsaved user profile refresh campaign would be saved with action %s" % user_profile_refresh_campaign.id
+        )
+
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
         # Examples: offerer validated by token (without authentication), offerer created by script
@@ -75,6 +83,7 @@ def add_action(
         bankAccount=bank_account,
         rule=rule,
         chronicle=chronicle,
+        userProfileRefreshCampaign=user_profile_refresh_campaign,
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )
