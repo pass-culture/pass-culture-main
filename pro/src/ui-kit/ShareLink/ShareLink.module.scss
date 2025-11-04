@@ -1,0 +1,25 @@
+.share-link {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+
+  &-input {
+    flex: 1;
+
+    input {
+      text-overflow: ellipsis;
+      user-select: none;
+      pointer-events: none;
+    }
+  }
+
+  &-button {
+    display: flex;
+    align-self: flex-end;
+  }
+}
+
+.container {
+  width: 100%;
+}
