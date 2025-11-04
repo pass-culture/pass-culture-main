@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -48,6 +48,11 @@ const MOCK_DATA = {
     id: 2,
     name: 'Nouvelle offre à la une',
     venueId: 1,
+  },
+  otherVenueOffer: {
+    id: 3,
+    name: 'Offre sur autre venue',
+    venueId: 2,
   },
 }
 
@@ -128,7 +133,7 @@ describe('HeadlineOfferContext', () => {
     )
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [
-        venueListItemFactory({
+        makeVenueListItem({
           id: MOCK_DATA.headlineOffer.venueId,
           isVirtual: false,
           isPermanent: true,
@@ -150,14 +155,13 @@ describe('HeadlineOfferContext', () => {
       })
     })
 
-    it('should not be available if offerer is not allowed to use it', async () => {
-      // Offerer must have only one non-virtual, permanent venue to be allowed to use headline offer.
+    it('should not be available if offerer has only virtual venues', async () => {
       vi.spyOn(api, 'getVenues').mockResolvedValue({
         venues: [
-          venueListItemFactory({
+          makeVenueListItem({
             id: MOCK_DATA.headlineOffer.venueId,
             isVirtual: true,
-            isPermanent: false,
+            isPermanent: true,
           }),
         ],
       })
@@ -170,6 +174,53 @@ describe('HeadlineOfferContext', () => {
         )
         expect(display.textContent).toContain('false')
       })
+    })
+  })
+
+  it('should not be available if offerer has more than one non-virtual venue', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({
+          id: MOCK_DATA.headlineOffer.venueId,
+          isVirtual: false,
+          isPermanent: false,
+        }),
+        makeVenueListItem({
+          id: MOCK_DATA.otherVenueOffer.venueId,
+          isVirtual: false,
+          isPermanent: true,
+        }),
+      ],
+    })
+
+    renderIndividualOffersContext()
+
+    await waitFor(async () => {
+      const display = await screen.findByText(
+        new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
+      )
+      expect(display.textContent).toContain('false')
+    })
+  })
+
+  it('should not be available if offerer has no permanent venue', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        makeVenueListItem({
+          id: MOCK_DATA.headlineOffer.venueId,
+          isVirtual: false,
+          isPermanent: false,
+        }),
+      ],
+    })
+
+    renderIndividualOffersContext()
+
+    await waitFor(async () => {
+      const display = await screen.findByText(
+        new RegExp(LABELS.display.isHeadlineOfferAllowedForOfferer)
+      )
+      expect(display.textContent).toContain('false')
     })
   })
 
