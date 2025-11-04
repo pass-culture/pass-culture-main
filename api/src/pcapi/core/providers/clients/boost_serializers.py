@@ -1,26 +1,25 @@
 import datetime
 from decimal import Decimal
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 
 from pcapi.core.offers import models as offers_models
-from pcapi.routes.serialization import BaseModel
 
 
-class LoginBoost(BaseModel):
-    code: int | None
+class LoginBoost(pydantic.BaseModel):
+    code: int | None = None
     message: str
-    token: str | None
+    token: str | None = None
 
 
-class Film2(BaseModel):
+class Film2(pydantic.BaseModel):
     """We transcribe their API schema and keep their name convention"""
 
     id: int
     titleCnc: str
     numVisa: int
     posterUrl: str
-    thumbUrl: str | None
+    thumbUrl: str | None = None
     duration: int  # in minutes
     idFilmAllocine: int
 
@@ -36,7 +35,7 @@ class Film2(BaseModel):
         )
 
 
-class Collection(BaseModel):
+class Collection(pydantic.BaseModel):
     data: list
     message: str
     page: int
@@ -51,14 +50,14 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
     return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc).replace(tzinfo=None)
 
 
-class ShowtimePricing(BaseModel):
+class ShowtimePricing(pydantic.BaseModel):
     id: int
     pricingCode: str
     amountTaxesIncluded: Decimal
     title: str
 
 
-class ShowTime4(BaseModel):
+class ShowTime4(pydantic.BaseModel):
     """We transcribe their API schema and keep their name convention"""
 
     id: int
@@ -69,10 +68,10 @@ class ShowTime4(BaseModel):
     format: dict
     version: dict
     screen: dict
-    showtimePricing: list[ShowtimePricing] = pydantic_v1.Field(default_factory=list)
+    showtimePricing: list[ShowtimePricing] = pydantic.Field(default_factory=list)
     attributs: list[int]
 
-    @pydantic_v1.validator("showDate", "showEndDate")
+    @pydantic.field_validator("showDate", "showEndDate")
     def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
         return _convert_to_utc_datetime(value)
 
@@ -81,77 +80,77 @@ class ShowTimeCollection(Collection):
     data: list[ShowTime4]
 
 
-class ShowTimeDetails(BaseModel):
+class ShowTimeDetails(pydantic.BaseModel):
     message: str
     data: ShowTime4
 
 
-class BasketItem(BaseModel):
+class BasketItem(pydantic.BaseModel):
     idShowtimePricing: int
     quantity: int
 
 
-class SaleRequest(BaseModel):
+class SaleRequest(pydantic.BaseModel):
     codePayment: str
     basketItems: list[BasketItem]
-    idsBeforeSale: str | None
+    idsBeforeSale: str | None = None
 
 
-class Seat(BaseModel):
-    id: int | None
+class Seat(pydantic.BaseModel):
+    id: int | None = None
     code: str
     line: int
     numLine: int
 
 
-class TicketResponse4(BaseModel):
+class TicketResponse4(pydantic.BaseModel):
     id: int
     idCnc: int
-    seat: Seat | None
+    seat: Seat | None = None
     ticketReference: str
 
 
-class SaleResponse3(BaseModel):
+class SaleResponse3(pydantic.BaseModel):
     id: int
     code: str
     type: str
-    amountTaxesIncluded: float | None
+    amountTaxesIncluded: float | None = None
     tickets: list[TicketResponse4]
 
 
-class SaleConfirmationResponse(BaseModel):
+class SaleConfirmationResponse(pydantic.BaseModel):
     message: str
     data: SaleResponse3
 
 
-class SalePreparation(BaseModel):
+class SalePreparation(pydantic.BaseModel):
     id: int
     idVendor: int
     idShowtime: int
     nbPlaceSelected: int
     placePrice: float
-    pricingTitle: str | None
+    pricingTitle: str | None = None
     reservation: str
 
 
-class SalePreparationResponse(BaseModel):
+class SalePreparationResponse(pydantic.BaseModel):
     message: str
     data: list[SalePreparation]
 
 
-class SaleCancelItem(BaseModel):
-    code: str | None
+class SaleCancelItem(pydantic.BaseModel):
+    code: str | None = None
     refundType: str
 
 
-class SaleCancel(BaseModel):
+class SaleCancel(pydantic.BaseModel):
     sales: list[SaleCancelItem]
 
 
-class CinemaAttribut(BaseModel):
+class CinemaAttribut(pydantic.BaseModel):
     id: int
     title: str
 
 
-class CinemaAttributCollection(BaseModel):
+class CinemaAttributCollection(pydantic.BaseModel):
     data: list[CinemaAttribut]
