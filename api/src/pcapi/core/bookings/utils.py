@@ -18,7 +18,6 @@ from pcapi.core.categories import subcategories
 
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
-    from pcapi.core.educational.models import CollectiveBooking
 
 QR_CODE_PASS_CULTURE_VERSION = "v3"
 
@@ -62,14 +61,6 @@ def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime,
     if booking.offerDepartmentCode:
         department_code = booking.offerDepartmentCode
         return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
-    return _apply_departement_timezone(
-        naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
-    )
-
-
-def convert_collective_booking_dates_utc_to_venue_timezone(
-    date_without_timezone: datetime, booking: "CollectiveBooking"
-) -> datetime | None:
     return _apply_departement_timezone(
         naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
     )

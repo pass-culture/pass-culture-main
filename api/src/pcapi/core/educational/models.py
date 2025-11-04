@@ -258,12 +258,6 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
-class CollectiveBookingStatusFilter(enum.Enum):
-    BOOKED = "booked"
-    VALIDATED = "validated"
-    REIMBURSED = "reimbursed"
-
-
 class InstitutionRuralLevel(enum.Enum):
     GRANDS_CENTRES_URBAINS = "Grands centres urbains"  # URBAIN_DENSE
     CEINTURES_URBAINES = "Ceintures urbaines"  # URBAIN_DENSE
