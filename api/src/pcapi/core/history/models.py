@@ -91,6 +91,9 @@ class ActionType(enum.Enum):
     # Chronicles
     CHRONICLE_PUBLISHED = "CHRONICLE_PUBLISHED"
     CHRONICLE_UNPUBLISHED = "CHRONICLE_UNPUBLISHED"
+    # User profile refresh campaigns
+    USER_PROFILE_REFRESH_CAMPAIGN_CREATED = "USER_PROFILE_REFRESH_CAMPAIGN_CREATED"
+    USER_PROFILE_REFRESH_CAMPAIGN_UPDATED = "USER_PROFILE_REFRESH_CAMPAIGN_UPDATED"
 
 
 class ActionHistory(PcObject, Model):
@@ -135,6 +138,7 @@ class ActionHistory(PcObject, Model):
     extraData: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
         "jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB)
     )
+    comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     # ActionHistory.userId.is_(None) is used in a query, keep non-conditional index
     userId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
@@ -198,12 +202,21 @@ class ActionHistory(PcObject, Model):
         back_populates="action_history",
     )
 
-    comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    userProfileRefreshCampaignId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger,
+        sa.ForeignKey("user_profile_refresh_campaign.id", ondelete="CASCADE"),
+        nullable=True,
+    )
+    userProfileRefreshCampaign: sa_orm.Mapped[users_models.UserProfileRefreshCampaign | None] = sa_orm.relationship(
+        "UserProfileRefreshCampaign",
+        foreign_keys=[userProfileRefreshCampaignId],
+        back_populates="action_history",
+    )
 
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId") >= 1 '
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId", "bankAccountId", "ruleId", "chronicleId", "userProfileRefreshCampaignId") >= 1 '
                 'OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME" '
                 'OR actionType = "ROLE_PERMISSIONS_CHANGED"'
             ),
@@ -217,4 +230,9 @@ class ActionHistory(PcObject, Model):
         sa.Index("ix_action_history_ruleId", ruleId, postgresql_where=ruleId.is_not(None)),
         sa.Index("ix_action_history_chronicleId", chronicleId, postgresql_where=chronicleId.is_not(None)),
         sa.Index("ix_action_history_actionType", actionType, postgresql_using="hash"),
+        sa.Index(
+            "ix_action_history_userProfileRefreshCampaignId",
+            userProfileRefreshCampaignId,
+            postgresql_where=userProfileRefreshCampaignId.is_not(None),
+        ),
     )

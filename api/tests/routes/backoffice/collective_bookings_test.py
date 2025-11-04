@@ -559,8 +559,7 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{cancelled.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{cancelled.id}")
         assert cells[1] == str(cancelled.id)
 
         db.session.refresh(cancelled)
@@ -580,8 +579,7 @@ class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{non_cancelled.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{non_cancelled.id}")
         assert cells[1] == str(non_cancelled.id)
 
         db.session.refresh(non_cancelled)
@@ -607,8 +605,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{confirmed.id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{confirmed.id}")
         assert cells[1] == str(confirmed.id)
 
         db.session.refresh(confirmed)
@@ -631,8 +628,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
         assert cells[1] == str(booking_id)
 
         booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
@@ -654,8 +650,7 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(response.data, tag="tr", id=f"booking-row-{booking_id}", is_xml=True)
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
         assert cells[1] == str(booking_id)
 
         booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()

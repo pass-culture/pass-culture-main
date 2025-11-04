@@ -71,7 +71,7 @@ class PcTableManager extends PcAddOn {
   }
 
   #initializeTableFromHtml = ($table) => {
-    const lines = $table.querySelectorAll("tr")
+    const lines = $table.querySelectorAll(":scope > tbody > tr")
     const configuration = this.#initializeHeaders($table)
     lines.forEach(($line) => {
       this.#initializeRow(configuration, $line)
@@ -80,7 +80,7 @@ class PcTableManager extends PcAddOn {
   }
 
   #initializeRow = (configuration, $line) => {
-    const cells = $line.querySelectorAll("td")
+    const cells = $line.querySelectorAll(":scope > td")
     if (cells !== null) {
       for (let i=0; i < Math.min(cells.length, configuration.columns.length); i++) {
         cells[i].classList.add(configuration.columns[i].id)
@@ -95,7 +95,7 @@ class PcTableManager extends PcAddOn {
       displayMenu: String($table.dataset.pcTableMenuHide).toLowerCase() !== "true",
       columns: [],
     }
-    $table.querySelectorAll("th").forEach(($column) => {
+    $table.querySelectorAll(":scope > thead > tr > th").forEach(($column) => {
       headerNumber++
       const columnConfiguration = {}
       const text_content = $column.textContent.replaceAll(/\n/g, '').trim()
@@ -337,7 +337,7 @@ class PcTableManager extends PcAddOn {
     }
 
     $table.classList.add('d-none')
-    $table.querySelectorAll("tr").forEach(($line) => {
+    $table.querySelectorAll(":scope > thead > tr, :scope > tbody > tr").forEach(($line) => {
       this.#applyConfigurationOnLine(configuration, $line)
     })
     $table.classList.remove('d-none')
@@ -403,7 +403,7 @@ class PcTableManager extends PcAddOn {
         const configuration = this.configurations[tableId]
         const defaultConfiguration = this.defaultConfigurations[tableId]
         tempTable.innerHTML = event.detail.serverResponse
-        const $newLines = tempTable.querySelectorAll("tr")
+        const $newLines = tempTable.querySelectorAll(":scope > tbody > tr")
         // re-arrange each line's columns to fit applied filters
         $newLines.forEach(($newLine) => {
           this.#initializeRow(defaultConfiguration, $newLine)

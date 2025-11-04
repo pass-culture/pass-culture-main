@@ -479,13 +479,9 @@ class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
         )
         assert response.status_code == 200
 
-        row = html_parser.get_tag(
-            response.data,
-            tag="tr",
-            id=f"collective-offer-template-row-{collective_offer_template_to_validate.id}",
-            is_xml=True,
+        cells = html_parser.extract_plain_row(
+            response.data, id=f"collective-offer-template-row-{collective_offer_template_to_validate.id}"
         )
-        cells = html_parser.extract(row, "td", is_xml=True)
         assert cells[2] == str(collective_offer_template_to_validate.id)
 
         assert collective_offer_template_to_validate.isActive is True
@@ -580,13 +576,10 @@ class RejectCollectiveOfferTemplateTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(
+        cells = html_parser.extract_plain_row(
             response.data,
-            tag="tr",
             id=f"collective-offer-template-row-{collective_offer_template_to_reject.id}",
-            is_xml=True,
         )
-        cells = html_parser.extract(row, "td", is_xml=True)
         assert cells[2] == str(collective_offer_template_to_reject.id)
 
         assert collective_offer_template_to_reject.isActive is False
@@ -663,10 +656,10 @@ class BatchCollectiveOfferTemplatesValidateTest(PostEndpointHelper):
             assert collective_offer_template.lastValidationType is OfferValidationType.MANUAL
             assert collective_offer_template.validation is OfferValidationStatus.APPROVED
             assert collective_offer_template.lastValidationAuthor == legit_user
-            row = html_parser.get_tag(
-                response.data, tag="tr", id=f"collective-offer-template-row-{collective_offer_template.id}", is_xml=True
+            cells = html_parser.extract_plain_row(
+                response.data,
+                id=f"collective-offer-template-row-{collective_offer_template.id}",
             )
-            cells = html_parser.extract(row, "td", is_xml=True)
             assert cells[2] == str(collective_offer_template.id)
 
         received_dict = {email["To"]: email["template"] for email in mails_testing.outbox}
@@ -734,10 +727,10 @@ class BatchCollectiveOfferTemplatesRejectTest(PostEndpointHelper):
                 collective_offer_template.rejectionReason
                 is educational_models.CollectiveOfferRejectionReason.WRONG_DATE
             )
-            row = html_parser.get_tag(
-                response.data, tag="tr", id=f"collective-offer-template-row-{collective_offer_template.id}", is_xml=True
+            cells = html_parser.extract_plain_row(
+                response.data,
+                id=f"collective-offer-template-row-{collective_offer_template.id}",
             )
-            cells = html_parser.extract(row, "td", is_xml=True)
             assert cells[2] == str(collective_offer_template.id)
 
         assert len(mails_testing.outbox) == 3

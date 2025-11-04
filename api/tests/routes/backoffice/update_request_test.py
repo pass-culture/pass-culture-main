@@ -585,10 +585,7 @@ class InstructTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
 
         mock_make_on_going.assert_called_once()
@@ -612,10 +609,7 @@ class InstructTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -644,10 +638,7 @@ class InstructTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
@@ -917,10 +908,7 @@ class AcceptTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         mock_make_accepted.assert_called_once()
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
 
         db.session.refresh(update_request)
@@ -1066,10 +1054,7 @@ class AcceptTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_called_once()
 
@@ -1102,10 +1087,7 @@ class AcceptTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_called_once()
 
@@ -1190,10 +1172,7 @@ class AcceptTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_make_accepted.assert_not_called()
 
@@ -1302,10 +1281,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_send_user_message.assert_called_once()
 
@@ -1345,10 +1321,7 @@ class AskForCorrectionTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_send_user_message.assert_not_called()
 
@@ -1385,10 +1358,7 @@ class AskForCorrectionTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_send_user_message.assert_called_once()
 
@@ -1419,10 +1389,7 @@ class AskForCorrectionTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_execute_query.assert_called_once()
 
@@ -1523,10 +1490,7 @@ class IdentityTheftTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_make_refused.assert_called_once()
 
@@ -1563,10 +1527,7 @@ class IdentityTheftTest(PostEndpointHelper):
             headers={"hx-request": "true"},
         )
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"request-row-{update_request.dsApplicationId}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
         assert str(update_request.dsApplicationId) in cells[1]
         mock_make_refused.assert_called_once()
 

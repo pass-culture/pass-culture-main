@@ -1620,6 +1620,7 @@ def set_offerer_pending(
         bank_account=None,  # otherwise mypy does not accept extra_data dict
         rule=None,  # otherwise mypy does not accept extra_data dict
         chronicle=None,  # otherwise mypy does not accept extra_data dict
+        user_profile_refresh_campaign=None,
         comment=comment,
         **extra_data,
     )

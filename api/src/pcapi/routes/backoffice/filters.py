@@ -121,6 +121,9 @@ ACTION_TYPE_TO_STRING = {
     # Chronicles
     history_models.ActionType.CHRONICLE_PUBLISHED: "Publication d'une chronique",
     history_models.ActionType.CHRONICLE_UNPUBLISHED: "Dépublication d'une chronique",
+    # User profile refresh campaign
+    history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED: "Création de campagne de mise à jour de données",
+    history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED: "Modification de campagne de mise à jour de données",
 }
 
 
@@ -186,6 +189,16 @@ def format_role(role: str | None, deposits: list[finance_models.Deposit] | None 
             return text
         case _:
             return "Aucune information"
+
+
+def format_user_profile_refresh_campaign_action_type(action_type: history_models.ActionType) -> str:
+    match action_type:
+        case history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_CREATED:
+            return "Création"
+        case history_models.ActionType.USER_PROFILE_REFRESH_CAMPAIGN_UPDATED:
+            return "Mise à jour"
+        case _:
+            return action_type.value
 
 
 def format_deposit_used(booking: bookings_models.Booking) -> str:
@@ -1158,7 +1171,7 @@ def format_gdpr_date_processed(date_processed: datetime.datetime | None) -> str:
     return "prête" if date_processed else "en attente"
 
 
-def _format_modified_info_value(value: typing.Any, name: str | None = None) -> str:
+def _format_modified_info_value(value: typing.Any, name: str | None = None, field_type: typing.Any = None) -> str:
     if name == "venueTypeCode":
         try:
             value = offerers_models.VenueTypeCode[value].value
@@ -1175,6 +1188,13 @@ def _format_modified_info_value(value: typing.Any, name: str | None = None) -> s
         return format_string_list(value)
     if isinstance(value, bool):
         return format_bool(value)
+    if field_type is not None and field_type is datetime.datetime:
+        parsed_value = None
+        try:
+            parsed_value = datetime.datetime.fromisoformat(value)
+        except (ValueError, TypeError):
+            pass
+        return format_date_time(parsed_value)
     return str(value)
 
 
@@ -1194,21 +1214,29 @@ def format_pivot_name(pivot_name: str) -> str:
             return pivot_name
 
 
-def format_modified_info_values(modified_info: typing.Any, name: str | None = None) -> str:
+def format_modified_info_values(
+    modified_info: typing.Any, name: str | None = None, model_instance: typing.Any = None
+) -> str:
     old_info = modified_info.get("old_info")
     new_info = modified_info.get("new_info")
 
+    field_type = None
+    if model_instance:
+        field = model_instance.__table__.columns.get(name)
+        if field is not None:
+            field_type = field.type.python_type
+
     if old_info is not None and new_info is not None:
         return Markup("{old_value} → {new_value}").format(
-            old_value=_format_modified_info_value(old_info, name),
-            new_value=_format_modified_info_value(new_info, name),
+            old_value=_format_modified_info_value(old_info, name, field_type),
+            new_value=_format_modified_info_value(new_info, name, field_type),
         )
 
     if old_info is not None:
-        return Markup("suppression de : {value}").format(value=_format_modified_info_value(old_info, name))
+        return Markup("suppression de : {value}").format(value=_format_modified_info_value(old_info, name, field_type))
 
     if new_info is not None:
-        return Markup("ajout de : {value}").format(value=_format_modified_info_value(new_info, name))
+        return Markup("ajout de : {value}").format(value=_format_modified_info_value(new_info, name, field_type))
 
     return str(modified_info)  # this should not happen if data is consistent
 
@@ -1356,6 +1384,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "ID ADAGE"
         case "isOpenToPublic":
             return "Accueil du public"
+        case "campaignDate":
+            return "Date"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
@@ -2047,3 +2077,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["product_mediation_link"] = product_mediation_link
     app.jinja_env.filters["format_artist_visibility_status"] = format_artist_visibility_status
     app.jinja_env.filters["format_collective_location_type"] = format_collective_location_type
+    app.jinja_env.filters["format_user_profile_refresh_campaign_action_type"] = (
+        format_user_profile_refresh_campaign_action_type
+    )

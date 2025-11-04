@@ -626,10 +626,7 @@ class SetResponseStatusTest(PostEndpointHelper):
         )
 
         assert response.status_code == 200
-        row = html_parser.get_tag(
-            response.data, tag="tr", id=f"operation-response-row-{event_response.id}", is_xml=True
-        )
-        cells = html_parser.extract(row, "td", is_xml=True)
+        cells = html_parser.extract_plain_row(response.data, id=f"operation-response-row-{event_response.id}")
         assert cells[2] == str(event_response.id)
         db.session.refresh(event_response)
         assert event_response.status == response_status
@@ -682,10 +679,7 @@ class BatchValidateResponsesStatusTest(PostEndpointHelper):
         )
         assert response.status_code == 200
         for event_response in (event_response1, event_response2):
-            row = html_parser.get_tag(
-                response.data, tag="tr", id=f"operation-response-row-{event_response.id}", is_xml=True
-            )
-            cells = html_parser.extract(row, "td", is_xml=True)
+            cells = html_parser.extract_plain_row(response.data, id=f"operation-response-row-{event_response.id}")
             assert cells[2] == str(event_response.id)
         db.session.refresh(event_response1)
         db.session.refresh(event_response2)
