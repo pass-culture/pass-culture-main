@@ -33,7 +33,10 @@ export const getInitialOffererIdAndVenueId = (
   const selectedVenueIdFromLocalStorage = Number(
     localStorageManager.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
   )
-  if (selectedVenueIdFromLocalStorage) {
+  if (
+    selectedVenueIdFromLocalStorage &&
+    venues.some((venue) => venue.id === selectedVenueIdFromLocalStorage)
+  ) {
     return {
       initialOffererId: null,
       initialVenueId: selectedVenueIdFromLocalStorage,
@@ -47,7 +50,12 @@ export const getInitialOffererIdAndVenueId = (
   const selectedOffererIdFromLocalStorage = Number(
     localStorageManager.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
   )
-  if (selectedOffererIdFromLocalStorage) {
+  if (
+    selectedOffererIdFromLocalStorage &&
+    offerersNames.some(
+      (offerer) => offerer.id === selectedOffererIdFromLocalStorage
+    )
+  ) {
     return {
       initialOffererId: selectedOffererIdFromLocalStorage,
       initialVenueId: null,
