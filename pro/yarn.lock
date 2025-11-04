@@ -539,59 +539,59 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
-"@biomejs/biome@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/biome/-/biome-2.3.1.tgz#d1a9284f52986324f288cdaf450331a0f3fb1da7"
-  integrity sha512-A29evf1R72V5bo4o2EPxYMm5mtyGvzp2g+biZvRFx29nWebGyyeOSsDWGx3tuNNMFRepGwxmA9ZQ15mzfabK2w==
+"@biomejs/biome@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/biome/-/biome-2.3.3.tgz#9a45620f1ad48fcbe972249b84921637446bd3b3"
+  integrity sha512-zn/P1pRBCpDdhi+VNSMnpczOz9DnqzOA2c48K8xgxjDODvi5O8gs3a2H233rck/5HXpkFj6TmyoqVvxirZUnvg==
   optionalDependencies:
-    "@biomejs/cli-darwin-arm64" "2.3.1"
-    "@biomejs/cli-darwin-x64" "2.3.1"
-    "@biomejs/cli-linux-arm64" "2.3.1"
-    "@biomejs/cli-linux-arm64-musl" "2.3.1"
-    "@biomejs/cli-linux-x64" "2.3.1"
-    "@biomejs/cli-linux-x64-musl" "2.3.1"
-    "@biomejs/cli-win32-arm64" "2.3.1"
-    "@biomejs/cli-win32-x64" "2.3.1"
+    "@biomejs/cli-darwin-arm64" "2.3.3"
+    "@biomejs/cli-darwin-x64" "2.3.3"
+    "@biomejs/cli-linux-arm64" "2.3.3"
+    "@biomejs/cli-linux-arm64-musl" "2.3.3"
+    "@biomejs/cli-linux-x64" "2.3.3"
+    "@biomejs/cli-linux-x64-musl" "2.3.3"
+    "@biomejs/cli-win32-arm64" "2.3.3"
+    "@biomejs/cli-win32-x64" "2.3.3"
 
-"@biomejs/cli-darwin-arm64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-arm64/-/cli-darwin-arm64-2.3.1.tgz#607835f8ef043e1a80f9ad2a232c9e860941ab60"
-  integrity sha512-ombSf3MnTUueiYGN1SeI9tBCsDUhpWzOwS63Dove42osNh0PfE1cUtHFx6eZ1+MYCCLwXzlFlYFdrJ+U7h6LcA==
+"@biomejs/cli-darwin-arm64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-arm64/-/cli-darwin-arm64-2.3.3.tgz#26c08da42152b44d0be7efc2d16f047aaa8e2f72"
+  integrity sha512-5+JtW6RKmjqL9un0UtHV0ezOslAyYBzyl5ZhYiu7GHesX2x8NCDl6tXYrenv9m7e1RLbkO5E5Kh04kseMtz6lw==
 
-"@biomejs/cli-darwin-x64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-x64/-/cli-darwin-x64-2.3.1.tgz#654fe4aaa8ea5d5bde5457db4961ad5d214713ac"
-  integrity sha512-pcOfwyoQkrkbGvXxRvZNe5qgD797IowpJPovPX5biPk2FwMEV+INZqfCaz4G5bVq9hYnjwhRMamg11U4QsRXrQ==
+"@biomejs/cli-darwin-x64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-x64/-/cli-darwin-x64-2.3.3.tgz#2465d133dbd756091889d225e007cc5bbdb0f912"
+  integrity sha512-UPmKRalkHicvIpeccuKqq+/gA2HYV8FUnAEDJnqYBlGlycKqe6xrovWqvWTE4TTNpIFf4UQyuaDzLkN6Kz6tbA==
 
-"@biomejs/cli-linux-arm64-musl@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64-musl/-/cli-linux-arm64-musl-2.3.1.tgz#5fe502082a575c31ef808cf080cbcd4485964167"
-  integrity sha512-+DZYv8l7FlUtTrWs1Tdt1KcNCAmRO87PyOnxKGunbWm5HKg1oZBSbIIPkjrCtDZaeqSG1DiGx7qF+CPsquQRcg==
+"@biomejs/cli-linux-arm64-musl@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64-musl/-/cli-linux-arm64-musl-2.3.3.tgz#dbb50ad4b5c1af6ebb135eb039eb2a344a105824"
+  integrity sha512-KhCDMV+V7Yu72v40ssGJTHuv/j0n7JQ6l0s/c+EMcX5zPYLMLr4XpmI+WXhp4Vfkz0T5Xnh5wbrTBI3f2UTpjQ==
 
-"@biomejs/cli-linux-arm64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64/-/cli-linux-arm64-2.3.1.tgz#81c02547905d379dbb312e6ff24b04908c2e320f"
-  integrity sha512-td5O8pFIgLs8H1sAZsD6v+5quODihyEw4nv2R8z7swUfIK1FKk+15e4eiYVLcAE4jUqngvh4j3JCNgg0Y4o4IQ==
+"@biomejs/cli-linux-arm64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64/-/cli-linux-arm64-2.3.3.tgz#ee359dc47e7a473ad841ba111078063e1066d05f"
+  integrity sha512-zeiKwALNB/hax7+LLhCYqhqzlWdTfgE9BGkX2Z8S4VmCYnGFrf2fON/ec6KCos7mra5MDm6fYICsEWN2+HKZhw==
 
-"@biomejs/cli-linux-x64-musl@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64-musl/-/cli-linux-x64-musl-2.3.1.tgz#c7c00beb5eda1ad25185544897e66eeec6be3b0b"
-  integrity sha512-Y3Ob4nqgv38Mh+6EGHltuN+Cq8aj/gyMTJYzkFZV2AEj+9XzoXB9VNljz9pjfFNHUxvLEV4b55VWyxozQTBaUQ==
+"@biomejs/cli-linux-x64-musl@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64-musl/-/cli-linux-x64-musl-2.3.3.tgz#379873b0b6efd5f3aed8b03c222a755ab82ddfc7"
+  integrity sha512-IyqQ+jYzU5MVy9CK5NV0U+NnUMPUAhYMrB/x4QgL/Dl1MqzBVc61bHeyhLnKM6DSEk73/TQYrk/8/QmVHudLdQ==
 
-"@biomejs/cli-linux-x64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64/-/cli-linux-x64-2.3.1.tgz#7481d2e7be98d4de574df233766a5bdda037c897"
-  integrity sha512-PYWgEO7up7XYwSAArOpzsVCiqxBCXy53gsReAb1kKYIyXaoAlhBaBMvxR/k2Rm9aTuZ662locXUmPk/Aj+Xu+Q==
+"@biomejs/cli-linux-x64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64/-/cli-linux-x64-2.3.3.tgz#2ac58b39e500141091a736e146bff350d7a396d6"
+  integrity sha512-05CjPLbvVVU8J6eaO6iSEoA0FXKy2l6ddL+1h/VpiosCmIp3HxRKLOa1hhC1n+D13Z8g9b1DtnglGtM5U3sTag==
 
-"@biomejs/cli-win32-arm64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-arm64/-/cli-win32-arm64-2.3.1.tgz#dac8c7c7223e97f86cd0eed7aa95584984761481"
-  integrity sha512-RHIG/zgo+69idUqVvV3n8+j58dKYABRpMyDmfWu2TITC+jwGPiEaT0Q3RKD+kQHiS80mpBrST0iUGeEXT0bU9A==
+"@biomejs/cli-win32-arm64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-arm64/-/cli-win32-arm64-2.3.3.tgz#8212127b47b78f6f18345708cae7c1216ae54869"
+  integrity sha512-NtlLs3pdFqFAQYZjlEHKOwJEn3GEaz7rtR2oCrzaLT2Xt3Cfd55/VvodQ5V+X+KepLa956QJagckJrNL+DmumQ==
 
-"@biomejs/cli-win32-x64@2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.3.1.tgz#f8818ab2c1e3a6e2ed8a656935173e5ce4c720be"
-  integrity sha512-izl30JJ5Dp10mi90Eko47zhxE6pYyWPcnX1NQxKpL/yMhXxf95oLTzfpu4q+MDBh/gemNqyJEwjBpe0MT5iWPA==
+"@biomejs/cli-win32-x64@2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.3.3.tgz#29e6046d3f98fe321d3788dcaa4425a943dac33e"
+  integrity sha512-klJKPPQvUk9Rlp0Dd56gQw/+Wt6uUprHdHWtbDC93f3Iv+knA2tLWpcYoOZJgPV+9s+RBmYv0DGy4mUlr20esg==
 
 "@csstools/color-helpers@^5.1.0":
   version "5.1.0"
