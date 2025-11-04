@@ -223,6 +223,36 @@ class CreateHighlightTest(PostEndpointHelper):
             "L'image de la valorisation thématique est obligatoire ;"
         )
 
+    def test_create_highlight_name_too_long(self, authenticated_client):
+        name = "a" * 61
+        description = "Highlight description"
+        highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
+        highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
+        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
+        availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        separator = " - "
+
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={
+                    "name": name,
+                    "description": description,
+                    "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries - 1,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : doit contenir moins de 60 caractères ;"
+        )
+
 
 class GetUpdateHighlightFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.highlights.get_update_highlight_form"

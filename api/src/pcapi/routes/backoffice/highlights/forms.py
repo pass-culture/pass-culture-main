@@ -38,7 +38,7 @@ class CreateHighlightForm(FlaskForm):
         "Nom de la valorisation thématique",
         validators=(
             wtforms.validators.InputRequired("Le nom est obligatoire"),
-            wtforms.validators.Length(max=200, message="doit contenir moins de %(max)d caractères"),
+            wtforms.validators.Length(max=60, message="doit contenir moins de %(max)d caractères"),
         ),
     )
 
