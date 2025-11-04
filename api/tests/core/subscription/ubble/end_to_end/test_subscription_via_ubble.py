@@ -35,6 +35,7 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleV2EndToEndTest:
+    @pytest.mark.time_machine("2025-02-02")
     def test_beneficiary_activation_with_ubble_mocked_response(self, client, ubble_client):
         seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(
