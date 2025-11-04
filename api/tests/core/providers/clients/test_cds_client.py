@@ -588,7 +588,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
     @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_seatmap")
     def test_should_return_duo_seat_if_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
         seatmap = cds_serializers.SeatmapCDS(
-            __root__=[
+            [
                 [1, 1, 1, 1, 0, 1],
                 [1, 1, 1, 3, 0, 1],
                 [1, 1, 3, 3, 0, 1],
@@ -597,7 +597,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
             ]
         )
 
-        cinema = cds_serializers.CinemaCDS(id=1, is_internet_sale_gauge_active=True)
+        cinema = cds_serializers.CinemaCDS(id="1", is_internet_sale_gauge_active=True)
         screen = cds_serializers.ScreenCDS(
             id=1,
             seatmapfronttoback=True,
@@ -622,7 +622,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         self, mocked_get_seatmap, mocked_get_hardcoded_seatmap
     ):
         seatmap = cds_serializers.SeatmapCDS(
-            __root__=[
+            [
                 [1, 1, 1, 1, 0, 1],
                 [1, 1, 1, 3, 0, 1],
             ]
@@ -681,7 +681,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
     @patch("pcapi.core.providers.clients.cds_client.CineDigitalServiceAPIClient.get_seatmap")
     def test_should_return_two_separate_seats_if_no_duo_available(self, mocked_get_seatmap, mocked_get_cinema_infos):
         seatmap = cds_serializers.SeatmapCDS(
-            __root__=[
+            [
                 [1, 3, 1, 3, 0, 1],
                 [3, 3, 3, 3, 0, 3],
                 [1, 3, 1, 3, 0, 1],
@@ -697,7 +697,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
             seatmapskipmissingseats=False,
         )
         show = create_show_cds(id_=1, screen_id=1)
-        cinema = cds_serializers.CinemaCDS(id=1, is_internet_sale_gauge_active=True)
+        cinema = cds_serializers.CinemaCDS(id="1", is_internet_sale_gauge_active=True)
 
         mocked_get_seatmap.return_value = seatmap
         mocked_get_cinema_infos.return_value = cinema
@@ -895,7 +895,7 @@ class CineDigitalServiceBookTicketTest:
             cds_serializers.SeatCDS(
                 (0, 0),
                 create_screen_cds(),
-                seat_map=cds_serializers.SeatmapCDS(__root__=[[1, 1, 1], [1, 1, 1], [1, 1, 1]]),
+                seat_map=cds_serializers.SeatmapCDS([[1, 1, 1], [1, 1, 1], [1, 1, 1]]),
                 hardcoded_seatmap=[],
             ),
         ]
@@ -1045,7 +1045,7 @@ class CineDigitalServiceBookTicketTest:
                 tariff=cds_serializers.TariffCDS(id=42, price=5, is_active=True, label="pass Culture"),
             )
         ]
-        mocked_seatmap = cds_serializers.SeatmapCDS(__root__=[[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+        mocked_seatmap = cds_serializers.SeatmapCDS([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
         mocked_get_available_duo_seat.return_value = [
             cds_serializers.SeatCDS((0, 0), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),
             cds_serializers.SeatCDS((0, 1), create_screen_cds(), mocked_seatmap, hardcoded_seatmap=[]),

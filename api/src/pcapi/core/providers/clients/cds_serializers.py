@@ -1,53 +1,47 @@
 import datetime
 import typing
 
-from pydantic.v1 import Field
-from pydantic.v1 import validator
+import pydantic
+from pydantic import Field
 
 import pcapi.core.offers.models as offers_models
-from pcapi.routes.serialization import BaseModel
 
 
-class IdObjectCDS(BaseModel):
+class CDSBaseModel(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(validate_by_name=True)
+
+
+class IdObjectCDS(CDSBaseModel):
     id: int
 
 
-class ShowTariffCDS(BaseModel):
+class ShowTariffCDS(CDSBaseModel):
     tariff: IdObjectCDS = Field(alias="tariffid")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class ShowsMediaoptionsCDS(BaseModel):
+class ShowsMediaoptionsCDS(CDSBaseModel):
     media_options_id: IdObjectCDS = Field(alias="mediaoptionsid")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class CinemaParameterCDS(BaseModel):
+class CinemaParameterCDS(CDSBaseModel):
     id: int
     key: str
-    value: str | None
+    value: str | None = None
 
 
-class CinemaCDS(BaseModel):
+class CinemaCDS(CDSBaseModel):
     id: str
     is_internet_sale_gauge_active: bool = Field(alias="internetsalegaugeactive")
     cinema_parameters: list[CinemaParameterCDS] = Field(alias="cinemaParameters", default_factory=list)
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class MediaOptionCDS(BaseModel):
+class MediaOptionCDS(CDSBaseModel):
     id: int
-    ticketlabel: str | None
+    ticketlabel: str | None = None
     label: str
 
 
-class ShowCDS(BaseModel):
+class ShowCDS(CDSBaseModel):
     id: int
     is_cancelled: bool = Field(alias="canceled")
     is_deleted: bool = Field(alias="deleted")
@@ -61,10 +55,7 @@ class ShowCDS(BaseModel):
     media: IdObjectCDS = Field(alias="mediaid")
     shows_mediaoptions_collection: list[ShowsMediaoptionsCDS] = Field(alias="showsMediaoptionsCollection")
 
-    class Config:
-        allow_population_by_field_name = True
-
-    @validator("is_empty_seatmap")
+    @pydantic.field_validator("is_empty_seatmap")
     def string_with_no_digit_to_true(cls, value: str | bool) -> bool:
         """
         2022/08/02 a seatmap should be similar to [[1,1,1,0],[1,1,1,0]]
@@ -78,17 +69,14 @@ class ShowCDS(BaseModel):
         return False
 
 
-class MediaCDS(BaseModel):
+class MediaCDS(CDSBaseModel):
     id: int
     title: str
     duration: int  # CDS api returns duration in seconds
-    posterpath: str | None
+    posterpath: str | None = None
     storyline: str
-    visanumber: str | None
+    visanumber: str | None = None
     allocineid: str | None = None
-
-    class Config:
-        allow_population_by_field_name = True
 
     def to_generic_movie(self) -> offers_models.Movie:
         return offers_models.Movie(
@@ -102,50 +90,38 @@ class MediaCDS(BaseModel):
         )
 
 
-class PaymentTypeCDS(BaseModel):
+class PaymentTypeCDS(CDSBaseModel):
     id: int
     internal_code: str = Field(alias="internalcode")
     is_active: bool = Field(alias="active")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class TariffCDS(BaseModel):
+class TariffCDS(CDSBaseModel):
     id: int
     price: float
     is_active: bool = Field(alias="active")
     label: str = Field(alias="labeltariff")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class VoucherTypeCDS(BaseModel):
+class VoucherTypeCDS(CDSBaseModel):
     id: int
-    code: str | None
-    tariff: TariffCDS | None = Field(alias="tariffid")
-
-    class Config:
-        allow_population_by_field_name = True
+    code: str | None = None
+    tariff: TariffCDS | None = Field(alias="tariffid", default=None)
 
 
-class ScreenCDS(BaseModel):
+class ScreenCDS(CDSBaseModel):
     id: int
     seatmap_front_to_back: bool = Field(alias="seatmapfronttoback")
     seatmap_left_to_right: bool = Field(alias="seatmaplefttoright")
     seatmap_skip_missing_seats: bool = Field(alias="seatmapskipmissingseats")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class SeatmapCDS(BaseModel):
-    __root__: list[list[int]]
+class SeatmapCDS(pydantic.RootModel, CDSBaseModel):
+    root: list[list[int]]
 
     @property
     def map(self) -> list[list[int]]:
-        return self.__root__
+        return self.root
 
     @property
     def nb_row(self) -> int:
@@ -156,71 +132,53 @@ class SeatmapCDS(BaseModel):
         return len(self.map[0]) if len(self.map[0]) > 0 else 0
 
 
-class CancelBookingCDS(BaseModel):
+class CancelBookingCDS(CDSBaseModel):
     barcodes: list[int]
     paiement_type_id: int = Field(alias="paiementtypeid")
 
-    class Config:
-        allow_population_by_field_name = True
+
+class CancelBookingsErrorsCDS(pydantic.RootModel, CDSBaseModel):
+    root: dict[str, str]
 
 
-class CancelBookingsErrorsCDS(BaseModel):
-    __root__: dict[str, str]
-
-
-class TicketSaleCDS(BaseModel):
+class TicketSaleCDS(CDSBaseModel):
     id: int
     cinema_id: str = Field(alias="cinemaid")
     operation_date: str = Field(alias="operationdate")
     is_cancelled: bool = Field(alias="canceled")
-    seat_col: int | None = Field(alias="seatcol")
-    seat_row: int | None = Field(alias="seatrow")
-    seat_number: str | None = Field(alias="seatnumber")
+    seat_col: int | None = Field(alias="seatcol", default=None)
+    seat_row: int | None = Field(alias="seatrow", default=None)
+    seat_number: str | None = Field(alias="seatnumber", default=None)
     tariff: IdObjectCDS = Field(alias="tariffid")
     voucher_type: str = Field(alias="vouchertype")
     show: IdObjectCDS = Field(alias="showid")
     disabled_person: bool = Field(alias="disabledperson")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class TransactionPayementCDS(BaseModel):
+class TransactionPayementCDS(CDSBaseModel):
     id: int
     amount: float
     payement_type: IdObjectCDS = Field(alias="paiementtypeid")
     voucher_type: IdObjectCDS = Field(alias="vouchertypeid")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class CreateTransactionBodyCDS(BaseModel):
+class CreateTransactionBodyCDS(CDSBaseModel):
     cinema_id: str = Field(alias="cinemaid")
     transaction_date: str = Field(alias="transactiondate")
     is_cancelled: bool = Field(alias="canceled")
     ticket_sale_collection: list[TicketSaleCDS] = Field(alias="ticketsaleCollection")
     payement_collection: list[TransactionPayementCDS] = Field(alias="paiementCollection")
 
-    class Config:
-        allow_population_by_field_name = True
 
-
-class TicketResponseCDS(BaseModel):
+class TicketResponseCDS(CDSBaseModel):
     barcode: str
-    seat_number: str | None = Field(alias="seatnumber")
-
-    class Config:
-        allow_population_by_field_name = True
+    seat_number: str | None = Field(alias="seatnumber", default=None)
 
 
-class CreateTransactionResponseCDS(BaseModel):
+class CreateTransactionResponseCDS(CDSBaseModel):
     id: int
     invoice_id: str = Field(alias="invoiceid")
     tickets: list[TicketResponseCDS]
-
-    class Config:
-        allow_population_by_field_name = True
 
 
 class SeatCDS:
