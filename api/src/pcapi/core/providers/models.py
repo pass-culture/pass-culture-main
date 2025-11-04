@@ -5,7 +5,6 @@ import typing
 from dataclasses import dataclass
 
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql as sa_sql
 
@@ -196,12 +195,6 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
             postgresql_where=venueIdAtOfferProvider.is_(None),
         ),
     )
-
-    @staticmethod
-    def restize_integrity_error(error: sa_exc.IntegrityError) -> tuple[str, str]:
-        if "unique_venue_provider" in str(error.orig):
-            return ("global", "Votre lieu est déjà lié à cette source")
-        return PcObject.restize_integrity_error(error)
 
     @property
     def hasTicketingService(self) -> bool:

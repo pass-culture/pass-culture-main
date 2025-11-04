@@ -227,7 +227,7 @@ class Returns201Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
+        assert response.json == {"global": ["Votre lieu est déjà lié à cette source."]}
         assert venue_provider.venue.venueProviders == [venue_provider]
 
     @pytest.mark.usefixtures("db_session")
