@@ -69,6 +69,12 @@ const baseOfferers: GetOffererResponseModel[] = [
     name: 'Structure 2',
     hasValidBankAccount: true,
   },
+  {
+    ...defaultGetOffererResponseModel,
+    id: 3,
+    name: 'Structure 3',
+    canDisplayHighlights: false,
+  },
 ]
 
 const renderHomePage = (options?: RenderWithProvidersOptions) => {
@@ -114,6 +120,7 @@ describe('Homepage', () => {
       syncDate: null,
       offererId: 1,
     })
+    vi.spyOn(api, 'getHighlights').mockResolvedValue([])
   })
 
   it('the user should see the home offer steps if they do not have any venues', async () => {
@@ -191,6 +198,42 @@ describe('Homepage', () => {
 
       expect(
         screen.queryByText('Présence sur l’application pass Culture')
+      ).not.toBeInTheDocument()
+    })
+  })
+  describe('render highlights', () => {
+    it('should display highlights when selected offerer can display highlights', async () => {
+      renderHomePage({ features: ['WIP_HIGHLIGHT'] })
+
+      expect(
+        await screen.findByText('Parcourir les temps forts')
+      ).toBeInTheDocument()
+    })
+
+    it('should not display highlights when the WIP_HIGHLIGHT feature is not active', async () => {
+      renderHomePage()
+
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText('Parcourir les temps forts')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not display highlights when selected offerer cannot display highlights', async () => {
+      renderHomePage({
+        features: ['WIP_HIGHLIGHT'],
+        storeOverrides: {
+          offerer: {
+            currentOfferer: baseOfferers[2],
+          },
+        },
+      })
+
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText('Parcourir les temps forts')
       ).not.toBeInTheDocument()
     })
   })
