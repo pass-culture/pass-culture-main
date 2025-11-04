@@ -1609,6 +1609,13 @@ class CollectiveBooking(PcObject, models.Model):
 
     sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
+    educationalDepositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True
+    )
+    educationalDeposit: sa_orm.Mapped["EducationalDeposit" | None] = sa_orm.relationship(
+        EducationalDeposit, foreign_keys=[educationalDepositId]
+    )
+
     confirmationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     confirmationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 

@@ -132,7 +132,8 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     validation.check_confirmation_limit_date_has_not_passed(collective_booking)
 
     if settings.EAC_CHECK_INSTITUTION_FUND:
-        _check_institution_fund(collective_booking)
+        deposit = _check_institution_fund(collective_booking)
+        collective_booking.educationalDeposit = deposit
 
     collective_booking.mark_as_confirmed()
 
@@ -149,7 +150,9 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     return collective_booking
 
 
-def _check_institution_fund(collective_booking: educational_models.CollectiveBooking) -> None:
+def _check_institution_fund(
+    collective_booking: educational_models.CollectiveBooking,
+) -> educational_models.EducationalDeposit:
     educational_institution_id = collective_booking.educationalInstitutionId
     educational_year_id = collective_booking.educationalYearId
     # TODO: check educationalYear joinedload
@@ -175,6 +178,8 @@ def _check_institution_fund(collective_booking: educational_models.CollectiveBoo
     )
 
     validation.check_institution_fund(booking_amount=collective_booking.collectiveStock.price, deposit=deposit)
+
+    return deposit
 
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:

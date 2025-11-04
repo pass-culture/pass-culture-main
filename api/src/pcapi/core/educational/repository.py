@@ -108,24 +108,10 @@ def get_and_lock_educational_deposit(
 
 
 def get_confirmed_collective_bookings_amount(deposit: models.EducationalDeposit) -> Decimal:
-    # TODO: check educationalYear joinedload
-    educational_year_start = deposit.educationalYear.beginningDate
-
-    # get the bookings that were confirmed during the deposit period
-    confirmation_date_filters: list[sa.ColumnElement[bool]] = [
-        models.CollectiveBooking.confirmationDate.op("<@")(deposit.period)
-    ]
-    # if the period contains the educational year start
-    # also get the bookings that were confirmed before the educational year start
-    if educational_year_start in deposit.period:
-        confirmation_date_filters.append(models.CollectiveBooking.confirmationDate < educational_year_start)
-
     query = db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
     query = query.join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
     query = query.filter(
-        models.CollectiveBooking.educationalInstitutionId == deposit.educationalInstitutionId,
-        models.CollectiveBooking.educationalYearId == deposit.educationalYearId,
-        sa.or_(*confirmation_date_filters),
+        models.CollectiveBooking.educationalDepositId == deposit.id,
         models.CollectiveBooking.status.not_in(
             [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
         ),
