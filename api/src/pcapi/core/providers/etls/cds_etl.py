@@ -152,7 +152,7 @@ class CDSExtractTransformLoadProcess(
     def _extract_result_to_log_dict(self, extract_result: CineDigitalServiceExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
         return {
-            "movies": [movie.dict() for movie in extract_result["movies"]],
+            "movies": [movie.model_dump_json() for movie in extract_result["movies"]],
             "media_options": extract_result["media_options"],
-            "shows": [show.dict() for show in extract_result["shows"]],
+            "shows": [show.model_dump_json() for show in extract_result["shows"]],
         }

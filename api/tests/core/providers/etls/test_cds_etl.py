@@ -170,7 +170,7 @@ class CDSExtractTransformLoadProcessTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
-                    is_empty_seatmap=True,
+                    is_empty_seatmap=False,
                     remaining_place=98,
                     internet_remaining_place=10,
                     showtime=datetime.datetime(
@@ -192,7 +192,7 @@ class CDSExtractTransformLoadProcessTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
-                    is_empty_seatmap=True,
+                    is_empty_seatmap=False,
                     remaining_place=120,
                     internet_remaining_place=30,
                     showtime=datetime.datetime(
@@ -213,7 +213,7 @@ class CDSExtractTransformLoadProcessTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
-                    is_empty_seatmap=True,
+                    is_empty_seatmap=False,
                     remaining_place=88,
                     internet_remaining_place=100,
                     showtime=datetime.datetime(
