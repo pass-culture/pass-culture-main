@@ -6,7 +6,6 @@ import hmac
 import json
 import logging
 
-import pydantic.v1 as pydantic_v1
 import sentry_sdk
 from requests.auth import HTTPBasicAuth  # noqa: TID251
 
@@ -109,7 +108,7 @@ class EMSScheduleConnector(AbstractEMSConnector):
         )
 
         self._check_response_is_ok(response)
-        return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
+        return ems_serializers.ScheduleResponse.model_validate(response.json())
 
 
 class EMSSitesConnector(AbstractEMSConnector):
@@ -135,7 +134,7 @@ class EMSSitesConnector(AbstractEMSConnector):
         )
 
         self._check_response_is_ok(response)
-        serialized_site_response = pydantic_v1.parse_obj_as(ems_serializers.SitesResponse, response.json())
+        serialized_site_response = ems_serializers.SitesResponse.model_validate(response.json())
         return serialized_site_response.sites
 
 

@@ -55,7 +55,7 @@ class EMSBookTicketTest:
             "pass_culture_price": 7.15,
             "total_price": 7.15,
             "email": beneficiary.email,
-            "num_pass_culture": beneficiary.id,
+            "num_pass_culture": str(beneficiary.id),
             "num_cmde": token,
             "billets": [
                 {
@@ -114,7 +114,7 @@ class EMSBookTicketTest:
             "pass_culture_price": 14.30,
             "total_price": 14.30,
             "email": beneficiary.email,
-            "num_pass_culture": beneficiary.id,
+            "num_pass_culture": str(beneficiary.id),
             "num_cmde": token,
             "billets": [
                 {
