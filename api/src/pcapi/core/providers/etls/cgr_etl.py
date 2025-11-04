@@ -101,4 +101,4 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRE
 
     def _extract_result_to_log_dict(self, extract_result: CGRExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
-        return {"films": [film.dict() for film in extract_result["films"]]}
+        return {"films": [film.model_dump_json() for film in extract_result["films"]]}

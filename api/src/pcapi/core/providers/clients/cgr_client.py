@@ -1,7 +1,7 @@
 import json
 import logging
 
-import pydantic.v1 as pydantic_v1
+import pydantic
 import regex
 from zeep import Client
 from zeep.cache import InMemoryCache
@@ -42,10 +42,10 @@ class CGRAPIException(ExternalBookingException):
 def _log_external_call(
     client: cinema_client.CinemaAPIClient,
     method: str,
-    response: pydantic_v1.BaseModel | dict,
+    response: pydantic.BaseModel | dict,
 ) -> None:
-    if isinstance(response, pydantic_v1.BaseModel):
-        response = response.dict(exclude_unset=True)
+    if isinstance(response, pydantic.BaseModel):
+        response = response.model_dump(exclude_unset=True)
 
     logger.debug(
         "[CINEMA] Call to external API",
@@ -109,7 +109,7 @@ class CGRAPIClient(cinema_client.CinemaAPIClient):
         data = json.loads(response)
         _check_response_is_ok(data, "GetSeancesPassCulture")
         _log_external_call(self, "GetSeancesPassCulture", data)
-        data = pydantic_v1.parse_obj_as(cgr_serializers.GetSancesPassCultureResponse, data)
+        data = cgr_serializers.GetSancesPassCultureResponse.model_validate(data)
         return data
 
     def get_num_cine(self) -> int:
@@ -162,7 +162,7 @@ class CGRAPIClient(cinema_client.CinemaAPIClient):
         )
         response = json.loads(response)
         _check_response_is_ok(response, "ReservationPassCulture")
-        response = pydantic_v1.parse_obj_as(cgr_serializers.ReservationPassCultureResponse, response)
+        response = cgr_serializers.ReservationPassCultureResponse.model_validate(response)
 
         logger.info(
             "Booked CGR Ticket",

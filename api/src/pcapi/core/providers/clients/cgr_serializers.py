@@ -2,16 +2,16 @@ import datetime
 import logging
 from decimal import Decimal
 
-from pydantic.v1 import validator
+from pydantic import field_validator
 
 from pcapi.core.offers import models as offers_models
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import BaseModelV2
 
 
 logger = logging.getLogger(__name__)
 
 
-class Seance(BaseModel):
+class Seance(BaseModelV2):
     IDSeance: int
     Date: datetime.date
     Heure: datetime.time
@@ -26,7 +26,7 @@ class Seance(BaseModel):
     libTarif: str
 
 
-class Film(BaseModel):
+class Film(BaseModelV2):
     IDFilm: int
     IDFilmAlloCine: int
     Titre: str
@@ -37,7 +37,7 @@ class Film(BaseModel):
     TypeFilm: str
     Seances: list[Seance]
 
-    @validator("Seances")
+    @field_validator("Seances")
     def skip_showtimes_with_negative_remaining_quantity(cls, seances: list[Seance]) -> list[Seance]:
         sanitized_showtimes = []
         for seance in seances:
@@ -62,18 +62,18 @@ class Film(BaseModel):
         )
 
 
-class GetSancesPassCultureResponseBody(BaseModel):
+class GetSancesPassCultureResponseBody(BaseModelV2):
     NumCine: int
     Films: list[Film]
 
 
-class GetSancesPassCultureResponse(BaseModel):
+class GetSancesPassCultureResponse(BaseModelV2):
     CodeErreur: int
     IntituleErreur: str
     ObjetRetour: GetSancesPassCultureResponseBody
 
 
-class ReservationPassCultureResponse(BaseModel):
+class ReservationPassCultureResponse(BaseModelV2):
     CodeErreur: int
     IntituleErreur: str
     QrCode: str
