@@ -20,7 +20,6 @@ def upgrade() -> None:
         existing_type=sa.INTEGER(),
         type_=sa.BigInteger(),
         existing_nullable=False,
-        autoincrement=True,
         existing_server_default=sa.text("nextval('venue_label_id_seq'::regclass)"),
     )
 
@@ -33,6 +32,5 @@ def downgrade() -> None:
         existing_type=sa.BigInteger(),
         type_=sa.INTEGER(),
         existing_nullable=False,
-        autoincrement=True,
         existing_server_default=sa.text("nextval('venue_label_id_seq'::regclass)"),
     )
