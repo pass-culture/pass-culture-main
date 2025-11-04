@@ -119,7 +119,10 @@ class EMSExtractTransformLoadProcess(CinemaETLProcessTemplate[EMSScheduleConnect
 
     def _extract_result_to_log_dict(self, extract_result: EMSExtractResult) -> dict:
         """Helper method to easily log result from extract step"""
-        return {"site_with_events": extract_result["site_with_events"].dict(), "version": extract_result["version"]}
+        return {
+            "site_with_events": extract_result["site_with_events"].model_dump_json(),
+            "version": extract_result["version"],
+        }
 
     def _post_load_provider_specific_hook(self, extract_result: EMSExtractResult) -> None:
         """EMS custom post load logic to update cinema_details version"""
