@@ -1,3 +1,5 @@
+import { Unstyled } from '@storybook/addon-docs/blocks'
+
 import { Meta, StoryObj } from '@storybook/react'
 import { Banner, BannerProps, BannerVariants } from './Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -7,7 +9,14 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 const meta: Meta<BannerProps> = {
   title: '@/design-system/Banner',
   component: Banner,
-  decorators: [withRouter],
+  decorators: [
+    withRouter,
+    (Story) => (
+      <Unstyled>
+        <Story />
+      </Unstyled>
+    ),
+  ],
 }
 export default meta
 type Story = StoryObj<typeof Banner>
@@ -15,7 +24,8 @@ type Story = StoryObj<typeof Banner>
 export const Default: Story = {
   args: {
     title: 'Titre important très long très long très long très long très',
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mattis libero ultrices sem scelerisque gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mattis libero ultrices sem scelerisque gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ',
     links: [
       { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
       { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
