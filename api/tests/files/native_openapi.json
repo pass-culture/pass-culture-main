@@ -5056,7 +5056,6 @@
             "TicketDisplayEnum": {
                 "description": "An enumeration.",
                 "enum": [
-                    "no_ticket",
                     "email_sent",
                     "email_will_be_sent",
                     "online_code",

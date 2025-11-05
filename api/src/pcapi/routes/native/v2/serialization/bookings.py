@@ -24,7 +24,6 @@ from pcapi.routes.shared.price import convert_to_cent
 
 
 class TicketDisplayEnum(enum.Enum):
-    NO_TICKET = "no_ticket"
     EMAIL_SENT = "email_sent"
     EMAIL_WILL_BE_SENT = "email_will_be_sent"
     ONLINE_CODE = "online_code"
@@ -200,16 +199,6 @@ class BookingResponseGetterDict(GetterDict):
             type=offer.withdrawalType,
             delay=offer.withdrawalDelay,
         )
-
-        if offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET and offer.isEvent:
-            return TicketResponse(
-                activation_code=None,
-                external_booking=None,
-                display=TicketDisplayEnum.NO_TICKET,
-                token=None,
-                voucher=None,
-                withdrawal=withdrawal,
-            )
 
         if offer.withdrawalType == WithdrawalTypeEnum.BY_EMAIL:
             return TicketResponse(
