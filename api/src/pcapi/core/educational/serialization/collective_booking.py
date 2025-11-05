@@ -14,7 +14,7 @@ def get_collective_bookings_per_year_response(
         educational_schemas.EducationalBookingPerYearResponse(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(booking),  # type: ignore[arg-type]
+            status=get_collective_booking_status(booking),
             cancellationReason=booking.cancellationReason,
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
@@ -52,6 +52,7 @@ def serialize_collective_booking(
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
+    redactor = collective_booking.educationalRedactor
 
     return educational_schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
@@ -76,15 +77,15 @@ def serialize_collective_booking(
         priceDetail=stock.priceDetail,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore[arg-type]
-            "email": collective_booking.educationalRedactor.email,
-            "redactorFirstName": collective_booking.educationalRedactor.firstName,
-            "redactorLastName": collective_booking.educationalRedactor.lastName,
-            "redactorCivility": collective_booking.educationalRedactor.civility,
-        },
+        redactor=educational_schemas.Redactor(
+            email=redactor.email,
+            redactorFirstName=redactor.firstName,
+            redactorLastName=redactor.lastName,
+            redactorCivility=redactor.civility,
+        ),
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
+        yearId=int(collective_booking.educationalYearId),
+        status=get_collective_booking_status(collective_booking),
         cancellationReason=collective_booking.cancellationReason,
         venueTimezone=venue.offererAddress.address.timezone,
         totalAmount=stock.price,
@@ -103,12 +104,12 @@ def serialize_collective_booking(
 
 def get_collective_booking_status(
     collective_booking: educational_models.CollectiveBooking,
-) -> str:
+) -> educational_models.CollectiveBookingStatus | educational_schemas.CollectiveBookingRefused:
     if collective_booking.status in (
         educational_models.CollectiveBookingStatus.USED,
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return educational_models.CollectiveBookingStatus.USED.value
+        return educational_models.CollectiveBookingStatus.USED
 
     if collective_booking.cancellationReason in [
         educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
@@ -116,7 +117,7 @@ def get_collective_booking_status(
     ]:
         return "REFUSED"
 
-    return collective_booking.status.value
+    return collective_booking.status
 
 
 def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> educational_schemas.Contact:
@@ -147,6 +148,7 @@ def serialize_reimbursement_notification(
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
+    redactor = collective_booking.educationalRedactor
 
     return educational_schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
@@ -172,15 +174,15 @@ def serialize_reimbursement_notification(
         priceDetail=stock.priceDetail,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore[arg-type]
-            "email": collective_booking.educationalRedactor.email,
-            "redactorFirstName": collective_booking.educationalRedactor.firstName,
-            "redactorLastName": collective_booking.educationalRedactor.lastName,
-            "redactorCivility": collective_booking.educationalRedactor.civility,
-        },
+        redactor=educational_schemas.Redactor(
+            email=redactor.email,
+            redactorFirstName=redactor.firstName,
+            redactorLastName=redactor.lastName,
+            redactorCivility=redactor.civility,
+        ),
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
+        yearId=int(collective_booking.educationalYearId),
+        status=get_collective_booking_status(collective_booking),
         venueTimezone=venue.offererAddress.address.timezone,
         totalAmount=stock.price,
         url=offer_app_link(offer),

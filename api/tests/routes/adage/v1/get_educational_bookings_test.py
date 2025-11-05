@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.educational import models
+from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
@@ -38,6 +39,21 @@ class Returns200Test:
         assert len(response.json["prebookings"]) == 2
         assert expected_serialized_prebooking(booking1) in response.json["prebookings"]
         assert expected_serialized_prebooking(booking2) in response.json["prebookings"]
+
+    def test_get_collective_bookings_refused(self, client):
+        booking = CancelledCollectiveBookingFactory(
+            cancellationReason=models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
+        )
+        year_adage_id = booking.educationalYear.adageId
+        institution_id = booking.educationalInstitution.institutionId
+
+        with assert_no_duplicated_queries():
+            response = client.with_eac_token().get(
+                f"/adage/v1/years/{year_adage_id}/educational_institution/{institution_id}/prebookings"
+            )
+
+        assert response.status_code == 200
+        assert response.json == {"prebookings": [{**expected_serialized_prebooking(booking), "status": "REFUSED"}]}
 
     def test_get_collective_bookings_with_address(self, client):
         educational_year = EducationalYearFactory()
