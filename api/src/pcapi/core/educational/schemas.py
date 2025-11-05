@@ -63,8 +63,8 @@ class Redactor(AdageBaseResponseModel):
     redactorLastName: str | None
     redactorCivility: str | None
 
-    class Config:
-        alias_generator = to_camel
+
+CollectiveBookingRefused = typing.Literal["REFUSED"]
 
 
 class EducationalBookingResponse(AdageBaseResponseModel):
@@ -91,7 +91,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
-    status: models.EducationalBookingStatus | models.CollectiveBookingStatus
+    status: models.CollectiveBookingStatus | CollectiveBookingRefused
     cancellationReason: models.CollectiveBookingCancellationReasons | None = Field(
         description="Reason when a prebooking order is cancelled"
     )
@@ -157,7 +157,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: models.EducationalBookingStatus | models.CollectiveBookingStatus
+    status: models.CollectiveBookingStatus | CollectiveBookingRefused
     cancellationReason: models.CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime.datetime
     totalAmount: decimal.Decimal

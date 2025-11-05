@@ -77,12 +77,6 @@ class AdageFrontRoles(enum.Enum):
     READONLY = "readonly"
 
 
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
-
-
 class CollectiveOfferExportType(enum.Enum):
     CSV = "csv"
     EXCEL = "excel"
@@ -252,10 +246,6 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
     ),
 }
-
-
-class EducationalBookingStatus(enum.Enum):
-    REFUSED = "REFUSED"
 
 
 class InstitutionRuralLevel(enum.Enum):
