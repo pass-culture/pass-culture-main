@@ -1,6 +1,6 @@
 import type { StockStatsResponseModel } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 
@@ -24,7 +24,7 @@ export const RecurrenceSection = ({
     stocksStats.remainingQuantity || stocksStats.remainingQuantity === 0
       ? new Intl.NumberFormat('fr-FR').format(stocksStats.remainingQuantity) +
         ' ' +
-        pluralizeString('place', stocksStats.remainingQuantity)
+        pluralizeFr(stocksStats.remainingQuantity, 'place', 'places')
       : 'Illimitée'
 
   let periodText = ''

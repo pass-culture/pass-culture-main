@@ -13,7 +13,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
 import { downloadFile } from '@/commons/utils/downloadFile'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from '@/icons/stroke-desk.svg'
@@ -110,10 +110,11 @@ export const DownloadBookingsModal = ({
           />
         </td>
         <td className={style['table-column']}>
-          {pluralize(schedulesCount, 'horaire')}
+          {schedulesCount} {pluralizeFr(schedulesCount, 'horaire', 'horaires')}
         </td>
         <td className={style['table-column']}>
-          {pluralize(priceCategoriesCount, 'tarif')}
+          {priceCategoriesCount}{' '}
+          {pluralizeFr(priceCategoriesCount, 'tarif', 'tarifs')}
         </td>
       </tr>
     )
@@ -138,7 +139,12 @@ export const DownloadBookingsModal = ({
               <div>Sélectionnez la date :</div>
             </legend>
             <div className={style['bookings-date-count']}>
-              {pluralize(priceCategoryAndScheduleCountByDate.length, 'date')}
+              {priceCategoryAndScheduleCountByDate.length}
+              {pluralizeFr(
+                priceCategoryAndScheduleCountByDate.length,
+                'date',
+                'dates'
+              )}
             </div>
             <hr className={style['horizontal-line']} />
             <table className={style['date-select-table']}>

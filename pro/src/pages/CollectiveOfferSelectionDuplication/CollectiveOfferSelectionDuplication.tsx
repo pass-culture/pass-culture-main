@@ -16,7 +16,7 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
@@ -155,14 +155,31 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <>
                 {/** biome-ignore lint/a11y/useSemanticElements: We want a role status */}
                 <p className={styles['visually-hidden']} role="status">
-                  {offers && pluralize(offers.length, 'offre vitrine trouvée')}
+                  {offers && (
+                    <>
+                      {offers.length}{' '}
+                      {pluralizeFr(
+                        offers.length,
+                        'offre vitrine trouvée',
+                        'offres vitrine trouvées'
+                      )}
+                    </>
+                  )}
                 </p>
 
                 <p className={styles['legend']}>
                   {searchedOfferName.length === 0
                     ? 'Les dernières offres vitrines créées'
-                    : `${offers && pluralize(offers.length, 'offre')}` +
-                      ' vitrine'}
+                    : offers && (
+                        <>
+                          {offers.length}{' '}
+                          {pluralizeFr(
+                            offers.length,
+                            'offre vitrine',
+                            'offres vitrine'
+                          )}
+                        </>
+                      )}
                 </p>
                 <ul className={styles['list']}>
                   {(offers || []).slice(0, 5).map((offer) => (

@@ -4,7 +4,7 @@ import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { OFFER_STATUS_SOLD_OUT } from '@/commons/core/Offers/constants'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullErrorIcon from '@/icons/full-error.svg'
@@ -39,14 +39,15 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
           departmentCode,
           FORMAT_DD_MM_YYYY_HH_mm
         )
-      : pluralize(stockSize, 'date')
+      : `${stockSize} ${pluralizeFr(stockSize, 'date', 'dates')}`
   }
 
-  const computeNumberOfSoldOutStocks = () =>
-    offer.stocks.filter((stock) => stock.remainingQuantity === 0).length
+  const numberOfSoldOutStocks = offer.stocks.filter(
+    (stock) => stock.remainingQuantity === 0
+  ).length
 
   const shouldShowIndividualWarning =
-    computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
+    numberOfSoldOutStocks > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
     <div className={styles['title-column']}>
@@ -62,10 +63,7 @@ export const OfferNameCell = ({ offer, offerLink }: OfferNameCellProps) => {
               {getDateInformations()}
               {shouldShowIndividualWarning && (
                 <Tooltip
-                  content={pluralize(
-                    computeNumberOfSoldOutStocks(),
-                    'date épuisée'
-                  )}
+                  content={`${numberOfSoldOutStocks} ${pluralizeFr(numberOfSoldOutStocks, 'date épuisée', 'dates épuisées')}`}
                 >
                   <button type="button" className={styles['sold-out-button']}>
                     <SvgIcon

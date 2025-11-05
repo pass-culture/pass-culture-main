@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import type { TopOffersResponseData } from '@/apiClient/v1'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
@@ -50,7 +50,7 @@ export const MostViewedOffers = ({
                 {topOffer.offerName}
               </span>
               <br /> {topOffer.numberOfViews.toLocaleString('fr-FR')}{' '}
-              {pluralizeString('vue', topOffer.numberOfViews)}
+              {pluralizeFr(topOffer.numberOfViews, 'vue', 'vues')}
             </div>
           </li>
         ))}

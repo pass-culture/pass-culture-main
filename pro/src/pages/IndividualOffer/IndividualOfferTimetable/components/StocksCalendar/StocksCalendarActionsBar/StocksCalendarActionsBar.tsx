@@ -9,7 +9,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Button } from '@/ui-kit/Button/Button'
@@ -106,7 +106,14 @@ export function StocksCalendarActionsBar({
       {checkedStocks.size > 0 ? (
         <ActionsBarSticky className={styles['sticky']}>
           <div className={styles['sticky-content']}>
-            <div>{pluralize(checkedStocks.size, 'date sélectionnée')}</div>
+            <div>
+              {checkedStocks.size}{' '}
+              {pluralizeFr(
+                checkedStocks.size,
+                'date sélectionnée',
+                'dates sélectionnées'
+              )}
+            </div>
             <div className={styles['sticky-content-buttons']}>
               <Button
                 variant={ButtonVariant.SECONDARY}

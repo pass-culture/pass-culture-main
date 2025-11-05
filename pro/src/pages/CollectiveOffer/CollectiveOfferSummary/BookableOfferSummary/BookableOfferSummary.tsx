@@ -30,7 +30,7 @@ import {
   isActionAllowedOnCollectiveOffer,
   isCollectiveOfferEditable,
 } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
@@ -239,13 +239,13 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
             </DetailItem>
             <DetailItem alt="Nombre de participants" src={strokeUserIcon}>
               {offer.collectiveStock?.numberOfTickets
-                ? `${offer.collectiveStock.numberOfTickets} ${pluralizeString('participant', offer.collectiveStock.numberOfTickets)}`
+                ? `${offer.collectiveStock.numberOfTickets} ${pluralizeFr(offer.collectiveStock.numberOfTickets, 'participant', 'participants')}`
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Prix de l’offre" src={strokeEuroIcon}>
               {offer.collectiveStock?.price ||
               offer.collectiveStock?.price === 0
-                ? `${offer.collectiveStock.price} ${pluralizeString('euro', offer.collectiveStock.price)}`
+                ? `${offer.collectiveStock.price} ${pluralizeFr(offer.collectiveStock.price, 'euro', 'euros')}`
                 : DEFAULT_RECAP_VALUE}
             </DetailItem>
             <DetailItem alt="Adresse de l’offre" src={strokeLocationIcon}>

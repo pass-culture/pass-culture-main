@@ -1,55 +1,13 @@
-import { pluralize } from '../pluralize'
+import { pluralizeFr } from '../pluralize'
 
-describe('pluralize', () => {
-  describe('standard words', () => {
-    it('should pluralize word if many offers', () => {
-      const wordToPluralize = 'offre'
-
-      const pluralizedWord = pluralize(5, wordToPluralize)
-
-      expect(pluralizedWord).toBe('5 offres')
-    })
-
-    it('should singularize word if 0 offer', () => {
-      const wordToSingularize = 'offres'
-
-      const singularizedWord = pluralize(0, wordToSingularize)
-
-      expect(singularizedWord).toBe('0 offre')
-    })
-
-    it('should singularize word if 1 offer', () => {
-      const wordToSingularize = 'offres'
-
-      const singularizedWord = pluralize(1, wordToSingularize)
-
-      expect(singularizedWord).toBe('1 offre')
-    })
-  })
-
-  describe('words with "x" plural', () => {
-    it('should pluralize word if many bijoux with required ending', () => {
-      const wordToPluralize = 'bijou'
-
-      const pluralizedWord = pluralize(5, wordToPluralize, 'x')
-
-      expect(pluralizedWord).toBe('5 bijoux')
-    })
-
-    it('should singularize word if 0 offer', () => {
-      const wordToSingularize = 'bijoux'
-
-      const singularizedWord = pluralize(0, wordToSingularize)
-
-      expect(singularizedWord).toBe('0 bijou')
-    })
-
-    it('should singularize word if 1 offer', () => {
-      const wordToSingularize = 'bijoux'
-
-      const singularizedWord = pluralize(1, wordToSingularize)
-
-      expect(singularizedWord).toBe('1 bijou')
-    })
+describe('pluralize french', () => {
+  it.each([
+    { count: 0, expected: 'offre' },
+    { count: 1, expected: 'offre' },
+    { count: 2, expected: 'offres' },
+    { count: 50, expected: 'offres' },
+  ])('should pluralize correctly for $count item(s)', ({ count, expected }) => {
+    const pluralizedWord = pluralizeFr(count, 'offre', 'offres')
+    expect(pluralizedWord).toBe(expected)
   })
 })

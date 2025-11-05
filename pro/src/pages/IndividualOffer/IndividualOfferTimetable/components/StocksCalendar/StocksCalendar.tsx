@@ -19,7 +19,7 @@ import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -257,7 +257,8 @@ export function StocksCalendar({
             </div>
             {data.stockCount > 0 && (
               <div className={styles['count']}>
-                {pluralize(data.stockCount, 'date')}
+                {data.stockCount}{' '}
+                {pluralizeFr(data.stockCount, 'date', 'dates')}
               </div>
             )}
             <StocksCalendarTable
