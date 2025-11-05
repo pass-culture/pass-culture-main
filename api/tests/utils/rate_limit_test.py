@@ -1,26 +1,21 @@
 import pytest
 from flask import current_app as app
 
-from pcapi.celery_tasks.tasks import RateLimitedError
-from pcapi.celery_tasks.tasks import get_key
-from pcapi.celery_tasks.tasks import rate_limit
 from pcapi.utils import date as date_utils
+from pcapi.utils.rate_limit import RateLimitedError
+from pcapi.utils.rate_limit import rate_limit
 
 
-class GetKeyTest:
-    @pytest.mark.parametrize("time_window_size", [60, 30])
-    def test_generated_key(self, time_window_size):
-        result = get_key("my_awesome_task", time_window_size)
-        time_window_size_id = int(date_utils.get_naive_utc_now().timestamp()) // time_window_size
-
-        assert result == f"pcapi:celery:bucket:my_awesome_task:{time_window_size}:{time_window_size_id}"
+def _get_redis_rate_limit_key(name: str, time_window_size: int) -> str:
+    time_window_size_id = int(date_utils.get_naive_utc_now().timestamp()) // time_window_size
+    return f"pcapi:rate_limit:{name}:{time_window_size}:{time_window_size_id}"
 
 
 class RateLimitTest:
     @pytest.mark.parametrize("time_window_size,max_per_time_window", [(60, 5), (30, 12)])
     def test_rate_limit_no_key(self, time_window_size, max_per_time_window):
         name = "my_awesome_task"
-        key = get_key(name, time_window_size)
+        key = _get_redis_rate_limit_key(name, time_window_size)
         executed = False
 
         with rate_limit(name, time_window_size, max_per_time_window):
@@ -34,7 +29,7 @@ class RateLimitTest:
         name = "my_awesome_task"
         time_window_size = 60
         max_per_time_window = 1000
-        key = get_key(name, time_window_size)
+        key = _get_redis_rate_limit_key(name, time_window_size)
         app.redis_client.set(key, 42)
         app.redis_client.expire(key, 80)
 
@@ -51,7 +46,7 @@ class RateLimitTest:
         name = "my_awesome_task"
         time_window_size = 60
         max_per_time_window = 10
-        key = get_key(name, time_window_size)
+        key = _get_redis_rate_limit_key(name, time_window_size)
         app.redis_client.set(key, 42)
         app.redis_client.expire(key, 80)
 
