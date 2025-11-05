@@ -2,15 +2,15 @@ import json
 import logging
 import time
 import typing
-from contextlib import contextmanager
 from functools import wraps
 
 import pydantic.v1 as pydantic_v1
 from celery import Task
 from celery import shared_task
-from flask import current_app as app
 
 import pcapi.celery_tasks.metrics as metrics
+from pcapi.utils.rate_limit import RateLimitedError
+from pcapi.utils.rate_limit import rate_limit
 
 
 # These values will prevent retrying tasks too far in the future as this can have negative effects
@@ -20,35 +20,6 @@ MAX_TIME_WINDOW_SIZE = 600
 MAX_RETRY_DURATION = 1200
 
 logger = logging.getLogger(__name__)
-
-
-class RateLimitedError(Exception):
-    def __init__(self, time_window_size: int, max_per_time_window: int, current: int):
-        self.time_window_size = time_window_size
-        self.max_per_time_window = max_per_time_window
-        self.current = current
-
-
-def get_key(name: str, time_window_size: int) -> str:
-    # The rate limiting works by using time window of size "time_window_size".
-    # If time_window_size is 60 (a minute) this means we will count every task call for a given minute
-    # To identify a given time_window we divide the current timestamp by "time_window_size".
-    time_window_id = int(time.time()) // time_window_size
-    return f"pcapi:celery:bucket:{name}:{time_window_size}:{time_window_id}"
-
-
-@contextmanager
-def rate_limit(name: str, time_window_size: int, max_per_time_window: int) -> typing.Iterator:
-    if max_per_time_window <= 0:
-        raise ValueError("max_per_time_window parameter must be above 0")
-    if time_window_size <= 0 or time_window_size >= MAX_TIME_WINDOW_SIZE:
-        raise ValueError(f"time_window_size parameter must be between {MAX_TIME_WINDOW_SIZE}")
-    key = get_key(name, time_window_size)
-    current_value = app.redis_client.incr(key)
-    app.redis_client.expire(key, 2 * time_window_size, nx=True)
-    if current_value > max_per_time_window:
-        raise RateLimitedError(time_window_size, max_per_time_window, current_value)
-    yield
 
 
 def celery_async_task(
@@ -74,7 +45,7 @@ def celery_async_task(
 
     # Since tasks above "max_per_time_window" will be retried in "time_window_size" time, time_window_size cannot be above the visibility_timeout setting of redis
     # See https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/redis.html#id3 for more details
-    if time_window_size > 600:
+    if time_window_size > MAX_TIME_WINDOW_SIZE:
         raise ValueError("task rate limit time_window_size above maximum")
 
     def decorator(f: typing.Callable) -> typing.Callable:
@@ -95,7 +66,7 @@ def celery_async_task(
                     parsed_payload = json.loads(parsed_payload.json())
                     parsed_payload = model.parse_obj(parsed_payload)
                 if max_per_time_window:
-                    with rate_limit(name, time_window_size, max_per_time_window):
+                    with rate_limit(f"celery:bucket:{name}", time_window_size, max_per_time_window):
                         f(parsed_payload)
                 else:
                     f(parsed_payload)
