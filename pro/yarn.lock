@@ -2297,13 +2297,6 @@ algoliasearch@>=4:
     "@algolia/requester-fetch" "5.24.0"
     "@algolia/requester-node-http" "5.24.0"
 
-allure-js-commons@3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.4.1.tgz#2aaed0424c5385154a1aad1fefe779307856138f"
-  integrity sha512-Lzs91+8fTPUucnLwQULuuLyEJWQCBCxsZl5tX6lMPFZcAVXgwu/Dti0XfzhH9R1Hw8e43k20XAlmyh/ZDqqpYA==
-  dependencies:
-    md5 "^2.3.0"
-
 allure-js-commons@3.4.2:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.4.2.tgz#91059468f1d3d0962f4484a6fa801f3262295bb6"
