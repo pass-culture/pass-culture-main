@@ -20,6 +20,7 @@ import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
 import { LOGS_DATA } from '@/commons/utils/config'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import {
   HighlightBanner,
   HighlightBannerVariant,
@@ -213,7 +214,7 @@ export const Offers = ({
         {displayStats && (
           <div className={styles['offers-stats']}>
             {new Intl.NumberFormat('fr-FR').format(nbHits)}{' '}
-            {nbHits === 1 ? 'offre' : 'offres'} au total
+            {pluralizeFr(nbHits, 'offre', 'offres')} au total
           </div>
         )}
       </div>

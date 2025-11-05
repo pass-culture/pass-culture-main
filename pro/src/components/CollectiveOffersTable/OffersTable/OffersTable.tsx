@@ -1,5 +1,6 @@
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { NoResults } from '@/components/NoResults/NoResults'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -56,9 +57,8 @@ export const OffersTable = ({
                 Liste des offres
               </h2>
               <div>
-                {`${getOffersCountToDisplay(offersCount)} ${
-                  offersCount <= 1 ? 'offre' : 'offres'
-                }`}
+                {getOffersCountToDisplay(offersCount)}{' '}
+                {pluralizeFr(offersCount, 'offre', 'offres')}
               </div>
             </div>
             {downloadButton}

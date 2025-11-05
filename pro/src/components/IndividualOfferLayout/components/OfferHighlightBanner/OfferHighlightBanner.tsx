@@ -3,6 +3,7 @@ import { type JSX, type ReactNode, useState } from 'react'
 import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -24,14 +25,18 @@ export const OfferHighlightBanner = ({
   const [isOpen, setIsOpen] = useState(false)
   const { logEvent } = useAnalytics()
 
-  const isPlural = highlightRequests.length > 1
-
   return (
     <>
       {highlightRequests.length > 0 ? (
         <div className={styles['highlight-banner']}>
           <span className={styles['highlight-banner-content']}>
-            <p>Valorisation{isPlural ? 's' : ''} à venir :</p>
+            <p>
+              {pluralizeFr(
+                highlightRequests.length,
+                'Valorisation à venir :',
+                'Valorisations à venir :'
+              )}
+            </p>
             {highlightRequests.map((request) => (
               <Tag
                 variant={TagVariant.NEW}
@@ -59,7 +64,11 @@ export const OfferHighlightBanner = ({
               }}
               icon={fullEditIcon}
             >
-              Éditer le{isPlural ? 's' : ''} temps fort{isPlural ? 's' : ''}
+              {pluralizeFr(
+                highlightRequests.length,
+                'Éditer le temps fort',
+                'Éditer les temps forts'
+              )}
             </Button>
           </OfferHighlightDialogBuilder>
         </div>

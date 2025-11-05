@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { getToday } from '@/commons/utils/date'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -101,9 +102,11 @@ export const InvoicesFilters = ({
           variant={ButtonVariant.TERNARY}
           icon={fullRefreshIcon}
         >
-          {selectableOptions.length === 1
-            ? 'Réinitialiser le filtre'
-            : 'Réinitialiser les filtres'}
+          {pluralizeFr(
+            selectableOptions.length,
+            'Réinitialiser le filtre',
+            'Réinitialiser les filtres'
+          )}
         </Button>
       </div>
 
