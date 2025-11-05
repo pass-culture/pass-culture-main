@@ -235,6 +235,7 @@ class BaseFinanceBackend:
         res = []
         data = (
             query.join(educational_models.CollectiveBooking.collectiveStock)
+            .join(educational_models.CollectiveBooking.educationalDeposit)
             .filter(
                 finance_models.Pricing.status == finance_models.PricingStatus.PROCESSED,
                 finance_models.Invoice.id == invoice_id,
@@ -242,15 +243,6 @@ class BaseFinanceBackend:
             .join(finance_models.Pricing.cashflows)
             .join(finance_models.Cashflow.invoices)
             .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sa.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
             .outerjoin(
                 educational_models.EducationalInstitutionProgramAssociation,

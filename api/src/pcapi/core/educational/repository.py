@@ -67,7 +67,7 @@ def find_bookings_in_interval(
 
 
 def get_and_lock_educational_deposit(
-    educational_institution_id: int, educational_year_id: str
+    educational_institution_id: int, educational_year_id: str, date_for_period_filter: datetime
 ) -> models.EducationalDeposit:
     """Returns educational_deposit with a FOR UPDATE lock
     Raises exceptions.EducationalDepositNotFound if no stock is found.
@@ -76,9 +76,10 @@ def get_and_lock_educational_deposit(
     """
     educational_deposit = (
         db.session.query(models.EducationalDeposit)
-        .filter_by(
-            educationalInstitutionId=educational_institution_id,
-            educationalYearId=educational_year_id,
+        .filter(
+            models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
+            models.EducationalDeposit.educationalYearId == educational_year_id,
+            models.EducationalDeposit.period.op("@>")(date_for_period_filter),
         )
         .populate_existing()
         .with_for_update()
@@ -89,12 +90,11 @@ def get_and_lock_educational_deposit(
     return educational_deposit
 
 
-def get_confirmed_collective_bookings_amount(educational_institution_id: int, educational_year_id: str) -> Decimal:
+def get_confirmed_collective_bookings_amount(deposit: models.EducationalDeposit) -> Decimal:
     query = db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
     query = query.join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
     query = query.filter(
-        models.CollectiveBooking.educationalInstitutionId == educational_institution_id,
-        models.CollectiveBooking.educationalYearId == educational_year_id,
+        models.CollectiveBooking.educationalDepositId == deposit.id,
         models.CollectiveBooking.status.not_in(
             [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
         ),
@@ -106,7 +106,9 @@ def get_confirmed_collective_bookings_amount(educational_institution_id: int, ed
 
 def find_collective_booking_by_id(booking_id: int) -> models.CollectiveBooking | None:
     query = _get_bookings_for_adage_base_query()
-    query = query.filter(models.CollectiveBooking.id == booking_id)
+    query = query.filter(models.CollectiveBooking.id == booking_id).options(
+        sa_orm.joinedload(models.CollectiveBooking.educationalYear)
+    )
     return query.one_or_none()
 
 

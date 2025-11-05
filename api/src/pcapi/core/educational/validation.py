@@ -10,15 +10,8 @@ from pcapi.models import api_errors
 from pcapi.models import db
 
 
-def check_institution_fund(
-    educational_institution_id: int,
-    educational_year_id: str,
-    booking_amount: Decimal,
-    deposit: models.EducationalDeposit,
-) -> None:
-    spent_amount = repository.get_confirmed_collective_bookings_amount(
-        educational_institution_id=educational_institution_id, educational_year_id=educational_year_id
-    )
+def check_institution_fund(booking_amount: Decimal, deposit: models.EducationalDeposit) -> None:
+    spent_amount = repository.get_confirmed_collective_bookings_amount(deposit)
     total_amount = booking_amount + spent_amount
     deposit.check_has_enough_fund(total_amount)
 

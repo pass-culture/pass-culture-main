@@ -128,7 +128,9 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     validation.check_confirmation_limit_date_has_not_passed(collective_booking)
 
     if settings.EAC_CHECK_INSTITUTION_FUND:
-        _check_institution_fund(collective_booking)
+        deposit = _get_booking_deposit_with_lock(collective_booking)
+        validation.check_institution_fund(booking_amount=collective_booking.collectiveStock.price, deposit=deposit)
+        collective_booking.educationalDeposit = deposit
 
     collective_booking.mark_as_confirmed()
 
@@ -145,17 +147,33 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     return collective_booking
 
 
-def _check_institution_fund(collective_booking: educational_models.CollectiveBooking) -> None:
-    educational_institution_id = collective_booking.educationalInstitutionId
-    educational_year_id = collective_booking.educationalYearId
-    deposit = educational_repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
+def _get_booking_deposit_with_lock(
+    collective_booking: educational_models.CollectiveBooking,
+) -> educational_models.EducationalDeposit:
+    educational_year = collective_booking.educationalYear
 
-    validation.check_institution_fund(
-        educational_institution_id=educational_institution_id,
-        educational_year_id=educational_year_id,
-        booking_amount=collective_booking.collectiveStock.price,
-        deposit=deposit,
+    confirmation_date = date_utils.get_naive_utc_now()
+    is_confirmation_date_in_same_year = (
+        educational_year.beginningDate <= confirmation_date <= educational_year.expirationDate
     )
+
+    date_for_period_filter: datetime.datetime
+    if is_confirmation_date_in_same_year:
+        # confirmation and event are in the same educational year
+        # -> the period depends on the confirmation date
+        date_for_period_filter = confirmation_date
+    else:
+        # confirmation and event are NOT in the same educational year
+        # -> the period is the first period of the event educational year
+        date_for_period_filter = educational_year.beginningDate
+
+    deposit = educational_repository.get_and_lock_educational_deposit(
+        educational_institution_id=collective_booking.educationalInstitutionId,
+        educational_year_id=collective_booking.educationalYearId,
+        date_for_period_filter=date_for_period_filter,
+    )
+
+    return deposit
 
 
 def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:

@@ -1460,6 +1460,8 @@ class EducationalDeposit(PcObject, models.Model):
         nullable=True,
     )
 
+    period: sa_orm.Mapped[DateTimeRange] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=False)
+
     def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
         """Check that the total amount of bookings won't exceed the
         deposit's amount.
@@ -1589,6 +1591,13 @@ class CollectiveBooking(PcObject, models.Model):
     )
 
     sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
+
+    educationalDepositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True
+    )
+    educationalDeposit: sa_orm.Mapped["EducationalDeposit" | None] = sa_orm.relationship(
+        EducationalDeposit, foreign_keys=[educationalDepositId]
+    )
 
     confirmationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     confirmationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
