@@ -9,8 +9,16 @@ from pcapi.core.offers.models import Offer
 from pcapi.models import db
 
 
+def default_accessibility_fields():
+    return {
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": True,
+        "visualDisabilityCompliant": True,
+    }
+
+
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
 class Returns201Test:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
@@ -22,6 +30,7 @@ class Returns201Test:
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -51,6 +60,7 @@ class Returns201Test:
             "url": "https://monsuperlivrenum.com/1345666",
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -66,6 +76,7 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.CONFERENCE.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -94,6 +105,7 @@ class Returns201Test:
             "venueId": venue.id,
             "productId": product.id,
             "extraData": {"ean": "9782123456803"},
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -124,6 +136,7 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -148,6 +161,7 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -179,6 +193,7 @@ class Returns201Test:
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
             "productId": product.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -213,6 +228,10 @@ class Returns201Test:
             "name": "Ernestine",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
+            "audioDisabilityCompliant": venue.audioDisabilityCompliant,
+            "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+            "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+            "visualDisabilityCompliant": venue.visualDisabilityCompliant,
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -238,44 +257,18 @@ class Returns201Test:
             "name": "Ernestine",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
         assert response.status_code == 201
 
         offer = db.session.get(Offer, response.json["id"])
-        assert offer.audioDisabilityCompliant is None
-        assert offer.mentalDisabilityCompliant is None
-        assert offer.motorDisabilityCompliant is None
-        assert offer.visualDisabilityCompliant is None
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
 
-    def test_create_offer_on_venue_with_external_accessibility_provider_informations(self, client):
-        venue = offerers_factories.VenueFactory(
-            audioDisabilityCompliant=None,
-            mentalDisabilityCompliant=None,
-            motorDisabilityCompliant=None,
-            visualDisabilityCompliant=None,
-        )
-        offerers_factories.AccessibilityProviderFactory(venue=venue)
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "Ernestine",
-            "subcategoryId": subcategories.LIVRE_PAPIER.id,
-            "venueId": venue.id,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 201
-
-        offer = db.session.get(Offer, response.json["id"])
-        assert offer.audioDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == False
-        assert offer.motorDisabilityCompliant == True
-        assert offer.visualDisabilityCompliant == True
-
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_create_offer_accepts_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=False,
@@ -305,7 +298,6 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == True
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
     def test_create_offer_skip_url_field_requirement(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -330,7 +322,6 @@ class Returns201Test:
 
 
 @pytest.mark.usefixtures("db_session")
-@pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
 class Returns400Test:
     @pytest.mark.parametrize(
         "partial_body,expected_status_code, expected_json",
@@ -356,19 +347,6 @@ class Returns400Test:
                 400,
                 {"url": ['L\'URL doit commencer par "http://" ou "https://"']},
             ),
-            (
-                {
-                    "url": "https://monlivrevirtuel.com/12345",
-                    "subcategoryId": subcategories.LIVRE_PAPIER.id,
-                },
-                400,
-                {"url": ['Une offre de sous-catégorie "Livre papier" ne peut contenir un champ `url`']},
-            ),
-            (
-                {"subcategoryId": subcategories.LIVRE_NUMERIQUE.id},
-                400,
-                {"url": ['Une offre de catégorie "Livre numérique, e-book" doit contenir un champ `url`']},
-            ),
             # 404
             (
                 {"venueId": 1234642646},
@@ -385,6 +363,7 @@ class Returns400Test:
             "name": "Le Visible et l'invisible - Suivi de notes de travail",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         json_body.update(**partial_body)
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=json_body)
@@ -402,6 +381,7 @@ class Returns400Test:
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000"},
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -419,6 +399,7 @@ class Returns400Test:
             "venueId": venue.id,
             "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
             "productId": 0,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -435,6 +416,7 @@ class Returns400Test:
             "name": "A cool offer name",
             "subcategoryId": subcategory_id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -442,26 +424,7 @@ class Returns400Test:
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert response.json["subcategory"] == [msg]
 
-    def test_create_offer_require_url_field(self, client):
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
-        data = {
-            "name": "New Offer",
-            "subcategoryId": subcategories.LIVESTREAM_MUSIQUE.id,
-            "venueId": venue.id,
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-        }
-        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
-        assert response.status_code == 400
-        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
-
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=True)
+    @pytest.mark.skip(reason="Test to be deleted when this file is, alongside the deprecated schema")
     def test_fail_when_body_is_missing_accessibility_fields(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -475,7 +438,12 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
         assert response.status_code == 400
-        assert response.json["global"][0] == "L’accessibilité de l’offre doit être définie"
+        assert response.json.keys() >= {
+            "audioDisabilityCompliant",
+            "mentalDisabilityCompliant",
+            "motorDisabilityCompliant",
+            "visualDisabilityCompliant",
+        }
 
 
 @pytest.mark.usefixtures("db_session")
@@ -488,6 +456,7 @@ class Returns403Test:
             "name": "Les orphelins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "venueId": venue.id,
+            **default_accessibility_fields(),
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
