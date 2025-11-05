@@ -1362,13 +1362,16 @@ class CreateMediationV2Test:
 
 @pytest.mark.usefixtures("db_session")
 class CreateDraftOfferTest:
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         offer = api.create_draft_offer(body, venue=venue)
 
@@ -1382,18 +1385,20 @@ class CreateDraftOfferTest:
         assert db.session.query(models.Offer).count() == 1
         assert offer.metaData is None
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_draft_offer_with_ean_in_name(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="A pretty good offer 4759217254634",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(exceptions.OfferException):
             api.create_draft_offer(body, venue=venue)
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
         # have acceslibre accessibility informations
@@ -1422,14 +1427,17 @@ class CreateDraftOfferTest:
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
+            audioDisabilityCompliant=venue.audioDisabilityCompliant,
+            mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+            motorDisabilityCompliant=venue.motorDisabilityCompliant,
+            visualDisabilityCompliant=venue.visualDisabilityCompliant,
         )
         offer = api.create_draft_offer(body, venue=venue)
-        assert offer.audioDisabilityCompliant == True
-        assert offer.mentalDisabilityCompliant == False
-        assert offer.motorDisabilityCompliant == True
-        assert offer.visualDisabilityCompliant == False
+        assert offer.audioDisabilityCompliant == venue.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_create_draft_offer_with_withrawal_details_from_venue(self):
         venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
 
@@ -1437,18 +1445,25 @@ class CreateDraftOfferTest:
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         offer = api.create_draft_offer(body, venue=venue)
 
         assert offer.withdrawalDetails == venue.withdrawalDetails
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(exceptions.OfferException) as error:
             api.create_draft_offer(body, venue=venue)
@@ -1456,13 +1471,16 @@ class CreateDraftOfferTest:
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert error.value.errors["subcategory"] == [msg]
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.deprecated.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(exceptions.OfferException) as error:
             api.create_draft_offer(body, venue=venue)
@@ -1563,23 +1581,6 @@ class UpdateDraftOfferTest:
 
         assert offer.name == "Name"
         assert offer.description == "description"
-
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
-    def test_cannot_update_digital_offer_without_setting_url_when_not_yet_set(self):
-        """When the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should raise an error."""
-        offer = factories.OfferFactory(
-            subcategoryId=subcategories.ABO_LIVRE_NUMERIQUE.id,
-        )
-
-        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(url=None)
-
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_draft_offer(offer, body)
-
-        assert offer.url == None
-        assert error.value.errors["url"] == [
-            'Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`'
-        ]
 
     def test_can_update_digital_offer_without_setting_url_if_not_yet_set_under_ff(self):
         """Under FF, when the URL is not yet set for an online-only subcategory, updating the offer without providing a URL should pass."""

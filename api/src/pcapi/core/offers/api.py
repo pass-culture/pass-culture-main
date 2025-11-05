@@ -42,7 +42,6 @@ import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
-from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.serialization.titelive_serializers import TiteliveImage
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
@@ -178,34 +177,6 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
     return formatted_extra_data
 
 
-def _get_accessibility_compliance_fields(venue: offerers_models.Venue) -> dict:
-    if venue.external_accessibility_id:
-        return _get_external_accessibility_compliance(venue)
-    return _get_internal_accessibility_compliance(venue)
-
-
-def _get_external_accessibility_compliance(venue: offerers_models.Venue) -> dict:
-    assert venue.accessibilityProvider  # helps mypy, already checked in caller
-    accessibility_data = acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
-        venue.accessibilityProvider.externalAccessibilityData
-    )
-    return {
-        "audioDisabilityCompliant": accessibility_data.isAccessibleAudioDisability,
-        "mentalDisabilityCompliant": accessibility_data.isAccessibleMentalDisability,
-        "motorDisabilityCompliant": accessibility_data.isAccessibleMotorDisability,
-        "visualDisabilityCompliant": accessibility_data.isAccessibleVisualDisability,
-    }
-
-
-def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict:
-    return {
-        "audioDisabilityCompliant": venue.audioDisabilityCompliant,
-        "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
-        "motorDisabilityCompliant": venue.motorDisabilityCompliant,
-        "visualDisabilityCompliant": venue.visualDisabilityCompliant,
-    }
-
-
 def create_draft_offer(
     body: offers_schemas.deprecated.PostDraftOfferBodyModel,
     venue: offerers_models.Venue,
@@ -215,8 +186,6 @@ def create_draft_offer(
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
 
@@ -224,20 +193,17 @@ def create_draft_offer(
     body_ean = body.extra_data.pop("ean", None)
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body_ean)
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        validation.check_accessibility_compliance(
-            audio_disability_compliant=body.audio_disability_compliant,
-            mental_disability_compliant=body.mental_disability_compliant,
-            motor_disability_compliant=body.motor_disability_compliant,
-            visual_disability_compliant=body.visual_disability_compliant,
-        )
+    validation.check_accessibility_compliance(
+        audio_disability_compliant=body.audio_disability_compliant,
+        mental_disability_compliant=body.mental_disability_compliant,
+        motor_disability_compliant=body.motor_disability_compliant,
+        visual_disability_compliant=body.visual_disability_compliant,
+    )
 
     fields = {
         key: value for key, value in body.dict(by_alias=True).items() if key not in ("venueId", "callId", "videoUrl")
     }
     fields.update({"ean": body_ean})
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
     fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
     if product:
@@ -276,23 +242,16 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.deprecated.Patc
     if body_ean:
         fields["ean"] = fields["extraData"].pop("ean")
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        # - The offer URL must not be removed if the offer has an online subcategory.
-        if offer.url and "url" in body.__fields_set__ and body.url is None:
-            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
-    else:
-        # - An URL must be provided if the offer has an online subcategory and had no URL before.
-        # - The offer URL must not be removed if the offer has an online subcategory.
-        if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
-            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    # - The offer URL must not be removed if the offer has an online subcategory.
+    if offer.url and "url" in body.__fields_set__ and body.url is None:
+        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return offer
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
+    if (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
         or "motorDisabilityCompliant" in updates
@@ -354,13 +313,12 @@ def create_offer(
 
         # TODO(jbaudet): should be ok to remove from this if-block
         # but let's be sure before doing anything stupid
-        if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-            validation.check_accessibility_compliance(
-                audio_disability_compliant=body.audio_disability_compliant,
-                mental_disability_compliant=body.mental_disability_compliant,
-                motor_disability_compliant=body.motor_disability_compliant,
-                visual_disability_compliant=body.visual_disability_compliant,
-            )
+        validation.check_accessibility_compliance(
+            audio_disability_compliant=body.audio_disability_compliant,
+            mental_disability_compliant=body.mental_disability_compliant,
+            motor_disability_compliant=body.motor_disability_compliant,
+            visual_disability_compliant=body.visual_disability_compliant,
+        )
 
     validation.check_offer_withdrawal(
         withdrawal_type=body.withdrawal_type,
@@ -383,16 +341,6 @@ def create_offer(
     fields.pop("videoUrl", None)
 
     if is_from_private_api:
-        if not feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-            disability_fields = {
-                "audioDisabilityCompliant",
-                "mentalDisabilityCompliant",
-                "motorDisabilityCompliant",
-                "visualDisabilityCompliant",
-            }
-            if not any(field for field in disability_fields if field in fields):
-                fields.update(_get_accessibility_compliance_fields(venue))
-
         if not body.withdrawal_details:
             fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
@@ -498,7 +446,7 @@ def update_offer(
         if not bookingAllowedDatetime or (bookingAllowedDatetime <= get_naive_utc_now()):
             reminders_notifications.notify_users_offer_is_bookable(offer)
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active() and (
+    if (
         "audioDisabilityCompliant" in updates
         or "mentalDisabilityCompliant" in updates
         or "motorDisabilityCompliant" in updates
@@ -565,17 +513,10 @@ def update_offer(
     except (KeyError, AttributeError):
         pass
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_OFFER_CREATION_FLOW.is_active():
-        # - The offer URL must not be removed if the offer has an online subcategory.
-        if offer.url and "url" in body.__fields_set__ and body.url is None:
-            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
-    else:
-        # - An URL must be provided if the offer has an online subcategory and had no URL before.
-        # - The offer URL must not be removed if the offer has an online subcategory.
-        if (offer.url is None and not body.url) or (offer.url and "url" in body.__fields_set__ and body.url is None):
-            offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
-            validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
+    # - The offer URL must not be removed if the offer has an online subcategory.
+    if offer.url and "url" in body.__fields_set__ and body.url is None:
+        offer_subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer.subcategoryId]
+        validation.check_url_is_coherent_with_subcategory(offer_subcategory, None)
 
     if "subcategoryId" in updates and offer.status != models.OfferStatus.DRAFT:
         raise offers_exceptions.UnallowedUpdate("subcategoryId")

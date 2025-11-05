@@ -18,6 +18,15 @@ from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
+def default_accessibility_fields():
+    return {
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": True,
+        "visualDisabilityCompliant": True,
+    }
+
+
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     # get user_session
@@ -305,7 +314,6 @@ class Returns200Test:
             "speaker": "",
         }
 
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     @pytest.mark.parametrize(
         "is_venue_address,address_payload,",
         [
@@ -340,7 +348,6 @@ class Returns200Test:
             ),
         ],
     )
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
     def test_first_step_funnel_creation_shouldnt_create_offer_offerer_address(
         self,
         client,
@@ -365,6 +372,7 @@ class Returns200Test:
                 "stageDirector": "",
                 "visa": "",
             },
+            **default_accessibility_fields(),
         }
         user_email = user_offerer.user.email
         response = client.with_session_auth(user_email).post("/offers/draft", json=data)
@@ -642,46 +650,6 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifiables"]
-
-    @pytest.mark.features(WIP_ENABLE_NEW_OFFER_CREATION_FLOW=False)
-    def test_fail_when_body_has_null_url_field(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-
-        # The offer has no URL with an online subcategory
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
-            venue=venue,
-        )
-
-        # and we don't provide an URL
-        data = {
-            "url": None,
-        }
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json=data
-        )
-
-        assert response.status_code == 400
-        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
-
-        # The offer has an URL with an online subcategory
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.LIVESTREAM_MUSIQUE.id,
-            url="http://example.com/offer",
-            venue=venue,
-        )
-
-        # and we try to remove the URL
-        data = {
-            "url": None,
-        }
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json=data
-        )
-
-        assert response.status_code == 400
-        assert response.json["url"][0] == 'Une offre de catégorie "Livestream musical" doit contenir un champ `url`'
 
     def test_fail_when_body_has_null_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
