@@ -156,6 +156,133 @@ class EMSStocksTest:
         self._assert_seyne_sur_mer_initial_sync_based_on_product(venue, venue_provider, cinema_detail, 86400)
 
     @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
+    def should_create_offers_event_if_address_info_are_missing(self, ProcessClass, requests_mock):
+        DATA_VERSION_0_WITHOUT_ADDRESS_INFO = {
+            "sites": [
+                {
+                    "id": "9997",
+                    "allocine_id": "Z9997",
+                    "name": "Ems Cine",
+                    "time_zone": "Europe/Paris",
+                    "events": [
+                        {
+                            "id": "SHJRH",
+                            "allocine_id": 269975,
+                            "title": "Spider-Man : Across the Spider-Verse",
+                            "director": "Joaquim Dos Santos, Justin K. Thompson, Kemp Powers",
+                            "release_date": "20230531",
+                            "synopsis": "Après avoir retrouvé Gwen Stacy, Spider-Man, le sympathique héros originaire de Brooklyn, est catapulté à travers le Multivers, où il rencontre une équipe de Spider-Héros chargée d'en protéger l'existence. Mais lorsque les héros s'opposent sur la façon de gérer une nouvelle menace, Miles se retrouve confronté à eux et doit redéfinir ce que signifie être un héros afin de sauver les personnes qu'il aime le plus.",
+                            "duration": 141,
+                            "bill_url": "https://example.com/FR/poster/5F988F1C/120/SHJRH.jpg",
+                            "sessions": [
+                                {
+                                    "id": "999700079243",
+                                    "date": "202307111000",
+                                    "features": ["video_3d", "vf", "disabled_access"],
+                                    "hall_id": 5,
+                                    "hall_name": "Salle 5",
+                                    "pass_culture_price": 7.15,
+                                },
+                                {
+                                    "id": "999700079244",
+                                    "date": "202307111230",
+                                    "features": ["video_3d", "vf", "disabled_access"],
+                                    "hall_id": 5,
+                                    "hall_name": "Salle 5",
+                                    "pass_culture_price": 7.15,
+                                },
+                            ],
+                        },
+                        {
+                            "id": "FGMSE",
+                            "allocine_id": 241065,
+                            "title": "Transformers : Rise of the Beasts",
+                            "director": "Steven Caple Jr.",
+                            "release_date": "20230607",
+                            "synopsis": "Renouant avec l'action et le grand spectacle qui ont fait des premiers Transformers un phénomène mondial il y a 14 ans, Transformers : Rise of The Beasts transportera le public dans une aventure aux quatre coins du monde au coeur des années 1990. On y découvrira pour la première fois les Maximals, Predacons et Terrorcons rejoignant l'éternel combat entre les Autobots et les Decepticons.",
+                            "duration": 127,
+                            "bill_url": "https://example.com/FR/poster/D7C57D16/120/FGMSE.jpg",
+                            "sessions": [
+                                {
+                                    "id": "999700079212",
+                                    "date": "202307111000",
+                                    "features": ["video_4k", "audio_dtsx", "vf", "disabled_access"],
+                                    "hall_id": 6,
+                                    "hall_name": "Salle 6",
+                                    "pass_culture_price": 5.15,
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    "id": "0063",
+                    "allocine_id": "P1209",
+                    "name": "Les Ormeaux",
+                    "address": "17-26 Rue des Echolères (parking des Ormeaux - place du marché)",
+                    "zip_code": "85520",
+                    "city": "Jard-sur-Mer",
+                    "time_zone": "Europe/Paris",
+                    "events": [
+                        {
+                            "id": "CDFG5",
+                            "allocine_id": 269976,
+                            "title": "Mon voisin Totoro",
+                            "director": "Hayao Miyazaki",
+                            "release_date": "19991208",
+                            "synopsis": "Mei, 4 ans, et Satsuki, 10 ans, s’installent à la campagne avec leur père pour se rapprocher de l’hôpital où séjourne leur mère. Elles découvrent la nature tout autour de la maison et, surtout, l’existence d’animaux étranges et merveilleux, les Totoros, avec qui elles deviennent très amies. Un jour, alors que Satsuki et Mei attendent le retour de leur mère, elles apprennent que sa sortie de l’hôpital a été repoussée. Mei décide alors d’aller lui rendre visite seule. Satsuki et les gens du village la recherchent en vain. Désespérée, Satsuki va finalement demander de l’aide à son voisin Totoro.",
+                            "duration": 87,
+                            "bill_url": "https://example.com/FR/poster/982D31BE/120/CDFG5.jpg",
+                            "sessions": [
+                                {
+                                    "id": "006300006867",
+                                    "date": "202307271000",
+                                    "features": ["vf"],
+                                    "hall_id": 1,
+                                    "hall_name": "Salle 1",
+                                    "pass_culture_price": 7,
+                                }
+                            ],
+                        },
+                    ],
+                },
+            ],
+            "version": 86400,
+        }
+        requests_mock.get("https://fake_url.com?version=0", json=DATA_VERSION_0_WITHOUT_ADDRESS_INFO)
+        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
+        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
+
+        offers_factories.ProductFactory(
+            name="Produit allociné 1",
+            description="Description du produit allociné 1",
+            durationMinutes=111,
+            extraData={"allocineId": 269975},
+        )
+        offers_factories.ProductFactory(
+            name="Produit allociné 2",
+            description="Description du produit allociné 2",
+            durationMinutes=222,
+            extraData={"allocineId": 241065},
+        )
+
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
+        )
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+            venue=venue, provider=ems_provider, idAtProvider="9997"
+        )
+        cinema_detail = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        self.execute_import(ProcessClass, venue_provider)
+
+        self._assert_seyne_sur_mer_initial_sync_based_on_product(venue, venue_provider, cinema_detail, 86400)
+
+    @pytest.mark.parametrize("ProcessClass", [EMSStocks, EMSExtractTransformLoadProcess])
     def should_update_finance_event_when_stock_beginning_datetime_is_updated(self, ProcessClass, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())

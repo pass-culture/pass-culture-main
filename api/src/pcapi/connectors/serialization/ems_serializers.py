@@ -58,9 +58,9 @@ class Site(BaseModel):
 class SiteWithEvents(BaseModel):
     id: str
     name: str
-    address: str
-    zip_code: str
-    city: str
+    address: str | None = None
+    zip_code: str | None = None
+    city: str | None = None
     events: list[Event]
 
 
