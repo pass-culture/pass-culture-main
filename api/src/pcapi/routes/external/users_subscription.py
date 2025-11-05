@@ -77,7 +77,7 @@ def ubble_v2_webhook_update_application_status(
         return ubble_serializers.WebhookDummyReponse()
 
     try:
-        ubble_subscription_api.update_ubble_workflow(fraud_check)
+        ubble_subscription_api.update_ubble_workflow_with_status(fraud_check, status)
     except requests_utils.ExternalAPIException as exc:
         logger.warning("External API error when updating ubble v2 workflow", extra=log_extra_data | {"exception": exc})
         raise ApiErrors({"msg": "an error occured while fetching data"}, status_code=500)

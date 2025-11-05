@@ -1458,6 +1458,6 @@ def test_pending_and_created_fraud_checks_are_updated(update_ubble_workflow_mock
         type=FraudCheckType.UBBLE, status=FraudCheckStatus.PENDING, dateCreated=yesterday
     )
 
-    ubble_subscription_api.update_pending_ubble_applications()
+    ubble_subscription_api.recover_pending_ubble_applications()
 
     update_ubble_workflow_mock.assert_has_calls([call(created_fraud_check), call(pending_fraud_check)], any_order=True)
