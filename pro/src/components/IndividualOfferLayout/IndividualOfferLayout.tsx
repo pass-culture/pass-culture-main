@@ -27,7 +27,6 @@ import { Status } from './components/Status/Status'
 import styles from './IndividualOfferLayout.module.scss'
 
 export interface IndividualOfferLayoutProps {
-  withStepper?: boolean
   children: ReactNode
   offer: GetIndividualOfferWithAddressResponseModel | null
 }
@@ -35,7 +34,6 @@ export interface IndividualOfferLayoutProps {
 // TODO (igabriele, 2025-08-18): Get `offer` directly from context (DRY, complexity).
 export const IndividualOfferLayout = ({
   children,
-  withStepper = true,
   offer,
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
@@ -57,9 +55,6 @@ export const IndividualOfferLayout = ({
       OfferStatus.PUBLISHED,
       OfferStatus.SCHEDULED,
     ].includes(offer.status)
-
-  const shouldDisplayActionOnStatus =
-    withStepper && !displayUpdatePublicationAndBookingDates
 
   const shouldDisplayHighlightsBanner =
     !!offer &&
@@ -92,23 +87,20 @@ export const IndividualOfferLayout = ({
   return (
     <>
       <div className={styles['title-container']}>
-        {offer && mode !== OFFER_WIZARD_MODE.CREATION && (
-          <>
-            {shouldDisplayActionOnStatus && (
-              <span className={styles.status}>
-                {
-                  <Status
-                    offer={offer}
-                    canEditPublicationDates={canEditPublicationDates}
-                  />
-                }
-              </span>
-            )}
-            {displayUpdatePublicationAndBookingDates && (
-              <OfferPublicationEdition offer={offer} />
-            )}
-          </>
-        )}
+        {offer &&
+          mode !== OFFER_WIZARD_MODE.CREATION &&
+          (displayUpdatePublicationAndBookingDates ? (
+            <OfferPublicationEdition offer={offer} />
+          ) : (
+            <span className={styles.status}>
+              {
+                <Status
+                  offer={offer}
+                  canEditPublicationDates={canEditPublicationDates}
+                />
+              }
+            </span>
+          ))}
       </div>
 
       {offer && (
@@ -120,7 +112,7 @@ export const IndividualOfferLayout = ({
         </p>
       )}
 
-      {offer && withStepper && <OfferStatusBanner status={offer.status} />}
+      {offer && <OfferStatusBanner status={offer.status} />}
 
       {hasPublishedOfferWithSameEan && (
         <Callout
@@ -159,7 +151,7 @@ export const IndividualOfferLayout = ({
         </div>
       )}
 
-      {withStepper && <IndividualOfferNavigation />}
+      <IndividualOfferNavigation />
 
       <div className={styles.content}>{children}</div>
     </>

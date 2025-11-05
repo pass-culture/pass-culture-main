@@ -63,7 +63,6 @@ const renderIndividualOfferLayout: RenderComponentFunction<
   }
   const props: IndividualOfferLayoutProps = {
     offer,
-    withStepper: true,
     children: <div>Template child</div>,
     ...params.props,
   }
@@ -117,16 +116,6 @@ describe('IndividualOfferLayout', () => {
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
 
       expect(screen.getByText(/offer name/)).toBeInTheDocument()
-    })
-
-    it('should not display stepper nor status when no stepper', () => {
-      const props = { offer: nonEventOffer, withStepper: false }
-
-      renderIndividualOfferLayout({ props })
-
-      expect(screen.queryByTestId('status')).not.toBeInTheDocument()
-      expect(screen.queryByText('Détails de l’offre')).not.toBeInTheDocument()
-      expect(screen.queryByText('Stock & Prix')).not.toBeInTheDocument()
     })
 
     it('should display status and button in edition', () => {
