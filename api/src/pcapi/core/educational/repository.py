@@ -123,7 +123,9 @@ def get_confirmed_collective_bookings_amount(deposit: models.EducationalDeposit)
 
 def find_collective_booking_by_id(booking_id: int) -> models.CollectiveBooking | None:
     query = _get_bookings_for_adage_base_query()
-    query = query.filter(models.CollectiveBooking.id == booking_id)
+    query = query.filter(models.CollectiveBooking.id == booking_id).options(
+        sa_orm.joinedload(models.CollectiveBooking.educationalYear)
+    )
     return query.one_or_none()
 
 
