@@ -18,9 +18,7 @@ from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -70,46 +68,6 @@ def test_booking_completed_url_gets_normalized():
         stock__offer__url="example.com?token={token}&email={email}",
     )
     assert booking.completedUrl == "http://example.com?token=ABCDEF&email=1@example.com"
-
-
-def test_too_many_bookings_postgresql_exception():
-    booking1 = factories.BookingFactory(stock__quantity=1)
-    with db.session.no_autoflush:
-        booking2 = models.Booking()
-        booking2.user = users_factories.BeneficiaryGrant18Factory()
-        booking2.stock = booking1.stock
-        booking2.offerer = booking1.offerer
-        booking2.venue = booking1.venue
-        booking2.quantity = 1
-        booking2.amount = booking1.stock.price
-        booking2.token = "123456"
-        with pytest.raises(ApiErrors) as exc:
-            repository.save(booking2)
-        assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
-
-
-def test_too_many_bookings_postgresql_exception_not_executed():
-    booking1 = factories.BookingFactory(stock__quantity=1)
-    booking2 = factories.BookingFactory(
-        status=models.BookingStatus.USED,
-        user=users_factories.BeneficiaryGrant18Factory(),
-        offerer=booking1.offerer,
-        quantity=1,
-        amount=booking1.stock.price,
-        token="123456",
-    )
-    booking2.stock = booking1.stock
-    booking2.quantity = 2
-
-    with pytest.raises(ApiErrors) as exc:
-        repository.save(booking2)
-        assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
-
-    booking2.quantity = 2
-    booking2.status = models.BookingStatus.REIMBURSED
-    # → Shouldn't raise an error as the new status is reimbursed and the check shouldn't take place
-    repository.save(booking2)
-    assert booking2.quantity == 2
 
 
 class BookingCanReactTest:

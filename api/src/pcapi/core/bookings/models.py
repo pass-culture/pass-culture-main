@@ -5,7 +5,6 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -320,15 +319,6 @@ class Booking(PcObject, Model):
         humanized_offer_id = humanize(offer.id)
         assert humanized_offer_id  # helps mypy
         return url.replace("{token}", token).replace("{offerId}", humanized_offer_id).replace("{email}", self.email)
-
-    @staticmethod
-    def restize_internal_error(ie: sa_exc.InternalError) -> tuple[str, str]:
-        assert ie.orig  # helps mypy
-        if "tooManyBookings" in str(ie.orig):
-            return ("global", "La quantité disponible pour cette offre est atteinte.")
-        if "insufficientFunds" in str(ie.orig):
-            return ("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
-        return PcObject.restize_internal_error(ie)
 
     @hybrid_property
     def isConfirmed(self) -> bool:

@@ -50,7 +50,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils import date as date_utils
 from pcapi.utils import queue
-from pcapi.utils.repository import save
+from pcapi.utils import repository as pcapi_repository
 from pcapi.utils.repository import transaction
 from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
@@ -657,7 +657,8 @@ def _execute_cancel_booking(
             stock.dnBookedQuantity -= booking.quantity
             if booking.activationCode and stock.quantity:
                 stock.quantity -= 1
-            save(booking, stock)
+            db.session.add(booking)
+            pcapi_repository.save(stock)
     return True
 
 
@@ -963,7 +964,8 @@ def update_cancellation_limit_dates(
             event_beginning=new_beginning_datetime,
             edition_date=date_utils.get_naive_utc_now(),
         )
-    save(*bookings_to_update)
+    db.session.add_all(bookings_to_update)
+    db.session.flush()
     return bookings_to_update
 
 
