@@ -12,7 +12,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { getHighlightDatespanTag } from '@/commons/utils/getHighlightDatespanTag'
+import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -133,7 +133,11 @@ export function OfferHighlightForm({
                 asset: {
                   variant: 'tag',
                   tag: {
-                    label: getHighlightDatespanTag(highlight.highlightDatespan),
+                    label: (
+                      <HighlightDatespanTag
+                        highlightDatespan={highlight.highlightDatespan}
+                      />
+                    ),
                   },
                 },
                 onChange: (e) => {

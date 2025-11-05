@@ -30,7 +30,7 @@ export type TagProps = {
   /**
    * The label of the tag.
    */
-  label: string
+  label: React.ReactNode
   /**
    * The variant of the tag, which determines its style.
    */
