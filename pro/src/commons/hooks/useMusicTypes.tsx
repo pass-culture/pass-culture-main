@@ -4,15 +4,15 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 
 import { GET_MUSIC_TYPES_QUERY_KEY } from '../config/swrQueryKeys'
-import { updateMusicTypes } from '../store/musicTypes/reducer'
-import { selectMusicTypes } from '../store/musicTypes/selectors'
+import { updateMusicTypes } from '../store/staticData/reducer'
+import { selectMusicTypes } from '../store/staticData/selectors'
 
 export function useMusicTypes() {
   const dispatch = useDispatch()
   const musicTypes = useSelector(selectMusicTypes)
   const shouldFetchMusicTypes = musicTypes === undefined
 
-  const { data, isLoading } = useSWR(
+  const { data } = useSWR(
     () => {
       return shouldFetchMusicTypes ? GET_MUSIC_TYPES_QUERY_KEY : null
     },
@@ -23,5 +23,5 @@ export function useMusicTypes() {
     },
     { fallbackData: [] }
   )
-  return { musicTypes: musicTypes || data, isLoading }
+  return { musicTypes: musicTypes || data }
 }
