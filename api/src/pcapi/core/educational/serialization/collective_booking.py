@@ -1,17 +1,17 @@
 import decimal
 from typing import Iterable
 
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational import models
+from pcapi.core.educational import schemas
 from pcapi.core.educational.adage_backends import serialize as adage_serialize
 from pcapi.core.offers.utils import offer_app_link
 
 
 def get_collective_bookings_per_year_response(
-    bookings: Iterable[educational_models.CollectiveBooking],
-) -> educational_schemas.EducationalBookingsPerYearResponse:
+    bookings: Iterable[models.CollectiveBooking],
+) -> schemas.EducationalBookingsPerYearResponse:
     serialized_bookings = [
-        educational_schemas.EducationalBookingPerYearResponse(
+        schemas.EducationalBookingPerYearResponse(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
             status=get_collective_booking_status(booking),
@@ -32,12 +32,12 @@ def get_collective_bookings_per_year_response(
         )
         for booking in bookings
     ]
-    return educational_schemas.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
+    return schemas.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
 def serialize_collective_bookings(
-    educational_bookings: list[educational_models.CollectiveBooking],
-) -> list[educational_schemas.EducationalBookingResponse]:
+    educational_bookings: list[models.CollectiveBooking],
+) -> list[schemas.EducationalBookingResponse]:
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
         serialized_educational_bookings.append(serialize_collective_booking(educational_booking))
@@ -46,15 +46,15 @@ def serialize_collective_bookings(
 
 
 def serialize_collective_booking(
-    collective_booking: educational_models.CollectiveBooking,
-) -> educational_schemas.EducationalBookingResponse:
+    collective_booking: models.CollectiveBooking,
+) -> schemas.EducationalBookingResponse:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
     redactor = collective_booking.educationalRedactor
 
-    return educational_schemas.EducationalBookingResponse(
+    return schemas.EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
@@ -77,7 +77,7 @@ def serialize_collective_booking(
         priceDetail=stock.priceDetail,
         price=stock.price,
         quantity=1,
-        redactor=educational_schemas.Redactor(
+        redactor=schemas.Redactor(
             email=redactor.email,
             redactorFirstName=redactor.firstName,
             redactorLastName=redactor.lastName,
@@ -103,31 +103,31 @@ def serialize_collective_booking(
 
 
 def get_collective_booking_status(
-    collective_booking: educational_models.CollectiveBooking,
-) -> educational_models.CollectiveBookingStatus | educational_schemas.CollectiveBookingRefused:
+    collective_booking: models.CollectiveBooking,
+) -> models.CollectiveBookingStatus | schemas.CollectiveBookingRefused:
     if collective_booking.status in (
-        educational_models.CollectiveBookingStatus.USED,
-        educational_models.CollectiveBookingStatus.REIMBURSED,
+        models.CollectiveBookingStatus.USED,
+        models.CollectiveBookingStatus.REIMBURSED,
     ):
-        return educational_models.CollectiveBookingStatus.USED
+        return models.CollectiveBookingStatus.USED
 
     if collective_booking.cancellationReason in [
-        educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
-        educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+        models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+        models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
     ]:
         return "REFUSED"
 
     return collective_booking.status
 
 
-def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> educational_schemas.Contact:
-    return educational_schemas.Contact(
+def _get_collective_offer_contact(offer: models.CollectiveOffer) -> schemas.Contact:
+    return schemas.Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
 
 
-def _get_educational_offer_accessibility(offer: educational_models.CollectiveOffer) -> str:
+def _get_educational_offer_accessibility(offer: models.CollectiveOffer) -> str:
     disability_compliance = []
     if offer.audioDisabilityCompliant:
         disability_compliance.append("Auditif")
@@ -142,15 +142,15 @@ def _get_educational_offer_accessibility(offer: educational_models.CollectiveOff
 
 
 def serialize_reimbursement_notification(
-    collective_booking: educational_models.CollectiveBooking, reason: str, value: decimal.Decimal, details: str
-) -> educational_schemas.AdageReimbursementNotification:
+    collective_booking: models.CollectiveBooking, reason: str, value: decimal.Decimal, details: str
+) -> schemas.AdageReimbursementNotification:
     stock = collective_booking.collectiveStock
     offer = stock.collectiveOffer
     domains = offer.domains
     venue = offer.venue
     redactor = collective_booking.educationalRedactor
 
-    return educational_schemas.AdageReimbursementNotification(
+    return schemas.AdageReimbursementNotification(
         accessibility=_get_educational_offer_accessibility(offer),
         address=adage_serialize.get_collective_offer_address(offer),
         startDatetime=stock.startDatetime,
@@ -174,7 +174,7 @@ def serialize_reimbursement_notification(
         priceDetail=stock.priceDetail,
         price=stock.price,
         quantity=1,
-        redactor=educational_schemas.Redactor(
+        redactor=schemas.Redactor(
             email=redactor.email,
             redactorFirstName=redactor.firstName,
             redactorLastName=redactor.lastName,
