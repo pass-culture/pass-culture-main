@@ -42,6 +42,48 @@ from . import messages
 logger = logging.getLogger(__name__)
 PAGE_SIZE = 20_000
 
+PENDING_STATUSES = [
+    ubble_schemas.UbbleIdentificationStatus.PROCESSING,
+    ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
+]
+CANCELED_STATUSES = [
+    ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
+    ubble_schemas.UbbleIdentificationStatus.REFUSED,
+    ubble_schemas.UbbleIdentificationStatus.ABORTED,
+    ubble_schemas.UbbleIdentificationStatus.EXPIRED,
+]
+CONCLUSIVE_STATUSES = [
+    ubble_schemas.UbbleIdentificationStatus.APPROVED,
+    ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
+    ubble_schemas.UbbleIdentificationStatus.DECLINED,
+    ubble_schemas.UbbleIdentificationStatus.PROCESSED,
+]
+
+
+def update_ubble_workflow_with_status(
+    fraud_check: subscription_models.BeneficiaryFraudCheck, status: ubble_schemas.UbbleIdentificationStatus
+) -> None:
+    """
+    Checks if a Ubble network call is needed according to the status returned by the Ubble webhook.
+
+    Ubble's rate limit of 200 requests/minute can be easily reached during peak hours through
+    the native app causing an influx of webhook notifications, plus recovery scripts.
+    """
+    if status in PENDING_STATUSES:
+        fraud_check.status = subscription_models.FraudCheckStatus.PENDING
+        pcapi_repository.save(fraud_check)
+        return
+
+    if status in CANCELED_STATUSES:
+        fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
+        pcapi_repository.save(fraud_check)
+        return
+
+    if status not in CONCLUSIVE_STATUSES:
+        return
+
+    update_ubble_workflow(fraud_check)
+
 
 def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     content = _get_content(fraud_check.thirdPartyId)
@@ -51,54 +93,45 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
 
     user = fraud_check.user
     status = content.status
-    if status in (
-        ubble_schemas.UbbleIdentificationStatus.PROCESSING,
-        ubble_schemas.UbbleIdentificationStatus.CHECKS_IN_PROGRESS,
-    ):
+    if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(user, fraud_check)
+        pcapi_repository.save(fraud_check)
+        return
 
-    elif status in [
-        ubble_schemas.UbbleIdentificationStatus.APPROVED,
-        ubble_schemas.UbbleIdentificationStatus.RETRY_REQUIRED,
-        ubble_schemas.UbbleIdentificationStatus.DECLINED,
-        ubble_schemas.UbbleIdentificationStatus.PROCESSED,
-    ]:
-        fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
-            user, fraud_check, content
-        )
-        try:
-            ubble_fraud_api.on_ubble_result(fraud_check)
-        except Exception:
-            logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
-            return
-
-        subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
-
-        if fraud_check.status != subscription_models.FraudCheckStatus.OK:
-            handle_validation_errors(user, fraud_check)
-            return
-
-        payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
-        ubble_tasks.store_id_pictures_task.delay(payload)
-
-        try:
-            is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
-        except Exception:
-            logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
-            return
-
-        if not is_activated:
-            external_attributes_api.update_external_user(user)
-
-    elif status in (
-        ubble_schemas.UbbleIdentificationStatus.INCONCLUSIVE,
-        ubble_schemas.UbbleIdentificationStatus.REFUSED,
-        ubble_schemas.UbbleIdentificationStatus.ABORTED,
-        ubble_schemas.UbbleIdentificationStatus.EXPIRED,
-    ):
+    if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
         pcapi_repository.save(fraud_check)
+        return
+
+    if status not in CONCLUSIVE_STATUSES:
+        return
+
+    fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
+        user, fraud_check, content
+    )
+    try:
+        ubble_fraud_api.on_ubble_result(fraud_check)
+    except Exception:
+        logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
+        return
+
+    subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
+
+    if fraud_check.status != subscription_models.FraudCheckStatus.OK:
+        handle_validation_errors(user, fraud_check)
+        return
+
+    payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
+    ubble_tasks.store_id_pictures_task.delay(payload)
+
+    try:
+        is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
+    except Exception:
+        logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
+        return
+
+    if not is_activated:
+        external_attributes_api.update_external_user(user)
 
 
 def _fill_missing_content_test_fields(
@@ -404,7 +437,7 @@ def get_ubble_subscription_message(
     return None
 
 
-def update_pending_ubble_applications(dry_run: bool = True) -> None:
+def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     """
     Sometimes the ubble webhook does not reach our API. This is a problem because the application is still pending.
     We want to be able to retrieve the processed applications and update the status of the application anyway.
