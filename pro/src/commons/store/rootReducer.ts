@@ -6,8 +6,8 @@ import { offererReducer } from '@/commons/store/offerer/reducer'
 import { userReducer } from '@/commons/store/user/reducer'
 
 import { adageFilterReducer } from './adageFilter/reducer'
-import { musicTypesReducer } from './musicTypes/reducer'
 import { navReducer } from './nav/reducer'
+import { musicTypesReducer } from './staticData/reducer'
 
 export const rootReducer = combineReducers({
   features: featuresReducer,
@@ -16,5 +16,5 @@ export const rootReducer = combineReducers({
   nav: navReducer,
   adageFilter: adageFilterReducer,
   offerer: offererReducer,
-  musicTypes: musicTypesReducer,
+  staticData: musicTypesReducer,
 })
