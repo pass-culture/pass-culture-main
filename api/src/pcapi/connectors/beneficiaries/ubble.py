@@ -13,6 +13,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
+from pcapi.utils.rate_limit import rate_limit
 
 
 logger = logging.getLogger(__name__)
@@ -73,7 +74,16 @@ def log_and_handle_ubble_response(
     return log_response_status_and_reraise_if_needed
 
 
+def ubble_rate_limit[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
+    def wrapper(*args: P.args, **kwds: P.kwargs) -> T:
+        with rate_limit("connectors:ubble", settings.UBBLE_RATE_LIMIT, settings.UBBLE_TIME_WINDOW_SIZE):
+            return func(*args, **kwds)
+
+    return wrapper
+
+
 @log_and_handle_ubble_response("applicant")
+@ubble_rate_limit
 def create_applicant(external_applicant_id: str, email: str) -> str:
     session = _configure_v2_session()
     response = session.post(
@@ -97,6 +107,7 @@ def create_applicant(external_applicant_id: str, email: str) -> str:
 
 
 @log_and_handle_ubble_response("post-identity-verifications")
+@ubble_rate_limit
 def create_identity_verification(
     applicant_id: str, first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> ubble_schemas.UbbleContent:
@@ -125,6 +136,7 @@ def create_identity_verification(
 
 
 @log_and_handle_ubble_response("identity-verifications-attempt")
+@ubble_rate_limit
 def create_identity_verification_attempt(identification_id: str, redirect_url: str) -> str:
     session = _configure_v2_session()
     response = session.post(
@@ -142,6 +154,7 @@ def create_identity_verification_attempt(identification_id: str, redirect_url: s
 
 
 @log_and_handle_ubble_response("create-and-start-idv")
+@ubble_rate_limit
 def create_and_start_identity_verification(
     first_name: str, last_name: str, redirect_url: str, webhook_url: str
 ) -> ubble_schemas.UbbleContent:
@@ -169,6 +182,7 @@ def create_and_start_identity_verification(
 
 
 @log_and_handle_ubble_response("get-identity-verifications")
+@ubble_rate_limit
 def get_identity_verification(identification_id: str) -> ubble_schemas.UbbleContent:
     response = requests.get(
         build_url(f"/v2/identity-verifications/{identification_id}"),
@@ -200,6 +214,7 @@ def _configure_v2_session() -> requests.Session:
     return session
 
 
+@ubble_rate_limit
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
     try:
         response = requests.get(http_url, stream=True)
