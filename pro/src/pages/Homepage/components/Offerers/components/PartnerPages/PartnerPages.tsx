@@ -8,6 +8,7 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import {
   getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
@@ -55,7 +56,11 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
   return (
     <section className={styles['section']}>
       <h2 className={styles['title']}>
-        {venues.length === 1 ? 'Votre page partenaire' : 'Vos pages partenaire'}
+        {pluralizeFr(
+          venues.length,
+          'Votre page partenaire',
+          'Vos pages partenaire'
+        )}
       </h2>
 
       <p className={styles['description']}>

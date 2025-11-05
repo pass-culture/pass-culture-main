@@ -17,6 +17,7 @@ import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getColle
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { computeActivationSuccessMessage } from '@/components/OffersTable/utils/computeActivationSuccessMessage'
@@ -37,13 +38,8 @@ export type CollectiveOffersActionsBarProps<T> = {
   searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
-const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres ont bien été mises en pause'
-      : 'offre a bien été mise en pause'
-  return `${nbSelectedOffers} ${successMessage}`
-}
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
+  `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été mise', 'offres ont bien été mises')} en pause`
 
 const toggleCollectiveOffersActiveInactiveStatus = async <
   T extends {

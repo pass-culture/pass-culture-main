@@ -1,3 +1,4 @@
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 
@@ -23,16 +24,8 @@ export const DeleteConfirmDialog = ({
       onCancel={onCancel}
       onConfirm={onConfirm}
       icon={strokeTrashIcon}
-      title={
-        nbSelectedOffers === 1
-          ? `Vous avez sélectionné ${nbSelectedOffers} offre brouillon,`
-          : `Vous avez sélectionné ${nbSelectedOffers} offres brouillon,`
-      }
-      secondTitle={
-        nbSelectedOffers === 1
-          ? `êtes-vous sûr de vouloir la supprimer ?`
-          : `êtes-vous sûr de vouloir toutes les supprimer ?`
-      }
+      title={`Vous avez sélectionné ${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre', 'offres')} brouillon`}
+      secondTitle={`êtes-vous sûr de vouloir ${pluralizeFr(nbSelectedOffers, 'la supprimer', 'toutes les supprimer')} ?`}
       open={isDialogOpen}
       refToFocusOnClose={refToFocusOnClose}
     />

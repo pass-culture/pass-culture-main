@@ -13,6 +13,7 @@ import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import { computeActivationSuccessMessage } from '@/components/OffersTable/utils/computeActivationSuccessMessage'
@@ -39,26 +40,14 @@ export type IndividualOffersActionsBarProps = {
   searchButtonRef?: React.RefObject<HTMLButtonElement>
 }
 
-const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
-  const activationWording =
-    'en cours d’activation, veuillez rafraichir dans quelques instants'
-  return nbSelectedOffers > 1
-    ? `Les offres sont ${activationWording}`
-    : `Une offre est ${activationWording}`
-}
+const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
+  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours d’activation, veuillez rafraichir dans quelques instants`
 
 const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
-  nbSelectedOffers > 1
-    ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
-    : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
+  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours de désactivation, veuillez rafraichir dans quelques instants`
 
-const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres ont bien été mises en pause'
-      : 'offre a bien été mise en pause'
-  return `${nbSelectedOffers} ${successMessage}`
-}
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
+  `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été mise', 'offres ont bien été mises')} en pause`
 
 const updateIndividualOffersStatus = async (
   isActive: boolean,

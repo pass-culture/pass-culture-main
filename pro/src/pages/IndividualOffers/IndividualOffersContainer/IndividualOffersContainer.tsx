@@ -16,6 +16,7 @@ import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -180,9 +181,8 @@ export const IndividualOffersContainer = ({
               Liste des offres
             </h2>
             <div>
-              {`${getOffersCountToDisplay(offers.length)} ${
-                offers.length <= 1 ? 'offre' : 'offres'
-              }`}
+              {getOffersCountToDisplay(offers.length)}{' '}
+              {pluralizeFr(offers.length, 'offre', 'offres')}
             </div>
           </div>
         )}
