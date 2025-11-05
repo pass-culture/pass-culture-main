@@ -8,12 +8,11 @@ from pydantic.v1.error_wrappers import ValidationError
 from pcapi import settings
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import schemas as educational_schemas
-from pcapi.core.educational import utils as educational_utils
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
+from pcapi.core.educational import schemas
+from pcapi.core.educational import utils
 from pcapi.core.educational import validation
-from pcapi.core.educational.schemas import RedactorInformation
 from pcapi.core.educational.serialization import collective_booking as collective_booking_serialize
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
@@ -30,24 +29,24 @@ logger = logging.getLogger(__name__)
 
 
 def book_collective_offer(
-    redactor_informations: RedactorInformation, stock_id: int
-) -> educational_models.CollectiveBooking:
-    redactor = educational_repository.find_or_create_redactor(redactor_informations)
+    redactor_informations: schemas.RedactorInformation, stock_id: int
+) -> models.CollectiveBooking:
+    redactor = repository.find_or_create_redactor(redactor_informations)
 
-    educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
+    educational_institution = repository.find_educational_institution_by_uai_code(redactor_informations.uai)
     if not educational_institution:
         raise exceptions.EducationalInstitutionUnknown()
 
-    stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
+    stock = repository.get_and_lock_collective_stock(stock_id=stock_id)
     validation.check_collective_stock_is_bookable(stock)
 
-    educational_year = educational_repository.find_educational_year_by_date(stock.startDatetime)
+    educational_year = repository.find_educational_year_by_date(stock.startDatetime)
     if not educational_year:
         raise exceptions.EducationalYearNotFound()
     validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
     utcnow = date_utils.get_naive_utc_now()
-    booking = educational_models.CollectiveBooking(
+    booking = models.CollectiveBooking(
         educationalInstitution=educational_institution,
         educationalYear=educational_year,
         educationalRedactor=redactor,
@@ -55,17 +54,15 @@ def book_collective_offer(
         collectiveStockId=stock.id,
         venueId=stock.collectiveOffer.venueId,
         offererId=stock.collectiveOffer.venue.managingOffererId,
-        status=educational_models.CollectiveBookingStatus.PENDING,
+        status=models.CollectiveBookingStatus.PENDING,
         dateCreated=utcnow,
-        cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-            stock.startDatetime, utcnow
-        ),
+        cancellationLimitDate=utils.compute_educational_booking_cancellation_limit_date(stock.startDatetime, utcnow),
     )
     db.session.add(booking)
     db.session.flush()
 
     # re-fetch the booking to load the relations used during seralization
-    new_booking = educational_repository.find_collective_booking_by_id(booking_id=booking.id)
+    new_booking = repository.find_collective_booking_by_id(booking_id=booking.id)
     assert new_booking is not None
 
     logger.info(
@@ -85,7 +82,7 @@ def book_collective_offer(
     return new_booking
 
 
-def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:
+def _notify_prebooking(data: schemas.EducationalBookingResponse) -> None:
     try:
         adage_client.notify_prebooking(data=data)
     except exceptions.AdageException as adage_error:
@@ -105,16 +102,16 @@ def _notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> 
         )
 
 
-def confirm_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
-    collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
+def confirm_collective_booking(educational_booking_id: int) -> models.CollectiveBooking:
+    collective_booking = repository.find_collective_booking_by_id(educational_booking_id)
 
     if collective_booking is None:
         raise exceptions.EducationalBookingNotFound()
 
-    if collective_booking.status == educational_models.CollectiveBookingStatus.CONFIRMED:
+    if collective_booking.status == models.CollectiveBookingStatus.CONFIRMED:
         return collective_booking
 
-    educational_utils.log_information_for_data_purpose(
+    utils.log_information_for_data_purpose(
         event_name="BookingApproval",
         extra_data={
             "stockId": collective_booking.collectiveStockId,
@@ -145,10 +142,10 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     return collective_booking
 
 
-def _check_institution_fund(collective_booking: educational_models.CollectiveBooking) -> None:
+def _check_institution_fund(collective_booking: models.CollectiveBooking) -> None:
     educational_institution_id = collective_booking.educationalInstitutionId
     educational_year_id = collective_booking.educationalYearId
-    deposit = educational_repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
+    deposit = repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
 
     validation.check_institution_fund(
         educational_institution_id=educational_institution_id,
@@ -158,12 +155,12 @@ def _check_institution_fund(collective_booking: educational_models.CollectiveBoo
     )
 
 
-def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
-    collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
+def refuse_collective_booking(educational_booking_id: int) -> models.CollectiveBooking:
+    collective_booking = repository.find_collective_booking_by_id(educational_booking_id)
     if collective_booking is None:
         raise exceptions.EducationalBookingNotFound()
 
-    if collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED:
+    if collective_booking.status == models.CollectiveBookingStatus.CANCELLED:
         return collective_booking
 
     try:
@@ -198,12 +195,12 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
 
 def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:
-    collective_offer: educational_models.CollectiveOffer | None = (
-        db.session.query(educational_models.CollectiveOffer)
-        .filter(educational_models.CollectiveOffer.id == offer_id)
+    collective_offer: models.CollectiveOffer | None = (
+        db.session.query(models.CollectiveOffer)
+        .filter(models.CollectiveOffer.id == offer_id)
         .options(
-            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
+            sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
+                models.CollectiveStock.collectiveBookings
             )
         )
         .first()
@@ -213,7 +210,7 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
         raise exceptions.CollectiveOfferNotFound()
 
     validation.check_collective_offer_action_is_allowed(
-        collective_offer, educational_models.CollectiveOfferAllowedAction.CAN_CANCEL
+        collective_offer, models.CollectiveOfferAllowedAction.CAN_CANCEL
     )
 
     if collective_offer.collectiveStock is None:
@@ -237,29 +234,29 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
 
 
 def notify_pro_users_one_day_before() -> None:
-    bookings = educational_repository.find_bookings_starting_in_x_days(1)
+    bookings = repository.find_bookings_starting_in_x_days(1)
     for booking in bookings:
         transactional_mails.send_eac_alert_one_day_before_event(booking)
 
 
 def notify_pro_users_one_day_after() -> None:
-    bookings = educational_repository.find_bookings_ending_in_x_days(-1)
+    bookings = repository.find_bookings_ending_in_x_days(-1)
     for booking in bookings:
         transactional_mails.send_eac_alert_one_day_after_event(booking)
 
 
 def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
-    bookings = educational_repository.find_pending_booking_confirmation_limit_date_in_3_days()
+    bookings = repository.find_pending_booking_confirmation_limit_date_in_3_days()
     for booking in bookings:
         transactional_mails.send_eac_pending_booking_confirmation_limit_date_in_3_days(booking)
 
 
 def _cancel_collective_booking(
-    collective_booking: educational_models.CollectiveBooking,
-    reason: educational_models.CollectiveBookingCancellationReasons,
+    collective_booking: models.CollectiveBooking,
+    reason: models.CollectiveBookingCancellationReasons,
     author_id: int,
 ) -> None:
-    educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+    repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
     db.session.refresh(collective_booking)
 
     try:
@@ -283,11 +280,9 @@ def _cancel_collective_booking(
 
 
 def _cancel_collective_booking_by_offerer(
-    collective_stock: educational_models.CollectiveStock,
-    author_id: int,
-    user_connect_as: bool,
-) -> educational_models.CollectiveBooking:
-    booking_to_cancel: educational_models.CollectiveBooking | None = next(
+    collective_stock: models.CollectiveStock, author_id: int, user_connect_as: bool
+) -> models.CollectiveBooking:
+    booking_to_cancel: models.CollectiveBooking | None = next(
         (
             collective_booking
             for collective_booking in collective_stock.collectiveBookings
@@ -300,9 +295,9 @@ def _cancel_collective_booking_by_offerer(
         raise exceptions.NoCollectiveBookingToCancel()
 
     if user_connect_as:
-        cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
+        cancellation_reason = models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
     else:
-        cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER
+        cancellation_reason = models.CollectiveBookingCancellationReasons.OFFERER
 
     _cancel_collective_booking(booking_to_cancel, cancellation_reason, author_id)
 
@@ -310,15 +305,15 @@ def _cancel_collective_booking_by_offerer(
 
 
 def cancel_collective_booking(
-    collective_booking: educational_models.CollectiveBooking,
-    reason: educational_models.CollectiveBookingCancellationReasons,
+    collective_booking: models.CollectiveBooking,
+    reason: models.CollectiveBookingCancellationReasons,
     force: bool = True,
     _from: str | None = None,
     author_id: int | None = None,
 ) -> None:
     collective_booking_id = collective_booking.id
     with atomic():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
 
         if finance_repository.has_reimbursement(collective_booking):
@@ -343,11 +338,11 @@ def cancel_collective_booking(
     )
 
 
-def uncancel_collective_booking(collective_booking: educational_models.CollectiveBooking) -> None:
-    educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+def uncancel_collective_booking(collective_booking: models.CollectiveBooking) -> None:
+    repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
     db.session.refresh(collective_booking)
     collective_booking.uncancel_booking()
-    if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
+    if collective_booking.status == models.CollectiveBookingStatus.USED:
         finance_api.add_event(
             finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
             booking=collective_booking,
@@ -364,7 +359,7 @@ def uncancel_collective_booking(collective_booking: educational_models.Collectiv
 
 
 def notify_reimburse_collective_booking(
-    collective_booking: educational_models.CollectiveBooking,
+    collective_booking: models.CollectiveBooking,
     reason: str,
     value: decimal.Decimal | None = None,
     details: str = "",
@@ -390,33 +385,33 @@ def notify_reimburse_collective_booking(
 
 def update_collective_bookings_for_new_institution(
     booking_ids: list[int],
-    institution_source: educational_models.EducationalInstitution,
-    institution_destination: educational_models.EducationalInstitution,
+    institution_source: models.EducationalInstitution,
+    institution_destination: models.EducationalInstitution,
 ) -> None:
     offer_ids = (
-        db.session.query(educational_models.CollectiveOffer)
-        .join(educational_models.CollectiveStock)
-        .join(educational_models.CollectiveBooking)
+        db.session.query(models.CollectiveOffer)
+        .join(models.CollectiveStock)
+        .join(models.CollectiveBooking)
         .filter(
-            educational_models.CollectiveBooking.id.in_(booking_ids),
-            educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id,
+            models.CollectiveBooking.id.in_(booking_ids),
+            models.CollectiveBooking.educationalInstitutionId == institution_source.id,
         )
-        .with_entities(educational_models.CollectiveOffer.id)
+        .with_entities(models.CollectiveOffer.id)
     )
 
-    db.session.query(educational_models.CollectiveOffer).filter(
-        educational_models.CollectiveOffer.id.in_(offer_ids)
-    ).update({"institutionId": institution_destination.id}, synchronize_session=False)
+    db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id.in_(offer_ids)).update(
+        {"institutionId": institution_destination.id}, synchronize_session=False
+    )
 
-    db.session.query(educational_models.CollectiveBooking).filter(
-        educational_models.CollectiveBooking.id.in_(booking_ids),
-        educational_models.CollectiveBooking.educationalInstitutionId == institution_source.id,
+    db.session.query(models.CollectiveBooking).filter(
+        models.CollectiveBooking.id.in_(booking_ids),
+        models.CollectiveBooking.educationalInstitutionId == institution_source.id,
     ).update({"educationalInstitutionId": institution_destination.id}, synchronize_session=False)
 
     db.session.flush()
 
 
-def notify_redactor_that_booking_has_been_cancelled(booking: educational_schemas.EducationalBookingResponse) -> None:
+def notify_redactor_that_booking_has_been_cancelled(booking: schemas.EducationalBookingResponse) -> None:
     try:
         adage_client.notify_booking_cancellation_by_offerer(data=booking)
     except exceptions.AdageException as adage_error:
@@ -438,7 +433,7 @@ def notify_redactor_that_booking_has_been_cancelled(booking: educational_schemas
         )
 
 
-def notify_pro_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
+def notify_pro_that_booking_has_been_cancelled(booking: models.CollectiveBooking) -> None:
     transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking)
 
 
@@ -461,9 +456,9 @@ def handle_expired_collective_bookings() -> None:
 def _cancel_expired_collective_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_collective_bookings] Start")
 
-    expiring_collective_bookings_query = educational_repository.find_expiring_collective_bookings_query()
+    expiring_collective_bookings_query = repository.find_expiring_collective_bookings_query()
     expiring_booking_ids = [
-        b[0] for b in expiring_collective_bookings_query.with_entities(educational_models.CollectiveBooking.id).all()
+        b[0] for b in expiring_collective_bookings_query.with_entities(models.CollectiveBooking.id).all()
     ]
 
     logger.info("[cancel_expired_collective_bookings] %d expiring bookings to cancel", len(expiring_booking_ids))
@@ -478,12 +473,12 @@ def _cancel_expired_collective_bookings(batch_size: int = 500) -> None:
     while start_index < len(expiring_booking_ids):
         booking_to_update_ids = expiring_booking_ids[start_index : start_index + batch_size]
         updated = (
-            db.session.query(educational_models.CollectiveBooking)
-            .filter(educational_models.CollectiveBooking.id.in_(booking_to_update_ids))
+            db.session.query(models.CollectiveBooking)
+            .filter(models.CollectiveBooking.id.in_(booking_to_update_ids))
             .update(
                 {
-                    "status": educational_models.CollectiveBookingStatus.CANCELLED,
-                    "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+                    "status": models.CollectiveBookingStatus.CANCELLED,
+                    "cancellationReason": models.CollectiveBookingCancellationReasons.EXPIRED,
                     "cancellationDate": date_utils.get_naive_utc_now(),
                 },
                 synchronize_session=False,
@@ -505,7 +500,7 @@ def _cancel_expired_collective_bookings(batch_size: int = 500) -> None:
 def _notify_offerers_of_expired_collective_bookings() -> None:
     logger.info("[notify_offerers_of_expired_collective_bookings] Start")
 
-    expired_collective_bookings = educational_repository.find_expired_collective_bookings()
+    expired_collective_bookings = repository.find_expired_collective_bookings()
 
     for collective_booking in expired_collective_bookings:
         transactional_mails.send_eac_booking_cancellation_email(collective_booking)
